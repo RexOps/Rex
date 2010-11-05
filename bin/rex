@@ -1,0 +1,65 @@
+#!/usr/bin/env perl
+
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+
+
+use strict;
+use warnings;
+
+use FindBin;
+
+use lib "$FindBin::Bin/../lib";
+
+use Rex::Config;
+use Rex::Group;
+use Rex::Task;
+use Rex::Commands;
+use Rex::Commands::Run;
+
+use Getopt::Std;
+use Scope::With;
+
+use constant VERSION => '1.0.0';
+
+my %opts;
+getopts('Thv', \%opts);
+
+if($opts{'h'}) {
+   print "(R)?ex - (Remote)? Execution\n";
+   printf "  %-15s %s\n", "-T", "List all known tasks.";
+   printf "  %-15s %s\n", "-h", "Display this help";
+   printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
+   exit 0;
+} elsif($opts{'v'}) {
+   print "(R)?ex " . VERSION . "\n";
+   exit 0;
+}
+
+if(-f "Rexfile") {
+   eval {
+      do("Rexfile");
+   };
+
+   if($@) { print $@ . "\n"; exit 1; }
+} else {
+   print STDERR "No Rexfile found.\n";
+   exit 1;
+}
+
+if($opts{'T'}) {
+   print "Tasks\n";
+   for my $task (Rex::Task->get_tasks) {
+      printf "  %-25s %s\n", $task, Rex::Task->get_desc($task);
+   }
+}
+
+if(defined $ARGV[0]) {
+   if(Rex::Task->is_task($ARGV[0])) {
+      Rex::Task->run($ARGV[0]);
+   }
+}
+

@@ -1,4 +1,4 @@
-#!perl
+#!/usr/bin/env perl
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -20,6 +20,7 @@ use Rex::Group;
 use Rex::Task;
 use Rex::Commands;
 use Rex::Commands::Run;
+use Rex::Commands::Upload;
 
 use Getopt::Std;
 use Scope::With;

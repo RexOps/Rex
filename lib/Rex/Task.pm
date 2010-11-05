@@ -9,6 +9,7 @@ package Rex::Task;
 use strict;
 use warnings;
 use Net::SSH::Expect;
+use Rex::Helper::SCP;
 
 use Data::Dumper;
 
@@ -77,42 +78,51 @@ sub run {
 
    print STDERR "Running task: $task\n";
    my $code = $tasks{$task}->{'func'};
-   eval {
-      my @server = @{$tasks{$task}->{'server'}};
+   my @server = @{$tasks{$task}->{'server'}};
 
-      if(scalar(@server) > 0) {
+   if(scalar(@server) > 0) {
 
-         for my $server (@server) {
-            print STDERR "Connecting to $server (" . Rex::Config->get_user . ")\n";
-            if(Rex::Config->get_password) {
-               $::ssh = Net::SSH::Expect->new(
-                  host => $server,
-                  user => Rex::Config->get_user,
-                  password => Rex::Config->get_password
-               );
+      for $::server (@server) {
+         print STDERR "Connecting to $::server (" . Rex::Config->get_user . ")\n";
+         if(Rex::Config->get_password) {
+            $::ssh = Net::SSH::Expect->new(
+               host => $::server,
+               user => Rex::Config->get_user,
+               password => Rex::Config->get_password
+            );
 
-               $::ssh->login();
-            } else {
-               $::ssh = Net::SSH::Expect->new(
-                  host => $server,
-                  user => Rex::Config->get_user
-               );
+            $::scp = Rex::Helper::SCP->new(
+               host => $::server,
+               user => Rex::Config->get_user,
+               password => Rex::Config->get_password
+            );
 
-               $::ssh->run_ssh();
-            }
+            $::ssh->login();
+         } else {
+            $::ssh = Net::SSH::Expect->new(
+               host => $::server,
+               user => Rex::Config->get_user
+            );
 
-            #$::ssh->exec("stty raw -echo");
-            $::ssh->exec("/bin/bash --noprofile --norc");
+            $::scp = Rex::Helper::SCP->new(
+               host => $::server,
+               user => Rex::Config->get_user
+            );
 
-            &$code;
-
-            $::ssh->exec("exit");
-            $::ssh->close();
+            $::ssh->run_ssh();
          }
-      } else {
+
+         #$::ssh->exec("stty raw -echo");
+         $::ssh->exec("/bin/bash --noprofile --norc");
+
          &$code;
+
+         $::ssh->exec("exit");
+         $::ssh->close();
       }
-   };
+   } else {
+      &$code;
+   }
 }
 
 1;

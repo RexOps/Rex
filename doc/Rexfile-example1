@@ -21,3 +21,8 @@ task "uname", group => "local", sub {
    run "id";
 };
 
+desc "Upload file";
+task "upload", "mango", sub {
+   upload "/tmp/test.txt", "/tmp/test.txt";
+};
+

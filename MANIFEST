@@ -1,10 +1,13 @@
 bin/rex
 lib/Rex/Commands/Run.pm
+lib/Rex/Commands/Upload.pm
 lib/Rex/Commands.pm
 lib/Rex/Config.pm
 lib/Rex/Group.pm
+lib/Rex/Helper/SCP.pm
 lib/Rex/Task.pm
 lib/Rex.pm
 Makefile.PL
 MANIFEST
+MANIFEST.SKIP
 README.pod

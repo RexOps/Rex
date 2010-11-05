@@ -3,19 +3,14 @@ user "root";
 group "frontend", "server1", "server2", "server3", "server4";
 group "local", "mango", "debian01";
 
-desc "Search the libs";
-task "search_lib", group => frontend, sub {
-   run "ls /usr/lib |wc -l";
+desc "Show uptime";
+task "uptime", group => frontend, sub {
+   run "uptime";
 };
 
-desc "Show free space on /";
+desc "Show free space";
 task "show_disk_free", sub {
    run "df -h";
-};
-
-desc "Start test server";
-task "start_server", sub {
-   print "start_server\n";
 };
 
 desc "Show Unix version";

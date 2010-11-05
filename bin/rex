@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!perl
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -14,6 +14,7 @@ use FindBin;
 
 use lib "$FindBin::Bin/../lib";
 
+use Rex;
 use Rex::Config;
 use Rex::Group;
 use Rex::Task;
@@ -22,8 +23,6 @@ use Rex::Commands::Run;
 
 use Getopt::Std;
 use Scope::With;
-
-use constant VERSION => '1.0.0';
 
 my %opts;
 getopts('Thvf:', \%opts);
@@ -36,7 +35,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    exit 0;
 } elsif($opts{'v'}) {
-   print "(R)?ex " . VERSION . "\n";
+   print "(R)?ex " . $Rex::VERSION . "\n";
    exit 0;
 }
 

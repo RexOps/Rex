@@ -20,6 +20,8 @@ L<Scope::With>
 
 A small example:
 
+=head3 Rexfile
+
     user "root";
     
     desc "Show Unix version";
@@ -27,9 +29,21 @@ A small example:
         run "uname -a";
     };
 
+=head3 Commandline
+
+=over 4
+
+=item *
+
+List all known Tasks
+
     bash# rex -T
     Tasks
       uname                     Show Unix version
+
+=item *
+
+Run Task I<uname>
 
     bash# rex uname
     Running task: uname
@@ -38,4 +52,7 @@ A small example:
     Running task: uname
     Connecting to server2 (root)
     Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
+
+=back
+
 =cut

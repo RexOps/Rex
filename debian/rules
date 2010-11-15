@@ -1,0 +1,51 @@
+#!/usr/bin/make -f
+
+export PERL_MM_USE_DEFAULT=1
+
+PERL   ?= /usr/bin/perl
+PACKAGE = $(shell dh_listpackages)
+TMP     = $(CURDIR)/debian/tmp
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	# Add commands to compile the package here
+	$(PERL) Makefile.PL INSTALLDIRS=vendor
+	$(MAKE)
+	$(MAKE) test
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	dh_clean build-stamp install-stamp
+	# Add commands to clean up after the build process here
+	[ ! -f Makefile ] || $(MAKE) realclean
+
+install: install-stamp
+install-stamp: build-stamp
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	# Add commands to install the package into $(TMP) here
+	$(MAKE) install DESTDIR=$(TMP) PREFIX=/usr
+	touch $@
+
+binary-arch:
+# We have nothing to do here for an architecture-independent package
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	#dh_installdocs README
+	#dh_installchangelogs 
+	dh_perl
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

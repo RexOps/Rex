@@ -32,7 +32,7 @@ A small example:
 
 * List all known Tasks
 
-    $ rex -T
+    rex -T
     Tasks
         uname                     Show Unix version
 

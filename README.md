@@ -32,17 +32,17 @@ A small example:
 
 * List all known Tasks
 
-    rex -T
-    Tasks
-        uname                     Show Unix version
+        bash# rex -T
+        Tasks
+            uname                     Show Unix version
 
 * Run Task 
 
-    bash# rex uname
-    Running task: uname
-    Connecting to server1 (root)
-    Linux mango 2.6.27-openvz-briullov.1-r4 #1 SMP Tue Nov 24 23:25:52 CET 2009 x86_64 Intel(R) Pentium(R) D CPU 2.80GHz GenuineIntel GNU/Linux
-    Running task: uname
-    Connecting to server2 (root)
-    Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
+        bash# rex uname
+        Running task: uname
+        Connecting to server1 (root)
+        Linux mango 2.6.27-openvz-briullov.1-r4 #1 SMP Tue Nov 24 23:25:52 CET 2009 x86_64 Intel(R) Pentium(R) D CPU 2.80GHz GenuineIntel GNU/Linux
+        Running task: uname
+        Connecting to server2 (root)
+        Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
 

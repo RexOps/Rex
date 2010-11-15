@@ -10,4 +10,3 @@ lib/Rex.pm
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
-README.pod

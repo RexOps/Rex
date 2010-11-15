@@ -32,9 +32,9 @@ A small example:
 
 * List all known Tasks
 
-    bash# rex -T
+    $ rex -T
     Tasks
-      uname                     Show Unix version
+        uname                     Show Unix version
 
 * Run Task 
 

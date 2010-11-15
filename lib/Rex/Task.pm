@@ -75,6 +75,7 @@ sub is_task {
 sub run {
    my $class = shift;
    my $task = shift;
+   my $ret;
 
    print STDERR "Running task: $task\n";
    my $code = $tasks{$task}->{'func'};
@@ -115,14 +116,16 @@ sub run {
          #$::ssh->exec("stty raw -echo");
          $::ssh->exec("/bin/bash --noprofile --norc");
 
-         &$code;
+         $ret = &$code;
 
          $::ssh->exec("exit");
          $::ssh->close();
       }
    } else {
-      &$code;
+      $ret = &$code;
    }
+
+   return $ret;
 }
 
 1;

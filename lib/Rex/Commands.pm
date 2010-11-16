@@ -25,6 +25,9 @@ sub task {
       $task_name = $class . ":" . $task_name;
    }
 
+   $task_name =~ s/^Rex:://;
+   $task_name =~ s/::/:/g;
+
    if($current_desc) {
       push(@_, $current_desc);
       $current_desc = "";

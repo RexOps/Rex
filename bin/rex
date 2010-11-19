@@ -23,7 +23,15 @@ use Rex::Commands::Run;
 use Rex::Commands::Upload;
 
 use Getopt::Std;
-use Scope::With;
+
+eval {
+   require Scope::With;
+   Scope::With->import();
+};
+
+if($@) {
+   print STDERR "[warn] no Scope::With found\n";
+}
 
 my %opts;
 getopts('Thvf:', \%opts);

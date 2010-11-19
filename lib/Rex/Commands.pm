@@ -16,7 +16,7 @@ require Exporter;
 use vars qw(@EXPORT $current_desc);
 use base qw(Exporter);
 
-@EXPORT = qw(task desc group user password);
+@EXPORT = qw(task desc group user password get_random);
 
 sub task {
    my($class, $file, @tmp) = caller;
@@ -50,6 +50,20 @@ sub user {
 
 sub password {
    Rex::Config->set_password(@_);
+}
+
+sub get_random {
+	my $self = shift;
+	my $count = shift;
+	my @chars = @_;
+	
+	srand();
+	my $ret = "";
+	for(0..$count) {
+		$ret .= $chars[int(rand(scalar(@chars)-1))];
+	}
+	
+	return $ret;
 }
 
 1;

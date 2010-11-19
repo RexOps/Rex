@@ -11,8 +11,6 @@ use warnings;
 use Net::SSH::Expect;
 use Rex::Helper::SCP;
 
-use Data::Dumper;
-
 use vars qw(%tasks);
 
 sub create_task {
@@ -81,6 +79,16 @@ sub run {
    my $code = $tasks{$task}->{'func'};
    my @server = @{$tasks{$task}->{'server'}};
 
+   my @params = @ARGV[1..$#ARGV];
+   my %opts = ();
+   for my $p (@params) {
+      my($key, $val) = split(/=/, $p, 2);
+      $key = substr($key, 2);
+
+      if($val) { $opts{$key} = $val; next; }
+      $opts{$key} = 1;
+   }
+
    if(scalar(@server) > 0) {
 
       for $::server (@server) {
@@ -116,13 +124,13 @@ sub run {
          #$::ssh->exec("stty raw -echo");
          $::ssh->exec("/bin/bash --noprofile --norc");
 
-         $ret = &$code;
+         $ret = &$code(\%opts);
 
          $::ssh->exec("exit");
          $::ssh->close();
       }
    } else {
-      $ret = &$code;
+      $ret = &$code(\%opts);
    }
 
    return $ret;

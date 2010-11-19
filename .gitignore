@@ -2,3 +2,10 @@
 *.sw*
 Makefile
 *.tar*
+blib
+*-stamp
+debian/files
+debian/tmp
+debian/substvars
+pm_to_blib
+debian/*.log

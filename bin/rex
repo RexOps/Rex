@@ -67,7 +67,7 @@ if(-f $rexfile) {
 if($opts{'T'}) {
    print "Tasks\n";
    for my $task (Rex::Task->get_tasks) {
-      printf "  %-25s %s\n", $task, Rex::Task->get_desc($task);
+      printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
    }
 }
 

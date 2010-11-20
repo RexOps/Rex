@@ -28,7 +28,7 @@ sub file_write {
 
 sub file_close {
    for my $f (keys %file_handles) {
-      if($f == $_[0]) {
+      if($file_handles{$f} == $_[0]) {
          $file_handles{$f} = undef;
          delete $file_handles{$f};
          close($_[0]);

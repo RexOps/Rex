@@ -18,7 +18,7 @@ use base qw(Exporter);
 @EXPORT = qw(mkd);
 
 sub mkd {
-   mkdir(@_);
+   mkdir($_[0]) or die($! . " -> " . join(" ", @_));
 }
 
 1;

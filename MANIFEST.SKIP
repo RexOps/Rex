@@ -1,2 +1,13 @@
 .sw[a-z]$
 .gitignore
+^debian\/
+README.pod
+MANIFEST
+\..*sw.*
+.git
+blib
+pm_toblib
+^Makefile$
+\.tar\.gz
+^.*-stamp$
+^doc\/

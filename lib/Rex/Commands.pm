@@ -53,7 +53,6 @@ sub password {
 }
 
 sub get_random {
-	my $self = shift;
 	my $count = shift;
 	my @chars = @_;
 	

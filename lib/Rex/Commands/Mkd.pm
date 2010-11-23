@@ -18,7 +18,21 @@ use base qw(Exporter);
 @EXPORT = qw(mkd);
 
 sub mkd {
-   mkdir($_[0]) or die($! . " -> " . join(" ", @_));
+   if(defined $::ssh) {
+      my $cmd = "mkdir " . $_[0];
+      $::ssh->send($cmd);
+
+      my @ret = ();
+      while(defined (my $line = $::ssh->read_line()) ) {
+         $line =~ s/[\r\n]//gms;
+         next if($line =~ m/^$/);
+         push @ret, $line;
+      }
+
+      return join("\n", @ret);
+   } else {
+      mkdir($_[0]) or die($! . " -> " . join(" ", @_));
+   }
 }
 
 1;

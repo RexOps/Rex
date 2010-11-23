@@ -1,6 +1,7 @@
 rex (0.0.4) lenny-sc; urgency=high
   * rm command
   * rd command
+  * rexfile locking
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 22 Nov 2010 16:50:00 +0200
 
 rex (0.0.3) lenny-sc; urgency=high

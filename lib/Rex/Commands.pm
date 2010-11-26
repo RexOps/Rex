@@ -16,7 +16,7 @@ require Exporter;
 use vars qw(@EXPORT $current_desc);
 use base qw(Exporter);
 
-@EXPORT = qw(task desc group user password get_random do_task);
+@EXPORT = qw(task desc group user password get_random do_task batch);
 
 sub task {
    my($class, $file, @tmp) = caller;
@@ -42,6 +42,15 @@ sub desc {
 
 sub group {
    Rex::Group->create_group(@_);
+}
+
+sub batch {
+   if($current_desc) {
+      push(@_, $current_desc);
+      $current_desc = "";
+   }
+
+   Rex::Batch->create_batch(@_);
 }
 
 sub user {

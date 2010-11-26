@@ -4,17 +4,40 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Commands::Rm;
+package Rex::Commands::Fs;
 
 use strict;
 use warnings;
 
 require Exporter;
+use Data::Dumper;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(rm rd);
+@EXPORT = qw(list_files rm rd mkd);
+
+use vars qw(%file_handles);
+
+sub list_files {
+   my $path = shift;
+
+   if(defined $::ssh) {
+      my $cmd = 'ls -1 ' . $path;
+      $::ssh->send($cmd);
+      my @ret = ();
+      while(defined (my $line = $::ssh->read_line()) ) {
+         $line =~ s/[\r\n]//gms;
+         next if($line =~ m/^$/);
+         push @ret, $line;
+      }
+
+      shift @ret;
+      return @ret;
+   } else {
+      return glob($path);
+   }
+}
 
 sub rm {
    my @files = @_;
@@ -54,5 +77,25 @@ sub rd {
       }
    }
 }
+
+sub mkd {
+   if(defined $::ssh) {
+      my $cmd = "mkdir " . $_[0];
+      $::ssh->send($cmd);
+
+      my @ret = ();
+      while(defined (my $line = $::ssh->read_line()) ) {
+         $line =~ s/[\r\n]//gms;
+         next if($line =~ m/^$/);
+         push @ret, $line;
+      }
+
+      return join("\n", @ret);
+   } else {
+      mkdir($_[0]) or die($! . " -> " . join(" ", @_));
+   }
+}
+
+
 
 1;

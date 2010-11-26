@@ -78,8 +78,10 @@ if($opts{'T'}) {
 }
 
 if(defined $ARGV[0]) {
-   if(Rex::Task->is_task($ARGV[0])) {
-      Rex::Task->run($ARGV[0]);
+   for my $task (@ARGV) {
+      if(Rex::Task->is_task($task)) {
+         Rex::Task->run($task);
+      }
    }
 }
 

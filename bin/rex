@@ -17,6 +17,7 @@ use lib "$FindBin::Bin/../lib";
 use Rex;
 use Rex::Config;
 use Rex::Group;
+use Rex::Batch;
 use Rex::Task;
 use Rex::Commands;
 use Rex::Commands::Run;
@@ -34,10 +35,11 @@ if($@) {
 }
 
 my %opts;
-getopts('Thvf:', \%opts);
+getopts('Thvf:b:', \%opts);
 
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution\n";
+   printf "  %-15s %s\n", "-b", "Run batch";
    printf "  %-15s %s\n", "-T", "List all known tasks.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
    printf "  %-15s %s\n", "-h", "Display this help";
@@ -74,6 +76,17 @@ if($opts{'T'}) {
    print "Tasks\n";
    for my $task (Rex::Task->get_tasks) {
       printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
+   }
+   print "Batches\n";
+   for my $batch (Rex::Batch->get_batchs) {
+      printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
+   }
+}
+
+if($opts{'b'}) {
+   my $batch = $opts{'b'};
+   if(Rex::Batch->is_batch($batch)) {
+      Rex::Batch->run($batch);
    }
 }
 

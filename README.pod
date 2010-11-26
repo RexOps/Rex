@@ -12,6 +12,10 @@ L<Net::SSH::Expect>
 
 =item *
 
+L<Net::SCP::Expect>
+
+=item *
+
 L<Scope::With>
 
 =back

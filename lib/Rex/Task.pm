@@ -76,8 +76,17 @@ sub run {
    my $ret;
 
    print STDERR "Running task: $task\n";
-   my $code = $tasks{$task}->{'func'};
    my @server = @{$tasks{$task}->{'server'}};
+
+   my($user, $pass);
+   if(ref($server[-1]) eq "HASH") {
+      my $data = pop(@server);
+      $user = $data->{'user'};
+      $pass = $data->{'password'};
+   } else {
+      $user = Rex::Config->get_user;
+      $pass = Rex::Config->get_password;
+   }
 
    my @params = @ARGV[1..$#ARGV];
    my %opts = ();
@@ -93,29 +102,29 @@ sub run {
 
       for $::server (@server) {
          print STDERR "Connecting to $::server (" . Rex::Config->get_user . ")\n";
-         if(Rex::Config->get_password) {
+         if($pass) {
             $::ssh = Net::SSH::Expect->new(
                host => $::server,
-               user => Rex::Config->get_user,
-               password => Rex::Config->get_password
+               user => $user,
+               password => $pass
             );
 
             $::scp = Rex::Helper::SCP->new(
                host => $::server,
-               user => Rex::Config->get_user,
-               password => Rex::Config->get_password
+               user => $user,
+               password => $pass
             );
 
             $::ssh->login();
          } else {
             $::ssh = Net::SSH::Expect->new(
                host => $::server,
-               user => Rex::Config->get_user
+               user => $user
             );
 
             $::scp = Rex::Helper::SCP->new(
                host => $::server,
-               user => Rex::Config->get_user
+               user => $user
             );
 
             $::ssh->run_ssh();
@@ -124,16 +133,24 @@ sub run {
          #$::ssh->exec("stty raw -echo");
          $::ssh->exec("/bin/bash --noprofile --norc");
 
-         $ret = &$code(\%opts);
+         $ret = _exec($task, \%opts);
 
          $::ssh->exec("exit");
          $::ssh->close();
       }
    } else {
-      $ret = &$code(\%opts);
+      $ret = _exec($task, \%opts);
    }
 
    return $ret;
+}
+
+sub _exec {
+   my $task = shift;
+   my $opts = shift;
+
+   my $code = $tasks{$task}->{'func'};
+   return &$code($opts);
 }
 
 1;

@@ -101,19 +101,50 @@ sub run {
    if(scalar(@server) > 0) {
 
       for $::server (@server) {
+         my $fail_counter;
          print STDERR "Connecting to $::server (" . $user . ")\n";
          if($pass) {
-            $::ssh = Net::SSH::Expect->new(
-               host => $::server,
-               user => $user,
-               password => $pass
-            );
+            $fail_counter = 0;
+            CON_SSH: {
+               eval {
+                  $::ssh = Net::SSH::Expect->new(
+                     host => $::server,
+                     user => $user,
+                     password => $pass
+                  );
+               };
 
-            $::scp = Rex::Helper::SCP->new(
-               host => $::server,
-               user => $user,
-               password => $pass
-            );
+               if($@) {
+                  ++$fail_counter;
+                  if($fail_counter < 5) {
+                     goto CON_SSH;
+                  } else {
+                     print $@;
+                     die;
+                  }
+               }
+            }
+
+            $fail_counter = 0;
+            CON_SCP: {
+               eval {
+                  $::scp = Rex::Helper::SCP->new(
+                     host => $::server,
+                     user => $user,
+                     password => $pass
+                  );
+               };
+
+               if($@) {
+                  ++$fail_counter;
+                  if($fail_counter < 5) {
+                     goto CON_SCP;
+                  } else {
+                     print $@;
+                     die;
+                  }
+               }
+            }
 
             $::ssh->login();
          } else {

@@ -101,7 +101,7 @@ sub run {
    if(scalar(@server) > 0) {
 
       for $::server (@server) {
-         print STDERR "Connecting to $::server (" . Rex::Config->get_user . ")\n";
+         print STDERR "Connecting to $::server (" . $user . ")\n";
          if($pass) {
             $::ssh = Net::SSH::Expect->new(
                host => $::server,

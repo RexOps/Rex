@@ -3,6 +3,7 @@ rex (0.0.5) lenny-sc; urgency=high
   * list_files command
   * run multiple tasks with one call
   * merged Mkd.pm Rm.pm to Fs.pm
+  * added batch command, to run multiple tasks
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 26 Nov 2010 13:50:00 +0200
 
 rex (0.0.4) lenny-sc; urgency=high

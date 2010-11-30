@@ -83,19 +83,25 @@ if($opts{'T'}) {
    }
 }
 
-if($opts{'b'}) {
-   my $batch = $opts{'b'};
-   if(Rex::Batch->is_batch($batch)) {
-      Rex::Batch->run($batch);
-   }
-}
-
-if(defined $ARGV[0]) {
-   for my $task (@ARGV) {
-      if(Rex::Task->is_task($task)) {
-         Rex::Task->run($task);
+eval {
+   if($opts{'b'}) {
+      my $batch = $opts{'b'};
+      if(Rex::Batch->is_batch($batch)) {
+         Rex::Batch->run($batch);
       }
    }
+
+   if(defined $ARGV[0]) {
+      for my $task (@ARGV) {
+         if(Rex::Task->is_task($task)) {
+            Rex::Task->run($task);
+         }
+      }
+   }
+};
+
+if($@) {
+   print STDERR "Error: $@\n";
 }
 
 # lock loeschen

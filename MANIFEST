@@ -1,7 +1,10 @@
 bin/rex
 lib/Rex.pm
+lib/Rex/Batch.pm
 lib/Rex/Commands.pm
+lib/Rex/Commands/Download.pm
 lib/Rex/Commands/File.pm
+lib/Rex/Commands/Fs.pm
 lib/Rex/Commands/Mkd.pm
 lib/Rex/Commands/Rm.pm
 lib/Rex/Commands/Run.pm

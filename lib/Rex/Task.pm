@@ -87,6 +87,7 @@ sub run {
       $user = Rex::Config->get_user;
       $pass = Rex::Config->get_password;
    }
+   my $timeout = Rex::Config->get_timeout;
 
    my @params = @ARGV[1..$#ARGV];
    my %opts = ();
@@ -110,7 +111,8 @@ sub run {
                   $::ssh = Net::SSH::Expect->new(
                      host => $::server,
                      user => $user,
-                     password => $pass
+                     password => $pass,
+                     timeout => $timeout
                   );
                };
 
@@ -131,7 +133,8 @@ sub run {
                   $::scp = Rex::Helper::SCP->new(
                      host => $::server,
                      user => $user,
-                     password => $pass
+                     password => $pass,
+                     timeout => $timeout
                   );
                };
 
@@ -150,12 +153,14 @@ sub run {
          } else {
             $::ssh = Net::SSH::Expect->new(
                host => $::server,
-               user => $user
+               user => $user,
+               timeout => $timeout
             );
 
             $::scp = Rex::Helper::SCP->new(
                host => $::server,
-               user => $user
+               user => $user,
+               timeout => $timeout
             );
 
             $::ssh->run_ssh();

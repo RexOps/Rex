@@ -9,7 +9,7 @@ package Rex::Config;
 use strict;
 use warnings;
 
-use vars qw($user $password);
+use vars qw($user $password $timeout);
 
 sub set_user {
    my $class = shift;
@@ -29,6 +29,17 @@ sub get_user {
 sub get_password {
    my $class = shift;
    return $password;
+}
+
+sub set_timeout {
+   my $class = shift;
+   $timeout = shift;
+}
+
+sub get_timeout {
+   my $class = shift;
+   return 2 unless $timeout;
+   return $timeout;
 }
 
 1;

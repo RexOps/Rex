@@ -22,6 +22,10 @@ sub run {
 
    my @ret = ();
    if(defined $::ssh) {
+      # irgendwas was noch so im puffer rumschwirrt einlesen bevor 
+      # der send gemacht wird.
+      while(defined (my $line = $::ssh->read_line()) ) { }
+
       $::ssh->send($cmd);
 
       while(defined (my $line = $::ssh->read_line()) ) {

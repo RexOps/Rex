@@ -35,7 +35,7 @@ if($@) {
 }
 
 my %opts;
-getopts('Thvf:b:', \%opts);
+getopts('Thvf:M:b:', \%opts);
 
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution\n";
@@ -43,6 +43,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-T", "List all known tasks.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
    printf "  %-15s %s\n", "-h", "Display this help";
+   printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    exit 0;
 } elsif($opts{'v'}) {
@@ -55,7 +56,11 @@ if($opts{'f'}) {
    $rexfile = $opts{'f'};
 }
 
-if(-f $rexfile) {
+if($opts{'M'}) {
+   my $mod = $opts{'M'};
+   $mod =~ s{::}{/}g;
+   require "$mod.pm";
+} elsif(-f $rexfile) {
    if(-f "$rexfile.lock") {
       print STDERR "Rexfile in use.\n";
       exit 1;

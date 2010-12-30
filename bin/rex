@@ -35,7 +35,7 @@ if($@) {
 }
 
 my %opts;
-getopts('Thvf:M:b:', \%opts);
+getopts('FThvf:M:b:', \%opts);
 
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution\n";
@@ -45,6 +45,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-h", "Display this help";
    printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
+   printf "  %-15s %s\n", "-F", "Free-Mode. Don't regard lock file";
    exit 0;
 } elsif($opts{'v'}) {
    print "(R)?ex " . $Rex::VERSION . "\n";
@@ -61,7 +62,7 @@ if($opts{'M'}) {
    $mod =~ s{::}{/}g;
    require "$mod.pm";
 } elsif(-f $rexfile) {
-   if(-f "$rexfile.lock") {
+   if(-f "$rexfile.lock" && ! exists $opts{'F'}) {
       print STDERR "Rexfile in use.\n";
       exit 1;
    }
@@ -110,6 +111,6 @@ if($@) {
 }
 
 # lock loeschen
-unlink("$rexfile.lock");
+unlink("$rexfile.lock") if(! exists $opts{'F'});
 
 

@@ -1,6 +1,7 @@
-rex (0.0.8) lenny-sc; urgency=high
+ex (0.0.8) lenny-sc; urgency=high
   * added -M parameter
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 18 Dec 2010 20:20:00 +0200
+  * added -F parameter
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 30 Dec 2010 20:10:00 +0200
 
 rex (0.0.7) lenny-sc; urgency=high
   * added timeout option

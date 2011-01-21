@@ -8,15 +8,7 @@
 
 =item *
 
-L<Net::SSH::Expect>
-
-=item *
-
-L<Net::SCP::Expect>
-
-=item *
-
-L<Scope::With>
+L<Net::SSH2>
 
 =back
 

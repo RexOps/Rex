@@ -102,8 +102,8 @@ sub run {
 
    if(scalar(@server) > 0) {
 
-      $::ssh = Net::SSH2->new;
       for $::server (@server) {
+         $::ssh = Net::SSH2->new;
 
          my $fail_connect = 0;
          print STDERR "Connecting to $::server (" . $user . ")\n";
@@ -122,7 +122,6 @@ sub run {
          }
 
          $ret = _exec($task, \%opts);
-
          $::ssh->disconnect();
       }
    } else {

@@ -8,8 +8,9 @@ package Rex::Task;
 
 use strict;
 use warnings;
-use Net::SSH::Expect;
-use Rex::Helper::SCP;
+#use Net::SSH::Expect;
+#use Rex::Helper::SCP;
+use Net::SSH2;
 
 use vars qw(%tasks);
 
@@ -101,78 +102,28 @@ sub run {
 
    if(scalar(@server) > 0) {
 
+      $::ssh = Net::SSH2->new;
       for $::server (@server) {
-         my $fail_counter;
+
+         my $fail_connect = 0;
          print STDERR "Connecting to $::server (" . $user . ")\n";
-         if($pass) {
-            $fail_counter = 0;
-            CON_SSH: {
-               eval {
-                  $::ssh = Net::SSH::Expect->new(
-                     host => $::server,
-                     user => $user,
-                     password => $pass,
-                     timeout => $timeout
-                  );
-               };
-
-               if($@) {
-                  ++$fail_counter;
-                  if($fail_counter < 5) {
-                     goto CON_SSH;
-                  } else {
-                     print $@;
-                     die;
-                  }
-               }
+         CON_SSH:
+            unless($::ssh->connect($::server)) {
+               ++$fail_connect;
+               goto CON_SSH if($fail_connect < 5);
+               print STDERR "Can't connect to $::server\n";
+               next;
             }
 
-            $fail_counter = 0;
-            CON_SCP: {
-               eval {
-                  $::scp = Rex::Helper::SCP->new(
-                     host => $::server,
-                     user => $user,
-                     password => $pass,
-                     timeout => $timeout
-                  );
-               };
-
-               if($@) {
-                  ++$fail_counter;
-                  if($fail_counter < 5) {
-                     goto CON_SCP;
-                  } else {
-                     print $@;
-                     die;
-                  }
-               }
-            }
-
-            $::ssh->login();
+         if(Rex::Config->get_password_auth) {
+            $::ssh->auth_password($user, $pass);
          } else {
-            $::ssh = Net::SSH::Expect->new(
-               host => $::server,
-               user => $user,
-               timeout => $timeout
-            );
-
-            $::scp = Rex::Helper::SCP->new(
-               host => $::server,
-               user => $user,
-               timeout => $timeout
-            );
-
-            $::ssh->run_ssh();
+            $::ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);
          }
-
-         #$::ssh->exec("stty raw -echo");
-         $::ssh->exec("/bin/bash --noprofile --norc");
 
          $ret = _exec($task, \%opts);
 
-         $::ssh->exec("exit");
-         $::ssh->close();
+         $::ssh->disconnect();
       }
    } else {
       $ret = _exec($task, \%opts);

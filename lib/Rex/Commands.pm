@@ -16,7 +16,10 @@ require Exporter;
 use vars qw(@EXPORT $current_desc);
 use base qw(Exporter);
 
-@EXPORT = qw(task desc group user password get_random do_task batch timeout);
+@EXPORT = qw(task desc group 
+            user password public_key private_key pass_auth
+            get_random do_task batch timeout
+          );
 
 sub task {
    my($class, $file, @tmp) = caller;
@@ -83,6 +86,21 @@ sub do_task {
    my $opts = shift;
 
    return Rex::Task->_exec($task, $opts);
+}
+
+sub public_key {
+   shift;
+   Rex::Config->set_public_key(@_);
+}
+
+sub private_key {
+   shift;
+   Rex::Config->set_private_key(@_);
+}
+
+sub pass_auth {
+   shift;
+   Rex::Config->set_password_auth(1);
 }
 
 1;

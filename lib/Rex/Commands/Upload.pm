@@ -22,9 +22,9 @@ sub upload {
 
    if(! -f $local) { print STDERR "File Not Found: $local\n"; return 1; }
 
-   if(defined $::scp) {
+   if(defined $::ssh) {
       print STDERR "Uploadling $local -> $remote\n";
-      $::scp->scp($local, $remote);
+      $::ssh->scp_put($local, $remote);
    } else {
       system("cp $local $remote");
    }

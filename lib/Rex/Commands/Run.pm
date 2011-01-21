@@ -11,6 +11,7 @@ use warnings;
 
 require Exporter;
 use Data::Dumper;
+use Rex::Helper::SSH2;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
@@ -22,30 +23,11 @@ sub run {
 
    my @ret = ();
    if(defined $::ssh) {
-      # irgendwas was noch so im puffer rumschwirrt einlesen bevor 
-      # der send gemacht wird.
-      while(defined (my $line = $::ssh->read_line()) ) { }
-
-      $::ssh->send($cmd);
-
-      while(defined (my $line = $::ssh->read_line()) ) {
-         $line =~ s/[\r\n]//gms;
-         next if($line =~ m/^$/);
-         push @ret, $line;
-      }
-
-      shift @ret;
+      my $out = net_ssh2_exec($::ssh, $cmd);
+      print $out;
    } else {
-      push @ret, `$cmd`;
-      chomp @ret;
+      system($cmd);
    }
-
-   if(scalar(@ret) >= 1) {
-      print join("\n", @ret);
-      print "\n";
-   }
-
-   return join("\n", @ret);
 }
 
 1;

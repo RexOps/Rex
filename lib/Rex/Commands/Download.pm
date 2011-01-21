@@ -20,9 +20,9 @@ sub download {
    my $remote = shift;
    my $local = shift;
 
-   if(defined $::scp) {
+   if(defined $::ssh) {
       print STDERR "Downloading $remote -> $local\n";
-      $::scp->scp(":".$remote, $local);
+      $::ssh->scp_get($remote, $local);
    } else {
       system("cp $remote $local");
    }

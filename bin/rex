@@ -30,6 +30,8 @@ eval {
    Scope::With->import();
 };
 
+$|++;
+
 if($@) {
    print STDERR "[warn] no Scope::With found\n";
 }

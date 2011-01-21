@@ -21,22 +21,25 @@ use vars qw(%file_handles);
 
 sub list_files {
    my $path = shift;
+   my @ret;
 
    if(defined $::ssh) {
-      my $cmd = 'ls -1 ' . $path;
-      $::ssh->send($cmd);
-      my @ret = ();
-      while(defined (my $line = $::ssh->read_line()) ) {
-         $line =~ s/[\r\n]//gms;
-         next if($line =~ m/^$/);
-         push @ret, $line;
-      }
+      my $sftp = $::ssh->sftp;
+      my $dir = $sftp->opendir($path);
 
-      shift @ret;
-      return @ret;
+      while(my $entry  = $dir->read) {
+         push @ret, $entry->{'name'};
+      }
    } else {
-      return glob($path);
+      opendir(my $dh, $path);
+      while(my $entry = readdir($dh)) {
+         next if ($entry =~ /^\.\.?$/);
+         push @ret, $entry;
+      }
+      closedir($dh);
    }
+
+   return @ret;
 }
 
 sub rm {
@@ -44,13 +47,7 @@ sub rm {
 
    if(defined $::ssh) {
       for my $file (@files) {
-         my $cmd = "rm -f $file";
-         $::ssh->send($cmd);
-
-         while(defined (my $line = $::ssh->read_line()) ) {
-            $line =~ s/[\r\n]//gms;
-            print "[rm] $line\n";
-         }
+         $::ssh->sftp->unlink($file);
       }
    } else {
       unlink(@files);
@@ -62,18 +59,11 @@ sub rd {
 
    if(defined $::ssh) {
       for my $dir (@dirs) {
-         my $cmd = "rm -rf $dir";
-         $::ssh->send($cmd);
-
-         while(defined (my $line = $::ssh->read_line()) ) {
-            $line =~ s/[\r\n]//gms;
-            print "[rd] $line\n";
-         }
+         $::ssh->sftp->rmdir($dir);
       }
    } else {
       for my $dir (@dirs) {
-         my @line = qx{rm -rf $dir};
-         print join("\n[rd] ", @line);
+         my @line = qx{rm -f $dir};
       }
    }
 }
@@ -81,16 +71,7 @@ sub rd {
 sub mkd {
    if(defined $::ssh) {
       my $cmd = "mkdir " . $_[0];
-      $::ssh->send($cmd);
-
-      my @ret = ();
-      while(defined (my $line = $::ssh->read_line()) ) {
-         $line =~ s/[\r\n]//gms;
-         next if($line =~ m/^$/);
-         push @ret, $line;
-      }
-
-      return join("\n", @ret);
+      $::ssh->sftp->mkdir(@_);
    } else {
       mkdir($_[0]) or die($! . " -> " . join(" ", @_));
    }

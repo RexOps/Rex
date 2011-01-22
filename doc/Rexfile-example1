@@ -1,24 +1,19 @@
+use Rex::Commands::Run;
+use Rex::Commands::Upload;
+
 user "root";
 
 group "frontend", "server1", "server2", "server3", "server4";
 group "local", "mango", "debian01";
 
 desc "Show uptime";
-task "uptime", group => frontend, sub {
+task "uptime", group => local, sub {
    run "uptime";
 };
 
 desc "Show free space";
 task "show_disk_free", sub {
    run "df -h";
-};
-
-desc "Show Unix version";
-task "uname", group => "local", sub {
-   run "export MYVAR='(R)?ex'";
-   run "uname -a";
-   run "echo 'Running: ' \$MYVAR";
-   run "id";
 };
 
 desc "Upload file";

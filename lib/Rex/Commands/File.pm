@@ -8,32 +8,39 @@ package Rex::Commands::File;
 
 use strict;
 use warnings;
+use Fcntl;
 
 require Exporter;
 use Data::Dumper;
+use Rex::FS::File;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(file_write file_close);
+@EXPORT = qw(file_write file_close file_read);
 
 use vars qw(%file_handles);
 
 sub file_write {
+   my ($file) = @_;
    my $fh;
-   open($fh, ">", $_[0]) or die($!);
-   $file_handles{$_[0]} = $fh;
-   return $fh;
+   if($::ssh) {
+      $fh = $::ssh->sftp->open($file, O_WRONLY | O_CREAT);
+   } else {
+      open($fh, ">", $file) or die($!);
+   }
+   return Rex::FS::File->new(fh => $fh);
 }
 
-sub file_close {
-   for my $f (keys %file_handles) {
-      if($file_handles{$f} == $_[0]) {
-         $file_handles{$f} = undef;
-         delete $file_handles{$f};
-         close($_[0]);
-      }
+sub file_read {
+   my ($file) = @_;
+   my $fh;
+   if($::ssh) {
+      $fh = $::ssh->sftp->open($file, O_RDONLY);
+   } else {
+      open($fh, "<", $file) or die($!);
    }
+   return Rex::FS::File->new(fh => $fh);
 }
 
 1;

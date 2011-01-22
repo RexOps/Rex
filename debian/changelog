@@ -1,5 +1,6 @@
 rex (0.1.0) lenny-sc; urgency=high
   * switched to Net::SSH2
+  * added remote file edit and read support
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 21 Jan 2011 20:20:00 +0200
 
 rex (0.0.8) lenny-sc; urgency=high

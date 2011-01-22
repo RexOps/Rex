@@ -8,8 +8,10 @@ lib/Rex/Commands/Fs.pm
 lib/Rex/Commands/Run.pm
 lib/Rex/Commands/Upload.pm
 lib/Rex/Config.pm
+lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Helper/SCP.pm
+lib/Rex/Helper/SSH2.pm
 lib/Rex/Task.pm
 Makefile.PL
 t/01.t

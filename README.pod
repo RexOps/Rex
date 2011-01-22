@@ -24,6 +24,13 @@ A small example:
     task "uname", "server1", "server2", sub {
         run "uname -a";
     };
+    
+    desc "Write into a file";
+    task "write", "server1", sub {
+        my $file = file_write '/tmp/status.out';
+        $file->write("File created\n");
+        $file->close;
+    };
 
 =head3 Commandline
 

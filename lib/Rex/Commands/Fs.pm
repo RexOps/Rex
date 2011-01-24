@@ -70,7 +70,6 @@ sub rd {
 
 sub mkd {
    if(defined $::ssh) {
-      my $cmd = "mkdir " . $_[0];
       $::ssh->sftp->mkdir(@_);
    } else {
       mkdir($_[0]) or die($! . " -> " . join(" ", @_));

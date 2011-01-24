@@ -89,17 +89,14 @@ sub do_task {
 }
 
 sub public_key {
-   shift;
    Rex::Config->set_public_key(@_);
 }
 
 sub private_key {
-   shift;
    Rex::Config->set_private_key(@_);
 }
 
 sub pass_auth {
-   shift;
    Rex::Config->set_password_auth(1);
 }
 

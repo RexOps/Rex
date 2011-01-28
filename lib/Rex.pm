@@ -9,6 +9,6 @@ use base qw(Exporter);
 use vars qw(@EXPORT $VERSION);
 
 @EXPORT = qw($VERSION);
-$VERSION = "0.1.1";
+$VERSION = "0.1.2";
 
 1;

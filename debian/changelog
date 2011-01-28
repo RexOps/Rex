@@ -1,26 +1,32 @@
-rex (0.1.1) lenny-sc; urgency=high
+rex (0.1.2) unstable; urgency=low
+  * fixed bug with public_key and private_key
+  * cleanup of control file
+  * cleanup of changelog file
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 28 Jan 2011 22:20:00 +0200
+
+rex (0.1.1) unstable; urgency=low
   * added remote file edit and read support
  -- Jan Gehring <jan.gehring@gmail.com>  Sat, 22 Jan 2011 01:10:00 +0200
 
-rex (0.1.0) lenny-sc; urgency=high
+rex (0.1.0) unstable; urgency=low
   * switched to Net::SSH2
   * added remote file edit and read support
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 21 Jan 2011 20:20:00 +0200
 
-rex (0.0.8) lenny-sc; urgency=high
+rex (0.0.8) unstable; urgency=low
   * added -M parameter
   * added -F parameter
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 30 Dec 2010 20:10:00 +0200
 
-rex (0.0.7) lenny-sc; urgency=high
+rex (0.0.7) unstable; urgency=low
   * added timeout option
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 09 Dec 2010 21:56:00 +0200
 
-rex (0.0.6) lenny-sc; urgency=high
+rex (0.0.6) unstable; urgency=low
   * Fix, running commands over ssh. empty the buffer.
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 29 Nov 2010 17:00:00 +0200
 
-rex (0.0.5) lenny-sc; urgency=high
+rex (0.0.5) unstable; urgency=low
   * download command
   * list_files command
   * run multiple tasks with one call
@@ -28,23 +34,23 @@ rex (0.0.5) lenny-sc; urgency=high
   * added batch command, to run multiple tasks
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 26 Nov 2010 13:50:00 +0200
 
-rex (0.0.4) lenny-sc; urgency=high
+rex (0.0.4) unstable; urgency=low
   * rm command
   * rd command
   * rexfile locking
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 22 Nov 2010 16:50:00 +0200
 
-rex (0.0.3) lenny-sc; urgency=high
+rex (0.0.3) unstable; urgency=low
   * get_random command
   * mkd command
   * file* commands
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 22 Nov 2010 16:50:00 +0200
 
-rex (0.0.2) lenny-sc; urgency=high
+rex (0.0.2) unstable; urgency=low
   * some cleanup
   * task naming
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 19 Nov 2010 07:30:00 +0200
 
-rex (0.0.1) lenny-sc; urgency=high
+rex (0.0.1) unstable; urgency=low
   * init
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 15 Oct 2010 15:13:00 +0200

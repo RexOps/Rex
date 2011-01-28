@@ -1,12 +1,12 @@
 Source: rex
-Section: system/utils
-Priority: standard
+Section: admin
+Priority: optional
 Maintainer: Jan Gehring <jan.gehring@gmail.com>
-Build-Depends: debhelper (>> 5.0.0), dpkg-dev (>= 1.10.23), lsb-release
-Standards-Version: 3.7.2
+Build-Depends: debhelper (>= 4), libnet-ssh2-perl (>= 0.33), perl (>= 5.10.0)
+Standards-Version: 3.5.1
 Homepage: https://github.com/krimdomu/-R--ex
 
 Package: rex
 Architecture: all
-Depends: perl
+Depends: perl (>= 5.10.0), libnet-ssh2-perl (>= 0.33)
 Description: REmote eXecute. Execute commands on remote machines.

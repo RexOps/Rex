@@ -11,6 +11,7 @@ use warnings;
 #use Net::SSH::Expect;
 #use Rex::Helper::SCP;
 use Net::SSH2;
+use POSIX ":sys_wait_h";
 
 use vars qw(%tasks);
 
@@ -102,27 +103,41 @@ sub run {
 
    if(scalar(@server) > 0) {
 
-      for $::server (@server) {
-         $::ssh = Net::SSH2->new;
+      my @children;
 
-         my $fail_connect = 0;
-         print STDERR "Connecting to $::server (" . $user . ")\n";
-         CON_SSH:
-            unless($::ssh->connect($::server)) {
-               ++$fail_connect;
-               goto CON_SSH if($fail_connect < 5);
-               print STDERR "Can't connect to $::server\n";
-               next;
+      for $::server (@server) {
+         if(my $pid = fork) { push(@children, $pid); }
+         else {
+            $::ssh = Net::SSH2->new;
+
+            my $fail_connect = 0;
+            print STDERR "Connecting to $::server (" . $user . ")\n";
+            CON_SSH:
+               unless($::ssh->connect($::server)) {
+                  ++$fail_connect;
+                  goto CON_SSH if($fail_connect < 5);
+                  print STDERR "Can't connect to $::server\n";
+                  next;
+               }
+
+            if(Rex::Config->get_password_auth) {
+               $::ssh->auth_password($user, $pass);
+            } else {
+               $::ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);
             }
 
-         if(Rex::Config->get_password_auth) {
-            $::ssh->auth_password($user, $pass);
-         } else {
-            $::ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);
-         }
+            $ret = _exec($task, \%opts);
+            $::ssh->disconnect();
 
-         $ret = _exec($task, \%opts);
-         $::ssh->disconnect();
+            exit; # exit child
+         }
+      }
+
+      for my $child (@children) {
+         my $kid;
+         do {
+            $kid = waitpid($child, &WNOHANG);
+         } until $kid == -1;
       }
    } else {
       $ret = _exec($task, \%opts);

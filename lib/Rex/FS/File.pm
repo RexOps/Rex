@@ -60,6 +60,9 @@ sub read_all {
       $all .= $in;
    }
 
+   if(wantarray) {
+      return split(/\n/, $all);
+   }
    return $all;
 }
 

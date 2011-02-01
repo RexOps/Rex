@@ -1,6 +1,10 @@
 rex (0.2.0) unstable; urgency=low
   * added support for parallel processing
- -- Jan Gehring <jan.gehring@gmail.com>  Sun, 30 Jan 2011 21:00:00 +0200
+  * renamed some FS functions
+  * added stat() function
+  * added is_file() function
+  * added is_dir() function
+ -- Jan Gehring <jan.gehring@gmail.com>  Tue, 01 Feb 2011 20:45:00 +0200
 
 rex (0.1.2) unstable; urgency=low
   * fixed bug with public_key and private_key

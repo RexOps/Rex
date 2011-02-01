@@ -15,7 +15,7 @@ use Data::Dumper;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files rm rd mkd);
+@EXPORT = qw(list_files unlink rmdir mkdir stat);
 
 use vars qw(%file_handles);
 
@@ -42,7 +42,7 @@ sub list_files {
    return @ret;
 }
 
-sub rm {
+sub unlink {
    my @files = @_;
 
    if(defined $::ssh) {
@@ -50,11 +50,11 @@ sub rm {
          $::ssh->sftp->unlink($file);
       }
    } else {
-      unlink(@files);
+      CORE::unlink(@files);
    }
 }
 
-sub rd {
+sub rmdir {
    my @dirs = @_;
 
    if(defined $::ssh) {
@@ -63,19 +63,36 @@ sub rd {
       }
    } else {
       for my $dir (@dirs) {
-         my @line = qx{rm -f $dir};
+         CORE::rmdir($dir);
       }
    }
 }
 
-sub mkd {
+sub mkdir {
    if(defined $::ssh) {
       $::ssh->sftp->mkdir(@_);
    } else {
-      mkdir($_[0]) or die($! . " -> " . join(" ", @_));
+      CORE::mkdir($_[0]) or die($! . " -> " . join(" ", @_));
    }
 }
 
+sub stat {
+   my %ret;
+   if(defined $::ssh) {
+      %ret = $::ssh->sftp->stat($_[0]);
+      $ret{'mode'} = sprintf("%04o", $ret{'mode'} & 07777);
+   } else {
+      my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
+               $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0]);
+      $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
+      $ret{'size'}  = $size;
+      $ret{'uid'}   = $uid;
+      $ret{'gid'}   = $gid;
+      $ret{'atime'} = $atime;
+      $ret{'mtime'} = $mtime;
+   }
 
+   %ret;
+}
 
 1;

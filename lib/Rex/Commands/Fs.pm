@@ -106,7 +106,7 @@ sub is_file {
          return 0;
       }
    } else {
-      if(-d $_[0]) {
+      if(! -f $_[0]) {
          return 0;
       }
    }

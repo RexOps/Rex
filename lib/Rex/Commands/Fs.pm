@@ -11,11 +11,12 @@ use warnings;
 
 require Exporter;
 use Data::Dumper;
+use Fcntl;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files unlink rmdir mkdir stat);
+@EXPORT = qw(list_files unlink rmdir mkdir stat is_file);
 
 use vars qw(%file_handles);
 
@@ -94,5 +95,24 @@ sub stat {
 
    %ret;
 }
+
+sub is_file {
+   if(defined $::ssh) {
+      if( $::ssh->sftp->opendir($_[0]) ) {
+         return 0;
+      }
+
+      if( ! $::ssh->sftp->open($_[0], O_RDONLY) ) {
+         return 0;
+      }
+   } else {
+      if(-d $_[0]) {
+         return 0;
+      }
+   }
+
+   return 1;
+}
+
 
 1;

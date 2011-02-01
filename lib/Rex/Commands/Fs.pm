@@ -16,7 +16,7 @@ use Fcntl;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files unlink rmdir mkdir stat is_file);
+@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir);
 
 use vars qw(%file_handles);
 
@@ -107,6 +107,20 @@ sub is_file {
       }
    } else {
       if(! -f $_[0]) {
+         return 0;
+      }
+   }
+
+   return 1;
+}
+
+sub is_dir {
+   if(defined $::ssh) {
+      if( ! $::ssh->sftp->opendir($_[0]) ) {
+         return 0;
+      }
+   } else {
+      if(-f $_[0]) {
          return 0;
       }
    }

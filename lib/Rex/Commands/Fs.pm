@@ -12,11 +12,12 @@ use warnings;
 require Exporter;
 use Data::Dumper;
 use Fcntl;
+use Rex::Helper::SSH2;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir);
+@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir is_readable is_writeable is_writable);
 
 use vars qw(%file_handles);
 
@@ -126,6 +127,42 @@ sub is_dir {
    }
 
    return 1;
+}
+
+sub is_readable {
+   if(defined $::ssh) {
+      my $out = net_ssh2_exec($::ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { print \"1\"; }'");
+      chomp $out;
+      if($out) {
+         return 1;
+      }
+   } else {
+      if(-r $_[0]) {
+         return 1;
+      }
+   }
+
+   return 0;
+}
+
+sub is_writable {
+   if(defined $::ssh) {
+      my $out = net_ssh2_exec($::ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { print \"1\"; }'");
+      chomp $out;
+      if($out) {
+         return 1;
+      }
+   } else {
+      if(-w $_[0]) {
+         return 1;
+      }
+   }
+
+   return 0;
+}
+
+sub is_writeable {
+   is_writable(@_);
 }
 
 

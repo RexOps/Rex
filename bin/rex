@@ -28,6 +28,11 @@ use Getopt::Std;
 $|++;
 
 my %opts;
+
+if($#ARGV < 0) {
+   @ARGV = qw(-h);
+}
+
 getopts('FThvf:M:b:', \%opts);
 
 if($opts{'h'}) {

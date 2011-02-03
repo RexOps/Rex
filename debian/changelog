@@ -1,3 +1,8 @@
+rex (0.1.3) unstable; urgency=low
+  * Fixed #1 (no Scope::With found)
+  * Fixed #2 (print help if no parameter is given)
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 03 Feb 2011 23:20:00 +0200
+
 rex (0.1.2) unstable; urgency=low
   * fixed bug with public_key and private_key
   * cleanup of control file

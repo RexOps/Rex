@@ -25,16 +25,7 @@ use Rex::Commands::Upload;
 
 use Getopt::Std;
 
-eval {
-   require Scope::With;
-   Scope::With->import();
-};
-
 $|++;
-
-if($@) {
-   print STDERR "[warn] no Scope::With found\n";
-}
 
 my %opts;
 getopts('FThvf:M:b:', \%opts);

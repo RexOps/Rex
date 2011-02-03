@@ -6,6 +6,9 @@ rex (0.2.0) unstable; urgency=low
   * added is_dir() function
   * added is_readable() function
   * added is_writable() function and an alias is_writeable()
+  * Fixed #1 (no Scope::With found)
+  * Fixed #2 (print help if no parameter is given)
+
  -- Jan Gehring <jan.gehring@gmail.com>  Tue, 01 Feb 2011 22:50:00 +0200
 
 rex (0.1.2) unstable; urgency=low

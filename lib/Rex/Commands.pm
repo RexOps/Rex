@@ -19,6 +19,7 @@ use base qw(Exporter);
 @EXPORT = qw(task desc group 
             user password public_key private_key pass_auth
             get_random do_task batch timeout
+            exit
           );
 
 sub task {
@@ -99,5 +100,15 @@ sub private_key {
 sub pass_auth {
    Rex::Config->set_password_auth(1);
 }
+
+sub exit {
+   print "Exiting Rex...\n";
+   print "Cleaning up...\n";
+
+   unlink("$::rexfile.lock") if($::rexfile);
+
+   CORE::exit(@_);
+}
+
 
 1;

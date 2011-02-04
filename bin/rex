@@ -64,6 +64,13 @@ if($opts{'M'}) {
       print STDERR "Rexfile in use.\n";
       exit 1;
    }
+   
+   print STDERR "Checking Rexfile Syntax...\n";
+   system("$^X -MRex::Commands -c $rexfile");
+   if($? != 0) {
+      exit 1;
+   }
+
    open(F, ">$rexfile.lock") or die($!);
    close(F);
    eval {

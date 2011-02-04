@@ -21,7 +21,6 @@ use Rex::Batch;
 use Rex::Task;
 use Rex::Commands;
 use Rex::Commands::Run;
-use Rex::Commands::Upload;
 
 use Getopt::Std;
 

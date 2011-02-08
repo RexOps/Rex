@@ -10,6 +10,8 @@ use strict;
 use warnings;
 
 require Exporter;
+use File::Basename qw(basename);
+use Rex::Commands::Fs;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
@@ -24,8 +26,14 @@ sub upload {
 
    if(defined $::ssh) {
       print STDERR "Uploadling $local -> $remote\n";
+      if(is_dir($remote)) {
+         $remote = $remote . '/' . basename($local);
+      }
       $::ssh->scp_put($local, $remote);
    } else {
+      if(-d $remote) {
+         $remote = $remote . '/' . basename($remote);
+      }
       system("cp $local $remote");
    }
 }

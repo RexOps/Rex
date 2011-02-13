@@ -9,7 +9,7 @@ package Rex::Config;
 use strict;
 use warnings;
 
-use vars qw($user $password $timeout $password_auth $public_key $private_key);
+use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism);
 
 sub set_user {
    my $class = shift;
@@ -76,4 +76,16 @@ sub get_private_key {
 
    return $ENV{'HOME'} . '/.ssh/id_rsa';
 }
+
+sub set_parallelism {
+   my $class = shift;
+   $parallelism = $_[0];
+}
+
+sub get_parallelism {
+   my $class = shift;
+   return $parallelism;
+}
+
+
 1;

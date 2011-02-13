@@ -8,10 +8,8 @@ package Rex::Task;
 
 use strict;
 use warnings;
-#use Net::SSH::Expect;
-#use Rex::Helper::SCP;
 use Net::SSH2;
-use POSIX ":sys_wait_h";
+use Rex::Fork::Manager;
 
 use vars qw(%tasks);
 
@@ -105,9 +103,10 @@ sub run {
 
       my @children;
 
+      my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
+
       for $::server (@server) {
-         if(my $pid = fork) { push(@children, $pid); }
-         else {
+         $fm->add(sub {
             $::ssh = Net::SSH2->new;
 
             my $fail_connect = 0;
@@ -130,15 +129,11 @@ sub run {
             $::ssh->disconnect();
 
             exit; # exit child
-         }
+         }, 1); # [END] $fm->add
       }
 
-      for my $child (@children) {
-         my $kid;
-         do {
-            $kid = waitpid($child, &WNOHANG);
-         } until $kid == -1;
-      }
+      $fm->wait_for_all;
+
    } else {
       $ret = _exec($task, \%opts);
    }

@@ -18,7 +18,7 @@ use base qw(Exporter);
 
 @EXPORT = qw(task desc group 
             user password public_key private_key pass_auth
-            get_random do_task batch timeout
+            get_random do_task batch timeout parallelism
             exit
           );
 
@@ -99,6 +99,10 @@ sub private_key {
 
 sub pass_auth {
    Rex::Config->set_password_auth(1);
+}
+
+sub parallelism {
+   Rex::Config->set_parallelism($_[0]);
 }
 
 sub exit {

@@ -84,7 +84,7 @@ sub set_parallelism {
 
 sub get_parallelism {
    my $class = shift;
-   return $parallelism;
+   return $parallelism || 1;
 }
 
 

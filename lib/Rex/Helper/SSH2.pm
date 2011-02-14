@@ -32,7 +32,9 @@ sub net_ssh2_exec {
 
       last unless $buf;
    }
+
    $chan->close;
+   $? = $chan->exit_status;
 
    return $in;
 }

@@ -13,6 +13,7 @@ require Exporter;
 use Data::Dumper;
 use Fcntl;
 use Rex::Helper::SSH2;
+use Rex::Commands::Run;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
@@ -59,14 +60,10 @@ sub unlink {
 sub rmdir {
    my @dirs = @_;
 
-   if(defined $::ssh) {
-      for my $dir (@dirs) {
-         $::ssh->sftp->rmdir($dir);
-      }
+   if(is_file("/bin/rm")) {
+      run "/bin/rm -rf " . join(" ", @dirs);
    } else {
-      for my $dir (@dirs) {
-         CORE::rmdir($dir);
-      }
+      die("Can't find /bin/rm");
    }
 }
 

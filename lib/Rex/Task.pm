@@ -112,11 +112,11 @@ sub run {
             my $fail_connect = 0;
             print STDERR "Connecting to $::server (" . $user . ")\n";
             CON_SSH:
-               unless($::ssh->connect($::server)) {
+               unless($::ssh->connect($::server, 22, Timeout => Rex::Config->get_timeout)) {
                   ++$fail_connect;
-                  goto CON_SSH if($fail_connect < 5);
+                  goto CON_SSH if($fail_connect < 3);
                   print STDERR "Can't connect to $::server\n";
-                  next;
+                  CORE::exit; # kind beenden
                }
 
             if(Rex::Config->get_password_auth) {
@@ -128,7 +128,7 @@ sub run {
             $ret = _exec($task, \%opts);
             $::ssh->disconnect();
 
-            exit; # exit child
+            CORE::exit; # exit child
          }, 1); # [END] $fm->add
       }
 

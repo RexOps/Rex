@@ -18,7 +18,7 @@ use Rex::Commands::Run;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir is_readable is_writeable is_writable);
+@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir is_readable is_writeable is_writable readlink);
 
 use vars qw(%file_handles);
 
@@ -160,6 +160,14 @@ sub is_writable {
 
 sub is_writeable {
    is_writable(@_);
+}
+
+sub readlink {
+   if(defined $::ssh) {
+      return $::ssh->sftp->readlink(@_);
+   } else {
+      return CORE::readlink(@_);
+   }
 }
 
 

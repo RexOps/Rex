@@ -11,6 +11,7 @@ rex (0.2.0) unstable; urgency=low
   * Fixed #2 (print help if no parameter is given)
   * added Rex::Fork::Manager to manage parallel processing
   * remove directory recursive
+  * added readlink function
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sun, 13 Feb 2011 23:50:00 +0200
 

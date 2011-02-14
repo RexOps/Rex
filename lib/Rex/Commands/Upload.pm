@@ -29,12 +29,15 @@ sub upload {
       if(is_dir($remote)) {
          $remote = $remote . '/' . basename($local);
       }
-      $::ssh->scp_put($local, $remote);
+
+      unless($::ssh->scp_put($local, $remote)) {
+         die("upload: $remote is not writeable.");
+      }
    } else {
       if(-d $remote) {
          $remote = $remote . '/' . basename($remote);
       }
-      system("cp $local $remote");
+      system("cp $local $remote") or die("upload: $remote is not writeable.");
    }
 }
 

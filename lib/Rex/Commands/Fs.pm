@@ -26,6 +26,10 @@ sub list_files {
    my $path = shift;
    my @ret;
 
+   unless(is_dir($path)) {
+      die("$path is not a directory.");
+   }
+
    if(defined $::ssh) {
       my $sftp = $::ssh->sftp;
       my $dir = $sftp->opendir($path);
@@ -50,6 +54,10 @@ sub unlink {
 
    if(defined $::ssh) {
       for my $file (@files) {
+         unless(is_file($file)) {
+            print STDERR "unlink: $file not found\n";
+            next;
+         }
          $::ssh->sftp->unlink($file);
       }
    } else {
@@ -62,6 +70,9 @@ sub rmdir {
 
    if(is_file("/bin/rm")) {
       run "/bin/rm -rf " . join(" ", @dirs);
+      unless($? == 0) {
+         die("Can't delete " . join(" ", @dirs));
+      }
    } else {
       die("Can't find /bin/rm");
    }
@@ -69,9 +80,11 @@ sub rmdir {
 
 sub mkdir {
    if(defined $::ssh) {
-      $::ssh->sftp->mkdir(@_);
+      unless($::ssh->sftp->mkdir(@_)) {
+         die("Can't create directory $_[0]");
+      }
    } else {
-      CORE::mkdir($_[0]) or die($! . " -> " . join(" ", @_));
+      CORE::mkdir(@_) or die("Can't create directory $_[0]");
    }
 }
 
@@ -79,10 +92,15 @@ sub stat {
    my %ret;
    if(defined $::ssh) {
       %ret = $::ssh->sftp->stat($_[0]);
+      
+      unless(%ret) {
+         die("Can't stat $_[0]");
+      }
+
       $ret{'mode'} = sprintf("%04o", $ret{'mode'} & 07777);
    } else {
       my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
-               $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0]);
+               $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0]) or die("Can't stat $_[0]");
       $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
       $ret{'size'}  = $size;
       $ret{'uid'}   = $uid;
@@ -91,7 +109,7 @@ sub stat {
       $ret{'mtime'} = $mtime;
    }
 
-   %ret;
+   return %ret;
 }
 
 sub is_file {
@@ -163,10 +181,15 @@ sub is_writeable {
 }
 
 sub readlink {
+   my $link;
    if(defined $::ssh) {
-      return $::ssh->sftp->readlink(@_);
+      $link = $::ssh->sftp->readlink(@_);
    } else {
-      return CORE::readlink(@_);
+      $link = CORE::readlink(@_);
+   }
+
+   unless($link) {
+      die("readlink: $_[0] is not a link.");
    }
 }
 

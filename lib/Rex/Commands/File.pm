@@ -29,6 +29,11 @@ sub file_write {
    } else {
       open($fh, ">", $file) or die($!);
    }
+
+   unless($fh) {
+      die("Can't open $file for writing.");
+   }
+
    return Rex::FS::File->new(fh => $fh);
 }
 
@@ -40,6 +45,11 @@ sub file_read {
    } else {
       open($fh, "<", $file) or die($!);
    }
+
+   unless($fh) {
+      die("Can't open $file for reading.");
+   }
+
    return Rex::FS::File->new(fh => $fh);
 }
 

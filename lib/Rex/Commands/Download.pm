@@ -23,11 +23,20 @@ sub download {
    my $remote = shift;
    my $local = shift;
 
+   unless(is_file($remote)) {
+      die("$remote not found.");
+   }
+   
+   unless(is_readable($remote)) {
+      die("$remote is not readable.");
+   }
+
    if(defined $::ssh) {
       print STDERR "Downloading $remote -> $local\n";
       if(-d $local) {
          $local = $local . '/' . basename($remote);
       }
+
       $::ssh->scp_get($remote, $local);
    } else {
       system("cp $remote $local");

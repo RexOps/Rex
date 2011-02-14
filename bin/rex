@@ -61,7 +61,7 @@ if($opts{'M'}) {
 } elsif(-f $::rexfile) {
    if(-f "$::rexfile.lock" && ! exists $opts{'F'}) {
       print STDERR "Rexfile in use.\n";
-      exit 1;
+      CORE::exit 1;
    }
    
    print STDERR "Checking Rexfile Syntax...\n";
@@ -79,7 +79,7 @@ if($opts{'M'}) {
    if($@) { print $@ . "\n"; exit 1; }
 } else {
    print STDERR "No Rexfile found.\n";
-   exit 1;
+   CORE::exit 1;
 }
 
 if($opts{'T'}) {

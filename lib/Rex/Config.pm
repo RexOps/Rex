@@ -38,8 +38,7 @@ sub set_timeout {
 
 sub get_timeout {
    my $class = shift;
-   return 2 unless $timeout;
-   return $timeout;
+   return $timeout || 2;
 }
 
 sub set_password_auth {

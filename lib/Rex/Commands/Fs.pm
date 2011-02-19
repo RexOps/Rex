@@ -80,11 +80,11 @@ sub rmdir {
 
 sub mkdir {
    if(defined $::ssh) {
-      unless($::ssh->sftp->mkdir(@_)) {
+      unless($::ssh->sftp->mkdir($_[0])) {
          die("Can't create directory $_[0]");
       }
    } else {
-      CORE::mkdir(@_) or die("Can't create directory $_[0]");
+      CORE::mkdir($_[0]) or die("Can't create directory $_[0]");
    }
 }
 
@@ -183,9 +183,9 @@ sub is_writeable {
 sub readlink {
    my $link;
    if(defined $::ssh) {
-      $link = $::ssh->sftp->readlink(@_);
+      $link = $::ssh->sftp->readlink($_[0]);
    } else {
-      $link = CORE::readlink(@_);
+      $link = CORE::readlink($_[0]);
    }
 
    unless($link) {

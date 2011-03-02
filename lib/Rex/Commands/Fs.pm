@@ -136,7 +136,7 @@ sub is_dir {
          return 0;
       }
    } else {
-      if(-f $_[0]) {
+      if( ! -d $_[0]) {
          return 0;
       }
    }

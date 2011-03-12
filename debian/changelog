@@ -1,4 +1,5 @@
 rex (0.2.1) unstable; urgency=low
+  * Added pid to lock-file
   * Fixed mkdir and stat for local files.
   * prepare for 0.2.1
 

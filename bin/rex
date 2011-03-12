@@ -60,8 +60,16 @@ if($opts{'M'}) {
    require "$mod.pm";
 } elsif(-f $::rexfile) {
    if(-f "$::rexfile.lock" && ! exists $opts{'F'}) {
-      print STDERR "Rexfile in use.\n";
-      CORE::exit 1;
+      my $pid = eval { local(@ARGV, $/) = ("$::rexfile.lock"); <>; };
+      system("ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
+      if($? == 0) {
+         print STDERR "Rexfile in use by $pid.\n";
+         CORE::exit 1;
+      } else
+      {
+         print STDERR "Found stale lock file. Removing it.\n";
+         unlink("$::rexfile.lock");
+      }
    }
    
    print STDERR "Checking Rexfile Syntax...\n";
@@ -70,8 +78,9 @@ if($opts{'M'}) {
       exit 1;
    }
 
-   open(F, ">$::rexfile.lock") or die($!);
-   close(F);
+   open(my $f, ">$::rexfile.lock") or die($!);
+   print $f $$; 
+   close($f);
    eval {
       do($::rexfile);
    };

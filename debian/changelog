@@ -1,3 +1,9 @@
+rex (0.2.2) unstable; urgency=low
+  * (run) return command output
+  * prepare for 0.2.2
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 21 Mar 2011 15:15:00 +0200
+
 rex (0.2.1) unstable; urgency=low
   * Added pid to lock-file
   * Fixed mkdir and stat for local files.

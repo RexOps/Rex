@@ -22,12 +22,14 @@ sub run {
    my $cmd = shift;
 
    my @ret = ();
+   my $out;
    if(defined $::ssh) {
-      my $out = net_ssh2_exec($::ssh, $cmd);
+      $out = net_ssh2_exec($::ssh, $cmd);
       print $out;
    } else {
-      system($cmd);
+      $out = qx{$cmd};
    }
+   return $out;
 }
 
 1;

@@ -84,9 +84,8 @@ sub get_random {
 
 sub do_task {
    my $task = shift;
-   my $opts = shift;
 
-   return Rex::Task->_exec($task, $opts);
+   return Rex::Task->run($task);
 }
 
 sub public_key {

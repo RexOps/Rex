@@ -24,8 +24,8 @@ use vars qw(%file_handles);
 sub file_write {
    my ($file) = @_;
    my $fh;
-   if($::ssh) {
-      $fh = $::ssh->sftp->open($file, O_WRONLY | O_CREAT);
+   if(my $ssh = Rex::is_ssh()) {
+      $fh = $ssh->sftp->open($file, O_WRONLY | O_CREAT);
    } else {
       open($fh, ">", $file) or die($!);
    }
@@ -40,8 +40,8 @@ sub file_write {
 sub file_read {
    my ($file) = @_;
    my $fh;
-   if($::ssh) {
-      $fh = $::ssh->sftp->open($file, O_RDONLY);
+   if(my $ssh = Rex::is_ssh()) {
+      $fh = $ssh->sftp->open($file, O_RDONLY);
    } else {
       open($fh, "<", $file) or die($!);
    }

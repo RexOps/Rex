@@ -31,13 +31,13 @@ sub download {
       die("$remote is not readable.");
    }
 
-   if(defined $::ssh) {
+   if(my $ssh = Rex::is_ssh()) {
       print STDERR "Downloading $remote -> $local\n";
       if(-d $local) {
          $local = $local . '/' . basename($remote);
       }
 
-      $::ssh->scp_get($remote, $local);
+      $ssh->scp_get($remote, $local);
    } else {
       system("cp $remote $local");
    }

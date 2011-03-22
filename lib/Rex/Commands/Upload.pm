@@ -24,13 +24,13 @@ sub upload {
 
    if(! -f $local) { print STDERR "File Not Found: $local\n"; return 1; }
 
-   if(defined $::ssh) {
+   if(my $ssh = Rex::is_ssh()) {
       print STDERR "Uploadling $local -> $remote\n";
       if(is_dir($remote)) {
          $remote = $remote . '/' . basename($local);
       }
 
-      unless($::ssh->scp_put($local, $remote)) {
+      unless($ssh->scp_put($local, $remote)) {
          die("upload: $remote is not writeable.");
       }
    } else {

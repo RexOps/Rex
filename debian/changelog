@@ -1,4 +1,5 @@
 rex (0.3.0) unstable; urgency=low
+  * ability to call tasks from other tasks
   * prepare for 0.3.0
 
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 22 Mar 2011 19:15:00 +0200

@@ -23,8 +23,8 @@ sub run {
 
    my @ret = ();
    my $out;
-   if(defined $::ssh) {
-      $out = net_ssh2_exec($::ssh, $cmd);
+   if(my $ssh = Rex::is_ssh()) {
+      $out = net_ssh2_exec($ssh, $cmd);
       print $out;
    } else {
       $out = qx{$cmd};

@@ -47,6 +47,12 @@ sub create_task {
       server => [ @server ],
       desc => $desc
    };
+
+   no strict 'refs';
+   *{"main::$task_name"} = sub {
+      Rex::Commands::do_task($task_name);
+   };
+   use strict;
 }
 
 sub get_tasks {
@@ -105,28 +111,34 @@ sub run {
 
       my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
 
-      for $::server (@server) {
+      for my $server (@server) {
          $fm->add(sub {
-            $::ssh = Net::SSH2->new;
+            my $ssh = Net::SSH2->new;
+
+            # push a remote connection
+            Rex::push_connection({ssh => $ssh, server => $server});
 
             my $fail_connect = 0;
-            print STDERR "Connecting to $::server (" . $user . ")\n";
+            print STDERR "Connecting to $server (" . $user . ")\n";
             CON_SSH:
-               unless($::ssh->connect($::server, 22, Timeout => Rex::Config->get_timeout)) {
+               unless($ssh->connect($server, 22, Timeout => Rex::Config->get_timeout)) {
                   ++$fail_connect;
                   goto CON_SSH if($fail_connect < 3);
-                  print STDERR "Can't connect to $::server\n";
+                  print STDERR "Can't connect to $server\n";
                   CORE::exit; # kind beenden
                }
 
             if(Rex::Config->get_password_auth) {
-               $::ssh->auth_password($user, $pass);
+               $ssh->auth_password($user, $pass);
             } else {
-               $::ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);
+               $ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);
             }
 
             $ret = _exec($task, \%opts);
-            $::ssh->disconnect();
+            $ssh->disconnect();
+
+            # remove remote connection from the stack
+            Rex::pop_connection();
 
             CORE::exit; # exit child
          }, 1); # [END] $fm->add
@@ -135,7 +147,14 @@ sub run {
       $fm->wait_for_all;
 
    } else {
+
+      # push a local connection
+      Rex::push_connection({ssh => 0, server => "<local>"});
+
       $ret = _exec($task, \%opts);
+
+      # remove local connection from stack
+      Rex::pop_connection();
    }
 
    return $ret;

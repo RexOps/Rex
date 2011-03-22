@@ -30,8 +30,8 @@ sub list_files {
       die("$path is not a directory.");
    }
 
-   if(defined $::ssh) {
-      my $sftp = $::ssh->sftp;
+   if(my $ssh = Rex::is_ssh()) {
+      my $sftp = $ssh->sftp;
       my $dir = $sftp->opendir($path);
 
       while(my $entry  = $dir->read) {
@@ -52,13 +52,13 @@ sub list_files {
 sub unlink {
    my @files = @_;
 
-   if(defined $::ssh) {
+   if(my $ssh = Rex::is_ssh()) {
       for my $file (@files) {
          unless(is_file($file)) {
             print STDERR "unlink: $file not found\n";
             next;
          }
-         $::ssh->sftp->unlink($file);
+         $ssh->sftp->unlink($file);
       }
    } else {
       CORE::unlink(@files);
@@ -79,8 +79,8 @@ sub rmdir {
 }
 
 sub mkdir {
-   if(defined $::ssh) {
-      unless($::ssh->sftp->mkdir($_[0])) {
+   if(my $ssh = Rex::is_ssh()) {
+      unless($ssh->sftp->mkdir($_[0])) {
          die("Can't create directory $_[0]");
       }
    } else {
@@ -90,8 +90,8 @@ sub mkdir {
 
 sub stat {
    my %ret;
-   if(defined $::ssh) {
-      %ret = $::ssh->sftp->stat($_[0]);
+   if(my $ssh = Rex::is_ssh()) {
+      %ret = $ssh->sftp->stat($_[0]);
       
       unless(%ret) {
          die("Can't stat $_[0]");
@@ -113,12 +113,12 @@ sub stat {
 }
 
 sub is_file {
-   if(defined $::ssh) {
-      if( $::ssh->sftp->opendir($_[0]) ) {
+   if(my $ssh = Rex::is_ssh()) {
+      if( $ssh->sftp->opendir($_[0]) ) {
          return 0;
       }
 
-      if( ! $::ssh->sftp->open($_[0], O_RDONLY) ) {
+      if( ! $ssh->sftp->open($_[0], O_RDONLY) ) {
          return 0;
       }
    } else {
@@ -131,8 +131,8 @@ sub is_file {
 }
 
 sub is_dir {
-   if(defined $::ssh) {
-      if( ! $::ssh->sftp->opendir($_[0]) ) {
+   if(my $ssh = Rex::is_ssh()) {
+      if( ! $ssh->sftp->opendir($_[0]) ) {
          return 0;
       }
    } else {
@@ -145,8 +145,8 @@ sub is_dir {
 }
 
 sub is_readable {
-   if(defined $::ssh) {
-      my $out = net_ssh2_exec($::ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { print \"1\"; }'");
+   if(my $ssh = Rex::is_ssh()) {
+      my $out = net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { print \"1\"; }'");
       chomp $out;
       if($out) {
          return 1;
@@ -161,8 +161,8 @@ sub is_readable {
 }
 
 sub is_writable {
-   if(defined $::ssh) {
-      my $out = net_ssh2_exec($::ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { print \"1\"; }'");
+   if(my $ssh = Rex::is_ssh()) {
+      my $out = net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { print \"1\"; }'");
       chomp $out;
       if($out) {
          return 1;
@@ -182,8 +182,8 @@ sub is_writeable {
 
 sub readlink {
    my $link;
-   if(defined $::ssh) {
-      $link = $::ssh->sftp->readlink($_[0]);
+   if(my $ssh = Rex::is_ssh()) {
+      $link = $ssh->sftp->readlink($_[0]);
    } else {
       $link = CORE::readlink($_[0]);
    }

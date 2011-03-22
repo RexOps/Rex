@@ -20,6 +20,7 @@ use base qw(Exporter);
             user password public_key private_key pass_auth
             get_random do_task batch timeout parallelism
             exit
+            evaluate_hostname
           );
 
 sub task {
@@ -80,6 +81,32 @@ sub get_random {
 	}
 	
 	return $ret;
+}
+
+sub evaluate_hostname {
+   my $str = shift;
+
+   my ($start, $from, $to, $dummy, $step, $end) = $str =~ m/^([\w-]+)\[(\d+)..(\d+)(\/(\d+))?\]([\w\.-]+)?$/;
+
+   unless($start) {
+      return $str;
+   }
+
+   $end  ||= '';
+   $step ||= 1;
+
+   my $strict_length = 0;
+   if( length $from == length $to ) {
+      $strict_length = length $to;
+   }
+
+   my @ret = ();
+   for(; $from <= $to; $from += $step) {
+         my $format = "%0".$strict_length."i";
+         push @ret, $start . sprintf($format, $from) . $end;
+   }
+
+   return @ret;
 }
 
 sub do_task {

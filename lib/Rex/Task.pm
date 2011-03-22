@@ -32,13 +32,13 @@ sub create_task {
       if($_[0] eq "group") {
          $group = $_[1];
          if(Rex::Group->is_group($group)) {
-            @server = Rex::Group->get_group($group);
+            push @server, Rex::Commands::evaluate_hostname($_) for Rex::Group->get_group($group);
          } else {
             print STDERR "Group $group not found!\n";
             exit 1;
          }
       } else {
-         @server = @_;
+         push @server, Rex::Commands::evaluate_hostname($_) for @_;
       }
    }
 

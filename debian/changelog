@@ -1,4 +1,6 @@
 rex (0.3.0) unstable; urgency=low
+  * run commands directly from command line
+  * serverranges (group "backend" => "be[01..40]";)
   * ability to call tasks from other tasks
   * prepare for 0.3.0
 

@@ -3,6 +3,8 @@ package Rex;
 use strict;
 use warnings;
 
+use Rex::Logger;
+
 require Exporter;
 use base qw(Exporter);
 

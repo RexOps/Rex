@@ -21,6 +21,7 @@ use base qw(Exporter);
             get_random do_task batch timeout parallelism
             exit
             evaluate_hostname
+            logging
           );
 
 sub task {
@@ -138,6 +139,20 @@ sub exit {
    unlink("$::rexfile.lock") if($::rexfile);
 
    CORE::exit(@_);
+}
+
+sub logging {
+   my $args = { @_ };
+
+   if(exists $args->{'to_file'}) {
+      Rex::Config->set_log_filename($args->{'to_file'});
+   }
+   elsif(exists $args->{'to_syslog'}) {
+      Rex::Config->set_log_priority($args->{'to_syslog'});
+   }
+   else {
+      Rex::Config->set_log_filename('rex.log');
+   }
 }
 
 

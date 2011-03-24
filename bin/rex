@@ -32,7 +32,12 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('FThvf:M:b:e:H:u:p:P:K:', \%opts);
+getopts('FThvdf:M:b:e:H:u:p:P:K:', \%opts);
+
+$Rex::Logger::debug = $opts{'d'};
+
+Rex::Logger::init;
+Rex::Logger::debug("started rex");
 
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution\n";
@@ -49,6 +54,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
+   printf "  %-15s %s\n", "-d", "Debug";
    print "\n";
    print "(*) Only useful with -e\n";
    print "\n";

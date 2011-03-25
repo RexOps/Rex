@@ -27,10 +27,11 @@ sub run {
    my $out;
    if(my $ssh = Rex::is_ssh()) {
       $out = net_ssh2_exec($ssh, $cmd);
-      print $out;
    } else {
       $out = qx{$cmd};
    }
+   print $out;
+
    return $out;
 }
 

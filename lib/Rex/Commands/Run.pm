@@ -21,6 +21,8 @@ use base qw(Exporter);
 sub run {
    my $cmd = shift;
 
+   Rex::Logger::debug("Running command: $cmd");
+
    my @ret = ();
    my $out;
    if(my $ssh = Rex::is_ssh()) {

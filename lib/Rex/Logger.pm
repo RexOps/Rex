@@ -34,8 +34,10 @@ sub info {
       syslog((Rex::Config->get_log_priority || "info"), $msg);
    }
    else {
-      print {$log_fh} "[" . get_timestamp() . "] $msg\n";
+      print {$log_fh} "[" . get_timestamp() . "] $msg\n" if($log_fh);
    }
+
+   print STDERR "[" . get_timestamp() . "] - INFO - $msg\n";
 }
 
 sub debug {
@@ -46,7 +48,7 @@ sub debug {
       syslog("debug", $msg);
    }
    else {
-      print {$log_fh} "[" . get_timestamp() . "] DEBUG - $msg\n";
+      print {$log_fh} "[" . get_timestamp() . "] DEBUG - $msg\n" if($log_fh);
    }
    
    print STDERR "[" . get_timestamp() . "] DEBUG - $msg\n";

@@ -24,21 +24,24 @@ sub download {
    my $local = shift;
 
    unless(is_file($remote)) {
+      Rex::Logger::info("File $remote not found");
       die("$remote not found.");
    }
    
    unless(is_readable($remote)) {
+      Rex::Logger::info("File $remote is not readable.");
       die("$remote is not readable.");
    }
 
    if(my $ssh = Rex::is_ssh()) {
-      print STDERR "Downloading $remote -> $local\n";
+      Rex::Logger::info("Downloading $remote -> $local");
       if(-d $local) {
          $local = $local . '/' . basename($remote);
       }
 
       $ssh->scp_get($remote, $local);
    } else {
+      Rex::Logger::info("Copying $remote -> $local");
       system("cp $remote $local");
    }
 }

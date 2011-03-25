@@ -18,6 +18,8 @@ sub create_task {
    my $task_name = shift;
    my $desc = pop;
 
+   Rex::Logger::debug("Creating task: $task_name");
+
    my $func;
    if(ref($desc) eq "CODE") {
       $func = $desc;
@@ -32,13 +34,16 @@ sub create_task {
       if($_[0] eq "group") {
          $group = $_[1];
          if(Rex::Group->is_group($group)) {
+            Rex::Logger::debug("\tusing group: $group -> " . join(", ", Rex::Group->get_group($group)));
             push @server, Rex::Commands::evaluate_hostname($_) for Rex::Group->get_group($group);
+            Rex::Logger::debug("\tserver: $_") for @server;
          } else {
-            print STDERR "Group $group not found!\n";
+            Rex::Logger::info("Group $group not found!");
             exit 1;
          }
       } else {
          push @server, Rex::Commands::evaluate_hostname($_) for @_;
+         Rex::Logger::debug("\tserver: $_") for @server;
       }
    }
 
@@ -81,8 +86,9 @@ sub run {
    my $task = shift;
    my $ret;
 
-   print STDERR "Running task: $task\n";
+   Rex::Logger::info("Running task: $task");
    my @server = @{$tasks{$task}->{'server'}};
+   Rex::Logger::debug("\tserver: $_") for @server;
 
    my($user, $pass);
    if(ref($server[-1]) eq "HASH") {
@@ -119,12 +125,16 @@ sub run {
             Rex::push_connection({ssh => $ssh, server => $server});
 
             my $fail_connect = 0;
-            print STDERR "Connecting to $server (" . $user . ")\n";
+
+            Rex::Logger::info("Connecting to $server (" . $user . ")");
+
             CON_SSH:
                unless($ssh->connect($server, 22, Timeout => Rex::Config->get_timeout)) {
                   ++$fail_connect;
                   goto CON_SSH if($fail_connect < 3);
-                  print STDERR "Can't connect to $server\n";
+
+                  Rex::Logger::info("Can't connect to $server");
+
                   CORE::exit; # kind beenden
                }
 
@@ -135,6 +145,8 @@ sub run {
             }
 
             $ret = _exec($task, \%opts);
+
+            Rex::Logger::debug("Disconnecting from $server");
             $ssh->disconnect();
 
             # remove remote connection from the stack
@@ -144,10 +156,12 @@ sub run {
          }, 1); # [END] $fm->add
       }
 
+      Rex::Logger::debug("Waiting for children to finish");
       $fm->wait_for_all;
 
    } else {
 
+      Rex::Logger::debug("This is not a remote session");
       # push a local connection
       Rex::push_connection({ssh => 0, server => "<local>"});
 
@@ -163,6 +177,8 @@ sub run {
 sub _exec {
    my $task = shift;
    my $opts = shift;
+
+   Rex::Logger::debug("Executing $task");
 
    my $code = $tasks{$task}->{'func'};
    return &$code($opts);

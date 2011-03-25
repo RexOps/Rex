@@ -36,8 +36,10 @@ getopts('FThvdf:M:b:e:H:u:p:P:K:', \%opts);
 
 $Rex::Logger::debug = $opts{'d'};
 
-Rex::Logger::init;
-Rex::Logger::debug("started rex");
+Rex::Logger::debug("Command Line Parameters");
+for my $param (keys %opts) {
+   Rex::Logger::debug("\t$param = " . $opts{$param});
+}
 
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution\n";
@@ -66,10 +68,14 @@ if($opts{'h'}) {
 
 $::rexfile = "Rexfile";
 if($opts{'f'}) {
+   Rex::Logger::debug("Using Rexfile: " . $opts{'f'});
    $::rexfile = $opts{'f'};
 }
 
 if($opts{'e'}) {
+   Rex::Logger::debug("Executing command line code");
+   Rex::Logger::debug("\t" . $opts{'e'});
+
    # execute the given code
    my $code = "sub { \n";
    $code   .= $opts{'e'} . "\n";
@@ -104,44 +110,54 @@ if($opts{'e'}) {
    Rex::Commands::do_task("eval-line");
 }
 elsif($opts{'M'}) {
+   Rex::Logger::debug("Loading Rex-Module: " . $opts{'M'});
    my $mod = $opts{'M'};
    $mod =~ s{::}{/}g;
    require "$mod.pm";
 }
 elsif(-f $::rexfile) {
+   Rex::Logger::debug("$::rexfile exists");
    if(-f "$::rexfile.lock" && ! exists $opts{'F'}) {
+      Rex::Logger::debug("Found $::rexfile.lock");
       my $pid = eval { local(@ARGV, $/) = ("$::rexfile.lock"); <>; };
       system("ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
       if($? == 0) {
-         print STDERR "Rexfile in use by $pid.\n";
+         Rex::Logger::info("Rexfile is in use by $pid.");
          CORE::exit 1;
       } else
       {
-         print STDERR "Found stale lock file. Removing it.\n";
+         Rex::Logger::info("Found stale lock file. Removing it.");
          unlink("$::rexfile.lock");
       }
    }
    
-   print STDERR "Checking Rexfile Syntax...\n";
+   Rex::Logger::debug("Checking Rexfile Syntax...");
    system("$^X -MRex::Commands -c $::rexfile");
    if($? != 0) {
       exit 1;
    }
 
+   Rex::Logger::debug("Creating lock-file ($::rexfile.lock)");
    open(my $f, ">$::rexfile.lock") or die($!);
    print $f $$; 
    close($f);
+
+   Rex::Logger::debug("Including/Parsing $::rexfile");
    eval {
       do($::rexfile);
    };
 
    if($@) { print $@ . "\n"; exit 1; }
 } else {
-   print STDERR "No Rexfile found.\n";
+   Rex::Logger::info("No Rexfile found");
    CORE::exit 1;
 }
 
+Rex::Logger::debug("Initializing Logger from parameters found in $::rexfile");
+Rex::Logger::init;
+
 if($opts{'T'}) {
+   Rex::Logger::debug("Listing Tasks and Batches");
    print "Tasks\n";
    for my $task (Rex::Task->get_tasks) {
       printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
@@ -154,6 +170,7 @@ if($opts{'T'}) {
 
 eval {
    if($opts{'b'}) {
+      Rex::Logger::debug("Running batch: " . $opts{'b'});
       my $batch = $opts{'b'};
       if(Rex::Batch->is_batch($batch)) {
          Rex::Batch->run($batch);
@@ -163,6 +180,7 @@ eval {
    if(defined $ARGV[0]) {
       for my $task (@ARGV) {
          if(Rex::Task->is_task($task)) {
+            Rex::Logger::debug("Running task: $task");
             Rex::Task->run($task);
          }
       }
@@ -170,10 +188,11 @@ eval {
 };
 
 if($@) {
-   print STDERR "Error: $@\n";
+   Rex::Logger::info("Error running task/batch: $@");
 }
 
 # lock loeschen
-unlink("$::rexfile.lock") if(! exists $opts{'F'});
+Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
+unlink("$::rexfile.lock")               if(! exists $opts{'F'});
 
 

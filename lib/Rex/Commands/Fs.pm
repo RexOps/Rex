@@ -27,9 +27,11 @@ sub list_files {
    my @ret;
 
    unless(is_dir($path)) {
+      Rex::Logger::debug("$path is not a directory.");
       die("$path is not a directory.");
    }
 
+   Rex::Logger::debug("Reading directory contents.");
    if(my $ssh = Rex::is_ssh()) {
       my $sftp = $ssh->sftp;
       my $dir = $sftp->opendir($path);
@@ -52,10 +54,12 @@ sub list_files {
 sub unlink {
    my @files = @_;
 
+   Rex::Logger::debug("Unlinking files: " . join(", ", @files));
+
    if(my $ssh = Rex::is_ssh()) {
       for my $file (@files) {
          unless(is_file($file)) {
-            print STDERR "unlink: $file not found\n";
+            Rex::Logger::info("unlink: $file not found");
             next;
          }
          $ssh->sftp->unlink($file);
@@ -68,51 +72,72 @@ sub unlink {
 sub rmdir {
    my @dirs = @_;
 
+   Rex::Logger::debug("Removing directories: " . join(", ", @dirs));
+
    if(is_file("/bin/rm")) {
       run "/bin/rm -rf " . join(" ", @dirs);
       unless($? == 0) {
-         die("Can't delete " . join(" ", @dirs));
+         Rex::Logger::debug("Can't delete " . join(", ", @dirs));
+         die("Can't delete " . join(", ", @dirs));
       }
    } else {
+      Rex::Logger::debug("/bin/rm not found.");
       die("Can't find /bin/rm");
    }
 }
 
 sub mkdir {
+   Rex::Logger::debug("Creating directory $_[0]");
+
    if(my $ssh = Rex::is_ssh()) {
       unless($ssh->sftp->mkdir($_[0])) {
+         Rex::Logger::debug("Can't create directory $_[0]");
          die("Can't create directory $_[0]");
       }
    } else {
-      CORE::mkdir($_[0]) or die("Can't create directory $_[0]");
+      unless(CORE::mkdir($_[0])) {
+         Rex::Logger::debug("Can't create directory $_[0]");
+         die("Can't create directory $_[0]");
+      }
    }
 }
 
 sub stat {
    my %ret;
+
+   Rex::Logger::debug("Getting fs stat from $_[0]");
+
    if(my $ssh = Rex::is_ssh()) {
       %ret = $ssh->sftp->stat($_[0]);
       
       unless(%ret) {
+         Rex::Logger::debug("Can't stat $_[0]");
          die("Can't stat $_[0]");
       }
 
       $ret{'mode'} = sprintf("%04o", $ret{'mode'} & 07777);
    } else {
-      my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
-               $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0]) or die("Can't stat $_[0]");
-      $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
-      $ret{'size'}  = $size;
-      $ret{'uid'}   = $uid;
-      $ret{'gid'}   = $gid;
-      $ret{'atime'} = $atime;
-      $ret{'mtime'} = $mtime;
+      if(my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
+               $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0])) {
+         $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
+         $ret{'size'}  = $size;
+         $ret{'uid'}   = $uid;
+         $ret{'gid'}   = $gid;
+         $ret{'atime'} = $atime;
+         $ret{'mtime'} = $mtime;
+      }
+      else {
+         Rex::Logger::debug("Can't stat $_[0]");
+         die("Can't stat $_[0]");
+      }
    }
 
    return %ret;
 }
 
 sub is_file {
+   Rex::Logger::debug("Checking if $_[0] is a file");
+   
    if(my $ssh = Rex::is_ssh()) {
       if( $ssh->sftp->opendir($_[0]) ) {
          return 0;
@@ -131,6 +156,8 @@ sub is_file {
 }
 
 sub is_dir {
+   Rex::Logger::debug("Checking if $_[0] is a directory");
+
    if(my $ssh = Rex::is_ssh()) {
       if( ! $ssh->sftp->opendir($_[0]) ) {
          return 0;
@@ -145,6 +172,8 @@ sub is_dir {
 }
 
 sub is_readable {
+   Rex::Logger::debug("Checking if $_[0] is readable");
+
    if(my $ssh = Rex::is_ssh()) {
       my $out = net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { print \"1\"; }'");
       chomp $out;
@@ -161,6 +190,8 @@ sub is_readable {
 }
 
 sub is_writable {
+   Rex::Logger::debug("Checking if $_[0] is writable");
+
    if(my $ssh = Rex::is_ssh()) {
       my $out = net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { print \"1\"; }'");
       chomp $out;
@@ -182,6 +213,8 @@ sub is_writeable {
 
 sub readlink {
    my $link;
+   Rex::Logger::debug("Reading link of $_[0]");
+
    if(my $ssh = Rex::is_ssh()) {
       $link = $ssh->sftp->readlink($_[0]);
    } else {
@@ -189,6 +222,7 @@ sub readlink {
    }
 
    unless($link) {
+      Rex::Logger::debug("readlink: $_[0] is not a link.");
       die("readlink: $_[0] is not a link.");
    }
 }

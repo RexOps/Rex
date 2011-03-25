@@ -9,7 +9,7 @@ package Rex::Config;
 use strict;
 use warnings;
 
-use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism $log_filename $log_priority);
+use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism $log_filename $log_facility);
 
 sub set_user {
    my $class = shift;
@@ -96,14 +96,14 @@ sub get_log_filename {
    return $log_filename;
 }
 
-sub set_log_priority {
+sub set_log_facility {
    my $class = shift;
-   $log_priority = shift;
+   $log_facility = shift;
 }
 
-sub get_log_priority {
+sub get_log_facility {
    my $class = shift;
-   return $log_priority;
+   return $log_facility;
 }
 
 

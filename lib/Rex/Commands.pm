@@ -148,7 +148,7 @@ sub logging {
       Rex::Config->set_log_filename($args->{'to_file'});
    }
    elsif(exists $args->{'to_syslog'}) {
-      Rex::Config->set_log_priority($args->{'to_syslog'});
+      Rex::Config->set_log_facility($args->{'to_syslog'});
    }
    else {
       Rex::Config->set_log_filename('rex.log');

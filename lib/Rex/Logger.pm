@@ -18,7 +18,7 @@ sub init {
       die if(Rex::Config->get_log_filename);
       require Sys::Syslog;
       Sys::Syslog->import;
-      openlog("rex", "ndelay,pid", "local0");
+      openlog("rex", "ndelay,pid", Rex::Config->get_log_facility);
       $has_syslog = 1;
    };
 
@@ -31,7 +31,7 @@ sub info {
    my ($msg) = @_;
 
    if($has_syslog) {
-      syslog((Rex::Config->get_log_priority || "info"), $msg);
+      syslog("info", $msg);
    }
    else {
       print {$log_fh} "[" . get_timestamp() . "] $msg\n" if($log_fh);

@@ -9,6 +9,7 @@ package Rex::Task;
 use strict;
 use warnings;
 use Net::SSH2;
+use Rex::Group;
 use Rex::Fork::Manager;
 
 use vars qw(%tasks);

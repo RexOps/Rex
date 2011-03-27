@@ -10,6 +10,12 @@
 
 L<Net::SSH2>
 
+=item *
+
+L<Expect>
+
+Only if you want to use the Rsync module.
+
 =back
 
 =head2 Usage

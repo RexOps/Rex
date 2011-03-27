@@ -1,0 +1,72 @@
+#!env perl -w
+
+use strict;
+use warnings;
+
+unless($ARGV[0]) {
+   print STDERR "Usage: rexify <project-name>\n";
+   exit 1;
+}
+
+unless(-d 'lib') {
+   mkdir('lib');
+}
+
+unless(-d 'lib/Rex') {
+   mkdir('lib/Rex');
+}
+
+print "Created lib/Rex\n";
+
+unless(-f 'lib/Rex/' . $ARGV[0] . '.pm') {
+   open(my $fh, ">", "lib/Rex/$ARGV[0].pm") or die($!);
+   print $fh qq~package Rex::$ARGV[0];
+
+use Rex::Commands;
+use Rex::Commands::Run;
+
+desc "Get uptime of server";
+task "uptime", group => 'servers', sub {
+   run "uptime";
+};
+
+1;
+~;
+   close($fh);
+
+   print STDERR "Created lib/Rex/$ARGV[0].pm\n";
+
+   open($fh, ">", "Rexfile") or die($!);
+   print $fh qq~
+
+use lib 'lib';
+
+# set your username
+user "<user>";
+
+# set your password
+password "<password>";
+
+# enable password authentication
+pass_auth;
+
+# put your server in this group
+group "servers" => "server1", "server2";
+
+
+# now load every module via ,,require''
+require Rex::$ARGV[0];
+
+~;
+   close($fh);
+
+   print STDERR "Created Rexfile.\n";
+   print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
+   print STDERR "You can edit lib/Rex/$ARGV[0].pm to define tasks.\n";
+   print STDERR "\n\nIf you have any questions or wished\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
+}
+else {
+   print STDERR "It seems that this project is already rexified.\n";
+   exit;
+}
+

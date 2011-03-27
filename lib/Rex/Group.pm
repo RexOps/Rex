@@ -9,6 +9,7 @@ package Rex::Group;
 use strict;
 use warnings;
 
+use Rex::Logger;
 
 use vars qw(%groups);
 

@@ -9,6 +9,8 @@ package Rex::Batch;
 use strict;
 use warnings;
 
+use Rex::Logger;
+
 
 use vars qw(%batchs);
 

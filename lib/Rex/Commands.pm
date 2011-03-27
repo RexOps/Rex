@@ -12,6 +12,8 @@ use warnings;
 use Data::Dumper;
 
 require Exporter;
+use Rex::Task;
+use Rex::Logger;
 
 use vars qw(@EXPORT $current_desc);
 use base qw(Exporter);

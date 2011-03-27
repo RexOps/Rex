@@ -9,6 +9,8 @@ package Rex::Config;
 use strict;
 use warnings;
 
+use Rex::Logger;
+
 use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism $log_filename $log_facility);
 
 sub set_user {

@@ -1,10 +1,12 @@
 bin/rex
+bin/rexify
 lib/Rex.pm
 lib/Rex/Batch.pm
 lib/Rex/Commands.pm
 lib/Rex/Commands/Download.pm
 lib/Rex/Commands/File.pm
 lib/Rex/Commands/Fs.pm
+lib/Rex/Commands/Rsync.pm
 lib/Rex/Commands/Run.pm
 lib/Rex/Commands/Upload.pm
 lib/Rex/Config.pm
@@ -13,6 +15,7 @@ lib/Rex/Fork/Task.pm
 lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Helper/SSH2.pm
+lib/Rex/Logger.pm
 lib/Rex/Task.pm
 Makefile.PL
 t/01.t

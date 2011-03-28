@@ -258,78 +258,78 @@ In that part you define the user and password you want to use to log into your s
 
 =head4 Simple Authentication
 
-Define the user:
+B<Define the user>
 
  user "<user>";
 
-Define the password:
+B<Define the password>
 
  password "<password>";
 
-Set password authentication:
+B<Set password authentication>
 
  pass_auth;
 
 
 =head4 Key Authentication
 
-Define Private Key:
+B<Define Private Key>
 
  private_key "/path/to/your/private/key.file";
 
-Define Public Key:
+B<Define Public Key>
 
  public_key "/path/to/your/public/key.file";
 
 =head4 Define Logging
 
-Log to a file:
+B<Log to a file>
 
  logging to_file => "rex.log";
 
-Log to syslog:
+B<Log to syslog>
 
  logging to_syslog => "local0";
 
 =head4 Other Configuration parameters
 
-Define ssh timeout:
+B<Define ssh timeout>
 
  timeout 10;
 
-Define parallelism:
+B<Define parallelism>
 
  parallelism 2;
 
 =head3 Group your servers
 
-Rex gives you the possibility to group your servers. So you don't need to type every servername multiple times.
+Rex gives you the possibility to B<group your servers>. So you don't need to type every servername multiple times.
 
  group "frontends" => "frontend01", "frontend02", "frontend03", "frontend04";
 
-You can even define ranges in the servernames:
+You can even B<define ranges> in the servernames:
 
  group "frontends" => "frontend[01..04]";
 
 =head3 Your tasks
 
-Create a task description:
+B<Create a task description>
 
  desc "This is a long description of a task";
 
-Create the task:
+B<Create the task>
 
  task "shortname", group => "frontends", sub {
      run "uptime";
  };
 
-or, if you don't have groups:
+B<or, if you don't have groups>
 
  task "shortname", "frontend01", "frontend02", "frontend03", "frontend04", sub {
      run "uptime";
  };
 
-and with serverranges:
+B<and with serverranges>
 
  task "shortname", "frontend[01..04]", sub {
      run "uptime";

@@ -83,6 +83,8 @@ if($opts{'e'}) {
 
    $code = eval($code);
 
+   my $pass_auth = 1;
+
    if($opts{'u'}) {
       Rex::Commands::user($opts{'u'});
    }
@@ -93,10 +95,16 @@ if($opts{'e'}) {
 
    if($opts{'P'}) {
       Rex::Commands::private_key($opts{'P'});
+      $pass_auth = 0;
    }
 
    if($opts{'K'}) {
       Rex::Commands::public_key($opts{'K'});
+      $pass_auth = 0;
+   }
+
+   if($pass_auth) {
+      pass_auth;
    }
 
    my @params = ();

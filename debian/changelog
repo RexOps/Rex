@@ -1,3 +1,9 @@
+rex (0.3.1) unstable; urgency=low
+  * fixed bug with command line -e and password auth
+  * prepare for 0.3.1
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 28 Mar 2011 19:30:00 +0200
+
 rex (0.3.0) unstable; urgency=low
   * added rexify command
   * added simple rsync support

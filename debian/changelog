@@ -1,4 +1,5 @@
 rex (0.3.1) unstable; urgency=low
+  * started some documentation for rex. after install just "man rex"
   * fixed bug with command line -e and password auth
   * prepare for 0.3.1
 

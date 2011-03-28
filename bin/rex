@@ -203,4 +203,137 @@ if($@) {
 Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
 unlink("$::rexfile.lock")               if(! exists $opts{'F'});
 
+__END__
+
+=pod
+
+=head1 (R)?ex - (Remote)? Execution
+
+Rex is a tool to ease the execution of commands on multiple remote servers. You can define small tasks, chain tasks to batches, link them with servers or server groups, and execute them easily in your terminal.
+
+=head2 Command line options
+
+=over 4
+
+=item -b              Run batch
+
+=item -e              Run the give code fragment
+
+=item -H              Execute task on these hosts (*)
+
+=item -u              Username for the ssh connection (*)
+
+=item -p              Password for the ssh connection (*)
+
+=item -P              Private Keyfile for the ssh connection (*)
+
+=item -K              Public Keyfile for the ssh connection (*)
+
+=item -T              List all known tasks.
+
+=item -f              Use this file instead of Rexfile
+
+=item -h              Display this help
+
+=item -M              Load Module instead of Rexfile
+
+=item -v              Display (R)?ex Version
+
+=item -F              Force. Don't regard lock file
+
+=item -d              Debug
+
+=back
+
+(*) Only useful with -e
+
+
+=head2 Rexfile
+
+If you run I<rex> it will read the file I<Rexfile> in the current working directory. A Rexfile consists 3 major parts.
+
+=head3 Authentication and Configuration
+
+In that part you define the user and password you want to use to log into your servers. You can even define timeouts or the paralellism of task exexecution.
+
+=head4 Simple Authentication
+
+Define the user:
+
+ user "<user>";
+
+Define the password:
+
+ password "<password>";
+
+Set password authentication:
+
+ pass_auth;
+
+
+=head4 Key Authentication
+
+Define Private Key:
+
+ private_key "/path/to/your/private/key.file";
+
+Define Public Key:
+
+ public_key "/path/to/your/public/key.file";
+
+=head4 Define Logging
+
+Log to a file:
+
+ logging to_file => "rex.log";
+
+Log to syslog:
+
+ logging to_syslog => "local0";
+
+=head4 Other Configuration parameters
+
+Define ssh timeout:
+
+ timeout 10;
+
+Define parallelism:
+
+ parallelism 2;
+
+=head3 Group your servers
+
+Rex gives you the possibility to group your servers. So you don't need to type every servername multiple times.
+
+ group "frontends" => "frontend01", "frontend02", "frontend03", "frontend04";
+
+You can even define ranges in the servernames:
+
+ group "frontends" => "frontend[01..04]";
+
+=head3 Your tasks
+
+Create a task description:
+
+ desc "This is a long description of a task";
+
+Create the task:
+
+ task "shortname", group => "frontends", sub {
+     run "uptime";
+ };
+
+or, if you don't have groups:
+
+ task "shortname", "frontend01", "frontend02", "frontend03", "frontend04", sub {
+     run "uptime";
+ };
+
+and with serverranges:
+
+ task "shortname", "frontend[01..04]", sub {
+     run "uptime";
+ };
+
+=cut
 

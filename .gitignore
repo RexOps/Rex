@@ -9,3 +9,6 @@ debian/tmp
 debian/substvars
 pm_to_blib
 debian/*.log
+*.tmp
+*.old
+*.bak

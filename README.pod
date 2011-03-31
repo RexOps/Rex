@@ -25,14 +25,19 @@ A small example:
 =head3 Rexfile
 
     user "root";
+    password "root";
+    pass_auth;
+
+    group "frontend" => "frontend[01..09]", "varnish[01..04]";
+
     
     desc "Show Unix version";
-    task "uname", "server1", "server2", sub {
+    task "uname", "server[1..9]", sub {
         run "uname -a";
     };
-    
+
     desc "Write into a file";
-    task "write", "server1", sub {
+    task "write", group => "frontend", sub {
         my $file = file_write '/tmp/status.out';
         $file->write("File created\n");
         $file->close;
@@ -41,6 +46,12 @@ A small example:
 =head3 Commandline
 
 =over 4
+
+=item *
+
+Run commands directly from command line
+
+    bash# rex -e 'run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
 
 =item *
 

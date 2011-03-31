@@ -24,6 +24,9 @@ A small example:
 
 =head3 Rexfile
 
+    use Rex::Commands::Run;
+    use Rex::Commands::File;
+
     user "root";
     password "root";
     pass_auth;

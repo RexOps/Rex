@@ -59,7 +59,7 @@ sub get_timestamp {
    $mon++;
    $year += 1900;
 
-   return "$year-" . sprintf("%02i", $mon) . sprintf("%02i", $mday) . " " . sprintf("%02i", $hour) . ":" . sprintf("%02i", $min) . ":" . sprintf("%02i", $sec);
+   return "$year-" . sprintf("%02i", $mon) . "-" . sprintf("%02i", $mday) . " " . sprintf("%02i", $hour) . ":" . sprintf("%02i", $min) . ":" . sprintf("%02i", $sec);
 }
 
 END {

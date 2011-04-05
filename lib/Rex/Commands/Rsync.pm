@@ -44,7 +44,7 @@ sub sync {
       push(@expect_options, [
                               qr{password: $},
                               sub {
-                                 print STDERR ">> WANT PASSWORD\n";
+                                 Rex::Logger::debug("Want Password");
                                  my $fh = shift;
                                  $fh->send($pass . "\n");
                                  exp_continue;
@@ -58,7 +58,7 @@ sub sync {
       push(@expect_options, [
                               qr{Enter passphrase for key.*: $},
                               sub {
-                                 print STDERR ">> WANT PASSPHRASE\n";
+                                 Rex::Logger::debug("Want Passphrase");
                                  my $fh = shift;
                                  $fh->send($pass . "\n");
                                  exp_continue;
@@ -70,11 +70,18 @@ sub sync {
    Rex::Logger::debug("cmd: $cmd");
 
    eval {
-      local $SIG{ALRM} = sub { die("Error in authentication or rsync timed out...\n"); };
-      alarm Rex::Config->get_timeout;
-
       my $exp = Expect->spawn($cmd) or die($!);
-      $exp->expect(undef, @expect_options);
+
+      my $login_task = shift @expect_options;
+      $exp->expect(Rex::Config->get_timeout, $login_task);
+      $exp->expect(undef, [
+                        qr{total size is \d+\s+speedup is },
+                        sub {
+                           Rex::Logger::debug("Finished transfer");
+                           exp_continue;
+                        }
+                     ]);
+      $exp->soft_close;
    };
 
    if($@) {

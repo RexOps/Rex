@@ -1,5 +1,6 @@
 rex (0.3.2) unstable; urgency=low
   * Fixed rsync timeout bug.
+  * Fixed bug if no description was set.
   * prepare for 0.3.2
 
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 05 Apr 2011 20:45:00 +0200

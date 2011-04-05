@@ -40,6 +40,9 @@ sub task {
       push(@_, $current_desc);
       $current_desc = "";
    }
+   else {
+      push(@_, "");
+   }
 
    Rex::Task->create_task($task_name, @_);
 }

@@ -1,3 +1,9 @@
+rex (0.3.2) unstable; urgency=low
+  * Fixed rsync timeout bug.
+  * prepare for 0.3.2
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 05 Apr 2011 20:45:00 +0200
+
 rex (0.3.1) unstable; urgency=low
   * started some documentation for rex. after install just "man rex"
   * fixed bug with command line -e and password auth

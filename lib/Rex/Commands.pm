@@ -60,6 +60,9 @@ sub batch {
       push(@_, $current_desc);
       $current_desc = "";
    }
+   else {
+      push(@_, "");
+   }
 
    Rex::Batch->create_batch(@_);
 }

@@ -30,7 +30,14 @@ sub run {
    } else {
       $out = qx{$cmd};
    }
-   print $out;
+
+   Rex::Logger::debug($out);
+
+   chomp $out;
+
+   if(wantarray) {
+      return split(/\n/, $out);
+   }
 
    return $out;
 }

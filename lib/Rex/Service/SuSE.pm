@@ -25,7 +25,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service start";
+   run "/etc/rc.d/$service start >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -37,7 +37,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service restart";
+   run "/etc/rc.d/$service restart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -49,7 +49,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service stop";
+   run "/etc/rc.d/$service stop >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -61,7 +61,7 @@ sub stop {
 sub status {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service status";
+   run "/etc/rc.d/$service status >/dev/null";
 
    if($? == 0) {
       return 1;

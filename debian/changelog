@@ -1,6 +1,7 @@
 rex (0.4.0) unstable; urgency=low
   * install package support for yum, apt and zypper
   * remove package support for yum, apt and zypper
+  * added support to install a specific version of a package
   * added template support
   * Started Hardware and Information gathering
   * prepare for 0.4.0

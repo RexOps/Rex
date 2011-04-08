@@ -38,10 +38,12 @@ sub is_installed {
 }
 
 sub install {
-   my ($self, $pkg) = @_;
+   my ($self, $pkg, $option) = @_;
 
-   Rex::Logger::debug("Installing $pkg");
-   my $f = run("yum -y install $pkg");
+   my $version = $option->{"version"} || "";
+
+   Rex::Logger::debug("Installing $pkg / $version");
+   my $f = run("yum -y install $pkg" . ($version?"-$version":""));
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");

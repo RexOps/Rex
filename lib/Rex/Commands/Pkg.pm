@@ -35,7 +35,7 @@ sub install {
 
       unless($pkg->is_installed($package)) {
          Rex::Logger::info("Installing $package.");
-         $pkg->install($package);
+         $pkg->install($package, $option);
       }
       else {
          Rex::Logger::info("$package already installed.");

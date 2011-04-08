@@ -56,7 +56,7 @@ sub install {
 
          my $vars = $option->{"template"};
          my %merge1 = %{$vars || {}};
-         my %merge2 = Rex::Hardware->get(qw/ Host Kernel Memory Network Swap /);
+         my %merge2 = Rex::Hardware->get(qw/ All /);
          my %template_vars = (%merge1, %merge2);
 
          my $fh = file_write($package);

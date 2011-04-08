@@ -14,6 +14,12 @@ sub get {
 
    my %hardware_information;
 
+   if("all" eq "\L$modules[0]") {
+
+      @modules = qw(Host Kernel Memory Network Swap);
+   
+   }
+
    for my $mod_string (@modules) {
 
       my $mod = "Rex::Hardware::$mod_string";

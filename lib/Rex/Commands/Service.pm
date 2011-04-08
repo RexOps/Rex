@@ -21,6 +21,15 @@ use Rex::Service;
 sub service {
    my ($service, $action) = @_;
 
+   if(wantarray) {
+   
+      # func-ref zurueckgeben
+      return sub {
+         service($service, $action);
+      };
+
+   }
+
    my $srvc = Rex::Service->get;
 
    if($action eq "start") {
@@ -31,6 +40,19 @@ sub service {
       }
       else {
          Rex::Logger::info("Error starting $service.");
+         return 0;
+      }
+
+   }
+
+   elsif($action eq "restart") {
+
+      if($srvc->restart($service)) {
+         Rex::Logger::info("Service $service restarted.");
+         return 1;
+      }
+      else {
+         Rex::Logger::info("Error restarting $service.");
          return 0;
       }
 

@@ -34,6 +34,18 @@ sub start {
    return 0;
 }
 
+sub restart {
+   my($self, $service) = @_;
+
+   run "/etc/rc.d/init.d/$service restart";
+
+   if($? == 0) {
+      return 1;
+   }
+
+   return 0;
+}
+
 sub stop {
    my($self, $service) = @_;
 

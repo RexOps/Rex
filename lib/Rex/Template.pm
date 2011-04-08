@@ -36,22 +36,32 @@ sub parse {
       if($code) {
          my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
 
-         if(! ref($vars->{$var_name})) {
-            $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
-         }
-         else {
-            $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
+         if($type && $type eq "+") {
+
+            if(! ref($vars->{$var_name})) {
+               $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
+            }
+            else {
+               $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
+            }
+
+            $_ = "\$r .= $text;";
+
          }
 
-         if($type && $type eq "+") {
-            $_ = "\$r .= $text;";
-         } else
-         {
+         else {
+
             $_ = $text;
+
          }
-      } else {
+
+      } 
+      
+      else {
+
          s/"/\\"/g;
          $_ = '$r .= "' . $_ . '";';
+
       }
 
    } split(/(\<%.*?%\>)/s, $data));

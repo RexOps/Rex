@@ -1,4 +1,5 @@
 rex (0.3.2) unstable; urgency=low
+  * Removed registering tasks as subs in main:: package.
   * Fixed rsync timeout bug.
   * Fixed bug if no description was set.
   * prepare for 0.3.2

@@ -54,11 +54,6 @@ sub create_task {
       desc => $desc
    };
 
-   no strict 'refs';
-   *{"main::$task_name"} = sub {
-      Rex::Commands::do_task($task_name);
-   };
-   use strict;
 }
 
 sub get_tasks {

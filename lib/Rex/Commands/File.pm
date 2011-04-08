@@ -28,7 +28,7 @@ sub file_write {
    Rex::Logger::debug("Opening file: $file for writing.");
 
    if(my $ssh = Rex::is_ssh()) {
-      $fh = $ssh->sftp->open($file, O_WRONLY | O_CREAT);
+      $fh = $ssh->sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
    } else {
       open($fh, ">", $file) or die($!);
    }

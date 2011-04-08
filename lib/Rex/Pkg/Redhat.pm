@@ -54,5 +54,24 @@ sub install {
    return 1;
 }
 
+sub remove {
+   my ($self, $pkg) = @_;
+
+   Rex::Logger::debug("Removing $pkg");
+   my $f = run("yum -y erase $pkg");
+
+   unless($? == 0) {
+      Rex::Logger::info("Error removing $pkg.");
+      Rex::Logger::debug($f);
+      return 0;
+   }
+
+   Rex::Logger::debug("$pkg successfully removed.");
+
+   return 1;
+}
+
+
+
 
 1;

@@ -72,6 +72,10 @@ if($opts{'f'}) {
    $::rexfile = $opts{'f'};
 }
 
+if($opts{'H'}) {
+   $::FORCE_SERVER = $opts{'H'};
+}
+
 if($opts{'e'}) {
    Rex::Logger::debug("Executing command line code");
    Rex::Logger::debug("\t" . $opts{'e'});

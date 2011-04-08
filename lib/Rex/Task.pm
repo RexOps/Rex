@@ -31,21 +31,35 @@ sub create_task {
 
    my $group = 'ALL';
    my @server = ();
-   if(scalar(@_) >= 1) {
-      if($_[0] eq "group") {
-         $group = $_[1];
-         if(Rex::Group->is_group($group)) {
-            Rex::Logger::debug("\tusing group: $group -> " . join(", ", Rex::Group->get_group($group)));
-            push @server, Rex::Commands::evaluate_hostname($_) for Rex::Group->get_group($group);
-            Rex::Logger::debug("\tserver: $_") for @server;
+
+   if($::FORCE_SERVER) {
+
+      my @servers = split(/\s+/, $::FORCE_SERVER);
+      push @server, Rex::Commands::evaluate_hostname($_) for @servers;
+
+      Rex::Logger::debug("\tserver: $_") for @server;
+
+   }
+
+   else {
+
+      if(scalar(@_) >= 1) {
+         if($_[0] eq "group") {
+            $group = $_[1];
+            if(Rex::Group->is_group($group)) {
+               Rex::Logger::debug("\tusing group: $group -> " . join(", ", Rex::Group->get_group($group)));
+               push @server, Rex::Commands::evaluate_hostname($_) for Rex::Group->get_group($group);
+               Rex::Logger::debug("\tserver: $_") for @server;
+            } else {
+               Rex::Logger::info("Group $group not found!");
+               exit 1;
+            }
          } else {
-            Rex::Logger::info("Group $group not found!");
-            exit 1;
+            push @server, Rex::Commands::evaluate_hostname($_) for @_;
+            Rex::Logger::debug("\tserver: $_") for @server;
          }
-      } else {
-         push @server, Rex::Commands::evaluate_hostname($_) for @_;
-         Rex::Logger::debug("\tserver: $_") for @server;
       }
+
    }
 
    $tasks{$task_name} = {

@@ -1,4 +1,5 @@
 rex (0.4.0) unstable; urgency=low
+  * install package support for yum, apt and zypper
   * Started Hardware and Information gathering
   * prepare for 0.4.0
 

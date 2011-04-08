@@ -28,7 +28,6 @@ sub DESTROY {
 
 sub write {
    my ($self, $buf) = @_;
-
    my $fh = $self->{'fh'};
    if(ref($fh) eq 'Net::SSH2::File') {
       $fh->write($buf);

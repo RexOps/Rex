@@ -1,4 +1,4 @@
-rex (0.4.0) unstable; urgency=low
+rex (0.3.99) unstable; urgency=low
   * use -H cli parameter to overwrite hosts or groups for a task
   * added md5 function
   * added functions to manage services (start/stop/status)

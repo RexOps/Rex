@@ -1,4 +1,5 @@
 rex (0.3.99.1) unstable; urgency=low
+  * symlink function
   * install non-template files
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 11 Apr 2011 19:30:00 +0200

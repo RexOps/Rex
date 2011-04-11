@@ -18,7 +18,7 @@ use Rex::Commands::Run;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir is_readable is_writeable is_writable readlink);
+@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir is_readable is_writeable is_writable readlink symlink);
 
 use vars qw(%file_handles);
 
@@ -49,6 +49,20 @@ sub list_files {
    }
 
    return @ret;
+}
+
+sub symlink {
+   my ($from, $to) = @_;
+
+   Rex::Logger::debug("Symlinking files: $to -> $from");
+
+   run "ln -snf $from $to";
+
+   if($? == 0) {
+      return 1;
+   }
+
+   return 0;
 }
 
 sub unlink {

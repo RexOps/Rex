@@ -73,14 +73,28 @@ sub sync {
       my $exp = Expect->spawn($cmd) or die($!);
 
       my $login_task = shift @expect_options;
-      $exp->expect(Rex::Config->get_timeout, $login_task);
-      $exp->expect(undef, [
-                        qr{total size is \d+\s+speedup is },
-                        sub {
-                           Rex::Logger::debug("Finished transfer");
-                           exp_continue;
-                        }
-                     ]);
+
+      eval {
+         $exp->expect(Rex::Config->get_timeout, $login_task, [
+                                 qr{total size is \d+\s+speedup is },
+                                 sub {
+                                    Rex::Logger::debug("Finished transfer very fast");
+                                    exp_continue;
+                                    die;
+                                 }
+                             
+                              ]);
+
+         $exp->expect(undef, [
+                           qr{total size is \d+\s+speedup is },
+                           sub {
+                              Rex::Logger::debug("Finished transfer");
+                              exp_continue;
+                           }
+                        ]);
+
+      };
+
       $exp->soft_close;
    };
 

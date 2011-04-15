@@ -24,11 +24,14 @@ use base qw(Exporter);
             exit
             evaluate_hostname
             logging
+            needs
           );
 
 sub task {
    my($class, $file, @tmp) = caller;
    my $task_name = shift;
+   my $task_name_save = $task_name;
+
    if($class ne "main") {
       $task_name = $class . ":" . $task_name;
    }
@@ -43,6 +46,10 @@ sub task {
    else {
       push(@_, "");
    }
+
+   no strict 'refs';
+   push (@{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
+   use strict;
 
    Rex::Task->create_task($task_name, @_);
 }
@@ -163,5 +170,22 @@ sub logging {
    }
 }
 
+sub needs {
+   my ($self, @args) = @_;
+
+   no strict 'refs';
+   my @tasks_to_run = @{"${self}::tasks"};
+   use strict;
+
+   for my $task (@tasks_to_run) {
+      if(@args && $task->{"name"} ~~ @args) {
+         &{ $task->{"code"} };
+      }
+      elsif(! @args) {
+         &{ $task->{"code"} };
+      }
+   }
+
+}
 
 1;

@@ -148,8 +148,8 @@ sub parallelism {
 }
 
 sub exit {
-   print "Exiting Rex...\n";
-   print "Cleaning up...\n";
+   Rex::Logger::info("Exiting Rex...");
+   Rex::Logger::info("Cleaning up...");
 
    unlink("$::rexfile.lock") if($::rexfile);
 
@@ -173,15 +173,19 @@ sub logging {
 sub needs {
    my ($self, @args) = @_;
 
+   Rex::Logger::debug("need to call tasks from $self");
+
    no strict 'refs';
    my @tasks_to_run = @{"${self}::tasks"};
    use strict;
 
    for my $task (@tasks_to_run) {
       if(@args && $task->{"name"} ~~ @args) {
+         Rex::Logger::debug("Calling " . $task->{"name"});
          &{ $task->{"code"} };
       }
       elsif(! @args) {
+         Rex::Logger::debug("Calling " . $task->{"name"});
          &{ $task->{"code"} };
       }
    }

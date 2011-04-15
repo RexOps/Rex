@@ -1,4 +1,4 @@
-#!env perl -w
+#!perl -w
 
 use strict;
 use warnings;

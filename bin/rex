@@ -45,7 +45,7 @@ if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution\n";
    printf "  %-15s %s\n", "-b", "Run batch";
    printf "  %-15s %s\n", "-e", "Run the given code fragment";
-   printf "  %-15s %s\n", "-H", "Execute task on these hosts (*)";
+   printf "  %-15s %s\n", "-H", "Execute task on these hosts";
    printf "  %-15s %s\n", "-u", "Username for the ssh connection (*)";
    printf "  %-15s %s\n", "-p", "Password for the ssh connection (*)";
    printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection (*)";
@@ -223,7 +223,7 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -e              Run the give code fragment
 
-=item -H              Execute task on these hosts (*)
+=item -H              Execute task on these hosts
 
 =item -u              Username for the ssh connection (*)
 

@@ -45,7 +45,7 @@ sub install {
             $pkg->install($pkg_to_install, $option);
          }
          else {
-            Rex::Logger::info("$package already installed.");
+            Rex::Logger::info("$pkg_to_install already installed.");
          }
       }
 

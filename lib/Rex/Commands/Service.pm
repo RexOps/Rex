@@ -34,13 +34,15 @@ sub service {
 
    if($action eq "start") {
 
-      if($srvc->start($service)) {
-         Rex::Logger::info("Service $service started.");
-         return 1;
-      }
-      else {
-         Rex::Logger::info("Error starting $service.");
-         return 0;
+      unless($srvc->status($service)) {
+         if($srvc->start($service)) {
+            Rex::Logger::info("Service $service started.");
+            return 1;
+         }
+         else {
+            Rex::Logger::info("Error starting $service.");
+            return 0;
+         }
       }
 
    }

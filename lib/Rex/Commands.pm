@@ -18,6 +18,8 @@ use Rex::Logger;
 use vars qw(@EXPORT $current_desc);
 use base qw(Exporter);
 
+use feature qw(say);
+
 @EXPORT = qw(task desc group 
             user password public_key private_key pass_auth
             get_random do_task batch timeout parallelism
@@ -25,6 +27,7 @@ use base qw(Exporter);
             evaluate_hostname
             logging
             needs
+            say
           );
 
 sub task {
@@ -190,6 +193,10 @@ sub needs {
       }
    }
 
+}
+
+sub say {
+   CORE::say(@_);
 }
 
 1;

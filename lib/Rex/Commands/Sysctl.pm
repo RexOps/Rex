@@ -25,8 +25,15 @@ sub sysctl {
 
    if($val) {
 
-      Rex:Logger::debug("Setting sysctl key $key to $val");
-      run "/sbin/sysctl -w $key=$val";
+      Rex::Logger::debug("Setting sysctl key $key to $val");
+      my $ret = run "/sbin/sysctl -n $key";
+
+      if($ret ne $val) {
+         run "/sbin/sysctl -w $key=$val";
+      }
+      else {
+         Rex::Logger::debug("$key has already value $val");
+      }
 
    }
    else {

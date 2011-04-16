@@ -8,6 +8,13 @@ unless($ARGV[0]) {
    exit 1;
 }
 
+unless(-d $ARGV[0]) {
+   print "Created $ARGV[0]\n";
+   mkdir($ARGV[0]);
+}
+print "chdir to $ARGV[0]\n";
+chdir($ARGV[0]);
+
 unless(-d 'lib') {
    mkdir('lib');
 }

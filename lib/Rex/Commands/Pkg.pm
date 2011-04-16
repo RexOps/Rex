@@ -35,12 +35,18 @@ sub install {
 
       my $pkg = Rex::Pkg->get;
 
-      unless($pkg->is_installed($package)) {
-         Rex::Logger::info("Installing $package.");
-         $pkg->install($package, $option);
+      if(!ref($package)) {
+         $package = [$package];
       }
-      else {
-         Rex::Logger::info("$package already installed.");
+
+      for my $pkg_to_install (@{$package}) {
+         unless($pkg->is_installed($pkg_to_install)) {
+            Rex::Logger::info("Installing $pkg_to_install.");
+            $pkg->install($pkg_to_install, $option);
+         }
+         else {
+            Rex::Logger::info("$package already installed.");
+         }
       }
 
    }

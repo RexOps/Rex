@@ -1,6 +1,7 @@
 rex (0.3.99.3) unstable; urgency=low
   * Build dependencies between tasks
   * Added sysctl command
+  * chmod, chgrp and chown for installing a file
 
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 15 Apr 2011 23:40:00 +0200
 

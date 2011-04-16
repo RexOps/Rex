@@ -79,7 +79,6 @@ sub sync {
                                  qr{total size is \d+\s+speedup is },
                                  sub {
                                     Rex::Logger::debug("Finished transfer very fast");
-                                    exp_continue;
                                     die;
                                  }
                              

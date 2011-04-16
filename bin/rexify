@@ -27,7 +27,7 @@ use Rex::Commands::Run;
 
 desc "Get uptime of server";
 task "uptime", group => 'servers', sub {
-   run "uptime";
+   say run "uptime";
 };
 
 1;
@@ -63,7 +63,7 @@ require Rex::$ARGV[0];
    print STDERR "Created Rexfile.\n";
    print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
    print STDERR "You can edit lib/Rex/$ARGV[0].pm to define tasks.\n";
-   print STDERR "\n\nIf you have any questions or wished\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
+   print STDERR "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
 }
 else {
    print STDERR "It seems that this project is already rexified.\n";

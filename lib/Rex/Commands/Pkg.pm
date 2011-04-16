@@ -16,8 +16,10 @@ use Rex::Commands::File;
 use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
+use Rex::Commands::Run;
 
 use Data::Dumper;
+use Digest::MD5;
 
 require Exporter;
 
@@ -43,9 +45,6 @@ sub install {
          unless($pkg->is_installed($pkg_to_install)) {
             Rex::Logger::info("Installing $pkg_to_install.");
             $pkg->install($pkg_to_install, $option);
-         }
-         else {
-            Rex::Logger::info("$pkg_to_install already installed.");
          }
       }
 
@@ -84,11 +83,30 @@ sub install {
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
          $old_md5 = md5($package);
+         my $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
 
-         upload $source, $package;
+         unless($local_md5 eq $old_md5) {
+            Rex::Logger::debug("MD5 is different $local_md5 -> $old_md5 (uploading)");
+            upload $source, $package;
+         }
+         else {
+            Rex::Logger::debug("MD5 is equal. Not uploading $source -> $package");
+         }
 
          $new_md5 = md5($package);
 
+      }
+
+      if(exists $option->{"owner"}) {
+         run "chown " . $option->{"owner"} . " $package";
+      }
+
+      if(exists $option->{"group"}) {
+         run "chgrp " . $option->{"group"} . " $package";
+      }
+
+      if(exists $option->{"mode"}) {
+         run "chmod " . $option->{"mode"} . " $package";
       }
 
       unless($old_md5 eq $new_md5) {

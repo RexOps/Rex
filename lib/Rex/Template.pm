@@ -36,23 +36,18 @@ sub parse {
       if($code) {
          my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
 
-         if($type && $type eq "+") {
-
-            if(! ref($vars->{$var_name})) {
-               $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
-            }
-            else {
-               $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
-            }
-
-            $_ = "\$r .= $text;";
-
+         if($var_name && ! ref($vars->{$var_name})) {
+            $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
+         }
+         else {
+            $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
          }
 
+         if($type && $type eq "+") {
+            $_ = "\$r .= $text;";
+         }
          else {
-
             $_ = $text;
-
          }
 
       } 
@@ -71,6 +66,7 @@ sub parse {
       no strict 'vars';
 
       for my $var (keys %{$vars}) {
+         Rex::Logger::debug("Registering: $var");
          unless(ref($vars->{$var})) {
             $$var = \$vars->{$var};
          } else {

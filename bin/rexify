@@ -4,16 +4,18 @@ use strict;
 use warnings;
 
 unless($ARGV[0]) {
-   print STDERR "Usage: rexify <project-name>\n";
+   print STDERR "Usage: rexify <project-name> [<directory>]\n";
    exit 1;
 }
 
-unless(-d $ARGV[0]) {
-   print "Created $ARGV[0]\n";
-   mkdir($ARGV[0]);
+my $dir = $ARGV[1] || $ARGV[0];
+
+unless(-d $dir) {
+   print "Created $dir\n";
+   mkdir($dir);
 }
-print "chdir to $ARGV[0]\n";
-chdir($ARGV[0]);
+print "chdir to $dir\n";
+chdir($dir);
 
 unless(-d 'lib') {
    mkdir('lib');
@@ -69,7 +71,7 @@ require Rex::$ARGV[0];
 
    print STDERR "Created Rexfile.\n";
    print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
-   print STDERR "You can edit lib/Rex/$ARGV[0].pm to define tasks.\n";
+   print STDERR "You can edit $dir/lib/Rex/$ARGV[0].pm to define tasks.\n";
    print STDERR "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
 }
 else {

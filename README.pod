@@ -16,6 +16,12 @@ L<Expect>
 
 Only if you want to use the Rsync module.
 
+=item *
+
+L<DBI>
+
+Only if you want to use the DB module.
+
 =back
 
 =head2 Usage

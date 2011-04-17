@@ -12,7 +12,7 @@ use warnings;
 use Rex::Commands::Run;
 
 sub get {
-   my $free_str = [ grep { /^Swap:/ } split(/\n/, run("free -m")) ]->[0];
+   my $free_str = [ grep { /^Swap:/ } split(/\n/, run("LC_ALL=C free -m")) ]->[0];
 
    my ($total, $used, $free) = ($free_str =~ m/^Swap:\s+(\d+)\s+(\d+)\s+(\d+)$/);
 

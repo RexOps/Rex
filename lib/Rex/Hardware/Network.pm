@@ -31,7 +31,7 @@ sub get_network_devices {
    my @proc_net_dev = grep  { ! /^$/ } map { $1 if /^\s+([^:]+)\:/ } split(/\n/, run("cat /proc/net/dev"));
 
    for my $dev (@proc_net_dev) {
-      my $ifconfig = run("ifconfig $dev");
+      my $ifconfig = run("LC_ALL=C ifconfig $dev");
       if($ifconfig =~ m/Link encap:Ethernet/m) {
          push(@device_list, $dev);
       }
@@ -49,7 +49,7 @@ sub get_network_configuration {
 
    for my $dev (@{$devices}) {
 
-      my $ifconfig = run("ifconfig $dev");
+      my $ifconfig = run("LC_ALL=C ifconfig $dev");
       $device_info->{$dev} = {
          ip          => [ ( $ifconfig =~ m/inet addr:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
          netmask     => [ ( $ifconfig =~ m/Mask:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],

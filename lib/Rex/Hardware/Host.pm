@@ -17,9 +17,9 @@ sub get {
 
    return {
    
-      manufacturer => [ run("dmidecode -t chassis") =~ m/Manufacturer: ([^\n]+)/ ]->[0],
-      hostname     => run("hostname"),
-      domain       => run("dnsdomainname"),
+      manufacturer => [ run("LC_ALL=C dmidecode -t chassis") =~ m/Manufacturer: ([^\n]+)/ ]->[0],
+      hostname     => run("LC_ALL=C hostname"),
+      domain       => run("LC_ALL=C dnsdomainname"),
       operatingsystem => get_operating_system(),
       operatingsystemrelease => get_operating_system_version(),
 

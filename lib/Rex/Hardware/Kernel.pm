@@ -14,10 +14,10 @@ use Rex::Commands::Run;
 sub get {
 
    return {
-      architecture => run ("uname -m"),
-      kernel       => run ("uname -s"),
-      kernelrelease => run ("uname -r"),
-      kernelversion => run ("uname -v"),
+      architecture => run ("LC_ALL=C uname -m"),
+      kernel       => run ("LC_ALL=C uname -s"),
+      kernelrelease => run ("LC_ALL=C uname -r"),
+      kernelversion => run ("LC_ALL=C uname -v"),
    };
 
 }

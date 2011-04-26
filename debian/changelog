@@ -1,3 +1,8 @@
+rex (0.3.99.4) unstable; urgency=low
+  * fixed user/password auth for changing user credentials
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 26 Apr 2011 13:00:00 +0200
+
 rex (0.3.99.3) unstable; urgency=low
   * Build dependencies between tasks
   * Added sysctl command

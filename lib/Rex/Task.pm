@@ -100,15 +100,21 @@ sub run {
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;
 
-   my($user, $pass);
+   my($user, $pass, $pass_auth);
    if(ref($server[-1]) eq "HASH") {
       my $data = pop(@server);
       $user = $data->{'user'};
       $pass = $data->{'password'};
+      $pass_auth = 1;
    } else {
       $user = Rex::Config->get_user;
       $pass = Rex::Config->get_password;
+      $pass_auth = Rex::Config->get_password_auth;
    }
+
+   Rex::Logger::debug("Using user: $user");
+   Rex::Logger::debug("Using password: $pass");
+
    my $timeout = Rex::Config->get_timeout;
 
    my @params = @ARGV[1..$#ARGV];
@@ -148,7 +154,7 @@ sub run {
                   CORE::exit; # kind beenden
                }
 
-            if(Rex::Config->get_password_auth) {
+            if($pass_auth) {
                $ssh->auth_password($user, $pass);
             } else {
                $ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);

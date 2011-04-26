@@ -113,7 +113,7 @@ sub run {
    }
 
    Rex::Logger::debug("Using user: $user");
-   Rex::Logger::debug("Using password: $pass");
+   Rex::Logger::debug("Using password: " . ($pass?$pass:"<no password>"));
 
    my $timeout = Rex::Config->get_timeout;
 

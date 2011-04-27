@@ -25,7 +25,11 @@ sub set_password {
 
 sub get_user {
    my $class = shift;
-   return $user;
+   if($user) {
+      return $user;
+   }
+
+   return $ENV{"USER"};
 }
 
 sub get_password {

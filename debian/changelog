@@ -1,5 +1,6 @@
 rex (0.3.99.4) unstable; urgency=low
   * fixed user/password auth for changing user credentials
+  * use $ENV{"USER"} as default login
 
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 26 Apr 2011 13:00:00 +0200
 

@@ -15,9 +15,10 @@ use Rex::Fork::Manager;
 use vars qw(%tasks);
 
 sub create_task {
-   my $class = shift;
+   my $class     = shift;
    my $task_name = shift;
-   my $desc = pop;
+   my $options   = pop;
+   my $desc      = pop;
 
    Rex::Logger::debug("Creating task: $task_name");
 
@@ -65,7 +66,8 @@ sub create_task {
    $tasks{$task_name} = {
       func => $func,
       server => [ @server ],
-      desc => $desc
+      desc => $desc,
+      no_ssh => ($options->{"no_ssh"}?1:0)
    };
 
 }
@@ -135,35 +137,50 @@ sub run {
 
       for my $server (@server) {
          $fm->add(sub {
-            my $ssh = Net::SSH2->new;
+            my $ssh;
 
-            # push a remote connection
-            Rex::push_connection({ssh => $ssh, server => $server});
+            if(! $tasks{$task}->{"no_ssh"}) {
+               $ssh = Net::SSH2->new;
 
-            my $fail_connect = 0;
+               # push a remote connection
+               Rex::push_connection({ssh => $ssh, server => $server});
 
-            Rex::Logger::info("Connecting to $server (" . $user . ")");
+               my $fail_connect = 0;
 
-            CON_SSH:
-               unless($ssh->connect($server, 22, Timeout => Rex::Config->get_timeout)) {
-                  ++$fail_connect;
-                  goto CON_SSH if($fail_connect < 3);
+               Rex::Logger::info("Connecting to $server (" . $user . ")");
 
-                  Rex::Logger::info("Can't connect to $server");
+               CON_SSH:
+                  unless($ssh->connect($server, 22, Timeout => Rex::Config->get_timeout)) {
+                     ++$fail_connect;
+                     goto CON_SSH if($fail_connect < 3);
 
-                  CORE::exit; # kind beenden
+                     Rex::Logger::info("Can't connect to $server");
+
+                     CORE::exit; # kind beenden
+                  }
+
+               if($pass_auth) {
+                  $ssh->auth_password($user, $pass);
+               } else {
+                  $ssh->auth_publickey($user, 
+                                          Rex::Config->get_public_key, 
+                                          Rex::Config->get_private_key, 
+                                          $pass);
                }
+            }
+            else {
 
-            if($pass_auth) {
-               $ssh->auth_password($user, $pass);
-            } else {
-               $ssh->auth_publickey($user, Rex::Config->get_public_key, Rex::Config->get_private_key, $pass);
+               Rex::Logger::debug("This is a remote session with NO_SSH");
+               Rex::push_connection({ssh => 0, server => $server});
+
             }
 
             $ret = _exec($task, \%opts);
 
-            Rex::Logger::debug("Disconnecting from $server");
-            $ssh->disconnect();
+            if(! $tasks{$task}->{"no_ssh"}) {
+               Rex::Logger::debug("Disconnecting from $server");
+               $ssh->disconnect();
+            }
 
             # remove remote connection from the stack
             Rex::pop_connection();

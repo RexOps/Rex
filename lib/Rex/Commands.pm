@@ -15,13 +15,13 @@ require Exporter;
 use Rex::Task;
 use Rex::Logger;
 
-use vars qw(@EXPORT $current_desc);
+use vars qw(@EXPORT $current_desc $global_no_ssh);
 use base qw(Exporter);
 
 use feature qw(say);
 
 @EXPORT = qw(task desc group 
-            user password public_key private_key pass_auth
+            user password public_key private_key pass_auth no_ssh
             get_random do_task batch timeout parallelism
             exit
             evaluate_hostname
@@ -30,10 +30,57 @@ use feature qw(say);
             say
           );
 
+sub no_ssh {
+   if(@_) {
+      $_[0]->(no_ssh => 1);
+   }
+   else {
+      $global_no_ssh = 1;
+   }
+}
+
 sub task {
    my($class, $file, @tmp) = caller;
+   my @_ARGS = @_;
+
+   if(wantarray) {
+      return sub {
+         my %option = @_;
+
+         $option{class} = $class;
+         $option{file}  = $file;
+         $option{tmp}   = \@tmp;
+
+         task(@_ARGS,\%option);
+      };
+   }
+
+   if(ref($_ARGS[-1]) eq "HASH") {
+      if($_ARGS[-1]->{class}) {
+         $class = $_ARGS[-1]->{class};
+      }
+
+      if($_ARGS[-1]->{file}) {
+         $file = $_ARGS[-1]->{file};
+      }
+
+      if($_ARGS[-1]->{tmp}) {
+         @tmp = @{ $_ARGS[-1]->{tmp} };
+      }
+   }
+
    my $task_name = shift;
    my $task_name_save = $task_name;
+
+   my $options = {};
+
+   if(ref($_[-1]) eq "HASH") {
+      $options = pop;
+   }
+
+   if($global_no_ssh) {
+      $options->{"no_ssh"} = 1;
+   }
 
    if($class ne "main") {
       $task_name = $class . ":" . $task_name;
@@ -54,7 +101,7 @@ sub task {
    push (@{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
    use strict;
 
-   Rex::Task->create_task($task_name, @_);
+   Rex::Task->create_task($task_name, @_, $options);
 }
 
 sub desc {

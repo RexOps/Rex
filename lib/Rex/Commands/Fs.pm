@@ -19,7 +19,7 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 
 @EXPORT = qw(list_files 
-            unlink rmdir mkdir stat readlink symlink rename
+            unlink rmdir mkdir stat readlink symlink rename chdir
             is_file is_dir is_readable is_writeable is_writable);
 
 use vars qw(%file_handles);
@@ -262,6 +262,11 @@ sub rename {
    }
 
    return $ret;
+}
+
+sub chdir {
+   Rex::Logger::info("chdir behaviour will be changed in the future.");
+   CORE::chdir(@_);
 }
 
 

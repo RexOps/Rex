@@ -2,6 +2,8 @@ rex (0.3.99.5) unstable; urgency=low
   * (upload) if no destination is set, use filename of source.
   * (download) if no destination is set, use filename of source.
   * fixed debug output.
+  * added some deprecated log messages
+  * preload some Commands (Run, Fs, File, Download, Upload)
 
  -- Jan Gehring <jan.gehring@gmail.com>  Thu, 26 Apr 2011 13:00:00 +0200
 

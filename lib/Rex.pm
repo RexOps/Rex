@@ -27,7 +27,11 @@ sub get_current_connection {
 }
 
 sub is_ssh {
-   return $CONNECTION_STACK[-1]->{"ssh"};
+   if($CONNECTION_STACK[-1]) {
+      return $CONNECTION_STACK[-1]->{"ssh"};
+   }
+
+   return 0;
 }
 
 1;

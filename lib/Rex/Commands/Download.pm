@@ -23,6 +23,10 @@ sub download {
    my $remote = shift;
    my $local = shift;
 
+   unless($local) {
+      $local = basename($remote);
+   }
+
    unless(is_file($remote)) {
       Rex::Logger::info("File $remote not found");
       die("$remote not found.");
@@ -34,10 +38,10 @@ sub download {
    }
 
    if(my $ssh = Rex::is_ssh()) {
-      Rex::Logger::info("Downloading $remote -> $local");
       if(-d $local) {
          $local = $local . '/' . basename($remote);
       }
+      Rex::Logger::info("Downloading $remote -> $local");
 
       $ssh->scp_get($remote, $local);
    } else {

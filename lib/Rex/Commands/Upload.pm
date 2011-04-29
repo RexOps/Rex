@@ -22,6 +22,10 @@ sub upload {
    my $local = shift;
    my $remote = shift;
 
+   unless($remote) {
+      $remote = basename($local);
+   }
+
    if(! -f $local) {
       Rex::Logger::info("File Not Found: $local");
       return 1;

@@ -30,9 +30,6 @@ A small example:
 
 =head3 Rexfile
 
-    use Rex::Commands::Run;
-    use Rex::Commands::File;
-
     user "root";
     password "root";
     pass_auth;
@@ -42,7 +39,7 @@ A small example:
     
     desc "Show Unix version";
     task "uname", "server[1..9]", sub {
-        run "uname -a";
+        say run "uname -a";
     };
 
     desc "Write into a file";
@@ -60,7 +57,7 @@ A small example:
 
 Run commands directly from command line
 
-    bash# rex -e 'run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
+    bash# rex -e 'say run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
 
 =item *
 

@@ -4,6 +4,37 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::DB
+
+=head1 DESCRIPTION
+
+This module gives you simple access to a database. Currently only I<select> is supported.
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::DB {
+                           dsn      => "DBI:mysql:database=test;host=dbhost",
+                           user     => "username",
+                           password => "password",
+                       };
+
+ task "list", sub {
+    my @data = db select => {
+                  fields => "*",
+                  from   => "table",
+                  where  => "enabled=1",
+               };
+ };
+
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::Commands::DB;
 
 use strict;
@@ -17,6 +48,17 @@ use vars qw(@EXPORT $dbh);
 
 @EXPORT = qw(db);
 
+=item db
+
+Do a database action. Currently only I<select> is supported.
+
+ my @data = db select => {
+               fields => "*",
+               from   => "table",
+               where  => "host='myhost'",
+            };
+
+=cut
 
 sub db {
 
@@ -49,6 +91,11 @@ sub db {
 
 }
 
+=begin
+
+=back
+
+=cut
 
 sub import {
 
@@ -67,3 +114,6 @@ sub import {
 }
 
 1;
+
+
+

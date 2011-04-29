@@ -4,6 +4,26 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::Upload
+
+=head1 DESCRIPTION
+
+With this module you can upload a local file via sftp to a remote host.
+
+=head1 SYNOPSIS
+
+ task "upload", "remoteserver", sub {
+    upload "localfile", "/remote/file";
+ };
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::Commands::Upload;
 
 use strict;
@@ -17,6 +37,18 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 
 @EXPORT = qw(upload);
+
+=begin
+
+=item upload($local, $remote)
+
+Perform an upload. If $remote is a directory the file will be uploaded to that directory.
+
+ task "upload", "remoteserver", sub {
+    upload "localfile", "/path";
+ };
+
+=cut
 
 sub upload {
    my $local = shift;
@@ -51,5 +83,12 @@ sub upload {
       }
    }
 }
+
+=begin
+
+=back
+
+=cut
+
 
 1;

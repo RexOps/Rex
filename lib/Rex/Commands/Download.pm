@@ -4,6 +4,31 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::Download
+
+=head1 DESCRIPTION
+
+With this module you can download a remotefile via sftp from a host to your local computer.
+
+=head1 SYNOPSIS
+
+ task "download", "remoteserver", sub {
+    download "/remote/file", "localfile";
+ };
+
+ task "download2", "remoteserver", sub {
+    download "/remote/file";
+ };
+
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::Commands::Download;
 
 use strict;
@@ -18,6 +43,16 @@ use Rex::Commands::Fs;
 use File::Basename qw(basename);
 
 @EXPORT = qw(download);
+
+=item download($remote, [$local])
+
+Perform a download. If no local file is specified it will download the file to the current directory.
+
+ task "download", "remoteserver", sub {
+    download "/remote/file", "localfile";
+ };
+
+=cut
 
 sub download {
    my $remote = shift;
@@ -50,4 +85,10 @@ sub download {
    }
 }
 
-1
+
+=back
+
+=cut
+
+
+1;

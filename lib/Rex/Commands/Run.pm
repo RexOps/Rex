@@ -4,6 +4,26 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::Run
+
+=head1 DESCRIPTION
+
+With this module you can run a command.
+
+=head1 SYNOPSIS
+
+ my $output = run "ls -l";
+
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
 package Rex::Commands::Run;
 
 use strict;
@@ -17,6 +37,16 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 
 @EXPORT = qw(run);
+
+=item run($command)
+
+This function will execute the given command and returns the output.
+
+ task "uptime", "server01", sub {
+    say run "uptime";
+ };
+
+=cut
 
 sub run {
    my $cmd = shift;
@@ -41,5 +71,9 @@ sub run {
 
    return $out;
 }
+
+=back
+
+=cut
 
 1;

@@ -4,6 +4,29 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::Pkg
+
+=head1 DESCRIPTION
+
+With this module you can install packages and files.
+
+=head1 SYNOPSIS
+
+ install file => "/etc/passwd", {
+                     source => "/export/files/etc/passwd"
+                 };
+
+ install package => "perl";
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
 package Rex::Commands::Pkg;
 
 use strict;
@@ -27,6 +50,72 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(install remove);
+
+=item install($type, $data, $options)
+
+The install function can install packages (for CentOS, OpenSuSE and Debian) and files.
+
+=over 4
+
+=item installing a package (This is only supported on CentOS, OpenSuSE and Debian systems.)
+
+ task "prepare", "server01", sub {
+    install package => "perl";
+
+    # or if you have to install more packages.
+    install package => [ 
+                           "perl",
+                           "ntp",
+                           "dbus",
+                           "hal",
+                           "sudo",
+                           "vim",
+                       ];
+ };
+
+=item installing a file
+
+ task "prepare", "server01", sub {
+    install file => "/etc/passwd", {
+                        source => "/export/files/etc/passwd",
+                        owner  => "root",
+                        group  => "root",
+                        mode   => 644,
+                    };
+ };
+
+=item installing a file and do somthing if the file was changed.
+
+ task "prepare", "server01", sub {
+    install file => "/etc/httpd/apache2.conf", {
+                        source    => "/export/files/etc/httpd/apache2.conf",
+                        owner     => "root",
+                        group     => "root",
+                        mode      => 644,
+                        on_change => sub { say "File was modified!"; }
+                    };
+ };
+
+=item installing a file from a template.
+
+ task "prepare", "server01", sub {
+    install file => "/etc/httpd/apache2.tpl", {
+                        source    => "/export/files/etc/httpd/apache2.conf",
+                        owner     => "root",
+                        group     => "root",
+                        mode      => 644,
+                        on_change => sub { say "File was modified!"; },
+                        template  => {
+                                        greeting => "hello",
+                                        name     => "Ben",
+                                     },
+                    };
+ };
+
+
+=back
+
+=cut
 
 sub install {
 
@@ -128,6 +217,16 @@ sub install {
 
 }
 
+=item remove($type, $package, $options) 
+
+This function will remove the given package from a system.
+
+ task "cleanup", "server01", sub {
+    remove "vim";
+ };
+
+=cut
+
 sub remove {
 
    my ($type, $package, $option) = @_;
@@ -155,5 +254,9 @@ sub remove {
    }
 
 }
+
+=back
+
+=cut
 
 1;

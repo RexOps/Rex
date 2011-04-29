@@ -4,6 +4,26 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::MD5
+
+=head1 DESCRIPTION
+
+With this module you calculate the md5 sum of a file.
+
+=head1 SYNOPSIS
+
+ my $md5 = md5($file);
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
+
 package Rex::Commands::MD5;
 
 use strict;
@@ -19,6 +39,16 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(md5);
+
+=item md5($file)
+
+This function will return the md5 sum (hexadecimal) for the given file.
+
+ task "md5", "server01", sub {
+    my $md5 = md5("/etc/passwd");
+ };
+
+=cut
 
 sub md5 {
    my ($file) = @_;
@@ -47,5 +77,9 @@ sub md5 {
 
    }
 }
+
+=back
+
+=cut
 
 1;

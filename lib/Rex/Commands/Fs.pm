@@ -4,6 +4,46 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::Fs
+
+=head1 DESCRIPTION
+
+With this module you can do file system tasks like creating a directory, removing files, move files, and more.
+
+=head1 SYNOPSIS
+
+ my @files = list_files "/etc";
+
+ unlink("/tmp/file");
+
+ rmdir("/tmp");
+ mkdir("/tmp");
+
+ my %stat = stat("/etc/passwd");
+
+ my $link = readlink("/path/to/a/link");
+ symlink("/source", "/dest");
+
+ rename("oldname", "newname");
+
+ chdir("/tmp");
+
+ is_file("/etc/passwd");
+ is_dir("/etc");
+ is_writeable("/tmp");
+ is_writable("/tmp");
+ 
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
+
 package Rex::Commands::Fs;
 
 use strict;
@@ -23,6 +63,16 @@ use base qw(Exporter);
             is_file is_dir is_readable is_writeable is_writable);
 
 use vars qw(%file_handles);
+
+=item list_files("/path");
+
+This function list all entries (files, directories, ...) in a given directory and returns a array.
+
+ task "ls-etc", "server01", sub {
+    my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
+ };
+
+=cut
 
 sub list_files {
    my $path = shift;
@@ -53,6 +103,16 @@ sub list_files {
    return @ret;
 }
 
+=item symlink($from, $to)
+
+This function will create a symlink from $from to $to.
+
+ task "symlink", "server01", sub {
+    symlink("/var/www/versions/1.0.0", "/var/www/html");
+ };
+
+=cut
+
 sub symlink {
    my ($from, $to) = @_;
 
@@ -66,6 +126,16 @@ sub symlink {
 
    return 0;
 }
+
+=item unlink($file)
+
+This function will remove the given file.
+
+ task "unlink", "server01", sub {
+    unlink("/tmp/testfile");
+ };
+
+=cut
 
 sub unlink {
    my @files = @_;
@@ -85,6 +155,16 @@ sub unlink {
    }
 }
 
+=item rmdir($dir)
+
+This function will remove the given directory.
+
+ task "rmdir", "server01", sub {
+    rmdir("/tmp");
+ };
+
+=cut
+
 sub rmdir {
    my @dirs = @_;
 
@@ -102,6 +182,16 @@ sub rmdir {
    }
 }
 
+=item mkdir($newdir)
+
+This function will create a new directory.
+
+ task "mkdir", "server01", sub {
+    mkdir("/tmp");
+ };
+
+=cut
+
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
 
@@ -117,6 +207,33 @@ sub mkdir {
       }
    }
 }
+
+=item stat($file)
+
+This function will return a hash with the following information about a file or directory.
+
+=over 4
+
+=item mode
+
+=item size
+
+=item uid
+
+=item gid
+
+=item atime
+
+=item mtime
+
+=back
+
+ task "stat", "server01", sub {
+    my %file_stat = stat("/etc/passwd");
+ };
+
+
+=cut
 
 sub stat {
    my %ret;
@@ -151,6 +268,21 @@ sub stat {
    return %ret;
 }
 
+=item is_file($file)
+
+This function tests if $file is a file. Returns 1 if true. 0 if false.
+
+ task "isfile", "server01", sub {
+    if( is_file("/etc/passwd") ) {
+       say "it is a file.";
+    }
+    else {
+       say "hm, this is not a file.";
+    }
+ };
+
+=cut
+
 sub is_file {
    Rex::Logger::debug("Checking if $_[0] is a file");
    
@@ -171,6 +303,21 @@ sub is_file {
    return 1;
 }
 
+=item is_dir($dir)
+
+This function tests if $dir is a directory. Returns 1 if true. 0 if false.
+
+ task "isdir", "server01", sub {
+    if( is_dir("/etc") ) {
+       say "it is a directory.";
+    }
+    else {
+       say "hm, this is not a directory.";
+    }
+ };
+
+=cut
+
 sub is_dir {
    Rex::Logger::debug("Checking if $_[0] is a directory");
 
@@ -186,6 +333,22 @@ sub is_dir {
 
    return 1;
 }
+
+=item is_readable($file)
+
+This function tests if $file is readable. It returns 1 if true. 0 if false.
+
+ task "readable", "server01", sub {
+    if( is_readable("/etc/passwd") ) {
+       say "passwd is readable";
+    }
+    else {
+       say "not readable.";
+    }
+ };
+
+=cut
+
 
 sub is_readable {
    Rex::Logger::debug("Checking if $_[0] is readable");
@@ -205,6 +368,22 @@ sub is_readable {
    return 0;
 }
 
+=item is_writable($file)
+
+This function tests if $file is writable. It returns 1 if true. 0 if false.
+
+ task "writable", "server01", sub {
+    if( is_writable("/etc/passwd") ) {
+       say "passwd is writable";
+    }
+    else {
+       say "not writable.";
+    }
+ };
+
+=cut
+
+
 sub is_writable {
    Rex::Logger::debug("Checking if $_[0] is writable");
 
@@ -223,9 +402,31 @@ sub is_writable {
    return 0;
 }
 
+=item is_writeable($file)
+
+This is only an alias for I<is_writable>.
+
+=cut
+
 sub is_writeable {
    is_writable(@_);
 }
+
+=item readlink($link)
+
+This function returns the link endpoint if $link is a symlink. If $link is not a symlink it will die.
+
+
+ task "islink", "server01", sub {
+    my $link;
+    eval {
+       $link = readlink("/tmp/testlink");
+    };
+
+    say "this is a link" if($link);
+ };
+
+=cut
 
 sub readlink {
    my $link;
@@ -244,6 +445,16 @@ sub readlink {
 
    return $link;
 }
+
+=item rename($old, $new)
+
+This function will rename $old to $new. Will return 1 on success and 0 on failure.
+
+ task "rename", "server01", sub {
+    rename("/tmp/old", "/tmp/new");
+ }; 
+
+=cut
 
 sub rename {
    my ($old, $new) = @_;
@@ -264,10 +475,24 @@ sub rename {
    return $ret;
 }
 
+=item chdir($newdir)
+
+This function will change the current workdirectory to $newdir. This function currently only works local.
+
+ task "chdir", "server01", sub {
+    chdir("/tmp");
+ };
+
+=cut
+
 sub chdir {
    Rex::Logger::info("chdir behaviour will be changed in the future.");
    CORE::chdir(@_);
 }
+
+=back
+
+=cut
 
 
 1;

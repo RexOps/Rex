@@ -55,13 +55,13 @@ use vars qw(@EXPORT);
 
 The install function can install packages (for CentOS, OpenSuSE and Debian) and files.
 
-=over 4
+=over 8
 
 =item installing a package (This is only supported on CentOS, OpenSuSE and Debian systems.)
 
  task "prepare", "server01", sub {
     install package => "perl";
-
+    
     # or if you have to install more packages.
     install package => [ 
                            "perl",

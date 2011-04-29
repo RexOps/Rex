@@ -20,7 +20,13 @@ use Rex::Group;
 use Rex::Batch;
 use Rex::Task;
 use Rex::Commands;
+
+# preload some modules
 use Rex::Commands::Run;
+use Rex::Commands::Fs;
+use Rex::Commands::File;
+use Rex::Commands::Download;
+use Rex::Commands::Upload;
 
 use Getopt::Std;
 

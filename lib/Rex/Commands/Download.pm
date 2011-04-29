@@ -17,7 +17,7 @@ With this module you can download a remotefile via sftp from a host to your loca
  task "download", "remoteserver", sub {
     download "/remote/file", "localfile";
  };
-
+ 
  task "download2", "remoteserver", sub {
     download "/remote/file";
  };

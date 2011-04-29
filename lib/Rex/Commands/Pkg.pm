@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
                      source => "/export/files/etc/passwd"
                  };
-
+ 
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS

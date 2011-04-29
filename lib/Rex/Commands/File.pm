@@ -19,7 +19,7 @@ With this module you can manipulate files.
     say $fh->read_all;
     $fh->close;
  };
-
+ 
  task "write-passwd", "server01", sub {
     my $fh = file_write "/etc/passwd";
     $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
@@ -61,13 +61,13 @@ On failure it will die.
  eval {
     $fh = file_write("/etc/groups");
  };
-
+ 
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
     exit;
  }
-
+ 
  # work with the filehandle
  $fh->write("...");
  $fh->close;
@@ -106,13 +106,13 @@ On failure it will die.
  eval {
     $fh = read("/etc/groups");
  };
-
+ 
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
     exit;
  }
-
+ 
  # work with the filehandle
  my $content = $fh->read_all;
  $fh->close;

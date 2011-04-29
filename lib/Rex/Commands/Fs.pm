@@ -15,21 +15,21 @@ With this module you can do file system tasks like creating a directory, removin
 =head1 SYNOPSIS
 
  my @files = list_files "/etc";
-
+ 
  unlink("/tmp/file");
-
+ 
  rmdir("/tmp");
  mkdir("/tmp");
-
+ 
  my %stat = stat("/etc/passwd");
-
+ 
  my $link = readlink("/path/to/a/link");
  symlink("/source", "/dest");
-
+ 
  rename("oldname", "newname");
-
+ 
  chdir("/tmp");
-
+ 
  is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
@@ -422,7 +422,7 @@ This function returns the link endpoint if $link is a symlink. If $link is not a
     eval {
        $link = readlink("/tmp/testlink");
     };
-
+    
     say "this is a link" if($link);
  };
 

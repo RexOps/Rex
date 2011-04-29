@@ -19,7 +19,7 @@ This module gives you simple access to a database. Currently only I<select> is s
                            user     => "username",
                            password => "password",
                        };
-
+ 
  task "list", sub {
     my @data = db select => {
                   fields => "*",

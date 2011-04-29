@@ -28,6 +28,7 @@ use feature qw(say);
             logging
             needs
             say
+            LOCAL
           );
 
 sub no_ssh {
@@ -244,6 +245,12 @@ sub needs {
 
 sub say {
    CORE::say(@_);
+}
+
+sub LOCAL (&) {
+   Rex::push_connection({ssh => 0, server => $server});
+   $_[0]->();
+   Rex::pop_connection();
 }
 
 1;

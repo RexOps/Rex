@@ -18,7 +18,9 @@ use Rex::Commands::Run;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files unlink rmdir mkdir stat is_file is_dir is_readable is_writeable is_writable readlink symlink);
+@EXPORT = qw(list_files 
+            unlink rmdir mkdir stat readlink symlink rename
+            is_file is_dir is_readable is_writeable is_writable);
 
 use vars qw(%file_handles);
 
@@ -239,6 +241,27 @@ sub readlink {
       Rex::Logger::debug("readlink: $_[0] is not a link.");
       die("readlink: $_[0] is not a link.");
    }
+
+   return $link;
+}
+
+sub rename {
+   my ($old, $new) = @_;
+
+   Rex::Logger::debug("Renaming $old to $new");
+
+   my $ret;
+   if(my $ssh = Rex::is_ssh()) {
+      $ret = $ssh->sftp->rename($old, $new);
+   } else {
+      $ret = CORE::rename($old, $new);
+   }
+
+   unless($ret) {
+      Rex::Logger::info("Rename failed ($old -> $new)");
+   }
+
+   return $ret;
 }
 
 

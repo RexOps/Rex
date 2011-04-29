@@ -1,3 +1,8 @@
+rex (0.4) unstable; urgency=low
+  * version update
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 29 Apr 2011 20:15:00 +0200
+
 rex (0.3.99.5) unstable; urgency=low
   * (upload) if no destination is set, use filename of source.
   * (download) if no destination is set, use filename of source.

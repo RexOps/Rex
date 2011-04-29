@@ -248,7 +248,8 @@ sub say {
 }
 
 sub LOCAL (&) {
-   Rex::push_connection({ssh => 0, server => $server});
+   my $cur_conn = Rex::get_current_connection();
+   Rex::push_connection({ssh => 0, server => $cur_conn->{"server"}});
    $_[0]->();
    Rex::pop_connection();
 }

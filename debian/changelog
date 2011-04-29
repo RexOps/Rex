@@ -1,3 +1,10 @@
+rex (0.3.99.5) unstable; urgency=low
+  * (upload) if no destination is set, use filename of source.
+  * (download) if no destination is set, use filename of source.
+  * fixed debug output.
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 26 Apr 2011 13:00:00 +0200
+
 rex (0.3.99.4) unstable; urgency=low
   * fixed user/password auth for changing user credentials
   * use $ENV{"USER"} as default login

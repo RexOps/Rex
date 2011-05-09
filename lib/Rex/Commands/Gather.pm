@@ -31,13 +31,15 @@ use warnings;
 
 use Rex::Hardware;
 use Rex::Hardware::Host;
+use Rex::Hardware::Network;
+use Rex::Hardware::Memory;
 
 require Exporter;
 use base qw(Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is);
+@EXPORT = qw(operating_system_is network_interfaces memory);
 
 =item operating_system_is($string)
 
@@ -64,6 +66,43 @@ sub operating_system_is {
    return 0;
 
 }
+
+=item network_interfaces
+
+Return an HashRef of all the networkinterfaces and their configuration.
+
+ task "get_network_information", "server01", sub {
+    my $net_info = network_interfaces();
+ };
+
+=cut
+
+sub network_interfaces {
+   
+   my $net = Rex::Hardware::Network->get();
+
+   return $net->{"networkconfiguration"};
+
+}
+
+=item memory
+
+Return an HashRef of all memory information.
+
+ task "get_memory_information", "server01", sub {
+    my $memory = memory();
+ };
+
+=cut
+
+sub memory {
+
+   my $mem = Rex::Hardware::Memory->get();
+
+   return $mem;
+
+}
+
 
 =back
 

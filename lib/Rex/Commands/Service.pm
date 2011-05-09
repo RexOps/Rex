@@ -4,6 +4,46 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Commands::Service
+
+=head1 DESCRIPTION
+
+With this module you can manage Linux services.
+
+Currently this module supports
+
+=over 4
+
+=item Debian
+
+=item CentOS
+
+=item OpenSuSE
+
+=back
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::Service
+ 
+ service apache2 => "start";
+ 
+ service apache2 => "stop";
+ 
+ service apache2 => "restart";
+ 
+ service apache2 => "status";
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
+
 package Rex::Commands::Service;
 
 use strict;
@@ -17,6 +57,47 @@ use base qw(Exporter);
 use Rex::Service;
 
 @EXPORT = qw(service);
+
+=item service($service, $action)
+
+The service function accepts 2 parameters. The first is the service name and the second the action you want to perform.
+
+=over 4
+
+=item starting a service
+
+ task "start-service", "server01", sub {
+    service apache2 => "start";
+ };
+
+=item stopping a service
+
+ task "stop-service", "server01", sub {
+    service apache2 => "stop";
+ };
+
+=item restarting a service
+
+ task "restart-service", "server01", sub {
+    service apache2 => "restart";
+ };
+
+
+=item checking status of a service
+
+ task "status-service", "server01", sub {
+    if( service apache2 => "status" ) {
+       say "Apache2 is running";
+    }
+    else {
+       say "Apache2 is not running";
+    }
+ };
+
+
+=back
+
+=cut
 
 sub service {
    my ($service, $action) = @_;
@@ -92,5 +173,9 @@ sub service {
 
    }
 }
+
+=back
+
+=cut
 
 1;

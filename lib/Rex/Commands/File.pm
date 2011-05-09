@@ -49,8 +49,6 @@ use base qw(Exporter);
 
 use vars qw(%file_handles);
 
-=begin
-
 =item file_write($file_name)
 
 This function opens a file for writing (it will truncate the file if it already exists). It returns a Rex::FS::File object on success.
@@ -94,8 +92,6 @@ sub file_write {
    return Rex::FS::File->new(fh => $fh);
 }
 
-=begin
-
 =item file_read($file_name)
 
 This function opens a file for reading. It returns a Rex::FS::File object on success.
@@ -138,8 +134,6 @@ sub file_read {
 
    return Rex::FS::File->new(fh => $fh);
 }
-
-=begin
 
 =back
 

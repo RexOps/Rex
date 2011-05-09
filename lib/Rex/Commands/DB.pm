@@ -91,8 +91,6 @@ sub db {
 
 }
 
-=begin
-
 =back
 
 =cut

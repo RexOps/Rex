@@ -38,8 +38,6 @@ use base qw(Exporter);
 
 @EXPORT = qw(upload);
 
-=begin
-
 =item upload($local, $remote)
 
 Perform an upload. If $remote is a directory the file will be uploaded to that directory.
@@ -83,8 +81,6 @@ sub upload {
       }
    }
 }
-
-=begin
 
 =back
 

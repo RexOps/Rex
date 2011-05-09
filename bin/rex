@@ -12,8 +12,6 @@ use warnings;
 
 use FindBin;
 
-use lib "$FindBin::Bin/../lib";
-
 use Rex;
 use Rex::Config;
 use Rex::Group;
@@ -52,10 +50,10 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-b", "Run batch";
    printf "  %-15s %s\n", "-e", "Run the given code fragment";
    printf "  %-15s %s\n", "-H", "Execute task on these hosts";
-   printf "  %-15s %s\n", "-u", "Username for the ssh connection (*)";
-   printf "  %-15s %s\n", "-p", "Password for the ssh connection (*)";
-   printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection (*)";
-   printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection (*)";
+   printf "  %-15s %s\n", "-u", "Username for the ssh connection";
+   printf "  %-15s %s\n", "-p", "Password for the ssh connection";
+   printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
+   printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection";
    printf "  %-15s %s\n", "-T", "List all known tasks.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
    printf "  %-15s %s\n", "-h", "Display this help";
@@ -63,8 +61,6 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
    printf "  %-15s %s\n", "-d", "Debug";
-   print "\n";
-   print "(*) Only useful with -e\n";
    print "\n";
    CORE::exit 0;
 } elsif($opts{'v'}) {
@@ -78,8 +74,12 @@ if($opts{'f'}) {
    $::rexfile = $opts{'f'};
 }
 
-if($opts{'H'}) {
-   $::FORCE_SERVER = $opts{'H'};
+FORCE_SERVER: {
+
+   if($opts{'H'}) {
+      $::FORCE_SERVER = $opts{'H'};
+   }
+
 }
 
 if($opts{'e'}) {
@@ -173,6 +173,38 @@ elsif(-f $::rexfile) {
    CORE::exit 1;
 }
 
+#### check if some parameters should be overwritten from the command line
+CHECK_OVERWRITE: {
+
+   my $pass_auth = 0;
+
+   if($opts{'u'}) {
+      Rex::Commands::user($opts{'u'});
+   }
+
+   if($opts{'p'}) {
+      Rex::Commands::password($opts{'p'});
+
+      unless($opts{'P'}) {
+         $pass_auth = 1;
+      }
+   }
+
+   if($opts{'P'}) {
+      Rex::Commands::private_key($opts{'P'});
+   }
+
+   if($opts{'K'}) {
+      Rex::Commands::public_key($opts{'K'});
+   }
+
+   if($pass_auth) {
+      pass_auth;
+   }
+
+}
+
+
 Rex::Logger::debug("Initializing Logger from parameters found in $::rexfile");
 Rex::Logger::init;
 
@@ -233,13 +265,13 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -H              Execute task on these hosts
 
-=item -u              Username for the ssh connection (*)
+=item -u              Username for the ssh connection
 
-=item -p              Password for the ssh connection (*)
+=item -p              Password for the ssh connection
 
-=item -P              Private Keyfile for the ssh connection (*)
+=item -P              Private Keyfile for the ssh connection
 
-=item -K              Public Keyfile for the ssh connection (*)
+=item -K              Public Keyfile for the ssh connection
 
 =item -T              List all known tasks.
 
@@ -256,8 +288,6 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 =item -d              Debug
 
 =back
-
-(*) Only useful with -e
 
 
 =head2 Rexfile

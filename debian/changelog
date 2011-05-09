@@ -1,6 +1,7 @@
 rex (0.4.1) unstable; urgency=low
   * api documentation
   * fixed cli parameters
+  * added some more hardware gather functions
 
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 29 Apr 2011 22:00:00 +0200
 

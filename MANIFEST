@@ -40,3 +40,4 @@ lib/Rex/Task.pm
 lib/Rex/Template.pm
 Makefile.PL
 t/01.t
+t/needs.t

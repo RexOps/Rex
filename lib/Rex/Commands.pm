@@ -48,8 +48,6 @@ use Rex::Logger;
 use vars qw(@EXPORT $current_desc $global_no_ssh);
 use base qw(Exporter);
 
-use feature qw(say);
-
 @EXPORT = qw(task desc group 
             user password public_key private_key pass_auth no_ssh
             get_random do_task batch timeout parallelism
@@ -437,7 +435,8 @@ sub needs {
    use strict;
 
    for my $task (@tasks_to_run) {
-      if(@args && $task->{"name"} ~~ @args) {
+      my $task_name = $task->{"name"};
+      if(@args && grep (/^$task_name$/, @args)) {
          Rex::Logger::debug("Calling " . $task->{"name"});
          &{ $task->{"code"} };
       }
@@ -516,7 +515,7 @@ sub exit {
 
 
 sub say {
-   CORE::say(@_);
+   print @_, "\n";
 }
 
 1;

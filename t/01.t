@@ -22,5 +22,6 @@ ok(1 == Rex::Task->is_task("test"), "is_task");
 ok("Test" eq Rex::Task->get_desc("test"), "get test task description");
 ok("test" eq Rex::Task->run("test"), "run test task");
 
+
 1;
 

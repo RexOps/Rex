@@ -1,4 +1,5 @@
 rex (0.4.99.0) unstable; urgency=low
+  * added kmod function to load and unload kernel modules
   * version update
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200

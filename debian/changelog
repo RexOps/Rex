@@ -1,8 +1,12 @@
+rex (0.4.99.0) unstable; urgency=low
+  * version update
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
+
 rex (0.4.2) unstable; urgency=low
   * restored compatibility with perl 5.8
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sun, 15 May 2011 20:00:00 +0200
-
 
 rex (0.4.1) unstable; urgency=low
   * api documentation

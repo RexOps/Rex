@@ -93,6 +93,11 @@ if($opts{'e'}) {
 
    $code = eval($code);
 
+   if($@) {
+      Rex::Logger::info("Error in eval line: $@\n");
+      exit 1;
+   }
+
    my $pass_auth = 0;
 
    if($opts{'u'}) {
@@ -125,6 +130,7 @@ if($opts{'e'}) {
    }
    push @params, $code;
    push @params, "eval-line-desc";
+   push @params, {};
 
    Rex::Task->create_task("eval-line", @params);
    Rex::Commands::do_task("eval-line");

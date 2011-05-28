@@ -1,4 +1,4 @@
-rex (0.4.99.0) unstable; urgency=low
+rex (0.5.0) unstable; urgency=low
   * added file_append function, to append data to a file
   * added functions to manage /etc/hosts entries
   * added user and group management functions

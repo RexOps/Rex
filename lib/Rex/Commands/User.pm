@@ -156,7 +156,7 @@ sub get_user {
       use strict;
    }
 
-   return {
+   return ( 
       name => $data->[0],
       password => $data->[1],
       uid => $data->[2],
@@ -165,7 +165,7 @@ sub get_user {
       home => $data->[7],
       shell => $data->[8],
       expire => exists $data->[9]?$data->[9]:0,
-   };
+   );
 }
 
 
@@ -268,12 +268,12 @@ sub get_group {
       use strict;
    }
 
-   return {
+   return (
       name => $data->[0],
       password => $data->[1],
       gid => $data->[2],
       members => $data->[3],
-   };
+   );
 }
 
 =item delete_group($group)

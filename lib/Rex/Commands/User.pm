@@ -133,8 +133,8 @@ Returns the uid of $user.
 sub get_uid {
    my ($user) = @_;
 
-   my $data = get_user($user);
-   return $data->{uid};
+   my %data = get_user($user);
+   return $data{uid};
 }
 
 =item get_user($user)
@@ -243,8 +243,8 @@ Return the group id of $group.
 sub get_gid {
    my ($group) = @_;
 
-   my $data = get_group($group);
-   return $data->{gid};
+   my %data = get_group($group);
+   return $data{gid};
 }
 
 =item get_group($group)

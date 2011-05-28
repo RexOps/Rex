@@ -146,6 +146,7 @@ Returns all information about $user.
 sub get_user {
    my ($user) = @_;
 
+   Rex::Logger::debug("Getting information for $user");
    my $data_str = run "perl -MData::Dumper -le'print Dumper [ getpwnam(\"$user\") ]'";
 
    my $data;
@@ -257,6 +258,7 @@ Return information of $group.
 sub get_group {
    my ($group) = @_;
 
+   Rex::Logger::debug("Getting information for $group");
    my $data_str = run "perl -MData::Dumper -le'print Dumper [ getgrnam(\"$group\") ]'";
 
    my $data;

@@ -1,4 +1,7 @@
 rex (0.4.99.0) unstable; urgency=low
+  * added file_append function, to append data to a file
+  * added functions to manage /etc/hosts entries
+  * added user and group management functions
   * added kmod function to load and unload kernel modules
   * version update
 

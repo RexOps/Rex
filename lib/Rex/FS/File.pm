@@ -65,12 +65,28 @@ Write $buf into the filehandle.
 =cut
 
 sub write {
-   my ($self, $buf) = @_;
+   my ($self, @buf) = @_;
    my $fh = $self->{'fh'};
    if(ref($fh) eq 'Net::SSH2::File') {
-      $fh->write($buf);
+      if(scalar(@buf) > 1) {
+         for my $line (@buf) {
+            $fh->write($line);
+            $fh->write($/);
+         }
+      }
+      else {
+         $fh->write($buf[0]);
+      }
    } else {
-      print $fh $buf;
+      if(scalar(@buf) > 1) {
+         for my $line (@buf) {
+            print $fh $line;
+            print $fh $/;
+         }
+      }
+      else {
+         print $fh $buf[0];
+      }
    }
 }
 

@@ -41,11 +41,12 @@ use Fcntl;
 require Exporter;
 use Data::Dumper;
 use Rex::FS::File;
+use Rex::Commands::Fs;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(file_write file_close file_read);
+@EXPORT = qw(file_write file_close file_read file_append);
 
 use vars qw(%file_handles);
 
@@ -87,6 +88,37 @@ sub file_write {
    unless($fh) {
       Rex::Logger::debug("Can't open $file for writing.");
       die("Can't open $file for writing.");
+   }
+
+   return Rex::FS::File->new(fh => $fh);
+}
+
+=item file_append($file_name)
+
+=cut
+
+sub file_append {
+   my ($file) = @_;
+   my $fh;
+
+   Rex::Logger::debug("Opening file: $file for appending.");
+
+   if(my $ssh = Rex::is_ssh()) {
+      if(is_file($file)) {
+         $fh = $ssh->sftp->open($file, O_WRONLY | O_APPEND );
+         my %stat = stat "$file";
+         $fh->seek($stat{size});
+      } 
+      else {
+         $fh = $ssh->sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
+      }
+   } else {
+      open($fh, ">>", $file) or die($!);
+   }
+
+   unless($fh) {
+      Rex::Logger::debug("Can't open $file for appending.");
+      die("Can't open $file for appending.");
    }
 
    return Rex::FS::File->new(fh => $fh);

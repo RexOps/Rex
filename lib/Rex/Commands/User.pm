@@ -15,7 +15,7 @@ With this module you can manage user and groups.
 =head1 SYNOPSIS
 
  task "create-user", "remoteserver", sub {
-    user "root" => {
+    create_user "root" => {
        uid => 0,
        home => '/root',
        commenct => 'Root Account',
@@ -46,7 +46,9 @@ use Rex::Logger;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(create_user delete_user get_uid get_user);
+@EXPORT = qw(create_user delete_user get_uid get_user
+               create_group delete_group get_group get_gid
+               );
 
 =item create_user($user => {})
 
@@ -144,7 +146,6 @@ Returns all information about $user.
 sub get_user {
    my ($user) = @_;
 
-   my ($name, $pass, $uid, $gid, $quota, $comment, $gcos, $dir, $shell, $expire) = getpwnam('victor');
    my $data_str = run "perl -MData::Dumper -le'print Dumper [ getpwnam(\"$user\") ]'";
 
    my $data;
@@ -196,5 +197,98 @@ sub delete_user {
    run $cmd . " " . $user;
    return $?==0?1:0;
 }
+
+=item create_group($group, {})
+
+Create or update a group.
+
+ create_group $group, {
+    gid => 1500,
+    system => 1,
+ };
+
+=cut
+
+sub create_group {
+   my ($group, $data) = @_;
+
+   my $cmd;
+
+   if(! defined get_gid($group)) {
+      Rex::Logger::debug("Creating new group $group");
+
+      $cmd = "groupadd ";
+   }
+   else {
+      Rex::Logger::debug("Group $group already exists. Updating...");
+      $cmd = "groupmod ";
+   }
+   
+   if(exists $data->{gid}) {
+      $cmd .= " -g " . $data->{gid};
+   }
+
+   run $cmd . " " . $group;
+
+   return get_gid($group);
+}
+
+=item get_gid($group)
+
+Return the group id of $group.
+
+=cut
+
+sub get_gid {
+   my ($group) = @_;
+
+   my $data = get_group($group);
+   return $data->{gid};
+}
+
+=item get_group($group)
+
+Return information of $group.
+
+ $info = get_group("wheel");
+
+=cut
+
+sub get_group {
+   my ($group) = @_;
+
+   my $data_str = run "perl -MData::Dumper -le'print Dumper [ getgrnam(\"$group\") ]'";
+
+   my $data;
+   {
+      no strict;
+      $data = eval $data_str;
+      use strict;
+   }
+
+   return {
+      name => $data->[0],
+      password => $data->[1],
+      gid => $data->[2],
+      members => $data->[3],
+   };
+}
+
+=item delete_group($group)
+
+Delete a group.
+
+=cut
+
+sub delete_group {
+   my ($group) = @_;
+
+   run "groupdel $group";
+
+   return $?==0?1:0;
+}
+
+=back
+=cut
 
 1;

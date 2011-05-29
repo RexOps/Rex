@@ -78,6 +78,22 @@ sub get_tasks {
    return sort { $a cmp $b } keys %tasks;
 }
 
+sub get_tasks_for {
+   my $class = shift;
+   my $host = shift;
+
+   my @tasks;
+   for my $task_name (keys %tasks) {
+      my @servers = @{$tasks{$task_name}->{"server"}};
+
+      if(grep { /^$host$/ } @servers) {
+         push @tasks, $task_name;
+      }
+   }
+
+   return sort { $a cmp $b } @tasks;
+}
+
 sub get_desc {
    my $class = shift;
    my $task = shift;

@@ -56,7 +56,9 @@ This function executes rsync to sync $source and $dest.
 =item UPLOAD - sync remote directory I</var/www/html> on server01 with the local directory I<html>.
 
  task "sync", "server01", sub {
-    sync "html/*", "/var/www/html";
+    sync "html/*", "/var/www/html", {
+      exclude => "*.sw*",
+    };
  };
 
 =item DOWNLOAD - sync local directory I<html> with the remote directory I</var/www/html> from server01.
@@ -75,14 +77,19 @@ sub sync {
    my $current_connection = Rex::get_current_connection();
    my $cmd;
 
+   my $params = "";
+   if($opt && exists $opt->{'exclude'}) {
+      $params .= " --exclude=" . $opt->{'exclude'};
+   }
+
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {
       Rex::Logger::debug("Downloading $source -> $dest");
-      $cmd = "rsync -a -e '\%s' --verbose --stats " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
+      $cmd = "rsync $params -a -e '\%s' --verbose --stats " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
                      . $source . " " . $dest;
    }
    else {
       Rex::Logger::debug("Uploading $source -> $dest");
-      $cmd = "rsync -a -e '\%s' --verbose --stats $source " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
+      $cmd = "rsync $params -a -e '\%s' --verbose --stats $source " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
                      . $dest;
    }
 

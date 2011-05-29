@@ -1,4 +1,5 @@
 rex (0.5.99.0) unstable; urgency=low
+  * added rex-master. started adding server/agent mode
   * added exclude parameter to sync function
   * version update
 

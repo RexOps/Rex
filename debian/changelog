@@ -1,6 +1,8 @@
 rex (0.5.99.0) unstable; urgency=low
-  * added rex-master. started adding server/agent mode
+  * added rex-agent
+  * added rex-master
   * added exclude parameter to sync function
+  * fixed chdir command
   * version update
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sun, 29 May 2011 19:00:00 +0200

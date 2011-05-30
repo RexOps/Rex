@@ -28,7 +28,7 @@ for my $param (keys %opts) {
 }
 
 if($opts{'h'}) {
-   print "(R)?ex - (Remote)? Execution\n";
+   print "(R)?ex - (Remote)? Execution (Master)\n";
    printf "  %-15s %s\n", "-l", "Set Logfilename";
    printf "  %-15s %s\n", "-i ip", "IP to listen on";
    printf "  %-15s %s\n", "-p port", "Set listen port";

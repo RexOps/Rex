@@ -112,11 +112,16 @@ sub is_task {
 sub run {
    my $class = shift;
    my $task = shift;
+   my $server_overwrite = shift;
    my $ret;
 
    Rex::Logger::info("Running task: $task");
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;
+   
+   if($server_overwrite) {
+      @server = ($server_overwrite);
+   }
 
    my($user, $pass, $pass_auth);
    if(ref($server[-1]) eq "HASH") {

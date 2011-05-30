@@ -26,7 +26,7 @@ sub run {
          my $p_dir = "$dir/$entry";
          $p_dir =~ s/^\.\///;
 
-         $ret .= "$p_dir\n";
+         $ret .= "$p_dir\n" if (-f $p_dir);
       }
       closedir($dh);
    }

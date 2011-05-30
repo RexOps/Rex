@@ -191,8 +191,10 @@ sub task {
    }
 
    no strict 'refs';
+   no warnings;
    push (@{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
    use strict;
+   use warnings;
 
    Rex::Task->create_task($task_name, @_, $options);
 }

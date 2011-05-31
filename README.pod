@@ -85,7 +85,9 @@ Run Task I<uname>
  Connecting to server2 (root)
  Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
 
-=item Master/Agent
+=item *
+
+Master/Agent
 
 Create a new project on the master
 

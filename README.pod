@@ -85,9 +85,9 @@ Run Task I<uname>
  Connecting to server2 (root)
  Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
 
-=item *
+=back
 
-Master/Agent
+=head3 Master/Agent
 
 Create a new project on the master
 
@@ -171,7 +171,5 @@ And start the agents on your servers.
  rex-agent -s your-rex-server -i 5 -f -d -c /tmp/cache
 
 Please test and reports bugs :) Any kind of feedback is welcome.
-
-=back
 
 =cut

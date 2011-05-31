@@ -14,7 +14,7 @@ $|++;
 
 my %opts;
 
-getopts('vhdl:p:i:', \%opts);
+getopts('vbhdP:l:p:i:', \%opts);
 
 $Rex::Logger::debug = $opts{'d'};
 
@@ -32,6 +32,8 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-l", "Set Logfilename";
    printf "  %-15s %s\n", "-i ip", "IP to listen on";
    printf "  %-15s %s\n", "-p port", "Set listen port";
+   printf "  %-15s %s\n", "-b", "Fork to background";
+   printf "  %-15s %s\n", "-P pid-file", "Pid File (default: master.pid)";
    printf "  %-15s %s\n", "-d", "Debug";
    printf "  %-15s %s\n", "-v", "Display version";
    print "\n";
@@ -44,6 +46,8 @@ if($opts{'h'}) {
 my %config = (
    port => $opts{'p'} || 7345,
    host => $opts{'i'} || "",
+   background => $opts{'b'} || 0,
+   pid_file => $opts{'P'}   || 'master.pid',
 );
 
 Rex::Master->new(%config)->run;

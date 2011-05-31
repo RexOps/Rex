@@ -11,6 +11,7 @@ use warnings;
 use Net::SSH2;
 use Rex::Group;
 use Rex::Fork::Manager;
+use Sys::Hostname;
 
 use vars qw(%tasks);
 
@@ -150,6 +151,11 @@ sub run {
       $opts{$key} = 1;
    }
 
+   my $hostname = hostname();
+   my ($shortname) = ($hostname =~ m/^([^\.]+)\.?/);
+   Rex::Logger::debug("My Hostname: " . $hostname);
+   Rex::Logger::debug("My Shortname: " . $shortname);
+
    if(scalar(@server) > 0) {
 
       my @children;
@@ -157,10 +163,11 @@ sub run {
       my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
 
       for my $server (@server) {
+         Rex::Logger::debug("Next Server: $server");
          $fm->add(sub {
             my $ssh;
 
-            if(! $tasks{$task}->{"no_ssh"}) {
+            if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                $ssh = Net::SSH2->new;
 
                # push a remote connection
@@ -198,7 +205,7 @@ sub run {
 
             $ret = _exec($task, \%opts);
 
-            if(! $tasks{$task}->{"no_ssh"}) {
+            if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                Rex::Logger::debug("Disconnecting from $server");
                $ssh->disconnect();
             }

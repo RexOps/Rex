@@ -55,6 +55,9 @@ sub run {
       no_client_stdout     => 1,
       proto                => 'tcp',
       serialize            => 'flock',
+
+      pid_file             => $self->{'config'}->{'pid_file'}           || 'master.pid',
+      background           => $self->{'config'}->{'background'}         || 0,
    );
 
 }

@@ -7,7 +7,9 @@ rex (0.5.99.0) unstable; urgency=low
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sun, 29 May 2011 19:00:00 +0200
 rex (0.5.1) unstable; urgency=low
+  * fixed chdir command
   * fixed typo in documentation
+  * documentation updates 
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
 

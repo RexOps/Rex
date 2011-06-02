@@ -8,6 +8,8 @@ lib/Rex/Commands/Download.pm
 lib/Rex/Commands/File.pm
 lib/Rex/Commands/Fs.pm
 lib/Rex/Commands/Gather.pm
+lib/Rex/Commands/Host.pm
+lib/Rex/Commands/Kernel.pm
 lib/Rex/Commands/MD5.pm
 lib/Rex/Commands/Pkg.pm
 lib/Rex/Commands/Rsync.pm
@@ -15,6 +17,7 @@ lib/Rex/Commands/Run.pm
 lib/Rex/Commands/Service.pm
 lib/Rex/Commands/Sysctl.pm
 lib/Rex/Commands/Upload.pm
+lib/Rex/Commands/User.pm
 lib/Rex/Config.pm
 lib/Rex/Fork/Manager.pm
 lib/Rex/Fork/Task.pm

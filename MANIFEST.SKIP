@@ -11,3 +11,9 @@ pm_toblib
 \.tar\.gz
 ^.*-stamp$
 ^doc\/
+.*\.tmp$
+README
+^test.*\..*
+.*\.old$
+^\.DS_*
+\.sh$

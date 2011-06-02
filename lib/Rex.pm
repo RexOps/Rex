@@ -12,7 +12,19 @@ Rex - Remote Execution
 
 (R)?ex is a small script to ease the execution of remote commands. You can write small tasks in a file named I<Rexfile>.
 
-You can find examples and howtos on http://rexify.org/
+You can find examples and howtos on L<http://rexify.org/>
+
+=head1 GETTING HELP
+
+=over 4
+
+=item * Web Site: L<http://rexify.org/>
+
+=item * IRC: irc.freenode.net #rex
+
+=item * Bug Tracker: L<https://rt.cpan.org/Dist/Display.html?Queue=Rex>
+
+=back
 
 =head1 Dependencies
 
@@ -45,6 +57,7 @@ Only if you want to use the DB module.
 
  bash# rex -H "server[01..10]" uname
 
+See L<Rex::Commands> for a list of all commands you can use.
 
 =head1 CLASS METHODS
 

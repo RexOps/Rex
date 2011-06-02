@@ -26,6 +26,38 @@ This module is the core commands module.
  password "password";
  
 
+=head1 COMMANDLIST
+
+=over 4
+
+=item * Database Commands L<Rex::Commands::DB>
+
+=item * SCP Up- and Download L<Rex::Commands::Upload>, L<Rex::Commands::Download>
+
+=item * File Manipulation L<Rex::Commands::File>
+
+=item * Filesystem Manipulation L<Rex::Commands::Fs>
+
+=item * Information Gathering L<Rex::Commands::Gather>
+
+=item * Manipulation of /etc/hosts L<Rex::Commands::Host>
+
+=item * Kernel Commands L<Rex::Commands::Kernel>
+
+=item * Package Commands L<Rex::Commands::Pkg>
+
+=item * Rsync Files L<Rex::Commands::Rsync>
+
+=item * Run Remote Commands L<Rex::Commands::Run>
+
+=item * Manage System Services (sysvinit) L<Rex::Commands::Service>
+
+=item * Sysctl Commands L<Rex::Commands::Sysctl>
+
+=item * Manage user and group accounts L<Rex::Commands::User>
+
+=back
+
 =head1 EXPORTED FUNCTIONS
 
 =over 4

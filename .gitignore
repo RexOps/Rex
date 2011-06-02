@@ -12,3 +12,4 @@ debian/*.log
 *.tmp
 *.old
 *.bak
+README

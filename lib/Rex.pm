@@ -10,12 +10,41 @@ Rex
 
 =head1 DESCRIPTION
 
-This is the main Package.
+(R)?ex is a small script to ease the execution of remote commands. You can write small tasks in a file named I<Rexfile>.
+
+You can find examples and howtos on http://rexify.org/
+
+=head1 Dependencies
+
+=over 4
+
+=item *
+
+L<Net::SSH2>
+
+=item *
+
+L<Expect>
+
+Only if you want to use the Rsync module.
+
+=item *
+
+L<DBI>
+
+Only if you want to use the DB module.
+
+=back
 
 =head1 SYNOPSIS
 
- Rex->is_ssh()
- Rex->get_current_connection()
+ desc "Show Unix version";
+ task "uname", sub {
+     say run "uname -a";
+ };
+
+ bash# rex -H "server[01..10]" uname
+
 
 =head1 CLASS METHODS
 

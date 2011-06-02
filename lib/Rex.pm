@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex
+Rex - Remote Execution
 
 =head1 DESCRIPTION
 

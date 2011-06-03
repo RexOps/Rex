@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Fs
+Rex::Commands::Fs - Transparent Filesystem Manipulation
 
 =head1 DESCRIPTION
 

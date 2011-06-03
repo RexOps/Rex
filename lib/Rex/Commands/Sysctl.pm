@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Sysctl
+Rex::Commands::Sysctl - Manage sysctl
 
 =head1 DESCRIPTION
 

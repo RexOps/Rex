@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Pkg
+Rex::Commands::Pkg - Install Packages and Files
 
 =head1 DESCRIPTION
 

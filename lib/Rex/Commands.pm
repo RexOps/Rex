@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands
+Rex::Commands - All the basic commands
 
 =head1 DESCRIPTION
 

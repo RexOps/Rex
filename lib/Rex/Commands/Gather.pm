@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Gather
+Rex::Commands::Gather - Hardware / Information gathering
 
 =head1 DESCRIPTION
 

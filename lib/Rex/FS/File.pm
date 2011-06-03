@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::FS::File
+Rex::FS::File - File Class
 
 =head1 DESCRIPTION
 

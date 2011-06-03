@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Kernel
+Rex::Commands::Kernel - Manage the kernel
 
 =head1 DESCRIPTION
 

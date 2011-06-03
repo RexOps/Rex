@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Download
+Rex::Commands::Download - Download files via SFTP
 
 =head1 DESCRIPTION
 

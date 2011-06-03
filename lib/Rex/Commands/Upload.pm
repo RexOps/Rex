@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Upload
+Rex::Commands::Upload - Upload files via SFTP
 
 =head1 DESCRIPTION
 

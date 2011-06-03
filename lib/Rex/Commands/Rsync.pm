@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Rsync
+Rex::Commands::Rsync - Sync complete directory structures
 
 =head1 DESCRIPTION
 

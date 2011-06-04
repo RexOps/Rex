@@ -1,23 +1,25 @@
-%{!?perl_sitelib: %define perl_sitelib %(eval "`%{__perl} -V:sitelib`"; echo $sitelib)}
-%{!?perl_sitearch: %define perl_sitearch %(eval "`%{__perl} -V:sitearch`"; echo $sitearch)}
-%{!?perl_archlib: %define perl_archlib %(eval "`%{__perl} -V:archlib`"; echo $archlib)}
+%define perl_vendorlib %(eval "`%{__perl} -V:installvendorlib`"; echo $installvendorlib)
+%define perl_vendorarch %(eval "`%{__perl} -V:installvendorarch`"; echo $installvendorarch)
 
 %define real_name Rex
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.3.1
+Version: 0.5.1
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: https://github.com/downloads/krimdomu/Rex/Rex-0.3.1.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.5.1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
-BuildRequires: perl >= 5.6.0
+BuildRequires: perl >= 5.8.0
 BuildRequires: perl(ExtUtils::MakeMaker)
 Requires: perl-Net-SSH2
+Requires: perl-Expect
+Requires: perl-DBI
 Requires: perl >= 5.8.0
+Requires: rsync
 
 %description
 Rex is a tool to ease the execution of commands on multiple remote 
@@ -27,14 +29,14 @@ your terminal.
 
 %prep
 %setup -n %{real_name}-%{version}
-perl Makefile.PL
 
 %build
-make 
+%{__perl} Makefile.PL INSTALLDIRS="vendor" PREFIX="%{buildroot}%{_prefix}"
+%{__make} %{?_smp_mflags}
 
 %install
 %{__rm} -rf %{buildroot}
-make DESTDIR=%{buildroot} install 
+%{__make} pure_install
 
 ### Clean up buildroot
 find %{buildroot} -name .packlist -exec %{__rm} {} \;
@@ -45,13 +47,17 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %files
 %defattr(-,root,root, 0755)
+%doc META.yml 
+%doc %{_mandir}/*
 %{_bindir}/*
-%{_mandir}/*
-%{perl_sitearch}/*
-%{perl_sitelib}/*
-%{perl_archlib}/*
+%{perl_vendorlib}/*
 
 %changelog
+* Sat Jun 04 2011 Jan Gehring <jan.gehring at, gmail.com> 0.5.1-1
+- fixed chdir command
+- fixed typo in documentation
+- documentation updates
+
 * Thu Mar 31 2011 Jan Gehring <jan.gehring at, gmail.com> 0.3.1-1
 - initial rpm
 

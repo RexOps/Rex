@@ -1,4 +1,5 @@
 rex (0.5.2) unstable; urgency=low
+  * spec file update
   * documentation updates 
 
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 03 Jun 2011 11:00:00 +0200

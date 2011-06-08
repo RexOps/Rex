@@ -346,12 +346,23 @@ Call $task from an other task. Will execute the given $task with the servers def
     say "Running on server2";
  };
 
+You may also use an arrayRef for $task if you want to call multiple tasks.
+
+ do_task [ qw/task1 task2 task3/ ];
+
 =cut
 
 sub do_task {
    my $task = shift;
 
-   return Rex::Task->run($task);
+   if(ref($task) eq "ARRAY") {
+      for my $t (@{$task}) {
+         Rex::Task->run($t);
+      }
+   }
+   else {
+      return Rex::Task->run($task);
+   }
 }
 
 =item public_key($key)
@@ -466,15 +477,27 @@ sub needs {
    my @tasks_to_run = @{"${self}::tasks"};
    use strict;
 
+   # cli parameter auslesen
+   # damit man sie dem task mitgeben kann
+   my @params = @ARGV[1..$#ARGV];
+   my %opts = ();
+   for my $p (@params) {
+      my($key, $val) = split(/=/, $p, 2);
+      $key = substr($key, 2);
+
+      if($val) { $opts{$key} = $val; next; }
+      $opts{$key} = 1;
+   }
+
    for my $task (@tasks_to_run) {
       my $task_name = $task->{"name"};
       if(@args && grep (/^$task_name$/, @args)) {
          Rex::Logger::debug("Calling " . $task->{"name"});
-         &{ $task->{"code"} };
+         &{ $task->{"code"} }(\%opts);
       }
       elsif(! @args) {
          Rex::Logger::debug("Calling " . $task->{"name"});
-         &{ $task->{"code"} };
+         &{ $task->{"code"} }(\%opts);
       }
    }
 

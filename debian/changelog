@@ -1,5 +1,9 @@
 rex (0.5.99.0) unstable; urgency=low
   * extended download function to work with urls (http, ftp)
+  * fixed bug in syntax check
+  * add console parameters to needs calls as default
+  * do_task now accepts an arrayRef to call multiple tasks at once
+  * check if package is installed, before the installation
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
 

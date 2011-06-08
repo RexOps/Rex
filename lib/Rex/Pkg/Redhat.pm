@@ -40,6 +40,11 @@ sub is_installed {
 sub install {
    my ($self, $pkg, $option) = @_;
 
+   if($self->is_installed($pkg) && ! $option->{"version"}) {
+      Rex::Logger::info("$pkg is already installed");
+      return 1;
+   }
+
    my $version = $option->{"version"} || "";
 
    Rex::Logger::debug("Installing $pkg / $version");

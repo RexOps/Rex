@@ -158,7 +158,7 @@ elsif(-f $::rexfile) {
    }
    
    Rex::Logger::debug("Checking Rexfile Syntax...");
-   system("$^X -MRex::Commands -c $::rexfile");
+   system("$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -c $::rexfile");
    if($? != 0) {
       exit 1;
    }

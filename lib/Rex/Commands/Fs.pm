@@ -487,7 +487,7 @@ This function will change the current workdirectory to $newdir. This function cu
 
 sub chdir {
    Rex::Logger::info("chdir behaviour will be changed in the future.");
-   CORE::chdir(@_);
+   CORE::chdir($_[0]);
 }
 
 =back

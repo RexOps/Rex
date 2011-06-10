@@ -12,6 +12,22 @@ use warnings;
 use Net::Server::Daemonize qw(daemonize);
 use LWP::UserAgent;
 
+use Rex;
+use Rex::Config;
+use Rex::Group;
+use Rex::Batch;
+use Rex::Task;
+use Rex::Commands;
+
+# preload some modules
+use Rex::Commands::Run;
+use Rex::Commands::Fs;
+use Rex::Commands::File;
+use Rex::Commands::Download;
+use Rex::Commands::Upload;
+
+use Cwd qw(getcwd);
+
 use vars qw($config);
 
 sub run {
@@ -33,6 +49,48 @@ sub run {
    while(1) {
 
       get_files();
+
+
+      RUN: {
+
+         chdir("/tmp");
+         $::rexfile = "Rexfile";
+
+         system("pwd");
+
+         if(-f "$::rexfile.lock") {
+            Rex::Logger::debug("Found $::rexfile.lock");
+            my $pid = eval { local(@ARGV, $/) = ("$::rexfile.lock"); <>; };
+            system("ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
+            if($? == 0) {
+               Rex::Logger::info("Rexfile is in use by $pid.");
+               CORE::exit 1;
+            } else
+            {
+               Rex::Logger::info("Found stale lock file. Removing it.");
+               unlink("$::rexfile.lock");
+            }
+         }
+         
+         Rex::Logger::debug("Checking Rexfile Syntax...");
+         system("$^X -MRex::Commands -c $::rexfile");
+         if($? != 0) {
+            exit 1;
+         }
+
+         Rex::Logger::debug("Creating lock-file ($::rexfile.lock)");
+         open(my $f, ">$::rexfile.lock") or die($!);
+         print $f $$; 
+         close($f);
+
+         Rex::Logger::debug("Including/Parsing $::rexfile");
+         eval {
+            do($::rexfile);
+         };
+
+         if($@) { print $@ . "\n"; exit 1; }
+
+      }
 
       Rex::Logger::debug('Sleeping for ' . $config->{'interval'} . ' seconds.');
       sleep $config->{'interval'};

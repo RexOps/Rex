@@ -178,7 +178,7 @@ sub file_read {
 
 This function returns the complete content of $file_name as a string.
 
- say cat "/etc/passwd";
+ print cat "/etc/passwd";
 
 =cut
 

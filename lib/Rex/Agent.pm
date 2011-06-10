@@ -30,6 +30,22 @@ use Rex::Commands::Upload;
 
 use Cwd qw(getcwd);
 
+use Rex;
+use Rex::Config;
+use Rex::Group;
+use Rex::Batch;
+use Rex::Task;
+use Rex::Commands;
+
+# preload some modules
+use Rex::Commands::Run;
+use Rex::Commands::Fs;
+use Rex::Commands::File;
+use Rex::Commands::Download;
+use Rex::Commands::Upload;
+
+use Cwd qw(getcwd);
+
 use vars qw($config);
 
 sub run {
@@ -49,7 +65,6 @@ sub run {
    }
 
    while(1) {
-
 
       my $pid = fork();
       if(not defined $pid) {

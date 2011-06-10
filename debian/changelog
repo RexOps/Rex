@@ -4,6 +4,7 @@ rex (0.5.99.0) unstable; urgency=low
   * add console parameters to needs calls as default
   * do_task now accepts an arrayRef to call multiple tasks at once
   * check if package is installed, before the installation
+  * added tail function
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
 

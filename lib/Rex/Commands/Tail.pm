@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Tail
+Rex::Commands::Tail - Tail a file
 
 =head1 DESCRIPTION
 

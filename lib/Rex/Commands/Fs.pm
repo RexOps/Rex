@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Fs
+Rex::Commands::Fs - Filesystem commands
 
 =head1 DESCRIPTION
 

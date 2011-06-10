@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::DB
+Rex::Commands::DB - Simple Database Access
 
 =head1 DESCRIPTION
 

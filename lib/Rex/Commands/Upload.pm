@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Upload
+Rex::Commands::Upload - Upload a local file to a remote server
 
 =head1 DESCRIPTION
 

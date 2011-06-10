@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::File
+Rex::Commands::File - Work with files
 
 =head1 DESCRIPTION
 

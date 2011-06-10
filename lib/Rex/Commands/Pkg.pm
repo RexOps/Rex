@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Pkg
+Rex::Commands::Pkg - Install/Remove Software packages
 
 =head1 DESCRIPTION
 

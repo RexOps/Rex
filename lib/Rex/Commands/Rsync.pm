@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Rsync
+Rex::Commands::Rsync - Simple Rsync Frontend
 
 =head1 DESCRIPTION
 

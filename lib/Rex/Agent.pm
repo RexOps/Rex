@@ -32,7 +32,7 @@ use Cwd qw(getcwd);
 
 use vars qw($config);
 
-sub run {
+sub run_now {
    my $class = shift;
    $config = { @_ };
 

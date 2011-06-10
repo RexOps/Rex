@@ -37,7 +37,7 @@ sub info {
       print {$log_fh} "[" . get_timestamp() . "] $msg\n" if($log_fh);
    }
 
-   print STDERR "[" . get_timestamp() . "] - INFO - $msg\n";
+   print STDERR "[" . get_timestamp() . "] - INFO - $msg\n" unless($::QUIET);
 }
 
 sub debug {
@@ -51,7 +51,7 @@ sub debug {
       print {$log_fh} "[" . get_timestamp() . "] DEBUG - $msg\n" if($log_fh);
    }
    
-   print STDERR "[" . get_timestamp() . "] DEBUG - $msg\n";
+   print STDERR "[" . get_timestamp() . "] DEBUG - $msg\n" unless($::QUIET);
 }
 
 sub get_timestamp {

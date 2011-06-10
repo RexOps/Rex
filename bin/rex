@@ -36,7 +36,7 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('FThvdf:M:b:e:H:u:p:P:K:', \%opts);
+getopts('qFThvdf:M:b:e:H:u:p:P:K:', \%opts);
 
 $Rex::Logger::debug = $opts{'d'};
 
@@ -61,11 +61,16 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
    printf "  %-15s %s\n", "-d", "Debug";
+   printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
    print "\n";
    CORE::exit 0;
 } elsif($opts{'v'}) {
    print "(R)?ex " . $Rex::VERSION . "\n";
    CORE::exit 0;
+}
+
+if($opts{'q'}) {
+   $::QUIET = 1;
 }
 
 $::rexfile = "Rexfile";
@@ -158,7 +163,11 @@ elsif(-f $::rexfile) {
    }
    
    Rex::Logger::debug("Checking Rexfile Syntax...");
-   system("$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -c $::rexfile");
+   my $out = qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -c $::rexfile 2>&1};
+   if($? > 0) {
+      print $out;
+   }
+
    if($? != 0) {
       exit 1;
    }

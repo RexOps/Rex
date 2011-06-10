@@ -14,7 +14,7 @@ require Exporter;
 use base qw(Exporter);
 
 use vars qw(@EXPORT);
-@EXPORT = qw(net_ssh2_exec);
+@EXPORT = qw(net_ssh2_exec net_ssh2_exec_output);
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
@@ -37,6 +37,36 @@ sub net_ssh2_exec {
    $? = $chan->exit_status;
 
    return $in;
+}
+
+sub net_ssh2_exec_output {
+   my ($ssh, $cmd, $callback) = @_;
+
+   my $chan = $ssh->channel;
+   $chan->blocking(1);
+
+   $chan->exec($cmd);
+
+   my $in;
+   while(1) {
+      my $buf;
+      $chan->read($buf, 15);
+
+      if($callback) {
+         &$callback($buf);
+      } 
+      else {
+         print $buf;
+      }
+
+      last unless $buf;
+   }
+
+   $chan->close;
+   $? = $chan->exit_status;
+
+   return $in;
+
 }
 
 

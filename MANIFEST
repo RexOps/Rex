@@ -1,6 +1,9 @@
 bin/rex
+bin/rex-agent
+bin/rex-master
 bin/rexify
 lib/Rex.pm
+lib/Rex/Agent.pm
 lib/Rex/Batch.pm
 lib/Rex/Commands.pm
 lib/Rex/Commands/DB.pm
@@ -16,6 +19,7 @@ lib/Rex/Commands/Rsync.pm
 lib/Rex/Commands/Run.pm
 lib/Rex/Commands/Service.pm
 lib/Rex/Commands/Sysctl.pm
+lib/Rex/Commands/Tail.pm
 lib/Rex/Commands/Upload.pm
 lib/Rex/Commands/User.pm
 lib/Rex/Config.pm
@@ -31,6 +35,9 @@ lib/Rex/Hardware/Network.pm
 lib/Rex/Hardware/Swap.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Logger.pm
+lib/Rex/Master.pm
+lib/Rex/Master/FileList.pm
+lib/Rex/Master/FileTransfer.pm
 lib/Rex/Pkg.pm
 lib/Rex/Pkg/Debian.pm
 lib/Rex/Pkg/Redhat.pm
@@ -43,4 +50,5 @@ lib/Rex/Task.pm
 lib/Rex/Template.pm
 Makefile.PL
 t/01.t
+t/host.t
 t/needs.t

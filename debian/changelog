@@ -1,4 +1,4 @@
-rex (0.5.99.0) unstable; urgency=low
+rex (0.6.0) unstable; urgency=low
   * extended download function to work with urls (http, ftp)
   * fixed bug in syntax check
   * add console parameters to needs calls as default
@@ -7,8 +7,9 @@ rex (0.5.99.0) unstable; urgency=low
   * added tail function
   * added cat function
   * added -q cli parameter. for no debugging output at all.
+  * added rex-master and rex-agent
 
- -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 10 Jun 2011 22:00:00 +0200
 
 rex (0.5.1) unstable; urgency=low
   * fixed chdir command

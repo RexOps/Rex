@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Run - Run commands, remote or local
+Rex::Commands::Run - Execute a remote command
 
 =head1 DESCRIPTION
 

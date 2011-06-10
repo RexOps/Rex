@@ -90,6 +90,27 @@ sub write {
    }
 }
 
+=item seek($offset)
+
+Seek to the file position $offset.
+
+Set the file pointer to the 5th byte.
+
+ $file->seek(5);
+
+=cut
+sub seek {
+   my ($self, $offset) = @_;
+
+   my $fh = $self->{'fh'};
+
+   if(ref($fh) eq 'Net::SSH2::File') {
+      $fh->seek($offset);
+   } else {
+      seek($fh, $offset, 0);
+   }
+}
+
 =item read($len)
 
 Read $len bytes out of the filehandle.

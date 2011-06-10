@@ -11,6 +11,7 @@ use warnings;
 use Net::SSH2;
 use Rex::Group;
 use Rex::Fork::Manager;
+use Sys::Hostname;
 
 use vars qw(%tasks);
 
@@ -78,6 +79,22 @@ sub get_tasks {
    return sort { $a cmp $b } keys %tasks;
 }
 
+sub get_tasks_for {
+   my $class = shift;
+   my $host = shift;
+
+   my @tasks;
+   for my $task_name (keys %tasks) {
+      my @servers = @{$tasks{$task_name}->{"server"}};
+
+      if(grep { /^$host$/ } @servers) {
+         push @tasks, $task_name;
+      }
+   }
+
+   return sort { $a cmp $b } @tasks;
+}
+
 sub get_desc {
    my $class = shift;
    my $task = shift;
@@ -96,11 +113,16 @@ sub is_task {
 sub run {
    my $class = shift;
    my $task = shift;
+   my $server_overwrite = shift;
    my $ret;
 
    Rex::Logger::info("Running task: $task");
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;
+   
+   if($server_overwrite) {
+      @server = ($server_overwrite);
+   }
 
    my($user, $pass, $pass_auth);
    if(ref($server[-1]) eq "HASH") {
@@ -129,6 +151,11 @@ sub run {
       $opts{$key} = 1;
    }
 
+   my $hostname = hostname();
+   my ($shortname) = ($hostname =~ m/^([^\.]+)\.?/);
+   Rex::Logger::debug("My Hostname: " . $hostname);
+   Rex::Logger::debug("My Shortname: " . $shortname);
+
    if(scalar(@server) > 0) {
 
       my @children;
@@ -136,10 +163,11 @@ sub run {
       my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
 
       for my $server (@server) {
+         Rex::Logger::debug("Next Server: $server");
          $fm->add(sub {
             my $ssh;
 
-            if(! $tasks{$task}->{"no_ssh"}) {
+            if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                $ssh = Net::SSH2->new;
 
                # push a remote connection
@@ -177,7 +205,7 @@ sub run {
 
             $ret = _exec($task, \%opts);
 
-            if(! $tasks{$task}->{"no_ssh"}) {
+            if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                Rex::Logger::debug("Disconnecting from $server");
                $ssh->disconnect();
             }

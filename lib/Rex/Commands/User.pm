@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::User - Manage user and group accounts
+Rex::Commands::User - Manipulate users and groups
 
 =head1 DESCRIPTION
 

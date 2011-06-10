@@ -16,9 +16,16 @@ With this module you can manipulate files.
 
  task "read-passwd", "server01", sub {
     my $fh = file_read "/etc/passwd";
-    say $fh->read_all;
+    for my $line = ($fh->read_all) {
+       print $line;
+    }
     $fh->close;
  };
+
+ task "read-passwd2", "server01", sub {
+    say cat "/etc/passwd";
+ };
+ 
  
  task "write-passwd", "server01", sub {
     my $fh = file_write "/etc/passwd";
@@ -46,7 +53,7 @@ use Rex::Commands::Fs;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(file_write file_close file_read file_append);
+@EXPORT = qw(file_write file_close file_read file_append cat);
 
 use vars qw(%file_handles);
 
@@ -166,6 +173,26 @@ sub file_read {
 
    return Rex::FS::File->new(fh => $fh);
 }
+
+=item cat($file_name)
+
+This function returns the complete content of $file_name as a string.
+
+ print cat "/etc/passwd";
+
+=cut
+
+sub cat {
+   my ($file) = @_;
+
+   my $fh = file_read($file);
+   my $content = $fh->read_all;
+   $fh->close;
+
+   return $content;
+}
+
+
 
 =back
 

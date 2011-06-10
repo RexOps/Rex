@@ -6,20 +6,22 @@
 
 =head1 NAME
 
-Rex::Commands::Download - Download files via SFTP
+Rex::Commands::Download - Download remote files
 
 =head1 DESCRIPTION
 
-With this module you can download a remotefile via sftp from a host to your local computer.
+With this module you can download a remotefile via sftp, http and ftp from a host to your local computer.
 
 =head1 SYNOPSIS
 
+ # sftp
  task "download", "remoteserver", sub {
     download "/remote/file", "localfile";
  };
  
- task "download2", "remoteserver", sub {
-    download "/remote/file";
+ # http
+ task "download2", sub {
+    download "http://server/remote/file";
  };
 
 
@@ -33,6 +35,25 @@ package Rex::Commands::Download;
 
 use strict;
 use warnings;
+
+use vars qw($has_wget $has_curl $has_lwp);
+
+# check which download type we should use
+BEGIN {
+
+   system("which wget >/dev/null 2>&1");
+   $has_wget = !$?;
+
+   system("which curl >/dev/null 2>&1");
+   $has_curl = !$?;
+
+   eval {
+      require LWP::Simple;
+      LWP::Simple->import;
+      $has_lwp = 1;
+   };
+
+};
 
 require Exporter;
 
@@ -52,15 +73,33 @@ Perform a download. If no local file is specified it will download the file to t
     download "/remote/file", "localfile";
  };
 
+ task "download", sub {
+    download "http://www.rexify.org/index.html", "localfile.html";
+ };
+
 =cut
 
 sub download {
    my $remote = shift;
    my $local = shift;
 
+   if($remote =~ m/^(https?|ftp):\/\//) {
+      _http_download($remote, $local);
+   }
+   else {
+      _sftp_download($remote, $local);
+   }
+}
+
+sub _sftp_download {
+   my $remote = shift;
+   my $local = shift;
+
+   Rex::Logger::debug("Downloading via SFTP");
    unless($local) {
       $local = basename($remote);
    }
+   Rex::Logger::debug("saving file to $local");
 
    unless(is_file($remote)) {
       Rex::Logger::info("File $remote not found");
@@ -76,15 +115,53 @@ sub download {
       if(-d $local) {
          $local = $local . '/' . basename($remote);
       }
-      Rex::Logger::info("Downloading $remote -> $local");
+      Rex::Logger::debug("Downloading $remote -> $local");
 
       $ssh->scp_get($remote, $local);
    } else {
-      Rex::Logger::info("Copying $remote -> $local");
+      Rex::Logger::debug("Copying $remote -> $local");
       system("cp $remote $local");
    }
+
 }
 
+sub _http_download {
+   my ($remote, $local) = @_;
+
+   unless($local) {
+      $local = basename($remote);
+   }
+   Rex::Logger::debug("saving file to $local");
+
+   my $content = _get_http($remote);
+   open(my $fh, ">", $local) or die($!);
+   binmode $fh;
+   print $fh $content;
+   close($fh);
+}
+
+sub _get_http {
+   my ($url) = @_;
+
+   my $html;
+   if($has_curl) {
+      Rex::Logger::debug("Downloading via curl");
+      $html = qx{curl -# -L '$url' 2>/dev/null};
+   }
+   elsif($has_wget) {
+      Rex::Logger::debug("Downloading via wget");
+      $html = qx{wget --no-check-certificate -O - '$url' 2>/dev/null};
+   }
+   elsif($has_lwp) {
+      Rex::Logger::debug("Downloading via LWP::Simple");
+      $html = get($url);
+   }
+   else {
+      die("No tool found to download something. (curl, wget, LWP::Simple)");
+   }
+
+   return $html;
+}
 
 =back
 

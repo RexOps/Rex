@@ -22,6 +22,12 @@ L<DBI>
 
 Only if you want to use the DB module.
 
+=item *
+
+L<Net::Server>
+
+If you want to run (R)?ex in Master/Agent mode.
+
 =back
 
 =head2 Usage
@@ -30,24 +36,24 @@ A small example:
 
 =head3 Rexfile
 
-    user "root";
-    password "root";
-    pass_auth;
+ user "root";
+ password "root";
+ pass_auth;
 
-    group "frontend" => "frontend[01..09]", "varnish[01..04]";
+ group "frontend" => "frontend[01..09]", "varnish[01..04]";
 
-    
-    desc "Show Unix version";
-    task "uname", "server[1..9]", sub {
-        say run "uname -a";
-    };
+ 
+ desc "Show Unix version";
+ task "uname", "server[1..9]", sub {
+     say run "uname -a";
+ };
 
-    desc "Write into a file";
-    task "write", group => "frontend", sub {
-        my $file = file_write '/tmp/status.out';
-        $file->write("File created\n");
-        $file->close;
-    };
+ desc "Write into a file";
+ task "write", group => "frontend", sub {
+     my $file = file_write '/tmp/status.out';
+     $file->write("File created\n");
+     $file->close;
+ };
 
 =head3 Commandline
 
@@ -57,28 +63,113 @@ A small example:
 
 Run commands directly from command line
 
-    bash# rex -e 'say run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
+ bash# rex -e 'say run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
 
 =item *
 
 List all known Tasks
 
-    bash# rex -T
-    Tasks
-      uname                     Show Unix version
+ bash# rex -T
+ Tasks
+   uname                     Show Unix version
 
 =item *
 
 Run Task I<uname>
 
-    bash# rex uname
-    Running task: uname
-    Connecting to server1 (root)
-    Linux mango 2.6.27-openvz-briullov.1-r4 #1 SMP Tue Nov 24 23:25:52 CET 2009 x86_64 Intel(R) Pentium(R) D CPU 2.80GHz GenuineIntel GNU/Linux
-    Running task: uname
-    Connecting to server2 (root)
-    Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
+ bash# rex uname
+ Running task: uname
+ Connecting to server1 (root)
+ Linux mango 2.6.27-openvz-briullov.1-r4 #1 SMP Tue Nov 24 23:25:52 CET 2009 x86_64 Intel(R) Pentium(R) D CPU 2.80GHz GenuineIntel GNU/Linux
+ Running task: uname
+ Connecting to server2 (root)
+ Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
 
 =back
+
+=head3 Master/Agent
+
+Create a new project on the master
+
+ rexify myproject
+ cd myproject
+
+Edit the I<Rexfile>.
+
+ use lib 'lib';
+ use Rex::myproject;
+
+ # put your server in this group
+ group "fe" => "fe[01..05]";
+ group "mw" => "mw[01..04]";
+
+ desc "Deploy Frontend Server";
+ task "deploy-fe", group => 'fe', sub {
+
+   needs Rex::myproject 'fe';
+
+ };
+
+ desc "Deploy Middleware Server";
+ task "deploy-mw", group => 'mw', sub {
+
+   needs Rex::myproject 'mw';
+
+ };
+ 
+Edit the file I<lib/Rex/myproject.pm>
+
+ package Rex::myproject 
+
+ use Rex::Commands;
+ use Rex::Commands::Run;
+ use Rex::Commands::Pkg;
+
+ task "fe", sub {
+ 
+    install package => [
+          'apache2',
+          'php5'
+       ];
+
+ };
+
+ task 'mw', sub {
+ 
+    install package => [
+          'tomcat6',
+          'apache2',
+          'libapache-mod_jk'
+       ];
+ 
+ };
+
+ 1;
+
+Now start the rex-master server. The server will bind on any device and port 7345 (tcp)
+
+ # debug mode (foreground)
+ rex-master -d
+
+ # daemon mode (background)
+ rex-master -b
+
+ # see all the options with rex-master --help
+
+
+And start the agents on your servers.
+
+ # see all the options with rex-agent --help
+
+ # debug mode (foreground)
+ # this will start the agent with:
+ #        -s your-rex-server = the master server
+ #        -i 5               = 5 seconds interval
+ #        -f                 = foreground
+ #        -d                 = debug mode
+ #        -c                 = cache dir (this directory must be writable)
+ rex-agent -s your-rex-server -i 5 -f -d -c /tmp/cache
+
+Please test and reports bugs :) Any kind of feedback is welcome.
 
 =cut

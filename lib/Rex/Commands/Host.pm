@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Host - Manipulate /etc/hosts entries
+Rex::Commands::Host - Edit /etc/hosts
 
 =head1 DESCRIPTION
 

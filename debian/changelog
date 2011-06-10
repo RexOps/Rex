@@ -1,11 +1,14 @@
 rex (0.5.99.0) unstable; urgency=low
-  * added rex-agent
-  * added rex-master
-  * added exclude parameter to sync function
-  * fixed chdir command
-  * version update
+  * extended download function to work with urls (http, ftp)
+  * fixed bug in syntax check
+  * add console parameters to needs calls as default
+  * do_task now accepts an arrayRef to call multiple tasks at once
+  * check if package is installed, before the installation
+  * added tail function
+  * added cat function
+  * added -q cli parameter. for no debugging output at all.
 
- -- Jan Gehring <jan.gehring@gmail.com>  Sun, 29 May 2011 19:00:00 +0200
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
 
 rex (0.5.1) unstable; urgency=low
   * fixed chdir command

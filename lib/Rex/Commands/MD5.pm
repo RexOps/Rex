@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::MD5
+Rex::Commands::MD5 - Calculate MD5 sum of files
 
 =head1 DESCRIPTION
 

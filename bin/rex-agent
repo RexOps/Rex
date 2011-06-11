@@ -14,7 +14,7 @@ $|++;
 
 my %opts;
 
-getopts('fvhdp:s:u:g:P:i:t:c:', \%opts);
+getopts('rfvhdp:s:u:g:P:i:t:c:', \%opts);
 
 $Rex::Logger::debug = $opts{'d'};
 
@@ -29,6 +29,7 @@ for my $param (keys %opts) {
 
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution (Agent)\n";
+   printf "  %-15s %s\n", "-r", "Run it. This is alpha code. Don't use it unless you want to test it. But be warned, it may crash everything.";
    printf "  %-15s %s\n", "-l", "Set Logfilename";
    printf "  %-15s %s\n", "-s server", "(R)?ex Master Server (default: rex)";
    printf "  %-15s %s\n", "-p port", "(R)?ex Master Server Port (default: 7345)";
@@ -48,7 +49,12 @@ if($opts{'h'}) {
    CORE::exit 0;
 }
 
-Rex::Agent->run(
+if(!$opts{'r'}) {
+   print "This is alpha code. Don't use it unless you want to test it. But be warned, it may crash everything.\n";
+   CORE::exit 1;
+}
+
+Rex::Agent->run_now(
    user => $opts{'u'}     || 'root',
    group => $opts{'g'}    || 'root',
    pid_file => $opts{'P'} || '/var/run/rex-agent.pid',

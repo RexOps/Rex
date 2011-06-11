@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Hardware
+Rex::Hardware - Base Class for hardware / information gathering
 
 =head1 DESCRIPTION
 

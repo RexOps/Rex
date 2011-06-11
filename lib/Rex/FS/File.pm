@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::FS::File
+Rex::FS::File - File Class
 
 =head1 DESCRIPTION
 
@@ -87,6 +87,27 @@ sub write {
       else {
          print $fh $buf[0];
       }
+   }
+}
+
+=item seek($offset)
+
+Seek to the file position $offset.
+
+Set the file pointer to the 5th byte.
+
+ $file->seek(5);
+
+=cut
+sub seek {
+   my ($self, $offset) = @_;
+
+   my $fh = $self->{'fh'};
+
+   if(ref($fh) eq 'Net::SSH2::File') {
+      $fh->seek($offset);
+   } else {
+      seek($fh, $offset, 0);
    }
 }
 

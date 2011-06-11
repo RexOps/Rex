@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::File
+Rex::Commands::File - Transparent File Manipulation
 
 =head1 DESCRIPTION
 

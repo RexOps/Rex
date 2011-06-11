@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Service
+Rex::Commands::Service - Manage System Services
 
 =head1 DESCRIPTION
 

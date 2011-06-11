@@ -14,7 +14,7 @@ $|++;
 
 my %opts;
 
-getopts('vbhdP:l:p:i:', \%opts);
+getopts('rvbhdP:l:p:i:', \%opts);
 
 $Rex::Logger::debug = $opts{'d'};
 
@@ -27,8 +27,10 @@ for my $param (keys %opts) {
    Rex::Logger::debug("\t$param = " . $opts{$param});
 }
 
+
 if($opts{'h'}) {
    print "(R)?ex - (Remote)? Execution (Master)\n";
+   printf "  %-15s %s\n", "-r", "Run it. This is alpha code. Don't use it unless you want to test it. But be warned, it may crash everything.";
    printf "  %-15s %s\n", "-l", "Set Logfilename";
    printf "  %-15s %s\n", "-i ip", "IP to listen on";
    printf "  %-15s %s\n", "-p port", "Set listen port";
@@ -41,6 +43,11 @@ if($opts{'h'}) {
 } elsif($opts{'v'}) {
    print "(R)?ex (Master) " . $Rex::VERSION . "\n";
    CORE::exit 0;
+}
+
+if(!$opts{'r'}) {
+   print "This is alpha code. Don't use it unless you want to test it. But be warned, it may crash everything.\n";
+   CORE::exit 1;
 }
 
 my %config = (

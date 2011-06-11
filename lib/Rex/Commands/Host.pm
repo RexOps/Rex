@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Host
+Rex::Commands::Host - Edit /etc/hosts
 
 =head1 DESCRIPTION
 

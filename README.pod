@@ -89,6 +89,8 @@ Run Task I<uname>
 
 =head3 Master/Agent
 
+See https://github.com/krimdomu/Rex-Server for more information.
+
 Create a new project on the master
 
  rexify myproject

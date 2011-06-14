@@ -1,4 +1,4 @@
-#!/opt/local/bin/perl -w
+#!perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -25,6 +25,12 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Commands::Upload;
+use Rex::Commands::Gather;
+use Rex::Commands::Kernel;
+use Rex::Commands::Pkg;
+use Rex::Commands::Service;
+use Rex::Commands::Sysctl;
+use Rex::Commands::Tail;
 
 use Getopt::Std;
 
@@ -163,7 +169,7 @@ elsif(-f $::rexfile) {
    }
    
    Rex::Logger::debug("Checking Rexfile Syntax...");
-   my $out = qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -c $::rexfile 2>&1};
+   my $out = qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -c $::rexfile 2>&1};
    if($? > 0) {
       print $out;
    }

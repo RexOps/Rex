@@ -53,7 +53,7 @@ This function executes rsync to sync $source and $dest.
 
 =over 4
 
-=item UPLOAD - sync remote directory I</var/www/html> on server01 with the local directory I<html>.
+=item UPLOAD - Will upload all from the local directory I<html> to the remote directory I</var/www/html>.
 
  task "sync", "server01", sub {
     sync "html/*", "/var/www/html", {
@@ -61,7 +61,7 @@ This function executes rsync to sync $source and $dest.
     };
  };
 
-=item DOWNLOAD - sync local directory I<html> with the remote directory I</var/www/html> from server01.
+=item DOWNLOAD - Will download all from the remote directory I</var/www/html> to the local directory I<html>.
 
  task "sync", "server01", sub {
     sync "/var/www/html/*", "html/", { download => 1 };

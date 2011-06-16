@@ -98,7 +98,7 @@ Return an HashRef of all memory information.
 
  task "get_memory_information", "server01", sub {
     my $memory = memory();
-
+     
     say "Total:   " . $memory->{"total"};
     say "Free:    " . $memory->{"free"};
     say "Used:    " . $memory->{"used"};

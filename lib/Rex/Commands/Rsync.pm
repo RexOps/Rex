@@ -64,7 +64,7 @@ This function executes rsync to sync $source and $dest.
 =item DOWNLOAD - sync local directory I<html> with the remote directory I</var/www/html> from server01.
 
  task "sync", "server01", sub {
-    sync "html/*", "/var/www/html", { download => 1 };
+    sync "/var/www/html/*", "html/", { download => 1 };
  };
 
 =back

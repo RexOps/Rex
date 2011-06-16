@@ -2,6 +2,7 @@ rex (0.6.1) unstable; urgency=low
   * fixed documentation bugs (thanks to djill)
   * fixed #68827, rewrote is_readable/is_writable
   * handle auth failure correctly
+  * mkdir now created directories recursive
 
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 10 Jun 2011 22:00:00 +0200
 

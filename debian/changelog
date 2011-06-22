@@ -1,5 +1,8 @@
 rex (0.7.0) unstable; urgency=low
   * preload a lot more default modules
+  * added new functions (df, du, cp)
+  * added some aliases (ln, cp, cd, ls)
+  * added process management functions (kill, killall, nice, ps)
 
 rex (0.6.1) unstable; urgency=low
   * fixed documentation bugs (thanks to djill)

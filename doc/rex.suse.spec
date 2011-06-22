@@ -53,6 +53,13 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Wed Jun 23 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.0-1
+- preload a lot more default modules
+- added new functions (df, du, cp)
+- added some aliases (ln, cp, cd, ls)
+- added process management functions (kill, killall, nice, ps)
+
 * Sun Jun 19 2011 Jan Gehring <jan.gehring at, gmail.com> 0.6.1-1
 - fixed documentation bugs (thanks to djill)
 - fixed #68827, rewrote is_readable/is_writable

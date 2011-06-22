@@ -58,9 +58,10 @@ use Rex::Commands::Run;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(list_files 
-            unlink rmdir mkdir stat readlink symlink rename chdir
-            is_file is_dir is_readable is_writeable is_writable);
+@EXPORT = qw(list_files ls
+            unlink rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
+            is_file is_dir is_readable is_writeable is_writable
+            df du);
 
 use vars qw(%file_handles);
 
@@ -103,6 +104,16 @@ sub list_files {
    return @ret;
 }
 
+=item ls($path)
+
+Just an alias for I<list_files>
+
+=cut
+
+sub ls {
+   return list_files(@_);
+}
+
 =item symlink($from, $to)
 
 This function will create a symlink from $from to $to.
@@ -125,6 +136,16 @@ sub symlink {
    }
 
    return 0;
+}
+
+=item ln($from, $to)
+
+ln is an alias for I<symlink>
+
+=cut
+
+sub ln {
+   sysmlink(@_);
 }
 
 =item unlink($file)
@@ -483,6 +504,16 @@ sub rename {
    return $ret;
 }
 
+=item mv($old, $new)
+
+mv is an alias for I<rename>.
+
+=cut
+
+sub mv {
+   return rename(@_);
+}
+
 =item chdir($newdir)
 
 This function will change the current workdirectory to $newdir. This function currently only works local.
@@ -496,6 +527,92 @@ This function will change the current workdirectory to $newdir. This function cu
 sub chdir {
    Rex::Logger::info("chdir behaviour will be changed in the future.");
    CORE::chdir($_[0]);
+}
+
+=item cd($newdir)
+
+This is an alias of I<chdir>.
+
+=cut
+
+sub cd {
+   chdir($_[0]);
+}
+
+=item df([$device])
+
+This function returns a hashRef reflecting the output of I<df>
+
+ task "df", "server01", sub {
+     my $df = df();
+     my $df_on_sda1 = df("/dev/sda1");
+ };
+
+
+=cut
+
+sub df {
+   my ($dev) = @_;
+
+   my $ret = {};
+
+   $dev ||= "";
+
+   my @lines = run "df $dev";
+   shift @lines;
+
+   for my $line (@lines) {
+      my ($fs, $size, $used, $free, $use_per, $mounted_on) = split(/\s+/, $line, 6);
+
+      $ret->{$fs} = {
+         size => $size,
+         used => $used,
+         free => $free,
+         used_perc => $use_per,
+         mounted_on => $mounted_on
+      };
+   }
+
+   if($dev) {
+      return $ret->{$dev};
+   }
+
+   return $ret;
+}
+
+=item du($path)
+
+Returns the disk usage of $path.
+
+ task "du", "server01", sub {
+    say "size of /var/www: " . du("/var/www");
+ };
+
+=cut
+
+sub du {
+   my ($path) = @_;
+
+   my @lines = run "du -s $path";
+   my ($du) = ($lines[0] =~ m/^(\d+)/);
+
+   return $du;
+}
+
+=item cp($source, $destination)
+
+cp will copy $source to $destination (it is recursive)
+
+ task "cp", "server01", sub {
+     cp("/var/www", "/var/www.old");
+ };
+
+=cut
+
+sub cp {
+   my ($source, $dest) = @_;
+
+   run "cp -a $source $dest";
 }
 
 =back

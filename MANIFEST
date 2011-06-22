@@ -53,3 +53,5 @@ Makefile.PL
 t/01.t
 t/host.t
 t/needs.t
+ChangeLog
+README

@@ -232,6 +232,11 @@ Rex::Logger::init;
 if($opts{'T'}) {
    Rex::Logger::debug("Listing Tasks and Batches");
    print "Tasks\n";
+   my @tasks = Rex::Task->get_tasks;
+   unless(@tasks) {
+      print "   no tasks defined.\n";
+      exit;
+   }
    for my $task (Rex::Task->get_tasks) {
       printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
    }

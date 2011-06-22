@@ -3,6 +3,7 @@ rex (0.7.0) unstable; urgency=low
   * added new functions (df, du, cp)
   * added some aliases (ln, cp, cd, ls)
   * added process management functions (kill, killall, nice, ps)
+  * splitted out rex-agent and rex-master.
 
 rex (0.6.1) unstable; urgency=low
   * fixed documentation bugs (thanks to djill)

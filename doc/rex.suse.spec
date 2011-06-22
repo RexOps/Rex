@@ -59,6 +59,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 - added new functions (df, du, cp)
 - added some aliases (ln, cp, cd, ls)
 - added process management functions (kill, killall, nice, ps)
+- splitted out rex-agent and rex-master.
 
 * Sun Jun 19 2011 Jan Gehring <jan.gehring at, gmail.com> 0.6.1-1
 - fixed documentation bugs (thanks to djill)

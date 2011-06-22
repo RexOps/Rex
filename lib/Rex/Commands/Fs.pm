@@ -511,7 +511,7 @@ mv is an alias for I<rename>.
 =cut
 
 sub mv {
-   return rename(@_);
+   return &rename(@_);
 }
 
 =item chdir($newdir)
@@ -536,7 +536,7 @@ This is an alias of I<chdir>.
 =cut
 
 sub cd {
-   chdir($_[0]);
+   &chdir($_[0]);
 }
 
 =item df([$device])

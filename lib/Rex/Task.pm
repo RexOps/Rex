@@ -187,14 +187,22 @@ sub run {
                      CORE::exit; # kind beenden
                   }
 
+               my $auth_ret;
                if($pass_auth) {
-                  $ssh->auth_password($user, $pass);
+                  $auth_ret = $ssh->auth_password($user, $pass);
                } else {
-                  $ssh->auth_publickey($user, 
+                  $auth_ret = $ssh->auth_publickey($user, 
                                           Rex::Config->get_public_key, 
                                           Rex::Config->get_private_key, 
                                           $pass);
                }
+
+               # auth unsuccessfull
+               unless($auth_ret) {
+                  Rex::Logger::info("Wrong username or password. Or wrong key.");
+                  CORE::exit 1;
+               }
+
             }
             else {
 

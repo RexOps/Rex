@@ -195,15 +195,25 @@ This function will create a new directory.
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
 
-   if(my $ssh = Rex::is_ssh()) {
-      unless($ssh->sftp->mkdir($_[0])) {
-         Rex::Logger::debug("Can't create directory $_[0]");
-         die("Can't create directory $_[0]");
-      }
-   } else {
-      unless(CORE::mkdir($_[0])) {
-         Rex::Logger::debug("Can't create directory $_[0]");
-         die("Can't create directory $_[0]");
+   my @splitted_dir = split(/\//, $_[0]);
+
+   my $str_part="";
+   for my $part (@splitted_dir) {
+      $str_part .= "/$part";
+
+      if(! is_dir($str_part) && ! is_file($str_part)) {
+         if(my $ssh = Rex::is_ssh()) {
+            unless($ssh->sftp->mkdir($str_part)) {
+               Rex::Logger::debug("Can't create directory $_[0]");
+               die("Can't create directory $_[0]");
+            }
+         }
+         else {
+            unless(CORE::mkdir($str_part)) {
+               Rex::Logger::debug("Can't create directory $_[0]");
+               die("Can't create directory $_[0]");
+            }
+         }
       }
    }
 }
@@ -354,9 +364,8 @@ sub is_readable {
    Rex::Logger::debug("Checking if $_[0] is readable");
 
    if(my $ssh = Rex::is_ssh()) {
-      my $out = net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { print \"1\"; }'");
-      chomp $out;
-      if($out) {
+      net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { exit 0; } exit 1'");
+      if($? == 0) {
          return 1;
       }
    } else {
@@ -388,9 +397,8 @@ sub is_writable {
    Rex::Logger::debug("Checking if $_[0] is writable");
 
    if(my $ssh = Rex::is_ssh()) {
-      my $out = net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { print \"1\"; }'");
-      chomp $out;
-      if($out) {
+      net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { exit 0; } exit 1'");
+      if($? == 0) {
          return 1;
       }
    } else {

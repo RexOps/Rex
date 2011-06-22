@@ -75,6 +75,13 @@ Return an HashRef of all the networkinterfaces and their configuration.
     my $net_info = network_interfaces();
  };
 
+You can interate over the devices as follow
+
+ my $net_info = network_interfaces();
+ for my $dev ( keys %{ $net_info } ) {
+    say "$dev has the ip: " . $net_info->{$dev}->{"ip"} . " and the netmask: " . $net_info->{$dev}->{"netmask"};
+ }
+
 =cut
 
 sub network_interfaces {
@@ -91,6 +98,12 @@ Return an HashRef of all memory information.
 
  task "get_memory_information", "server01", sub {
     my $memory = memory();
+     
+    say "Total:   " . $memory->{"total"};
+    say "Free:    " . $memory->{"free"};
+    say "Used:    " . $memory->{"used"};
+    say "Cached:  " . $memory->{"cached"};
+    say "Buffers: " . $memory->{"buffers"};
  };
 
 =cut

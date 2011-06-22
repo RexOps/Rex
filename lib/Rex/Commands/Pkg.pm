@@ -222,7 +222,7 @@ sub install {
 This function will remove the given package from a system.
 
  task "cleanup", "server01", sub {
-    remove "vim";
+    remove package => "vim";
  };
 
 =cut

@@ -52,9 +52,9 @@ Or, if you want to format the output by yourself, you can define a callback func
  task "syslog", "server01", sub {
     tail "/var/log/syslog", sub {
       my ($data) = @_;
-
+      
       my $server = Rex->get_current_connection()->{'server'};
-
+      
       print "$server>> $data\n";
     };
  };

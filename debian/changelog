@@ -5,6 +5,8 @@ rex (0.7.0) unstable; urgency=low
   * added process management functions (kill, killall, nice, ps)
   * splitted out rex-agent and rex-master.
 
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 23 Jun 2011 12:00:00 +0200
+
 rex (0.6.1) unstable; urgency=low
   * fixed documentation bugs (thanks to djill)
   * fixed #68827, rewrote is_readable/is_writable

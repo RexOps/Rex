@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.7.0
+Version: 0.7.1
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.7.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.7.1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -53,6 +53,10 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sat Jun 25 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.1-1
+- restored the backward compatibility with perl 5.8.x
+- suppress warning if no parameter is given
 
 * Wed Jun 23 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.0-1
 - preload a lot more default modules

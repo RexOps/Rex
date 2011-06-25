@@ -1,3 +1,8 @@
+rex (0.8.0) unstable; urgency=low
+  * version update
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 25 Jun 2011 23:30:00 +0200
+
 rex (0.7.1) unstable; urgency=low
   * restored the backward compatibility with perl 5.8.x
   * suppress warning if no parameter is given

@@ -99,7 +99,7 @@ sub import {
 
    my ($class, $opt) = @_;
 
-   $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} // "");  
+   $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "");  
 
    my ($ns_register_to, $file, $line) = caller;   
 

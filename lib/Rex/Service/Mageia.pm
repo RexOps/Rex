@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Service::Debian;
+package Rex::Service::Mageia;
 
 use strict;
 use warnings;
@@ -25,7 +25,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "/etc/init.d/$service start";
+   run "/etc/rc.d/init.d/$service start >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -37,7 +37,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "/etc/init.d/$service restart";
+   run "/etc/rc.d/init.d/$service restart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -49,7 +49,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "/etc/init.d/$service stop";
+   run "/etc/rc.d/init.d/$service stop >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -61,7 +61,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "/etc/init.d/$service reload";
+   run "/etc/rc.d/init.d/$service reload >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -73,7 +73,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "/etc/init.d/$service status";
+   run "/etc/rc.d/init.d/$service status >/dev/null";
 
    if($? == 0) {
       return 1;

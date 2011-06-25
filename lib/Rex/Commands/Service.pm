@@ -94,6 +94,13 @@ The service function accepts 2 parameters. The first is the service name and the
     }
  };
 
+=item reloading a service
+
+ task "reload-service", "server01", sub {
+    service apache2 => "reload";
+ };
+
+
 
 =back
 
@@ -149,6 +156,19 @@ sub service {
       }
       else {
          Rex::Logger::info("Error stopping $service.");
+         return 0;
+      }
+
+   }
+
+   elsif($action eq "reload") {
+
+      if($srvc->reload($service)) {
+         Rex::Logger::info("Service $service is reloaded.");
+         return 1;
+      }
+      else {
+         Rex::Logger::info("Error $service does not support reload");
          return 0;
       }
 

@@ -216,11 +216,17 @@ This function will create a new directory.
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
 
-   my @splitted_dir = split(/\//, $_[0]);
+   my @splitted_dir = map { $_="/$_"; } split(/\//, $_[0]);
+   unless($splitted_dir[0] eq "/") {
+      $splitted_dir[0] = "." . $splitted_dir[0];
+   }
+   else {
+      shift @splitted_dir;
+   }
 
    my $str_part="";
    for my $part (@splitted_dir) {
-      $str_part .= ($str_part eq "/"?$part:"/$part");
+      $str_part .= $part;
 
       if(! is_dir($str_part) && ! is_file($str_part)) {
          if(my $ssh = Rex::is_ssh()) {

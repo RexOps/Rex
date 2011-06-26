@@ -2,6 +2,7 @@ bin/rex
 bin/rex-agent
 bin/rex-master
 bin/rexify
+ChangeLog
 lib/Rex.pm
 lib/Rex/Agent.pm
 lib/Rex/Batch.pm
@@ -50,8 +51,7 @@ lib/Rex/Service/SuSE.pm
 lib/Rex/Task.pm
 lib/Rex/Template.pm
 Makefile.PL
+README
 t/01.t
 t/host.t
 t/needs.t
-ChangeLog
-README

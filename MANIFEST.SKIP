@@ -12,7 +12,6 @@ pm_toblib
 ^.*-stamp$
 ^doc\/
 .*\.tmp$
-README
 ^test.*\..*
 .*\.old$
 ^\.DS_*

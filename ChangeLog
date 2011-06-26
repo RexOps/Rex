@@ -1,5 +1,7 @@
 2011-06-26 Jan Gehring <jan.gehring, gmail.com> (0.8.0)
   * added mageia support for services and packages
+  * added chown, chgrp and chmod functions
+  * mkdir, added possibility to specify the permission, the user and the group
 
 2011-06-25 Jan Gehring <jan.gehring, gmail.com> (0.7.1)
   * restored the backward compatibility with perl 5.8.x

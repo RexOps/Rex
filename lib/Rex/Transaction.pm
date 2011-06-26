@@ -29,8 +29,10 @@ sub transaction(&) {
    };
 
    if($@) {
-      print "Wuhuuuu bin jestorbaaeeaeaennnn!! $@\n";
-      exit 1;
+      Rex::Logger::info("Transaction failed. Rolling back.");
+      for my $rollback_code (reverse @ROLLBACKS) {
+         &$rollback_code();
+      }
    }
 
 }

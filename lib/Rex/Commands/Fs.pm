@@ -220,7 +220,7 @@ sub mkdir {
 
    my $str_part="";
    for my $part (@splitted_dir) {
-      $str_part .= "/$part";
+      $str_part .= ($str_part eq "/"?$part:"/$part");
 
       if(! is_dir($str_part) && ! is_file($str_part)) {
          if(my $ssh = Rex::is_ssh()) {

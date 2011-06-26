@@ -1,6 +1,7 @@
 2011-06-25 Jan Gehring <jan.gehring, gmail.com> (0.7.1)
   * restored the backward compatibility with perl 5.8.x
   * suppress warning if no parameter is given
+  * fixed mkdir function
 
 2011-06-23 Jan Gehring <jan.gehring, gmail.com> (0.7.0)
   * preload a lot more default modules

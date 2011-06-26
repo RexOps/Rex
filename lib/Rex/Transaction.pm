@@ -20,6 +20,7 @@ use Rex::Logger;
 
 sub transaction(&) {
    my ($code) = @_;
+   my $ret = 1;
 
    Rex::Logger::debug("Cleaning ROLLBACKS array");
    @ROLLBACKS = ();
@@ -30,10 +31,14 @@ sub transaction(&) {
 
    if($@) {
       Rex::Logger::info("Transaction failed. Rolling back.");
+
+      $ret = 0;
       for my $rollback_code (reverse @ROLLBACKS) {
          &$rollback_code();
       }
    }
+
+   return $ret;
 
 }
 

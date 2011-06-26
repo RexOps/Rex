@@ -46,6 +46,8 @@ This module is the core commands module.
 
 =item * Package Commands L<Rex::Commands::Pkg>
 
+=item * Process Management L<Rex::Commands::Process>
+
 =item * Rsync Files L<Rex::Commands::Rsync>
 
 =item * Run Remote Commands L<Rex::Commands::Run>
@@ -53,6 +55,8 @@ This module is the core commands module.
 =item * Manage System Services (sysvinit) L<Rex::Commands::Service>
 
 =item * Sysctl Commands L<Rex::Commands::Sysctl>
+
+=item * Live Tail files L<Rex::Commands::Tail>
 
 =item * Manage user and group accounts L<Rex::Commands::User>
 

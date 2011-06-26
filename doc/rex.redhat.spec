@@ -57,6 +57,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 * Sat Jun 25 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.1-1
 - restored the backward compatibility with perl 5.8.x
 - suppress warning if no parameter is given
+- fixed a mkdir bug with 2 trailings slashs and relative directories
 
 * Wed Jun 23 2011 Jan Gehring <jan.gehring at, gmail.com> 0.7.0-1
 - preload a lot more default modules

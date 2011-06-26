@@ -1,6 +1,7 @@
 rex (0.7.1) unstable; urgency=low
   * restored the backward compatibility with perl 5.8.x
   * suppress warning if no parameter is given
+  * fixed a mkdir bug with 2 trailings slashs and relative directories
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sat, 25 Jun 2011 21:30:00 +0200
 

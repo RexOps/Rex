@@ -32,6 +32,11 @@ With this module you can manipulate files.
     $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
     $fh->close;
  };
+    
+ delete_lines_matching "/var/log/auth.log", matching => "root";
+ delete_lines_matching "/var/log/auth.log", matching => qr{Failed};
+ delete_lines_matching "/var/log/auth.log", 
+                        matching => "root", qr{Failed}, "nobody";
 
 =head1 EXPORTED FUNCTIONS
 
@@ -53,7 +58,7 @@ use Rex::Commands::Fs;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(file_write file_close file_read file_append cat);
+@EXPORT = qw(file_write file_close file_read file_append cat delete_lines_matching append_if_no_such_line);
 
 use vars qw(%file_handles);
 
@@ -192,9 +197,98 @@ sub cat {
    return $content;
 }
 
+=item delete_lines_matching($file, $regexp)
+
+Delete lines that match $regexp in $file.
+
+ task "clean-logs", sub {
+     delete_lines_matching "/var/log/auth.log" => "root";
+ };
+
+=cut
+sub delete_lines_matching {
+   my ($file, @m) = @_;
+
+   if(! is_file($file)) {
+      Rex::Logger::info("File: $file not found.");
+      return;
+   }
+
+   if(! is_writable($file)) {
+      Rex::Logger::info("File: $file not writable.");
+      return;
+   }
+
+   my $nl = $/;
+   my @content = split(/$nl/, cat ($file));
+
+   my $fh = file_write $file;
+
+   OUT:
+   for my $line (@content) {
+      IN:
+      for my $match (@m) {
+         if(! ref($match) eq "Regexp") {
+            $match = qr{$match};
+         }
+
+         if($line =~ $match) {
+            next OUT;
+         }
+      }
+
+      $fh->write($line . $nl);
+   }
+   $fh->close;
+}
+
+=item append_if_no_such_line($file, $new_line, @regexp)
+
+Append $new_line to $file if none in @regexp is found.
+
+ task "add-group", sub {
+    append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2";
+ };
+
+=cut
+sub append_if_no_such_line {
+   my ($file, $new_line, @m) = @_;
+
+   if(! is_file($file)) {
+      Rex::Logger::info("File: $file not found.");
+      return;
+   }
+
+   if(! is_writable($file)) {
+      Rex::Logger::info("File: $file not writable.");
+      return;
+   }
+
+   my $nl = $/;
+   my @content = split(/$nl/, cat ($file));
+
+   for my $line (@content) {
+      for my $match (@m) {
+         if(! ref($match) eq "Regexp") {
+            $match = qr{$match};
+         }
+
+         if($line =~ $match) {
+            return 0;
+         }
+      }
+   }
+
+   push @content, $new_line;
+   my $fh = file_write $file;
+   $fh->write(join($nl, @content));
+   $fh->close;
+
+}
 
 
 =back
+
 
 =cut
 

@@ -10,7 +10,7 @@ Rex::Commands::DB - Simple Database Access
 
 =head1 DESCRIPTION
 
-This module gives you simple access to a database. Currently only I<select> is supported.
+This module gives you simple access to a database. Currently I<select>, I<delete>, I<insert> and I<update> is supported.
 
 =head1 SYNOPSIS
 
@@ -50,12 +50,30 @@ use vars qw(@EXPORT $dbh);
 
 =item db
 
-Do a database action. Currently only I<select> is supported.
+Do a database action.
 
  my @data = db select => {
                fields => "*",
                from   => "table",
                where  => "host='myhost'",
+            };
+            
+ db insert => "table", {
+               field1 => "value1",
+               field2 => "value2",
+               field3 => 5,
+            };
+             
+ db update => "table", {
+                  set => {
+                     field1 => "newvalue",
+                     field2 => "newvalue2",
+                  },
+                  where => "id=5",
+             };
+             
+ db delete => "table", {
+               where => "id < 5",
             };
 
 =cut
@@ -113,8 +131,34 @@ sub db {
 
       $sth->execute or die($sth->errstr);
    }
+   elsif($type eq "update") {
+      my $sql = "UPDATE %s SET %s WHERE %s";
+
+      my @values;
+      for my $key (keys %{$data->{"set"}}) {
+         push(@values, "$key = ?");
+      }
+
+      $sql = sprintf($sql, $table, join(",", @values), $data->{"where"});
+      Rex::Logger::debug("sql: $sql");
+
+      my $sth = $dbh->prepare($sql);
+      my $i=1;
+      for my $key (keys %{$data->{"set"}}) {
+         Rex::Logger::debug("sql: binding: " . $data->{"set"}->{$key});
+         $sth->bind_param($i, $data->{"set"}->{$key}) or die($sth->errstr);
+         $i++;
+      }
+
+      $sth->execute or die($sth->errstr);
+   }
+   elsif($type eq "delete") {
+      my $sql = sprintf("DELETE FROM %s WHERE %s", $table, $data->{"where"});
+      my $sth = $dbh->prepare($sql);
+      $sth->execute or die($sth->errstr);
+   }
    else {
-      Rex::Logger::info("DB $type not supported.");
+      Rex::Logger::info("DB: action $type not supported.");
    }
 
 }
@@ -122,17 +166,6 @@ sub db {
 =back
 
 =cut
-
-sub quote_sql {
-   my ($s) = @_;
-
-   $s =~ s/'/\\'/g;
-   $s =~ s/"/\\"/g;
-   $s =~ s/\\/\\\\/g;
-   $s =~ s/\0/\\0/g;
-
-   return $s;
-}
 
 sub import {
 

@@ -26,6 +26,25 @@ This module gives you simple access to a database. Currently I<select>, I<delete
                   from   => "table",
                   where  => "enabled=1",
                };
+           
+   db insert => "table", {
+                field1 => "value1",
+                 field2 => "value2",
+                 field3 => 5,
+               };
+                
+   db update => "table", {
+                    set => {
+                       field1 => "newvalue",
+                       field2 => "newvalue2",
+                    },
+                    where => "id=5",
+                };
+                
+   db delete => "table", {
+                 where => "id < 5",
+              };
+           
  };
 
 

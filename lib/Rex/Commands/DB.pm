@@ -62,19 +62,26 @@ Do a database action. Currently only I<select> is supported.
 
 sub db {
 
-   my ($type, $data) = @_;
+   my ($type, $table, $data) = @_;
+   if(ref($table)) {
+      my %d = %{$table};
+      delete $d{"from"};
+      $data = \%d;
 
-   unless($data->{"from"}) {
-      Rex::Logger::info("No table to select from defined (use from => '...')");
+      $table = $table->{"from"};
+   }
+
+   unless($table) {
+      Rex::Logger::info("No table defined...')");
       return;
    }
 
    if($type eq "select") {
-      my $sql = sprintf("SELECT %s FROM %s WHERE %s", $data->{"fields"} || "*", $data->{"from"}, $data->{"where"} || "");
+      my $sql = sprintf("SELECT %s FROM %s WHERE %s", $data->{"fields"} || "*", $table, $data->{"where"} || "1=1");
       Rex::Logger::debug("sql: $sql");
 
       my $sth = $dbh->prepare($sql);
-      $sth->execute;
+      $sth->execute or die($sth->errstr);
 
       my @return;
 
@@ -85,6 +92,27 @@ sub db {
 
       return @return;
    }
+   elsif($type eq "insert") {
+      my $sql = "INSERT INTO %s (%s) VALUES(%s)";
+
+      my @values;
+      for my $key (keys %{$data}) {
+         push(@values, "?");
+      }
+
+      $sql = sprintf($sql, $table, join(",", keys %{$data}), join(",", @values));
+      Rex::Logger::debug("sql: $sql");
+
+      my $sth = $dbh->prepare($sql);
+      my $i=1;
+      for my $key (keys %{$data}) {
+         Rex::Logger::debug("sql: binding: " . $data->{$key});
+         $sth->bind_param($i, $data->{$key}) or die($sth->errstr);
+         $i++;
+      }
+
+      $sth->execute or die($sth->errstr);
+   }
    else {
       Rex::Logger::info("DB $type not supported.");
    }
@@ -94,6 +122,17 @@ sub db {
 =back
 
 =cut
+
+sub quote_sql {
+   my ($s) = @_;
+
+   $s =~ s/'/\\'/g;
+   $s =~ s/"/\\"/g;
+   $s =~ s/\\/\\\\/g;
+   $s =~ s/\0/\\0/g;
+
+   return $s;
+}
 
 sub import {
 

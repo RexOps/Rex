@@ -1,6 +1,11 @@
 rex (0.8.0) unstable; urgency=low
-  * version update
   * added mageia support for services and packages
+  * added chown, chgrp and chmod functions
+  * mkdir, added possibility to specify the permission, the user and the group
+  * added function delete_lines_matching
+  * added function append_if_no_such_line
+  * added reload action for services
+  * extended db module to support insert, delete, update
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sat, 25 Jun 2011 23:30:00 +0200
 

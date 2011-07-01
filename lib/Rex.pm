@@ -24,6 +24,8 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =item * Bug Tracker: L<https://rt.cpan.org/Dist/Display.html?Queue=Rex>
 
+=item * Twitter: L<http://twitter.com/jfried83>
+
 =back
 
 =head1 Dependencies

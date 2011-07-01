@@ -220,15 +220,6 @@ This function will create a new directory.
 
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
-   my $dir = shift;
-   my $options = { @_ };
-
-   my $mode  = $options->{"mode"}  || 755;
-   my $owner = $options->{"owner"} || "";
-   my $group = $options->{"group"} || "";
-   my $not_recursive = $options->{"not_recursive"} || 0;
-
-   my @splitted_dir = split(/\//, $dir);
 
    my @splitted_dir = map { $_="/$_"; } split(/\//, $_[0]);
    unless($splitted_dir[0] eq "/") {
@@ -245,21 +236,16 @@ sub mkdir {
       if(! is_dir($str_part) && ! is_file($str_part)) {
          if(my $ssh = Rex::is_ssh()) {
             unless($ssh->sftp->mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $dir");
-               die("Can't create directory $dir");
+               Rex::Logger::debug("Can't create directory $_[0]");
+               die("Can't create directory $_[0]");
             }
          }
          else {
             unless(CORE::mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $dir");
-               die("Can't create directory $dir");
+               Rex::Logger::debug("Can't create directory $_[0]");
+               die("Can't create directory $_[0]");
             }
          }
-
-         &chown($owner, $str_part) if $owner;
-         &chgrp($group, $str_part) if $group;
-         &chmod($mode, $str_part)  if $owner;
-
       }
    }
 }

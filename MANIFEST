@@ -42,10 +42,12 @@ lib/Rex/Master/FileList.pm
 lib/Rex/Master/FileTransfer.pm
 lib/Rex/Pkg.pm
 lib/Rex/Pkg/Debian.pm
+lib/Rex/Pkg/Mageia.pm
 lib/Rex/Pkg/Redhat.pm
 lib/Rex/Pkg/SuSE.pm
 lib/Rex/Service.pm
 lib/Rex/Service/Debian.pm
+lib/Rex/Service/Mageia.pm
 lib/Rex/Service/Redhat.pm
 lib/Rex/Service/SuSE.pm
 lib/Rex/Task.pm

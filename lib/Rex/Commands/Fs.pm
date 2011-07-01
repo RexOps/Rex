@@ -34,6 +34,10 @@ With this module you can do file system tasks like creating a directory, removin
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
+    
+ chmod 755, "/tmp";
+ chown "user", "/tmp";
+ chgrp "group", "/tmp";
  
 
 =head1 EXPORTED FUNCTIONS
@@ -60,6 +64,7 @@ use base qw(Exporter);
 
 @EXPORT = qw(list_files ls
             unlink rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
+            chown chgrp chmod
             is_file is_dir is_readable is_writeable is_writable
             df du);
 
@@ -215,6 +220,15 @@ This function will create a new directory.
 
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
+   my $dir = shift;
+   my $options = { @_ };
+
+   my $mode  = $options->{"mode"}  || 755;
+   my $owner = $options->{"owner"} || "";
+   my $group = $options->{"group"} || "";
+   my $not_recursive = $options->{"not_recursive"} || 0;
+
+   my @splitted_dir = split(/\//, $dir);
 
    my @splitted_dir = map { $_="/$_"; } split(/\//, $_[0]);
    unless($splitted_dir[0] eq "/") {
@@ -231,19 +245,97 @@ sub mkdir {
       if(! is_dir($str_part) && ! is_file($str_part)) {
          if(my $ssh = Rex::is_ssh()) {
             unless($ssh->sftp->mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $_[0]");
-               die("Can't create directory $_[0]");
+               Rex::Logger::debug("Can't create directory $dir");
+               die("Can't create directory $dir");
             }
          }
          else {
             unless(CORE::mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $_[0]");
-               die("Can't create directory $_[0]");
+               Rex::Logger::debug("Can't create directory $dir");
+               die("Can't create directory $dir");
             }
          }
+
+         &chown($owner, $str_part) if $owner;
+         &chgrp($group, $str_part) if $group;
+         &chmod($mode, $str_part)  if $owner;
+
       }
    }
 }
+
+=item chown($owner, $file)
+
+Change the owner of a file or a directory.
+
+ chown "www-data", "/var/www/html";
+     
+ chown "www-data", "/var/www/html",
+                        recursive => 1;
+
+=cut
+
+sub chown {
+   my ($user, $file, @opts) = @_;
+   my $options = { @opts };
+
+   my $recursive = "";
+   if(exists $options->{"recursive"} && $options->{"recursive"} == 1) {
+      $recursive = " -R ";
+   }
+
+   run "chown $recursive $user $file";
+   if($? == 0) { return 1; }
+}
+
+=item chgrp($group, $file)
+
+Change the group of a file or a directory.
+
+ chgrp "nogroup", "/var/www/html";
+    
+ chgrp "nogroup", "/var/www/html",
+                     recursive => 1;
+
+=cut
+
+sub chgrp {
+   my ($group, $file, @opts) = @_;
+   my $options = { @opts };
+
+   my $recursive = "";
+   if(exists $options->{"recursive"} && $options->{"recursive"} == 1) {
+      $recursive = " -R ";
+   }
+
+   run "chgrp $recursive $group $file";
+   if($? == 0) { return 1; }
+}
+
+=item chmod($mode, $file)
+
+Change the permissions of a file or a directory.
+
+ chmod 755, "/var/www/html";
+    
+ chmod 755, "/var/www/html",
+               recursive => 1;
+
+=cut
+
+sub chmod {
+   my ($mode, $file, @opts) = @_;
+   my $options = { @opts };
+
+   my $recursive = "";
+   if(exists $options->{"recursive"} && $options->{"recursive"} == 1) {
+      $recursive = " -R ";
+   }
+
+   run "chmod $recursive $mode $file";
+   if($? == 0) { return 1; }
+}
+
 
 =item stat($file)
 

@@ -58,6 +58,18 @@ sub stop {
    return 0;
 }
 
+sub reload {
+   my($self, $service) = @_;
+
+   run "/etc/rc.d/$service reload >/dev/null";
+
+   if($? == 0) {
+      return 1;
+   }
+
+   return 0;
+}
+
 sub status {
    my($self, $service) = @_;
 

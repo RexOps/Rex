@@ -24,6 +24,8 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =item * Bug Tracker: L<https://rt.cpan.org/Dist/Display.html?Queue=Rex>
 
+=item * Twitter: L<http://twitter.com/jfried83>
+
 =back
 
 =head1 Dependencies
@@ -79,7 +81,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
 
 @EXPORT = qw($VERSION);
-$VERSION = "0.7.1";
+$VERSION = "0.8.0";
 
 
 sub push_connection {
@@ -88,6 +90,7 @@ sub push_connection {
 
 sub pop_connection {
    pop @CONNECTION_STACK;
+   Rex::Logger::debug("Connections in queue: " . scalar(@CONNECTION_STACK));
 }
 
 =item get_current_connection

@@ -34,10 +34,10 @@ sub info {
       syslog("info", $msg);
    }
    else {
-      print {$log_fh} "[" . get_timestamp() . "] $msg\n" if($log_fh);
+      print {$log_fh} "[" . get_timestamp() . "] ($$) INFO - $msg\n" if($log_fh);
    }
 
-   print STDERR "[" . get_timestamp() . "] - INFO - $msg\n" unless($::QUIET);
+   print STDERR "[" . get_timestamp() . "] ($$) - INFO - $msg\n" unless($::QUIET);
 }
 
 sub debug {
@@ -48,10 +48,10 @@ sub debug {
       syslog("debug", $msg);
    }
    else {
-      print {$log_fh} "[" . get_timestamp() . "] DEBUG - $msg\n" if($log_fh);
+      print {$log_fh} "[" . get_timestamp() . "] ($$) DEBUG - $msg\n" if($log_fh);
    }
    
-   print STDERR "[" . get_timestamp() . "] DEBUG - $msg\n" unless($::QUIET);
+   print STDERR "[" . get_timestamp() . "] ($$) DEBUG - $msg\n" unless($::QUIET);
 }
 
 sub get_timestamp {

@@ -88,6 +88,7 @@ sub push_connection {
 
 sub pop_connection {
    pop @CONNECTION_STACK;
+   Rex::Logger::debug("Connections in queue: " . scalar(@CONNECTION_STACK));
 }
 
 =item get_current_connection

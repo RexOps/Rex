@@ -18,8 +18,8 @@ sub get {
    return {
    
       manufacturer => [ run("LC_ALL=C dmidecode -t chassis") =~ m/Manufacturer: ([^\n]+)/ ]->[0],
-      hostname     => run("LC_ALL=C hostname"),
-      domain       => run("LC_ALL=C dnsdomainname"),
+      hostname     => run("LC_ALL=C hostname") || "",
+      domain       => run("LC_ALL=C dnsdomainname") || "",
       operatingsystem => get_operating_system(),
       operatingsystemrelease => get_operating_system_version(),
 
@@ -35,6 +35,10 @@ sub get_operating_system {
 
    if(is_file("/etc/SuSE-release")) {
       return "SuSE";
+   }
+
+   if(is_file("/etc/mageia-release")) {
+      return "Mageia";
    }
 
    if(is_file("/etc/redhat-release")) {
@@ -82,6 +86,17 @@ sub get_operating_system_version {
 
       return $1;
 
+   }
+   elsif($op eq "Mageia") {
+      my $fh = file_read("/etc/mageia-release");
+      my $content = $fh->read_all;
+      $fh->close;
+
+      chomp $content;
+
+      $content =~ m/(\d+)/;
+
+      return $1;
    }
    elsif($op eq "SuSE") {
       

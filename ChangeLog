@@ -1,3 +1,8 @@
+2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.8.1)
+  * fixed mageia detection
+  * fixed bug if dnsdomainname returns no domainname
+  * fixed mkdir bug on setting permissions, caused by a wrong merge
+
 2011-06-26 Jan Gehring <jan.gehring, gmail.com> (0.8.0)
   * added mageia support for services and packages
   * added chown, chgrp and chmod functions

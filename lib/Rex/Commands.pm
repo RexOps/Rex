@@ -232,6 +232,16 @@ sub task {
    use strict;
    use warnings;
 
+   no strict 'refs';
+   my %sym_table = %{"${class}::"};
+   use strict;
+
+   if(! exists $sym_table{$task_name_save} && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
+      no strict 'refs';
+      *{"${class}::$task_name_save"} = $_[-2];
+      use strict;
+   }
+
    Rex::Task->create_task($task_name, @_, $options);
 }
 

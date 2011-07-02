@@ -213,15 +213,46 @@ sub rmdir {
 This function will create a new directory.
 
  task "mkdir", "server01", sub {
-    mkdir("/tmp");
+    mkdir "/tmp";
+         
+    mkdir "/tmp",
+      chown => "root",
+      chgrp => "root",
+      mode => 1777;
  };
 
 =cut
 
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
+   my $dir = shift;
+   my $options = { @_ };
 
-   my @splitted_dir = map { $_="/$_"; } split(/\//, $_[0]);
+   my $mode  = $options->{"mode"}  || 755;
+   my $owner = $options->{"owner"} || "";
+   my $group = $options->{"group"} || "";
+   my $not_recursive = $options->{"not_recursive"} || 0;
+
+   if($not_recursive) {
+      if(my $ssh = Rex::is_ssh()) {
+         unless($ssh->sftp->mkdir($dir)) {
+            Rex::Logger::debug("Can't create directory $dir");
+            die("Can't create directory $dir");
+         }
+      }
+      else {
+         unless(CORE::mkdir($dir)) {
+            Rex::Logger::debug("Can't create directory $dir");
+            die("Can't create directory $dir");
+         }
+
+         &chown($owner, $dir) if $owner;
+         &chgrp($group, $dir) if $group;
+         &chmod($mode, $dir)  if $owner;
+      }
+   }
+
+   my @splitted_dir = map { $_="/$_"; } split(/\//, $dir);
    unless($splitted_dir[0] eq "/") {
       $splitted_dir[0] = "." . $splitted_dir[0];
    }
@@ -231,21 +262,26 @@ sub mkdir {
 
    my $str_part="";
    for my $part (@splitted_dir) {
-      $str_part .= $part;
+      $str_part .= "/$part";
 
       if(! is_dir($str_part) && ! is_file($str_part)) {
          if(my $ssh = Rex::is_ssh()) {
             unless($ssh->sftp->mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $_[0]");
-               die("Can't create directory $_[0]");
+               Rex::Logger::debug("Can't create directory $dir");
+               die("Can't create directory $dir");
             }
          }
          else {
             unless(CORE::mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $_[0]");
-               die("Can't create directory $_[0]");
+               Rex::Logger::debug("Can't create directory $dir");
+               die("Can't create directory $dir");
             }
          }
+
+         &chown($owner, $str_part) if $owner;
+         &chgrp($group, $str_part) if $group;
+         &chmod($mode, $str_part)  if $owner;
+
       }
    }
 }

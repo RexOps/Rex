@@ -238,6 +238,7 @@ sub task {
 
    if(! exists $sym_table{$task_name_save} && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
       no strict 'refs';
+      Rex::Logger::Debug("Registering task: ${class}::$task_name_save");
       *{"${class}::$task_name_save"} = $_[-2];
       use strict;
    }

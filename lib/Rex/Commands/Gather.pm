@@ -39,7 +39,25 @@ use base qw(Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is network_interfaces memory);
+@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system);
+
+=item get_operating_system
+
+Will return the current operating system name.
+ 
+ task "get-os", "server01", sub {
+    say get_operating_system();
+ };
+
+=cut
+
+sub get_operating_system {
+
+   my $host = Rex::Hardware::Host->get();
+
+   return $host->{"operatingsystem"} || "unknown";
+
+}
 
 =item operating_system_is($string)
 

@@ -54,13 +54,109 @@ require Exporter;
 use Data::Dumper;
 use Rex::FS::File;
 use Rex::Commands::Fs;
+use Rex::Commands::Upload;
+use Rex::Commands::MD5;
+
+use File::Basename qw(dirname);
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(file_write file_close file_read file_append cat delete_lines_matching append_if_no_such_line);
+@EXPORT = qw(file_write file_close file_read file_append 
+               cat
+               delete_lines_matching append_if_no_such_line
+               file template);
 
 use vars qw(%file_handles);
+
+=item template($file, @params)
+
+Parse a template and return the content.
+
+ my $content = template("/files/templates/vhosts.tpl", 
+                     name => "test.lan",
+                     webmaster => 'webmaster@test.lan');
+
+=cut
+sub template {
+   my ($file, @params) = @_;
+   my $param = { @params };
+
+   unless($file =~ m/^\//) {
+      # path is relative
+      Rex::Logger::debug("Relativ path $file");
+      my ($caller_package, $caller_file, $caller_line) = caller;
+      my $d = dirname($caller_file) . "/" . $file;
+
+      Rex::Logger::debug("New filename: $d");
+      $file = $d;
+   }
+
+   my $template = Rex::Template->new;
+   my $content = eval { local(@ARGV, $/) = ($file); <>; };
+
+   my %merge1 = %{$param || {}};
+   my %merge2 = Rex::Hardware->get(qw/ All /);
+   my %template_vars = (%merge1, %merge2);
+
+   return $template->parse($content, \%template_vars);
+}
+
+
+
+=item file($file_name, %options)
+
+=cut
+sub file {
+   my ($file, @options) = @_;
+   my $option = { @options };
+
+   my $on_change = $option->{"on_change"} || sub {};
+
+   my ($new_md5, $old_md5);
+   $old_md5 = md5($file);
+
+   unless($file =~ m/^\//) {
+      # path is relative
+      Rex::Logger::debug("Relativ path $file");
+      my ($caller_package, $caller_file, $caller_line) = caller;
+      my $d = dirname($caller_file) . "/" . $file;
+
+      Rex::Logger::debug("New filename: $d");
+      $file = $d;
+   }
+
+   if(exists $option->{"content"}) {
+      my $fh = file_write($file);
+      $fh->write($option->{"content"});
+      $fh->close;
+   }
+   elsif(exists $option->{"source"}) {
+      upload $option->{"source"}, "$file";
+   }
+
+   $new_md5 = md5($file);
+
+   if(exists $option->{"chmod"}) {
+      chmod($option->{"chmod"}, $file);
+   }
+
+   if(exists $option->{"chgrp"}) {
+      chgrp($option->{"chgrp"}, $file);
+   }
+
+   if(exists $option->{"chown"}) {
+      chown($option->{"chown"}, $file);
+   }
+
+   unless($old_md5 eq $new_md5) {
+      Rex::Logger::debug("File $file has been changed... Running on_change");
+      Rex::Logger::debug("old: $old_md5");
+      Rex::Logger::debug("new: $new_md5");
+
+      &$on_change($file);
+   }
+}
 
 =item file_write($file_name)
 

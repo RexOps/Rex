@@ -1,6 +1,7 @@
 2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.9.0)
   * register tasks as function if possible
   * add "lib" to INC if exists
+  * added function get_operating_system
 
 2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.8.1)
   * fixed mageia detection

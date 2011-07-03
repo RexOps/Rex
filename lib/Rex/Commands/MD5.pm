@@ -74,6 +74,7 @@ sub md5 {
    else {
       
       Rex::Logger::debug("File $file not found.");
+      return "";
 
    }
 }

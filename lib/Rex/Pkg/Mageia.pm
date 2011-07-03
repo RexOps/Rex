@@ -47,7 +47,7 @@ sub install {
 
    my $version = $option->{"version"} || "";
 
-   Rex::Logger::debug("Installing $pkg / $version");
+   Rex::Logger::info("Installing $pkg / $version");
    my $f = run("urpmi --auto --quiet $pkg");
 
    unless($? == 0) {

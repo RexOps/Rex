@@ -592,8 +592,8 @@ sub say {
 }
 
 sub todo {
-   ($package, $filename, $line) = caller;
-   Rex::Logger:info("TODO: $line: " . $package . " ($filename)");
+   my ($package, $filename, $line) = caller;
+   Rex::Logger::info("TODO: $line: " . $package . " ($filename)");
 }
 
 1;

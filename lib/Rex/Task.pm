@@ -15,6 +15,9 @@ use Sys::Hostname;
 
 use vars qw(%tasks);
 
+# will be set from Rex::Transaction::transaction()
+our $IN_TRANSACTION = 0;
+
 sub create_task {
    my $class     = shift;
    my $task_name = shift;
@@ -175,7 +178,7 @@ sub run {
       for my $server (@server) {
          Rex::Logger::debug("Next Server: $server");
          # push it
-         $fm->add(sub {
+         my $forked_sub = sub {
             my $ssh;
 
             # this must be a ssh connection
@@ -237,9 +240,19 @@ sub run {
             # remove remote connection from the stack
             Rex::pop_connection();
 
-            CORE::exit; # exit child
-         }, 1); # [END] $fm->add
-      }
+            CORE::exit unless($IN_TRANSACTION); # exit child
+         }; # [END] $forked_sub
+
+         # add the worker (forked_sub) to the fork queue
+         unless($IN_TRANSACTION) {
+            # not inside a transaction, so lets fork happyly...
+            $fm->add($forked_sub, 1);
+         }
+         else {
+            # inside a transaction, no little small funny kids, ... and no chance to get zombies :(
+            &$forked_sub();
+         }
+      } # [END] for my $server
 
       Rex::Logger::debug("Waiting for children to finish");
       # wait for all jobs to be finished

@@ -234,7 +234,7 @@ sub run {
             # disconnect if ssh connection
             if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                Rex::Logger::debug("Disconnecting from $server");
-               $ssh->disconnect();
+               $ssh->disconnect() unless($IN_TRANSACTION);
             }
 
             # remove remote connection from the stack

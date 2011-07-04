@@ -90,7 +90,14 @@ sub transaction(&) {
 
       $ret = 0;
       for my $rollback_code (reverse @ROLLBACKS) {
-         &$rollback_code();
+         # push the connection of the task back
+         Rex::push_connection($rollback_code->{"connection"});
+
+         # run the rollback code
+         &{ $rollback_code->{"code"} }();
+
+         # and pop it away
+         Rex::pop_connection();
       }
    }
 
@@ -111,7 +118,10 @@ See I<transaction>.
 sub on_rollback(&) {
    my ($code) = @_;
 
-   push @ROLLBACKS, $code;
+   push (@ROLLBACKS, {
+      code       => $code,
+      connection => Rex::get_current_connection()
+   });
 }
 
 =back

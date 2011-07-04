@@ -137,16 +137,16 @@ sub file {
 
    $new_md5 = md5($file);
 
-   if(exists $option->{"chmod"}) {
-      chmod($option->{"chmod"}, $file);
+   if(exists $option->{"mode"}) {
+      chmod($option->{"mode"}, $file);
    }
 
-   if(exists $option->{"chgrp"}) {
-      chgrp($option->{"chgrp"}, $file);
+   if(exists $option->{"group"}) {
+      chgrp($option->{"group"}, $file);
    }
 
-   if(exists $option->{"chown"}) {
-      chown($option->{"chown"}, $file);
+   if(exists $option->{"owner"}) {
+      chown($option->{"owner"}, $file);
    }
 
    unless($old_md5 eq $new_md5) {

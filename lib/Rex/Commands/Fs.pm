@@ -216,8 +216,8 @@ This function will create a new directory.
     mkdir "/tmp";
          
     mkdir "/tmp",
-      chown => "root",
-      chgrp => "root",
+      owner => "root",
+      group => "root",
       mode => 1777;
  };
 

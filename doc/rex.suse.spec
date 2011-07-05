@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.8.0
+Version: 0.8.1
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.8.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.8.1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -53,6 +53,11 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Wed Jul 06 2011 Jan Gehring <jan.gehring at, gmail.com> 0.8.1-1
+- fixed mageia detection
+- fixed bug if dnsdomainname returns no domainname
+- fixed mkdir bug on setting permissions, caused by a wrong merge
 
 * Fri Jul 01 2011 Jan Gehring <jan.gehring at, gmail.com> 0.8.0-1
 - added mageia support for services and packages

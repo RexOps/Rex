@@ -150,7 +150,7 @@ ln is an alias for I<symlink>
 =cut
 
 sub ln {
-   sysmlink(@_);
+   &symlink(@_);
 }
 
 =item unlink($file)

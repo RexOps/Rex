@@ -1,3 +1,10 @@
+rex (0.8.1) unstable; urgency=low
+  * fixed mageia detection
+  * fixed bug if dnsdomainname returns no domainname
+  * fixed mkdir bug on setting permissions, caused by a wrong merge
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Wed, 06 Jul 2011 00:20:00 +0200
+
 rex (0.8.0) unstable; urgency=low
   * added mageia support for services and packages
   * added chown, chgrp and chmod functions

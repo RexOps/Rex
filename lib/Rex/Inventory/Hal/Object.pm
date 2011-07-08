@@ -31,6 +31,11 @@ sub parent {
 sub get {
 
    my ($self, $key) = @_;
+
+   if(ref($self->{$key}) eq "ARRAY") {
+      return @{$self->{$key}};
+   }
+
    return $self->{$key};
 
 }

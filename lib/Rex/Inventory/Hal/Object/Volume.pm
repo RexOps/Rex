@@ -1,0 +1,69 @@
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+
+package Rex::Inventory::Hal::Object::Volume;
+
+use strict;
+use warnings;
+use Data::Dumper;
+
+use Rex::Inventory::Hal::Object;
+use base qw(Rex::Inventory::Hal::Object);
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
+
+   bless($self, $proto);
+
+   return $self;
+}
+
+sub get_dev {
+
+   my ($self) = @_;
+   return $self->get('block.device');
+
+}
+
+sub get_size {
+
+   my ($self) = @_;
+   return $self->get('volume.size');
+
+}
+
+sub get_fstype {
+
+   my ($self) = @_;
+   return $self->get('volume.fstype');
+
+}
+
+sub get_uuid {
+
+   my ($self) = @_;
+   return $self->get('volume.uuid');
+
+}
+
+sub is_parition {
+
+   my ($self) = @_;
+   return $self->get('volume.is_partition') eq "true"?1:0;
+
+}
+
+sub is_mounted {
+
+   my ($self) = @_;
+   return $self->get('volume.is_mounted') eq "true"?1:0;
+
+}
+
+
+1;

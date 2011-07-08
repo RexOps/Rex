@@ -39,6 +39,30 @@ sub get_devices_of {
    return @ret;
 }
 
+# get network devices
+sub get_network_devices {
+
+   my ($self) = @_;
+   return $self->get_devices_of('net');
+
+}
+
+# get storage devices
+sub get_storage_devices {
+
+   my ($self) = @_;
+   return grep { ! $_->is_cdrom } $self->get_devices_of('storage');
+
+}
+
+# get storage volumes
+sub get_storage_volumes {
+
+   my ($self) = @_;
+   return $self->get_devices_of('volume');
+
+}
+
 # get a hal object from category and udi
 sub get_object_by_cat_and_udi {
    my ($self, $cat, $udi) = @_;
@@ -106,7 +130,7 @@ sub _read_lshal {
          $val =~ s/^\s+//;
          $val =~ s/\s+$//;
          $val =~ s/^'|'$//g;
-         $data{$key} = $val;
+         $data{$key} = $self->_parse_hal_string($val);
       }
 
    }
@@ -132,6 +156,21 @@ sub _read_lshal {
 
    $self->{'__hal'} = \%devices;
 
+
+}
+
+sub _parse_hal_string {
+
+   my ($self, $line) = @_;
+
+   if($line =~ m/^\{.*\}$/) {
+      $line =~ s/^\{/[/;
+      $line =~ s/\}$/]/;
+
+      return eval $line;
+   }
+   
+   return $line;
 
 }
 

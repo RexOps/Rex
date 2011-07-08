@@ -4,10 +4,11 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Inventory::Hal::Object::Net;
+package Rex::Inventory::Hal::Object::Storage;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 use Rex::Inventory::Hal::Object;
 use base qw(Rex::Inventory::Hal::Object);
@@ -23,23 +24,48 @@ sub new {
 }
 
 sub get_dev {
+
    my ($self) = @_;
-   return $self->get('net.interface');
+   return $self->get('block.device');
+
 }
 
-sub get_mac {
+sub is_cdrom {
+
    my ($self) = @_;
-   return $self->get('net.address');
+   if( grep { /^storage\.cdrom$/ } $self->get('info.capabilities') ) {
+      return 1;
+   }
+
+}
+
+sub get_size {
+
+   my ($self) = @_;
+   return $self->get('storage.size');
+
 }
 
 sub get_product {
+
    my ($self) = @_;
-   return ($self->parent()->get('info.product') || $self->parent()->get('pci.product')) || "";
+   return $self->get('info.product');
+
 }
 
 sub get_vendor {
+
    my ($self) = @_;
-   return $self->parent()->get('info.vendor') || "";
+   return $self->get('storage.vendor');
+
 }
+
+sub get_bus {
+
+   my ($self) = @_;
+   return $self->get('storage.bus');
+
+}
+
 
 1;

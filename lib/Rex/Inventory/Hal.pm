@@ -4,9 +4,9 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Hal;
+package Rex::Inventory::Hal;
 
-use Rex::Hal::Object;
+use Rex::Inventory::Hal::Object;
 use Rex::Commands::Run;
 use Data::Dumper;
 
@@ -43,11 +43,11 @@ sub get_devices_of {
 sub get_object_by_cat_and_udi {
    my ($self, $cat, $udi) = @_;
 
-   my $class_name = "Rex::Hal::Object::\u$cat";
+   my $class_name = "Rex::Inventory::Hal::Object::\u$cat";
    eval "use $class_name";
    if($@) {
       Rex::Logger::debug("This Hal Object isn't supported yet. Falling back to Base Object.");
-      $class_name = "Rex::Hal::Object";
+      $class_name = "Rex::Inventory::Hal::Object";
    }
 
    return $class_name->new(%{$self->{'__hal'}->{$cat}->{$udi}}, hal => $self);

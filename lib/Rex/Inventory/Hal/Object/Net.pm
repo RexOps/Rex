@@ -4,13 +4,13 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Hal::Object::Net;
+package Rex::Inventory::Hal::Object::Net;
 
 use strict;
 use warnings;
 
-use Rex::Hal::Object;
-use base qw(Rex::Hal::Object);
+use Rex::Inventory::Hal::Object;
+use base qw(Rex::Inventory::Hal::Object);
 
 sub new {
    my $that = shift;

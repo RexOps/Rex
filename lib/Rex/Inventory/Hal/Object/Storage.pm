@@ -13,6 +13,18 @@ use Data::Dumper;
 use Rex::Inventory::Hal::Object;
 use base qw(Rex::Inventory::Hal::Object);
 
+__PACKAGE__->has([
+
+   { key => "block.device",   accessor => "dev", },
+   { key => "storage.size",   accessor => "size", },
+   { key => "info.product",   accessor => "product" },
+   { key => "storage.vendor", accessor => "vendor" },
+   { key => "storage.bus",    accessor => "bus" },
+
+]);
+
+
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -23,13 +35,6 @@ sub new {
    return $self;
 }
 
-sub get_dev {
-
-   my ($self) = @_;
-   return $self->get('block.device');
-
-}
-
 sub is_cdrom {
 
    my ($self) = @_;
@@ -38,34 +43,5 @@ sub is_cdrom {
    }
 
 }
-
-sub get_size {
-
-   my ($self) = @_;
-   return $self->get('storage.size');
-
-}
-
-sub get_product {
-
-   my ($self) = @_;
-   return $self->get('info.product');
-
-}
-
-sub get_vendor {
-
-   my ($self) = @_;
-   return $self->get('storage.vendor');
-
-}
-
-sub get_bus {
-
-   my ($self) = @_;
-   return $self->get('storage.bus');
-
-}
-
 
 1;

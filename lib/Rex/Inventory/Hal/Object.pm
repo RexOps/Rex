@@ -19,6 +19,30 @@ sub new {
    return $self;
 }
 
+sub has {
+
+   my ($class, $keys) = @_;
+   for my $k (@{$keys}) {
+      my $key      = $k->{"key"};
+      my $accessor = $k->{"accessor"};
+
+      no strict 'refs';
+      *{"${class}::get_$accessor"} = sub {
+         my ($self) = @_;
+         if($k->{"parent"}) {
+            return $self->parent()->get($key);
+         }
+         else {
+            return $self->get($key);
+         }
+      };
+
+      push(@{"${class}::items"}, $k);
+      use strict;
+   }
+
+}
+
 
 # returns the parent of the current object
 sub parent {
@@ -36,8 +60,29 @@ sub get {
       return @{$self->{$key}};
    }
 
-   return $self->{$key};
+   return exists $self->{$key} ?
+               $self->{$key} :
+               "";
 
+}
+
+sub get_all {
+
+   my ($self) = @_;
+
+   my $r = ref($self);
+
+   no strict 'refs';
+   my @items = @{"${r}::items"};
+   use strict;
+
+   my $ret;
+   for my $itm (@items) {
+      my $f = "get_" . $itm->{"accessor"};
+      $ret->{$itm->{"accessor"}} = $self->$f();
+   }
+
+   return $ret;
 }
 
 1;

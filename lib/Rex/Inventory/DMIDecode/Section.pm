@@ -49,6 +49,8 @@ sub has {
          my $self = shift;
          return $self->get($o_itm, $is_array);
       };
+
+      push(@{"${class}::items"}, "\L$itm");
    }
 
    use strict;
@@ -69,6 +71,27 @@ sub get {
 
 }
 
+sub get_all {
+
+   my ($self) = @_;
+
+   use Data::Dumper;
+   my $r = ref($self);
+
+   no strict 'refs';
+   my @items = @{"${r}::items"};
+   use strict;
+
+   my $ret = {};
+   for my $itm (@items) {
+      my $f = "get_$itm";
+      $ret->{$itm} = $self->$f();
+   }
+
+   return $ret;
+
+}
+
 sub dump {
 
    my ($self) = @_;
@@ -82,7 +105,8 @@ sub _search_for {
    my ($self, $key, $is_array) = @_;
 
    unless($self->dmi->get_tree($SECTION->{ref($self)})) {
-      die $SECTION->{ref($self)} . " not supported";
+      #die $SECTION->{ref($self)} . " not supported";
+      return;
    }
 
    my $idx = 0;

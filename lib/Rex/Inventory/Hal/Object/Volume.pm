@@ -13,6 +13,17 @@ use Data::Dumper;
 use Rex::Inventory::Hal::Object;
 use base qw(Rex::Inventory::Hal::Object);
 
+__PACKAGE__->has([
+
+   { key => "block.device",  accessor => "dev", },
+   { key => "volume.size",   accessor => "size", },
+   { key => "volume.fstype", accessor => "fstype" },
+   { key => "volume.uuid",   accessor => "uuid" },
+
+]);
+
+
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -21,34 +32,6 @@ sub new {
    bless($self, $proto);
 
    return $self;
-}
-
-sub get_dev {
-
-   my ($self) = @_;
-   return $self->get('block.device');
-
-}
-
-sub get_size {
-
-   my ($self) = @_;
-   return $self->get('volume.size');
-
-}
-
-sub get_fstype {
-
-   my ($self) = @_;
-   return $self->get('volume.fstype');
-
-}
-
-sub get_uuid {
-
-   my ($self) = @_;
-   return $self->get('volume.uuid');
-
 }
 
 sub is_parition {

@@ -12,6 +12,7 @@ use warnings;
 use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;
 use Rex::Inventory::DMIDecode::CPU;
+use Rex::Inventory::DMIDecode::Memory;
 use Rex::Commands::Run;
 
 sub new {
@@ -53,13 +54,32 @@ sub get_cpus {
    my ($self) = @_;
    my @cpus = ();
    my $tree = $self->get_tree("Processor Information");
-   my $idx=-1;
-   for my $cpu (grep { $_->{"Status"} =~ m/Populated/ } @{ $tree }) {
-      push(@cpus, Rex::Inventory::DMIDecode::CPU->new(dmi => $self, index => $idx));
+   my $idx=0;
+   for my $cpu ( @{ $tree } ) {
+      if($cpu->{"Status"} =~m/Populated/) {
+         push(@cpus, Rex::Inventory::DMIDecode::CPU->new(dmi => $self, index => $idx));
+      }
       ++$idx;
    }
 
    return @cpus;
+
+}
+
+sub get_memory_modules {
+
+   my ($self) = @_;
+   my @mems = ();
+   my $tree = $self->get_tree("Memory Device");
+   my $idx = 0;
+   for my $mem (@{ $tree }) {
+      if($mem->{"Size"} =~ m/\d+/) {
+         push(@mems, Rex::Inventory::DMIDecode::Memory->new(dmi => $self, index => $idx));
+      }
+      ++$idx;
+   }
+
+   return @mems;
 
 }
 

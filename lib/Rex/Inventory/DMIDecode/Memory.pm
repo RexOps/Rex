@@ -1,0 +1,38 @@
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+
+package Rex::Inventory::DMIDecode::Memory;
+
+use strict;
+use warnings;
+
+use Rex::Inventory::DMIDecode::Section;
+use base qw(Rex::Inventory::DMIDecode::Section);
+
+__PACKAGE__->section("Memory Device");
+
+__PACKAGE__->has([ 'Part Number', 
+                   'Serial Number',
+                   'Type',
+                   'Speed',
+                   'Size',
+                   'Manufacturer',
+                   'Bank Locator',
+                   'Form Factor',
+                   'Locator', ], 1);  # is_array 1
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = $that->SUPER::new(@_);
+
+   bless($self, $proto);
+
+   return $self;
+}
+
+1;
+

@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Inventory::DMIDecode::BaseBoard;
+use Rex::Inventory::DMIDecode::Bios;
 use Rex::Commands::Run;
 
 sub new {
@@ -40,6 +41,12 @@ sub get_base_board {
    return Rex::Inventory::DMIDecode::BaseBoard->new(dmi => $self);
 }
 
+sub get_bios {
+   my ($self) = @_;
+
+   return Rex::Inventory::DMIDecode::Bios->new(dmi => $self);
+}
+
 sub _read_dmidecode {
 
    my ($self) = @_;
@@ -49,6 +56,8 @@ sub _read_dmidecode {
 
    my %section = ();
    my $section = ""; 
+   my $new_section = 0;
+   my $sub_section = "";
 
    for my $l (@lines) {
 
@@ -59,48 +68,59 @@ sub _read_dmidecode {
       last if $l =~ m/^End Of Table$/;
 
 
+
       unless(substr($l, 0, 1) eq "\t") {
          $section = $l;
+         $new_section = 1;
          next;
       }
 
       my $line = $l;
       $line =~ s/^\t+//g;
+      $line =~ s/\s+$//g;
+
+      next if $l =~ m/^$/;
 
       if($l =~ m/^\t[a-zA-Z0-9]/) {
          if(exists $section{$section} && ! ref($section{$section})) {
             my $content = $section{$section};
             $section{$section} = [];
+            my @arr = ();
             my ($key, $val) = split(/: /, $line, 2);
             $key =~ s/:$//; 
-            push (@{$section{$section}}, $content);
+            $sub_section = $key;
+            #push (@{$section{$section}}, $content);
             push (@{$section{$section}}, {$key => $val});
+            $new_section = 0;
             next;
          }
          elsif(exists $section{$section} && ref($section{$section})) {
+            if($new_section) {
+               push (@{$section{$section}}, {});
+               $new_section = 0;
+            }
             my ($key, $val) = split(/: /, $line, 2);
             $key =~ s/:$//; 
-            push (@{$section{$section}}, {$key => $val});
+            $sub_section = $key;
+            my $href = $section{$section}->[-1];
+            #push (@{$section{$section}}, {$key => $val});
+            $href->{$key} = $val;
             next;
          }
 
          my ($key, $val) = split(/: /, $line, 2);
          if(!$val) { $key =~ s/:$//; }
+         $sub_section = $key;
          $section{$section} = [{$key => $val}];
+         $new_section = 0;
       }
       elsif($l =~ m/^\t\t[a-zA-Z0-9]/) {
-         my $i = pop @{$section{$section}};
-         my ($key) = [keys %{$i}]->[0];
-         my ($val) = [values %{$i}]->[0];
-
-         if(ref($i->{$key})) {
-            push(@{$i->{$key}}, $line);
-            push(@{$section{$section}}, $i);
+         my $href = $section{$section}->[-1];
+         if(! ref($href->{$sub_section})) {
+            $href->{$sub_section} = [];
          }
-         else {
 
-            push(@{$section{$section}}, {  $key => [$line] });
-         }
+         push(@{$href->{$sub_section}}, $line);
       }
 
 

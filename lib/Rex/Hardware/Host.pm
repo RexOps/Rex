@@ -29,6 +29,10 @@ sub get {
 
 sub get_operating_system {
 
+   if(my $ret = run "lsb_release -s -i") {
+      if($ret eq "Ubuntu") { return "Ubuntu"; }
+   }
+
    if(is_file("/etc/debian_version")) {
       return "Debian";
    }
@@ -73,6 +77,10 @@ sub get_operating_system_version {
 
       return $content;
 
+   }
+   elsif($op eq "Ubuntu") {
+      my @l = run "lsb_release -r -s";
+      return $l[0];
    }
    elsif($op eq "Redhat" or $op eq "CentOS") {
 

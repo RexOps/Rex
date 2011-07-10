@@ -23,6 +23,10 @@ sub get {
       $host->{"operatingsystem"} = "Redhat";
    }
 
+   if($host->{"operatingsystem"} eq "Ubuntu") {
+      $host->{"operatingsystem"} = "Debian";
+   }
+
    my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
    eval "use $class";
 

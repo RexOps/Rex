@@ -89,7 +89,10 @@ sub _search_for {
    for my $entry (@{ $self->dmi->get_tree($SECTION->{ref($self)}) }) {
       my ($_key) = keys %{$entry};
       if($is_array) {
-         next if $idx != $self->get_index();
+         if ($idx != $self->get_index()) {
+            ++$idx;
+            next;
+         }
       }
 
       if(exists $entry->{$key}) {

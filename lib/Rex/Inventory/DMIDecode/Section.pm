@@ -33,7 +33,7 @@ sub section {
 }
 
 sub has {
-   my ($class, $item) = @_;
+   my ($class, $item, $is_array) = @_;
    
    unless(ref($item) eq "ARRAY") {
       my $_tmp = $item;
@@ -47,7 +47,7 @@ sub has {
       $itm =~ s/[^a-zA-Z0-9_]+/_/g;
       *{"${class}::get_\L$itm"} = sub {
          my $self = shift;
-         return $self->get($o_itm);
+         return $self->get($o_itm, $is_array);
       };
    }
 
@@ -64,8 +64,8 @@ sub dmi {
 
 sub get {
 
-   my ($self, $key) = @_;
-   return $self->_search_for($key);
+   my ($self, $key, $is_array) = @_;
+   return $self->_search_for($key, $is_array);
 
 }
 
@@ -79,14 +79,36 @@ sub dump {
 }
 
 sub _search_for {
-   my ($self, $key) = @_;
+   my ($self, $key, $is_array) = @_;
 
+   unless($self->dmi->get_tree($SECTION->{ref($self)})) {
+      die $SECTION->{ref($self)} . " not supported";
+   }
+
+   my $idx = 0;
    for my $entry (@{ $self->dmi->get_tree($SECTION->{ref($self)}) }) {
       my ($_key) = keys %{$entry};
+      if($is_array) {
+         next if $idx != $self->get_index();
+      }
+
       if(exists $entry->{$key}) {
          return $entry->{$key};
       }
+      else {
+         return "";
+      }
+      ++$idx;
    }
+
+   return "";
+}
+
+sub get_index {
+
+   my ($self) = @_;
+   return $self->{"index"};
+
 }
 
 

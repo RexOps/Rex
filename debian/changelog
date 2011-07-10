@@ -1,3 +1,17 @@
+rex (0.9.0) unstable; urgency=low
+  * register tasks as function if possible
+  * add "lib" to INC if exists
+  * added function get_operating_system
+  * added transactions
+  * deprecated "package file =>"
+  * added hal module to access hardware information detected by hal
+  * added dmidecode module to access bios information
+  * added inventory function "inventor"
+  * added ubuntu support (tested with lts 10.04)
+  * added can_run function, to test if a command is present
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 10 Jul 2011 19:30:00 +0200
+
 rex (0.8.1) unstable; urgency=low
   * fixed mageia detection
   * fixed bug if dnsdomainname returns no domainname

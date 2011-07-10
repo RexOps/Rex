@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.8.1
+Version: 0.9.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.8.1.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.9.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -53,6 +53,18 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sun Jul 10 2011 Jan Gehring <jan.gehring at, gmail.com> 0.9.0-1
+- register tasks as function if possible
+- add "lib" to INC if exists
+- added function get_operating_system
+- added transactions
+- deprecated "package file =>"
+- added hal module to access hardware information detected by hal
+- added dmidecode module to access bios information
+- added inventory function "inventor"
+- added ubuntu support (tested with lts 10.04)
+- added can_run function, to test if a command is present
 
 * Wed Jul 06 2011 Jan Gehring <jan.gehring at, gmail.com> 0.8.1-1
 - fixed mageia detection

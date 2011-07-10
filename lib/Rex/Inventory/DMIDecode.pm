@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;
+use Rex::Inventory::DMIDecode::CPU;
 use Rex::Commands::Run;
 
 sub new {
@@ -45,6 +46,21 @@ sub get_bios {
    my ($self) = @_;
 
    return Rex::Inventory::DMIDecode::Bios->new(dmi => $self);
+}
+
+sub get_cpus {
+
+   my ($self) = @_;
+   my @cpus = ();
+   my $tree = $self->get_tree("Processor Information");
+   my $idx=-1;
+   for my $cpu (grep { $_->{"Status"} =~ m/Populated/ } @{ $tree }) {
+      push(@cpus, Rex::Inventory::DMIDecode::CPU->new(dmi => $self, index => $idx));
+      ++$idx;
+   }
+
+   return @cpus;
+
 }
 
 sub _read_dmidecode {

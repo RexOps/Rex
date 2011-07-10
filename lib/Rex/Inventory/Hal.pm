@@ -8,6 +8,8 @@ package Rex::Inventory::Hal;
 
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Run;
+use Rex::Logger;
+
 use Data::Dumper;
 
 use strict;
@@ -96,6 +98,11 @@ sub _read_lshal {
 
    my ($self) = @_;
 
+   unless(can_run "lshal") {
+      Rex::Logger::info("No lshal available");
+      die;
+   }
+
    my @lines = run "lshal";
    my %devices;
    my %tmp_devices;
@@ -138,7 +145,7 @@ sub _read_lshal {
 
    for my $dev (keys %tmp_devices) {
 
-      my $s_key = $tmp_devices{$dev}->{"info.subsystem"};
+      my $s_key = $tmp_devices{$dev}->{"info.subsystem"} || $tmp_devices{$dev}->{"linux.subsystem"};
       $s_key ||= $tmp_devices{$dev}->{"info.category"};
 
       if(! $s_key) {

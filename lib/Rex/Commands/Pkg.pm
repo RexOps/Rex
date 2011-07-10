@@ -143,8 +143,9 @@ sub install {
 
    elsif($type eq "file") {
 
-      Rex::Logger::info("The install file => ... call is deprecated. Please use 'file' instead.");
-      Rex::Logger::info("See http://rexify.org/api/Rex/Commands/File.pm for more information.");
+      Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
+      Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
+      Rex::Logger::debug("See http://rexify.org/api/Rex/Commands/File.pm for more information.");
    
       my $source    = $option->{"source"};
       my $on_change = $option->{"on_change"} || sub {};

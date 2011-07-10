@@ -5,6 +5,10 @@
   * added transactions
   * deprecated "package file =>"
   * added hal module to access hardware information detected by hal
+  * added dmidecode module to access bios information
+  * added inventory function "inventor"
+  * added ubuntu support (tested with lts 10.04)
+  * added can_run function, to test if a command is present
 
 2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.8.1)
   * fixed mageia detection

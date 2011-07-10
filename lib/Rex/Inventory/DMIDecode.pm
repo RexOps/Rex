@@ -13,6 +13,7 @@ use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;
 use Rex::Inventory::DMIDecode::CPU;
 use Rex::Inventory::DMIDecode::Memory;
+use Rex::Inventory::DMIDecode::MemoryArray;
 use Rex::Commands::Run;
 
 sub new {
@@ -76,6 +77,21 @@ sub get_memory_modules {
       if($mem->{"Size"} =~ m/\d+/) {
          push(@mems, Rex::Inventory::DMIDecode::Memory->new(dmi => $self, index => $idx));
       }
+      ++$idx;
+   }
+
+   return @mems;
+
+}
+
+sub get_memory_arrays {
+
+   my ($self) = @_;
+   my @mems = ();
+   my $tree = $self->get_tree("Physical Memory Array");
+   my $idx = 0;
+   for my $mema (@{ $tree }) {
+      push(@mems, Rex::Inventory::DMIDecode::MemoryArray->new(dmi => $self, index => $idx));
       ++$idx;
    }
 

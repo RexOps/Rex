@@ -36,7 +36,7 @@ use Rex::Helper::SSH2;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(run);
+@EXPORT = qw(run can_run);
 
 =item run($command)
 
@@ -70,6 +70,31 @@ sub run {
    }
 
    return $out;
+}
+
+=item can_run($command)
+
+This function checks if a command is in the path or is available.
+
+ task "uptime", sub {
+    if(can_run "uptime") {
+       say run "uptime";
+    }
+ };
+
+=cut
+sub can_run {
+   my $cmd = shift;
+
+   if($cmd =~ m/^\//) {
+      if(is_file($cmd)) {
+         return 1;
+      }
+   }
+   else {
+      run "which $cmd";
+      if($? == 0) { return 1; }
+   }
 }
 
 =back

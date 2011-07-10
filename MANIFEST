@@ -13,6 +13,7 @@ lib/Rex/Commands/File.pm
 lib/Rex/Commands/Fs.pm
 lib/Rex/Commands/Gather.pm
 lib/Rex/Commands/Host.pm
+lib/Rex/Commands/Inventory.pm
 lib/Rex/Commands/Kernel.pm
 lib/Rex/Commands/MD5.pm
 lib/Rex/Commands/Pkg.pm
@@ -36,6 +37,20 @@ lib/Rex/Hardware/Memory.pm
 lib/Rex/Hardware/Network.pm
 lib/Rex/Hardware/Swap.pm
 lib/Rex/Helper/SSH2.pm
+lib/Rex/Inventory.pm
+lib/Rex/Inventory/DMIDecode.pm
+lib/Rex/Inventory/DMIDecode/BaseBoard.pm
+lib/Rex/Inventory/DMIDecode/Bios.pm
+lib/Rex/Inventory/DMIDecode/CPU.pm
+lib/Rex/Inventory/DMIDecode/Memory.pm
+lib/Rex/Inventory/DMIDecode/MemoryArray.pm
+lib/Rex/Inventory/DMIDecode/Section.pm
+lib/Rex/Inventory/DMIDecode/SystemInformation.pm
+lib/Rex/Inventory/Hal.pm
+lib/Rex/Inventory/Hal/Object.pm
+lib/Rex/Inventory/Hal/Object/Net.pm
+lib/Rex/Inventory/Hal/Object/Storage.pm
+lib/Rex/Inventory/Hal/Object/Volume.pm
 lib/Rex/Logger.pm
 lib/Rex/Master.pm
 lib/Rex/Master/FileList.pm
@@ -52,6 +67,7 @@ lib/Rex/Service/Redhat.pm
 lib/Rex/Service/SuSE.pm
 lib/Rex/Task.pm
 lib/Rex/Template.pm
+lib/Rex/Transaction.pm
 Makefile.PL
 README
 t/01.t

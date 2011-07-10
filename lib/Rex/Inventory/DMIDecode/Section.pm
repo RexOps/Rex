@@ -83,7 +83,7 @@ sub _search_for {
 
    for my $entry (@{ $self->dmi->get_tree($SECTION->{ref($self)}) }) {
       my ($_key) = keys %{$entry};
-      if($_key eq $key) {
+      if(exists $entry->{$key}) {
          return $entry->{$key};
       }
    }

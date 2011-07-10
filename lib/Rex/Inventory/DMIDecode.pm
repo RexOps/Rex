@@ -14,6 +14,7 @@ use Rex::Inventory::DMIDecode::Bios;
 use Rex::Inventory::DMIDecode::CPU;
 use Rex::Inventory::DMIDecode::Memory;
 use Rex::Inventory::DMIDecode::MemoryArray;
+use Rex::Inventory::DMIDecode::SystemInformation;
 use Rex::Commands::Run;
 
 sub new {
@@ -49,6 +50,13 @@ sub get_bios {
 
    return Rex::Inventory::DMIDecode::Bios->new(dmi => $self);
 }
+
+sub get_system_information {
+   my ($self) = @_;
+
+   return Rex::Inventory::DMIDecode::SystemInformation->new(dmi => $self);
+}
+
 
 sub get_cpus {
 

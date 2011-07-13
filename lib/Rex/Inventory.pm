@@ -13,6 +13,7 @@ use Rex::Inventory::DMIDecode;
 use Rex::Inventory::Hal;
 use Rex::Commands::Network;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 
 sub new {
    my $that = shift;
@@ -59,9 +60,10 @@ sub get {
       volumes     => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @volumes; return $ret; }->(),
       configuration => {
          network => {
-            routes               => \@routes,
-            current_connections  => \@netstat,
-            default_gateway      => $default_gw,
+            routes                => \@routes,
+            current_connections   => \@netstat,
+            default_gateway       => $default_gw,
+            current_configuration => network_interfaces(),
          },
          host    => {
             name   => [ run "hostname" ]->[0],

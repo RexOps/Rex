@@ -107,7 +107,7 @@ sub netstat {
    my @ret;
 
    my @netstat = run "netstat -nap";
-   my ($in_inet, $in_unix);
+   my ($in_inet, $in_unix) = (0, 0);
    for my $line (@netstat) {
       if($in_inet == 1) { ++$in_inet; next; }
       if($in_unix == 1) { ++$in_unix; next; }
@@ -117,7 +117,7 @@ sub netstat {
       }
 
       if($line =~ m/^Active UNIX/) {
-         $in_inet = undef;
+         $in_inet = 0;
          $in_unix = 1;
          next;
       }
@@ -141,7 +141,7 @@ sub netstat {
       if($in_unix) {
          my ($proto, $refcnt, $flags, $type, $state, $inode, $pid, $cmd, $path) 
             = ($line =~ m/^([a-z]+)\s+(\d+)\s+\[([^\]]+)\]\s+([a-z]+)\s+([a-z]+)?\s+(\d+)\s+(\d+)\/([^\s]+)\s+(.*)$/i);
-         $state =~ s/^\s|\s$//g;
+         $state =~ s/^\s|\s$//g if ($state);
 
          push(@ret, {
             proto        => $proto,

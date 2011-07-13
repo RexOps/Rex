@@ -66,6 +66,7 @@ sub get {
          host    => {
             name   => [ run "hostname" ]->[0],
             domain => [ run "hostname -d" || qw() ]->[0],
+            kernel => [ run "uname -r" || qw() ]->[0],
          },
       },
    };

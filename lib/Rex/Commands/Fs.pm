@@ -735,6 +735,43 @@ sub cp {
    run "cp -a $source $dest";
 }
 
+=item mount($device, $mount_point, @options)
+
+Mount devices.
+
+ task "mount", "server01", sub {
+    mount "/dev/sda5", "/tmp";
+    mount "/dev/sda6", "/mnt/sda6",
+               fs => "ext3",
+               options => [qw/noatime async/];
+ };
+
+=cut
+sub mount {
+   my ($device, $mount_point, @options) = @_;
+   my $option = { @options };
+
+   my $cmd = sprintf("mount %s %s %s %s", 
+                           $option->{"fs"}?"-t " . $option->{"fs"}:"",   # file system
+                           $option->{"options"}?" -o " . join(",", @{$option->{"options"}}):"",
+                           $device,
+                           $mount_point);
+}
+
+=item umount($mount_point)
+
+Unmount device.
+
+ task "umount", "server01", sub {
+    umount "/tmp";
+ };
+
+=cut
+sub umount {
+   my ($mount_point) = @_;
+   run "umount $mount_point";
+}
+
 =back
 
 =cut

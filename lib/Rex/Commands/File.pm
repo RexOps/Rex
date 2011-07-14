@@ -106,6 +106,20 @@ sub template {
 
 =item file($file_name, %options)
 
+This function is the successor of I<install file>. Please use this function to upload files to you server.
+
+ task "prepare", "server1", "server2", sub {
+    file "/etc/passwd",
+       source => "/files/etc/passwd";
+    
+    file "/etc/passwd",
+       content => template("/files/templates/etc/passwd.tpl");
+     
+    file "/etc/httpd/conf/httpd.conf",
+       source => "/files/etc/httpd/conf/httpd.conf",
+       on_change => sub { service httpd => "restart"; };
+ };
+
 =cut
 sub file {
    my ($file, @options) = @_;

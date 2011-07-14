@@ -11,6 +11,9 @@ use warnings;
 
 use Rex::Inventory::DMIDecode;
 use Rex::Inventory::Hal;
+use Rex::Commands::Network;
+use Rex::Commands::Run;
+use Rex::Commands::Gather;
 
 sub new {
    my $that = shift;
@@ -41,6 +44,10 @@ sub get {
    my @storage  = $hal->get_storage_devices;
    my @volumes  = $hal->get_storage_volumes;
 
+   my @routes     = route;
+   my @netstat    = netstat;
+   my $default_gw = default_gateway;
+
    return {
       base_board  => ($base_board?$base_board->get_all():{}),
       bios        => $bios->get_all(),
@@ -51,6 +58,19 @@ sub get {
       net         => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @net_devs; return $ret; }->(),
       storage     => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @storage; return $ret; }->(),
       volumes     => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @volumes; return $ret; }->(),
+      configuration => {
+         network => {
+            routes                => \@routes,
+            current_connections   => \@netstat,
+            default_gateway       => $default_gw,
+            current_configuration => network_interfaces(),
+         },
+         host    => {
+            name   => [ run "hostname" ]->[0],
+            domain => [ run "hostname -d" || qw() ]->[0],
+            kernel => [ run "uname -r" || qw() ]->[0],
+         },
+      },
    };
 
 }

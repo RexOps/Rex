@@ -91,7 +91,7 @@ use base qw(Exporter);
             evaluate_hostname
             logging
             needs
-            say todo
+            say
             LOCAL
           );
 
@@ -591,9 +591,5 @@ sub say {
    print @_, "\n";
 }
 
-sub todo {
-   my ($package, $filename, $line) = caller;
-   Rex::Logger::info("TODO: $line: " . $package . " ($filename)");
-}
 
 1;

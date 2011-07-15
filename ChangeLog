@@ -1,5 +1,8 @@
-2011-07-12 Jan Gehring <jan.gehring, gmail.com> (0.9.99.0)
+2011-07-12 Jan Gehring <jan.gehring, gmail.com> (0.10.0)
   * added network module for route, default gateway and netstat
+  * added mount and umount function
+  * added cron module
+  * added more information (basic system information) to the inventor function
 
 2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.9.0)
   * register tasks as function if possible

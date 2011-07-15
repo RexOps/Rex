@@ -7,6 +7,7 @@ lib/Rex.pm
 lib/Rex/Agent.pm
 lib/Rex/Batch.pm
 lib/Rex/Commands.pm
+lib/Rex/Commands/Cron.pm
 lib/Rex/Commands/DB.pm
 lib/Rex/Commands/Download.pm
 lib/Rex/Commands/File.pm
@@ -16,6 +17,7 @@ lib/Rex/Commands/Host.pm
 lib/Rex/Commands/Inventory.pm
 lib/Rex/Commands/Kernel.pm
 lib/Rex/Commands/MD5.pm
+lib/Rex/Commands/Network.pm
 lib/Rex/Commands/Pkg.pm
 lib/Rex/Commands/Process.pm
 lib/Rex/Commands/Rsync.pm

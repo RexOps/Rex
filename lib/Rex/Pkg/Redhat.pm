@@ -78,6 +78,28 @@ sub remove {
    return 1;
 }
 
+sub get_installed {
+   my ($self) = @_;
+
+   my @lines = run "rpm -qa --nosignature --nodigest --qf '\%{NAME} \%|EPOCH?{\%{EPOCH}}:{0}| \%{VERSION} \%{RELEASE} \%{ARCH}\\n'";
+
+   my @pkg;
+
+   for my $line (@lines) {
+      if($line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/) {
+         push(@pkg, {
+            name    => $1,
+            epoch   => $2,
+            version => $3,
+            release => $4,
+            arch    => $5,
+         });
+      }
+   }
+
+   return @pkg;
+}
+
 
 
 

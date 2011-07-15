@@ -82,4 +82,24 @@ sub remove {
 }
 
 
+sub get_installed {
+   my ($self) = @_;
+
+   my @lines = run "dpkg-query -W --showformat '\${Status} \${Package}|\${Version}\\n'";
+
+   my @pkg;
+
+   for my $line (@lines) {
+      if($line =~ m/^install ok installed ([^\|]+)\|(.*)$/) {
+         push(@pkg, {
+            name    => $1,
+            version => $2,
+         });
+      }
+   }
+
+   return @pkg;
+}
+
+
 1;

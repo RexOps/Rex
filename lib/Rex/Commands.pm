@@ -30,6 +30,8 @@ This module is the core commands module.
 
 =over 4
 
+=item * Cron Management L<Rex::Commands::Cron>
+
 =item * Database Commands L<Rex::Commands::DB>
 
 =item * SCP Up- and Download L<Rex::Commands::Upload>, L<Rex::Commands::Download>
@@ -41,6 +43,8 @@ This module is the core commands module.
 =item * Information Gathering L<Rex::Commands::Gather>
 
 =item * Manipulation of /etc/hosts L<Rex::Commands::Host>
+
+=item * Get an inventory of your Hardware L<Rex::Commands::Inventory>
 
 =item * Kernel Commands L<Rex::Commands::Kernel>
 

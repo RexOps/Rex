@@ -51,6 +51,51 @@ use Rex::Commands::File;
 
 =item cron($action => $user, ...)
 
+With this function you can manage cronjobs.
+
+List cronjobs.
+
+ use Rex::Commands::Cron;
+ use Data::Dumper;
+    
+ task "listcron", "server1", sub {
+    my @crons = cron list => "root";
+    print Dumper(\@crons);
+ };
+
+Add a cronjob.
+
+This example will add a cronjob running on minute 1, 5, 19 and 40. Every hour and every day.
+
+ use Rex::Commands::Cron;
+ use Data::Dumper;
+    
+ task "addcron", "server1", sub {
+     cron add => "root", {
+        minute => "1,5,19,40",
+     };
+ };
+
+This example will add a cronjob only running on the 1st, 3rd and 5th day of a month. But only when these days are monday or wednesday. And only in January and May. To the 11th and 23th hour. And to the 1st and 5th minute.
+
+ task "addcron", "server1", sub {
+     cron add => "root", {
+        minute => "1,5",
+        hour   => "11,23",
+        month  => "1,5",
+        day_of_week => "1,3",
+        day_of_month => "1,3,5",
+     };
+ };
+
+Delete a cronjob.
+
+This example will delete the 4th cronjob. It starts counting by zero (0).
+
+ task "delcron", "server1", sub {
+     cron delete => "root", 3;
+ };
+
 =cut
 
 sub cron {
@@ -119,3 +164,8 @@ sub cron {
 
 }
 
+=back
+
+=cut
+
+1;

@@ -58,6 +58,7 @@ sub inventor {
 }
 
 =back
+
 =cut
 
 1;

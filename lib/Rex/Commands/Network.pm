@@ -74,7 +74,7 @@ sub route {
 
 }
 
-=item default_gateway
+=item default_gateway([$default_gw])
 
 Get or set the default gateway.
 
@@ -162,6 +162,8 @@ sub netstat {
 
 }
 
+=back
 
+=cut
 
 1;

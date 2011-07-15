@@ -3,6 +3,7 @@
   * added mount and umount function
   * added cron module
   * added more information (basic system information) to the inventor function
+  * added installed_packages function to get all the installed packages
 
 2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.9.0)
   * register tasks as function if possible

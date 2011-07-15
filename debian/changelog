@@ -1,3 +1,12 @@
+rex (0.10.0) unstable; urgency=low
+  * added network module for route, default gateway and netstat
+  * added mount and umount function
+  * added cron module
+  * added more information (basic system information) to the inventor function
+  * added installed_packages function to get all the installed packages
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 15 Jul 2011 22:50:00 +0200
+
 rex (0.9.0) unstable; urgency=low
   * register tasks as function if possible
   * add "lib" to INC if exists

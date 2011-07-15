@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.9.0
+Version: 0.10.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.9.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.10.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -53,6 +53,13 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Fri Jul 15 2011 Jan Gehring <jan.gehring at, gmail.com> 0.10.0-1
+- added network module for route, default gateway and netstat
+- added mount and umount function
+- added cron module
+- added more information (basic system information) to the inventor function
+- added installed_packages function to get all the installed packages
 
 * Sun Jul 10 2011 Jan Gehring <jan.gehring at, gmail.com> 0.9.0-1
 - register tasks as function if possible

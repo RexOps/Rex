@@ -66,7 +66,8 @@ use base qw(Exporter);
             unlink rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
             chown chgrp chmod
             is_file is_dir is_readable is_writeable is_writable
-            df du);
+            df du
+            mount umount);
 
 use vars qw(%file_handles);
 
@@ -756,6 +757,11 @@ sub mount {
                            $option->{"options"}?" -o " . join(",", @{$option->{"options"}}):"",
                            $device,
                            $mount_point);
+
+   run $cmd;
+   if($? == 0) { return 1; }
+
+   return 0;
 }
 
 =item umount($mount_point)
@@ -770,6 +776,9 @@ Unmount device.
 sub umount {
    my ($mount_point) = @_;
    run "umount $mount_point";
+
+   if($? == 0) { return 1; }
+   return 0;
 }
 
 =back

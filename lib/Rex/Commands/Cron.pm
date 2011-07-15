@@ -67,38 +67,53 @@ sub cron {
          if($line =~ m/^\s+#/) { next; }
          if($line =~ m/^\s*$/) { next; }
 
-         my ($minute, $hour, $day_of_month, $month, $day_of_week, $cmd) = split(/\s+/, $line, 6);
-         push(@ret, {
-            minute       => $minute,
-            hour         => $hour,
-            day_of_month => $day_of_month,
-            month        => $month,
-            day_of_week  => $day_of_week,
-         });
+         if(exists $config->{"as_text"}) {
+            push(@ret, $line);
+         }
+         else {
+            my ($minute, $hour, $day_of_month, $month, $day_of_week, $cmd) = split(/\s+/, $line, 6);
+            push(@ret, {
+               minute       => $minute,
+               hour         => $hour,
+               day_of_month => $day_of_month,
+               month        => $month,
+               day_of_week  => $day_of_week,
+               command      => $cmd,
+            });
+         }
       }
 
       return @ret;
    }
    elsif($action eq "add") {
       my @lines = run "crontab -u $user -l";
-      my $new_cron = "";
+
+      my $new_cron = sprintf("%s %s %s %s %s %s", $config->{"minute"} || "*",
+                                                  $config->{"hour"} || "*",
+                                                  $config->{"day_of_month"} || "*",
+                                                  $config->{"month"} || "*",
+                                                  $config->{"day_of_week"} || "*",
+                                                  $config->{"command"} || "*",
+                                                  );
 
       push (@lines, $new_cron);
       my $fh = file_write "/tmp/cron.rex.tmp";
-      $fh->write(join("\n", @lines));
+      $fh->write(join("\n", @lines) . "\n");
       $fh->close;
 
-      run "crontab -u /tmp/cron.rex.tmp";
+      run "crontab -u $user /tmp/cron.rex.tmp";
       unlink "/tmp/cron.rex.tmp";
    }
    elsif($action eq "delete") {
-      my @lines = run "crontab -u $user -l";
+      my @crons = cron(list => $user, {as_text => 1});
+
+      splice(@crons, $config, 1);
 
       my $fh = file_write "/tmp/cron.rex.tmp";
-      $fh->write(join("\n", @lines));
+      $fh->write(join("\n", @crons) . "\n");
       $fh->close;
 
-      run "crontab -u /tmp/cron.rex.tmp";
+      run "crontab -u $user /tmp/cron.rex.tmp";
       unlink "/tmp/cron.rex.tmp";
    }
 

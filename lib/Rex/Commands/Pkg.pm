@@ -75,7 +75,7 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
 
 =item installing a file
  
- This is deprecated since 0.9. Please use L<File> I<file> instead.
+This is deprecated since 0.9. Please use L<File> I<file> instead.
 
  task "prepare", "server01", sub {
     install file => "/etc/passwd", {

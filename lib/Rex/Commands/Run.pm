@@ -58,7 +58,7 @@ sub run {
    if(my $ssh = Rex::is_ssh()) {
       $out = net_ssh2_exec($ssh, "LC_ALL=C " . $cmd);
    } else {
-      $out = qx{"LC_ALL=C $cmd"};
+      $out = qx{LC_ALL=C $cmd};
    }
 
    Rex::Logger::debug($out);

@@ -191,6 +191,7 @@ sub import {
    my ($class, $opt) = @_;
 
    $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "");  
+   $dbh->{mysql_auto_reconnect} = 1;
 
    my ($ns_register_to, $file, $line) = caller;   
 

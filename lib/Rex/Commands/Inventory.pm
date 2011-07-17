@@ -38,9 +38,9 @@ require Exporter;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(inventor);
+@EXPORT = qw(inventor inventory);
 
-=item inventor
+=item inventory
 
 This function returns an hashRef of all gathered hardware. Use the Data::Dumper module to see its structure.
 
@@ -51,10 +51,15 @@ This function returns an hashRef of all gathered hardware. Use the Data::Dumper 
 
 =cut
 
-sub inventor {
+sub inventory {
    my $inv = Rex::Inventory->new;
 
    return $inv->get;
+}
+
+
+sub inventor {
+   return inventory();
 }
 
 =back

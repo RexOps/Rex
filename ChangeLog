@@ -1,3 +1,7 @@
+2011-07-17 Jan Gehring <jan.gehring, gmail.com> (0.10.1)
+  * fixed db disconnect on forks
+  * fixed some typos
+
 2011-07-12 Jan Gehring <jan.gehring, gmail.com> (0.10.0)
   * added network module for route, default gateway and netstat
   * added mount and umount function

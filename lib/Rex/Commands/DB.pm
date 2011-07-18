@@ -115,6 +115,9 @@ sub db {
 
    if($type eq "select") {
       my $sql = sprintf("SELECT %s FROM %s WHERE %s", $data->{"fields"} || "*", $table, $data->{"where"} || "1=1");
+      if(defined $data->{"order"}) {
+         $sql .= " ORDER BY " . $data->{"order"};
+      }
       Rex::Logger::debug("sql: $sql");
 
       my $sth = $dbh->prepare($sql);

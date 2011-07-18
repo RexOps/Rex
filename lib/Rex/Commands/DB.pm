@@ -143,6 +143,7 @@ sub db {
       my $sth = $dbh->prepare($sql);
       my $i=1;
       for my $key (keys %{$data}) {
+         $data->{$key} ||= '';
          Rex::Logger::debug("sql: binding: " . $data->{$key});
          $sth->bind_param($i, $data->{$key}) or die($sth->errstr);
          $i++;

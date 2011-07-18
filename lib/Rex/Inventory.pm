@@ -63,10 +63,15 @@ sub get {
             for my $l_drive (keys %{$hp_raid->{$key}->{"array"}->{$shelf}->{"logical_drive"}}) {
                my $l_drive_data = $hp_raid->{$key}->{"array"}->{$shelf}->{"logical_drive"}->{$l_drive};
                my ($size) = ($l_drive_data->{"size"} =~ m/^([0-9\.]+)/);
+               my $multi = 1024 * 1024 * 1024;
+               if($l_drive_data->{"size"} =~ m/TB$/) {
+                  $multi *= 1024;
+               }
+
                push(@raid_logical_drives, {
                      status => ($l_drive_data->{"status"} eq "OK"?1:0),
                      raid_level => $l_drive_data->{"fault_tolerance"},
-                     size => sprintf("%i", $size * 1024 * 1024 * 1024),
+                     size => sprintf("%i", $size * $multi),
                      dev => $l_drive_data->{"disk_name"},
                      shelf => $shelf,
                   });

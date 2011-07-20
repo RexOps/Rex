@@ -34,5 +34,21 @@ sub new {
    return $self;
 }
 
+sub get {
+
+   my ($self, $key, $is_array) = @_;
+   if($key eq "Type") {
+      my $ret = $self->_search_for($key, $is_array);
+      if($ret eq "<OUT OF SPEC>") {
+         return "";
+      }
+
+      return $ret;
+   }
+
+   return $self->SUPER::get($key, $is_array);
+
+}
+
 1;
 

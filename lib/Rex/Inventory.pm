@@ -14,6 +14,7 @@ use Rex::Inventory::Hal;
 use Rex::Commands::Network;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
+use Rex::Commands::LVM;
 
 use Rex::Inventory::HP::ACU;
 
@@ -49,6 +50,10 @@ sub get {
    my @routes     = route;
    my @netstat    = netstat;
    my $default_gw = default_gateway;
+
+   my @pvs = pvs;
+   my @vgs = vgs;
+   my @lvs = lvs;
 
    my @raid_controller;
    if(my $hp_raid = Rex::Inventory::HP::ACU->get()) {
@@ -109,6 +114,11 @@ sub get {
       volumes     => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @volumes; return $ret; }->(),
       raid        => {
          controller => \@raid_controller,
+      },
+      lvm         => {
+         physical_volumes => \@pvs,
+         volume_groups    => \@vgs,
+         logical_volumes  => \@lvs,
       },
       configuration => {
          network => {

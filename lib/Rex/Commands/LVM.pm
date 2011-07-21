@@ -13,7 +13,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
-@EXPORT = qw(pvs vgs);
+@EXPORT = qw(pvs vgs lvs);
 
 use Rex::Commands::Run;
 
@@ -27,6 +27,8 @@ sub pvs {
       chomp $line;
       $line =~ s/^\s+//g;
       my ($phy_vol, $vol_group, $format, $attr, $psize, $pfree) = split(/\|/, $line);
+      $pfree =~ s/B$//;
+      $psize =~ s/B$//;
 
       push(@ret, {
          physical_volume => $phy_vol,
@@ -59,6 +61,8 @@ sub vgs {
       chomp $line;
       $line =~ s/^\s+//g;
       my ($pv_name, $vg_name, $vg_size, $vg_free, $vg_attr) = split(/\|/, $line);
+      $vg_free =~ s/B$//;
+      $vg_size =~ s/B$//;
       
       push(@ret, {
          physical_volume => $pv_name,
@@ -73,5 +77,33 @@ sub vgs {
 
 }
 
+sub lvs {
+
+   my ($vg) = @_;
+
+   my $cmd = "lvdisplay --units b --columns --separator '|' -o 'lv_name,lv_path,lv_attr,lv_size' --noheading";
+   if($vg) {
+      $cmd .= " " . $vg;
+   }
+
+   my @lines = run $cmd;
+
+   my @ret;
+   for my $line (@lines) {
+      chomp $line;
+      $line =~ s/^\s+//g;
+
+      my($lv_name, $lv_path, $lv_attr, $lv_size) = split(/\|/, $line);
+      $lv_size =~ s/B$//;
+      push(@ret, {
+         name => $lv_name,
+         path => $lv_path,
+         attributes => $lv_attr,
+         size => $lv_size,
+      });
+   }
+
+   return @ret;
+}
    
 1;

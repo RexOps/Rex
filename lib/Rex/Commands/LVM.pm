@@ -4,6 +4,29 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Commands::LVM - Get LVM Information
+
+=head1 DESCRIPTION
+
+With this module you can get information of your lvm setup.
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::LVM;
+    
+ my @physical_devices = pvs;
+ my @volume_groups = vgs;
+ my @logical_volumes = lvs;
+ 
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
 package Rex::Commands::LVM;
    
 use strict;
@@ -17,6 +40,22 @@ use vars qw(@EXPORT);
 
 use Rex::Commands::Run;
 
+=item pvs
+
+Get Information of all your physical volumes.
+
+ use Data::Dumper;
+ use Rex::Commands::LVM;
+   
+ task "lvm", sub {
+    my @physical_volumes = pvs;
+      
+    for my $physical_volume (@physical_volumes) {
+       say Dumper($physical_volume);
+    }
+ };
+
+=cut
 
 sub pvs {
    
@@ -43,6 +82,23 @@ sub pvs {
    return @ret;
 
 }
+
+=item vgs
+
+Get Information of all your volume groups.
+
+ use Data::Dumper;
+ use Rex::Commands::LVM;
+    
+ task "lvm", sub {
+    my @volume_groups = vgs;
+      
+    for my $volume_group (@volume_groups) {
+       say Dumper($volume_group);
+    }
+ };
+
+=cut
 
 sub vgs {
 
@@ -76,6 +132,23 @@ sub vgs {
    return @ret;
 
 }
+
+=item lvs
+
+Get Information of all your logical volumes.
+
+ use Data::Dumper;
+ use Rex::Commands::LVM;
+    
+ task "lvm", sub {
+    my @logical_volumes = lvs;
+      
+    for my $logical_volume (@logical_volumes) {
+       say Dumper($logical_volume);
+    }
+ };
+
+=cut
 
 sub lvs {
 

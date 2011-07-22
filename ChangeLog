@@ -1,3 +1,12 @@
+2011-07-22 Jan Gehring <jan.gehring, gmail.com> (0.11.0)
+  * added lvm module
+  * added lvm to inventory
+  * fixed <OUT OF SPEC> inventory string
+  * fixed multiplicator for GB and TB
+  * added order key to selects
+  * added support for hpacucli
+  * added centos 6 support
+
 2011-07-17 Jan Gehring <jan.gehring, gmail.com> (0.10.1)
   * fixed db disconnect on forks
   * fixed some typos

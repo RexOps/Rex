@@ -16,6 +16,7 @@ lib/Rex/Commands/Gather.pm
 lib/Rex/Commands/Host.pm
 lib/Rex/Commands/Inventory.pm
 lib/Rex/Commands/Kernel.pm
+lib/Rex/Commands/LVM.pm
 lib/Rex/Commands/MD5.pm
 lib/Rex/Commands/Network.pm
 lib/Rex/Commands/Pkg.pm
@@ -53,6 +54,7 @@ lib/Rex/Inventory/Hal/Object.pm
 lib/Rex/Inventory/Hal/Object/Net.pm
 lib/Rex/Inventory/Hal/Object/Storage.pm
 lib/Rex/Inventory/Hal/Object/Volume.pm
+lib/Rex/Inventory/HP/ACU.pm
 lib/Rex/Logger.pm
 lib/Rex/Master.pm
 lib/Rex/Master/FileList.pm

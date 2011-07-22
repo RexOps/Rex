@@ -48,6 +48,8 @@ This module is the core commands module.
 
 =item * Kernel Commands L<Rex::Commands::Kernel>
 
+=item * LVM Commands L<Rex::Commands::LVM>
+
 =item * Package Commands L<Rex::Commands::Pkg>
 
 =item * Process Management L<Rex::Commands::Process>

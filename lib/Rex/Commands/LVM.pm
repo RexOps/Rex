@@ -4,6 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+
 =head1 NAME
 
 Rex::Commands::LVM - Get LVM Information
@@ -20,6 +21,8 @@ With this module you can get information of your lvm setup.
  my @volume_groups = vgs;
  my @logical_volumes = lvs;
  
+
+
 =head1 EXPORTED FUNCTIONS
 
 =over 4
@@ -178,5 +181,10 @@ sub lvs {
 
    return @ret;
 }
+
+=back
+
+=cut
+
    
 1;

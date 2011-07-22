@@ -128,7 +128,7 @@ sub get {
             current_configuration => network_interfaces(),
          },
          host    => {
-            name   => [ run "hostname" ]->[0],
+            name   => [ run "hostname -s" ]->[0],
             domain => [ run "hostname -d" || qw() ]->[0],
             kernel => [ run "uname -r" || qw() ]->[0],
          },

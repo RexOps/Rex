@@ -241,13 +241,18 @@ sub remove {
    if($type eq "package") {
 
       my $pkg = Rex::Pkg->get;
-
-      if($pkg->is_installed($package)) {
-         Rex::Logger::info("Removing $package.");
-         $pkg->remove($package);
+      unless(ref($package) eq "ARRAY") {
+         $package = ["$package"];
       }
-      else {
-         Rex::Logger::info("$package is not installed.");
+
+      for my $pkg (@{$package}) {
+         if($pkg->is_installed($package)) {
+            Rex::Logger::info("Removing $package.");
+            $pkg->remove($package);
+         }
+         else {
+            Rex::Logger::info("$package is not installed.");
+         }
       }
 
    }

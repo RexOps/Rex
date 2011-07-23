@@ -32,11 +32,15 @@ use warnings;
 require Exporter;
 use Data::Dumper;
 use Rex::Helper::SSH2;
+use Rex::Config;
+
+use Expect;
+use Net::SSH2::Expect;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(run can_run);
+@EXPORT = qw(run can_run sudo);
 
 =item run($command)
 
@@ -94,6 +98,47 @@ sub can_run {
    else {
       run "which $cmd";
       if($? == 0) { return 1; }
+   }
+}
+
+=item sudo($command)
+
+Run $command with I<sudo>.
+
+ task "eth1-down", sub {
+   sudo "ifconfig eth1 down";
+ };
+
+=cut
+sub sudo {
+   my ($cmd) = @_;
+
+   my $exp;
+   my $timeout       = Rex::Config->get_timeout;
+   my $sudo_password = Rex::Config->get_sudo_password;
+
+   if(my $ssh = Rex::is_ssh()) {
+      $exp = Net::SSH2::Expect->new($ssh);
+   }
+   else {
+      $exp = Expect->new();
+   }
+
+   $exp->spawn("sudo", $cmd);
+
+   $exp->expect($timeout, [
+                              qr/Password:/ => sub {
+                                          my ($exp, $line) = @_;
+                                          $exp->send($sudo_password . "\n");
+
+                                          unless(ref($exp) eq "Net::SSH2::Expect") {
+                                             exp_continue;
+                                          }
+                                       },
+                          ]);
+
+   unless(ref($exp) eq "Net::SSH2::Expect") {
+      $exp->soft_close;
    }
 }
 

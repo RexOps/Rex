@@ -8,5 +8,5 @@ Homepage: https://github.com/krimdomu/-R--ex
 
 Package: rex
 Architecture: all
-Depends: perl (>= 5.10.0), libnet-ssh2-perl (>= 0.33)
+Depends: perl (>= 5.10.0), libnet-ssh2-perl (>= 0.33), libnet-ssh2-expect-perl
 Description: REmote eXecute. Execute commands on remote machines.

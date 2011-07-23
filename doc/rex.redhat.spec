@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.11.0
+Version: 0.11.99.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.11.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.11.99.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -18,6 +18,7 @@ BuildRequires: perl(ExtUtils::MakeMaker)
 Requires: perl-Net-SSH2
 Requires: perl-Expect
 Requires: perl-DBI
+Requires: perl-Net-SSH2-Expect
 Requires: perl >= 5.8.0
 Requires: rsync
 

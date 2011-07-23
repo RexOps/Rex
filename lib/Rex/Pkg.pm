@@ -19,7 +19,7 @@ sub get {
 
    my $host = Rex::Hardware::Host->get();
 
-   if($host->{"operatingsystem"} eq "CentOS") {
+   if(lc($host->{"operatingsystem"}) eq "centos" || lc($host->{"operatingsystem"}) eq "redhat") {
       $host->{"operatingsystem"} = "Redhat";
    }
 

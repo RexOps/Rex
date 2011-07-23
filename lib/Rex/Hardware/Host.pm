@@ -29,9 +29,10 @@ sub get {
 
 sub get_operating_system {
 
+   # use lsb_release if available
    if(can_run "lsb_release") {
       if(my $ret = run "lsb_release -s -i") {
-         if($ret eq "Ubuntu") { return "Ubuntu"; }
+         return $ret;
       }
    }
 
@@ -63,11 +64,19 @@ sub get_operating_system {
 
    return "Unknown";
 
+
 }
 
 sub get_operating_system_version {
    
    my $op = get_operating_system();
+
+   # use lsb_release if available
+   if(can_run "lsb_release") {
+      if(my $ret = run "lsb_release -r -s") {
+         return $ret;
+      }
+   }
 
    if($op eq "Debian") {
 
@@ -84,7 +93,7 @@ sub get_operating_system_version {
       my @l = run "lsb_release -r -s";
       return $l[0];
    }
-   elsif($op eq "Redhat" or $op eq "CentOS") {
+   elsif(lc($op) eq "redhat" or lc($op) eq "centos") {
 
       my $fh = file_read("/etc/redhat-release");
       my $content = $fh->read_all;

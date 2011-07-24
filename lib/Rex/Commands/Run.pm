@@ -124,10 +124,19 @@ sub sudo {
       $exp = Expect->new();
    }
 
+   $exp->log_stdout(0);
+
+   my $cmd_out = "";
+   $exp->log_file(sub {
+      my ($str) = @_;
+      $cmd_out .= $str;
+   });
+
    $exp->spawn("sudo", $cmd);
 
    $exp->expect($timeout, [
-                              qr/Password:/ => sub {
+                              qr/Password:|\[sudo\] password for [^:]+:/i => sub {
+                                          Rex::Logger::debug("Sending password");
                                           my ($exp, $line) = @_;
                                           $exp->send($sudo_password . "\n");
 
@@ -140,6 +149,13 @@ sub sudo {
    unless(ref($exp) eq "Net::SSH2::Expect") {
       $exp->soft_close;
    }
+
+   chomp $cmd_out;
+
+   if(wantarray) {
+      return split(/\n/, $cmd_out);
+   }
+   return $cmd_out;
 }
 
 =back

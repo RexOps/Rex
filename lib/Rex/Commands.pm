@@ -91,7 +91,7 @@ use vars qw(@EXPORT $current_desc $global_no_ssh);
 use base qw(Exporter);
 
 @EXPORT = qw(task desc group 
-            user password public_key private_key pass_auth no_ssh
+            user password sudo_password public_key private_key pass_auth no_ssh
             get_random do_task batch timeout parallelism
             exit
             evaluate_hostname
@@ -329,6 +329,16 @@ Set the password for the ssh connection (or for the private key file).
 
 sub password {
    Rex::Config->set_password(@_);
+}
+
+=item sudo_password($password)
+
+Set the password for the sudo command.
+
+=cut
+
+sub sudo_password {
+   Rex::Config->set_sudo_password(@_);
 }
 
 =item timeout($seconds)

@@ -11,7 +11,7 @@ use warnings;
 
 use Rex::Logger;
 
-use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism $log_filename $log_facility);
+use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password);
 
 sub set_user {
    my $class = shift;
@@ -22,6 +22,12 @@ sub set_password {
    my $class = shift;
    $password = shift;
 }
+
+sub set_sudo_password {
+   my $class = shift;
+   $sudo_password = shift;
+}
+
 
 sub get_user {
    my $class = shift;
@@ -35,6 +41,11 @@ sub get_user {
 sub get_password {
    my $class = shift;
    return $password;
+}
+
+sub get_sudo_password {
+   my $class = shift;
+   return $sudo_password;
 }
 
 sub set_timeout {

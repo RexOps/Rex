@@ -510,6 +510,21 @@ Depend on the I<uname> task in the package MyPkg. The I<uname> task will be call
 sub needs {
    my ($self, @args) = @_;
 
+   # if no namespace is given, use the current one
+   if(ref($self) eq "ARRAY") {
+      @args = @{ $self };
+      ($self) = caller;
+   }
+
+   if(! @args) {
+      @args = ($self);
+      ($self) = caller;
+   }
+
+   if(ref($args[0]) eq "ARRAY") {
+      @args = @{ $args[0] };
+   }
+
    Rex::Logger::debug("need to call tasks from $self");
 
    no strict 'refs';

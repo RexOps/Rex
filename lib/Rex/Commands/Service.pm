@@ -58,7 +58,7 @@ use Rex::Service;
 
 @EXPORT = qw(service);
 
-=item service($service, $action)
+=item service($service, $action, [$option])
 
 The service function accepts 2 parameters. The first is the service name and the second the action you want to perform.
 
@@ -107,7 +107,7 @@ The service function accepts 2 parameters. The first is the service name and the
 =cut
 
 sub service {
-   my ($services, $action) = @_;
+   my ($services, $action, $options) = @_;
 
    if(wantarray) {
    
@@ -190,6 +190,12 @@ sub service {
             Rex::Logger::info("$service is stopped");
             return 0;
          }
+
+      }
+
+      elsif($action eq "ensure") {
+
+         $srvc->ensure($service, $options);
 
       }
 

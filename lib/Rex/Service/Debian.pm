@@ -82,5 +82,18 @@ sub status {
    return 0;
 }
 
+sub ensure {
+   my ($self, $service, $what) = @_;
+
+   if($what =~  /^stop/) {
+      $self->stop($service);
+      run "update-rc.d -f $service remove";
+   }
+   elsif($what =~ /^start/) {
+      $self->start($service);
+      run "update-rc.d $service defaults";
+   }
+}
+
 
 1;

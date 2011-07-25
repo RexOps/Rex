@@ -82,5 +82,17 @@ sub status {
    return 0;
 }
 
+sub ensure {
+   my ($self, $service, $what) = @_;
+
+   if($what =~  /^stop/) {
+      $self->stop($service);
+      run "chkconfig $service off";
+   }
+   elsif($what =~ /^start/) {
+      $self->start($service);
+      run "chkconfig $service on";
+   }
+}
 
 1;

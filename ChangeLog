@@ -1,3 +1,8 @@
+2011-07-26 Jan Gehring <jan.gehring, gmail.com> (0.11.1)
+  * fixed output of netstat (reported by Thomas Biege)
+  * fixed inclusion of some modules in Run.pm that causes errors under 
+    some circumstances (reported by Thomas Biege)
+
 2011-07-22 Jan Gehring <jan.gehring, gmail.com> (0.11.0)
   * added lvm module
   * added lvm to inventory

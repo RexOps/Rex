@@ -31,6 +31,8 @@ use warnings;
 
 require Exporter;
 use Data::Dumper;
+use Rex;
+use Rex::Logger;
 use Rex::Helper::SSH2;
 use Rex::Config;
 

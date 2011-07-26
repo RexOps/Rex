@@ -55,6 +55,10 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %changelog
 
+* Thu Jul 26 2011 Jan Gehring <jan.gehring at, gmail.com> 0.11.1-1
+- fixed output of netstat (reported by Thomas Biege)
+- fixed inclusion of some modules in Run.pm that causes errors under some circumstances (reported by Thomas Biege)
+
 * Fri Jul 22 2011 Jan Gehring <jan.gehring at, gmail.com> 0.11.0-1
 - added lvm module
 - added lvm to inventory

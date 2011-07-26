@@ -142,6 +142,8 @@ sub netstat {
          $cmd   ||= "";
          $state ||= "";
 
+         $cmd =~ s/\s+$//;
+
          push(@ret, {
             proto        => $proto,
             recvq        => $recvq,
@@ -173,6 +175,8 @@ sub netstat {
 
 
          $state =~ s/^\s|\s$//g if ($state);
+         $flags =~ s/\s+$//;
+         $cmd =~ s/\s+$//;
 
          my $data = {
             proto        => $proto,
@@ -185,9 +189,6 @@ sub netstat {
             command      => $cmd,
             path         => $path,
          };
-
-         print ">> $line\n";
-         print Dumper($data);
 
          push(@ret, $data);
       }

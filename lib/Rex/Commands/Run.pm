@@ -61,6 +61,7 @@ sub run {
 
    my @ret = ();
    my $out;
+   # no can_run($cmd) if there are parameters
    if(my $ssh = Rex::is_ssh()) {
       $out = net_ssh2_exec($ssh, "LC_ALL=C " . $cmd);
    } else {

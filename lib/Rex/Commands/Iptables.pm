@@ -104,6 +104,28 @@ sub iptables {
       }
 
    }
+   elsif(exists $option{"state"}) {
+      $cmd .= "-t filter -A INPUT ";
+
+      if(exists $option{"dev"}) {
+         $cmd .= " -i " . $option{"dev"};
+      }
+
+      $cmd .= " -m state --state " . $option{"state"};
+      
+      if(exists $option{"accept"}) {
+         $cmd .= " -j ACCEPT ";
+      }
+      
+      if(exists $option{"drop"}) {
+         $cmd .= " -j DROP ";
+      }
+
+      if(exists $option{"reject"}) {
+         $cmd .= " -j REJECT ";
+      }
+
+   }
    elsif(exists $option{"redirect"}) {
       $cmd .= " -t nat ";
 

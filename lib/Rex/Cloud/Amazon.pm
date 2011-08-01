@@ -63,11 +63,20 @@ sub timestamp {
 sub run_instance {
    my ($self, %data) = @_;
 
-   $self->_request("RunInstances", 
+   my $xml = $self->_request("RunInstances", 
                ImageId  => $data{"image_id"},
                MinCount => 1,
                MaxCount => 1,
                InstanceType => $data{"type"} || "m1.small");
+
+   my $ref = XMLin($xml);
+
+   if(exists $data{"name"}) {
+      $self->add_tag(id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
+                     name => "Name",
+                     value => $data{"name"});
+   }
+
 }
 
 sub terminate_instance {
@@ -82,6 +91,15 @@ sub stop_instance {
 
    $self->_request("StopInstances",
                "InstanceId.1" => $id);
+}
+
+sub add_tag {
+   my ($self, %data) = @_;
+
+   $self->_request("CreateTags",
+               "ResourceId.1" => $data{"id"},
+               "Tag.1.Key"    => $data{"name"},
+               "Tag.1.Value"  => $data{"value"});
 }
 
 sub list_running_instances {

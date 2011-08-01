@@ -11,7 +11,9 @@ use warnings;
 
 use Rex::Logger;
 
-use vars qw($user $password $timeout $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password);
+use vars qw($user $password 
+            $timeout $max_connect_fails
+            $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password);
 
 sub set_user {
    my $class = shift;
@@ -26,6 +28,15 @@ sub set_password {
 sub set_sudo_password {
    my $class = shift;
    $sudo_password = shift;
+}
+
+sub set_max_connect_fails {
+   my $class = shift;
+   $max_connect_fails = shift;
+}
+
+sub get_max_connect_fails {
+   return $max_connect_fails || 3;
 }
 
 

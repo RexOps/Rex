@@ -92,7 +92,7 @@ use base qw(Exporter);
 
 @EXPORT = qw(task desc group 
             user password sudo_password public_key private_key pass_auth no_ssh
-            get_random do_task batch timeout parallelism
+            get_random do_task batch timeout max_connect_retries parallelism
             exit
             evaluate_hostname
             logging
@@ -349,6 +349,15 @@ Set the timeout for the ssh connection and other network related stuff.
 
 sub timeout {
    Rex::Config->set_timeout(@_);
+}
+
+=item max_connect_retries($count)
+
+Set the maximum number of connection retries.
+
+=cut
+sub max_connect_retries {
+   Rex::Config->set_connect_fails(@_);
 }
 
 =item get_random($count, @chars)

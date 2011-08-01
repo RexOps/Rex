@@ -17,10 +17,15 @@ use Rex::Logger;
 use Rex::Config;
 use Rex::Cloud;
     
-@EXPORT = qw(cloud cloud_service cloud_auth cloud_region cloud_list);
+@EXPORT = qw(cloud cloud_service cloud_auth cloud_region cloud_list get_cloud_instances_as_group);
 
 sub cloud_service {
    ($cloud_service) = @_;
+
+   # set retry counter to a higher value
+   if(Rex::Config->get_max_connect_fails() < 5) {
+      Rex::Config->set_max_connect_fails(15);
+   }
 }
 
 sub cloud_auth {
@@ -41,6 +46,27 @@ sub cloud_list {
 
 }
 
+sub get_cloud_instances_as_group {
+   
+   # return funcRef
+   return sub {
+      my @list = cloud_list;
+
+      my @ret;
+
+      for my $instance (@list) {
+         if($instance->{"state"} eq "running") {
+            push(@ret, $instance->{"ip"});
+         }
+      }
+
+      return @ret;
+   };
+
+}
+
+
+
 sub cloud {
 
    my ($action, $data) = @_;
@@ -57,6 +83,7 @@ sub cloud {
       $cloud->run_instance(
          image_id => $data->{"image_id"},
          name     => $data->{"name"} || undef,
+         key      => $data->{"key"} || undef,
       );
    }
 

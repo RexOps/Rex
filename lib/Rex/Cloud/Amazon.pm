@@ -67,6 +67,7 @@ sub run_instance {
                ImageId  => $data{"image_id"},
                MinCount => 1,
                MaxCount => 1,
+               KeyName  => $data{"key"},
                InstanceType => $data{"type"} || "m1.small");
 
    my $ref = XMLin($xml);
@@ -75,6 +76,13 @@ sub run_instance {
       $self->add_tag(id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
                      name => "Name",
                      value => $data{"name"});
+   }
+
+   my ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_running_instances();
+
+   while($info->{"state"} ne "running") {
+      ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_running_instances();
+      sleep 1;
    }
 
 }
@@ -145,10 +153,18 @@ sub _request {
 
    if($res->code >= 500) {
       Rex::Logger::info("Error on request");
+      return;
    }
 
    else {
-      return $res->content;
+      my $ret;
+      eval {
+         no warnings;
+         $ret = $res->content;
+         use warnings;
+      };
+
+      return $ret;
    }
 }
 

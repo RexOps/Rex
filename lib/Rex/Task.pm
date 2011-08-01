@@ -53,7 +53,16 @@ sub create_task {
             $group = $_[1];
             if(Rex::Group->is_group($group)) {
                Rex::Logger::debug("\tusing group: $group -> " . join(", ", Rex::Group->get_group($group)));
-               push @server, Rex::Commands::evaluate_hostname($_) for Rex::Group->get_group($group);
+
+               for my $server_name (Rex::Group->get_group($group)) {
+                  if(ref($server_name) eq "CODE") {
+                     push(@server, $server_name);
+                  }
+                  else {
+                     push(@server, Rex::Commands::evaluate_hostname($server_name));
+                  }
+               }
+
                Rex::Logger::debug("\tserver: $_") for @server;
             } else {
                Rex::Logger::info("Group $group not found!");
@@ -123,6 +132,18 @@ sub run {
    # get servers belonging to the task
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;
+
+   my @new_server;
+   for my $server_name (@server) {
+      if(ref($server_name) eq "CODE") {
+         push(@new_server, &$server_name());
+      }
+      else {
+         push(@new_server, $server_name);
+      }
+   }
+
+   @server = @new_server;
    
    # overwrite servers if requested
    # this is mostly for the rex agent
@@ -190,12 +211,13 @@ sub run {
 
                my $fail_connect = 0;
 
-               Rex::Logger::info("Connecting to $server (" . $user . ")");
 
+               Rex::Logger::info("Connecting to $server (" . $user . ")");
                CON_SSH:
                   unless($ssh->connect($server, 22, Timeout => Rex::Config->get_timeout)) {
                      ++$fail_connect;
-                     goto CON_SSH if($fail_connect < 3); # try connecting 3 times
+                     sleep 1;
+                     goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails); # try connecting 3 times
 
                      Rex::Logger::info("Can't connect to $server");
 

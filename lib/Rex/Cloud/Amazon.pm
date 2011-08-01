@@ -20,6 +20,8 @@ use MIME::Base64 qw(encode_base64 decode_base64);
 use Digest::HMAC_SHA1;
 use HTTP::Date qw(time2isoz);
 
+use XML::Simple;
+
 use Data::Dumper;
 
 
@@ -30,7 +32,8 @@ sub new {
 
    bless($self, $proto);
 
-   $self->{"__version"} = "2009-11-30";
+   #$self->{"__version"} = "2009-11-30";
+   $self->{"__version"} = "2011-05-15";
    $self->{"__signature_version"} = 1;
    $self->{"__endpoint_url"} = "http://us-east-1.ec2.amazonaws.com";
 
@@ -44,12 +47,65 @@ sub set_auth {
    $self->{"__secret_access_key"} = $secret_access_key;
 }
 
+sub set_endpoint {
+   my ($self, $endpoint) = @_;
+   $self->{'__endpoint_url'} = "http://$endpoint";
+}
+
 sub timestamp {
    my $t = time2isoz();
    chop($t);
    $t .= ".000Z";
    $t =~ s/\s+/T/g;
    return $t;
+}
+
+sub run_instance {
+   my ($self, %data) = @_;
+
+   $self->_request("RunInstances", 
+               ImageId  => $data{"image_id"},
+               MinCount => 1,
+               MaxCount => 1,
+               InstanceType => $data{"type"} || "m1.small");
+}
+
+sub terminate_instance {
+   my ($self, $id) = @_;
+
+   $self->_request("TerminateInstances",
+               "InstanceId.1" => $id);
+}
+
+sub stop_instance {
+   my ($self, $id) = @_;
+
+   $self->_request("StopInstances",
+               "InstanceId.1" => $id);
+}
+
+sub list_running_instances {
+   my ($self) = @_;
+
+   my @ret;
+
+   my $xml = $self->_request("DescribeInstances");
+   my $ref = XMLin($xml);
+
+   for my $instance_set (@{$ref->{"reservationSet"}->{"item"}}) {
+      push(@ret, {
+         ip => $instance_set->{"instancesSet"}->{"item"}->{"ipAddress"},
+         id => $instance_set->{"instancesSet"}->{"item"}->{"instanceId"},
+         architecture => $instance_set->{"instancesSet"}->{"item"}->{"architecture"},
+         type => $instance_set->{"instancesSet"}->{"item"}->{"instanceType"},
+         dns_name => $instance_set->{"instancesSet"}->{"item"}->{"dnsName"},
+         state => $instance_set->{"instancesSet"}->{"item"}->{"instanceState"}->{"name"},
+         launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
+         name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
+      });
+   }
+
+   return @ret;
 }
 
 sub get_regions {
@@ -62,10 +118,10 @@ sub get_regions {
 }
 
 sub _request {
-   my ($self, $action) = @_;
+   my ($self, $action, %args) = @_;
 
    my $ua = LWP::UserAgent->new;
-   my %param = $self->_sign($action);
+   my %param = $self->_sign($action, %args);
 
    my $res = $ua->post($self->{'__endpoint_url'}, \%param);
 
@@ -79,7 +135,7 @@ sub _request {
 }
 
 sub _sign {
-   my ($self, $action) = @_;  
+   my ($self, $action, %args) = @_;  
 
    my %sign_hash = (
       AWSAccessKeyId   => $self->{"__access_key"},
@@ -87,6 +143,7 @@ sub _sign {
       Timestamp        => $self->timestamp(),
       Version          => $self->{"__version"},
       SignatureVersion => $self->{"__signature_version"},
+      %args
    );
 
    my $sign_this;
@@ -105,6 +162,7 @@ sub _sign {
       Timestamp         => $self->timestamp(),
       Version           => $self->{"__version"},
       Signature         => $encoded,
+      %args
    );
 
    return %params;

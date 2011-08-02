@@ -103,7 +103,7 @@ sub cloud_instance {
    }
 
    elsif($action eq "terminate") {
-      $cloud->terminate_instance($data);
+      $cloud->terminate_instance(instance_id => $data);
    }
 
 }
@@ -131,6 +131,25 @@ sub cloud_volume {
                         size => $data->{"size"} || 1,
                         zone => $data->{"zone"} || undef,
                      );
+   }
+
+   elsif($action eq "detach") {
+      my $vol_id;
+
+      if(ref($data)) {
+         $vol_id = $data->{"id"};
+      }
+      else {
+         $vol_id = $data;
+      }
+
+      $cloud->detach_volume(
+         volume_id => $vol_id,
+      );
+   }
+
+   elsif($action eq "delete") {
+      $cloud->delete_volume(volume_id => $data);
    }
 
    elsif($action eq "list") {

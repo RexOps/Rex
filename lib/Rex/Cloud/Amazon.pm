@@ -105,11 +105,27 @@ sub attach_volume {
       Device => $data{"name"} || "/dev/sdh");
 }
 
+sub detach_volume {
+   my ($self, %data) = @_;
+
+   $self->_request("DetachVolume",
+         VolumeId => $data{"volume_id"},
+      );
+}
+
+sub delete_volume {
+   my ($self, %data) = @_;
+
+   $self->_request("DeleteVolume", 
+      VolumeId => $data{"volume_id"},
+   );
+}
+
 sub terminate_instance {
-   my ($self, $id) = @_;
+   my ($self, %data) = @_;
 
    $self->_request("TerminateInstances",
-               "InstanceId.1" => $id);
+               "InstanceId.1" => $data{"instance_id"});
 }
 
 sub stop_instance {

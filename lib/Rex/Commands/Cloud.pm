@@ -17,7 +17,10 @@ use Rex::Logger;
 use Rex::Config;
 use Rex::Cloud;
     
-@EXPORT = qw(cloud cloud_service cloud_auth cloud_region cloud_list get_cloud_instances_as_group);
+@EXPORT = qw(cloud_instance cloud_volume 
+               cloud_instance_list cloud_volume_list
+               cloud_service cloud_auth cloud_region 
+               get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones);
 
 sub cloud_service {
    ($cloud_service) = @_;
@@ -36,13 +39,23 @@ sub cloud_region {
    ($cloud_region) = @_;
 }
 
-sub cloud_list {
+sub cloud_instance_list {
 
    my $cloud = get_cloud_service($cloud_service);
    $cloud->set_auth($access_key, $secret_access_key);
    $cloud->set_endpoint($cloud_region);
 
-   return $cloud->list_running_instances();
+   return $cloud->list_instances();
+
+}
+
+sub cloud_volume_list {
+   
+   my $cloud = get_cloud_service($cloud_service);
+   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_endpoint($cloud_region);
+
+   return $cloud->list_volumes();
 
 }
 
@@ -50,7 +63,7 @@ sub get_cloud_instances_as_group {
    
    # return funcRef
    return sub {
-      my @list = cloud_list;
+      my @list = cloud_instance_list;
 
       my @ret;
 
@@ -67,7 +80,7 @@ sub get_cloud_instances_as_group {
 
 
 
-sub cloud {
+sub cloud_instance {
 
    my ($action, $data) = @_;
    my $cloud = get_cloud_service($cloud_service);
@@ -84,12 +97,57 @@ sub cloud {
          image_id => $data->{"image_id"},
          name     => $data->{"name"} || undef,
          key      => $data->{"key"} || undef,
+         zone     => $data->{"zone"} || undef,
+         volume   => $data->{"volume"} || undef,
       );
    }
 
    elsif($action eq "terminate") {
       $cloud->terminate_instance($data);
    }
+
+}
+
+sub get_cloud_regions {
+
+   my $cloud = get_cloud_service($cloud_service);
+
+   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_endpoint($cloud_region);
+
+   return $cloud->get_regions;
+}
+
+sub cloud_volume {
+
+   my ($action, $data) = @_;
+   my $cloud = get_cloud_service($cloud_service);
+
+   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_endpoint($cloud_region);
+
+   if($action eq "create") {
+      $cloud->create_volume(
+                        size => $data->{"size"} || 1,
+                        zone => $data->{"zone"} || undef,
+                     );
+   }
+
+   elsif($action eq "list") {
+      return $cloud->list_volumes();
+   }
+
+}
+
+sub get_cloud_availability_zones {
+
+   my $cloud = get_cloud_service($cloud_service);
+
+   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_endpoint($cloud_region);
+
+   return $cloud->get_availability_zones();
+
 
 }
 

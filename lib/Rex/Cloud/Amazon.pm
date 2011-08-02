@@ -35,7 +35,7 @@ sub new {
    #$self->{"__version"} = "2009-11-30";
    $self->{"__version"} = "2011-05-15";
    $self->{"__signature_version"} = 1;
-   $self->{"__endpoint_url"} = "http://us-east-1.ec2.amazonaws.com";
+   $self->{"__endpoint"} = "us-east-1.ec2.amazonaws.com";
 
    return $self;
 }
@@ -49,7 +49,7 @@ sub set_auth {
 
 sub set_endpoint {
    my ($self, $endpoint) = @_;
-   $self->{'__endpoint_url'} = "http://$endpoint";
+   $self->{'__endpoint'} = $endpoint;
 }
 
 sub timestamp {
@@ -68,7 +68,8 @@ sub run_instance {
                MinCount => 1,
                MaxCount => 1,
                KeyName  => $data{"key"},
-               InstanceType => $data{"type"} || "m1.small");
+               InstanceType => $data{"type"} || "m1.small",
+               "Placement.AvailabilityZone" => $data{"zone"} || "");
 
    my $ref = $self->_xml($xml);
 
@@ -85,6 +86,23 @@ sub run_instance {
       sleep 1;
    }
 
+   if(exists $data{"volume"}) {
+      $self->attach_volume(
+         volume_id => $data{"volume"},
+         instance_id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
+         name => "/dev/sdh", # default for new instances
+      );
+   }
+
+}
+
+sub attach_volume {
+   my ($self, %data) = @_;
+
+   $self->_request("AttachVolume", 
+      VolumeId => $data{"volume_id"},
+      InstanceId => $data{"instance_id"},
+      Device => $data{"name"} || "/dev/sdh");
 }
 
 sub terminate_instance {
@@ -108,6 +126,52 @@ sub add_tag {
                "ResourceId.1" => $data{"id"},
                "Tag.1.Key"    => $data{"name"},
                "Tag.1.Value"  => $data{"value"});
+}
+
+sub create_volume {
+   my ($self, %data) = @_;
+
+   my $xml = $self->_request("CreateVolume", 
+               "Size" => $data{"size"} || 1,
+               "AvailabilityZone" => $data{"zone"},
+               );
+
+   my $ref = $self->_xml($xml);
+
+   return $ref->{"volumeId"};
+
+   my ($info) = grep { $_->{"id"} eq $ref->{"volumeId"} } $self->list_volumes();
+
+   while($info->{"status"} ne "available") {
+      ($info) = grep { $_->{"id"} eq $ref->{"volumeId"} } $self->list_volumes();
+      sleep 1;
+   }
+
+}
+
+sub list_volumes {
+   my ($self) = @_;
+
+   my $xml = $self->_request("DescribeVolumes");
+   my $ref = $self->_xml($xml);
+
+   return unless(exists $ref->{"volumeSet"}->{"item"});
+   if(ref($ref->{"volumeSet"}->{"item"}) eq "HASH") {
+      $ref->{"volumeSet"}->{"item"} = [ $ref->{"volumeSet"}->{"item"} ];
+   }
+
+   my @volumes;
+   for my $vol (@{$ref->{"volumeSet"}->{"item"}}) {
+      push(@volumes, {
+         id => $vol->{"volumeId"},
+         status => $vol->{"status"},
+         zone => $vol->{"availabilityZone"},
+         size => $vol->{"size"},
+         attached_to => $vol->{"attachmentSet"}->{"item"}->{"instanceId"},
+      });
+   }
+
+   return @volumes;
 }
 
 sub list_instances {
@@ -157,13 +221,31 @@ sub get_regions {
    return %items;
 }
 
+sub get_availability_zones {
+   my ($self) = @_;
+
+   my $xml = $self->_request("DescribeAvailabilityZones");
+   my $ref = $self->_xml($xml);
+
+   my @zones;
+   for my $item (@{$ref->{"availabilityZoneInfo"}->{"item"}}) {
+      push(@zones, {
+         zone_name => $item->{"zoneName"},
+         region_name => $item->{"regionName"},
+         zone_state => $item->{"zoneState"},
+      });
+   }
+
+   return @zones;
+}
+
 sub _request {
    my ($self, $action, %args) = @_;
 
    my $ua = LWP::UserAgent->new;
    my %param = $self->_sign($action, %args);
 
-   my $res = $ua->post($self->{'__endpoint_url'}, \%param);
+   my $res = $ua->post("http://" . $self->{'__endpoint'}, \%param);
 
    if($res->code >= 500) {
       Rex::Logger::info("Error on request");

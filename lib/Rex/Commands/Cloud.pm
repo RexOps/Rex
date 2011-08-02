@@ -3,7 +3,53 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
+=head1 NAME
+
+Rex::Commands::Cloud - Cloud Management Commands
+
+=head1 DESCRIPTION
+
+With this Module you can manage different Cloud services. Currently it supports Amazon EC2.
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::Cloud;
+     
+ cloud_service "Amazon";
+ cloud_auth "your-access-key", "your-private-access-key";
+ cloud_region "ec2.eu-west-1.amazonaws.com";
+    
+ task "list", sub {
+    print Dumper cloud_instance_list;
+    print Dumper cloud_volume_list;
+ };
+      
+ task "create", sub {
+    my $vol_id = cloud_volume create => { size => 1, zone => "eu-west-1a", };
+       
+    cloud_instance create => {
+          image_id => "ami-xxxxxxx",
+          name     => "test01",
+          key      => "my-key",
+          volume   => $vol_id,
+          zone     => "eu-west-1a",
+       };
+ };
+     
+ task "destroy", sub {
+    cloud_volume detach => "vol-xxxxxxx";
+    cloud_volume delete => "vol-xxxxxxx";
+       
+    cloud_instance terminate => "i-xxxxxxx";
+ };
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::Commands::Cloud;
    
 use strict;
@@ -22,6 +68,24 @@ use Rex::Cloud;
                cloud_service cloud_auth cloud_region 
                get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones);
 
+=item cloud_service($cloud_service)
+
+Define which cloud service to use.
+
+=over 4
+
+=item Services
+
+=over 4
+
+=item Amazon
+
+=back
+
+=back
+
+
+=cut
 sub cloud_service {
    ($cloud_service) = @_;
 
@@ -31,13 +95,41 @@ sub cloud_service {
    }
 }
 
+=over 4
+
+=item cloud_auth($access_key, $secret_access_key)
+
+Set the authentication for the cloudservice.
+
+=cut
 sub cloud_auth {
    ($access_key, $secret_access_key) = @_;
 }
 
+=item cloud_region($region)
+
+Set the cloud region.
+
+=cut
+
 sub cloud_region {
    ($cloud_region) = @_;
 }
+
+=item cloud_instance_list
+
+Get all instances of a cloud service.
+
+ task "list", sub {
+    for my $instance (cloud_instance_list()) {
+       say "Arch  : " . $instance->{"architecture"};
+       say "IP    : " . $instance->{"ip"};
+       say "ID    : " . $instance->{"id"};
+       say "State : " . $instance->{"state"};
+    }
+ };
+
+=cut
 
 sub cloud_instance_list {
 
@@ -49,6 +141,21 @@ sub cloud_instance_list {
 
 }
 
+=item cloud_volume_list
+
+Get all volumes of a cloud service.
+
+ task "list-volumes", sub {
+    for my $volume (cloud_volume_list()) {
+       say "ID       : " . $volume->{"id"};
+       say "Zone     : " . $volume->{"zone"};
+       say "State    : " . $volume->{"state"};
+       say "Attached : " . $volume->{"attached_to"};
+    }
+ };
+
+=cut
+
 sub cloud_volume_list {
    
    my $cloud = get_cloud_service($cloud_service);
@@ -58,6 +165,15 @@ sub cloud_volume_list {
    return $cloud->list_volumes();
 
 }
+
+=item get_cloud_instances_as_group
+
+Get a list of all running instances of a cloud service. This can be used for a I<group> definition.
+
+ group fe  => "fe01", "fe02", "fe03";
+ group ec2 => get_cloud_instances_as_group();
+
+=cut
 
 sub get_cloud_instances_as_group {
    
@@ -78,7 +194,13 @@ sub get_cloud_instances_as_group {
 
 }
 
+=item cloud_instance($action, $data)
 
+This function controlls all aspects of a cloud instance.
+
+=over 4 
+
+=cut
 
 sub cloud_instance {
 
@@ -92,6 +214,20 @@ sub cloud_instance {
       return $cloud->list_running_instances();
    }
 
+=item create
+
+Create a new instance.
+
+ cloud_instance create => {
+       image_id => "ami-xxxxxx",
+       key      => "ssh-key",
+       name     => "fe-ec2-01",   # name is not necessary
+       volume   => "vol-yyyyy",   # volume is not necessary
+       zone     => "eu-west-1a",  # zone is not necessary
+    };
+
+=cut
+
    elsif($action eq "create") {
       $cloud->run_instance(
          image_id => $data->{"image_id"},
@@ -102,11 +238,27 @@ sub cloud_instance {
       );
    }
 
+=item terminate
+
+Terminate an instance. This will destroy all data and remove the instance.
+
+ cloud_instance terminate => "i-zzzzzzz";
+
+=cut
+
    elsif($action eq "terminate") {
       $cloud->terminate_instance(instance_id => $data);
    }
 
 }
+
+=back
+
+=item get_cloud_regions
+
+Returns all regions as an array.
+
+=cut
 
 sub get_cloud_regions {
 
@@ -118,6 +270,14 @@ sub get_cloud_regions {
    return $cloud->get_regions;
 }
 
+=item cloud_volume($action , $data)
+
+This function controlls all aspects of a cloud volume.
+
+=over 4
+
+=cut
+
 sub cloud_volume {
 
    my ($action, $data) = @_;
@@ -126,12 +286,33 @@ sub cloud_volume {
    $cloud->set_auth($access_key, $secret_access_key);
    $cloud->set_endpoint($cloud_region);
 
+
+=item create
+
+Create a new volume. Size is in Gigabytes.
+
+ task "create-vol", sub {
+    my $vol_id = cloud_volume create => { size => 1, zone => "eu-west-1a", };
+ };
+
+=cut
+
    if($action eq "create") {
       $cloud->create_volume(
                         size => $data->{"size"} || 1,
                         zone => $data->{"zone"} || undef,
                      );
    }
+
+=item detach
+
+Detach a volume from an instance.
+
+ task "detach-vol", sub {
+    cloud_volume detach => "vol-xxxxxx";
+ };
+
+=cut
 
    elsif($action eq "detach") {
       my $vol_id;
@@ -148,6 +329,16 @@ sub cloud_volume {
       );
    }
 
+=item delete
+
+Delete a volume. This will destroy all data.
+
+ task "delete-vol", sub {
+    cloud_volume delete => "vol-xxxxxx";
+ };
+
+=cut
+
    elsif($action eq "delete") {
       $cloud->delete_volume(volume_id => $data);
    }
@@ -158,6 +349,16 @@ sub cloud_volume {
 
 }
 
+=item get_cloud_availability_zones
+
+Returns all availability zones of a cloud services. If available.
+
+ task "get-zones", sub {
+    print Dumper get_cloud_availability_zones;
+ };
+
+=cut
+
 sub get_cloud_availability_zones {
 
    my $cloud = get_cloud_service($cloud_service);
@@ -167,7 +368,11 @@ sub get_cloud_availability_zones {
 
    return $cloud->get_availability_zones();
 
-
 }
+
+=back
+
+=cut
+
 
 1;

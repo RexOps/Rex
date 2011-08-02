@@ -20,7 +20,7 @@ use MIME::Base64 qw(encode_base64 decode_base64);
 use Digest::HMAC_SHA1;
 use HTTP::Date qw(time2isoz);
 
-use XML::Simple;
+require XML::Simple;
 
 use Data::Dumper;
 
@@ -70,7 +70,7 @@ sub run_instance {
                KeyName  => $data{"key"},
                InstanceType => $data{"type"} || "m1.small");
 
-   my $ref = XMLin($xml);
+   my $ref = $self->_xml($xml);
 
    if(exists $data{"name"}) {
       $self->add_tag(id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
@@ -78,10 +78,10 @@ sub run_instance {
                      value => $data{"name"});
    }
 
-   my ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_running_instances();
+   my ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_instances();
 
    while($info->{"state"} ne "running") {
-      ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_running_instances();
+      ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_instances();
       sleep 1;
    }
 
@@ -110,13 +110,21 @@ sub add_tag {
                "Tag.1.Value"  => $data{"value"});
 }
 
-sub list_running_instances {
+sub list_instances {
    my ($self) = @_;
 
    my @ret;
 
    my $xml = $self->_request("DescribeInstances");
-   my $ref = XMLin($xml);
+   my $ref = $self->_xml($xml);
+
+   return unless(exists $ref->{"reservationSet"});
+   return unless(exists $ref->{"reservationSet"}->{"item"});
+
+   if(ref $ref->{"reservationSet"}->{"item"} eq "HASH") {
+      # if only one instance is returned, turn it to an array
+      $ref->{"reservationSet"}->{"item"} = [ $ref->{"reservationSet"}->{"item"} ];
+   }
 
    for my $instance_set (@{$ref->{"reservationSet"}->{"item"}}) {
       push(@ret, {
@@ -132,6 +140,12 @@ sub list_running_instances {
    }
 
    return @ret;
+}
+
+sub list_running_instances {
+   my ($self) = @_;
+
+   return grep { $_->{"state"} eq "running" } $self->list_instances();
 }
 
 sub get_regions {
@@ -211,6 +225,13 @@ sub _hash {
    return encode_base64($hashed->digest, "");
 }
 
+sub _xml {
+   my ($self, $xml) = @_;
+
+   #my $x = XML::Simple->new(ForceArray => 1);
+   my $x = XML::Simple->new;
+   return $x->XMLin($xml);
+}
 
 
 1;

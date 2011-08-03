@@ -128,6 +128,7 @@ sub iptables {
          push(@iptables_option, {j => "REJECT"});
       }
 
+      _run_iptables (@iptables_option);
    }
    elsif(exists $option{"redirect"}) {
       push(@iptables_option, {t => "nat"});

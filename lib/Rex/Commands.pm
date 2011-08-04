@@ -30,6 +30,8 @@ This module is the core commands module.
 
 =over 4
 
+=item * Cloud Management L<Rex::Commands::Cloud>
+
 =item * Cron Management L<Rex::Commands::Cron>
 
 =item * Database Commands L<Rex::Commands::DB>
@@ -45,6 +47,8 @@ This module is the core commands module.
 =item * Manipulation of /etc/hosts L<Rex::Commands::Host>
 
 =item * Get an inventory of your Hardware L<Rex::Commands::Inventory>
+
+=item * Manage your iptables rules L<Rex::Commands::Iptables>
 
 =item * Kernel Commands L<Rex::Commands::Kernel>
 

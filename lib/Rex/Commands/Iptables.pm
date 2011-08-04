@@ -34,7 +34,10 @@ With this Module you can manage basic Iptables rules.
        dev => "eth0",
        to  => 10080,
     };
-       
+      
+    default_state_rule;
+    default_state_rule dev => "eth0";
+        
     is_nat_gateway;
        
     iptables t => "nat",
@@ -69,7 +72,8 @@ use Rex::Commands::Gather;
 use Rex::Logger;
 
 @EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear 
-               open_port close_port redirect_port);
+               open_port close_port redirect_port
+               default_state_rule);
 
 sub iptables;
 
@@ -245,6 +249,32 @@ sub is_nat_gateway {
 
    }
 
+}
+
+=item default_state_rule(%option)
+
+Set the default state rules for the given device.
+
+ task "firewall", sub {
+    default_state_rule(dev => "eth0");
+ };
+
+=cut
+sub default_state_rule {
+   my (%option) = @_;
+
+   unless(exists $option{"dev"}) {
+      my $net_info = network_interfaces();
+      my @devs = keys %{$net_info};
+
+      for my $dev (@devs) {
+         default_state_rule(dev => $dev);
+      }
+
+      return;
+   }
+
+   iptables t => "filter", A => "INPUT", i => $option{"dev"}, m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
 }
 
 =item iptables_list

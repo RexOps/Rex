@@ -21,9 +21,87 @@ use Rex::Commands::Run;
 
 use Rex::Logger;
 
-@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear);
+@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear open_port);
+
+sub open_port {
+
+   my ($port, $option) = @_;
+
+   my @opts;
+
+   push(@opts, "t", "filter", "I", "INPUT");
+
+   if(exists $option->{"dev"}) {
+      push(@opts, "i", $option->{"dev"});
+   }
+
+   if(exists $option->{"proto"}) {
+      push(@opts, "p", $option->{"proto"});
+      push(@opts, "m", $option->{"proto"});
+   }
+   else {
+      push(@opts, "p", "tcp");
+      push(@opts, "m", "tcp");
+   }
+
+   if($port eq "all") {
+      push(@opts, "j", "ACCEPT");
+   }
+   else {
+      if(ref($port) eq "ARRAY") {
+         for my $port_num (@{$port}) {
+            open_port($port_num, $option);
+         }
+         return;
+      }
+
+      push(@opts, "dport", $port);
+   }
+
+   iptables @opts;
+
+}
+
+sub close_port {
+}
+
+sub redirect_port {
+}
 
 sub iptables {
+   my (@params) = @_;
+
+   my $cmd = "";
+   my $n = -1;
+   while( $params[++$n] ) {
+      my ($key, $val) = @params[$n, $n++];
+
+      if(ref($key) eq "ARRAY") {
+         $cmd .= join(" ", @{$key});
+         last;
+      }
+
+      if(length($key) == 1) {
+         $cmd .= "-$key $val ";
+      }
+      else {
+         $cmd .= "--$key=$val";
+      }
+   }
+
+   if(can_run("iptables")) {
+      run "iptables $cmd";
+
+      if($? != 0) {
+         Rex::Logger::info("Error setting iptable rule: $cmd");
+      }
+   }
+   else {
+      Rex::Logger::info("IPTables not found.");
+   }
+}
+
+sub _iptables {
    
    my (%option) = @_;
 
@@ -268,48 +346,15 @@ sub iptables_list {
 }
 
 sub iptables_clear {
-   _run_iptables(
-      {'F' => ''},
-   );
 
-   _run_iptables(
-      {'X' => ''},
-   );
+   for my $table (qw/nat mangle filter/) {
+      iptables t => $table, F => '';
+      iptables t => $table, X => '';
+   }
 
-   _run_iptables(
-      {'t' => 'nat'},
-      {'F' => ''},
-   );
-
-   _run_iptables(
-      {'t' => 'nat'},
-      {'X' => ''},
-   );
-
-   _run_iptables(
-      {'t' => 'mangle'},
-      {'F' => ''},
-   );
-
-   _run_iptables(
-      {'t' => 'mangle'},
-      {'X' => ''},
-   );
-
-   _run_iptables(
-      {'P' => 'INPUT'},
-      ['ACCEPT'],
-   );
-
-   _run_iptables(
-      {'P' => 'FORWARD'},
-      ['ACCEPT'],
-   );
-
-   _run_iptables(
-      {'P' => 'OUTPUT'},
-      ['ACCEPT'],
-   );
+   for my $p (qw/INPUT FORWARD OUTPUT/) {
+      iptabls P => $p, ["ACCEPT"];
+   }
 
 }
 

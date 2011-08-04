@@ -2,7 +2,7 @@ Source: rex
 Section: admin
 Priority: optional
 Maintainer: Jan Gehring <jan.gehring@gmail.com>
-Build-Depends: debhelper (>= 4), libnet-ssh2-perl (>= 0.33), perl (>= 5.10.0)
+Build-Depends: debhelper (>= 4), libnet-ssh2-perl (>= 0.33), perl (>= 5.10.0), libnet-ssh2-expect-perl
 Standards-Version: 3.5.1
 Homepage: https://github.com/krimdomu/-R--ex
 

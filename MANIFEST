@@ -6,7 +6,10 @@ ChangeLog
 lib/Rex.pm
 lib/Rex/Agent.pm
 lib/Rex/Batch.pm
+lib/Rex/Cloud.pm
+lib/Rex/Cloud/Amazon.pm
 lib/Rex/Commands.pm
+lib/Rex/Commands/Cloud.pm
 lib/Rex/Commands/Cron.pm
 lib/Rex/Commands/DB.pm
 lib/Rex/Commands/Download.pm
@@ -15,6 +18,7 @@ lib/Rex/Commands/Fs.pm
 lib/Rex/Commands/Gather.pm
 lib/Rex/Commands/Host.pm
 lib/Rex/Commands/Inventory.pm
+lib/Rex/Commands/Iptables.pm
 lib/Rex/Commands/Kernel.pm
 lib/Rex/Commands/LVM.pm
 lib/Rex/Commands/MD5.pm
@@ -40,6 +44,7 @@ lib/Rex/Hardware/Memory.pm
 lib/Rex/Hardware/Network.pm
 lib/Rex/Hardware/Swap.pm
 lib/Rex/Helper/SSH2.pm
+lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Inventory.pm
 lib/Rex/Inventory/DMIDecode.pm
 lib/Rex/Inventory/DMIDecode/BaseBoard.pm

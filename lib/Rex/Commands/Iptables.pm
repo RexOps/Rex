@@ -18,54 +18,74 @@ use vars qw(@EXPORT);
 
 use Rex::Commands::Sysctl;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 
 use Rex::Logger;
 
-@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear open_port);
+@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear 
+               open_port close_port redirect_port);
+
+sub iptables;
 
 sub open_port {
 
    my ($port, $option) = @_;
-
-   my @opts;
-
-   push(@opts, "t", "filter", "I", "INPUT");
-
-   if(exists $option->{"dev"}) {
-      push(@opts, "i", $option->{"dev"});
-   }
-
-   if(exists $option->{"proto"}) {
-      push(@opts, "p", $option->{"proto"});
-      push(@opts, "m", $option->{"proto"});
-   }
-   else {
-      push(@opts, "p", "tcp");
-      push(@opts, "m", "tcp");
-   }
-
-   if($port eq "all") {
-      push(@opts, "j", "ACCEPT");
-   }
-   else {
-      if(ref($port) eq "ARRAY") {
-         for my $port_num (@{$port}) {
-            open_port($port_num, $option);
-         }
-         return;
-      }
-
-      push(@opts, "dport", $port);
-   }
-
-   iptables @opts;
+   _open_or_close_port("i", "I", "INPUT", "ACCEPT", $port, $option);
 
 }
 
 sub close_port {
+
+   my ($port, $option) = @_;
+   _open_or_close_port("i", "A", "INPUT", "DROP", $port, $option);
+
 }
 
 sub redirect_port {
+   my ($in_port, $option) = @_;
+
+   my @opts;
+
+   push (@opts, "t", "nat");
+
+   if(! ref($option)) {
+      my $net_info = network_interfaces();
+      my @devs = keys %{$net_info};
+
+      for my $dev (@devs) {
+         redirect_port($in_port, {
+            dev => $dev,
+            to  => $option,
+         });
+      }
+      
+      return;
+   }
+
+   unless(exists $option->{"dev"}) {
+      my $net_info = network_interfaces();
+      my @devs = keys %{$net_info};
+
+      for my $dev (@devs) {
+         $option->{"dev"} = $dev;
+         redirect_port($in_port, $option);
+      }
+
+      return;
+   }
+
+   if($option->{"to"} =~ m/^\d+$/) {
+      $option->{"proto"} ||= "tcp";
+
+      push(@opts, "I", "PREROUTING", "i", $option->{"dev"}, "p", $option->{"proto"}, "m", $option->{"proto"});
+      push(@opts, "dport", $in_port, "j", "REDIRECT", "to-ports", $option->{"to"});
+
+   }
+   else {
+      Rex::Logger::info("Redirect to other hosts isn't supported right now. Please do it by hand.");
+   }
+
+   iptables @opts;
 }
 
 sub iptables {
@@ -74,7 +94,7 @@ sub iptables {
    my $cmd = "";
    my $n = -1;
    while( $params[++$n] ) {
-      my ($key, $val) = @params[$n, $n++];
+      my ($key, $val) = reverse @params[$n, $n++];
 
       if(ref($key) eq "ARRAY") {
          $cmd .= join(" ", @{$key});
@@ -85,7 +105,7 @@ sub iptables {
          $cmd .= "-$key $val ";
       }
       else {
-         $cmd .= "--$key=$val";
+         $cmd .= "--$key $val ";
       }
    }
 
@@ -101,183 +121,6 @@ sub iptables {
    }
 }
 
-sub _iptables {
-   
-   my (%option) = @_;
-
-   my $cmd = "/sbin/iptables ";
-
-   my @iptables_option = ();
-
-   if(exists $option{"open"}) {
-
-      push(@iptables_option, { t => "filter" });
-      push(@iptables_option, { I => "INPUT" });
-
-      # net device given?
-      if(exists $option{"dev"}) {
-         push(@iptables_option, { i => $option{"dev"} });
-      }
-
-      # proto given?
-      if(exists $option{"proto"}) {
-         push(@iptables_option, { p => $option{"proto"} });
-         push(@iptables_option, { m => $option{"proto"} });
-      }
-      else {
-         push(@iptables_option, { p => "tcp" });
-         push(@iptables_option, { m => "tcp" });
-      }
-
-      unless($option{"open"} eq "all") {
-         for my $port (@{$option{"open"}}) {
-            my @sub_option = @iptables_option;
-
-            push(@sub_option, { dport => $port });
-            push(@sub_option, { j => "ACCEPT" });
-
-            _run_iptables (@sub_option);
-         }
-      }
-      else {
-         push(@iptables_option, { j => "ACCEPT" });
-         _run_iptables (@iptables_option);
-      }
-
-   }
-   elsif(exists $option{"close"}) {
-      push(@iptables_option, { t => "filter" });
-      push(@iptables_option, { A => "INPUT" });
-
-      # net device given?
-      if(exists $option{"dev"}) {
-         push(@iptables_option, { i => $option{"dev"} });
-      }
-
-      # proto given?
-      if(exists $option{"proto"}) {
-         push(@iptables_option, { p => $option{"proto"} });
-         push(@iptables_option, { m => $option{"proto"} });
-      }
-      else {
-         push(@iptables_option, { p => "tcp" });
-         push(@iptables_option, { m => "tcp" });
-      }
-
-      unless($option{"close"} eq "all") {
-         for my $port (@{$option{"close"}}) {
-            my @sub_option = @iptables_option;
-
-            push(@sub_option, { dport => $port });
-            push(@sub_option, { j => "REJECT" });
-            push(@sub_option, { "reject-with" => "icmp-host-unreachable" });
-
-            _run_iptables (@sub_option);
-         }
-      }
-      else {
-         push(@iptables_option, { j => "REJECT" });
-         push(@iptables_option, { "reject-with" => "icmp-host-unreachable" });
-
-         _run_iptables (@iptables_option);
-      }
-
-   }
-   elsif(exists $option{"state"}) {
-      push(@iptables_option, {t => "filter"});
-      push(@iptables_option, {A => "INPUT"});
-
-      if(exists $option{"dev"}) {
-         push(@iptables_option, {i => $option{"dev"}});
-      }
-
-      push(@iptables_option, {m => "state"});
-      push(@iptables_option, {state => $option{"state"}});
-      
-      if(exists $option{"accept"}) {
-         push(@iptables_option, {j => "ACCEPT"});
-      }
-      
-      if(exists $option{"drop"}) {
-         push(@iptables_option, {j => "DROP"});
-      }
-
-      if(exists $option{"reject"}) {
-         push(@iptables_option, {j => "REJECT"});
-      }
-
-      _run_iptables (@iptables_option);
-   }
-   elsif(exists $option{"redirect"}) {
-      push(@iptables_option, {t => "nat"});
-
-      if($option{"to"} =~ m/\:(\d+)$/) {
-
-         push(@iptables_option, {I => "OUTPUT"});
-
-         if(exists $option{"destination"}) {
-            push(@iptables_option, {d => $option{"destination"} . "/32"});
-         }
-
-         if(exists $option{"source"}) {
-            push(@iptables_option, {s => $option{"source"} . "/32"});
-         }
-
-         # proto given?
-         if(exists $option{"proto"}) {
-            push(@iptables_option, {p => $option{"proto"}});
-            push(@iptables_option, {m => $option{"proto"}});
-         }
-         else {
-            push(@iptables_option, {p => "tcp"});
-            push(@iptables_option, {m => "tcp"});
-         }
-
-         if(exists $option{"dev"}) {
-            push(@iptables_option, {o => $option{"dev"}});
-         }
-
-         push(@iptables_option, {dport => $option{"redirect"}});
-         push(@iptables_option, {j => $option{"DNAT"}});
-         push(@iptables_option, {"to-destination" => $option{"to"}});
-
-      }
-      else {
-
-         push(@iptables_option, {I => "PREROUTING"});
-
-         if(exists $option{"destination"}) {
-            push(@iptables_option, {d => $option{"destination"} . "/32"});
-         }
-
-         if(exists $option{"source"}) {
-            push(@iptables_option, {s => $option{"source"} . "/32"});
-         }
-
-         if(exists $option{"dev"}) {
-            push(@iptables_option, {i => $option{"dev"}});
-         }
-
-         # proto given?
-         if(exists $option{"proto"}) {
-            push(@iptables_option, {p => $option{"proto"}});
-            push(@iptables_option, {m => $option{"proto"}});
-         }
-         else {
-            push(@iptables_option, {p => "tcp"});
-            push(@iptables_option, {m => "tcp"});
-         }
-
-         push(@iptables_option, {dport => $option{"redirect"}});
-         push(@iptables_option, {j => "REDIRECT"});
-         push(@iptables_option, {"to-ports" => $option{"to"}});
-      
-      }
-
-      _run_iptables (@iptables_option);
-   }
-
-}
 
 sub is_nat_gateway {
 
@@ -292,12 +135,7 @@ sub is_nat_gateway {
       Rex::Logger::debug("Default GW Device is $dev");
 
       sysctl "net.ipv4.ip_forward" => 1;
-      push(@iptables_option, {t => "nat"});
-      push(@iptables_option, {A => "POSTROUTING"});
-      push(@iptables_option, {o => $dev});
-      push(@iptables_option, {j => "MASQUERADE"});
-
-      _run_iptables (@iptables_option);
+      iptables t => "nat", A => "POSTROUTING", o => $dev, j => "MASQUERADE";
 
       return $?==0?1:0;
 
@@ -336,7 +174,7 @@ sub iptables_list {
       for my $part (@parts) {
          my ($key, $value) = split(/\s/, $part, 2);
          $key =~ s/^\-+//;
-         push(@option, {$key => $value});
+         push(@option, $key => $value);
       }
 
       push (@{$ret->{$current_table}}, \@option);
@@ -354,42 +192,63 @@ sub iptables_clear {
    }
 
    for my $p (qw/INPUT FORWARD OUTPUT/) {
-      iptabls P => $p, ["ACCEPT"];
+      iptables P => $p, ["ACCEPT"];
    }
 
 }
 
-sub _run_iptables {
+sub _open_or_close_port {
+   my ($dev_type, $push_type, $chain, $jump, $port, $option) = @_;
 
-   my (@options) = @_;
+   my @opts;
 
-   my $cmd = "/sbin/iptables ";
+   push(@opts, "t", "filter", "$push_type", "$chain");
 
-   for my $option (values @options) {
-
-      if(ref($option) eq "HASH") {
-         my ($key) = keys %{$option};
-         my ($value) = values %{$option};
-
-         if(length($key) == 1) {
-            $cmd .= " -$key $value ";
-         }
-         else {
-            $cmd .= " --$key $value ";
-         }
-
-      }
-      elsif(ref($option) eq "ARRAY") {
-         $cmd .= join(" ", @{$option});
-      }
-
+   unless(exists $option->{"dev"}) {
+      my $net_info = network_interfaces();
+      my @dev = keys %{$net_info};
+      $option->{"dev"} = \@dev;
    }
 
-   run $cmd;
-
-   if($? != 0) {
-      Rex::Logger::info("Error setting iptable rule: $cmd");
+   if(exists $option->{"dev"} && ! ref($option->{"dev"})) {
+      push(@opts, "$dev_type", $option->{"dev"});
    }
+   elsif(ref($option->{"dev"}) eq "ARRAY") {
+      for my $dev (@{$option->{"dev"}}) {
+         my $new_option = $option;
+         $new_option->{"dev"} = $dev;
+
+         _open_or_close_port($dev_type, $push_type, $chain, $jump, $port, $new_option);
+      }
+
+      return;
+   }
+
+   if(exists $option->{"proto"}) {
+      push(@opts, "p", $option->{"proto"});
+      push(@opts, "m", $option->{"proto"});
+   }
+   else {
+      push(@opts, "p", "tcp");
+      push(@opts, "m", "tcp");
+   }
+
+   if($port eq "all") {
+      push(@opts, "j", "$jump");
+   }
+   else {
+      if(ref($port) eq "ARRAY") {
+         for my $port_num (@{$port}) {
+            _open_or_close_port($dev_type, $push_type, $chain, $jump, $port_num, $option);
+         }
+         return;
+      }
+
+      push(@opts, "j", $jump);
+      push(@opts, "dport", $port);
+   }
+
+   iptables @opts;
 
 }
 

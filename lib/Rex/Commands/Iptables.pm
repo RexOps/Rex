@@ -4,6 +4,52 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Commands::Iptables - Iptable Management Commands
+
+=head1 DESCRIPTION
+
+With this Module you can manage basic Iptables rules.
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::Iptables;
+     
+ task "firewall", sub {
+    iptables_clear;
+
+    open_port 22;
+    open_port [22, 80] => {
+       dev => "eth0",
+    };
+        
+    close_port 22 => {
+       dev => "eth0",
+    };
+    close_port "all";
+        
+    redirect_port 80 => 10080;
+    redirect_port 80 => {
+       dev => "eth0",
+       to  => 10080,
+    };
+       
+    is_nat_gateway;
+       
+    iptables t => "nat",
+             A => "POSTROUTING",
+             o => "eth0",
+             j => "MASQUERADE";
+
+ };
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::Commands::Iptables;
 
 use strict;
@@ -27,6 +73,17 @@ use Rex::Logger;
 
 sub iptables;
 
+=item open_port($port, $option)
+
+Open a port for inbound connections.
+
+ task "firewall", sub {
+    open_port 22;
+    open_port [22, 80];
+    open_port [22, 80] => { dev => "eth1", };
+ };
+
+=cut
 sub open_port {
 
    my ($port, $option) = @_;
@@ -34,6 +91,17 @@ sub open_port {
 
 }
 
+=item close_port($port, $option)
+
+Close a port for inbound connections.
+
+ task "firewall", sub {
+    close_port 22;
+    close_port [22, 80];
+    close_port [22, 80] => { dev => "eth0", };
+ };
+
+=cut
 sub close_port {
 
    my ($port, $option) = @_;
@@ -41,6 +109,19 @@ sub close_port {
 
 }
 
+=item redirect_port($in_port, $option)
+
+Redirect $in_port to an other local port.
+
+ task "redirects", sub {
+    redirect_port 80 => 10080;
+    redirect_port 80 => {
+       to  => 10080,
+       dev => "eth0",
+    };
+ };
+
+=cut
 sub redirect_port {
    my ($in_port, $option) = @_;
 
@@ -88,6 +169,16 @@ sub redirect_port {
    iptables @opts;
 }
 
+=item iptables(@params)
+
+Write standard iptable comands.
+
+ task "firewall", sub {
+    iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
+    iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
+ };
+
+=cut
 sub iptables {
    my (@params) = @_;
 
@@ -121,7 +212,15 @@ sub iptables {
    }
 }
 
+=item is_nat_gateway
 
+This function create a nat gateway for the device the default route points to.
+
+ task "make-gateway", sub {
+    is_nat_gateway;
+ };
+
+=cut
 sub is_nat_gateway {
 
    Rex::Logger::debug("Changing this system to a nat gateway.");
@@ -148,6 +247,15 @@ sub is_nat_gateway {
 
 }
 
+=item iptables_list
+
+List all iptables rules.
+
+ task "list-iptables", sub {
+    print Dumper iptables_list;
+ };
+
+=cut
 sub iptables_list {
    
    my (%tables, $ret);
@@ -184,6 +292,15 @@ sub iptables_list {
    return $ret;
 }
 
+=item iptables_clear
+
+Remove all iptables rules.
+
+ task "no-firewall", sub {
+    iptables_clear;
+ };
+
+=cut
 sub iptables_clear {
 
    for my $table (qw/nat mangle filter/) {
@@ -251,6 +368,10 @@ sub _open_or_close_port {
    iptables @opts;
 
 }
+
+=back
+
+=cut
 
 
 1;

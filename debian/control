@@ -9,5 +9,5 @@ Homepage: http://rexify.org/
 Package: rex
 Architecture: all
 Depends: perl (>= 5.10.0), libnet-ssh2-perl (>= 0.33), libwww-perl, libxml-simple-perl,
- libdigest-sha1-perl, libdigest-hmac-perl
+ libdigest-sha1-perl, libdigest-hmac-perl, libexpect-perl
 Description: REmote eXecute. Execute commands on remote machines.

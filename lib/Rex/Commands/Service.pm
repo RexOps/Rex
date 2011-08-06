@@ -27,14 +27,20 @@ Currently this module supports
 =head1 SYNOPSIS
 
  use Rex::Commands::Service
- 
+     
  service apache2 => "start";
- 
+     
  service apache2 => "stop";
- 
+     
  service apache2 => "restart";
- 
+     
  service apache2 => "status";
+    
+ service apache2 => "reload";
+    
+ service apache2 => "ensure", "started";
+   
+ service apache2 => "ensure", "stopped";
 
 =head1 EXPORTED FUNCTIONS
 
@@ -101,6 +107,17 @@ The service function accepts 2 parameters. The first is the service name and the
  };
 
 
+=item ensure that a service will started at boot time
+
+ task "prepare", sub {
+    service apache2 => "ensure", "started";
+ };
+
+=item ensure that a service will NOT be started.
+
+ task "prepare", sub {
+    service apache2 => "ensure", "stopped";
+ };
 
 =back
 

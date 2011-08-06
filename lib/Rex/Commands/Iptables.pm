@@ -18,7 +18,7 @@ With this Module you can manage basic Iptables rules.
      
  task "firewall", sub {
     iptables_clear;
-
+     
     open_port 22;
     open_port [22, 80] => {
        dev => "eth0",
@@ -44,7 +44,7 @@ With this Module you can manage basic Iptables rules.
              A => "POSTROUTING",
              o => "eth0",
              j => "MASQUERADE";
-
+    
  };
 
 =head1 EXPORTED FUNCTIONS

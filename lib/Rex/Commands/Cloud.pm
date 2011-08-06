@@ -95,7 +95,6 @@ sub cloud_service {
    }
 }
 
-=over 4
 
 =item cloud_auth($access_key, $secret_access_key)
 
@@ -198,8 +197,6 @@ sub get_cloud_instances_as_group {
 
 This function controlls all aspects of a cloud instance.
 
-=over 4 
-
 =cut
 
 sub cloud_instance {
@@ -252,8 +249,6 @@ Terminate an instance. This will destroy all data and remove the instance.
 
 }
 
-=back
-
 =item get_cloud_regions
 
 Returns all regions as an array.
@@ -273,8 +268,6 @@ sub get_cloud_regions {
 =item cloud_volume($action , $data)
 
 This function controlls all aspects of a cloud volume.
-
-=over 4
 
 =cut
 

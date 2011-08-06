@@ -20,6 +20,11 @@ Requires: perl-Expect
 Requires: perl-DBI
 Requires: perl >= 5.8.0
 Requires: rsync
+Requires: perl-Digest-SHA1
+Requires: perl-libwww-perl
+Requires: perl-XML-Simple
+Requires: perl-Digest-HMAC
+
 
 %description
 Rex is a tool to ease the execution of commands on multiple remote 

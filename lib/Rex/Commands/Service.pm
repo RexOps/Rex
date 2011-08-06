@@ -124,18 +124,15 @@ sub service {
 
    my $srvc = Rex::Service->get;
 
-   for my $service (@{$services}) {
-
+   for my $service (@$services) {
       if($action eq "start") {
 
          unless($srvc->status($service)) {
             if($srvc->start($service)) {
                Rex::Logger::info("Service $service started.");
-               return 1;
             }
             else {
                Rex::Logger::info("Error starting $service.");
-               return 0;
             }
          }
 
@@ -145,11 +142,9 @@ sub service {
 
          if($srvc->restart($service)) {
             Rex::Logger::info("Service $service restarted.");
-            return 1;
          }
          else {
             Rex::Logger::info("Error restarting $service.");
-            return 0;
          }
 
       }
@@ -158,11 +153,9 @@ sub service {
 
          if($srvc->stop($service)) {
             Rex::Logger::info("Service $service stopped.");
-            return 1;
          }
          else {
             Rex::Logger::info("Error stopping $service.");
-            return 0;
          }
 
       }
@@ -171,11 +164,9 @@ sub service {
 
          if($srvc->reload($service)) {
             Rex::Logger::info("Service $service is reloaded.");
-            return 1;
          }
          else {
             Rex::Logger::info("Error $service does not support reload");
-            return 0;
          }
 
       }
@@ -184,11 +175,9 @@ sub service {
 
          if($srvc->status($service)) {
             Rex::Logger::info("Service $service is running.");
-            return 1;
          }
          else {
             Rex::Logger::info("$service is stopped");
-            return 0;
          }
 
       }

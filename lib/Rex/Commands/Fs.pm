@@ -63,7 +63,7 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 
 @EXPORT = qw(list_files ls
-            unlink rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
+            unlink rm rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
             chown chgrp chmod
             is_file is_dir is_readable is_writeable is_writable
             df du
@@ -180,6 +180,16 @@ sub unlink {
    } else {
       CORE::unlink(@files);
    }
+}
+
+=item rm($file)
+
+This is an alias for unlink.
+
+=cut
+
+sub rm {
+   &unlink(@_);
 }
 
 =item rmdir($dir)

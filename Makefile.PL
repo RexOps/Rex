@@ -14,6 +14,6 @@ WriteMakefile(
                   'HTTP::Date' => 0,
                   },
    EXE_FILES => ['bin/rex', 'bin/rexify'],
-   LICENSE => 'perl'
+   LICENSE => 'GPL3'
 );
 

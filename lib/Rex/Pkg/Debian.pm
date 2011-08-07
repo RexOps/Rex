@@ -101,5 +101,11 @@ sub get_installed {
    return @pkg;
 }
 
+sub update_pkg_db {
+   my ($self) = @_;
+
+   run "apt-get -y update";
+}
+
 
 1;

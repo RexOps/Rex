@@ -47,7 +47,6 @@ sub install {
 
    my $version = $option->{"version"} || "";
 
-   Rex::Logger::info("Installing $pkg.");
    my $f = run("urpmi --auto --quiet $pkg");
 
    unless($? == 0) {
@@ -99,6 +98,12 @@ sub get_installed {
    }
 
    return @pkg;
+}
+
+sub update_pkg_db {
+   my ($self) = @_;
+
+   run "urpmi.update -a";
 }
 
 1;

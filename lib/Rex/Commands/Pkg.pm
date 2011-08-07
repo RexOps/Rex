@@ -49,7 +49,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install remove installed_packages);
+@EXPORT = qw(install remove installed_packages update_package_db);
 
 =item install($type, $data, $options)
 
@@ -284,6 +284,21 @@ This function returns all installed packages and their version.
 sub installed_packages {
    my $pkg = Rex::Pkg->get;
    return $pkg->get_installed;
+}
+
+=item update_package_db
+
+This function updates the local package database. For example, on CentOS it will execute I<yum makecache>.
+
+ task "update-pkg-db", "server1", "server2", sub {
+    update_package_db;
+    install package => "apache2";
+ };
+
+=cut
+sub update_package_db {
+   my $pkg = Rex::Pkg->get;
+   $pkg->update_pkg_db();
 }
 
 =back

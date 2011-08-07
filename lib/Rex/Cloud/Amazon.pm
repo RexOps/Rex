@@ -325,7 +325,7 @@ sub _hash {
 
 sub _xml {
    my ($self, $xml) = @_;
-
+print $xml;
    #my $x = XML::Simple->new(ForceArray => 1);
    my $x = XML::Simple->new;
    return $x->XMLin($xml);

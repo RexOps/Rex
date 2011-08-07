@@ -100,7 +100,11 @@ sub get_installed {
    return @pkg;
 }
 
+sub update_pkg_db {
+   my ($self) = @_;
 
+   run "yum makecache";
+}
 
 
 1;

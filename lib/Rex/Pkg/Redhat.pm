@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Commands::File;
 
 sub new {
    my $that = shift;
@@ -104,6 +105,28 @@ sub update_pkg_db {
    my ($self) = @_;
 
    run "yum makecache";
+}
+
+sub add_repository {
+   my ($self, %data) = @_;
+
+   my $name = $data{"name"};
+   my $desc = $data{"description"} || $data{"name"};
+
+   my $fh = file_write "/etc/yum.repos.d/rex.repo";
+
+   $fh->write("# This file is managed by Rex\n");
+   $fh->write("[$name]\n");
+   $fh->write("name=$desc\n");
+   $fh->write("baseurl=" . $data{"url"} . "\n");
+   $fh->write("enabled=1\n");
+
+   $fh->close;
+}
+
+sub rm_repository {
+   my ($self, $name) = @_;
+   unlink "/etc/yum.repos.d/rex.repo";
 }
 
 

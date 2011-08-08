@@ -105,5 +105,16 @@ sub update_pkg_db {
 
    run "urpmi.update -a";
 }
+sub add_repository {
+   my ($self, %data) = @_;
+   my $name = $data{"name"};
+
+   run "urpmi.addmedia $name " . $data{"url"};
+}
+
+sub rm_repository {
+   my ($self, $name) = @_;
+   run "urpmi.removemedia $name";
+}
 
 1;

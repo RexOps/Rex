@@ -106,4 +106,14 @@ sub update_pkg_db {
    run "zypper ref";
 }
 
+sub add_repository {
+   my ($self, %data) = @_;
+   run "zypper addrepo -f -n " . $data{"name"} . " " . $data{"url"} . " " . $data{"name"};
+}
+
+sub rm_repository {
+   my ($self, $name) = @_;
+   run "zypper removerepo $name";
+}
+
 1;

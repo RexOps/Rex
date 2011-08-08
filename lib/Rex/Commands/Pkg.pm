@@ -301,8 +301,35 @@ sub update_package_db {
    $pkg->update_pkg_db();
 }
 
-=back
+=cut
+
+=item repository($action, %data)
+
+Add or remove a repository from the package manager.
+
+ task "add-repo", "server1", "server2", sub {
+    repository 
+         add        => "name",
+         url        => "http://rex.linux-files.org/debian/squeeze",
+         distro     => "squeeze",
+         repository => "rex",
+         source     => 1;
+ };
 
 =cut
+
+sub repository {
+   my ($action, %data) = @_;
+   my $pkg = Rex::Pkg->get;
+
+   if($action eq "add") {
+      $pkg->add_repository(%data);
+   }
+   elsif($action eq "remove") {
+      $pkg->rm_repository(%data);
+   }
+}
+
+=back
 
 1;

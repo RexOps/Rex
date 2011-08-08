@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Commands::File;
 
 sub new {
    my $that = shift;
@@ -105,6 +106,25 @@ sub update_pkg_db {
    my ($self) = @_;
 
    run "apt-get -y update";
+}
+
+sub add_repository {
+   my ($self, %data) = @_;
+
+   my $name = $data{"name"};
+
+   my $fh = file_write "/etc/apt/sources.list.d/$name.list";
+   $fh->write("# This file is managed by Rex\n");
+   $fh->write("deb " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   if(exists $data{"source"} && $data{"source"}) {
+      $fh->write("deb-src " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   }
+   $fh->close;
+}
+
+sub rm_repository {
+   my ($self, $name) = @_;
+   unlink "/etc/apt/sources.list.d/$name.list";
 }
 
 

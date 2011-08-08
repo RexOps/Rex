@@ -307,14 +307,25 @@ sub update_package_db {
 
 Add or remove a repository from the package manager.
 
+For Debian: If you have no source repository, or if you don't want to add it, just remove the I<source> parameter.
+
  task "add-repo", "server1", "server2", sub {
-    repository 
-         add        => "name",
+    repository "add" => "repository-name",
          url        => "http://rex.linux-files.org/debian/squeeze",
          distro     => "squeeze",
          repository => "rex",
          source     => 1;
  };
+
+
+For CentOS, Mageia and SuSE only the name and the url are needed.
+
+ task "add-repo", "server1", "server2", sub {
+    repository add => "repository-name",
+         url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
+
+ };
+
 
 =cut
 

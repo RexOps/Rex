@@ -55,6 +55,9 @@ sub route {
    my @ret = ();
 
    my @route = run "netstat -nr";  
+   if($? != 0) {
+      die("Error running netstat");
+   }
    shift @route; shift @route; # remove first 2 lines
 
    for my $route_entry (@route) {
@@ -85,9 +88,16 @@ sub default_gateway {
    if($new_default_gw) {
       if(default_gateway()) {
          run "route del default";
+         if($? != 0) {
+            die("Error running route del default");
+         }
       }
 
       run "route add default gw $new_default_gw";
+      if($? != 0) {
+         die("Error route add default");
+      }
+
    }
    else {
       my @route = route();
@@ -107,6 +117,9 @@ sub netstat {
    my @ret;
 
    my @netstat = run "netstat -nap";
+   if($? != 0) {
+      die("Error running netstat");
+   }
    my ($in_inet, $in_unix) = (0, 0);
    for my $line (@netstat) {
       if($in_inet == 1) { ++$in_inet; next; }

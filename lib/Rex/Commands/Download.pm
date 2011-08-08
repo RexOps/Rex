@@ -117,10 +117,15 @@ sub _sftp_download {
       }
       Rex::Logger::debug("Downloading $remote -> $local");
 
-      $ssh->scp_get($remote, $local);
+      if(!$ssh->scp_get($remote, $local)) {
+         die($ssh->error);
+      }
    } else {
       Rex::Logger::debug("Copying $remote -> $local");
-      system("cp $remote $local");
+      system("cp $remote $local >/dev/null 2>&1");
+      if($? > 0) {
+         die("Error copying file $remote to $local");
+      }
    }
 
 }

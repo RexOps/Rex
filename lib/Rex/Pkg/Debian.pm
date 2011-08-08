@@ -54,7 +54,7 @@ sub install {
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error installing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
@@ -74,7 +74,7 @@ sub remove {
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error removing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully removed.");
@@ -106,6 +106,9 @@ sub update_pkg_db {
    my ($self) = @_;
 
    run "apt-get -y update";
+   if($? != 0) {
+      die("Error updating package database");
+   }
 }
 
 sub add_repository {

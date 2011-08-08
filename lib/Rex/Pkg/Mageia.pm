@@ -52,7 +52,7 @@ sub install {
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error installing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
@@ -69,7 +69,7 @@ sub remove {
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error removing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully removed.");
@@ -104,17 +104,26 @@ sub update_pkg_db {
    my ($self) = @_;
 
    run "urpmi.update -a";
+   if($? != 0) {
+      die("Error updating package repository");
+   }
 }
 sub add_repository {
    my ($self, %data) = @_;
    my $name = $data{"name"};
 
    run "urpmi.addmedia $name " . $data{"url"};
+   if($? != 0) {
+      die("Error adding repository $name");
+   }
 }
 
 sub rm_repository {
    my ($self, $name) = @_;
    run "urpmi.removemedia $name";
+   if($? != 0) {
+      die("Error removing repository $name");
+   }
 }
 
 1;

@@ -64,6 +64,7 @@ sub kmod {
       run "modprobe $module";
       unless($? == 0) {
          Rex::Logger::info("Error loading Kernel Module: $module");
+         die("Error loading Kernel Module: $module");
       }
       else {
          Rex::Logger::debug("Kernel Module $module loaded.");
@@ -74,6 +75,7 @@ sub kmod {
       run "rmmod $module";
       unless($? == 0) {
          Rex::Logger::info("Error unloading Kernel Module: $module");
+         die("Error unloading Kernel Module: $module");
       }
       else {
          Rex::Logger::debug("Kernel Module $module unloaded.");
@@ -81,7 +83,7 @@ sub kmod {
    }
    else {
       Rex::Logger::info("Unknown action $action");
-      exit 1;
+      die("Unknown action $action");
    }
 }
 

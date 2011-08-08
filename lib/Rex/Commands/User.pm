@@ -113,12 +113,15 @@ sub create_user {
    }
    else {
       Rex::Logger::info("Error creating/updating user $user");
-      return -1;
+      die("Error creating/updating user $user");
    }
 
    if(exists $data->{password}) {
       Rex::Logger::debug("Changing password of $user.");
       run "echo '$user:" . $data->{password} . "' | chpasswd";
+      if($? != 0) {
+         die("Error setting password for $user");
+      }
    }
 
    return get_uid($user);
@@ -148,6 +151,9 @@ sub get_user {
 
    Rex::Logger::debug("Getting information for $user");
    my $data_str = run "perl -MData::Dumper -le'print Dumper [ getpwnam(\"$user\") ]'";
+   if($? != 0) {
+      die("Error getting  user information for $user");
+   }
 
    my $data;
    {
@@ -196,7 +202,9 @@ sub delete_user {
    }
 
    run $cmd . " " . $user;
-   return $?==0?1:0;
+   if($? != 0) {
+      die("Error deleting user $user");
+   }
 }
 
 =item create_group($group, {})
@@ -230,6 +238,9 @@ sub create_group {
    }
 
    run $cmd . " " . $group;
+   if($? != 0) {
+      die("Error creating/modifying group $group");
+   }
 
    return get_gid($group);
 }
@@ -260,6 +271,9 @@ sub get_group {
 
    Rex::Logger::debug("Getting information for $group");
    my $data_str = run "perl -MData::Dumper -le'print Dumper [ getgrnam(\"$group\") ]'";
+   if($? != 0) {
+      die("Error getting group information");
+   }
 
    my $data;
    {
@@ -286,8 +300,9 @@ sub delete_group {
    my ($group) = @_;
 
    run "groupdel $group";
-
-   return $?==0?1:0;
+   if($? != 0) {
+      die("Error deleting group $group");
+   }
 }
 
 =back

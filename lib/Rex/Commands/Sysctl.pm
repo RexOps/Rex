@@ -66,6 +66,9 @@ sub sysctl {
 
       if($ret ne $val) {
          run "/sbin/sysctl -w $key=$val";
+         if($? != 0) {
+            die("Sysctl failed $key -> $val");
+         }
       }
       else {
          Rex::Logger::debug("$key has already value $val");
@@ -80,7 +83,7 @@ sub sysctl {
       }
       else {
          Rex::Logger::info("Error getting sysctl key: $key");
-         return -255;
+         die("Error getting sysctl key: $key");
       }
 
    }

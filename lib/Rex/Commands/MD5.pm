@@ -64,7 +64,7 @@ sub md5 {
 
       unless($? == 0) {
          Rex::Logger::info("Unable to get md5 sum of $file");
-         return;
+         die("Unable to get md5 sum of $file");
       }
 
       Rex::Logger::debug("MD5SUM ($file): $md5");
@@ -74,7 +74,7 @@ sub md5 {
    else {
       
       Rex::Logger::debug("File $file not found.");
-      return "";
+      die("File $file not found");
 
    }
 }

@@ -170,9 +170,6 @@ sub list_volumes {
 
    my $xml = $self->_request("DescribeVolumes");
    my $ref = $self->_xml($xml);
-   if($? > 0) {
-      return 0;
-   }
 
    return unless(exists $ref->{"volumeSet"}->{"item"});
    if(ref($ref->{"volumeSet"}->{"item"}) eq "HASH") {
@@ -200,9 +197,6 @@ sub list_instances {
 
    my $xml = $self->_request("DescribeInstances");
    my $ref = $self->_xml($xml);
-   if($? > 0) {
-      return 0;
-   }
 
    return unless(exists $ref->{"reservationSet"});
    return unless(exists $ref->{"reservationSet"}->{"item"});
@@ -293,7 +287,7 @@ sub _sign {
    my %sign_hash = (
       AWSAccessKeyId   => $self->{"__access_key"},
       Action           => $action,
-      Tmestamp        => $self->timestamp(),
+      Timestamp        => $self->timestamp(),
       Version          => $self->{"__version"},
       SignatureVersion => $self->{"__signature_version"},
       %args
@@ -345,8 +339,7 @@ sub _xml {
          push(@error_msg, $error->{"Error"}->{"Message"} . " (Code: " . $error->{"Error"}->{"Code"} . ")");
       }
 
-      $? = 1;
-      $@ = join("\n", @error_msg);
+      die(join("\n", @error_msg));
    }
 }
 

@@ -94,12 +94,18 @@ sub list_files {
    if(my $ssh = Rex::is_ssh()) {
       my $sftp = $ssh->sftp;
       my $dir = $sftp->opendir($path);
+      unless($dir) {
+         die("Can't read $path");
+      }
 
       while(my $entry  = $dir->read) {
          push @ret, $entry->{'name'};
       }
    } else {
       opendir(my $dh, $path);
+      unless($dh) {
+         die("Can't read $path");
+      }
       while(my $entry = readdir($dh)) {
          next if ($entry =~ /^\.\.?$/);
          push @ret, $entry;
@@ -137,11 +143,10 @@ sub symlink {
 
    run "ln -snf $from $to";
 
-   if($? == 0) {
-      return 1;
+   if($? != 0) {
+      die("Can't link $from -> $to");
    }
 
-   return 0;
 }
 
 =item ln($from, $to)
@@ -318,7 +323,7 @@ sub chown {
    }
 
    run "chown $recursive $user $file";
-   if($? == 0) { return 1; }
+   if($? != 0) { die("Can't chown $file"); }
 }
 
 =item chgrp($group, $file)
@@ -342,7 +347,7 @@ sub chgrp {
    }
 
    run "chgrp $recursive $group $file";
-   if($? == 0) { return 1; }
+   if($? != 0) { die("Can't chgrp $file"); }
 }
 
 =item chmod($mode, $file)
@@ -366,7 +371,7 @@ sub chmod {
    }
 
    run "chmod $recursive $mode $file";
-   if($? == 0) { return 1; }
+   if($? != 0) { die("Can't chmod $file"); }
 }
 
 
@@ -630,9 +635,9 @@ sub rename {
 
    unless($ret) {
       Rex::Logger::info("Rename failed ($old -> $new)");
+      die("Rename failed $old -> $new");
    }
 
-   return $ret;
 }
 
 =item mv($old, $new)
@@ -744,6 +749,9 @@ sub cp {
    my ($source, $dest) = @_;
 
    run "cp -a $source $dest";
+   if($? != 0) {
+      die("Copy failed from $source to $dest");
+   }
 }
 
 =item mount($device, $mount_point, @options)
@@ -769,9 +777,7 @@ sub mount {
                            $mount_point);
 
    run $cmd;
-   if($? == 0) { return 1; }
-
-   return 0;
+   if($? != 0) { die("Mount failed of $mount_point"); }
 }
 
 =item umount($mount_point)
@@ -787,8 +793,7 @@ sub umount {
    my ($mount_point) = @_;
    run "umount $mount_point";
 
-   if($? == 0) { return 1; }
-   return 0;
+   if($? != 0) { die("Umount failed of $mount_point"); }
 }
 
 =back

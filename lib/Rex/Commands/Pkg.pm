@@ -36,6 +36,7 @@ use Rex::Pkg;
 use Rex::Logger;
 use Rex::Template;
 use Rex::Commands::File;
+use Rex::Commands::Fs;
 use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
@@ -164,20 +165,26 @@ sub install {
          my %merge2 = Rex::Hardware->get(qw/ All /);
          my %template_vars = (%merge1, %merge2);
 
-         $old_md5 = md5($package);
+         eval {
+            $old_md5 = md5($package);
+         };
 
          my $fh = file_write($package);
          $fh->write($template->parse($content, \%template_vars));
          $fh->close;
 
-         $new_md5 = md5($package);
+         eval {
+            $new_md5 = md5($package);
+         };
 
       }
       else {
          
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
-         $old_md5 = md5($package);
+         eval {
+            $old_md5 = md5($package);
+         };
          my $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
 
          unless($local_md5 eq $old_md5) {
@@ -188,23 +195,28 @@ sub install {
             Rex::Logger::debug("MD5 is equal. Not uploading $source -> $package");
          }
 
-         $new_md5 = md5($package);
+         eval {
+            $new_md5 = md5($package);
+         };
 
       }
 
       if(exists $option->{"owner"}) {
-         run "chown " . $option->{"owner"} . " $package";
+         chown $option->{"owner"}, $package;
       }
 
       if(exists $option->{"group"}) {
-         run "chgrp " . $option->{"group"} . " $package";
+         chgrp $option->{"group"}, $package;
       }
 
       if(exists $option->{"mode"}) {
-         run "chmod " . $option->{"mode"} . " $package";
+         chmod $option->{"mode"}, $package;
       }
 
-      unless($old_md5 eq $new_md5) {
+      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+         $old_md5 ||= "";
+         $new_md5 ||= "";
+
          Rex::Logger::debug("File $package has been changed... Running on_change");
          Rex::Logger::debug("old: $old_md5");
          Rex::Logger::debug("new: $new_md5");
@@ -217,7 +229,7 @@ sub install {
    else {
       
       Rex::Logger::info("$type not supported.");
-      exit 1;
+      die("install $type not supported");
 
    }
 
@@ -260,7 +272,7 @@ sub remove {
    else {
       
       Rex::Logger::info("$type not supported.");
-      exit 1;
+      die("remove $type not supported");
 
    }
 

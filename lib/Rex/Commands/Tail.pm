@@ -80,6 +80,9 @@ sub tail {
       while(1) {
          if(!%new_stat || $new_stat{'size'} > $stat{'size'}) {
             my $fh = file_read $file;
+            unless($fh) {
+               die("Error opening $file for reading");
+            }
             my $data;
 
             if(!%new_stat) {

@@ -53,7 +53,7 @@ sub install {
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error installing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
@@ -70,7 +70,7 @@ sub remove {
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error removing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully removed.");
@@ -104,16 +104,25 @@ sub update_pkg_db {
    my ($self) = @_;
 
    run "zypper ref";
+   if($? != 0) {
+      die("Error updating package repository");
+   }
 }
 
 sub add_repository {
    my ($self, %data) = @_;
    run "zypper addrepo -f -n " . $data{"name"} . " " . $data{"url"} . " " . $data{"name"};
+   if($? != 0) {
+      die("Error adding repository $name");
+   }
 }
 
 sub rm_repository {
    my ($self, $name) = @_;
    run "zypper removerepo $name";
+   if($? != 0) {
+      die("Error removing repository $name");
+   }
 }
 
 1;

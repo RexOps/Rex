@@ -301,7 +301,6 @@ sub update_package_db {
    $pkg->update_pkg_db();
 }
 
-=cut
 
 =item repository($action, %data)
 
@@ -326,6 +325,12 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
 
  };
 
+To remove a repository just delete it with its name.
+
+ task "rm-repo", "server1", sub {
+    repository remove => "repository-name";
+ };
+
 
 =cut
 
@@ -336,11 +341,13 @@ sub repository {
    if($action eq "add") {
       $pkg->add_repository(%data);
    }
-   elsif($action eq "remove") {
+   elsif($action eq "remove" || $action eq "delete") {
       $pkg->rm_repository(%data);
    }
 }
 
 =back
+
+=cut
 
 1;

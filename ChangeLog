@@ -2,6 +2,7 @@
   * added function to update package database
   * lizenz aenderung auf GPLv3
   * added an alias for unlink (rm)
+  * added functions to manage repositories
 
 2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
   * allow array refs for Pkg::remove

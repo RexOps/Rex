@@ -170,6 +170,9 @@ sub list_volumes {
 
    my $xml = $self->_request("DescribeVolumes");
    my $ref = $self->_xml($xml);
+   if($? > 0) {
+      return 0;
+   }
 
    return unless(exists $ref->{"volumeSet"}->{"item"});
    if(ref($ref->{"volumeSet"}->{"item"}) eq "HASH") {
@@ -197,6 +200,9 @@ sub list_instances {
 
    my $xml = $self->_request("DescribeInstances");
    my $ref = $self->_xml($xml);
+   if($? > 0) {
+      return 0;
+   }
 
    return unless(exists $ref->{"reservationSet"});
    return unless(exists $ref->{"reservationSet"}->{"item"});
@@ -265,6 +271,7 @@ sub _request {
 
    if($res->code >= 500) {
       Rex::Logger::info("Error on request");
+      Rex::Logger::debug($res->content);
       return;
    }
 
@@ -286,7 +293,7 @@ sub _sign {
    my %sign_hash = (
       AWSAccessKeyId   => $self->{"__access_key"},
       Action           => $action,
-      Timestamp        => $self->timestamp(),
+      Tmestamp        => $self->timestamp(),
       Version          => $self->{"__version"},
       SignatureVersion => $self->{"__signature_version"},
       %args
@@ -325,10 +332,22 @@ sub _hash {
 
 sub _xml {
    my ($self, $xml) = @_;
-print $xml;
-   #my $x = XML::Simple->new(ForceArray => 1);
+
    my $x = XML::Simple->new;
-   return $x->XMLin($xml);
+   my $res = $x->XMLin($xml);
+   if(defined $res->{"Errors"}) {
+      if(ref($res->{"Errors"}) ne "ARRAY") {
+         $res->{"Errors"} = [ $res->{"Errors"} ];
+      }
+
+      my @error_msg = ();
+      for my $error (@{$res->{"Errors"}}) {
+         push(@error_msg, $error->{"Error"}->{"Message"} . " (Code: " . $error->{"Error"}->{"Code"} . ")");
+      }
+
+      $? = 1;
+      $@ = join("\n", @error_msg);
+   }
 }
 
 

@@ -1,8 +1,10 @@
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.12.99.0)
   * added function to update package database
-  * lizenz aenderung auf GPLv3
+  * license changed to GPL3
   * added an alias for unlink (rm)
   * added functions to manage repositories
+  * revised error handling
+  * added jiffybox support, a german cloudservice from domainfactory
 
 2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
   * allow array refs for Pkg::remove

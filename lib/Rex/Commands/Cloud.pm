@@ -66,7 +66,9 @@ use Rex::Cloud;
 @EXPORT = qw(cloud_instance cloud_volume 
                cloud_instance_list cloud_volume_list
                cloud_service cloud_auth cloud_region 
-               get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones);
+               get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones
+               get_cloud_plans
+               get_cloud_operating_systems);
 
 =item cloud_service($cloud_service)
 
@@ -226,13 +228,45 @@ Create a new instance.
 =cut
 
    elsif($action eq "create") {
-      $cloud->run_instance(
+      my %data_hash = (
          image_id => $data->{"image_id"},
          name     => $data->{"name"} || undef,
          key      => $data->{"key"} || undef,
          zone     => $data->{"zone"} || undef,
          volume   => $data->{"volume"} || undef,
+         password => $data->{"password"} || undef,
+         plan_id  => $data->{"plan_id"} || undef,
       );
+
+      if(exists $data->{"metadata"}) {
+         $data_hash{"metadata"} = $data->{"metadata"};
+      }
+
+      $cloud->run_instance(%data_hash);
+   }
+
+=item start
+
+Start an existing instance
+
+ cloud_instance start => "instance-id";
+
+=cut
+
+   elsif($action eq "start") {
+      $cloud->start_instance(instance_id => $data);
+   }
+
+=item stop
+
+Stop an existing instance
+
+ cloud_instance stop => "instance-id";
+
+=cut
+
+   elsif($action eq "stop") {
+      $cloud->stop_instance(instance_id => $data);
    }
 
 =item terminate
@@ -361,6 +395,34 @@ sub get_cloud_availability_zones {
 
    return $cloud->get_availability_zones();
 
+}
+
+=item get_cloud_plans
+
+Retrieve information of the available cloud plans. If supported.
+
+=cut
+sub get_cloud_plans {
+   my $cloud = get_cloud_service($cloud_service);
+
+   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_endpoint($cloud_region);
+
+   return $cloud->list_plans;
+}
+
+=item get_cloud_operating_systems
+
+Retrieve information of the available cloud plans. If supported.
+
+=cut
+sub get_cloud_operating_systems {
+   my $cloud = get_cloud_service($cloud_service);
+
+   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_endpoint($cloud_region);
+
+   return $cloud->list_operating_systems;
 }
 
 =back

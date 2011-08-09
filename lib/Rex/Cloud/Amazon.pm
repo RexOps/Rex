@@ -14,6 +14,9 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Cloud::Base;
+
+use base qw(Rex::Cloud::Base);
 
 use LWP::UserAgent;
 use MIME::Base64 qw(encode_base64 decode_base64);
@@ -171,6 +174,7 @@ sub list_volumes {
    my $xml = $self->_request("DescribeVolumes");
    my $ref = $self->_xml($xml);
 
+   return unless($ref);
    return unless(exists $ref->{"volumeSet"}->{"item"});
    if(ref($ref->{"volumeSet"}->{"item"}) eq "HASH") {
       $ref->{"volumeSet"}->{"item"} = [ $ref->{"volumeSet"}->{"item"} ];
@@ -198,6 +202,7 @@ sub list_instances {
    my $xml = $self->_request("DescribeInstances");
    my $ref = $self->_xml($xml);
 
+   return unless($ref);
    return unless(exists $ref->{"reservationSet"});
    return unless(exists $ref->{"reservationSet"}->{"item"});
 
@@ -341,6 +346,8 @@ sub _xml {
 
       die(join("\n", @error_msg));
    }
+
+   return $res;
 }
 
 

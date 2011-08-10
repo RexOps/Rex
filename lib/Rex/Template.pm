@@ -31,7 +31,7 @@ sub parse {
    my $r="";
 
    $new_data = join("\n", map {
-      my ($code, $type, $text) = ($_ =~ m/(\<%)*([+])*(.+)%\>/s);
+      my ($code, $type, $text) = ($_ =~ m/(\<%)*([+=])*(.+)%\>/s);
 
       if($code) {
          my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
@@ -43,7 +43,7 @@ sub parse {
             $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
          }
 
-         if($type && $type eq "+") {
+         if($type && $type =~ m/^[+=]$/) {
             $_ = "\$r .= $text;";
          }
          else {

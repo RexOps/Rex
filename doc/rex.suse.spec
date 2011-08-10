@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.11.99.0
+Version: 0.12.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.11.99.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.12.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -18,9 +18,13 @@ BuildRequires: perl(ExtUtils::MakeMaker)
 Requires: perl-Net-SSH2
 Requires: perl-Expect
 Requires: perl-DBI
-Requires: perl-Net-SSH2-Expect
 Requires: perl >= 5.8.0
 Requires: rsync
+Requires: perl-Digest-SHA1
+Requires: perl-libwww-perl
+Requires: perl-XML-Simple
+Requires: perl-Digest-HMAC
+
 
 %description
 Rex is a tool to ease the execution of commands on multiple remote 
@@ -54,6 +58,16 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Thu Aug 04 2011 Jan Gehring <jan.gehring at, gmail.com> 0.12.0-1
+- allow array refs for Pkg::remove
+- register every task as a sub if not in main package
+- use lsb_release if available as default to detect operating system/version
+- added sudo command
+- allow to manage multiple services at once
+- added possibility to add and remove services from runlevels
+- added iptables module for basic iptables commands
+- added cloud layer and support for amazon ec2 instances
 
 * Thu Jul 26 2011 Jan Gehring <jan.gehring at, gmail.com> 0.11.1-1
 - fixed output of netstat (reported by Thomas Biege)

@@ -4,6 +4,55 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Commands::Iptables - Iptable Management Commands
+
+=head1 DESCRIPTION
+
+With this Module you can manage basic Iptables rules.
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::Iptables;
+     
+ task "firewall", sub {
+    iptables_clear;
+     
+    open_port 22;
+    open_port [22, 80] => {
+       dev => "eth0",
+    };
+        
+    close_port 22 => {
+       dev => "eth0",
+    };
+    close_port "all";
+        
+    redirect_port 80 => 10080;
+    redirect_port 80 => {
+       dev => "eth0",
+       to  => 10080,
+    };
+      
+    default_state_rule;
+    default_state_rule dev => "eth0";
+        
+    is_nat_gateway;
+       
+    iptables t => "nat",
+             A => "POSTROUTING",
+             o => "eth0",
+             j => "MASQUERADE";
+    
+ };
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::Commands::Iptables;
 
 use strict;
@@ -18,63 +67,129 @@ use vars qw(@EXPORT);
 
 use Rex::Commands::Sysctl;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 
 use Rex::Logger;
 
-@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear open_port);
+@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear 
+               open_port close_port redirect_port
+               default_state_rule);
 
+sub iptables;
+
+=item open_port($port, $option)
+
+Open a port for inbound connections.
+
+ task "firewall", sub {
+    open_port 22;
+    open_port [22, 80];
+    open_port [22, 80] => { dev => "eth1", };
+ };
+
+=cut
 sub open_port {
 
    my ($port, $option) = @_;
+   _open_or_close_port("i", "I", "INPUT", "ACCEPT", $port, $option);
+
+}
+
+=item close_port($port, $option)
+
+Close a port for inbound connections.
+
+ task "firewall", sub {
+    close_port 22;
+    close_port [22, 80];
+    close_port [22, 80] => { dev => "eth0", };
+ };
+
+=cut
+sub close_port {
+
+   my ($port, $option) = @_;
+   _open_or_close_port("i", "A", "INPUT", "DROP", $port, $option);
+
+}
+
+=item redirect_port($in_port, $option)
+
+Redirect $in_port to an other local port.
+
+ task "redirects", sub {
+    redirect_port 80 => 10080;
+    redirect_port 80 => {
+       to  => 10080,
+       dev => "eth0",
+    };
+ };
+
+=cut
+sub redirect_port {
+   my ($in_port, $option) = @_;
 
    my @opts;
 
-   push(@opts, "t", "filter", "I", "INPUT");
+   push (@opts, "t", "nat");
 
-   if(exists $option->{"dev"}) {
-      push(@opts, "i", $option->{"dev"});
+   if(! ref($option)) {
+      my $net_info = network_interfaces();
+      my @devs = keys %{$net_info};
+
+      for my $dev (@devs) {
+         redirect_port($in_port, {
+            dev => $dev,
+            to  => $option,
+         });
+      }
+      
+      return;
    }
 
-   if(exists $option->{"proto"}) {
-      push(@opts, "p", $option->{"proto"});
-      push(@opts, "m", $option->{"proto"});
-   }
-   else {
-      push(@opts, "p", "tcp");
-      push(@opts, "m", "tcp");
-   }
+   unless(exists $option->{"dev"}) {
+      my $net_info = network_interfaces();
+      my @devs = keys %{$net_info};
 
-   if($port eq "all") {
-      push(@opts, "j", "ACCEPT");
-   }
-   else {
-      if(ref($port) eq "ARRAY") {
-         for my $port_num (@{$port}) {
-            open_port($port_num, $option);
-         }
-         return;
+      for my $dev (@devs) {
+         $option->{"dev"} = $dev;
+         redirect_port($in_port, $option);
       }
 
-      push(@opts, "dport", $port);
+      return;
+   }
+
+   if($option->{"to"} =~ m/^\d+$/) {
+      $option->{"proto"} ||= "tcp";
+
+      push(@opts, "I", "PREROUTING", "i", $option->{"dev"}, "p", $option->{"proto"}, "m", $option->{"proto"});
+      push(@opts, "dport", $in_port, "j", "REDIRECT", "to-ports", $option->{"to"});
+
+   }
+   else {
+      Rex::Logger::info("Redirect to other hosts isn't supported right now. Please do it by hand.");
    }
 
    iptables @opts;
-
 }
 
-sub close_port {
-}
+=item iptables(@params)
 
-sub redirect_port {
-}
+Write standard iptable comands.
 
+ task "firewall", sub {
+    iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
+    iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
+ };
+
+=cut
 sub iptables {
    my (@params) = @_;
 
    my $cmd = "";
    my $n = -1;
    while( $params[++$n] ) {
-      my ($key, $val) = @params[$n, $n++];
+      my ($key, $val) = reverse @params[$n, $n++];
 
       if(ref($key) eq "ARRAY") {
          $cmd .= join(" ", @{$key});
@@ -85,7 +200,7 @@ sub iptables {
          $cmd .= "-$key $val ";
       }
       else {
-         $cmd .= "--$key=$val";
+         $cmd .= "--$key $val ";
       }
    }
 
@@ -101,183 +216,15 @@ sub iptables {
    }
 }
 
-sub _iptables {
-   
-   my (%option) = @_;
+=item is_nat_gateway
 
-   my $cmd = "/sbin/iptables ";
+This function create a nat gateway for the device the default route points to.
 
-   my @iptables_option = ();
+ task "make-gateway", sub {
+    is_nat_gateway;
+ };
 
-   if(exists $option{"open"}) {
-
-      push(@iptables_option, { t => "filter" });
-      push(@iptables_option, { I => "INPUT" });
-
-      # net device given?
-      if(exists $option{"dev"}) {
-         push(@iptables_option, { i => $option{"dev"} });
-      }
-
-      # proto given?
-      if(exists $option{"proto"}) {
-         push(@iptables_option, { p => $option{"proto"} });
-         push(@iptables_option, { m => $option{"proto"} });
-      }
-      else {
-         push(@iptables_option, { p => "tcp" });
-         push(@iptables_option, { m => "tcp" });
-      }
-
-      unless($option{"open"} eq "all") {
-         for my $port (@{$option{"open"}}) {
-            my @sub_option = @iptables_option;
-
-            push(@sub_option, { dport => $port });
-            push(@sub_option, { j => "ACCEPT" });
-
-            _run_iptables (@sub_option);
-         }
-      }
-      else {
-         push(@iptables_option, { j => "ACCEPT" });
-         _run_iptables (@iptables_option);
-      }
-
-   }
-   elsif(exists $option{"close"}) {
-      push(@iptables_option, { t => "filter" });
-      push(@iptables_option, { A => "INPUT" });
-
-      # net device given?
-      if(exists $option{"dev"}) {
-         push(@iptables_option, { i => $option{"dev"} });
-      }
-
-      # proto given?
-      if(exists $option{"proto"}) {
-         push(@iptables_option, { p => $option{"proto"} });
-         push(@iptables_option, { m => $option{"proto"} });
-      }
-      else {
-         push(@iptables_option, { p => "tcp" });
-         push(@iptables_option, { m => "tcp" });
-      }
-
-      unless($option{"close"} eq "all") {
-         for my $port (@{$option{"close"}}) {
-            my @sub_option = @iptables_option;
-
-            push(@sub_option, { dport => $port });
-            push(@sub_option, { j => "REJECT" });
-            push(@sub_option, { "reject-with" => "icmp-host-unreachable" });
-
-            _run_iptables (@sub_option);
-         }
-      }
-      else {
-         push(@iptables_option, { j => "REJECT" });
-         push(@iptables_option, { "reject-with" => "icmp-host-unreachable" });
-
-         _run_iptables (@iptables_option);
-      }
-
-   }
-   elsif(exists $option{"state"}) {
-      push(@iptables_option, {t => "filter"});
-      push(@iptables_option, {A => "INPUT"});
-
-      if(exists $option{"dev"}) {
-         push(@iptables_option, {i => $option{"dev"}});
-      }
-
-      push(@iptables_option, {m => "state"});
-      push(@iptables_option, {state => $option{"state"}});
-      
-      if(exists $option{"accept"}) {
-         push(@iptables_option, {j => "ACCEPT"});
-      }
-      
-      if(exists $option{"drop"}) {
-         push(@iptables_option, {j => "DROP"});
-      }
-
-      if(exists $option{"reject"}) {
-         push(@iptables_option, {j => "REJECT"});
-      }
-
-   }
-   elsif(exists $option{"redirect"}) {
-      push(@iptables_option, {t => "nat"});
-
-      if($option{"to"} =~ m/\:(\d+)$/) {
-
-         push(@iptables_option, {I => "OUTPUT"});
-
-         if(exists $option{"destination"}) {
-            push(@iptables_option, {d => $option{"destination"} . "/32"});
-         }
-
-         if(exists $option{"source"}) {
-            push(@iptables_option, {s => $option{"source"} . "/32"});
-         }
-
-         # proto given?
-         if(exists $option{"proto"}) {
-            push(@iptables_option, {p => $option{"proto"}});
-            push(@iptables_option, {m => $option{"proto"}});
-         }
-         else {
-            push(@iptables_option, {p => "tcp"});
-            push(@iptables_option, {m => "tcp"});
-         }
-
-         if(exists $option{"dev"}) {
-            push(@iptables_option, {o => $option{"dev"}});
-         }
-
-         push(@iptables_option, {dport => $option{"redirect"}});
-         push(@iptables_option, {j => $option{"DNAT"}});
-         push(@iptables_option, {"to-destination" => $option{"to"}});
-
-      }
-      else {
-
-         push(@iptables_option, {I => "PREROUTING"});
-
-         if(exists $option{"destination"}) {
-            push(@iptables_option, {d => $option{"destination"} . "/32"});
-         }
-
-         if(exists $option{"source"}) {
-            push(@iptables_option, {s => $option{"source"} . "/32"});
-         }
-
-         if(exists $option{"dev"}) {
-            push(@iptables_option, {i => $option{"dev"}});
-         }
-
-         # proto given?
-         if(exists $option{"proto"}) {
-            push(@iptables_option, {p => $option{"proto"}});
-            push(@iptables_option, {m => $option{"proto"}});
-         }
-         else {
-            push(@iptables_option, {p => "tcp"});
-            push(@iptables_option, {m => "tcp"});
-         }
-
-         push(@iptables_option, {dport => $option{"redirect"}});
-         push(@iptables_option, {j => "REDIRECT"});
-         push(@iptables_option, {"to-ports" => $option{"to"}});
-      
-      }
-
-      _run_iptables (@iptables_option);
-   }
-
-}
-
+=cut
 sub is_nat_gateway {
 
    Rex::Logger::debug("Changing this system to a nat gateway.");
@@ -291,12 +238,7 @@ sub is_nat_gateway {
       Rex::Logger::debug("Default GW Device is $dev");
 
       sysctl "net.ipv4.ip_forward" => 1;
-      push(@iptables_option, {t => "nat"});
-      push(@iptables_option, {A => "POSTROUTING"});
-      push(@iptables_option, {o => $dev});
-      push(@iptables_option, {j => "MASQUERADE"});
-
-      _run_iptables (@iptables_option);
+      iptables t => "nat", A => "POSTROUTING", o => $dev, j => "MASQUERADE";
 
       return $?==0?1:0;
 
@@ -309,6 +251,41 @@ sub is_nat_gateway {
 
 }
 
+=item default_state_rule(%option)
+
+Set the default state rules for the given device.
+
+ task "firewall", sub {
+    default_state_rule(dev => "eth0");
+ };
+
+=cut
+sub default_state_rule {
+   my (%option) = @_;
+
+   unless(exists $option{"dev"}) {
+      my $net_info = network_interfaces();
+      my @devs = keys %{$net_info};
+
+      for my $dev (@devs) {
+         default_state_rule(dev => $dev);
+      }
+
+      return;
+   }
+
+   iptables t => "filter", A => "INPUT", i => $option{"dev"}, m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
+}
+
+=item iptables_list
+
+List all iptables rules.
+
+ task "list-iptables", sub {
+    print Dumper iptables_list;
+ };
+
+=cut
 sub iptables_list {
    
    my (%tables, $ret);
@@ -335,7 +312,7 @@ sub iptables_list {
       for my $part (@parts) {
          my ($key, $value) = split(/\s/, $part, 2);
          $key =~ s/^\-+//;
-         push(@option, {$key => $value});
+         push(@option, $key => $value);
       }
 
       push (@{$ret->{$current_table}}, \@option);
@@ -345,6 +322,15 @@ sub iptables_list {
    return $ret;
 }
 
+=item iptables_clear
+
+Remove all iptables rules.
+
+ task "no-firewall", sub {
+    iptables_clear;
+ };
+
+=cut
 sub iptables_clear {
 
    for my $table (qw/nat mangle filter/) {
@@ -353,44 +339,69 @@ sub iptables_clear {
    }
 
    for my $p (qw/INPUT FORWARD OUTPUT/) {
-      iptabls P => $p, ["ACCEPT"];
+      iptables P => $p, ["ACCEPT"];
    }
 
 }
 
-sub _run_iptables {
+sub _open_or_close_port {
+   my ($dev_type, $push_type, $chain, $jump, $port, $option) = @_;
 
-   my (@options) = @_;
+   my @opts;
 
-   my $cmd = "/sbin/iptables ";
+   push(@opts, "t", "filter", "$push_type", "$chain");
 
-   for my $option (values @options) {
-
-      if(ref($option) eq "HASH") {
-         my ($key) = keys %{$option};
-         my ($value) = values %{$option};
-
-         if(length($key) == 1) {
-            $cmd .= " -$key $value ";
-         }
-         else {
-            $cmd .= " --$key $value ";
-         }
-
-      }
-      elsif(ref($option) eq "ARRAY") {
-         $cmd .= join(" ", @{$option});
-      }
-
+   unless(exists $option->{"dev"}) {
+      my $net_info = network_interfaces();
+      my @dev = keys %{$net_info};
+      $option->{"dev"} = \@dev;
    }
 
-   run $cmd;
-
-   if($? != 0) {
-      Rex::Logger::info("Error setting iptable rule: $cmd");
+   if(exists $option->{"dev"} && ! ref($option->{"dev"})) {
+      push(@opts, "$dev_type", $option->{"dev"});
    }
+   elsif(ref($option->{"dev"}) eq "ARRAY") {
+      for my $dev (@{$option->{"dev"}}) {
+         my $new_option = $option;
+         $new_option->{"dev"} = $dev;
+
+         _open_or_close_port($dev_type, $push_type, $chain, $jump, $port, $new_option);
+      }
+
+      return;
+   }
+
+   if(exists $option->{"proto"}) {
+      push(@opts, "p", $option->{"proto"});
+      push(@opts, "m", $option->{"proto"});
+   }
+   else {
+      push(@opts, "p", "tcp");
+      push(@opts, "m", "tcp");
+   }
+
+   if($port eq "all") {
+      push(@opts, "j", "$jump");
+   }
+   else {
+      if(ref($port) eq "ARRAY") {
+         for my $port_num (@{$port}) {
+            _open_or_close_port($dev_type, $push_type, $chain, $jump, $port_num, $option);
+         }
+         return;
+      }
+
+      push(@opts, "j", $jump);
+      push(@opts, "dport", $port);
+   }
+
+   iptables @opts;
 
 }
+
+=back
+
+=cut
 
 
 1;

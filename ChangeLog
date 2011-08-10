@@ -1,5 +1,12 @@
-2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.11.99.0)
+2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
   * allow array refs for Pkg::remove
+  * register every task as a sub if not in main package
+  * use lsb_release if available as default to detect operating system/version
+  * added sudo command
+  * allow to manage multiple services at once
+  * added possibility to add and remove services from runlevels
+  * added iptables module for basic iptables commands
+  * added cloud layer and support for amazon ec2 instances
 
 2011-07-26 Jan Gehring <jan.gehring, gmail.com> (0.11.1)
   * fixed output of netstat (reported by Thomas Biege)

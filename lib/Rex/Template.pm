@@ -31,7 +31,7 @@ sub parse {
    my $r="";
 
    $new_data = join("\n", map {
-      my ($code, $type, $text) = ($_ =~ m/(\<%)*([+])*(.+)%\>/s);
+      my ($code, $type, $text) = ($_ =~ m/(\<%)*([+=])*(.+)%\>/s);
 
       if($code) {
          my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
@@ -43,7 +43,7 @@ sub parse {
             $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
          }
 
-         if($type && $type eq "+") {
+         if($type && $type =~ m/^[+=]$/) {
             $_ = "\$r .= $text;";
          }
          else {
@@ -54,8 +54,7 @@ sub parse {
       
       else {
 
-         s/"/\\"/g;
-         $_ = '$r .= "' . $_ . '";';
+         $_ = '$r .= "' . _quote($_) . '";';
 
       }
 
@@ -75,6 +74,7 @@ sub parse {
       }
 
       Rex::Logger::debug($new_data);
+      print $new_data;
       eval($new_data);
 
       if($@) {
@@ -84,6 +84,17 @@ sub parse {
    };
 
    return $r;
+}
+
+sub _quote {
+   my ($str) = @_;
+
+   $str =~ s/\\/\\\\/g;
+   $str =~ s/"/\\"/g;
+   $str =~ s/\@/\\@/g;
+   $str =~ s/\%/\\%/g;
+
+   return $str;
 }
 
 1;

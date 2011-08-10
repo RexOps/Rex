@@ -224,6 +224,9 @@ sub run {
                      CORE::exit; # kind beenden
                   }
 
+               Rex::Logger::info("Current Error-Code: " . $ssh->error());
+               Rex::Logger::info("Connected to $server, trying to authenticate.");
+
                my $auth_ret;
                if($pass_auth) {
                   $auth_ret = $ssh->auth_password($user, $pass);
@@ -233,6 +236,9 @@ sub run {
                                           Rex::Config->get_private_key, 
                                           $pass);
                }
+
+               Rex::Logger::info("Current Error-Code: " . $ssh->error());
+               Rex::Logger::info("Successfull auth");
 
                # auth unsuccessfull
                unless($auth_ret) {

@@ -49,7 +49,7 @@ sub install {
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("apt-get --force-yes -y install $pkg" . ($version?"=$version":""));
+   my $f = run("DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=\"--force-confold\" --force-yes -y install $pkg" . ($version?"=$version":""));
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");

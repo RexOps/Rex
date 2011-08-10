@@ -50,7 +50,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install remove installed_packages update_package_db);
+@EXPORT = qw(install remove installed_packages update_package_db repository);
 
 =item install($type, $data, $options)
 
@@ -347,8 +347,10 @@ To remove a repository just delete it with its name.
 =cut
 
 sub repository {
-   my ($action, %data) = @_;
+   my ($action, $name, %data) = @_;
    my $pkg = Rex::Pkg->get;
+
+   $data{"name"} = $name;
 
    if($action eq "add") {
       $pkg->add_repository(%data);

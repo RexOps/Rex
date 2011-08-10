@@ -74,7 +74,6 @@ sub parse {
       }
 
       Rex::Logger::debug($new_data);
-      print $new_data;
       eval($new_data);
 
       if($@) {

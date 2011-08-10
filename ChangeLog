@@ -5,6 +5,7 @@
   * added functions to manage repositories
   * revised error handling
   * added jiffybox support, a german cloudservice from domainfactory
+  * fixed template parsing bug (port from 0.12.1)
 
 2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
   * allow array refs for Pkg::remove

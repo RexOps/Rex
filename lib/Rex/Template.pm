@@ -54,8 +54,7 @@ sub parse {
       
       else {
 
-         s/"/\\"/g;
-         $_ = '$r .= "' . $_ . '";';
+         $_ = '$r .= "' . _quote($_) . '";';
 
       }
 
@@ -75,6 +74,7 @@ sub parse {
       }
 
       Rex::Logger::debug($new_data);
+      print $new_data;
       eval($new_data);
 
       if($@) {
@@ -84,6 +84,17 @@ sub parse {
    };
 
    return $r;
+}
+
+sub _quote {
+   my ($str) = @_;
+
+   $str =~ s/\\/\\\\/g;
+   $str =~ s/"/\\"/g;
+   $str =~ s/\@/\\@/g;
+   $str =~ s/\%/\\%/g;
+
+   return $str;
 }
 
 1;

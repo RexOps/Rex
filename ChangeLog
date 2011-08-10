@@ -1,3 +1,6 @@
+2011-08-10 Jan Gehring <jan.gehring, gmail.com> (0.12.1)
+  * fixed bug in template parsing
+
 2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
   * allow array refs for Pkg::remove
   * register every task as a sub if not in main package

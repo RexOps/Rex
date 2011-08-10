@@ -12,6 +12,7 @@ WriteMakefile(
                   'MIME::Base64' => 0,
                   'Digest::HMAC_SHA1' => 0,
                   'HTTP::Date' => 0,
+                  'JSON::XS' => 0,
                   },
    EXE_FILES => ['bin/rex', 'bin/rexify'],
    LICENSE => 'GPL3'

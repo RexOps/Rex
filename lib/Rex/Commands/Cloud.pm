@@ -10,7 +10,7 @@ Rex::Commands::Cloud - Cloud Management Commands
 
 =head1 DESCRIPTION
 
-With this Module you can manage different Cloud services. Currently it supports Amazon EC2.
+With this Module you can manage different Cloud services. Currently it supports Amazon EC2 and Jiffybox.
 
 =head1 SYNOPSIS
 
@@ -81,6 +81,8 @@ Define which cloud service to use.
 =over 4
 
 =item Amazon
+
+=item Jiffybox
 
 =back
 

@@ -67,7 +67,8 @@ use base qw(Exporter);
             chown chgrp chmod
             is_file is_dir is_readable is_writeable is_writable
             df du
-            mount umount);
+            mount umount
+            glob);
 
 use vars qw(%file_handles);
 
@@ -794,6 +795,28 @@ sub umount {
    run "umount $mount_point";
 
    if($? != 0) { die("Umount failed of $mount_point"); }
+}
+
+=item glob($glob)
+
+ task "glob", "server1", sub {
+    my @files_with_p = grep { is_file($_) } glob("/etc/p*");
+ };
+
+=cut
+sub glob {
+   my ($glob) = @_;
+
+   if(my $ssh = Rex::is_ssh()) {
+      my $content = run "perl -MData::Dumper -le'print Dumper [ glob(\"$glob\") ]'";
+      $content =~ s/^\$VAR1 =/return /;
+      my $tmp = eval $content;
+      return @{$tmp};
+   }
+   else {
+      return CORE::glob($glob);
+   }
+   
 }
 
 =back

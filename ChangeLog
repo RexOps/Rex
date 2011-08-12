@@ -1,3 +1,6 @@
+2011-08-10 Jan Gehring <jan.gehring, gmail.com> (0.12.2)
+  * fixed a bug with too long content in file function
+
 2011-08-10 Jan Gehring <jan.gehring, gmail.com> (0.12.1)
   * fixed bug in template parsing
 

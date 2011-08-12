@@ -148,7 +148,10 @@ sub file {
 
    if(exists $option->{"content"}) {
       my $fh = file_write($file);
-      $fh->write($option->{"content"});
+      my @lines = split(qr{$/}, $option->{"content"});
+      for my $line (@lines) {
+         $fh->write($line . $/);
+      }
       $fh->close;
    }
    elsif(exists $option->{"source"}) {

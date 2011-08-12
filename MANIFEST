@@ -1,6 +1,4 @@
 bin/rex
-bin/rex-agent
-bin/rex-master
 bin/rexify
 ChangeLog
 lib/Rex.pm

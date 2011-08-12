@@ -1,3 +1,7 @@
+rex (0.12.2) unstable; urgency=low
+  * fixed a bug with too long content in file function
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 12 Aug 2011 19:30:00 +0200
+
 rex (0.12.1) unstable; urgency=low
   * fixed a nasty bug in the template module
  -- Jan Gehring <jan.gehring@gmail.com>  Wed, 10 Aug 2011 22:30:00 +0200

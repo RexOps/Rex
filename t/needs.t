@@ -31,7 +31,7 @@ task("test2", sub {
 
 package main;
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
@@ -71,8 +71,29 @@ task("test2", sub {
 
 });
 
+desc("Test 3");
+task("test3", sub {
+
+   needs("test4");
+
+   if(-f "test4.txt") {
+      unlink("test4.txt");
+      return 1;
+   }
+
+   return 0;
+});
+
+desc("Test 4");
+task("test4", sub {
+   open(my $fh, ">", "test4.txt");
+   close($fh);
+});
+
+
 ok(Rex::Task->run("test"), "testing needs");
 ok(Rex::Task->run("test2"), "testing needs");
+ok(Rex::Task->run("test3"), "testing needs - local namespace");
 
 
 

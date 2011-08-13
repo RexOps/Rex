@@ -163,7 +163,7 @@ sub run_instance {
 
    ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
-   while($data->{"state"} ne "READY") {
+   while($data->{"state"} ne "STOPPED") {
       Rex::Logger::debug("Waiting for instance to be created...");
       ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
@@ -234,6 +234,7 @@ sub list_instances {
          type => $data->{"result"}->{$instance_id}->{"plan"}->{"name"},
          dns_name => "j$instance_id.servers.jiffybox.net",
          state => $state,
+         __state => $data->{"result"}->{$instance_id}->{"status"}, 
          launch_time => undef,
          name => $data->{"result"}->{$instance_id}->{"name"},
       });
@@ -245,7 +246,7 @@ sub list_instances {
 sub list_running_instances {
    my ($self) = @_;
 
-   return grep { $_->{"state"} eq "RUNNING" } $self->list_instances();
+   return grep { $_->{"__state"} eq "READY" || $_->{"__state"} eq "UPDATING" } $self->list_instances();
 }
 
 

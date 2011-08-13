@@ -71,6 +71,12 @@ sub _do_request {
 
    my $json = JSON::XS->new;
    my $data = $json->decode($res->decoded_content);
+
+   Rex::Logger::debug(Dumper($data));
+
+   unless($data->{"result"}) {
+      die("Error talking to jiffybox: " . $data->{"messages"}->[0]->{"message"});
+   }
    
    return $data;
 }
@@ -133,7 +139,7 @@ sub run_instance {
    my @jiffy_data;
 
    Rex::Logger::debug("Trying to start a new instance with data:");
-   Rex::Logger::debug("   $_ -> " . $data{$_}) for keys %data;
+   Rex::Logger::debug("   $_ -> " . ($data{$_}?$data{$_}:"undef")) for keys %data;
 
    push(@jiffy_data, "name" => $data{"name"}, "planid" => $data{"plan_id"}, "distribution" => $data{"image_id"});
 
@@ -210,13 +216,24 @@ sub list_instances {
    my $data = $self->_do_request("GET", "jiffyBoxes");
 
    for my $instance_id (keys %{$data->{"result"}}) {
+      my $state = $data->{"result"}->{$instance_id}->{"status"};
+
+      if($state eq "READY") {
+         if($data->{"result"}->{$instance_id}->{"running"}) {
+            $state = "RUNNING";
+         }
+         else {
+            $state = "STOPPED";
+         }
+      }
+
       push(@ret, {
          ip => $data->{"result"}->{$instance_id}->{"ips"}->{"public"}->[0],
          id => $instance_id,
          architecture => undef,
          type => $data->{"result"}->{$instance_id}->{"plan"}->{"name"},
          dns_name => "j$instance_id.servers.jiffybox.net",
-         state => $data->{"result"}->{$instance_id}->{"status"},
+         state => $state,
          launch_time => undef,
          name => $data->{"result"}->{$instance_id}->{"name"},
       });
@@ -225,7 +242,11 @@ sub list_instances {
    return @ret;
 }
 
-sub list_running_instances { Rex::Logger::debug("Not implemented"); }
+sub list_running_instances {
+   my ($self) = @_;
+
+   return grep { $_->{"state"} eq "RUNNING" } $self->list_instances();
+}
 
 
 1;

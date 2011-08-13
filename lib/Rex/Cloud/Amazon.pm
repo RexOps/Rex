@@ -71,7 +71,7 @@ sub run_instance {
    my ($self, %data) = @_;
 
    Rex::Logger::debug("Trying to start a new Amazon instance with data:");
-   Rex::Logger::debug("   $_ -> " . $data{$_}) for keys %data;
+   Rex::Logger::debug("   $_ -> " . ($data{$_}?$data{$_}:"undef")) for keys %data;
 
    my $xml = $self->_request("RunInstances", 
                ImageId  => $data{"image_id"},

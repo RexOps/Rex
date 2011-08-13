@@ -287,7 +287,15 @@ sub _request {
 }
 
 sub _sign {
-   my ($self, $action, %args) = @_;  
+   my ($self, $action, %o_args) = @_;  
+
+   my %args;
+   for my $key (keys %o_args) {
+      next unless $key;
+      next unless $o_args{$key};
+
+      $args{$key} = $o_args{$key};
+   }
 
    my %sign_hash = (
       AWSAccessKeyId   => $self->{"__access_key"},

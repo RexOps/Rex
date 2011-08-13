@@ -182,14 +182,16 @@ sub get_cloud_instances_as_group {
    
    # return funcRef
    return sub {
-      my @list = cloud_instance_list;
+      my $cloud = get_cloud_service($cloud_service);
+      $cloud->set_auth($access_key, $secret_access_key);
+      $cloud->set_endpoint($cloud_region);
+
+      my @list = $cloud->list_running_instances();
 
       my @ret;
 
       for my $instance (@list) {
-         if($instance->{"state"} eq "running") {
-            push(@ret, $instance->{"ip"});
-         }
+         push(@ret, $instance->{"ip"});
       }
 
       return @ret;

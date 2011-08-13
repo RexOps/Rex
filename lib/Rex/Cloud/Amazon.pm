@@ -40,6 +40,9 @@ sub new {
    $self->{"__signature_version"} = 1;
    $self->{"__endpoint"} = "us-east-1.ec2.amazonaws.com";
 
+   Rex::Logger::debug("Creating new Amazon Object, with endpoint: " . $self->{"__endpoint"});
+   Rex::Logger::debug("Using API Version: " . $self->{"__version"});
+
    return $self;
 }
 
@@ -52,6 +55,7 @@ sub set_auth {
 
 sub set_endpoint {
    my ($self, $endpoint) = @_;
+   Rex::Logger::debug("Setting new endpoint to $endpoint");
    $self->{'__endpoint'} = $endpoint;
 }
 
@@ -65,6 +69,9 @@ sub timestamp {
 
 sub run_instance {
    my ($self, %data) = @_;
+
+   Rex::Logger::debug("Trying to start a new Amazon instance with data:");
+   Rex::Logger::debug("   $_ -> " . $data{$_}) for keys %data;
 
    my $xml = $self->_request("RunInstances", 
                ImageId  => $data{"image_id"},
@@ -85,6 +92,7 @@ sub run_instance {
    my ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_instances();
 
    while($info->{"state"} ne "running") {
+      Rex::Logger::debug("Waiting for instance to be created...");
       ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_instances();
       sleep 1;
    }
@@ -102,6 +110,8 @@ sub run_instance {
 sub attach_volume {
    my ($self, %data) = @_;
 
+   Rex::Logger::debug("Trying to attach a new volume");
+
    $self->_request("AttachVolume", 
       VolumeId => $data{"volume_id"},
       InstanceId => $data{"instance_id"},
@@ -111,6 +121,8 @@ sub attach_volume {
 sub detach_volume {
    my ($self, %data) = @_;
 
+   Rex::Logger::debug("Trying to detach a volume");
+
    $self->_request("DetachVolume",
          VolumeId => $data{"volume_id"},
       );
@@ -118,6 +130,8 @@ sub detach_volume {
 
 sub delete_volume {
    my ($self, %data) = @_;
+
+   Rex::Logger::debug("Trying to delete a volume");
 
    $self->_request("DeleteVolume", 
       VolumeId => $data{"volume_id"},
@@ -127,6 +141,8 @@ sub delete_volume {
 sub terminate_instance {
    my ($self, %data) = @_;
 
+   Rex::Logger::debug("Trying to terminate an instance");
+
    $self->_request("TerminateInstances",
                "InstanceId.1" => $data{"instance_id"});
 }
@@ -134,12 +150,16 @@ sub terminate_instance {
 sub stop_instance {
    my ($self, $id) = @_;
 
+   Rex::Logger::debug("Trying to stop an instance");
+
    $self->_request("StopInstances",
                "InstanceId.1" => $id);
 }
 
 sub add_tag {
    my ($self, %data) = @_;
+
+   Rex::Logger::debug("Adding a new tag: " . $data{id} . " -> " . $data{name} .  " -> " . $data{value});
 
    $self->_request("CreateTags",
                "ResourceId.1" => $data{"id"},
@@ -149,6 +169,8 @@ sub add_tag {
 
 sub create_volume {
    my ($self, %data) = @_;
+
+   Rex::Logger::debug("Creating a new volume");
 
    my $xml = $self->_request("CreateVolume", 
                "Size" => $data{"size"} || 1,
@@ -162,6 +184,7 @@ sub create_volume {
    my ($info) = grep { $_->{"id"} eq $ref->{"volumeId"} } $self->list_volumes();
 
    while($info->{"status"} ne "available") {
+      Rex::Logger::debug("Waiting for volume to become ready...");
       ($info) = grep { $_->{"id"} eq $ref->{"volumeId"} } $self->list_volumes();
       sleep 1;
    }
@@ -265,6 +288,9 @@ sub _request {
 
    my $ua = LWP::UserAgent->new;
    my %param = $self->_sign($action, %args);
+
+   Rex::Logger::debug("Sending request to: http://" . $self->{'__endpoint'});
+   Rex::Logger::debug("   $_ -> " . $param{$_}) for keys %param;
 
    my $res = $ua->post("http://" . $self->{'__endpoint'}, \%param);
 

@@ -27,6 +27,7 @@ sub new {
    bless($self, $proto);
 
    $self->{"__endpoint"} = "https://api.jiffybox.de/%s/v1.0/%s";
+   Rex::Logger::debug("Creating new Jiffybox Object, with endpoint: " . $self->{"__endpoint"});
 
    return $self;
 }
@@ -40,6 +41,9 @@ sub _do_request {
    my ($self, $type, $action, @params) = @_;
 
    my $url = sprintf($self->{"__endpoint"}, $self->_auth_key, $action);
+
+   Rex::Logger::debug("Requesting $url");
+
    my $ua  = LWP::UserAgent->new;
    my ($res);
 
@@ -61,7 +65,7 @@ sub _do_request {
    }
 
    if($res->code >= 500) {
-      print $res->content;
+      Rex::Logger::info($res->content);
       die("Error on request.");
    }
 
@@ -93,6 +97,9 @@ sub set_auth {
 
 sub list_plans {
    my ($self) = @_;
+
+   Rex::Logger::debug("Listing plans");
+
    my $data = $self->_do_request("GET", "plans");
 
    return $self->_result_to_array($data);
@@ -100,8 +107,11 @@ sub list_plans {
 
 sub list_operating_systems {
    my ($self) = @_;
-   my $data = $self->_do_request("GET", "distributions");
 
+   Rex::Logger::debug("Listing operating systems");
+
+   my $data = $self->_do_request("GET", "distributions");
+ 
    return $self->_result_to_array($data, "os_id");
 }
 
@@ -121,6 +131,9 @@ sub run_instance {
    my ($self, %data) = @_;
 
    my @jiffy_data;
+
+   Rex::Logger::debug("Trying to start a new instance with data:");
+   Rex::Logger::debug("   $_ -> " . $data{$_}) for keys %data;
 
    push(@jiffy_data, "name" => $data{"name"}, "planid" => $data{"plan_id"}, "distribution" => $data{"image_id"});
 
@@ -145,6 +158,7 @@ sub run_instance {
    ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
    while($data->{"state"} ne "READY") {
+      Rex::Logger::debug("Waiting for instance to be created...");
       ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
       sleep $sleep_countdown;

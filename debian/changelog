@@ -1,3 +1,14 @@
+rex (0.13.0) unstable; urgency=low
+  * added function to update package database
+  * license changed to GPL3
+  * added an alias for unlink (rm)
+  * added functions to manage repositories
+  * revised error handling
+  * added jiffybox support, a german cloudservice from domainfactory
+  * fixed template parsing bug (port from 0.12.1)
+  * fixed bug with too long content in file function (port from 0.12.2)
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 14 Aug 2011 15:30:00 +0200
+
 rex (0.12.0) unstable; urgency=low
   * allow array refs for Pkg::remove
   * register every task as a sub if not in main package

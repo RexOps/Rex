@@ -1,4 +1,4 @@
-2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.12.99.0)
+2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.13.0)
   * added function to update package database
   * license changed to GPL3
   * added an alias for unlink (rm)
@@ -6,6 +6,7 @@
   * revised error handling
   * added jiffybox support, a german cloudservice from domainfactory
   * fixed template parsing bug (port from 0.12.1)
+  * fixed bug with too long content in file function (port from 0.12.2)
 
 2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
   * allow array refs for Pkg::remove

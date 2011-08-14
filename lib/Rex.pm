@@ -81,7 +81,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
 
 @EXPORT = qw($VERSION);
-$VERSION = "0.12.99.0";
+$VERSION = "0.13.0";
 
 
 sub push_connection {

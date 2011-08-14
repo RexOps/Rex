@@ -38,7 +38,14 @@ use Rex::Helper::SSH2;
 use Rex::Helper::SSH2::Expect;
 use Rex::Config;
 
-use Expect;
+BEGIN {
+   if($^O !~ m/^MSWin/) {
+      eval "use Expect";
+   }
+   else {
+      Rex::Logger::debug("Running under windows, Expect not supported.");
+   }
+}
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
@@ -145,7 +152,7 @@ sub sudo {
                                           $exp->send($sudo_password . "\n");
 
                                           unless(ref($exp) eq "Rex::Helper::SSH2::Expect") {
-                                             exp_continue;
+                                             exp_continue();
                                           }
                                        },
                           ]);

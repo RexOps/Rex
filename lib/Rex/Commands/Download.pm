@@ -41,17 +41,23 @@ use vars qw($has_wget $has_curl $has_lwp);
 # check which download type we should use
 BEGIN {
 
-   system("which wget >/dev/null 2>&1");
-   $has_wget = !$?;
+   if($^O !~ m/^MSWin/) {
+      system("which wget >/dev/null 2>&1");
+      $has_wget = !$?;
 
-   system("which curl >/dev/null 2>&1");
-   $has_curl = !$?;
+      system("which curl >/dev/null 2>&1");
+      $has_curl = !$?;
+   }
 
    eval {
       require LWP::Simple;
       LWP::Simple->import;
       $has_lwp = 1;
    };
+
+   if($^O =~ m/^MSWin/ && ! $has_lwp) {
+      Rex::Logger::info("Please install LWP::Simple to allow file downloads.");
+   }
 
 };
 

@@ -73,7 +73,12 @@ sub run {
    if(my $ssh = Rex::is_ssh()) {
       $out = net_ssh2_exec($ssh, "LC_ALL=C " . $cmd);
    } else {
-      $out = qx{LC_ALL=C $cmd};
+      if($^O =~ m/^MSWin/) {
+         $out = qx{$cmd};
+      }
+      else {
+         $out = qx{LC_ALL=C $cmd};
+      }
    }
 
    Rex::Logger::debug($out);
@@ -100,6 +105,10 @@ This function checks if a command is in the path or is available.
 =cut
 sub can_run {
    my $cmd = shift;
+
+   if($^O =~ m/^MSWin/) {
+      return 1;
+   }
 
    if($cmd =~ m/^\//) {
       if(is_file($cmd)) {
@@ -132,7 +141,12 @@ sub sudo {
       $exp = Rex::Helper::SSH2::Expect->new($ssh);
    }
    else {
-      $exp = Expect->new();
+      if($^O =~ m/^MSWin/) {
+         die("Expect not woring on windows");
+      }
+      else {
+         $exp = Expect->new();
+      }
    }
 
    $exp->log_stdout(0);

@@ -15,6 +15,6 @@ WriteMakefile(
                   'JSON::XS' => 0,
                   },
    EXE_FILES => ['bin/rex', 'bin/rexify'],
-   LICENSE => 'GPL3'
+   LICENSE => 'GPL'
 );
 

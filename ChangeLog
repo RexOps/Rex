@@ -1,5 +1,6 @@
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.13.0)
   * added function to update package database
+  * added windows support
   * license changed to GPL3
   * added an alias for unlink (rm)
   * added functions to manage repositories

@@ -32,7 +32,7 @@ sub get {
 
    if($@) {
    
-      Rex::Logger::info("OS not supported");
+      Rex::Logger::info("OS not supported (" . $host->{"operatingsystem"} . ")");
       exit 1;
    
    }

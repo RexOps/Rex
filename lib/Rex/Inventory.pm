@@ -42,7 +42,11 @@ sub get {
    @mem_arrays = $dmi->get_memory_arrays;
    $sys_info   = $dmi->get_system_information;
 
-   my $hal = Rex::Inventory::Hal->new;
+   my $hal = {};
+   eval {
+      $hal = Rex::Inventory::Hal->new;
+   };
+
    my @net_devs = $hal->get_network_devices;
    my @storage  = $hal->get_storage_devices;
    my @volumes  = $hal->get_storage_volumes;
@@ -51,56 +55,61 @@ sub get {
    my @netstat    = netstat;
    my $default_gw = default_gateway;
 
-   my @pvs = pvs;
-   my @vgs = vgs;
-   my @lvs = lvs;
+   my (@pvs, @vgs, @lvs);
+   eval {
+      @pvs = pvs;
+      @vgs = vgs;
+      @lvs = lvs;
+   };
 
    my @raid_controller;
-   if(my $hp_raid = Rex::Inventory::HP::ACU->get()) {
-      # hp raid entdeckt
-      for my $key (keys %{$hp_raid}) {
+   eval {
+      if(my $hp_raid = Rex::Inventory::HP::ACU->get()) {
+         # hp raid entdeckt
+         for my $key (keys %{$hp_raid}) {
 
-         my %raid_shelfs;
-         for my $shelf (keys %{$hp_raid->{$key}->{"array"}}) {
-            my $shelf_data = $hp_raid->{$key}->{"array"}->{$shelf};
+            my %raid_shelfs;
+            for my $shelf (keys %{$hp_raid->{$key}->{"array"}}) {
+               my $shelf_data = $hp_raid->{$key}->{"array"}->{$shelf};
 
-            my @raid_logical_drives;
-            for my $l_drive (keys %{$hp_raid->{$key}->{"array"}->{$shelf}->{"logical_drive"}}) {
-               my $l_drive_data = $hp_raid->{$key}->{"array"}->{$shelf}->{"logical_drive"}->{$l_drive};
-               my ($size) = ($l_drive_data->{"size"} =~ m/^([0-9\.]+)/);
-               my $multi = 1024 * 1024 * 1024;
-               if($l_drive_data->{"size"} =~ m/TB$/) {
-                  $multi *= 1024;
+               my @raid_logical_drives;
+               for my $l_drive (keys %{$hp_raid->{$key}->{"array"}->{$shelf}->{"logical_drive"}}) {
+                  my $l_drive_data = $hp_raid->{$key}->{"array"}->{$shelf}->{"logical_drive"}->{$l_drive};
+                  my ($size) = ($l_drive_data->{"size"} =~ m/^([0-9\.]+)/);
+                  my $multi = 1024 * 1024 * 1024;
+                  if($l_drive_data->{"size"} =~ m/TB$/) {
+                     $multi *= 1024;
+                  }
+
+                  push(@raid_logical_drives, {
+                        status => ($l_drive_data->{"status"} eq "OK"?1:0),
+                        raid_level => $l_drive_data->{"fault_tolerance"},
+                        size => sprintf("%i", $size * $multi),
+                        dev => $l_drive_data->{"disk_name"},
+                        shelf => $shelf,
+                     });
                }
 
-               push(@raid_logical_drives, {
-                     status => ($l_drive_data->{"status"} eq "OK"?1:0),
-                     raid_level => $l_drive_data->{"fault_tolerance"},
-                     size => sprintf("%i", $size * $multi),
-                     dev => $l_drive_data->{"disk_name"},
-                     shelf => $shelf,
-                  });
+               $raid_shelfs{$shelf} = {
+                     type => $shelf_data->{"interface_type"},
+                     status => ($shelf_data->{"status"} eq "OK"?1:0),
+                     logical_drives => \@raid_logical_drives,
+                  };
+
             }
 
-            $raid_shelfs{$shelf} = {
-                  type => $shelf_data->{"interface_type"},
-                  status => ($shelf_data->{"status"} eq "OK"?1:0),
-                  logical_drives => \@raid_logical_drives,
-               };
+            push(@raid_controller, {
+                        type => $hp_raid->{$key}->{"description"},
+                        model => $hp_raid->{$key}->{"model"},
+                        serial_number => $hp_raid->{$key}->{"serial_number"},
+                        cache_status => ($hp_raid->{$key}->{"cache_status"} eq "OK"?1:0),
+                        shelfs => \%raid_shelfs,
+                     });
+
 
          }
-
-         push(@raid_controller, {
-                     type => $hp_raid->{$key}->{"description"},
-                     model => $hp_raid->{$key}->{"model"},
-                     serial_number => $hp_raid->{$key}->{"serial_number"},
-                     cache_status => ($hp_raid->{$key}->{"cache_status"} eq "OK"?1:0),
-                     shelfs => \%raid_shelfs,
-                  });
-
-
       }
-   }
+   };
 
    return {
       base_board  => ($base_board?$base_board->get_all():{}),

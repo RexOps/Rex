@@ -113,7 +113,7 @@ sub add_repository {
    my ($self, %data) = @_;
    run "zypper addrepo -f -n " . $data{"name"} . " " . $data{"url"} . " " . $data{"name"};
    if($? != 0) {
-      die("Error adding repository $name");
+      die("Error adding repository " . $data{name});
    }
 }
 

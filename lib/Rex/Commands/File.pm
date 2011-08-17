@@ -215,8 +215,8 @@ sub file_write {
 
    Rex::Logger::debug("Opening file: $file for writing.");
 
-   if(my $ssh = Rex::is_ssh()) {
-      $fh = $ssh->sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
+   if(my $sftp = Rex::get_sftp()) {
+      $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
    } else {
       open($fh, ">", $file) or die($!);
    }
@@ -239,14 +239,14 @@ sub file_append {
 
    Rex::Logger::debug("Opening file: $file for appending.");
 
-   if(my $ssh = Rex::is_ssh()) {
+   if(my $sftp = Rex::get_sftp()) {
       if(is_file($file)) {
-         $fh = $ssh->sftp->open($file, O_WRONLY | O_APPEND );
+         $fh = $sftp->open($file, O_WRONLY | O_APPEND );
          my %stat = stat "$file";
          $fh->seek($stat{size});
       } 
       else {
-         $fh = $ssh->sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
+         $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
       }
    } else {
       open($fh, ">>", $file) or die($!);
@@ -289,8 +289,8 @@ sub file_read {
 
    Rex::Logger::debug("Opening file: $file for reading.");
 
-   if(my $ssh = Rex::is_ssh()) {
-      $fh = $ssh->sftp->open($file, O_RDONLY);
+   if(my $sftp = Rex::get_sftp()) {
+      $fh = $sftp->open($file, O_RDONLY);
    } else {
       open($fh, "<", $file) or die($!);
    }

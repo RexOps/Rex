@@ -1,4 +1,5 @@
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.13.0)
+  * cache sftp object - for speed
   * added function to update package database
   * added windows support
   * license changed to GPL3

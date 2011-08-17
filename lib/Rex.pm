@@ -129,6 +129,20 @@ sub is_ssh {
    return 0;
 }
 
+=item get_sftp
+
+Returns the sftp object for the current ssh connection.
+
+=cut
+
+sub get_sftp {
+   if($CONNECTION_STACK[-1]) {
+      return $CONNECTION_STACK[-1]->{"sftp"};
+   }
+
+   return 0;
+}
+
 =back
 
 =cut

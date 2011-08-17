@@ -2,10 +2,11 @@ bin/rex
 bin/rexify
 ChangeLog
 lib/Rex.pm
-lib/Rex/Agent.pm
 lib/Rex/Batch.pm
 lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm
+lib/Rex/Cloud/Base.pm
+lib/Rex/Cloud/Jiffybox.pm
 lib/Rex/Commands.pm
 lib/Rex/Commands/Cloud.pm
 lib/Rex/Commands/Cron.pm
@@ -59,9 +60,6 @@ lib/Rex/Inventory/Hal/Object/Storage.pm
 lib/Rex/Inventory/Hal/Object/Volume.pm
 lib/Rex/Inventory/HP/ACU.pm
 lib/Rex/Logger.pm
-lib/Rex/Master.pm
-lib/Rex/Master/FileList.pm
-lib/Rex/Master/FileTransfer.pm
 lib/Rex/Pkg.pm
 lib/Rex/Pkg/Debian.pm
 lib/Rex/Pkg/Mageia.pm
@@ -75,6 +73,7 @@ lib/Rex/Service/SuSE.pm
 lib/Rex/Task.pm
 lib/Rex/Template.pm
 lib/Rex/Transaction.pm
+LICENSE
 Makefile.PL
 README
 t/01.t

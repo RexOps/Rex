@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Commands::File;
 
 sub new {
    my $that = shift;
@@ -48,12 +49,12 @@ sub install {
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("apt-get --force-yes -y install $pkg" . ($version?"=$version":""));
+   my $f = run("DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=\"--force-confold\" --force-yes -y install $pkg" . ($version?"=$version":""));
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error installing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
@@ -73,7 +74,7 @@ sub remove {
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error removing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully removed.");
@@ -99,6 +100,34 @@ sub get_installed {
    }
 
    return @pkg;
+}
+
+sub update_pkg_db {
+   my ($self) = @_;
+
+   run "apt-get -y update";
+   if($? != 0) {
+      die("Error updating package database");
+   }
+}
+
+sub add_repository {
+   my ($self, %data) = @_;
+
+   my $name = $data{"name"};
+
+   my $fh = file_write "/etc/apt/sources.list.d/$name.list";
+   $fh->write("# This file is managed by Rex\n");
+   $fh->write("deb " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   if(exists $data{"source"} && $data{"source"}) {
+      $fh->write("deb-src " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   }
+   $fh->close;
+}
+
+sub rm_repository {
+   my ($self, $name) = @_;
+   unlink "/etc/apt/sources.list.d/$name.list";
 }
 
 

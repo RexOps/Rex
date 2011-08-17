@@ -1,0 +1,16 @@
+<SOFTPKG NAME="Rex" VERSION="0.13.0">
+    <ABSTRACT></ABSTRACT>
+    <AUTHOR>Jan Gehring</AUTHOR>
+    <IMPLEMENTATION>
+        <REQUIRE NAME="DBI::" />
+        <REQUIRE NAME="Digest::HMAC_SHA1" />
+        <REQUIRE NAME="HTTP::Date" />
+        <REQUIRE NAME="JSON::XS" />
+        <REQUIRE NAME="LWP::UserAgent" />
+        <REQUIRE NAME="MIME::Base64" />
+        <REQUIRE NAME="Net::SSH2" />
+        <REQUIRE NAME="XML::Simple" />
+        <ARCHITECTURE NAME="MSWin32-x64-multi-thread-5.12" />
+        <CODEBASE HREF="Rex-0.13.0.tar.gz" />
+    </IMPLEMENTATION>
+</SOFTPKG>

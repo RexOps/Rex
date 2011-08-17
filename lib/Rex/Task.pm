@@ -224,6 +224,9 @@ sub run {
                      CORE::exit; # kind beenden
                   }
 
+               Rex::Logger::debug("Current Error-Code: " . $ssh->error());
+               Rex::Logger::info("Connected to $server, trying to authenticate.");
+
                my $auth_ret;
                if($pass_auth) {
                   $auth_ret = $ssh->auth_password($user, $pass);
@@ -234,11 +237,15 @@ sub run {
                                           $pass);
                }
 
+               Rex::Logger::debug("Current Error-Code: " . $ssh->error());
+
                # auth unsuccessfull
                unless($auth_ret) {
                   Rex::Logger::info("Wrong username or password. Or wrong key.");
                   CORE::exit 1;
                }
+
+               Rex::Logger::debug("Successfull auth");
 
             }
             else {

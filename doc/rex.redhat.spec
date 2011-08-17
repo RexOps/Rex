@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.12.2
+Version: 0.13.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.12.2.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.13.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,11 +58,15 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %changelog
 
-* Fri Aug 12 2011 Jan Gehring <jan.gehring at, gmail.com> 0.12.2-1
-- fixed a bug with too long content in file function
-
-* Wed Aug 10 2011 Jan Gehring <jan.gehring at, gmail.com> 0.12.1-1
-- fixed a bug in template processing
+* Sun Aug 14 2011 Jan Gehring <jan.gehring at, gmail.com> 0.13.0-1
+- added function to update package database
+- license changed to GPL3
+- added an alias for unlink (rm)
+- added functions to manage repositories
+- revised error handling
+- added jiffybox support, a german cloudservice from domainfactory
+- fixed template parsing bug (port from 0.12.1)
+- fixed bug with too long content in file function (port from 0.12.2)
 
 * Thu Aug 04 2011 Jan Gehring <jan.gehring at, gmail.com> 0.12.0-1
 - allow array refs for Pkg::remove

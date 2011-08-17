@@ -529,7 +529,11 @@ sub needs {
       ($self) = caller;
    }
 
-   if(! @args) {
+   no strict 'refs';
+   my @maybe_tasks_to_run = @{"${self}::tasks"};
+   use strict;
+
+   if(! @args && ! @maybe_tasks_to_run) {
       @args = ($self);
       ($self) = caller;
    }

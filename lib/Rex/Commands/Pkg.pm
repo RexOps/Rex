@@ -36,6 +36,7 @@ use Rex::Pkg;
 use Rex::Logger;
 use Rex::Template;
 use Rex::Commands::File;
+use Rex::Commands::Fs;
 use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
@@ -49,7 +50,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install remove installed_packages);
+@EXPORT = qw(install remove installed_packages update_package_db repository);
 
 =item install($type, $data, $options)
 
@@ -164,20 +165,26 @@ sub install {
          my %merge2 = Rex::Hardware->get(qw/ All /);
          my %template_vars = (%merge1, %merge2);
 
-         $old_md5 = md5($package);
+         eval {
+            $old_md5 = md5($package);
+         };
 
          my $fh = file_write($package);
          $fh->write($template->parse($content, \%template_vars));
          $fh->close;
 
-         $new_md5 = md5($package);
+         eval {
+            $new_md5 = md5($package);
+         };
 
       }
       else {
          
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
-         $old_md5 = md5($package);
+         eval {
+            $old_md5 = md5($package);
+         };
          my $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
 
          unless($local_md5 eq $old_md5) {
@@ -188,23 +195,28 @@ sub install {
             Rex::Logger::debug("MD5 is equal. Not uploading $source -> $package");
          }
 
-         $new_md5 = md5($package);
+         eval {
+            $new_md5 = md5($package);
+         };
 
       }
 
       if(exists $option->{"owner"}) {
-         run "chown " . $option->{"owner"} . " $package";
+         chown $option->{"owner"}, $package;
       }
 
       if(exists $option->{"group"}) {
-         run "chgrp " . $option->{"group"} . " $package";
+         chgrp $option->{"group"}, $package;
       }
 
       if(exists $option->{"mode"}) {
-         run "chmod " . $option->{"mode"} . " $package";
+         chmod $option->{"mode"}, $package;
       }
 
-      unless($old_md5 eq $new_md5) {
+      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+         $old_md5 ||= "";
+         $new_md5 ||= "";
+
          Rex::Logger::debug("File $package has been changed... Running on_change");
          Rex::Logger::debug("old: $old_md5");
          Rex::Logger::debug("new: $new_md5");
@@ -217,7 +229,7 @@ sub install {
    else {
       
       Rex::Logger::info("$type not supported.");
-      exit 1;
+      die("install $type not supported");
 
    }
 
@@ -260,7 +272,7 @@ sub remove {
    else {
       
       Rex::Logger::info("$type not supported.");
-      exit 1;
+      die("remove $type not supported");
 
    }
 
@@ -284,6 +296,68 @@ This function returns all installed packages and their version.
 sub installed_packages {
    my $pkg = Rex::Pkg->get;
    return $pkg->get_installed;
+}
+
+=item update_package_db
+
+This function updates the local package database. For example, on CentOS it will execute I<yum makecache>.
+
+ task "update-pkg-db", "server1", "server2", sub {
+    update_package_db;
+    install package => "apache2";
+ };
+
+=cut
+sub update_package_db {
+   my $pkg = Rex::Pkg->get;
+   $pkg->update_pkg_db();
+}
+
+
+=item repository($action, %data)
+
+Add or remove a repository from the package manager.
+
+For Debian: If you have no source repository, or if you don't want to add it, just remove the I<source> parameter.
+
+ task "add-repo", "server1", "server2", sub {
+    repository "add" => "repository-name",
+         url        => "http://rex.linux-files.org/debian/squeeze",
+         distro     => "squeeze",
+         repository => "rex",
+         source     => 1;
+ };
+
+
+For CentOS, Mageia and SuSE only the name and the url are needed.
+
+ task "add-repo", "server1", "server2", sub {
+    repository add => "repository-name",
+         url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
+
+ };
+
+To remove a repository just delete it with its name.
+
+ task "rm-repo", "server1", sub {
+    repository remove => "repository-name";
+ };
+
+
+=cut
+
+sub repository {
+   my ($action, $name, %data) = @_;
+   my $pkg = Rex::Pkg->get;
+
+   $data{"name"} = $name;
+
+   if($action eq "add") {
+      $pkg->add_repository(%data);
+   }
+   elsif($action eq "remove" || $action eq "delete") {
+      $pkg->rm_repository(%data);
+   }
 }
 
 =back

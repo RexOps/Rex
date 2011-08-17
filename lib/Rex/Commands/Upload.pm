@@ -58,7 +58,7 @@ sub upload {
 
    if(! -f $local) {
       Rex::Logger::info("File Not Found: $local");
-      return 1;
+      die("File $local not found.");
    }
 
    if(my $ssh = Rex::is_ssh()) {

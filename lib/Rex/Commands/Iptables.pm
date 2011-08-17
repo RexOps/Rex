@@ -209,10 +209,12 @@ sub iptables {
 
       if($? != 0) {
          Rex::Logger::info("Error setting iptable rule: $cmd");
+         die("Error setting iptable rule: $cmd");
       }
    }
    else {
       Rex::Logger::info("IPTables not found.");
+      die("IPTables not found.");
    }
 }
 
@@ -239,8 +241,6 @@ sub is_nat_gateway {
 
       sysctl "net.ipv4.ip_forward" => 1;
       iptables t => "nat", A => "POSTROUTING", o => $dev, j => "MASQUERADE";
-
-      return $?==0?1:0;
 
    }
    else {

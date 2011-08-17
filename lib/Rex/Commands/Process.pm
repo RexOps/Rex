@@ -59,6 +59,9 @@ sub kill {
    $sig ||= "";
 
    run ("kill $sig " . $process);
+   if($? != 0) {
+      die("Error killing $process");
+   }
 }
 
 =item killall($name, $sig)
@@ -76,7 +79,15 @@ sub killall {
    my ($process, $sig) = @_;
    $sig ||= "";
 
-   run ("killall $sig $process");
+   if(can_run("killall")) {
+      run ("killall $sig $process");
+      if($? != 0) {
+         die("Error killing $process");
+      }
+   }
+   else {
+      die("Can't execute killall.");
+   }
 }
 
 =item ps
@@ -95,6 +106,9 @@ List all processes on a system. Will return all fields of a I<ps aux>.
 
 sub ps {
    my @list = run("ps aux");
+   if($? != 0) {
+      die("Error running ps aux");
+   }
    shift @list;
 
    my @ret = ();
@@ -146,6 +160,9 @@ Renice a process identified by $pid with the priority $level.
 sub nice {
    my ($pid, $level) = @_;
    run "renice $level $pid";
+   if($? != 0) {
+      die("Error renicing $pid");
+   }
 }
 
 =back

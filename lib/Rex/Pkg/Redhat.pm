@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Commands::File;
 
 sub new {
    my $that = shift;
@@ -53,7 +54,7 @@ sub install {
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error installing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
@@ -70,7 +71,7 @@ sub remove {
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.");
       Rex::Logger::debug($f);
-      return 0;
+      die("Error removing $pkg");
    }
 
    Rex::Logger::debug("$pkg successfully removed.");
@@ -100,7 +101,36 @@ sub get_installed {
    return @pkg;
 }
 
+sub update_pkg_db {
+   my ($self) = @_;
 
+   run "yum makecache";
+   if($? != 0) {
+      die("Error updating package repository");
+   }
+}
+
+sub add_repository {
+   my ($self, %data) = @_;
+
+   my $name = $data{"name"};
+   my $desc = $data{"description"} || $data{"name"};
+
+   my $fh = file_write "/etc/yum.repos.d/rex.repo";
+
+   $fh->write("# This file is managed by Rex\n");
+   $fh->write("[$name]\n");
+   $fh->write("name=$desc\n");
+   $fh->write("baseurl=" . $data{"url"} . "\n");
+   $fh->write("enabled=1\n");
+
+   $fh->close;
+}
+
+sub rm_repository {
+   my ($self, $name) = @_;
+   unlink "/etc/yum.repos.d/rex.repo";
+}
 
 
 1;

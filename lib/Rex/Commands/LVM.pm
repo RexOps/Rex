@@ -63,6 +63,9 @@ Get Information of all your physical volumes.
 sub pvs {
    
    my @lines = run "pvdisplay --units b --columns --separator '|' --noheadings";
+   if($? != 0) {
+      die("Error running pvdisplay");
+   }
 
    my @ret;
    for my $line (@lines) {
@@ -114,6 +117,9 @@ sub vgs {
    }
 
    my @lines = run $cmd;
+   if($? != 0) {
+      die("Error running vgdisplay");
+   }
 
    my @ret;
    for my $line (@lines) {
@@ -163,6 +169,9 @@ sub lvs {
    }
 
    my @lines = run $cmd;
+   if($? != 0) {
+      die("Error running lvdisplay");
+   }
 
    my @ret;
    for my $line (@lines) {

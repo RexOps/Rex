@@ -126,6 +126,8 @@ sub run {
    my $class = shift;
    my $task = shift;
    my $server_overwrite = shift;
+   my $params = shift;
+
    my $ret;
 
    Rex::Logger::info("Running task: $task");
@@ -179,6 +181,10 @@ sub run {
 
       if($val) { $opts{$key} = $val; next; }
       $opts{$key} = 1;
+   }
+
+   if($params) {
+      %opts = %{$params};
    }
 
    # get hostname

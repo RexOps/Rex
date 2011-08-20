@@ -9,21 +9,65 @@ package Rex::Hardware::Memory;
 use strict;
 use warnings;
 
+use Rex::Hardware::Host;
 use Rex::Commands::Run;
+use Rex::Commands::Sysctl;
 
 sub get {
-   my $free_str = [ grep { /^Mem:/ } split(/\n/, run("LC_ALL=C free -m")) ]->[0];
+   my $os = Rex::Hardware::Host::get_operating_system();
 
-   my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+   if($os =~ /BSD/) {
+      my $mem_str  = run "top -d1 | grep Mem:";
+      my $swap_str = run "top -d1 | grep Swap:";
+      my $total_mem = sysctl("hw.physmem");
 
-   return { 
-      total => $total,
-      used  => $used,
-      free  => $free,
-      shared => $shared,
-      buffers => $buffers,
-      cached => $cached
-   };
+      my $convert = sub {
+
+         if($_[1] eq "G") {
+            $_[0] = $_[0] * 1024 * 1024 * 1024;
+         }
+         elsif($_[1] eq "M") {
+            $_[0] = $_[0] * 1024 * 1024;
+         }
+         elsif($_[1] eq "K") {
+            $_[0] = $_[0] * 1024;
+         }
+
+      };
+
+      my ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $cache, $c_ent, $buf, $b_ent, $free, $f_ent) = 
+            ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
+
+      &$convert($active, $a_ent);
+      &$convert($inactive, $i_ent);
+      &$convert($wired, $w_ent);
+      &$convert($cache, $c_ent);
+      &$convert($buf, $b_ent);
+      &$convert($free, $f_ent);
+
+      return {
+         total => $total_mem,
+         used => $active + $inactive + $wired,
+         free  => $free,
+         cached => $cache,
+         buffers => $buf,
+      };
+   }
+   else {
+      # default for linux
+      my $free_str = [ grep { /^Mem:/ } split(/\n/, run("LC_ALL=C free -m")) ]->[0];
+
+      my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+
+      return { 
+         total => $total,
+         used  => $used,
+         free  => $free,
+         shared => $shared,
+         buffers => $buffers,
+         cached => $cached
+      };
+   }
 }
 
 1;

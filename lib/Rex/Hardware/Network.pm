@@ -12,6 +12,7 @@ use warnings;
 use Data::Dumper;
 
 use Rex::Commands::Run;
+use Rex::Hardware::Host;
 
 sub get {
 
@@ -26,19 +27,28 @@ sub get {
 
 sub get_network_devices {
 
-   my @device_list;
+   my $os = Rex::Hardware::Host::get_operating_system();
 
-   my @proc_net_dev = grep  { ! /^$/ } map { $1 if /^\s+([^:]+)\:/ } split(/\n/, run("cat /proc/net/dev"));
+   if($os =~ m/BSD/) {
+      my @device_list = grep { $_=$1 if /^([a-z0-9]+)\:/i } run "ifconfig -a";
 
-   for my $dev (@proc_net_dev) {
-      my $ifconfig = run("LC_ALL=C ifconfig $dev");
-      if($ifconfig =~ m/Link encap:Ethernet/m) {
-         push(@device_list, $dev);
-      }
+      return \@device_list;
    }
+   else {
+      #default is linux
+      my @device_list;
 
-   return \@device_list;
+      my @proc_net_dev = grep  { ! /^$/ } map { $1 if /^\s+([^:]+)\:/ } split(/\n/, run("cat /proc/net/dev"));
 
+      for my $dev (@proc_net_dev) {
+         my $ifconfig = run("LC_ALL=C ifconfig $dev");
+         if($ifconfig =~ m/Link encap:Ethernet/m) {
+            push(@device_list, $dev);
+         }
+      }
+
+      return \@device_list;
+   }
 }
 
 sub get_network_configuration {
@@ -50,12 +60,25 @@ sub get_network_configuration {
    for my $dev (@{$devices}) {
 
       my $ifconfig = run("LC_ALL=C ifconfig $dev");
-      $device_info->{$dev} = {
-         ip          => [ ( $ifconfig =~ m/inet addr:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-         netmask     => [ ( $ifconfig =~ m/Mask:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-         broadcast   => [ ( $ifconfig =~ m/Bcast:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-         mac         => [ ( $ifconfig =~ m/HWaddr (..:..:..:..:..:..)/ ) ]->[0],
-      };
+
+      my $os = Rex::Hardware::Host::get_operating_system();
+
+      if($os =~ m/BSD/) {
+         $device_info->{$dev} = {
+            ip          => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+            netmask     => [ ( $ifconfig =~ m/netmask (0x[a-f0-9]+)/ ) ]->[0],
+            broadcast   => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+            mac         => [ ( $ifconfig =~ m/ether (..:..:..:..:..:..)/ ) ]->[0],
+         };
+      }
+      else {
+         $device_info->{$dev} = {
+            ip          => [ ( $ifconfig =~ m/inet addr:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+            netmask     => [ ( $ifconfig =~ m/Mask:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+            broadcast   => [ ( $ifconfig =~ m/Bcast:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+            mac         => [ ( $ifconfig =~ m/HWaddr (..:..:..:..:..:..)/ ) ]->[0],
+         };
+      }
 
    }
 

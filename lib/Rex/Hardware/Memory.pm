@@ -18,7 +18,6 @@ sub get {
 
    if($os =~ /BSD/) {
       my $mem_str  = run "top -d1 | grep Mem:";
-      my $swap_str = run "top -d1 | grep Swap:";
       my $total_mem = sysctl("hw.physmem");
 
       my $convert = sub {

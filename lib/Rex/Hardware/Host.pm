@@ -12,14 +12,21 @@ use warnings;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
+use Rex::Logger;
 
 sub get {
+
+   unless(can_run("dmidecode")) {
+      Rex::Logger::debug("Please install dmidecode on the target system.");
+   }
+
+   my ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
 
    return {
    
       manufacturer => [ run("LC_ALL=C dmidecode -t chassis") =~ m/Manufacturer: ([^\n]+)/ ]->[0],
-      hostname     => run("LC_ALL=C hostname") || "",
-      domain       => run("LC_ALL=C dnsdomainname") || "",
+      hostname     => run("LC_ALL=C hostname -s") || "",
+      domain       => $domain || "",
       operatingsystem => get_operating_system(),
       operatingsystemrelease => get_operating_system_version(),
 
@@ -62,7 +69,8 @@ sub get_operating_system {
       }
    }
 
-   return "Unknown";
+   my $os_string = run "uname -s";
+   return $os_string;   # return the plain os
 
 
 }
@@ -129,6 +137,10 @@ sub get_operating_system_version {
 
       return $1;
 
+   }
+   elsif($op =~ /BSD/) {
+      my ($version) = grep { $_=$1 if /(\d+\.\d+)/ } run "uname -r";
+      return $version;
    }
 
    return "Unknown";

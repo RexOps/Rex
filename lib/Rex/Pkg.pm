@@ -9,6 +9,7 @@ package Rex::Pkg;
 use strict;
 use warnings;
 
+use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Logger;
@@ -25,6 +26,10 @@ sub get {
 
    if($host->{"operatingsystem"} eq "Ubuntu") {
       $host->{"operatingsystem"} = "Debian";
+   }
+
+   if(is_bsd) {
+      $host->{"operatingsystem"} = "BSD";
    }
 
    my $class = "Rex::Pkg::" . $host->{"operatingsystem"};

@@ -32,6 +32,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 
 use Data::Dumper;
 
@@ -58,10 +59,21 @@ This function load or unload a kernel module.
 
 sub kmod {
    my ($action, $module) = @_;
+   
+   my $os = get_operating_system();
+
+   my $load_command = "modprobe";
+   my $unload_command = "rmmod";
+
+   if($os =~ m/BSD/) {
+      $load_command = "kldload";
+      $unload_command = "kldunload";
+   }
+
 
    if($action eq "load") {
       Rex::Logger::debug("Loading Kernel Module: $module");
-      run "modprobe $module";
+      run "$load_command $module";
       unless($? == 0) {
          Rex::Logger::info("Error loading Kernel Module: $module");
          die("Error loading Kernel Module: $module");
@@ -72,7 +84,7 @@ sub kmod {
    }
    elsif($action eq "unload") {
       Rex::Logger::debug("Unloading Kernel Module: $module");
-      run "rmmod $module";
+      run "$unload_command $module";
       unless($? == 0) {
          Rex::Logger::info("Error unloading Kernel Module: $module");
          die("Error unloading Kernel Module: $module");

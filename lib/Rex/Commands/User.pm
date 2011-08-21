@@ -42,6 +42,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
+use Rex::User;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
@@ -57,74 +58,7 @@ Create or update a user.
 =cut
 
 sub create_user {
-   my ($user, $data) = @_;
-
-   my $cmd;
-
-
-   if(! defined get_uid($user)) {
-      Rex::Logger::debug("User $user does not exists. Creating it now.");
-      $cmd = "useradd ";
-
-      if(exists $data->{system}) {
-         $cmd .= " -r";
-      }
-   }
-   else {
-      Rex::Logger::debug("User $user already exists. Updating...");
-
-      $cmd = "usermod ";
-   }
-
-   if(exists $data->{uid}) {
-      $cmd .= " --uid " . $data->{uid};
-   }
-
-   if(exists $data->{home}) {
-      $cmd .= " -d " . $data->{home};
-
-      if(!is_dir($data->{home})) {
-         $cmd .= " -m";
-      }
-   }
-
-   if(exists $data->{comment}) {
-      $cmd .= " --comment '" . $data->{comment} . "'";
-   }
-
-   if(exists $data->{expire}) {
-      $cmd .= " --expiredate '" . $data->{expiredate} . "'";
-   }
-
-   if(exists $data->{groups}) {
-      my @groups = @{$data->{groups}};
-      my $pri_group = shift @groups;
-
-      $cmd .= " --gid $pri_group";
-
-      if(@groups) {
-         $cmd .= " --groups " . join(",", @groups);
-      }
-   }
- 
-   run "$cmd $user";
-   if($? == 0) {
-      Rex::Logger::debug("User $user created/updated.");
-   }
-   else {
-      Rex::Logger::info("Error creating/updating user $user");
-      die("Error creating/updating user $user");
-   }
-
-   if(exists $data->{password}) {
-      Rex::Logger::debug("Changing password of $user.");
-      run "echo '$user:" . $data->{password} . "' | chpasswd";
-      if($? != 0) {
-         die("Error setting password for $user");
-      }
-   }
-
-   return get_uid($user);
+   Rex::User->get()->create_user(@_);
 }
 
 =item get_uid($user)
@@ -134,10 +68,7 @@ Returns the uid of $user.
 =cut
 
 sub get_uid {
-   my ($user) = @_;
-
-   my %data = get_user($user);
-   return $data{uid};
+   Rex::User->get()->get_uid(@_);
 }
 
 =item get_user($user)
@@ -147,31 +78,7 @@ Returns all information about $user.
 =cut
 
 sub get_user {
-   my ($user) = @_;
-
-   Rex::Logger::debug("Getting information for $user");
-   my $data_str = run "perl -MData::Dumper -le'print Dumper [ getpwnam(\"$user\") ]'";
-   if($? != 0) {
-      die("Error getting  user information for $user");
-   }
-
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
-
-   return ( 
-      name => $data->[0],
-      password => $data->[1],
-      uid => $data->[2],
-      gid => $data->[3],
-      comment => $data->[5],
-      home => $data->[7],
-      shell => $data->[8],
-      expire => exists $data->[9]?$data->[9]:0,
-   );
+   Rex::User->get()->get_user(@_);
 }
 
 
@@ -187,24 +94,7 @@ Delete a user from the system.
 =cut
 
 sub delete_user {
-   my ($user, $data) = @_;
-
-   Rex::Logger::debug("Removing user $user");
-
-   my $cmd = "userdel";
-
-   if(exists $data->{delete_home}) {
-      $cmd .= " --remove";
-   }
-
-   if(exists $data->{force}) {
-      $cmd .= " --force";
-   }
-
-   run $cmd . " " . $user;
-   if($? != 0) {
-      die("Error deleting user $user");
-   }
+   Rex::User->get()->rm_user(@_);
 }
 
 =item create_group($group, {})
@@ -219,30 +109,7 @@ Create or update a group.
 =cut
 
 sub create_group {
-   my ($group, $data) = @_;
-
-   my $cmd;
-
-   if(! defined get_gid($group)) {
-      Rex::Logger::debug("Creating new group $group");
-
-      $cmd = "groupadd ";
-   }
-   else {
-      Rex::Logger::debug("Group $group already exists. Updating...");
-      $cmd = "groupmod ";
-   }
-   
-   if(exists $data->{gid}) {
-      $cmd .= " -g " . $data->{gid};
-   }
-
-   run $cmd . " " . $group;
-   if($? != 0) {
-      die("Error creating/modifying group $group");
-   }
-
-   return get_gid($group);
+   Rex::User->get()->create_group(@_);
 }
 
 =item get_gid($group)
@@ -252,10 +119,7 @@ Return the group id of $group.
 =cut
 
 sub get_gid {
-   my ($group) = @_;
-
-   my %data = get_group($group);
-   return $data{gid};
+   Rex::User->get()->get_gid(@_);
 }
 
 =item get_group($group)
@@ -267,27 +131,7 @@ Return information of $group.
 =cut
 
 sub get_group {
-   my ($group) = @_;
-
-   Rex::Logger::debug("Getting information for $group");
-   my $data_str = run "perl -MData::Dumper -le'print Dumper [ getgrnam(\"$group\") ]'";
-   if($? != 0) {
-      die("Error getting group information");
-   }
-
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
-
-   return (
-      name => $data->[0],
-      password => $data->[1],
-      gid => $data->[2],
-      members => $data->[3],
-   );
+   Rex::User->get()->get_group(@_);
 }
 
 =item delete_group($group)
@@ -297,12 +141,7 @@ Delete a group.
 =cut
 
 sub delete_group {
-   my ($group) = @_;
-
-   run "groupdel $group";
-   if($? != 0) {
-      die("Error deleting group $group");
-   }
+   Rex::User->get()->rm_group(@_);
 }
 
 =back

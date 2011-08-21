@@ -33,7 +33,18 @@ sub has {
             return $self->parent()->get($key);
          }
          else {
-            return $self->get($key);
+            if(ref($key) eq "ARRAY") {
+               for my $_k (@{$key}) {
+                  if(my $ret = $self->get($_k)) {
+                     return $ret;
+                  }
+
+                  return "";
+               }
+            }
+            else {
+               return $self->get($key);
+            }
          }
       };
 

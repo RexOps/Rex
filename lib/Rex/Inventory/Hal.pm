@@ -8,6 +8,7 @@ package Rex::Inventory::Hal;
 
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 use Rex::Logger;
 
 use Data::Dumper;
@@ -31,11 +32,11 @@ sub new {
 # like net or storage
 sub get_devices_of {
 
-   my ($self, $cat) = @_;
+   my ($self, $cat, $rex_class) = @_;
    my @ret;
 
    for my $dev (keys %{ $self->{'__hal'}->{$cat} }) {
-      push( @ret, $self->get_object_by_cat_and_udi($cat, $dev));
+      push( @ret, $self->get_object_by_cat_and_udi($cat, $dev, $rex_class));
    }
 
    return @ret;
@@ -53,7 +54,15 @@ sub get_network_devices {
 sub get_storage_devices {
 
    my ($self) = @_;
-   return grep { ! $_->is_cdrom } $self->get_devices_of('storage');
+   my $os = get_operating_system();
+
+   if($os =~ m/BSD/) {
+      return grep { ! $_->is_cdrom && ! $_->is_volume && ! $_->is_floppy } $self->get_devices_of('block', 'storage');
+   }
+   else {
+      # default linux
+      return grep { ! $_->is_cdrom && ! $_->is_floppy } $self->get_devices_of('storage');
+   }
 
 }
 
@@ -61,15 +70,26 @@ sub get_storage_devices {
 sub get_storage_volumes {
 
    my ($self) = @_;
-   return $self->get_devices_of('volume');
+
+   my $os = get_operating_system();
+
+   if($os =~ m/BSD/) {
+      return grep { ! $_->is_cdrom && $_->is_volume && ! $_->is_floppy } $self->get_devices_of('block', 'volume');
+   }
+   else {
+      # default linux
+      return $self->get_devices_of('volume');
+   }
 
 }
 
 # get a hal object from category and udi
 sub get_object_by_cat_and_udi {
-   my ($self, $cat, $udi) = @_;
+   my ($self, $cat, $udi, $rex_class) = @_;
 
-   my $class_name = "Rex::Inventory::Hal::Object::\u$cat";
+   $rex_class ||= $cat;
+
+   my $class_name = "Rex::Inventory::Hal::Object::\u$rex_class";
    eval "use $class_name";
    if($@) {
       Rex::Logger::debug("This Hal Object isn't supported yet. Falling back to Base Object.");
@@ -153,6 +173,10 @@ sub _read_lshal {
          next;
       }
 
+      if($s_key =~ m/\./) {
+         ($s_key) = split(/\./, $s_key);
+      }
+
       if(! exists $devices{$s_key}) {
          $devices{$s_key} = {};
       }
@@ -162,7 +186,6 @@ sub _read_lshal {
    }
 
    $self->{'__hal'} = \%devices;
-
 
 }
 

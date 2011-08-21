@@ -48,5 +48,31 @@ sub is_mounted {
 
 }
 
+sub is_cdrom {
+
+   my ($self) = @_;
+   if( grep { /^storage\.cdrom$/ } $self->get('info.capabilities') ) {
+      return 1;
+   }
+
+}
+
+sub is_volume {
+   
+   my ($self) = @_;
+   if( grep { ! /^false$/ } $self->get('block.is_volume') ) {
+      return 1;
+   }
+
+}
+
+sub is_floppy {
+   
+   my ($self) = @_;
+   if( grep { /^floppy$/ } $self->get('storage.drive_type') ) {
+      return 1;
+   }
+
+}
 
 1;

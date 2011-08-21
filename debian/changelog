@@ -1,3 +1,9 @@
+rex (0.14.0) unstable; urgency=low
+  * Extended API to allow passing of arguments to Rex::Task->run
+  * FreeBSD support
+  * Ubuntu support
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 21 Aug 2011 20:30:00 +0200
+
 rex (0.13.0) unstable; urgency=low
   * added function to update package database
   * license changed to GPL3

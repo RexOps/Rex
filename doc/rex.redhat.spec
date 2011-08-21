@@ -59,6 +59,11 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %changelog
 
+* Sun Aug 21 2011 Jan Gehring <jan.gehring at, gmail.com> 0.14.0-1
+- Extended API to allow passing of arguments to Rex::Task->run
+- FreeBSD support
+- Ubuntu support
+
 * Sun Aug 14 2011 Jan Gehring <jan.gehring at, gmail.com> 0.13.0-1
 - added function to update package database
 - license changed to GPL3

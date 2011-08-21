@@ -1,3 +1,8 @@
+2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.14.0)
+  * Extended API to allow passing of arguments to Rex::Task->run
+  * FreeBSD support
+  * Ubuntu support
+
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.13.0)
   * cache sftp object - for speed
   * added function to update package database

@@ -15,6 +15,10 @@ use Rex::Logger;
 sub get {
 
    my $user_o = "Linux";
+   if(is_freebsd) {
+      $user_o = "FreeBSD";
+   }
+
 
    my $class = "Rex::User::" . $user_o;
    eval "use $class";

@@ -20,7 +20,7 @@ With this module you can manage user and groups.
        home => '/root',
        commenct => 'Root Account',
        expire => '2011-05-30',
-       groups  => 'root',
+       groups  => ['root', '...'],
        password => 'blahblah',
        system => 1,
     };

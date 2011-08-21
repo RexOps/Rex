@@ -38,6 +38,7 @@ use warnings;
 
 require Exporter;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 use Data::Dumper;
 
 use vars qw(@EXPORT);
@@ -51,6 +52,13 @@ Get routing information
 
 =cut
 sub route {
+
+   my $os = get_operating_system();
+   
+   if($os =~ m/BSD/) {
+      Rex::Logger::info("route not supported under BSD");
+      return;
+   }
 
    my @ret = ();
 
@@ -83,6 +91,14 @@ Get or set the default gateway.
 
 =cut
 sub default_gateway {
+
+   my $os = get_operating_system();
+   
+   if($os =~ m/BSD/) {
+      Rex::Logger::info("default_gateway not supported under BSD");
+      return;
+   }
+
    my ($new_default_gw) = @_;
 
    if($new_default_gw) {
@@ -113,6 +129,13 @@ Get network connection information
 
 =cut
 sub netstat {
+
+   my $os = get_operating_system();
+   
+   if($os =~ m/BSD/) {
+      Rex::Logger::info("netstat not supported under BSD");
+      return;
+   }
 
    my @ret;
 

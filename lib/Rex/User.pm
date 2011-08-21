@@ -16,10 +16,6 @@ sub get {
 
    my $user_o = "Linux";
 
-   if(is_bsd) {
-      $user_o = "BSD";
-   }
-
    my $class = "Rex::User::" . $user_o;
    eval "use $class";
 

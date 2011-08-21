@@ -39,7 +39,7 @@ use base qw(Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system is_bsd);
+@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system is_freebsd);
 
 =item get_operating_system
 
@@ -134,12 +134,12 @@ sub memory {
 
 }
 
-=item is_bsd
+=item is_freebsd
 
 Returns true if the target system is a BSD.
 
  task "foo", "server1", "server2", sub {
-    if(is_bsd) {
+    if(is_freebsd) {
        say "This is a bsd system...";
     }
     else {
@@ -148,9 +148,9 @@ Returns true if the target system is a BSD.
  };
 
 =cut
-sub is_bsd {
+sub is_freebsd {
    my $os = get_operating_system();
-   if($os =~ m/BSD/) {
+   if($os =~ m/FreeBSD/i) {
       return 1;
    }
 }

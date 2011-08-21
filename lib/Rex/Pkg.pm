@@ -28,10 +28,6 @@ sub get {
       $host->{"operatingsystem"} = "Debian";
    }
 
-   if(is_bsd) {
-      $host->{"operatingsystem"} = "BSD";
-   }
-
    my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
    eval "use $class";
 

@@ -158,8 +158,8 @@ sub run_instance {
    my $data = $self->_do_request("POST", "jiffyBoxes", @jiffy_data);
    my $instance_id = $data->{"result"}->{"id"};
 
-   my $sleep_countdown = 5;
-   sleep $sleep_countdown; # wait 5 seconds
+   my $sleep_countdown = 10;
+   sleep $sleep_countdown; # wait 10 seconds
 
    ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
@@ -171,8 +171,8 @@ sub run_instance {
 
       --$sleep_countdown;
 
-      if($sleep_countdown <= 0) {
-         $sleep_countdown = 3;
+      if($sleep_countdown <= 3) {
+         $sleep_countdown = 7;
       }
    }
 

@@ -55,6 +55,10 @@ sub get_operating_system {
       return "Mageia";
    }
 
+   if(is_file("/etc/gentoo-release")) {
+      return "Gentoo";
+   }
+
    if(is_file("/etc/redhat-release")) {
       my $fh = file_read("/etc/redhat-release");
       my $content = $fh->read_all;
@@ -130,6 +134,17 @@ sub get_operating_system_version {
 
       return $1;
    }
+
+   elsif($op eq "Gentoo") {
+      my $fh = file_read("/etc/gentoo-release");
+      my $content = $fh->read_all;
+      $fh->close;
+
+      chomp $content;
+
+      return [ split(/\s+/, $content) ]->[-1];
+   }
+
    elsif($op eq "SuSE") {
       
       my $fh = file_read("/etc/SuSE-release");

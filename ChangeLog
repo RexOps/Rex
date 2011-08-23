@@ -1,4 +1,7 @@
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.14.1)
+  * new function to detect a redhat system (or clone like CentOS, Scientific
+  Linux)
+2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.14.1)
   * increased timeouts for jiffybox
   * fixed template bug with $ signs
 

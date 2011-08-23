@@ -64,6 +64,9 @@ sub get_operating_system {
       if($content =~ m/CentOS/) {
          return "CentOS";
       }
+      elsif($content =~ m/Scientific/) {
+         return "Scientific";
+      }
       else {
          return "Redhat";
       }

@@ -39,7 +39,8 @@ use base qw(Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system is_freebsd);
+@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system 
+               is_freebsd is_redhat);
 
 =item get_operating_system
 
@@ -151,6 +152,25 @@ Returns true if the target system is a BSD.
 sub is_freebsd {
    my $os = get_operating_system();
    if($os =~ m/FreeBSD/i) {
+      return 1;
+   }
+}
+
+=item is_redhat
+
+ task "foo", "server1", sub {
+    if(is_redhat) {
+       # do something on a redhat system (like RHEL, Fedora, CentOS, Scientific Linux
+    }
+ };
+
+=cut
+sub is_redhat {
+   my $os = get_operating_system();
+
+   my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific");
+
+   if(grep { /$os/i } @redhat_clones) {
       return 1;
    }
 }

@@ -92,6 +92,7 @@ sub _quote {
    $str =~ s/"/\\"/g;
    $str =~ s/\@/\\@/g;
    $str =~ s/\%/\\%/g;
+   $str =~ s/\$/\\\$/g;
 
    return $str;
 }

@@ -104,7 +104,9 @@ sub get_operating_system_version {
       my @l = run "lsb_release -r -s";
       return $l[0];
    }
-   elsif(lc($op) eq "redhat" or lc($op) eq "centos") {
+   elsif(lc($op) eq "redhat" 
+            or lc($op) eq "centos"
+            or lc($op) eq "scientific") {
 
       my $fh = file_read("/etc/redhat-release");
       my $content = $fh->read_all;

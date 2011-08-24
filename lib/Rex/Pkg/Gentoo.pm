@@ -27,9 +27,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("equery list $pkg");
-
-   unless($? == 0) {
+   unless(grep { $_->{"name"} eq "vim" } get_installed()) {
       Rex::Logger::debug("$pkg is NOT installed.");
       return 0;
    }
@@ -69,7 +67,7 @@ sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("emerge --depclean $pkg");
+   my $f = run("emerge -C $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.");
@@ -86,7 +84,26 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   Rex::Logger::info("todo");
+   # ,,stolen'' from epm
+   my $pkgregex =
+      '(.+?)'.                                    # name
+      '-(\d+(?:\.\d+)*\w*)'.                      # version, eg 1.23.4a
+      '((?:(?:_alpha|_beta|_pre|_rc)\d*)?)'.      # special suffix
+      '((?:-r\d+)?)$';                            # revision, eg r12
+
+   my @ret;
+   for my $line (run("epm -qa")) {
+      my $r = qr{$pkgregex};
+      my ($name, $version, $suffix, $revision) = ($line =~ $r);
+      push(@ret, {
+         name => $name,
+         version => $version,
+         suffix => $suffix,
+         release => $revision,
+      });
+   }
+
+   return @ret;
 }
 
 sub update_pkg_db {
@@ -102,12 +119,26 @@ sub add_repository {
    my ($self, %data) = @_;
 
    my $name = $data{"name"};
-   Rex::Logger::info("todo");
+
+   if(can_run("layman")) {
+      run "layman -a $name";
+   }
+   else {
+      Rex::Logger::debug("You have to install layman, git and subversion.");
+      die("Please install layman, git and subversion");
+   }
 }
 
 sub rm_repository {
    my ($self, $name) = @_;
-   Rex::Logger::info("todo");
+
+   if(can_run("layman")) {
+      run "layman -d $name";
+   }
+   else {
+      Rex::Logger::debug("You have to install layman, git and subversion.");
+      die("Please install layman, git and subversion");
+   }
 }
 
 

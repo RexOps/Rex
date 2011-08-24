@@ -82,6 +82,7 @@ sub run {
    }
 
    Rex::Logger::debug($out);
+   Rex::Logger::debug("Returncode: $?");
 
    chomp $out;
 

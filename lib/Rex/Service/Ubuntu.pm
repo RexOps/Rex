@@ -73,13 +73,13 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "service $service status";
+   my @ret = run "service $service status";
 
-   if($? == 0) {
-      return 1;
+   if(grep { /stop\// } @ret) {
+      return 0;
    }
 
-   return 0;
+   return 1;
 }
 
 sub ensure {

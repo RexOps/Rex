@@ -4,6 +4,7 @@
   * scientific linux support
   * increased timeouts for jiffybox
   * fixed template bug with $ signs
+  * added support for gentoo
 
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.14.0)
   * Extended API to allow passing of arguments to Rex::Task->run

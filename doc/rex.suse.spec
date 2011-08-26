@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.14.0
+Version: 0.15.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.14.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.15.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,13 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Fri Aug 26 2011 Jan Gehring <jan.gehring at, gmail.com> 0.15.0-1
+- new function to detect a redhat system (or clone like CentOS, Scientific Linux)
+- increased timeouts for jiffybox
+- fixed template bug with $ signs
+- added support for scientific linux
+- added support for gentoo
 
 * Sun Aug 21 2011 Jan Gehring <jan.gehring at, gmail.com> 0.14.0-1
 - Extended API to allow passing of arguments to Rex::Task->run

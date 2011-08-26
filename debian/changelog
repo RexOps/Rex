@@ -1,3 +1,12 @@
+rex (0.15.0) unstable; urgency=low
+  * new function to detect a redhat system (or clone like CentOS, Scientific Linux)
+  * increased timeouts for jiffybox
+  * fixed template bug with $ signs
+  * added support for scientific linux
+  * added support for gentoo
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 26 Aug 2011 21:00:00 +0200
+
 rex (0.14.0) unstable; urgency=low
   * Extended API to allow passing of arguments to Rex::Task->run
   * FreeBSD support

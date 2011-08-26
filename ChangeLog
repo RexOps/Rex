@@ -1,9 +1,9 @@
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.15)
   * new function to detect a redhat system (or clone like CentOS, Scientific
   Linux)
-  * scientific linux support
   * increased timeouts for jiffybox
   * fixed template bug with $ signs
+  * added support for scientific linux
   * added support for gentoo
 
 2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.14.0)

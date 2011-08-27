@@ -103,6 +103,7 @@ use base qw(Exporter);
             needs
             say
             LOCAL
+            path
           );
 
 =item no_ssh([$task])
@@ -595,6 +596,17 @@ sub LOCAL (&) {
    Rex::push_connection({ssh => 0, server => $cur_conn->{"server"}});
    $_[0]->();
    Rex::pop_connection();
+}
+
+=item path(@path)
+
+Set the execution path for all commands.
+
+ path "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/pkg/bin", "/usr/pkg/sbin";
+
+=cut
+sub path {
+   Rex::Config->set_path(@_);
 }
 
 =back

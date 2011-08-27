@@ -13,7 +13,20 @@ use Rex::Logger;
 
 use vars qw($user $password 
             $timeout $max_connect_fails
-            $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password);
+            $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
+            $path);
+
+sub set_path {
+   my $class = shift;
+   $path = shift;
+}
+
+sub get_path {
+   if(!$path) {
+      return ("/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin", "/usr/pkg/bin", "/usr/pkg/sbin");
+   }
+   return $path;
+}
 
 sub set_user {
    my $class = shift;

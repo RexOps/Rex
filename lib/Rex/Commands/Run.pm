@@ -71,7 +71,12 @@ sub run {
    my $out;
    # no can_run($cmd) if there are parameters
    if(my $ssh = Rex::is_ssh()) {
-      $out = net_ssh2_exec($ssh, "LC_ALL=C " . $cmd);
+      my @paths = Rex::Config->get_path;
+      my $path="";
+      if(@paths) {
+         $path = "PATH=" . join(":", @paths);
+      }
+      $out = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
    } else {
       if($^O =~ m/^MSWin/) {
          $out = qx{$cmd};

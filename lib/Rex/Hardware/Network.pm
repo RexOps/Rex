@@ -68,7 +68,7 @@ sub get_network_configuration {
             ip          => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
             netmask     => [ ( $ifconfig =~ m/netmask (0x[a-f0-9]+)/ ) ]->[0],
             broadcast   => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-            mac         => [ ( $ifconfig =~ m/ether (..:..:..:..:..:..)/ ) ]->[0],
+            mac         => [ ( $ifconfig =~ m/(ether|address:) (..:..:..:..:..:..)/ ) ]->[1],
          };
       }
       else {

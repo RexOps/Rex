@@ -27,7 +27,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   unless(grep { $_->{"name"} eq "vim" } get_installed()) {
+   unless(grep { $_->{"name"} eq $pkg } get_installed()) {
       Rex::Logger::debug("$pkg is NOT installed.");
       return 0;
    }

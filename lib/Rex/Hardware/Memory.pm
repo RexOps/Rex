@@ -16,7 +16,45 @@ use Rex::Commands::Sysctl;
 sub get {
    my $os = Rex::Hardware::Host::get_operating_system();
 
-   if($os =~ /BSD/) {
+   
+   if($os =~ /NetBSD/) {
+      my $mem_str  = run "top -d1 | grep Memory:";
+      my $total_mem = sysctl("hw.physmem");
+
+      my $convert = sub {
+
+         if($_[1] eq "G") {
+            $_[0] = $_[0] * 1024 * 1024 * 1024;
+         }
+         elsif($_[1] eq "M") {
+            $_[0] = $_[0] * 1024 * 1024;
+         }
+         elsif($_[1] eq "K") {
+            $_[0] = $_[0] * 1024;
+         }
+
+      };
+
+      my ($active, $a_ent, $wired, $w_ent, $exec, $e_ent, $file, $f_ent, $free, $fr_ent) = 
+         ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
+
+      &$convert($active, $a_ent);
+      &$convert($wired, $w_ent);
+      &$convert($exec, $e_ent);
+      &$convert($file, $f_ent);
+      &$convert($free, $fr_ent);
+
+      return {
+         total => $total_mem,
+         used => $active + $exec + $file + $wired,
+         free => $free,
+         file => $file,
+         exec => $exec,
+         wired => $wired,
+      };
+
+   }
+   elsif($os =~ /FreeBSD/) {
       my $mem_str  = run "top -d1 | grep Mem:";
       my $total_mem = sysctl("hw.physmem");
 

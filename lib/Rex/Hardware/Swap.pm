@@ -16,7 +16,37 @@ sub get {
 
    my $os = Rex::Hardware::Host::get_operating_system();
 
-   if($os =~ /BSD/) {
+   if($os =~ /NetBSD/) {
+      my $swap_str = run "top -d1 | grep Swap:";
+
+      my $convert = sub {
+
+         if($_[1] eq "G") {
+            $_[0] = $_[0] * 1024 * 1024 * 1024;
+         }
+         elsif($_[1] eq "M") {
+            $_[0] = $_[0] * 1024 * 1024;
+         }
+         elsif($_[1] eq "K") {
+            $_[0] = $_[0] * 1024;
+         }
+
+      };
+
+      my ($total, $t_ent, $free, $f_ent) = 
+            ($swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
+
+      &$convert($total, $t_ent);
+      &$convert($free, $f_ent);
+
+      return {
+         total => $total,
+         used => $total-$free,
+         free => $free,
+      };
+
+   }
+   elsif($os =~ /FreeBSD/) {
       my $swap_str = run "top -d1 | grep Swap:";
 
       my $convert = sub {

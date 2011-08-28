@@ -521,7 +521,7 @@ sub is_readable {
    Rex::Logger::debug("Checking if $_[0] is readable");
 
    if(my $ssh = Rex::is_ssh()) {
-      net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-r \"$_[0]\") { exit 0; } exit 1'");
+      net_ssh2_exec($ssh, "perl -le 'if(-r \"$_[0]\") { exit 0; } exit 1'");
       if($? == 0) {
          return 1;
       }
@@ -554,7 +554,7 @@ sub is_writable {
    Rex::Logger::debug("Checking if $_[0] is writable");
 
    if(my $ssh = Rex::is_ssh()) {
-      net_ssh2_exec($ssh, "/usr/bin/perl -le 'if(-w \"$_[0]\") { exit 0; } exit 1'");
+      net_ssh2_exec($ssh, "perl -le 'if(-w \"$_[0]\") { exit 0; } exit 1'");
       if($? == 0) {
          return 1;
       }

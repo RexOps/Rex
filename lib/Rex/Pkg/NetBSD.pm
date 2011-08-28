@@ -46,11 +46,10 @@ sub install {
       return 1;
    }
 
-   my $version = $option->{'version'} || '';
+   my $version = "-" . $option->{'version'} || '';
 
-   Rex::Logger::debug("Version option not supported.");
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run(". /etc/profile; /usr/sbin/pkg_add $pkg");
+   my $f = run(". /etc/profile; /usr/sbin/pkg_add $pkg$version");
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.");

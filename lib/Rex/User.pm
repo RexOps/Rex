@@ -18,6 +18,9 @@ sub get {
    if(is_freebsd) {
       $user_o = "FreeBSD";
    }
+   elsif(is_netbsd) {
+      $user_o = "NetBSD";
+   }
 
 
    my $class = "Rex::User::" . $user_o;

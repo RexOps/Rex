@@ -27,7 +27,10 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("/usr/sbin/pkg_info $pkg-*");
+   unless(grep { $_->{"name"} eq $pkg } get_installed()) {
+      Rex::Logger::debug("$pkg is NOT installed.");
+      return 0;
+   }
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");
@@ -46,7 +49,7 @@ sub install {
       return 1;
    }
 
-   my $version = "-" . $option->{'version'} || '';
+   my $version = ($option->{"version"}?"-".$option->{"version"}:"");
 
    Rex::Logger::debug("Installing $pkg / $version");
    my $f = run(". /etc/profile; /usr/sbin/pkg_add $pkg$version");

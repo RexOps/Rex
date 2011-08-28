@@ -17,7 +17,39 @@ sub get {
    my $os = Rex::Hardware::Host::get_operating_system();
 
    
-   if($os =~ /NetBSD/) {
+   if($os eq "OpenBSD") {
+      my $mem_str  = run "top -d1 | grep Memory:";
+      my $total_mem = sysctl("hw.physmem");
+
+      my $convert = sub {
+
+         if($_[1] eq "G") {
+            $_[0] = $_[0] * 1024 * 1024 * 1024;
+         }
+         elsif($_[1] eq "M") {
+            $_[0] = $_[0] * 1024 * 1024;
+         }
+         elsif($_[1] eq "K") {
+            $_[0] = $_[0] * 1024;
+         }
+
+      };
+
+      my ($phys_mem, $p_m_ent, $virt_mem, $v_m_ent, $free, $f_ent) =
+         ($mem_str =~m/(\d+)([a-z])\/(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
+
+      &$convert($phys_mem, $p_m_ent);
+      &$convert($virt_mem, $v_m_ent);
+      &$convert($free, $f_ent);
+
+      return {
+         used => $phys_mem + $virt_mem,
+         total => $total_mem,
+         free => $free,
+      };
+
+   }
+   elsif($os eq "NetBSD") {
       my $mem_str  = run "top -d1 | grep Memory:";
       my $total_mem = sysctl("hw.physmem");
 

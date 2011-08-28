@@ -55,7 +55,7 @@ This function load or unload a kernel module.
     kmod unload => "ipmi_si";
  };
 
-If you're using NetBSD you have to specify the complete path and, if needed the entry function.
+If you're using NetBSD or OpenBSD you have to specify the complete path and, if needed the entry function.
 
  task "load", sub {
     kmod load => "/usr/lkm/ntfs.o";
@@ -78,7 +78,7 @@ sub kmod {
       $load_command = "kldload";
       $unload_command = "kldunload";
    }
-   elsif($os eq "NetBSD" ) {
+   elsif($os eq "NetBSD" || $os eq "OpenBSD") {
       $load_command = "modload";
       $unload_command = "modunload";
 

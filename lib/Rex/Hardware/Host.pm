@@ -21,7 +21,7 @@ sub get {
    }
 
    my $domain;
-   if(get_operating_system() eq "NetBSD") {
+   if(get_operating_system() eq "NetBSD" || get_operating_system() eq "OpenBSD") {
       ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname");
    }
    else {

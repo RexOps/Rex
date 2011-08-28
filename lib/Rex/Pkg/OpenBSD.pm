@@ -1,0 +1,29 @@
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+
+package Rex::Pkg::OpenBSD;
+
+use strict;
+use warnings;
+
+use Rex::Commands::Run;
+use Rex::Commands::File;
+
+use Rex::Pkg::NetBSD;
+
+use base qw(Rex::Pkg::NetBSD);
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = $that->SUPER::new(@_);
+
+   bless($self, $proto);
+
+   return $self;
+}
+
+1;

@@ -21,7 +21,9 @@ sub get {
    elsif(is_netbsd) {
       $user_o = "NetBSD";
    }
-
+   elsif(is_openbsd) {
+      $user_o = "OpenBSD";
+   }
 
    my $class = "Rex::User::" . $user_o;
    eval "use $class";

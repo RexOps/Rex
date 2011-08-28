@@ -40,7 +40,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory get_operating_system 
-               is_freebsd is_netbsd is_redhat);
+               is_freebsd is_netbsd is_openbsd is_redhat);
 
 =item get_operating_system
 
@@ -192,6 +192,27 @@ Returns true if the target system is a NetBSD.
 sub is_netbsd {
    my $os = get_operating_system();
    if($os =~ m/NetBSD/i) {
+      return 1;
+   }
+}
+
+=item is_openbsd
+
+Returns true if the target system is an OpenBSD.
+
+ task "foo", "server1", "server2", sub {
+    if(is_openbsd) {
+       say "This is an openbsd system...";
+    }
+    else {
+       say "This is not an openbsd system...";
+    }
+ };
+
+=cut
+sub is_openbsd {
+   my $os = get_operating_system();
+   if($os =~ m/OpenBSD/i) {
       return 1;
    }
 }

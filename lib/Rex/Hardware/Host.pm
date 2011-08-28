@@ -20,7 +20,13 @@ sub get {
       Rex::Logger::debug("Please install dmidecode on the target system.");
    }
 
-   my ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
+   my $domain;
+   if(get_operating_system() eq "NetBSD") {
+      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname");
+   }
+   else {
+      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
+   }
 
    return {
    

@@ -252,7 +252,7 @@ sub task {
       Rex::Logger::debug("Registering task: ${class}::$task_name_save");
       *{"${class}::$task_name_save"} = $_[-2];
       use strict;
-   } elsif($class ne "main" && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
+   } elsif($class ne "main" && ! exists $sym_table{$task_name_save} && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
       # if not in main namespace, register the task as a sub
       no strict 'refs';
       Rex::Logger::debug("Registering task (not main namespace): ${class}::$task_name_save");

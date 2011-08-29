@@ -75,7 +75,8 @@ sub upload {
       if(-d $remote) {
          $remote = $remote . '/' . basename($remote);
       }
-      unless(system("cp $local $remote")) {
+      system("cp $local $remote");
+      if($? != 0) {
          Rex::Logger::debug("upload: $remote is not writable");
          die("upload: $remote is not writable.");
       }

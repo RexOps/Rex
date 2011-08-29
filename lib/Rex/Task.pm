@@ -107,6 +107,11 @@ sub get_tasks_for {
    return sort { $a cmp $b } @tasks;
 }
 
+sub clear_tasks {
+   my $class = shift;
+   %tasks = ();
+}
+
 sub get_desc {
    my $class = shift;
    my $task = shift;

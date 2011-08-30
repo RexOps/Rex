@@ -87,29 +87,44 @@ sub _template_kvm {
 
 sub _template_storage_helper {
 
-   my $xml_ref = shift;
-   my $storage = shift;
-   my $driver  = shift;
-   my $device  = shift;
-   my $bus     = shift;
-   my $src_dev;
+   my $storage       = shift;
+   my $domain_type   = shift;
 
-   if(defined($storage->{'type'})) {
-      $storage->{'type'} eq 'file' ? $src_dev = 'dev' : $src_dev = $storage->{'type'};
+   my $tpl;
+
+   ## set defaults
+   unless(defined($storage->{'bus'})) {
+      $storage->{'bus'} = 'ide';
    }
 
-   if(defined($storage->{'disk'})) {
-      $device = 'cdrom' if $storage->{'disk'} =~ m:.+\.iso$:;
+   if(defined($storage->{'disk'}) && $storage->{'disk'} =~ m:^file\:(.+):) {
+      $storage->{'disk'} = $1;
+      $tpl               = {'type' => 'file', 'device'=> 'disk'};
+
+      ## default values for xen pvm machines
+      if($domain_type eq 'xen-pvm') {
+         $tpl->{'driver'}  = {'name' => 'tap', 'type' => 'aio'};
+         $tpl->{'target'}  = {'dev' => $storage->{'dev'}, 'bus' => 'xen' };
+      } else {
+         $tpl->{'driver'}  = {'name' => 'file'};
+         $tpl->{'target'}  = {'dev' => $storage->{'dev'}, 'bus' => $storage->{'bus'} };
+      }
+
+      $tpl->{'source'}  = {'file' => $storage->{'disk'} };
+
+   } elsif (defined($storage->{'cdrom'}) && $storage->{'cdrom'} =~ m:^file\:(.+):) {
+
+      $storage->{'cdrom'} = $1;
+      $tpl                = {'type' => 'file', 'device'=> 'cdrom'};
+      $tpl->{'driver'}    = {'name' => 'file'};
+      $tpl->{'target'}    = {'dev' => $storage->{'dev'}, 'bus' => $storage->{'bus'} };
+      $tpl->{'source'}    = {'file' => $storage->{'cdrom'} };
+
+   } else { 
+      Rex::Logger::info("Wrong Storage definition ...");
    }
 
-   return {
-      'type'   => $storage->{'type'},
-      'driver' => $driver,
-      'device' => $device,
-      'source' => { $src_dev => $storage->{'disk'}},
-      'target' => { 'dev'    => $storage->{'dev'},
-      'bus'     => $bus }
-   }; 
+   return $tpl;
 
 }
 
@@ -121,17 +136,16 @@ sub _template_storage {
    for my $storage (@$storage_ref) {
       ## check if pvm
       if(defined($xml_ref->{'domain'}->{'bootloader'})) {
-         if(($storage->{'type'} eq 'file' && defined($storage->{'disk'})) && $xml_ref->{'domain'}->{'type'} eq 'xen') {
+         if($xml_ref->{'domain'}->{'type'} eq 'xen') {
             push(@{$xml_ref->{'domain'}->{'devices'}->{'disk'}},
-               _template_storage_helper($xml_ref,$storage,{'name' => 'tap', 'type' => 'aio'},'disk','xen'));
+               _template_storage_helper($storage, $xml_ref->{'domain'}->{'type'}."-pvm"));
          } else {
             Rex::Logger::info("No or wrong Storage definition ...");
          }
       } else {
-         if(($storage->{'type'} eq 'file' && defined($storage->{'disk'})) 
-            && ($xml_ref->{'domain'}->{'type'} eq 'xen' || $xml_ref->{'domain'}->{'type'} eq 'kvm')) {
+         if($xml_ref->{'domain'}->{'type'} eq 'xen' || $xml_ref->{'domain'}->{'type'} eq 'kvm') {
             push(@{$xml_ref->{'domain'}->{'devices'}->{'disk'}},
-               _template_storage_helper($xml_ref,$storage,{'name' => 'file'},'disk','ide'));
+               _template_storage_helper($storage, $xml_ref->{'domain'}->{'type'}));
 
          } else {
             Rex::Logger::info("No or wrong Storage definition ...");
@@ -260,7 +274,9 @@ sub execute {
 
    Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
 
-   run "LANG=C virsh define <(echo '$template')";
+   #print Dumper $template;
+   #die;
+   run "LC_ALL=C virsh define <(echo '$template')";
    if($? != 0) {
      die("Error starting vm $opts");
    }

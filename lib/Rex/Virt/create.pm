@@ -106,7 +106,6 @@ sub _template_storage_helper {
          $tpl->{'driver'}  = {'name' => 'tap', 'type' => 'aio'};
          $tpl->{'target'}  = {'dev' => $storage->{'dev'}, 'bus' => 'xen' };
       } else {
-         $tpl->{'driver'}  = {'name' => 'file'};
          $tpl->{'target'}  = {'dev' => $storage->{'dev'}, 'bus' => $storage->{'bus'} };
       }
 
@@ -116,7 +115,6 @@ sub _template_storage_helper {
 
       $storage->{'cdrom'} = $1;
       $tpl                = {'type' => 'file', 'device'=> 'cdrom'};
-      $tpl->{'driver'}    = {'name' => 'file'};
       $tpl->{'target'}    = {'dev' => $storage->{'dev'}, 'bus' => $storage->{'bus'} };
       $tpl->{'source'}    = {'file' => $storage->{'cdrom'} };
 
@@ -247,35 +245,28 @@ sub execute {
 
    my $template = prepare_instance_create($opts);
 
-   ## use a os-template
-   if($opts->{'template'}) {
-      my @source  = keys(%{$opts->{'template'}});
-      my @dest    = values(%{$opts->{'template'}});
-      Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$source[0]\"");
-      Rex::Logger::info("Please wait ...");
-      run "qemu-img convert -f raw $source[0] -O raw $dest[0]";
-      if($? != 0) {
-         die("Error building domain: \"$opts->{'name'}\" from template: \"$source[0]\"\n
-             Template doesn't exist or the qemu-img binary is missing")
-      }
-   } else {
-      ## create storage devices
-      for (@{$opts->{'storage'}}) {
-         if($_->{'size'} && ($_->{'type'} eq 'file' || $_->{'type'} eq 'block')) {
-            my $size = $_->{'size'}*1024;
-            Rex::Logger::debug("creating storage disk: \"$_->{'disk'}\"");            
-            run "qemu-img create -f raw $_->{'disk'} $size";
-            if($? != 0) {
-               die("Error creating storage disk: $_->{'disk'}");
-            }
+   ## create storage devices
+   for (@{$opts->{'storage'}}) {
+      if($_->{'size'} && $_->{'disk'}) {
+         my $size = $_->{'size'}*1024;
+         Rex::Logger::debug("creating storage disk: \"$_->{'disk'}\"");            
+         run "LC_ALL=C qemu-img create -f raw $_->{'disk'} $size";
+         if($? != 0) {
+            die("Error creating storage disk: $_->{'disk'}");
          }
+      } elsif($_->{'template'} && $_->{'disk'}) {
+          Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
+          Rex::Logger::info("Please wait ...");
+          run "LC_ALL=C qemu-img convert -f raw $_->{'template'} -O raw $_->{'disk'}";
+          if($? != 0) {
+             die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
+             Template doesn't exist or the qemu-img binary is missing")
+          }
       }
    } 
 
    Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
 
-   #print Dumper $template;
-   #die;
    run "LC_ALL=C virsh define <(echo '$template')";
    if($? != 0) {
      die("Error starting vm $opts");

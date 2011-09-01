@@ -16,24 +16,46 @@ use Rex::Commands::Sysctl;
 sub get {
    my $os = Rex::Hardware::Host::get_operating_system();
 
-   
-   if($os eq "OpenBSD") {
+    my $convert = sub {
+
+      if($_[1] eq "G") {
+         $_[0] = $_[0] * 1024 * 1024 * 1024;
+      }
+      elsif($_[1] eq "M") {
+         $_[0] = $_[0] * 1024 * 1024;
+      }
+      elsif($_[1] eq "K") {
+         $_[0] = $_[0] * 1024;
+      }
+
+   };
+
+  
+   if($os eq "SunOS") {
+      my @data = run "echo ::memstat | mdb -k";
+
+      my ($free_cache) = grep { $_=$1 if /^Free \(cache[^\d]+\d+\s+(\d+)/ } @data;
+      my ($free_list)  = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
+      my ($page_cache) = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
+
+      my $free = $free_cache + $free_list;
+      #my ($total, $total_e) = grep { $_=$1 if /^Memory Size: (\d+) ([a-z])/i } run "prtconf";
+      my ($total) = grep { $_=$1 if /^Total\s+\d+\s+(\d+)/ } @data;
+
+      &$convert($free, "M");
+      &$convert($total, "M");
+      my $used = $total - $free;
+
+      return {
+         used => $used,
+         total => $total,
+         free => $free,
+      };
+
+   }
+   elsif($os eq "OpenBSD") {
       my $mem_str  = run "top -d1 | grep Memory:";
       my $total_mem = sysctl("hw.physmem");
-
-      my $convert = sub {
-
-         if($_[1] eq "G") {
-            $_[0] = $_[0] * 1024 * 1024 * 1024;
-         }
-         elsif($_[1] eq "M") {
-            $_[0] = $_[0] * 1024 * 1024;
-         }
-         elsif($_[1] eq "K") {
-            $_[0] = $_[0] * 1024;
-         }
-
-      };
 
       my ($phys_mem, $p_m_ent, $virt_mem, $v_m_ent, $free, $f_ent) =
          ($mem_str =~m/(\d+)([a-z])\/(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
@@ -52,20 +74,6 @@ sub get {
    elsif($os eq "NetBSD") {
       my $mem_str  = run "top -d1 | grep Memory:";
       my $total_mem = sysctl("hw.physmem");
-
-      my $convert = sub {
-
-         if($_[1] eq "G") {
-            $_[0] = $_[0] * 1024 * 1024 * 1024;
-         }
-         elsif($_[1] eq "M") {
-            $_[0] = $_[0] * 1024 * 1024;
-         }
-         elsif($_[1] eq "K") {
-            $_[0] = $_[0] * 1024;
-         }
-
-      };
 
       my ($active, $a_ent, $wired, $w_ent, $exec, $e_ent, $file, $f_ent, $free, $fr_ent) = 
          ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
@@ -89,20 +97,6 @@ sub get {
    elsif($os =~ /FreeBSD/) {
       my $mem_str  = run "top -d1 | grep Mem:";
       my $total_mem = sysctl("hw.physmem");
-
-      my $convert = sub {
-
-         if($_[1] eq "G") {
-            $_[0] = $_[0] * 1024 * 1024 * 1024;
-         }
-         elsif($_[1] eq "M") {
-            $_[0] = $_[0] * 1024 * 1024;
-         }
-         elsif($_[1] eq "K") {
-            $_[0] = $_[0] * 1024;
-         }
-
-      };
 
       my ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $cache, $c_ent, $buf, $b_ent, $free, $f_ent) = 
             ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);

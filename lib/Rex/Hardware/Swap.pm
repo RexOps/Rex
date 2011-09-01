@@ -31,7 +31,21 @@ sub get {
    };
 
 
-   if($os eq "OpenBSD") {
+   if($os eq "SunOS") {
+      my ($swap_str) = run("swap -s");
+
+      my ($used, $u_ent, $avail, $a_ent) = ($swap_str =~ m/(\d+)([a-z]) used, (\d+)([a-z]) avail/);
+
+      &$convert($used, uc($u_ent));
+      &$convert($avail, uc($a_ent));
+
+      return {
+         total => $used + $avail,
+         used => $used,
+         free => $avail,
+      };
+   }
+   elsif($os eq "OpenBSD") {
       my $swap_str = run "top -d1 | grep Swap:";
 
       my ($used, $u_ent, $total, $t_ent) = ($swap_str =~ m/Swap: (\d+)([a-z])\/(\d+)([a-z])/i);

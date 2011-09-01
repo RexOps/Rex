@@ -29,7 +29,7 @@ sub get_network_devices {
 
    my $os = Rex::Hardware::Host::get_operating_system();
 
-   if($os =~ m/BSD/) {
+   if($os =~ m/BSD/ || $os eq "SunOS") {
       my @device_list = grep { $_=$1 if /^([a-z0-9]+)\:/i } run "ifconfig -a";
 
       return \@device_list;
@@ -63,12 +63,12 @@ sub get_network_configuration {
 
       my $os = Rex::Hardware::Host::get_operating_system();
 
-      if($os =~ m/BSD/) {
+      if($os =~ m/BSD/ || $os eq "SunOS") {
          $device_info->{$dev} = {
             ip          => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
             netmask     => [ ( $ifconfig =~ m/netmask (0x[a-f0-9]+)/ ) ]->[0],
             broadcast   => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-            mac         => [ ( $ifconfig =~ m/(ether|address:|lladdr) (..:..:..:..:..:..)/ ) ]->[1],
+            mac         => [ ( $ifconfig =~ m/(ether|address:|lladdr) (..?:..?:..?:..?:..?:..?)/ ) ]->[1],
          };
       }
       else {

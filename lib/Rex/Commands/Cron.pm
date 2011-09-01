@@ -43,6 +43,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
+use Rex::Commands::Gather;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
@@ -103,7 +104,14 @@ sub cron {
    my ($action, $user, $config) = @_;
 
    if($action eq "list") {
-      my @lines = run "crontab -u $user -l";
+      my @lines;
+
+      if(operating_system_is("SunOS")) {
+         @lines = run "crontab -l $user";
+      }
+      else {
+         @lines = run "crontab -u $user -l";
+      }
       my @ret = ();
 
       for my $line (@lines) {
@@ -131,7 +139,14 @@ sub cron {
       return @ret;
    }
    elsif($action eq "add") {
-      my @lines = run "crontab -u $user -l";
+      my @lines;
+      if(operating_system_is("SunOS")) {
+         @lines = run "crontab -l $user";
+      }
+      else {
+         @lines = run "crontab -u $user -l";
+      }
+
 
       my $new_cron = sprintf("%s %s %s %s %s %s", $config->{"minute"} || "*",
                                                   $config->{"hour"} || "*",
@@ -146,7 +161,12 @@ sub cron {
       $fh->write(join("\n", @lines) . "\n");
       $fh->close;
 
-      run "crontab -u $user /tmp/cron.rex.tmp";
+      if(operating_system_is("SunOS")) {
+         run "crontab /tmp/cron.rex.tmp";
+      }
+      else {
+         run "crontab -u $user /tmp/cron.rex.tmp";
+      }
       unlink "/tmp/cron.rex.tmp";
    }
    elsif($action eq "delete") {
@@ -158,7 +178,13 @@ sub cron {
       $fh->write(join("\n", @crons) . "\n");
       $fh->close;
 
-      run "crontab -u $user /tmp/cron.rex.tmp";
+      if(operating_system_is("SunOS")) {
+         run "crontab /tmp/cron.rex.tmp";
+      }
+      else {
+         run "crontab -u $user /tmp/cron.rex.tmp";
+      }
+
       unlink "/tmp/cron.rex.tmp";
    }
 

@@ -14,24 +14,34 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
 
+use Rex::Inventory::Bios;
+
 sub get {
 
    unless(can_run("dmidecode")) {
       Rex::Logger::debug("Please install dmidecode on the target system.");
    }
 
-   my $domain;
+   my $bios = Rex::Inventory::Bios::get();
+
+   my ($domain, $hostname);
    if(get_operating_system() eq "NetBSD" || get_operating_system() eq "OpenBSD") {
+      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname");
       ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname");
    }
+   elsif(get_operating_system() eq "SunOS") {
+      ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } run("LC_ALL=C hostname");
+      ($domain) = run("LC_ALL=C domainname");
+   }
    else {
+      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
       ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
    }
 
    return {
    
-      manufacturer => [ run("LC_ALL=C dmidecode -t chassis") =~ m/Manufacturer: ([^\n]+)/ ]->[0],
-      hostname     => run("LC_ALL=C hostname -s") || "",
+      manufacturer => $bios->get_system_information()->get_manufacturer(),
+      hostname     => $hostname,
       domain       => $domain || "",
       operatingsystem => get_operating_system(),
       operatingsystemrelease => get_operating_system_version(),
@@ -169,7 +179,7 @@ sub get_operating_system_version {
       return $version;
    }
 
-   return "Unknown";
+   return [ run("uname -r") ]->[0];
 
 }
 

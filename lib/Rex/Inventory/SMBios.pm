@@ -16,6 +16,7 @@ use Rex::Commands::Run;
 
 use Rex::Inventory::SMBios::BaseBoard;
 use Rex::Inventory::SMBios::Bios;
+use Rex::Inventory::SMBios::CPU;
 use Rex::Inventory::SMBios::Memory;
 use Rex::Inventory::SMBios::MemoryArray;
 use Rex::Inventory::SMBios::SystemInformation;

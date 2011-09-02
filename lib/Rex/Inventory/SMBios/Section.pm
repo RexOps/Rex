@@ -143,7 +143,7 @@ sub _search_for {
 sub get_index {
 
    my ($self) = @_;
-   return $self->{"index"};
+   return $self->{"index"} || 0;
 
 }
 

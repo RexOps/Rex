@@ -85,6 +85,26 @@ sub kmod {
       if($options->{"entry"}) {
          $load_command .= " -e " . $options->{"entry"};
       }
+   } elsif($os eq "SunOS") {
+      $load_command = "modload -p ";
+      
+      if($options->{"exec_file"}) {
+         $load_command .= " -e " . $options->{"exec_file"} . " ";
+      }
+
+      $unload_command = sub {
+         my @mod_split = split(/\//, $module);
+         my $mod = $mod_split[-1];
+
+         my ($mod_id) = grep { $_=$1 if $_ =~ qr{(\d+).*$mod} } run "modinfo";
+         my $cmd = "modunload -i $mod_id";
+
+         if($options->{"exec_file"}) {
+            $cmd .= " -e " . $options->{"exec_file"};
+         }
+
+         return $cmd;
+      };
    }
 
 
@@ -101,7 +121,12 @@ sub kmod {
    }
    elsif($action eq "unload") {
       Rex::Logger::debug("Unloading Kernel Module: $module");
-      run "$unload_command $module";
+      my $unload_command_str = $unload_command;
+      if(ref($unload_command) eq "CODE") {
+         $unload_command_str = &$unload_command();
+      }
+
+      run "$unload_command_str $module";
       unless($? == 0) {
          Rex::Logger::info("Error unloading Kernel Module: $module");
          die("Error unloading Kernel Module: $module");

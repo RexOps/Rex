@@ -18,24 +18,28 @@ use Rex::Inventory::Bios;
 
 sub get {
 
-   unless(can_run("dmidecode")) {
+   my $dmi = Rex::get_cache()->can_run("dmidecode");
+
+   unless($dmi) {
       Rex::Logger::debug("Please install dmidecode on the target system.");
    }
 
    my $bios = Rex::Inventory::Bios::get();
 
+   my $os = Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system");
+
    my ($domain, $hostname);
-   if(get_operating_system() eq "NetBSD" || get_operating_system() eq "OpenBSD") {
-      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname");
-      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname");
+   if($os eq "NetBSD" || $os eq "OpenBSD") {
+      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
+      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
    }
-   elsif(get_operating_system() eq "SunOS") {
-      ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } run("LC_ALL=C hostname");
+   elsif($os eq "SunOS") {
+      ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
       ($domain) = run("LC_ALL=C domainname");
    }
    else {
-      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
-      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } run("LC_ALL=C hostname -f");
+      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
+      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
    }
 
    return {
@@ -43,8 +47,8 @@ sub get {
       manufacturer => $bios->get_system_information()->get_manufacturer(),
       hostname     => $hostname,
       domain       => $domain || "",
-      operatingsystem => get_operating_system(),
-      operatingsystemrelease => get_operating_system_version(),
+      operatingsystem => $os,
+      operatingsystemrelease => Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system_version"),
 
    };
 
@@ -53,7 +57,9 @@ sub get {
 sub get_operating_system {
 
    # use lsb_release if available
-   if(can_run "lsb_release") {
+   my $is_lsb = Rex::get_cache()->can_run("lsb_release");
+
+   if($is_lsb) {
       if(my $ret = run "lsb_release -s -i") {
          return $ret;
       }
@@ -92,7 +98,7 @@ sub get_operating_system {
       }
    }
 
-   my $os_string = run "uname -s";
+   my $os_string = Rex::get_cache()->run("uname -s");
    return $os_string;   # return the plain os
 
 
@@ -100,10 +106,12 @@ sub get_operating_system {
 
 sub get_operating_system_version {
    
-   my $op = get_operating_system();
+   my $op = Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system");
+
+   my $is_lsb = Rex::get_cache()->can_run("lsb_release");
 
    # use lsb_release if available
-   if(can_run "lsb_release") {
+   if($is_lsb) {
       if(my $ret = run "lsb_release -r -s") {
          return $ret;
       }
@@ -179,7 +187,7 @@ sub get_operating_system_version {
       return $version;
    }
 
-   return [ run("uname -r") ]->[0];
+   return [ Rex::get_cache()->run("uname -r") ]->[0];
 
 }
 

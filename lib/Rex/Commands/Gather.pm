@@ -39,7 +39,7 @@ use base qw(Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system 
+@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system_version
                is_freebsd is_netbsd is_openbsd is_redhat);
 
 =item get_operating_system
@@ -85,6 +85,33 @@ sub operating_system_is {
    return 0;
 
 }
+
+=item operating_system_version()
+
+Will return the os release number as an integer. For example, it will convert 5.10 to 510, 10.04 to 1004 or 6.0.3 to 603.
+ 
+ task "prepare", "server01", sub {
+    if( operating_system_version() >= 510 ) {
+       say "OS Release is higher or equal to 510";
+    }
+ };
+
+=cut
+
+sub operating_system_version {
+
+   my ($os) = @_;
+
+   my $host = Rex::Hardware::Host->get();
+
+   my $v = $host->{"operatingsystemrelease"};
+   $v =~ s/[\.,]//g;
+
+   return $v;
+
+}
+
+
 
 =item network_interfaces
 

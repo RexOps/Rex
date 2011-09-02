@@ -108,7 +108,7 @@ List all processes on a system. Will return all fields of a I<ps aux>.
 sub ps {
    my @list;
    
-   if(operating_system_is("SunOS")) {
+   if(operating_system_is("SunOS") && operating_system_version() <= 510) {
       @list = run("/usr/ucb/ps aux");
    }
    else {

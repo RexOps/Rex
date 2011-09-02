@@ -122,8 +122,14 @@ sub can_run {
       }
    }
    else {
-      run "which $cmd";
-      if($? == 0) { return 1; }
+      my @ret = run "which $cmd";
+      if($? != 0) { return 0; }
+
+      if( grep { /^no.*in/ } @ret ) {
+         return 0;
+      }
+
+      return 1;
    }
 }
 

@@ -41,6 +41,7 @@ use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
 use Rex::Commands::Run;
+use Rex::Config;
 
 use Data::Dumper;
 use Digest::MD5;
@@ -50,7 +51,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install remove installed_packages update_package_db repository);
+@EXPORT = qw(install remove installed_packages update_package_db repository package_provider_for);
 
 =item install($type, $data, $options)
 
@@ -209,16 +210,11 @@ sub install {
    
    }
 
-   else {
+   elsif($type eq "package") {
       
       my $pkg;
       
-      if($type eq "package") {
-         $pkg = Rex::Pkg->get;
-      }
-      else {
-         $pkg = Rex::Pkg->get($type);
-      }
+      $pkg = Rex::Pkg->get;
 
       if(!ref($package)) {
          $package = [$package];
@@ -359,6 +355,27 @@ sub repository {
    elsif($action eq "remove" || $action eq "delete") {
       $pkg->rm_repository(%data);
    }
+}
+
+=item package_provider_for $os => $type;
+
+To set an other package provider as the default, use this function.
+
+ user "root";
+     
+ group "db" => "db[01..10]";
+ package_provider_for SunOS => "blastwave";
+    
+ task "prepare", group => "db", sub {
+     install package => "vim";
+ };
+ 
+This example will install I<vim> on every db server. If the server is a Solaris (SunOS) it will use the I<blastwave> Repositories.
+
+=cut
+sub package_provider_for {
+   my ($os, $provider) = @_;
+   Rex::Config->set("package_provider", {$os => $provider});
 }
 
 =back

@@ -14,7 +14,8 @@ use Rex::Logger;
 use vars qw($user $password 
             $timeout $max_connect_fails
             $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
-            $path);
+            $path
+            $set_param);
 
 sub set_path {
    my $class = shift;
@@ -147,5 +148,34 @@ sub get_log_facility {
    return $log_facility;
 }
 
+
+sub set {
+   my ($class, $var, $data) = @_;
+
+   if(ref($data) eq "HASH") {
+      for my $key (keys %{$data}) {
+         $set_param->{$var}->{$key} = $data->{$key};
+      }
+   }
+   elsif(ref($data) eq "ARRAY") {
+      push(@{$set_param->{$var}}, @{$data});
+   }
+   else {
+      $set_param->{$var} = $data;
+   }
+}
+
+sub unset {
+   my ($class, $var) = @_;
+   $set_param->{$var} = undef;
+   delete $set_param->{$var};
+}
+
+sub get {
+   my ($class, $var) = @_;
+   if(exists $set_param->{$var}) {
+      return $set_param->{$var};
+   }
+}
 
 1;

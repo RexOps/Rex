@@ -61,8 +61,10 @@ use vars qw(@EXPORT);
 use base qw(Exporter);
 
 use Rex::Service;
+use Rex::Logger;
+use Rex::Config;
 
-@EXPORT = qw(service);
+@EXPORT = qw(service service_provider_for);
 
 =item service($service, $action, [$option])
 
@@ -226,6 +228,30 @@ sub service {
    }
 
 }
+
+=item service_provider_for $os => $type;
+
+To set an other service provider as the default, use this function.
+
+ user "root";
+     
+ group "db" => "db[01..10]";
+ service_provider_for SunOS => "svcadm";
+    
+ task "start", group => "db", sub {
+     service ssh => "restart";
+ };
+ 
+This example will restart the I<ssh> service via svcadm (but only on SunOS, on other operating systems it will use the default).
+
+=cut
+sub service_provider_for {
+   my ($os, $provider) = @_;
+   Rex::Logger::debug("setting service provider for $os to $provider");
+   Rex::Config->set("service_provider", {$os => $provider});
+}
+
+
 
 =back
 

@@ -9,6 +9,7 @@ package Rex::Service;
 use strict;
 use warnings;
 
+use Rex::Config;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
@@ -23,6 +24,15 @@ sub get {
    }
 
    my $class = "Rex::Service::" . $host->{"operatingsystem"};
+
+   my $provider_for = Rex::Config->get("service_provider") || {};
+   my $provider;
+
+   if(exists $provider_for->{$host->{"operatingsystem"}}) {
+      $provider = $provider_for->{$host->{"operatingsystem"}};
+      $class .= "::$provider";
+   }
+
    eval "use $class";
 
    if($@) {

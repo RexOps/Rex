@@ -18,6 +18,8 @@ use Rex::Group;
 use Rex::Batch;
 use Rex::Task;
 use Rex::Commands;
+use Rex::Cache;
+use Rex::Logger;
 
 # preload some modules
 use Rex::Commands::Run;
@@ -50,9 +52,16 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('qFThvdf:M:b:e:H:u:p:P:K:', \%opts);
+getopts('CcqFThvdf:M:b:e:H:u:p:P:K:', \%opts);
 
 $Rex::Logger::debug = $opts{'d'};
+
+if($opts{"c"}) {
+   $Rex::Cache::USE = 1;
+}
+elsif($opts{"C"}) {
+   $Rex::Cache::USE = 0;
+}
 
 Rex::Logger::debug("Command Line Parameters");
 for my $param (keys %opts) {
@@ -75,6 +84,8 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
    printf "  %-15s %s\n", "-d", "Debug";
+   printf "  %-15s %s\n", "-c", "Turn cache ON";
+   printf "  %-15s %s\n", "-C", "Turn cache OFF";
    printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
    print "\n";
    CORE::exit 0;
@@ -327,6 +338,10 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 =item -F              Force. Don't regard lock file
 
 =item -d              Debug
+
+=item -C              Turn cache OFF
+
+=item -c              Turn cache ON
 
 =back
 

@@ -18,6 +18,8 @@ use Data::Dumper;
 
 sub get {
 
+   my ($self, $provider) = @_;
+
    my $host = Rex::Hardware::Host->get();
 
    #if(lc($host->{"operatingsystem"}) eq "centos" || lc($host->{"operatingsystem"}) eq "redhat") {
@@ -26,12 +28,22 @@ sub get {
    }
 
    my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
+
+   if($provider) {
+      $class .= "::$provider";
+   }
+
    eval "use $class";
 
    if($@) {
    
-      Rex::Logger::info("OS not supported (" . $host->{"operatingsystem"} . ")");
-      exit 1;
+      if($provider) {
+         Rex::Logger::info("Provider not supported (" . $provider . ")");
+      }
+      else {
+         Rex::Logger::info("OS not supported (" . $host->{"operatingsystem"} . ")");
+      }
+      die("OS/Provider not supported");
    
    }
 

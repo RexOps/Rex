@@ -125,24 +125,7 @@ sub install {
    my ($type, $package, $option) = @_;
 
 
-   if($type eq "package") {
-
-      my $pkg = Rex::Pkg->get;
-
-      if(!ref($package)) {
-         $package = [$package];
-      }
-
-      for my $pkg_to_install (@{$package}) {
-         unless($pkg->is_installed($pkg_to_install)) {
-            Rex::Logger::info("Installing $pkg_to_install.");
-            $pkg->install($pkg_to_install, $option);
-         }
-      }
-
-   }
-
-   elsif($type eq "file") {
+   if($type eq "file") {
 
       Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
       Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
@@ -228,8 +211,26 @@ sub install {
 
    else {
       
-      Rex::Logger::info("$type not supported.");
-      die("install $type not supported");
+      my $pkg;
+      
+      if($type eq "package") {
+         $pkg = Rex::Pkg->get;
+      }
+      else {
+         $pkg = Rex::Pkg->get($type);
+      }
+
+      if(!ref($package)) {
+         $package = [$package];
+      }
+
+      for my $pkg_to_install (@{$package}) {
+         unless($pkg->is_installed($pkg_to_install)) {
+            Rex::Logger::info("Installing $pkg_to_install.");
+            $pkg->install($pkg_to_install, $option);
+         }
+      }
+     
 
    }
 

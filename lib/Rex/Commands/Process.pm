@@ -34,6 +34,7 @@ use warnings;
 require Exporter;
 use Data::Dumper;
 use Rex::Commands::Run;
+use Rex::Commands::Gather;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
@@ -105,7 +106,15 @@ List all processes on a system. Will return all fields of a I<ps aux>.
 =cut
 
 sub ps {
-   my @list = run("ps aux");
+   my @list;
+   
+   if(operating_system_is("SunOS")) {
+      @list = run("/usr/ucb/ps aux");
+   }
+   else {
+      @list = run("ps aux");
+   }
+
    if($? != 0) {
       die("Error running ps aux");
    }

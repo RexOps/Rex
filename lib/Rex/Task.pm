@@ -11,6 +11,7 @@ use warnings;
 use Net::SSH2;
 use Rex::Group;
 use Rex::Fork::Manager;
+use Rex::Cache;
 use Sys::Hostname;
 
 use vars qw(%tasks);
@@ -247,7 +248,7 @@ sub run {
                }
 
                # push a remote connection
-               Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef});
+               Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});
 
                Rex::Logger::debug("Current Error-Code: " . $ssh->error());
 
@@ -265,7 +266,7 @@ sub run {
                # for example for libvirt.
 
                Rex::Logger::debug("This is a remote session with NO_SSH");
-               Rex::push_connection({ssh => 0, server => $server, sftp => 0});
+               Rex::push_connection({ssh => 0, server => $server, sftp => 0, cache => Rex::Cache->new});
 
             }
 
@@ -303,7 +304,7 @@ sub run {
 
       Rex::Logger::debug("This is not a remote session");
       # push a local connection
-      Rex::push_connection({ssh => 0, server => "<local>", sftp => 0});
+      Rex::push_connection({ssh => 0, server => "<local>", sftp => 0, cache => Rex::Cache->new});
 
       $ret = _exec($task, \%opts);
 

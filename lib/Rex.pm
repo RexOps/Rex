@@ -143,6 +143,14 @@ sub get_sftp {
    return 0;
 }
 
+sub get_cache {
+   if($CONNECTION_STACK[-1]) {
+      return $CONNECTION_STACK[-1]->{"cache"};
+   }
+
+   return 0;
+}
+
 =back
 
 =cut

@@ -261,7 +261,7 @@ sub remove {
       for my $_pkg (@{$package}) {
          if($pkg->is_installed($_pkg)) {
             Rex::Logger::info("Removing $_pkg.");
-            $pkg->remove($_pkg);
+            $pkg->remove($_pkg, $option);
          }
          else {
             Rex::Logger::info("$_pkg is not installed.");

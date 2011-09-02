@@ -3,6 +3,7 @@ bin/rexify
 ChangeLog
 lib/Rex.pm
 lib/Rex/Batch.pm
+lib/Rex/Cache.pm
 lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm
 lib/Rex/Cloud/Base.pm
@@ -42,9 +43,11 @@ lib/Rex/Hardware/Kernel.pm
 lib/Rex/Hardware/Memory.pm
 lib/Rex/Hardware/Network.pm
 lib/Rex/Hardware/Swap.pm
+lib/Rex/Helper/Array.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Inventory.pm
+lib/Rex/Inventory/Bios.pm
 lib/Rex/Inventory/DMIDecode.pm
 lib/Rex/Inventory/DMIDecode/BaseBoard.pm
 lib/Rex/Inventory/DMIDecode/Bios.pm
@@ -59,6 +62,14 @@ lib/Rex/Inventory/Hal/Object/Net.pm
 lib/Rex/Inventory/Hal/Object/Storage.pm
 lib/Rex/Inventory/Hal/Object/Volume.pm
 lib/Rex/Inventory/HP/ACU.pm
+lib/Rex/Inventory/SMBios.pm
+lib/Rex/Inventory/SMBios/BaseBoard.pm
+lib/Rex/Inventory/SMBios/Bios.pm
+lib/Rex/Inventory/SMBios/CPU.pm
+lib/Rex/Inventory/SMBios/Memory.pm
+lib/Rex/Inventory/SMBios/MemoryArray.pm
+lib/Rex/Inventory/SMBios/Section.pm
+lib/Rex/Inventory/SMBios/SystemInformation.pm
 lib/Rex/Logger.pm
 lib/Rex/Pkg.pm
 lib/Rex/Pkg/Debian.pm
@@ -68,6 +79,10 @@ lib/Rex/Pkg/Mageia.pm
 lib/Rex/Pkg/NetBSD.pm
 lib/Rex/Pkg/OpenBSD.pm
 lib/Rex/Pkg/Redhat.pm
+lib/Rex/Pkg/SunOS.pm
+lib/Rex/Pkg/SunOS/Blastwave.pm
+lib/Rex/Pkg/SunOS/OpenCSW.pm
+lib/Rex/Pkg/SunOS/pkg.pm
 lib/Rex/Pkg/SuSE.pm
 lib/Rex/Pkg/Ubuntu.pm
 lib/Rex/Service.pm
@@ -78,6 +93,8 @@ lib/Rex/Service/Mageia.pm
 lib/Rex/Service/NetBSD.pm
 lib/Rex/Service/OpenBSD.pm
 lib/Rex/Service/Redhat.pm
+lib/Rex/Service/SunOS.pm
+lib/Rex/Service/SunOS/svcadm.pm
 lib/Rex/Service/SuSE.pm
 lib/Rex/Service/Ubuntu.pm
 lib/Rex/Task.pm
@@ -88,9 +105,11 @@ lib/Rex/User/FreeBSD.pm
 lib/Rex/User/Linux.pm
 lib/Rex/User/NetBSD.pm
 lib/Rex/User/OpenBSD.pm
+lib/Rex/User/SunOS.pm
 LICENSE
 Makefile.PL
 README
 t/01.t
+t/config.t
 t/host.t
 t/needs.t

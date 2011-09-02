@@ -1,3 +1,11 @@
+2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.17)
+  * added solaris 11 support
+  * added solaris 10 support
+  * added a caching module
+  * added a clear task function (for rex-swarm)
+  * added a function to get os release
+  * fixed local copy error handling
+
 2011-08-28 Jan Gehring <jan.gehring, gmail.com> (0.16)
   * added NetBSD support
   * added OpenBSD support

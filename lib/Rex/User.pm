@@ -24,6 +24,9 @@ sub get {
    elsif(is_openbsd) {
       $user_o = "OpenBSD";
    }
+   elsif(operating_system_is("SunOS")) {
+      $user_o = "SunOS";
+   }
 
    my $class = "Rex::User::" . $user_o;
    eval "use $class";

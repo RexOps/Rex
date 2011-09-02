@@ -88,9 +88,18 @@ sub create_user {
    }
 
    if(exists $data->{password}) {
+      my $expect_path;
+
       if(Rex::get_cache()->can_run("/usr/local/bin/expect")) {
+         $expect_path = "/usr/local/bin/expect";
+      }
+      elsif(Rex::get_cache()->can_run("/usr/bin/expect")) {
+         $expect_path = "/usr/bin/expect";
+      }
+
+      if($expect_path) {
          my $fh = file_write "/tmp/chpasswd";
-         $fh->write(qq~#!/usr/local/bin/expect --
+         $fh->write(qq~#!$expect_path --
 # Input: username password
 set USER [lindex \$argv 0]
 set PASS [lindex \$argv 1] 
@@ -115,7 +124,7 @@ expect eof
          rm "/tmp/chpasswd";
       }
       else {
-         die("No expect found in /usr/local/bin. Can't set user password.");
+         die("No expect found in /usr/local/bin or /usr/bin. Can't set user password.");
       }
    }
 

@@ -11,6 +11,8 @@ use warnings;
 
 use Data::Dumper;
 
+use Rex::Logger;
+use Rex::Helper::Array;
 use Rex::Commands::Run;
 use Rex::Hardware::Host;
 
@@ -32,6 +34,7 @@ sub get_network_devices {
    if($os =~ m/BSD/ || $os eq "SunOS") {
       my @device_list = grep { $_=$1 if /^([a-z0-9]+)\:/i } run "ifconfig -a";
 
+      @device_list = array_uniq(@device_list);
       return \@device_list;
    }
    else {
@@ -41,12 +44,13 @@ sub get_network_devices {
       my @proc_net_dev = grep  { ! /^$/ } map { $1 if /^\s+([^:]+)\:/ } split(/\n/, run("cat /proc/net/dev"));
 
       for my $dev (@proc_net_dev) {
-         my $ifconfig = run("LC_ALL=C ifconfig $dev");
+         my $ifconfig = run("ifconfig $dev");
          if($ifconfig =~ m/Link encap:Ethernet/m) {
             push(@device_list, $dev);
          }
       }
 
+      @device_list = array_uniq(@device_list);
       return \@device_list;
    }
 }
@@ -66,7 +70,7 @@ sub get_network_configuration {
       if($os =~ m/BSD/ || $os eq "SunOS") {
          $device_info->{$dev} = {
             ip          => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-            netmask     => [ ( $ifconfig =~ m/netmask (0x[a-f0-9]+)/ ) ]->[0],
+            netmask     => [ ( $ifconfig =~ m/(netmask 0x|netmask )([a-f0-9]+)/ ) ]->[1],
             broadcast   => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
             mac         => [ ( $ifconfig =~ m/(ether|address:|lladdr) (..?:..?:..?:..?:..?:..?)/ ) ]->[1],
          };

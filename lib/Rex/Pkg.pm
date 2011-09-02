@@ -9,6 +9,7 @@ package Rex::Pkg;
 use strict;
 use warnings;
 
+use Rex::Config;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
@@ -18,9 +19,10 @@ use Data::Dumper;
 
 sub get {
 
-   my ($self, $provider) = @_;
+   my ($self) = @_;
 
    my $host = Rex::Hardware::Host->get();
+   my $pkg_provider_for = Rex::Config->get("package_provider") || {};
 
    #if(lc($host->{"operatingsystem"}) eq "centos" || lc($host->{"operatingsystem"}) eq "redhat") {
    if(is_redhat()) {
@@ -29,7 +31,9 @@ sub get {
 
    my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
 
-   if($provider) {
+   my $provider;
+   if(exists $pkg_provider_for->{$host->{"operatingsystem"}}) {
+      $provider = $pkg_provider_for->{$host->{"operatingsystem"}};
       $class .= "::$provider";
    }
 

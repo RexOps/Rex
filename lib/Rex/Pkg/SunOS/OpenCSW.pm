@@ -38,7 +38,7 @@ sub install {
    Rex::Logger::debug("Version option not supported.");
    Rex::Logger::debug("Installing $pkg");
 
-   my $cmd = "/opt/csw/bin/pkgutil --yes -i $pkg";
+   my $cmd = $self->_pkgutil() . " --yes -i $pkg";
    my $f = run($cmd);
 
    unless($? == 0) {
@@ -58,7 +58,7 @@ sub remove {
 
    Rex::Logger::debug("Removing $pkg");
 
-   my $cmd = "/opt/csw/bin/pkgutil --yes -r $pkg";
+   my $cmd = $self->_pkgutil() . " --yes -r $pkg";
    my $f = run($cmd . " $pkg");
 
    unless($? == 0) {
@@ -75,7 +75,11 @@ sub remove {
 
 sub update_pkg_db {
    my ($self) = @_;
-   run "/opt/csw/bin/pkgutil -U";
+   run $self->_pkgutil() . " -U";
+}
+
+sub _pkgutil {
+   return "/opt/csw/bin/pkgutil";
 }
 
 1;

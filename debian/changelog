@@ -1,3 +1,13 @@
+rex (0.17.0) unstable; urgency=low
+  * added solaris 11 support
+  * added solaris 10 support
+  * added a caching module
+  * added a clear task function (for rex-swarm)
+  * added a function to get os release
+  * fixed local copy error handling
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 03 Sep 2011 02:30:00 +0200
+
 rex (0.16.0) unstable; urgency=low
   * added NetBSD support
   * added OpenBSD support

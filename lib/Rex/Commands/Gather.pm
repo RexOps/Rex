@@ -305,7 +305,7 @@ Returns true if the target system is a Solaris System.
 sub is_solaris {
 
    my $host = Rex::Hardware::Host->get();
-   if($host->{"kernelname"} =~ m/Solaris/) {
+   if($host->{"kernelname"} =~ m/SunOS/) {
       return 1;
    }
 }

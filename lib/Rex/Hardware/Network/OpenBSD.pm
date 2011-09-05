@@ -51,6 +51,11 @@ sub route {
          next;
       }
 
+      if($route_entry =~ m/^AppleTalk/) {
+         # kein appletalk ...
+         next;
+      }
+
       if($route_entry =~ m/^Destination/) {
          next;
       }
@@ -95,9 +100,9 @@ sub default_gateway {
 
    if($new_default_gw) {
       if(default_gateway()) {
-         run "route del default";
+         run "route delete default";
          if($? != 0) {
-            die("Error running route del default");
+            die("Error running route delete default");
          }
       }
 

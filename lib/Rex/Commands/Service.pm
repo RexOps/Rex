@@ -241,7 +241,7 @@ To set an other service provider as the default, use this function.
  task "start", group => "db", sub {
      service ssh => "restart";
  };
- 
+
 This example will restart the I<ssh> service via svcadm (but only on SunOS, on other operating systems it will use the default).
 
 =cut

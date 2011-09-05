@@ -331,7 +331,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
     repository add => "repository-name",
          url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
-
+     
  };
 
 To remove a repository just delete it with its name.
@@ -369,7 +369,7 @@ To set an other package provider as the default, use this function.
  task "prepare", group => "db", sub {
      install package => "vim";
  };
- 
+
 This example will install I<vim> on every db server. If the server is a Solaris (SunOS) it will use the I<blastwave> Repositories.
 
 =cut

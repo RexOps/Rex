@@ -1,3 +1,7 @@
+2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.18)
+  * added network support for Solaris, NetBSD, FreeBSD and OpenBSD
+  * added is_solaris, is_bsd and is_linux function
+
 2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.17)
   * added solaris 11 support
   * added solaris 10 support

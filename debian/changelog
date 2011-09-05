@@ -1,3 +1,9 @@
+rex (0.18.0) unstable; urgency=low
+  * added network support for Solaris, NetBSD, FreeBSD and OpenBSD
+  * added is_solaris, is_bsd and is_linux function
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 05 Sep 2011 23:50:00 +0200
+
 rex (0.17.0) unstable; urgency=low
   * added solaris 11 support
   * added solaris 10 support

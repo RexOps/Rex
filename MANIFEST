@@ -42,6 +42,11 @@ lib/Rex/Hardware/Host.pm
 lib/Rex/Hardware/Kernel.pm
 lib/Rex/Hardware/Memory.pm
 lib/Rex/Hardware/Network.pm
+lib/Rex/Hardware/Network/FreeBSD.pm
+lib/Rex/Hardware/Network/Linux.pm
+lib/Rex/Hardware/Network/NetBSD.pm
+lib/Rex/Hardware/Network/OpenBSD.pm
+lib/Rex/Hardware/Network/Solaris.pm
 lib/Rex/Hardware/Swap.pm
 lib/Rex/Helper/Array.pm
 lib/Rex/Helper/SSH2.pm

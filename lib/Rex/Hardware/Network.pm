@@ -16,13 +16,7 @@ use Rex::Logger;
 
 sub get {
 
-   my $os_type = Rex::Commands::Gather::get_operating_system();
-
-   $os_type = "Linux"   if Rex::Commands::Gather::is_linux();
-   $os_type = "Solaris" if Rex::Commands::Gather::is_solaris();
-
-   my $hw_class = "Rex::Hardware::Network::$os_type";
-   eval "use $hw_class;";
+   my $hw_class = _get_class();
 
    return {
  
@@ -31,6 +25,30 @@ sub get {
 
    };
 
+}
+
+sub route {
+   return _get_class()->route();
+}
+
+sub default_gateway {
+   return _get_class()->default_gateway(@_);
+}
+
+sub netstat {
+   return _get_class()->netstat();
+}
+
+sub _get_class {
+   my $os_type = Rex::Commands::Gather::get_operating_system();
+
+   $os_type = "Linux"   if Rex::Commands::Gather::is_linux();
+   $os_type = "Solaris" if Rex::Commands::Gather::is_solaris();
+
+   my $hw_class = "Rex::Hardware::Network::$os_type";
+   eval "use $hw_class;";
+
+   return $hw_class;
 }
 
 1;

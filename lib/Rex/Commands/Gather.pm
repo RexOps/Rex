@@ -40,7 +40,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system_version
-               is_freebsd is_netbsd is_openbsd is_redhat);
+               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris);
 
 =item get_operating_system
 
@@ -243,6 +243,73 @@ sub is_openbsd {
       return 1;
    }
 }
+
+=item is_linux
+
+Returns true if the target system is a Linux System.
+
+ task "prepare", "server1", "server2", sub {
+    if(is_linux) {
+      say "This is a linux system...";
+    }
+    else {
+      say "This is not a linux system...";
+    }
+ };
+
+=cut
+sub is_linux {
+
+   my $host = Rex::Hardware::Host->get();
+   if($host->{"kernelname"} =~ m/Linux/) {
+      return 1;
+   }
+}
+
+=item is_bsd
+
+Returns true if the target system is a BSD System.
+
+ task "prepare", "server1", "server2", sub {
+    if(is_bsd) {
+      say "This is a BSD system...";
+    }
+    else {
+      say "This is not a BSD system...";
+    }
+ };
+
+=cut
+sub is_bsd {
+
+   my $host = Rex::Hardware::Host->get();
+   if($host->{"kernelname"} =~ m/BSD/) {
+      return 1;
+   }
+}
+
+=item is_solaris
+
+Returns true if the target system is a Solaris System.
+
+ task "prepare", "server1", "server2", sub {
+    if(is_solaris) {
+      say "This is a Solaris system...";
+    }
+    else {
+      say "This is not a Solaris system...";
+    }
+ };
+
+=cut
+sub is_solaris {
+
+   my $host = Rex::Hardware::Host->get();
+   if($host->{"kernelname"} =~ m/Solaris/) {
+      return 1;
+   }
+}
+
 
 
 =back

@@ -49,6 +49,7 @@ sub get {
       domain       => $domain || "",
       operatingsystem => $os,
       operatingsystemrelease => Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system_version"),
+      kernelname => [ run "uname -s" ]->[0],
 
    };
 

@@ -44,11 +44,11 @@ sub get {
 
    return {
    
-      manufacturer => $bios->get_system_information()->get_manufacturer(),
-      hostname     => $hostname,
+      manufacturer => $bios->get_system_information()->get_manufacturer() || "",
+      hostname     => $hostname || "",
       domain       => $domain || "",
-      operatingsystem => $os,
-      operatingsystemrelease => Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system_version"),
+      operatingsystem => $os || "",
+      operatingsystemrelease => Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system_version") || "",
       kernelname => [ run "uname -s" ]->[0],
 
    };

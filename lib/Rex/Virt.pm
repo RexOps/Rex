@@ -18,7 +18,7 @@ use Rex::Logger;
 @EXPORT = qw(virt);
 
 sub virt {
-   my ($action, $arg1, %opt) = @_;
+   my ($action, $vmname, %opt) = @_;
 
    my $mod = "Rex::Virt::$action";
    eval "use $mod;";
@@ -28,7 +28,7 @@ sub virt {
       exit 2;
    }
 
-   return $mod->execute($arg1, %opt);
+   return $mod->execute($vmname, %opt);
 }
 
 1;

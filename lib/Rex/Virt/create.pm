@@ -13,7 +13,7 @@ use Rex::Logger;
 use Rex::Commands::Run;
 
 use XML::Simple;
-use Rex::Virt::info;
+use Rex::Virt::hypervisor;
 
 use Data::Dumper;
 
@@ -223,7 +223,7 @@ sub prepare_instance_create {
 
    ## set vm properties
    $ref->{'domain'}->{'name'}->{'content'}    = $opts->{'name'};
-   $ref->{'domain'}->{'memory'}->{'content'}  = $opts->{'mem'} * 1024;
+   $ref->{'domain'}->{'memory'}->{'content'}  = $opts->{'memory'} * 1024;
    $ref->{'domain'}->{'vcpu'}->{'content'}    = $opts->{'vcpu'};
 
    ## set optional parameters
@@ -234,14 +234,16 @@ sub prepare_instance_create {
 };
 
 sub execute {
-   my ($class, $opts) = @_;
+   my ($class, $name, %opt) = @_;
+   my $opts = \%opt;
+   $opts->{"name"} = $name;
 
    unless($opts) {
       die("You have to define the create options!");
    }
 
    ## detect the hypervisor caps
-   $opts->{'hypervisor'} = Rex::Virt::info->execute($opts->{'name'}, action => 'capabilities');
+   $opts->{'hypervisor'} = Rex::Virt::hypervisor->execute('capabilities');
 
    my $template = prepare_instance_create($opts);
 

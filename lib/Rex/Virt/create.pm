@@ -197,9 +197,9 @@ sub prepare_instance_create {
    my $ref = $xs->XMLin($template, KeepRoot => 1, KeyAttr => 1, ForceContent => 1);
 
    ## some fixes of the xml format
-   $ref->{'domain'}->{'devices'}->{'content'}   = undef if defined($ref->{'domain'}->{'devices'});
-   $ref->{'domain'}->{'features'}->{'content'}  = undef if defined($ref->{'domain'}->{'features'});
-   $ref->{'domain'}->{'os'}->{'content'}        = undef if defined($ref->{'domain'}->{'os'});
+   $ref->{'domain'}->{'devices'}->{'content'}   = "" if defined($ref->{'domain'}->{'devices'});
+   $ref->{'domain'}->{'features'}->{'content'}  = "" if defined($ref->{'domain'}->{'features'});
+   $ref->{'domain'}->{'os'}->{'content'}        = "" if defined($ref->{'domain'}->{'os'});
 
    $ref->{'domain'}->{'devices'}->{'emulator'}->{'content'} = $opts->{'hypervisor'}->{'emulator'}
    if defined($ref->{'domain'}->{'devices'}->{'emulator'});
@@ -248,16 +248,16 @@ sub execute {
    ## create storage devices
    for (@{$opts->{'storage'}}) {
       if($_->{'size'} && $_->{'disk'}) {
-         my $size = $_->{'size'}*1024;
+         my $size = $_->{'size'};
          Rex::Logger::debug("creating storage disk: \"$_->{'disk'}\"");            
-         run "LC_ALL=C qemu-img create -f raw $_->{'disk'} $size";
+         run "qemu-img create -f raw $_->{'disk'} $size";
          if($? != 0) {
             die("Error creating storage disk: $_->{'disk'}");
          }
       } elsif($_->{'template'} && $_->{'disk'}) {
           Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
           Rex::Logger::info("Please wait ...");
-          run "LC_ALL=C qemu-img convert -f raw $_->{'template'} -O raw $_->{'disk'}";
+          run "qemu-img convert -f raw $_->{'template'} -O raw $_->{'disk'}";
           if($? != 0) {
              die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
              Template doesn't exist or the qemu-img binary is missing")
@@ -267,7 +267,7 @@ sub execute {
 
    Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
 
-   run "LC_ALL=C virsh define <(echo '$template')";
+   run "virsh define <(echo '$template')";
    if($? != 0) {
      die("Error starting vm $opts");
    }

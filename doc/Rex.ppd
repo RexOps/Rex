@@ -1,4 +1,4 @@
-<SOFTPKG NAME="Rex" VERSION="0.16.0">
+<SOFTPKG NAME="Rex" VERSION="0.18.1">
     <ABSTRACT></ABSTRACT>
     <AUTHOR>Jan Gehring</AUTHOR>
     <IMPLEMENTATION>
@@ -11,6 +11,6 @@
         <REQUIRE NAME="Net::SSH2" />
         <REQUIRE NAME="XML::Simple" />
         <ARCHITECTURE NAME="MSWin32-x64-multi-thread-5.12" />
-        <CODEBASE HREF="Rex-0.16.0.tar.gz" />
+        <CODEBASE HREF="Rex-0.18.1.tar.gz" />
     </IMPLEMENTATION>
 </SOFTPKG>

@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virt::set_option;
+package Rex::Virt::option;
 
 use strict;
 use warnings;

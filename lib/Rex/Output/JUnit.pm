@@ -42,13 +42,15 @@ sub print {
    my $time;
       $time += $_->{"time"} for @{$self->{"data"}};
 
-   print $t->parse($data, {
+   open(my $fh, ">", "junit_output.xml") or die($!);
+   print $fh $t->parse($data, {
       errors => scalar(grep { $_->{"status"} eq "failed" } @{$self->{"data"}}),
       tests => scalar(@{$self->{"data"}}),
       time_over_all => $time,
       system_out => $self->{"error"} || "",
       items => $self->{"data"},
    });
+   close($fh);
 }
 
 1;

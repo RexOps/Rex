@@ -99,6 +99,8 @@ sub transaction(&) {
          # and pop it away
          Rex::pop_connection();
       }
+
+      die("Transaction failed. Rollback done.");
    }
 
    $Rex::Task::IN_TRANSACTION = 0;

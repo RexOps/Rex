@@ -1,3 +1,8 @@
+rex (0.18.1) unstable; urgency=low
+  * fixed a bug registering tasks as functions
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 09 Sep 2011 08:40:00 +0200
+
 rex (0.18.0) unstable; urgency=low
   * added network support for Solaris, NetBSD, FreeBSD and OpenBSD
   * added is_solaris, is_bsd and is_linux function

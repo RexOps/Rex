@@ -1,3 +1,6 @@
+2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.18.1)
+  * fixed a bug registering tasks as functions
+
 2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.18)
   * added network support for Solaris, NetBSD, FreeBSD and OpenBSD
   * added is_solaris, is_bsd and is_linux function

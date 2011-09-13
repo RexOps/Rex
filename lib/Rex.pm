@@ -83,7 +83,6 @@ use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
 @EXPORT = qw($VERSION);
 $VERSION = "0.19.0";
 
-
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
 }

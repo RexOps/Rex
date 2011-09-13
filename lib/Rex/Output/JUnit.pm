@@ -58,10 +58,17 @@ sub print {
 __DATA__
 <?xml version='1.0' encoding='utf-8'?>
 <testsuites>
-  <testsuite name="rex" errors="<%= $::errors %>" failures="<%= $::errors %>" tests="<%= $::tests %>" time="<%= $::time_over_all %>">
+  <testsuite name="rex" errors="<%= $::errors %>" failures="0" tests="<%= $::tests %>" time="<%= $::time_over_all %>">
     <system-out><%= $::system_out %></system-out>                                                                                               
     <% foreach my $item (@$::items) { %>
-    <testcase name="<%= $item->{"name"} %>" classname="t_rex_proc" time="<%= $item->{"time"} %>" /><% } %>
+    <% if($item->{"status"} eq "failed") { %>
+    <testcase name="<%= $item->{"name"} %>" classname="t_rex_proc" time="<%= $item->{"time"} %>">
+       <failure message="not ok - <%= $item->{"name"} %>" type="Rex::Task"></failure>
+    </testcase>
+    <% } else { %>
+    <testcase name="<%= $item->{"name"} %>" classname="t_rex_proc" time="<%= $item->{"time"} %>" />
+    <% } %>
+    <% } %>
   </testsuite>
 </testsuites>
 

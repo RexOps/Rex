@@ -15,7 +15,8 @@ use vars qw($user $password
             $timeout $max_connect_fails
             $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
             $path
-            $set_param);
+            $set_param
+            $environment);
 
 sub set_path {
    my $class = shift;
@@ -146,6 +147,15 @@ sub set_log_facility {
 sub get_log_facility {
    my $class = shift;
    return $log_facility;
+}
+
+sub set_environment {
+   my ($class, $env) = @_;
+   $environment = $env;
+}
+
+sub get_environment {
+   return $environment;
 }
 
 

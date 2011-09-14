@@ -1,3 +1,8 @@
+2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.19.0)
+  * added JUnit output module
+  * added environment support
+  * load Rex::Commands::Process as default
+
 2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.18.1)
   * fixed a bug registering tasks as functions
 

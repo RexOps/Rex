@@ -27,7 +27,7 @@ sub get_path {
    if(!$path) {
       return ("/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin", "/usr/pkg/bin", "/usr/pkg/sbin");
    }
-   return $path;
+   return @{ $path };
 }
 
 sub set_user {

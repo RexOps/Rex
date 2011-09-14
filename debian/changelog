@@ -1,3 +1,10 @@
+rex (0.19.0) unstable; urgency=low
+  * added JUnit output module
+  * added environment support
+  * load Rex::Commands::Process as default
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 14 Sep 2011 11:40:00 +0200
+
 rex (0.18.1) unstable; urgency=low
   * fixed a bug registering tasks as functions
 

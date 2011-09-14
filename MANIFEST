@@ -76,6 +76,8 @@ lib/Rex/Inventory/SMBios/MemoryArray.pm
 lib/Rex/Inventory/SMBios/Section.pm
 lib/Rex/Inventory/SMBios/SystemInformation.pm
 lib/Rex/Logger.pm
+lib/Rex/Output.pm
+lib/Rex/Output/JUnit.pm
 lib/Rex/Pkg.pm
 lib/Rex/Pkg/Debian.pm
 lib/Rex/Pkg/FreeBSD.pm

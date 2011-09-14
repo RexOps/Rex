@@ -24,6 +24,14 @@ This module is the core commands module.
  user "user";
  
  password "password";
+     
+ environment live => sub {
+    user "root";
+    password "foobar";
+    pass_auth;
+    group frontend => "www01", "www02";
+ };
+ 
  
 
 =head1 COMMANDLIST
@@ -91,7 +99,7 @@ require Exporter;
 use Rex::Task;
 use Rex::Logger;
 
-use vars qw(@EXPORT $current_desc $global_no_ssh);
+use vars qw(@EXPORT $current_desc $global_no_ssh $environments);
 use base qw(Exporter);
 
 @EXPORT = qw(task desc group 
@@ -102,6 +110,7 @@ use base qw(Exporter);
             logging
             needs
             say
+            environment
             LOCAL
             path
           );
@@ -571,6 +580,52 @@ sub needs {
 
 }
 
+=item environment($name => $code)
+
+Define an environment. With environments one can use the same task for different hosts. For example if you want to use the same task on your integration-, test- and production servers.
+
+ # define default user/password
+ user "root";
+ password "foobar";
+ pass_auth;
+     
+ # define default frontend group containing only testwww01.
+ group frontend => "testwww01";
+     
+ # define live environment, with different user/password 
+ # and a frontend server group containing www01, www02 and www03.
+ environment live => sub {
+    user "root";
+    password "livefoo";
+    pass_auth;
+       
+    group frontend => "www01", "www02", "www03";
+ };
+     
+ # define stage environment with default user and password. but with 
+ # a own frontend group containing only stagewww01.
+ environment stage => sub {
+    group frontend => "stagewww01";
+ };
+    
+ task "prepare", group => "frontend", sub {
+     say run "hostname";
+ };
+
+Calling this task I<rex prepare> will execute on testwww01. 
+Calling this task with I<rex -E live prepare> will execute on www01, www02, www03.
+Calling this task I<rex -E stage prepare> will execute on stagewww01. 
+
+=cut
+sub environment {
+   my ($name, $code) = @_;
+   $environments->{$name} = $code;
+
+   if(Rex::Config->get_environment eq $name) {
+      &$code();
+   }
+}
+
 =item LOCAL(&)
 
 With the LOCAL function you can do local commands within a task that is defined to work on remote servers.
@@ -646,7 +701,13 @@ sub exit {
    CORE::exit(@_);
 }
 
+sub get_environment {
+   my ($class, $env) = @_;
 
+   if(exists $environments->{$env}) {
+      return $environments->{$env};
+   }
+}
 
 sub say {
    return unless $_[0];

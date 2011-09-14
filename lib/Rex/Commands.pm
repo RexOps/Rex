@@ -369,7 +369,7 @@ Set the maximum number of connection retries.
 
 =cut
 sub max_connect_retries {
-   Rex::Config->set_connect_fails(@_);
+   Rex::Config->set_max_connect_fails(@_);
 }
 
 =item get_random($count, @chars)
@@ -386,7 +386,7 @@ sub get_random {
 	
 	srand();
 	my $ret = "";
-	for(0..$count) {
+	for(1..$count) {
 		$ret .= $chars[int(rand(scalar(@chars)-1))];
 	}
 	
@@ -659,7 +659,7 @@ Set the execution path for all commands.
 
 =cut
 sub path {
-   Rex::Config->set_path(@_);
+   Rex::Config->set_path([@_]);
 }
 
 =item set($key, $value)

@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virt::destroy;
+package Rex::Virtualization::LibVirt::start;
 
 use strict;
 use warnings;
@@ -20,19 +20,17 @@ sub execute {
    }
 
    my $dom = $arg1;
-   Rex::Logger::debug("destroying domain: $dom");
+   Rex::Logger::debug("starting domain: $dom");
 
    unless($dom) {
       die("VM $dom not found.");
    }
 
-   run "virsh destroy $dom";
+   run "virsh start $dom";
    if($? != 0) {
-      die("Error destroying vm $dom");
+      die("Error starting vm $dom");
    }
 
 }
 
 1;
-
-

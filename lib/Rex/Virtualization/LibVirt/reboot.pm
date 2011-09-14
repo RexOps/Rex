@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virt::start;
+package Rex::Virtualization::LibVirt::reboot;
 
 use strict;
 use warnings;
@@ -20,15 +20,15 @@ sub execute {
    }
 
    my $dom = $arg1;
-   Rex::Logger::debug("starting domain: $dom");
+   Rex::Logger::debug("rebooting domain: $dom");
 
    unless($dom) {
       die("VM $dom not found.");
    }
 
-   run "virsh start $dom";
+   run "virsh reboot $dom";
    if($? != 0) {
-      die("Error starting vm $dom");
+      die("Error rebooting vm $dom");
    }
 
 }

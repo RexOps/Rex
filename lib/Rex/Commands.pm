@@ -113,6 +113,8 @@ use base qw(Exporter);
             environment
             LOCAL
             path
+            set
+            get
           );
 
 =item no_ssh([$task])
@@ -660,7 +662,48 @@ sub path {
    Rex::Config->set_path(@_);
 }
 
+=item set($key, $value)
+
+Set a configuration parameter. These Variables can be used in templates as well.
+
+ set database => "db01";
+      
+ task "prepare", sub {
+    my $db = get "database";
+ };
+
+Or in a template
+
+ DB: <%= $::database %>
+
+=cut
+sub set {
+   my ($key, $value) = @_;
+   Rex::Config->set($key, $value);
+}
+
+=item get($key, $value)
+
+Get a configuration parameter.
+
+ set database => "db01";
+      
+ task "prepare", sub {
+    my $db = get "database";
+ };
+
+Or in a template
+
+ DB: <%= $::database %>
+
+=cut
+sub get {
+   my ($key) = @_;
+   return Rex::Config->get($key);
+}
+
 =back
+
 
 =cut
 

@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virt::create;
+package Rex::Virtualization::LibVirt::create;
 
 use strict;
 use warnings;
@@ -13,7 +13,7 @@ use Rex::Logger;
 use Rex::Commands::Run;
 
 use XML::Simple;
-use Rex::Virt::hypervisor;
+use Rex::Virtualization::LibVirt::hypervisor;
 
 use Data::Dumper;
 
@@ -243,7 +243,7 @@ sub execute {
    }
 
    ## detect the hypervisor caps
-   $opts->{'hypervisor'} = Rex::Virt::hypervisor->execute('capabilities');
+   $opts->{'hypervisor'} = Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
 
    my $template = prepare_instance_create($opts);
 

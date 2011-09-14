@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virt::shutdown;
+package Rex::Virtualization::LibVirt::delete;
 
 use strict;
 use warnings;
@@ -13,24 +13,26 @@ use Rex::Logger;
 use Rex::Commands::Run;
 
 sub execute {
-   my ($class, $arg1, %opt) = @_;
+   my ($class, $arg1) = @_;
 
    unless($arg1) {
       die("You have to define the vm name!");
    }
 
    my $dom = $arg1;
-   Rex::Logger::debug("shutdown domain: $dom");
+   Rex::Logger::debug("deleting domain: $dom");
 
    unless($dom) {
       die("VM $dom not found.");
    }
 
-   run "virsh shutdown $dom";
+   run "virsh undefine $dom";
    if($? != 0) {
-      die("Error shutdown vm $dom");
+      die("Error destroying vm $dom");
    }
 
 }
 
 1;
+
+

@@ -56,6 +56,7 @@ use Rex::FS::File;
 use Rex::Commands::Fs;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
+use Rex::Commands::Run;
 use Rex::Helper::Hash;
 
 use File::Basename qw(dirname);
@@ -66,7 +67,8 @@ use base qw(Exporter);
 @EXPORT = qw(file_write file_close file_read file_append 
                cat
                delete_lines_matching append_if_no_such_line
-               file template);
+               file template
+               extract);
 
 use vars qw(%file_handles);
 
@@ -443,6 +445,34 @@ sub append_if_no_such_line {
 
 }
 
+=item extract($file)
+
+This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
+
+=cut
+sub extract {
+   my ($file) = @_;
+
+   if($file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
+      run "gunzip -c $file | tar -xf -";
+   }
+   elsif($file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
+      run "bunzip2 -c $file | tar -xf -";
+   }
+   elsif($file =~ m/\.(zip|war|jar)$/) {
+      run "unzip -o $file";
+   }
+   elsif($file =~ m/\.gz$/) {
+      run "gunzip $file";
+   }
+   elsif($file =~ m/\.bz2$/) {
+      run "bunzip2 $file";
+   }
+   else {
+      Rex::Logger::info("File not supported.");
+      die("File ($file) not supported.");
+   }
+}
 
 =back
 

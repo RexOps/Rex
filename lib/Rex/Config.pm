@@ -16,7 +16,8 @@ use vars qw($user $password
             $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
             $path
             $set_param
-            $environment);
+            $environment
+            $SET_HANDLER);
 
 sub set_path {
    my $class = shift;
@@ -158,9 +159,18 @@ sub get_environment {
    return $environment;
 }
 
+sub register_set_handler {
+   my ($handler_name, $code) = @_;
+   $SET_HANDLER->{$handler_name} = $code;
+}
 
 sub set {
    my ($class, $var, $data) = @_;
+
+   if(exists($SET_HANDLER->{$var})) {
+      shift; shift;
+      return &{ $SET_HANDLER->{$var} }(@_);
+   }
 
    if(ref($data) eq "HASH") {
       for my $key (keys %{$data}) {

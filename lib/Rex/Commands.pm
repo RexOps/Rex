@@ -78,6 +78,8 @@ This module is the core commands module.
 
 =item * Manage user and group accounts L<Rex::Commands::User>
 
+=item * Manage your virtual environments L<Rex::Commands::Virtualization>
+
 =back
 
 =head1 EXPORTED FUNCTIONS

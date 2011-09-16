@@ -94,6 +94,8 @@ This module exports only the I<vm> function. You can manage everything with this
 
 =back
 
+=head1 EXAMPLES
+
 =head2 Creating a Virtual Machine
 
 Create a VM named "vm01" with 512 MB ram and 2 cpus. One harddrive, 10 GB in size beeing a file on disk.

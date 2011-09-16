@@ -1,5 +1,5 @@
 2011-09-16 Jan Gehring <jan.gehring, gmail.com> (0.20.0)
-  * added virtualization module
+  * added virtualization module (from Sascha Guenther)
   * added extract function
   * flattend hardware gather template variables
   * fixed set_path and get_path

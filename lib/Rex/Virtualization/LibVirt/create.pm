@@ -29,7 +29,7 @@ sub _template_xen_pvm {
      <on_reboot>restart</on_reboot>
      <on_crash>destroy</on_crash>
      <devices>
-       <graphics type='vnc' port='-1' autoport='yes' keymap='de'/>
+       <graphics type='vnc' port='-1' autoport='yes' keymap='us'/>
      </devices>
    </domain>";
 
@@ -55,7 +55,7 @@ sub _template_xen_hvm {
          <devices>
             <emulator>default</emulator>
             <input type='mouse' bus='ps2'/>
-            <graphics type='vnc' port='-1' autoport='yes' keymap='de'/>
+            <graphics type='vnc' port='-1' autoport='yes' keymap='us'/>
          </devices>
       </domain>";
 
@@ -79,7 +79,7 @@ sub _template_kvm {
         <devices>
           <emulator>default</emulator>
           <input type='mouse' bus='ps2'/>
-          <graphics type='vnc' port='-1' autoport='yes' keymap='de'/>
+          <graphics type='vnc' port='-1' autoport='yes' keymap='us'/>
         </devices>
       </domain>";
 

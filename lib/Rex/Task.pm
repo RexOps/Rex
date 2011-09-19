@@ -242,14 +242,10 @@ sub run {
                Rex::Logger::info("Connected to $server, trying to authenticate.");
 
                my $auth_ret;
-               if($pass_auth) {
-                  $auth_ret = $ssh->auth_password($user, $pass);
-               } else {
-                  $auth_ret = $ssh->auth_publickey($user, 
-                                          Rex::Config->get_public_key, 
-                                          Rex::Config->get_private_key, 
-                                          $pass);
-               }
+               $auth_ret = $ssh->auth('username' => $user,
+                                      'password' => $pass,
+                                      'publickey' => Rex::Config->get_public_key,
+                                      'privatekey' => Rex::Config->get_private_key);
 
                # push a remote connection
                Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});

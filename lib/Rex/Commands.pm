@@ -105,7 +105,7 @@ use vars qw(@EXPORT $current_desc $global_no_ssh $environments);
 use base qw(Exporter);
 
 @EXPORT = qw(task desc group 
-            user password sudo_password public_key private_key pass_auth no_ssh
+            user password port sudo_password public_key private_key pass_auth no_ssh
             get_random do_task batch timeout max_connect_retries parallelism
             exit
             evaluate_hostname
@@ -343,6 +343,16 @@ Set the password for the ssh connection (or for the private key file).
 
 sub password {
    Rex::Config->set_password(@_);
+}
+
+=item port($port)
+
+Set the port where the ssh server is listening.
+
+=cut
+
+sub port {
+   Rex::Config->set_port(@_);
 }
 
 =item sudo_password($password)

@@ -224,7 +224,7 @@ sub prepare_instance_create {
    ## set vm properties
    $ref->{'domain'}->{'name'}->{'content'}    = $opts->{'name'};
    $ref->{'domain'}->{'memory'}->{'content'}  = $opts->{'memory'};
-   $ref->{'domain'}->{'vcpu'}->{'content'}    = $opts->{'vcpu'};
+   $ref->{'domain'}->{'vcpu'}->{'content'}    = $opts->{'vcpu'} || 1;
 
    ## set optional parameters
    $ref->{'domain'}->{'os'}->{'boot'}->{'dev'} = $opts->{'boot'} if defined($opts->{'boot'});

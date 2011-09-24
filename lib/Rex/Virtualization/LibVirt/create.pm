@@ -10,231 +10,30 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Commands::Fs;
 use Rex::Commands::Run;
+use Rex::File::Parser::Data;
+use Rex::Template;
 
 use XML::Simple;
 use Rex::Virtualization::LibVirt::hypervisor;
 
 use Data::Dumper;
 
-
-sub _template_xen_pvm {
-
-     return "<domain type='xen'>
-     <description></description>
-     <bootloader>/usr/bin/pygrub</bootloader>
-     <bootloader_args>-q</bootloader_args>
-     <clock offset='utc'/>
-     <on_poweroff>destroy</on_poweroff>
-     <on_reboot>restart</on_reboot>
-     <on_crash>destroy</on_crash>
-     <devices>
-       <graphics type='vnc' port='-1' autoport='yes' keymap='us'/>
-     </devices>
-   </domain>";
-
+my $QEMU_IMG;
+if(can_run("qemu-img")) {
+   $QEMU_IMG = "qemu-img";
+}
+elsif(can_run("qemu-img-xen")) {
+   $QEMU_IMG = "qemu-img-xen";
 }
 
-sub _template_xen_hvm {
-
-   return "<domain type='xen'>
-         <description></description>
-         <os>
-            <type>hvm</type>
-            <loader>default</loader>
-         </os>
-         <features>
-            <acpi/>
-            <apic/>
-            <pae/>
-         </features>
-         <clock offset='utc'/>
-         <on_poweroff>destroy</on_poweroff>
-         <on_reboot>restart</on_reboot>
-         <on_crash>restart</on_crash>
-         <devices>
-            <emulator>default</emulator>
-            <input type='mouse' bus='ps2'/>
-            <graphics type='vnc' port='-1' autoport='yes' keymap='us'/>
-         </devices>
-      </domain>";
-
-}
-
-sub _template_kvm {
-
-   return "<domain type='kvm'>
-        <os>
-          <type>hvm</type>
-        </os>
-        <features>
-          <acpi/>
-          <apic/>
-          <pae/>
-        </features>
-        <clock offset='utc'/>
-        <on_poweroff>destroy</on_poweroff>
-        <on_reboot>restart</on_reboot>
-        <on_crash>restart</on_crash>
-        <devices>
-          <emulator>default</emulator>
-          <input type='mouse' bus='ps2'/>
-          <graphics type='vnc' port='-1' autoport='yes' keymap='us'/>
-        </devices>
-      </domain>";
-
-}
-
-sub _template_storage_helper {
-
-   my $storage       = shift;
-   my $domain_type   = shift;
-
-   my $tpl;
-
-   ## set defaults
-   unless(defined($storage->{'bus'})) {
-      $storage->{'bus'} = 'ide';
-   }
-
-   if(defined($storage->{'disk'}) && $storage->{'disk'} =~ m:^file\:(.+):) {
-      $storage->{'disk'} = $1;
-      $tpl               = {'type' => 'file', 'device'=> 'disk'};
-
-      ## default values for xen pvm machines
-      if($domain_type eq 'xen-pvm') {
-         $tpl->{'driver'}  = {'name' => 'tap', 'type' => 'aio'};
-         $tpl->{'target'}  = {'dev' => $storage->{'dev'}, 'bus' => 'xen' };
-      } else {
-         $tpl->{'target'}  = {'dev' => $storage->{'dev'}, 'bus' => $storage->{'bus'} };
-      }
-
-      $tpl->{'source'}  = {'file' => $storage->{'disk'} };
-
-   } elsif (defined($storage->{'cdrom'}) && $storage->{'cdrom'} =~ m:^file\:(.+):) {
-
-      $storage->{'cdrom'} = $1;
-      $tpl                = {'type' => 'file', 'device'=> 'cdrom'};
-      $tpl->{'target'}    = {'dev' => $storage->{'dev'}, 'bus' => $storage->{'bus'} };
-      $tpl->{'source'}    = {'file' => $storage->{'cdrom'} };
-
-   } else { 
-      Rex::Logger::info("Wrong Storage definition ...");
-   }
-
-   return $tpl;
-
-}
-
-sub _template_storage {
-
-   my $storage_ref = shift;
-   my $xml_ref     = shift; 
-
-   for my $storage (@$storage_ref) {
-      ## check if pvm
-      if(defined($xml_ref->{'domain'}->{'bootloader'})) {
-         if($xml_ref->{'domain'}->{'type'} eq 'xen') {
-            push(@{$xml_ref->{'domain'}->{'devices'}->{'disk'}},
-               _template_storage_helper($storage, $xml_ref->{'domain'}->{'type'}."-pvm"));
-         } else {
-            Rex::Logger::info("No or wrong Storage definition ...");
-         }
-      } else {
-         if($xml_ref->{'domain'}->{'type'} eq 'xen' || $xml_ref->{'domain'}->{'type'} eq 'kvm') {
-            push(@{$xml_ref->{'domain'}->{'devices'}->{'disk'}},
-               _template_storage_helper($storage, $xml_ref->{'domain'}->{'type'}));
-
-         } else {
-            Rex::Logger::info("No or wrong Storage definition ...");
-         }
-      }
-   }
-
-   return $xml_ref;
-
-}
-
-sub _template_network {
-
-   my $network_ref = shift;
-   my $xml_ref     = shift; 
-
-   for (@$network_ref) {
-      if($_->{'bridge'}) {
-         $xml_ref->{'domain'}->{'devices'}->{'interface'}->{'type'}                 = 'bridge';
-         $xml_ref->{'domain'}->{'devices'}->{'interface'}->{'source'}->{'bridge'}   = $_->{'bridge'};
-         $xml_ref->{'domain'}->{'devices'}->{'interface'}->{'source'}->{'bridge'}   = $_->{'bridge'};
-      } else {
-         Rex::Logger::info("No or wrong Network definition ...");
-      }
-   }
-
-   return $xml_ref;
-
-}
-
-
-sub prepare_instance_create {
-
-   my $opts  =  shift;
-   my $xs = XML::Simple->new();
-   my $template;
-
-   ## templates for the different types of hypervisors
-   if($opts->{'hypervisor'}->{'xen'}) {
-      if(defined($opts->{'vmtype'}) && $opts->{'vmtype'} eq 'pvm') {
-         $template = _template_xen_pvm;
-      } else {
-         $template = _template_xen_hvm;
-      }
-   } elsif($opts->{'hypervisor'}->{'kvm'}) {
-         $template = _template_kvm;
-   } else {
-      die("Cannot detect hypervisor ....");
-   }  
-
-   my $ref = $xs->XMLin($template, KeepRoot => 1, KeyAttr => 1, ForceContent => 1);
-
-   ## some fixes of the xml format
-   $ref->{'domain'}->{'devices'}->{'content'}   = "" if defined($ref->{'domain'}->{'devices'});
-   $ref->{'domain'}->{'features'}->{'content'}  = "" if defined($ref->{'domain'}->{'features'});
-   $ref->{'domain'}->{'os'}->{'content'}        = "" if defined($ref->{'domain'}->{'os'});
-
-   $ref->{'domain'}->{'devices'}->{'emulator'}->{'content'} = $opts->{'hypervisor'}->{'emulator'}
-   if defined($ref->{'domain'}->{'devices'}->{'emulator'});
-
-   $ref->{'domain'}->{'os'}->{'loader'}->{'content'} = $opts->{'hypervisor'}->{'loader'}
-   if defined($ref->{'domain'}->{'os'}->{'loader'});
-
-   ## templates for the storage
-   if(ref($opts->{'storage'}) eq 'ARRAY') {
-      $ref = _template_storage($opts->{'storage'},$ref);
-   } else {
-      die("No or wrong Storage definition ...");
-   }
-
-   ## templates for the network
-   if(ref($opts->{'network'}) eq 'ARRAY') {
-      $ref = _template_network($opts->{'network'},$ref);
-   } else {
-      die("No or wrong Network definition ...");
-   }
-
-   ## set vm properties
-   $ref->{'domain'}->{'name'}->{'content'}    = $opts->{'name'};
-   $ref->{'domain'}->{'memory'}->{'content'}  = $opts->{'memory'};
-   $ref->{'domain'}->{'vcpu'}->{'content'}    = $opts->{'vcpu'} || 1;
-
-   ## set optional parameters
-   $ref->{'domain'}->{'os'}->{'boot'}->{'dev'} = $opts->{'boot'} if defined($opts->{'boot'});
-
-   return $xs->XMLout($ref, RootName => undef, NoEscape => 1);
-
-};
+# read __DATA__ into an array
+my @data = <DATA>;
 
 sub execute {
    my ($class, $name, %opt) = @_;
+
    my $opts = \%opt;
    $opts->{"name"} = $name;
 
@@ -243,23 +42,49 @@ sub execute {
    }
 
    ## detect the hypervisor caps
-   $opts->{'hypervisor'} = Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
+   my $hypervisor = Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
+   my $virt_type = "unknown";
 
-   my $template = prepare_instance_create($opts);
+   if(exists $hypervisor->{"emulator"}) {
+      $opts->{"emulator"} = $hypervisor->{"emulator"};
+   }
+
+   if(exists $hypervisor->{"kvm"}) {
+      $virt_type = "kvm";
+   }
+   #elsif(exists $hypervisor->{"xen"}) {
+   #   $virt_type = "xen";
+   #}
+   else {
+      die("Hypervisor not supported.");
+   }
+
+   my $fp = Rex::File::Parser::Data->new(data => \@data);
+   my $create_xml = $fp->read("create-${virt_type}.xml");
+
+   my $template = Rex::Template->new;
+   my $parsed_template = $template->parse($create_xml, $opts);
+
+   Rex::Logger::debug($parsed_template);
 
    ## create storage devices
    for (@{$opts->{'storage'}}) {
-      if($_->{'size'} && $_->{'disk'}) {
+      if($_->{'size'} && $_->{'type'} eq "file") {
          my $size = $_->{'size'};
-         Rex::Logger::debug("creating storage disk: \"$_->{'disk'}\"");            
-         run "qemu-img create -f raw $_->{'disk'} $size";
-         if($? != 0) {
-            die("Error creating storage disk: $_->{'disk'}");
+         if(!is_file($_->{"file"})) {
+            Rex::Logger::debug("creating storage disk: \"$_->{file}\"");            
+            run "$QEMU_IMG create -f raw $_->{'file'} $size";
+            if($? != 0) {
+               die("Error creating storage disk: $_->{'file'}");
+            }
          }
-      } elsif($_->{'template'} && $_->{'disk'}) {
+         else {
+            Rex::Logger::info("$_->{file} already exists. Using this.");
+         }
+      } elsif($_->{'template'} && $_->{'type'} eq "file") {
           Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
           Rex::Logger::info("Please wait ...");
-          run "qemu-img convert -f raw $_->{'template'} -O raw $_->{'disk'}";
+          run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
           if($? != 0) {
              die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
              Template doesn't exist or the qemu-img binary is missing")
@@ -269,12 +94,92 @@ sub execute {
 
    Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
 
-   run "virsh define <(echo '$template')";
+   $parsed_template =~ s/[\n\r]//gms;
+
+   run "virsh define <(echo '$parsed_template')";
    if($? != 0) {
-     die("Error starting vm $opts");
+     die("Error starting vm $opts->{name}");
    }
 
    return;
 }
 
 1;
+
+__DATA__
+
+@create-kvm.xml
+<domain type="kvm">
+  <name><%= $::name %></name>
+  <memory><%= $::memory %></memory>
+  <currentMemory><%= $::memory %></currentMemory>
+  <vcpu><%= $::cpus %></vcpu>
+  <os>
+    <type arch="<%= $::arch %>">hvm</type>
+    <boot dev="<%= $::boot %>"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset="<%= $::clock %>"/>
+  <on_poweroff><%= $::on_poweroff %></on_poweroff>
+  <on_reboot><%= $::on_reboot %></on_reboot>
+  <on_crash><%= $::on_crash %></on_crash>
+  <devices>
+    <emulator><%= $::emulator %></emulator>
+
+    <% for my $disk (@{$::storage}) { %>
+    <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
+      <driver name="qemu" type="raw"/>
+      <% if ($disk->{file}) { %>
+      <source file="<%= $disk->{file} %>"/>
+      <% } %>
+      <% if(exists $disk->{readonly}) { %>
+      <readonly/>
+      <% } %>
+      <target dev="<%= $disk->{dev} %>" bus="<%= $disk->{bus} %>"/>
+      <address <% for my $key (keys %{$disk->{address}}) { %> <%= $key %>="<%= $disk->{address}->{$key} %>" <% } %> />
+    </disk>
+    <% } %>
+    <controller type="ide" index="0">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x1"/>
+    </controller>
+    <% for my $netdev (@{$::network}) { %>
+    <interface type="<%= $netdev->{type} %>">
+      <% if($netdev->{type} eq "bridge") { %>
+      <source bridge="<%= $netdev->{bridge} %>"/>
+      <% } %>
+      <model type="<%= $netdev->{model} %>"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x0"/>
+    </interface>
+    <% } %>
+    <serial type="pty">
+      <target port="0"/>
+    </serial>
+    <console type="pty">
+      <target port="0"/>
+    </console>
+    <input type="mouse" bus="ps2"/>
+    <graphics type="vnc" port="-1" autoport="yes"/>
+    <video>
+      <model type="cirrus" vram="9216" heads="1"/>
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>
+    </video>
+    <memballoon model="virtio">
+      <address type="pci" domain="0x0000" bus="0x00" slot="0x06" function="0x0"/>
+    </memballoon>
+  </devices>
+</domain>
+@end
+
+@create-xen-hvm.xml
+
+@end
+
+@create-xen-pvm.xml
+
+@end
+
+

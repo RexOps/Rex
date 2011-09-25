@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Commands::Gather;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
 use Rex::File::Parser::Data;
@@ -47,14 +48,24 @@ sub execute {
 
    if(exists $hypervisor->{"emulator"}) {
       $opts->{"emulator"} = $hypervisor->{"emulator"};
+
+      if(operating_system_is("Debian") && exists $hypervisor->{"xen"}) {
+         # fix for debian, because virsh capabilities don't give the correct
+         # emulator.
+         $opts->{"emulator"} = "/usr/lib/xen-4.0/bin/qemu-dm";
+      }
+   }
+
+   if(exists $hypervisor->{"loader"}) {
+      $opts->{"loader"} = $hypervisor->{"loader"};
    }
 
    if(exists $hypervisor->{"kvm"}) {
       $virt_type = "kvm";
    }
-   #elsif(exists $hypervisor->{"xen"}) {
-   #   $virt_type = "xen";
-   #}
+   elsif(exists $hypervisor->{"xen"}) {
+      $virt_type = "xen-" . $opts->{"type"};
+   }
    else {
       die("Hypervisor not supported.");
    }
@@ -175,7 +186,59 @@ __DATA__
 @end
 
 @create-xen-hvm.xml
+<domain type="xen">
+  <name><%= $::name %></name>
+  <memory><%= $::memory %></memory>
+  <currentMemory><%= $::memory %></currentMemory>
+  <vcpu><%= $::cpus %></vcpu>
+  <os>
+    <type>hvm</type>
+    <loader><%= $::loader %></loader>
+    <boot dev="<%= $::boot %>"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset="<%= $::clock %>">
+    <timer name="hpet" present="no"/>
+  </clock>
+  <on_poweroff><%= $::on_poweroff %></on_poweroff>
+  <on_reboot><%= $::on_reboot %></on_reboot>
+  <on_crash><%= $::on_crash %></on_crash>
+  <devices>
+    <emulator><%= $::emulator %></emulator>
 
+    <% for my $disk (@{$::storage}) { %>
+    <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
+      <% if(exists $disk->{file}) { %>
+      <driver name="file"/>
+      <source file="<%= $disk->{file} %>"/>
+      <% } %>
+      <target dev="<%= $disk->{dev} %>" bus="<%= $disk->{bus} %>"/>
+      <% if(exists $disk->{readonly}) { %>
+      <readonly/>
+      <% } %>
+    </disk>
+    <% } %>
+
+    <% for my $netdev (@{$::network}) { %>
+    <interface type="<%= $netdev->{type} %>">
+      <% if($netdev->{type} eq "bridge") { %>
+      <source bridge="<%= $netdev->{bridge} %>"/>
+      <% } %>
+    </interface>
+    <% } %>
+    <graphics type="vnc" autoport="yes"/>
+    <serial type="pty">
+      <target port="0"/>
+    </serial>
+    <console type="pty">
+      <target port="0"/>
+    </console>
+  </devices>
+</domain>
 @end
 
 @create-xen-pvm.xml

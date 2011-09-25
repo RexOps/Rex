@@ -159,11 +159,14 @@ __DATA__
     </controller>
     <% for my $netdev (@{$::network}) { %>
     <interface type="<%= $netdev->{type} %>">
+      <% if(exists $netdev->{mac}) { %>
+      <mac address='<%= $netdev->{mac} %>'/>
+      <% } %>
       <% if($netdev->{type} eq "bridge") { %>
       <source bridge="<%= $netdev->{bridge} %>"/>
       <% } %>
       <model type="<%= $netdev->{model} %>"/>
-      <address type="pci" domain="0x0000" bus="0x00" slot="0x03" function="0x0"/>
+      <address <% for my $key (keys %{$netdev->{address}}) { %> <%= $key %>="<%= $netdev->{address}->{$key} %>" <% } %> />
     </interface>
     <% } %>
     <serial type="pty">
@@ -173,7 +176,7 @@ __DATA__
       <target port="0"/>
     </console>
     <input type="mouse" bus="ps2"/>
-    <graphics type="vnc" port="-1" autoport="yes"/>
+    <graphics type="vnc" autoport="yes"/>
     <video>
       <model type="cirrus" vram="9216" heads="1"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>
@@ -225,6 +228,9 @@ __DATA__
 
     <% for my $netdev (@{$::network}) { %>
     <interface type="<%= $netdev->{type} %>">
+      <% if(exists $netdev->{mac}) { %>
+      <mac address='<%= $netdev->{mac} %>'/>
+      <% } %>
       <% if($netdev->{type} eq "bridge") { %>
       <source bridge="<%= $netdev->{bridge} %>"/>
       <% } %>
@@ -242,6 +248,58 @@ __DATA__
 @end
 
 @create-xen-pvm.xml
+<domain type="xen">
+  <name><%= $::name %></name>
+  <memory><%= $::memory %></memory>
+  <currentMemory><%= $::memory %></currentMemory>
+  <vcpu><%= $::cpus %></vcpu>
+  <% if(defined $::bootloader) { %>
+  <bootloader><%= $::bootloader %></bootloader>
+  <% } %>
+  <os>
+    <type><%= $::os->{type} %></type>
+    <% if(exists $::os->{kernel}) { %>
+    <kernel><%= $::os->{kernel} %></kernel>
+    <% } %>
+    <% if(exists $::os->{initrd}) { %>
+    <initrd><%= $::os->{initrd} %></initrd>
+    <% } %>
+    <% if(exists $::os->{cmdline}) { %>
+    <cmdline><%= $::os->{cmdline} %></cmdline>
+    <% } %>
+  </os>
+  <clock offset="<%= $::clock %>"/>
+  <on_poweroff><%= $::on_poweroff %></on_poweroff>
+  <on_reboot><%= $::on_reboot %></on_reboot>
+  <on_crash><%= $::on_crash %></on_crash>
+  <devices>
+
+    <% for my $disk (@{$::storage}) { %>
+    <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
+      <driver name="tap" type="aio"/>
+      <% if(exists $disk->{file}) { %>
+      <source file="<%= $disk->{file} %>"/>
+      <% } %>
+      <target dev="<%= $disk->{dev} %>" bus="<%= $disk->{bus} %>"/>
+    </disk>
+    <% } %>
+
+    <% for my $netdev (@{$::network}) { %>
+    <interface type="<%= $netdev->{type} %>">
+      <% if(exists $netdev->{mac}) { %>
+      <mac address="<%= $netdev->{mac} %>"/>
+      <% } %>
+      <% if($netdev->{type} eq "bridge") { %>
+      <source bridge="<%= $netdev->{bridge} %>"/>
+      <% } %>
+    </interface>
+    <% } %>
+    <graphics type="vnc" autoport="yes"/>
+    <console type="pty">
+      <target port="0"/>
+    </console>
+  </devices>
+</domain>
 
 @end
 

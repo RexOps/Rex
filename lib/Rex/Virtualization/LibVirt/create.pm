@@ -56,7 +56,7 @@ sub execute {
       }
    }
 
-   if(exists $hypervisor->{"loader"}) {
+   if(exists $hypervisor->{"loader"} && ! exists $opts->{"loader"}) {
       $opts->{"loader"} = $hypervisor->{"loader"};
    }
 

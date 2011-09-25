@@ -46,7 +46,7 @@ sub execute {
    my $hypervisor = Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
    my $virt_type = "unknown";
 
-   if(exists $hypervisor->{"emulator"}) {
+   if(exists $hypervisor->{"emulator"} && ! exists $opts->{"emulator"}) {
       $opts->{"emulator"} = $hypervisor->{"emulator"};
 
       if(operating_system_is("Debian") && exists $hypervisor->{"xen"}) {
@@ -75,7 +75,7 @@ sub execute {
 
    my $template = Rex::Template->new;
    my $parsed_template = $template->parse($create_xml, $opts);
-
+   
    Rex::Logger::debug($parsed_template);
 
    ## create storage devices

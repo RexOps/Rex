@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.19.0
+Version: 0.20.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.19.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.20.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,14 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Mon Sep 26 2011 Jan Gehring <jan.gehring at, gmail.com> 0.20.0-1
+- added virtualization module (from Sascha Guenther)
+- added extract function
+- flattend hardware gather template variables
+- fixed set_path and get_path
+- fixed get_random to return not 1 char too much
+- added set and get commands to set config values
 
 * Wed Sep 14 2011 Jan Gehring <jan.gehring at, gmail.com> 0.19.0-1
 - added JUnit output module

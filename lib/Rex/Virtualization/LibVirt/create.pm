@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Gather;
+use Rex::Hardware;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
 use Rex::File::Parser::Data;
@@ -46,19 +47,7 @@ sub execute {
    my $hypervisor = Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
    my $virt_type = "unknown";
 
-   if(exists $hypervisor->{"emulator"} && ! exists $opts->{"emulator"}) {
-      $opts->{"emulator"} = $hypervisor->{"emulator"};
-
-      if(operating_system_is("Debian") && exists $hypervisor->{"xen"}) {
-         # fix for debian, because virsh capabilities don't give the correct
-         # emulator.
-         $opts->{"emulator"} = "/usr/lib/xen-4.0/bin/qemu-dm";
-      }
-   }
-
-   if(exists $hypervisor->{"loader"} && ! exists $opts->{"loader"}) {
-      $opts->{"loader"} = $hypervisor->{"loader"};
-   }
+   _set_defaults($opts, $hypervisor);
 
    if(exists $hypervisor->{"kvm"}) {
       $virt_type = "kvm";
@@ -114,6 +103,248 @@ sub execute {
 
    return;
 }
+
+sub _set_defaults {
+   my ($opts, $hyper) = @_;
+
+   if( ! exists $opts->{"name"} ) {
+      die("You have to give a name.");
+   }
+
+   if( ! exists $opts->{"storage"} ) {
+      die("You have to add at least one storage disk.");
+   }
+
+   if( ! exists $opts->{"type"} ) {
+
+      if( exists $opts->{"os"} && exists $opts->{"os"}->{"kernel"} && ! exists $hyper->{"kvm"} ) {
+         $opts->{"type"} = "pvm";
+      }
+      else {
+         $opts->{"type"} = "hvm";
+      }
+
+   }
+
+   if( ! exists $opts->{"memory"} ) {
+      $opts->{"memory"} = 512 * 1024;
+   }
+
+   if( ! exists $opts->{"cpus"} ) {
+      $opts->{"cpus"} = 1;
+   }
+
+   if( ! exists $opts->{"clock"} ) {
+      $opts->{"clock"} = "utc";
+   }
+
+   if( ! exists $opts->{"arch"} ) {
+      if( exists $hyper->{"x86_64"} ) {
+         $opts->{"arch"} = "x86_64";
+      }
+      else {
+         $opts->{"arch"} = "i686";
+      }
+   }
+
+   if( ! exists $opts->{"boot"} ) {
+      $opts->{"boot"} = "hd";
+   }
+
+   if( ! exists $opts->{"emulator"} ) {
+      $opts->{"emulator"} = $hyper->{"emulator"};
+
+      if(operating_system_is("Debian") && exists $hyper->{"xen"}) {
+         # fix for debian, because virsh capabilities don't give the correct
+         # emulator.
+         $opts->{"emulator"} = "/usr/lib/xen-4.0/bin/qemu-dm";
+      }
+
+   }
+
+   if(exists $hyper->{"loader"} && ! exists $opts->{"loader"}) {
+      $opts->{"loader"} = $hyper->{"loader"};
+   }
+
+   if( ! exists $opts->{"on_poweroff"} ) {
+      $opts->{"on_poweroff"} = "destroy";
+   }
+
+   if( ! exists $opts->{"on_reboot"} ) {
+      $opts->{"on_reboot"} = "restart";
+   }
+
+   if( ! exists $opts->{"on_crash"} ) {
+      $opts->{"on_crash"} = "restart";
+   }
+
+   if( exists $hyper->{"xen"} && $opts->{"type"} eq "pvm" ) {
+
+      if( ! exists $opts->{"os"}->{"type"} ) {
+         $opts->{"os"}->{"type"} = "linux";
+      }
+
+      if( ! exists $opts->{"os"}->{"kernel"} ) {
+         my %hw = Rex::Hardware->get(qw/ Kernel /);
+
+         if(is_redhat()) {
+            $opts->{"os"}->{"kernel"} = "/boot/vmlinuz-" . $hw{"Kernel"}->{"kernelrelease"};
+         }
+         else {
+            $opts->{"os"}->{"kernel"} = "/boot/vmlinuz-" . $hw{"Kernel"}->{"kernelrelease"};
+         }
+      }
+
+      if( ! exists $opts->{"os"}->{"initrd"} ) {
+         my %hw = Rex::Hardware->get(qw/ Kernel /);
+
+         if(is_redhat()) {
+            $opts->{"os"}->{"initrd"} = "/boot/initrd-" . $hw{"Kernel"}->{"kernelrelease"} . ".img";
+         }
+         else {
+            $opts->{"os"}->{"initrd"} = "/boot/initrd.img-" . $hw{"Kernel"}->{"kernelrelease"};
+         }
+      }
+
+      if( ! exists $opts->{"os"}->{"cmdline"} ) {
+         my @root_store = grep { $_->{"is_root"} && $_->{"is_root"} == 1 } @{ $opts->{"storage"} };
+         $opts->{"os"}->{"cmdline"} = "root=/dev/" . $root_store[0]->{"dev"} . " ro";
+      }
+
+   }
+
+   _set_storage_defaults($opts, $hyper);
+
+   _set_network_defaults($opts, $hyper);
+
+}
+
+sub _set_storage_defaults {
+   my ($opts, $hyper) = @_;
+
+   my $store_letter = "a";
+   for my $store ( @{ $opts->{"storage"} } ) {
+
+      if( ! exists $store->{"type"} ) {
+         $store->{"type"} = "file";
+      }
+
+      if( ! exists $store->{"size"} && $store->{"type"} eq "file" ) {
+
+         if($store->{"file"} =~ m/swap/) {
+            $store->{"size"} = "1G";
+         }
+         else {
+            $store->{"size"} = "10G";
+         }
+
+      }
+
+      if( ! exists $store->{"device"} ) {
+         $store->{"device"} = "disk";
+      }
+
+      if( ! exists $store->{"dev"} ) {
+
+         if( exists $hyper->{"kvm"} ) {
+            $store->{"dev"} = "vd${store_letter}";
+         }
+         else {
+            $store->{"dev"} = "ha${store_letter}";
+         }
+
+      }
+
+      if( ! exists $store->{"bus"} ) {
+
+         if( exists $hyper->{"kvm"} ) {
+            $store->{"bus"} = "virtio";
+         }
+         else {
+            $store->{"bus"} = "ide";
+         }
+
+      }
+      
+      if( exists $hyper->{"kvm"} ) {
+         
+         if( ! exists $store->{"address"} ) {
+            $store->{"address"} = {
+               type     => "pci",
+               domain   => "0x0000",
+               bus      => "0x00",
+               slot     => "0x05",
+               function => "0x0",
+            };
+         }
+
+      }
+
+      if( is_redhat() ) {
+
+         if( ! exists $store->{"aio"} ) {
+            $store->{"aio"} = 1;
+         }
+
+      }
+
+      $store_letter++;
+
+   }
+
+}
+
+sub _set_network_defaults {
+   my ($opts, $hyper) = @_;
+
+   if( ! exists $opts->{"network"} ) {
+      $opts->{"network"} = [
+         {
+            type   => "bridge",
+            bridge => "virbr0",
+         },
+      ];
+   }
+
+   for my $netdev ( @{ $opts->{"network"} } ) {
+
+      if( ! exists $netdev->{"type"} ) {
+
+         $netdev->{"type"} = "bridge";
+
+      }
+
+      if( ! exists $netdev->{"bridge"} ) {
+
+         $netdev->{"bridge"} = "virbr0";
+
+      }
+
+      if( exists $hyper->{"kvm"} ) {
+
+         if( ! exists $netdev->{"model"} ) {
+
+            $netdev->{"model"} = "virtio";
+
+         }
+
+         if( ! exists $netdev->{"address"} ) {
+
+            $netdev->{"address"} = {
+               type     => "pci",
+               domain   => "0x0000",
+               bus      => "0x00",
+               slot     => "0x03",
+               function => "0x0",
+            };
+
+         }
+
+      }
+
+   }
+}
+
 
 1;
 

@@ -276,7 +276,11 @@ __DATA__
 
     <% for my $disk (@{$::storage}) { %>
     <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
+      <% if($disk->{aio}) { %>
       <driver name="tap" type="aio"/>
+      <% } else { %>
+      <driver name="file"/>
+      <% } %>
       <% if(exists $disk->{file}) { %>
       <source file="<%= $disk->{file} %>"/>
       <% } %>

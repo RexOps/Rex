@@ -69,18 +69,14 @@ With this module you can manage your virtualization.
               
  print Dumper vm info => "vm01";
     
+ # creating a vm on a kvm host
  vm create => "vm01",
-          memory  => 512*1024,
-          vcpu    => 2,
-          storage => [ 
-                        { disk  => "file:/pool/vm01.img", dev => "hda", size => "10G" },
-                        { cdrom => "file:/iso/debian-6.0.2.1-amd64-netinst.iso", dev => "hdc" },
-                     ],
-          network => [
-                        { bridge => "virbr0", },
-                     ],
-          boot    => "network",  # default is boot from first harddrive
-          vmtype  => "hvm"; # default is pvm
+      storage     => [
+         {   
+            file   => "/mnt/data/libvirt/images/vm01.img",
+            dev    => "vda",
+         }   
+      ];  
           
  print Dumper vm hypervisor => "capabilities";
 
@@ -98,35 +94,176 @@ This module exports only the I<vm> function. You can manage everything with this
 
 =head2 Creating a Virtual Machine
 
-Create a VM named "vm01" with 512 MB ram and 2 cpus. One harddrive, 10 GB in size beeing a file on disk.
-With a cdrom as an iso image and a bridged network on the bridge virbr0. The Bootorder is set to "network".
+Create a (KVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size beeing a file on disk.
+With a cdrom as an iso image and a bridged network on the bridge virbr0. The Bootorder is set to "cdrom".
 
  vm create => "vm01",
-          memory  => 512*1024,
-          vcpu    => 2,
-          storage => [ 
-                        { disk  => "file:/pool/vm01.img", dev => "hda", size => "10G" },
-                        { cdrom => "file:/iso/debian-6.0.2.1-amd64-netinst.iso", dev => "hdc" },
-                     ],
-          network => [
-                        { bridge => "virbr0", },
-                     ],
-          boot    => "network";
+      boot => "cdrom",
+      storage     => [
+         {
+            size   => "10G",
+            file   => "/mnt/data/libvirt/images/vm01.img",
+         },
+                                                                                                                                        
+         {
+            file     => "/mnt/data/iso/debian-6.0.2.1-amd64-netinst.iso",
+         },
+      ]; 
 
-The same, but with a template to clone the vm from. And a second harddrive. But bootet not from network.
+This is the same as above, but with all options in use.
 
  vm create => "vm01",
-          memory  => 512*1024,
-          vcpu    => 2,
-          storage => [ 
-                        { disk  => "file:/pool/vm01.img", dev => "hda", template => "/templates/webserver.img" },
-                        { disk  => "file:/pool/vm01-2.img", dev => "hdb", size => "10G" },
-                        { cdrom => "file:/iso/debian-6.0.2.1-amd64-netinst.iso", dev => "hdc" },
-                     ],
-          network => [
-                        { bridge => "virbr0", },
-                     ];
+      memory   => 512*1024,
+      cpus     => 1,      
+      arch     => "x86_64",
+      boot     => "cdrom",
+      clock    => "utc", 
+      emulator => "/usr/bin/qemu-system-x86_64",
+      on_poweroff => "destroy",
+      on_reboot   => "restart",
+      on_crash    => "restart",
+      storage     => [
+         {  type   => "file",
+            size   => "10G",
+            device => "disk",
+            file   => "/mnt/data/libvirt/images/vm01.img",
+            dev    => "vda",
+            bus    => "virtio",
+            address => {
+               type     => "pci",
+               domain   => "0x0000",
+               bus      => "0x00",
+               slot     => "0x05",
+               function => "0x0",
+            },
+         },
+         {  type     => "file",
+            device   => "cdrom",
+            file     => "/mnt/data/iso/debian-6.0.2.1-amd64-netinst.iso",
+            dev      => "hdc",
+            bus      => "ide",
+            readonly => 1,
+            address  => {                                                                                                               
+               type       => "drive",
+               controller => 0,
+               bus        => 1,
+               unit       => 0,
+            },
+         },
+      ],
+      network => [
+         {  type    => "bridge",
+            bridge  => "virbr0",
+            model   => "virtio",
+            address => {
+               type     => "pci",
+               domain   => "0x0000",
+               bus      => "0x00",
+               slot     => "0x03",
+               function => "0x0",
+            },
+         },
+      ];
 
+Create a (Xen/HVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, cloned from an existing one.
+
+ vm create => "vm01",
+      type   => "hvm",
+      storage     => [
+         {
+            file     => "/mnt/data/libvirt/images/vm01.img",
+            template => "/mnt/data/libvirt/images/svn01.img",                                                                           
+         },
+      ];
+
+This is the same as above, but with all options in use.
+
+ vm create => "vm01",
+      memory => 512*1024,
+      cpus   => 1,
+      boot   => "hd",
+      clock  => "utc",
+      on_poweroff => "destroy",
+      on_reboot   => "restart",
+      on_crash    => "restart",
+      storage     => [
+         {  type   => "file",
+            size   => "10G",
+            device => "disk",
+            file   => "/mnt/data/libvirt/images/vm01.img",
+            dev    => "hda",
+            bus    => "ide",
+            template => "/mnt/data/libvirt/images/svn01.img",                                                                           
+         },
+         {  type     => "file",
+            device   => "cdrom",
+            dev      => "hdc",
+            bus      => "ide",
+            readonly => 1,
+         },
+      ],
+      network => [
+         {  type    => "bridge",
+            bridge  => "virbr0",
+         },
+      ],
+      type => "hvm";
+
+Create a (Xen/PVM) VM named "vm01" with 512 MB ram and 1 cpu. With one root partition (10GB in size) and one swap parition (1GB in size).
+
+ vm create => "vm01",
+      type   => "pvm",
+      storage     => [
+         {
+            file    => "/mnt/data/libvirt/images/domains/vm01/disk.img",
+            dev     => "xvda2",
+            is_root => 1,                                                                                                               
+         },
+         {  
+            file   => "/mnt/data/libvirt/images/domains/vm01/swap.img",
+            dev    => "xvda1",
+         },
+      ];
+
+This is the same as above, but with all options in use.
+
+ vm create => "vm01",
+      type   => "pvm",
+      memory => 512*1024,
+      cpus   => 1,
+      clock  => "utc",
+      on_poweroff => "destroy",
+      on_reboot   => "restart",
+      on_crash    => "restart",
+      os          => {
+         type  => "linux",
+         kernel => "/boot/vmlinuz-2.6.32-5-xen-amd64",
+         initrd => "/boot/initrd.img-2.6.32-5-xen-amd64",
+         cmdline => "root=/dev/xvda2 ro",
+      },
+      storage     => [
+         {  type   => "file",
+            size   => "10G",
+            device => "disk",
+            file   => "/mnt/data/libvirt/images/domains/vm01/disk.img",
+            dev    => "xvda2",
+            bus    => "xen",
+            aio    => 1, # if you want to use aio
+         },
+         {  type   => "file",
+            size   => "4G",
+            device => "disk",
+            file   => "/mnt/data/libvirt/images/domains/vm01/swap.img",
+            dev    => "xvda1",
+            bus    => "xen",
+            aio    => 1, # if you want to use aio
+         },
+      ],
+      network => [
+         {  type    => "bridge",
+            bridge  => "virbr0",
+         },
+      ];
 
 =head2 Start/Stop/Destroy
 

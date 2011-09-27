@@ -240,8 +240,16 @@ sub _set_storage_defaults {
 
       }
 
+      if( exists $store->{"file"} && $store->{"file"} =~ m/\.iso$/ && ! exists $store->{"device"} ) {
+         $store->{"device"} = "cdrom";
+      }
+
       if( ! exists $store->{"device"} ) {
          $store->{"device"} = "disk";
+      }
+
+      if( ! exists $store->{"dev"} && $store->{"device"} eq "cdrom") {
+         $store->{"dev"} = "hdc"; 
       }
 
       if( ! exists $store->{"dev"} ) {
@@ -250,14 +258,14 @@ sub _set_storage_defaults {
             $store->{"dev"} = "vd${store_letter}";
          }
          else {
-            $store->{"dev"} = "ha${store_letter}";
+            $store->{"dev"} = "hd${store_letter}";
          }
 
       }
 
       if( ! exists $store->{"bus"} ) {
 
-         if( exists $hyper->{"kvm"} ) {
+         if( exists $hyper->{"kvm"} && $store->{"device"} eq "disk" ) {
             $store->{"bus"} = "virtio";
          }
          else {
@@ -268,7 +276,7 @@ sub _set_storage_defaults {
       
       if( exists $hyper->{"kvm"} ) {
          
-         if( ! exists $store->{"address"} ) {
+         if( $store->{"bus"} eq "virtio" && ! exists $store->{"address"} ) {
             $store->{"address"} = {
                type     => "pci",
                domain   => "0x0000",
@@ -277,7 +285,19 @@ sub _set_storage_defaults {
                function => "0x0",
             };
          }
+         elsif( $store->{"bus"} eq "ide" && ! exists $store->{"address"} ) {
+            $store->{"address"} = {
+               type       => "drive",
+               controller => 0,
+               bus        => 1,
+               unit       => 0,
+            };
+         }
 
+      }
+
+      if( $store->{"device"} eq "cdrom" ) {
+         $store->{"readonly"} = 1;
       }
 
       if( is_redhat() ) {

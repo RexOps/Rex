@@ -69,7 +69,7 @@ sub execute {
 
    ## create storage devices
    for (@{$opts->{'storage'}}) {
-      if($_->{'size'} && $_->{'type'} eq "file") {
+      if(! exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file") {
          my $size = $_->{'size'};
          if(!is_file($_->{"file"})) {
             Rex::Logger::debug("creating storage disk: \"$_->{file}\"");            

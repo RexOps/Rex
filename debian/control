@@ -10,4 +10,4 @@ Package: rex
 Architecture: all
 Depends: perl (>= 5.10.0), libnet-ssh2-perl (>= 0.33), libwww-perl, libxml-simple-perl,
  libdigest-sha1-perl, libdigest-hmac-perl, libexpect-perl
-Description: REmote eXecute. Execute commands on remote machines.
+Description: Rex is a tool to ease the execution of commands on multiple remote servers.

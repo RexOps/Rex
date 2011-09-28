@@ -9,6 +9,7 @@ package Rex::Hardware::Host;
 use strict;
 use warnings;
 
+use Rex;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
@@ -18,40 +19,49 @@ use Rex::Inventory::Bios;
 
 sub get {
 
-   my $dmi = Rex::get_cache()->can_run("dmidecode");
+   if(Rex::is_ssh || $^O !~ m/^MSWin/i) {
 
-   unless($dmi) {
-      Rex::Logger::debug("Please install dmidecode on the target system.");
-   }
+      my $dmi = Rex::get_cache()->can_run("dmidecode");
 
-   my $bios = Rex::Inventory::Bios::get();
+      unless($dmi) {
+         Rex::Logger::debug("Please install dmidecode on the target system.");
+      }
 
-   my $os = Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system");
+      my $bios = Rex::Inventory::Bios::get();
 
-   my ($domain, $hostname);
-   if($os eq "NetBSD" || $os eq "OpenBSD") {
-      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
-      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
-   }
-   elsif($os eq "SunOS") {
-      ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
-      ($domain) = run("LC_ALL=C domainname");
+      my $os = Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system");
+
+      my ($domain, $hostname);
+      if($os eq "NetBSD" || $os eq "OpenBSD") {
+         ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
+         ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
+      }
+      elsif($os eq "SunOS") {
+         ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
+         ($domain) = run("LC_ALL=C domainname");
+      }
+      else {
+         ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
+         ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
+      }
+
+      return {
+      
+         manufacturer => $bios->get_system_information()->get_manufacturer() || "",
+         hostname     => $hostname || "",
+         domain       => $domain || "",
+         operatingsystem => $os || "",
+         operatingsystemrelease => Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system_version") || "",
+         kernelname => [ run "uname -s" ]->[0],
+
+      };
+
    }
    else {
-      ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
-      ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
+      return {
+         operatingsystem => $^O,
+      };
    }
-
-   return {
-   
-      manufacturer => $bios->get_system_information()->get_manufacturer() || "",
-      hostname     => $hostname || "",
-      domain       => $domain || "",
-      operatingsystem => $os || "",
-      operatingsystemrelease => Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system_version") || "",
-      kernelname => [ run "uname -s" ]->[0],
-
-   };
 
 }
 

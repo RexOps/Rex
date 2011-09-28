@@ -112,7 +112,19 @@ if($opts{'f'}) {
 FORCE_SERVER: {
 
    if($opts{'H'}) {
-      $::FORCE_SERVER = $opts{'H'};
+      if($opts{'H'} =~ m/^perl:(.*)/) {
+         my $host_eval = eval( $1 );
+
+         if(ref($host_eval) eq "ARRAY") {
+            $::FORCE_SERVER = join(" ", @{$host_eval});
+         }
+         else {
+            die("Perl Code have to return an array reference.");
+         }
+      }
+      else {
+         $::FORCE_SERVER = $opts{'H'};
+      }
    }
 
 }

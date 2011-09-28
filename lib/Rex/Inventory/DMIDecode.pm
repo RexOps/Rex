@@ -111,7 +111,7 @@ sub _read_dmidecode {
 
    my ($self) = @_;
 
-   my @lines = run "dmidecode";
+   my @lines = run "dmidecode 2>/dev/null";
    chomp @lines;
 
    my %section = ();

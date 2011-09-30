@@ -12,10 +12,12 @@ use warnings;
 my $has_syslog = 0;
 my $log_fh;
 our $debug = 0;
+our $silent = 0;
 
 my $log_opened = 0;
 
 sub init {
+   return if $silent;
    eval {
       die if(Rex::Config->get_log_filename);
       require Sys::Syslog;
@@ -33,6 +35,7 @@ sub init {
 
 sub info {
    my ($msg) = @_;
+   return if $silent;
 
    # workaround for windows Sys::Syslog behaviour on forks
    # see: #6
@@ -59,6 +62,7 @@ sub info {
 
 sub debug {
    my ($msg) = @_;
+   return if $silent;
    return unless $debug;
 
    # workaround for windows Sys::Syslog behaviour on forks
@@ -93,6 +97,7 @@ sub get_timestamp {
 }
 
 sub shutdown {
+   return if $silent;
    return unless $log_opened;
 
    if($has_syslog) {

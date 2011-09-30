@@ -491,7 +491,15 @@ With this function you can define the logging behaviour of (R)?ex.
 =cut
 
 sub logging {
-   my $args = { @_ };
+   my $args;
+
+   if($_[0] eq "-nolog" || $_[0] eq "nolog") {
+      $Rex::Logger::silent = 1 unless $Rex::Logger::debug;
+      return;
+   }
+   else {
+      $args = { @_ };
+   }
 
    if(exists $args->{'to_file'}) {
       Rex::Config->set_log_filename($args->{'to_file'});

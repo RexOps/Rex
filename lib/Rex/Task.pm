@@ -215,6 +215,9 @@ sub run {
          my $forked_sub = sub {
             my $ssh;
 
+            # reconnect to logger
+            Rex::Logger::init();
+
             # this must be a ssh connection
             if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                $ssh = Net::SSH2->new;
@@ -266,7 +269,7 @@ sub run {
                # this is a remote session without a ssh connection
                # for example for libvirt.
 
-               Rex::Logger::debug("This is a remote session with NO_SSH");
+               #Rex::Logger::debug("This is a remote session with NO_SSH");
                Rex::push_connection({ssh => 0, server => $server, sftp => 0, cache => Rex::Cache->new});
 
             }
@@ -282,6 +285,9 @@ sub run {
 
             # remove remote connection from the stack
             Rex::pop_connection();
+
+            # close logger
+            Rex::Logger::shutdown();
 
             CORE::exit unless($IN_TRANSACTION); # exit child
          }; # [END] $forked_sub
@@ -303,6 +309,8 @@ sub run {
 
    } else {
 
+      Rex::Logger::init();
+
       Rex::Logger::debug("This is not a remote session");
       # push a local connection
       Rex::push_connection({ssh => 0, server => "<local>", sftp => 0, cache => Rex::Cache->new});
@@ -311,6 +319,8 @@ sub run {
 
       # remove local connection from stack
       Rex::pop_connection();
+
+      Rex::Logger::shutdown();
    }
 
    return $ret;

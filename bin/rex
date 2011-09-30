@@ -277,7 +277,6 @@ CHECK_OVERWRITE: {
 
 
 Rex::Logger::debug("Initializing Logger from parameters found in $::rexfile");
-Rex::Logger::init;
 
 if($opts{'T'}) {
    Rex::Logger::debug("Listing Tasks and Batches");

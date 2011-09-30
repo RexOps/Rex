@@ -172,6 +172,7 @@ sub run {
       $pass_auth = Rex::Config->get_password_auth;
    }
 
+   $user ||= "";
    Rex::Logger::debug("Using user: $user");
    Rex::Logger::debug("Using password: " . ($pass?$pass:"<no password>"));
 

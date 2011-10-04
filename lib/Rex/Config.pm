@@ -156,7 +156,7 @@ sub set_environment {
 }
 
 sub get_environment {
-   return $environment;
+   return $environment || "";
 }
 
 sub register_set_handler {

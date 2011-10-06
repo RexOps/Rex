@@ -160,7 +160,7 @@ sub get_environment {
 }
 
 sub register_set_handler {
-   my ($handler_name, $code) = @_;
+   my ($class, $handler_name, $code) = @_;
    $SET_HANDLER->{$handler_name} = $code;
 }
 

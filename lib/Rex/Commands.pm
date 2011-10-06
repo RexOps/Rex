@@ -688,8 +688,8 @@ Or in a template
 
 =cut
 sub set {
-   my ($key, $value) = @_;
-   Rex::Config->set($key, $value);
+   my ($key, @value) = @_;
+   Rex::Config->set($key, @value);
 }
 
 =item get($key, $value)

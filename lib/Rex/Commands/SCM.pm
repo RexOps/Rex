@@ -17,12 +17,17 @@ Rex::Config->register_set_handler("repository" => sub {
 });
 
 sub checkout {
-   my ($name, $co_to, %data) = @_;
+   my ($name, %data) = @_;
 
-   my $type = $REPOS{"$name"}->{"type"};
+   my $type = $REPOS{"$name"}->{"type"} ? $REPOS{$name}->{"type"} : "git";
    my $class = "Rex::SCM::\u$type";
 
-   $co_to ||= $name;
+   my $co_to = exists $data{"path"} ? $data{"path"} : "";
+
+   if($data{"path"}) {
+      $data{"path"} = undef;
+      delete $data{"path"};
+   }
 
    eval "use $class;";
    if($@) {

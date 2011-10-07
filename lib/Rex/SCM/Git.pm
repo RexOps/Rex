@@ -23,10 +23,11 @@ sub new {
 
 sub checkout {
    my ($self, $repo_info, $checkout_to, $checkout_opt) = @_;
+
    my $clone_cmd = sprintf($CLONE_COMMAND, $repo_info->{"url"}, $checkout_to);
    Rex::Logger::debug("clone_cmd: $clone_cmd");
 
-   Rex::Logger::info("cloning " . $repo_info->{"url"} . " to $checkout_to");
+   Rex::Logger::info("cloning " . $repo_info->{"url"} . " to " . ($checkout_to?$checkout_to:"."));
    my $out = run "$clone_cmd";
    unless($? == 0) {
       Rex::Logger::info("Error cloning repository.");
@@ -51,6 +52,7 @@ sub checkout {
       Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
       Rex::Logger::info("switching to branch " . $checkout_opt->{"branch"});
+
 
       $out = run "$checkout_cmd";
       Rex::Logger::debug($out);

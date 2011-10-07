@@ -8,7 +8,7 @@ use Rex::Commands::Run;
 
 use vars qw($CHECKOUT_COMMAND);
 
-$CHECKOUT_COMMAND = "svn %s checkout %s %s";
+$CHECKOUT_COMMAND = "svn --non-interactive --trust-server-cert %s checkout %s %s";
 
 sub new {
    my $that = shift;
@@ -25,18 +25,19 @@ sub checkout {
 
    my $special_opts = "";
 
-   if(exists $checkout_opt->{"username"}) {
-      $special_opts = " --username  " . $checkout_opt->{"username"};
+   if(exists $repo_info->{"username"}) {
+      $special_opts = " --username  '" . $repo_info->{"username"} . "'";
    }
 
-   if(exists $checkout_opt->{"password"}) {
-      $special_opts .= " --password  " . $checkout_opt->{"password"};
+   if(exists $repo_info->{"password"}) {
+      $special_opts .= " --password  '" . $repo_info->{"password"} . "'";
    }
+
 
    my $checkout_cmd = sprintf($CHECKOUT_COMMAND, $special_opts, $repo_info->{"url"}, $checkout_to);
    Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
-   Rex::Logger::info("checkout " . $repo_info->{"url"} . " to $checkout_to");
+   Rex::Logger::info("cloning " . $repo_info->{"url"} . " to " . ($checkout_to?$checkout_to:"."));
    my $out = run "$checkout_cmd";
    unless($? == 0) {
       Rex::Logger::info("Error checking out repository.");

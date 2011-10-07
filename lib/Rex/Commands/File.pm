@@ -52,6 +52,7 @@ use Fcntl;
 
 require Exporter;
 use Data::Dumper;
+use Rex::Config;
 use Rex::FS::File;
 use Rex::Commands::Fs;
 use Rex::Commands::Upload;
@@ -93,6 +94,17 @@ sub template {
 
       Rex::Logger::debug("New filename: $d");
       $file = $d;
+   }
+
+   # if there is a file called filename.environment then use this file
+   # ex: 
+   # $content = template("files/hosts.tpl");
+   # 
+   # rex -E live ...
+   # will first look if files/hosts.tpl.live is available, if not it will
+   # use files/hosts.tpl
+   if(-f "$file." . Rex::Config->get_environment) {
+      $file = "$file." . Rex::Config->get_environment;
    }
 
    my $template = Rex::Template->new;

@@ -31,6 +31,7 @@ use warnings;
 
 require Exporter;
 use File::Basename qw(basename);
+use Rex::Config;
 use Rex::Commands::Fs;
 
 use vars qw(@EXPORT);
@@ -52,8 +53,21 @@ sub upload {
    my $local = shift;
    my $remote = shift;
 
+   # if remote not set, use name of local.
+   # must be done before the next line.
    unless($remote) {
       $remote = basename($local);
+   }
+
+   # if there is a file called filename.environment then use this file
+   # ex: 
+   # upload "files/hosts", "/etc/hosts";
+   # 
+   # rex -E live ...
+   # will first look if files/hosts.live is available, if not it will
+   # use files/hosts
+   if(-f "$local." . Rex::Config->get_environment) {
+      $local = "$local." . Rex::Config->get_environment;
    }
 
    if(! -f $local) {

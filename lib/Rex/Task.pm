@@ -228,7 +228,12 @@ sub run {
 
                Rex::Logger::info("Connecting to $server (" . $user . ")");
                CON_SSH:
-                  unless($ssh->connect($server, Rex::Config->get_port, Timeout => Rex::Config->get_timeout)) {
+                  my $port = Rex::Config->get_port;
+                  if($server =~ m/^(.*?):(\d+)$/) {
+                     $server = $1;
+                     $port   = $2;
+                  }
+                  unless($ssh->connect($server, $port, Timeout => Rex::Config->get_timeout)) {
                      ++$fail_connect;
                      sleep 1;
                      goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails); # try connecting 3 times

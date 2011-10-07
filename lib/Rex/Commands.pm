@@ -630,11 +630,16 @@ Calling this task I<rex -E stage prepare> will execute on stagewww01.
 
 =cut
 sub environment {
-   my ($name, $code) = @_;
-   $environments->{$name} = $code;
+   if(@_) {
+      my ($name, $code) = @_;
+      $environments->{$name} = $code;
 
-   if(Rex::Config->get_environment eq $name) {
-      &$code();
+      if(Rex::Config->get_environment eq $name) {
+         &$code();
+      }
+   }
+   else {
+      return Rex::Config->get_environment;
    }
 }
 

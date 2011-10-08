@@ -14,6 +14,8 @@ use Rex::Fork::Manager;
 use Rex::Cache;
 use Sys::Hostname;
 
+use Data::Dumper;
+
 use vars qw(%tasks);
 
 # will be set from Rex::Transaction::transaction()
@@ -81,7 +83,13 @@ sub create_task {
       func => $func,
       server => [ @server ],
       desc => $desc,
-      no_ssh => ($options->{"no_ssh"}?1:0)
+      no_ssh => ($options->{"no_ssh"}?1:0),
+      auth => {
+         get_user        => Rex::Config->get_user,
+         get_password    => Rex::Config->get_password,
+         get_private_key => Rex::Config->get_private_key,
+         get_public_key  => Rex::Config->get_public_key,
+      },
    };
 
 }
@@ -137,6 +145,8 @@ sub run {
    my $ret;
 
    Rex::Logger::info("Running task: $task");
+   Rex::Logger::debug(Dumper($tasks{$task}));
+
    # get servers belonging to the task
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;

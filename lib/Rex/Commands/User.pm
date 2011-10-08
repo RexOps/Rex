@@ -67,6 +67,12 @@ sub create_user {
       die("If ssh_key option is used you have to specify home, too.");
    }
 
+   if(! is_dir($data->{"home"} . "/.ssh")) {
+      mkdir $data->{"home"} . "/.ssh",
+         owner => $user,
+         mode  => 700;
+   }
+
    my $fh = file_write $data->{"home"} . "/.ssh/authorized_keys";
    $fh->write($data->{"ssh_key"});
    $fh->close;

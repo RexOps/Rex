@@ -14,8 +14,6 @@ use Rex::Fork::Manager;
 use Rex::Cache;
 use Sys::Hostname;
 
-use Data::Dumper;
-
 use vars qw(%tasks);
 
 # will be set from Rex::Transaction::transaction()
@@ -145,7 +143,6 @@ sub run {
    my $ret;
 
    Rex::Logger::info("Running task: $task");
-   Rex::Logger::debug(Dumper($tasks{$task}));
 
    # get servers belonging to the task
    my @server = @{$tasks{$task}->{'server'}};

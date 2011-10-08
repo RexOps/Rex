@@ -85,10 +85,10 @@ sub create_task {
       desc => $desc,
       no_ssh => ($options->{"no_ssh"}?1:0),
       auth => {
-         get_user        => Rex::Config->get_user,
-         get_password    => Rex::Config->get_password,
-         get_private_key => Rex::Config->get_private_key,
-         get_public_key  => Rex::Config->get_public_key,
+         user        => Rex::Config->get_user,
+         password    => Rex::Config->get_password,
+         private_key => Rex::Config->get_private_key,
+         public_key  => Rex::Config->get_public_key,
       },
    };
 
@@ -169,22 +169,26 @@ sub run {
       @server = ($server_overwrite);
    }
 
-   my($user, $pass, $pass_auth);
+   my($user, $pass, $private_key, $public_key);
    if(ref($server[-1]) eq "HASH") {
       # use extra defined credentials
       my $data = pop(@server);
       $user = $data->{'user'};
       $pass = $data->{'password'};
-      $pass_auth = 1;
+      if(exists $data->{"private_key"}) {
+         $private_key = $data->{"private_key"};
+         $public_key  = $data->{"public_key"};
+      }
    } else {
-      $user = Rex::Config->get_user;
-      $pass = Rex::Config->get_password;
-      $pass_auth = Rex::Config->get_password_auth;
+      $user = $tasks{$task}->{"auth"}->{"user"};
+      $pass = $tasks{$task}->{"auth"}->{"password"};
+      $private_key = $tasks{$task}->{"auth"}->{"private_key"};
+      $public_key  = $tasks{$task}->{"auth"}->{"public_key"};
    }
 
    $user ||= "";
    Rex::Logger::debug("Using user: $user");
-   Rex::Logger::debug("Using password: " . ($pass?$pass:"<no password>"));
+   Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
 
    my $timeout = Rex::Config->get_timeout;
 
@@ -232,9 +236,7 @@ sub run {
             if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                $ssh = Net::SSH2->new;
 
-
                my $fail_connect = 0;
-
 
                Rex::Logger::info("Connecting to $server (" . $user . ")");
                CON_SSH:
@@ -259,8 +261,8 @@ sub run {
                my $auth_ret;
                $auth_ret = $ssh->auth('username' => $user,
                                       'password' => $pass,
-                                      'publickey' => Rex::Config->get_public_key,
-                                      'privatekey' => Rex::Config->get_private_key);
+                                      'publickey' => $public_key,
+                                      'privatekey' => $private_key);
 
                # push a remote connection
                Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});

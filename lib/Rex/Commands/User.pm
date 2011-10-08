@@ -23,6 +23,7 @@ With this module you can manage user and groups.
        groups  => ['root', '...'],
        password => 'blahblah',
        system => 1,
+       ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...",
     };
  };
 
@@ -58,7 +59,17 @@ Create or update a user.
 =cut
 
 sub create_user {
+   my ($user, $data) = @_;
    Rex::User->get()->create_user(@_);
+
+   if(defined $data->{"ssh_key"} && ! defined $data->{"home"}) {
+      Rex::Logger::debug("If ssh_key option is used you have to specify home, too.");
+      die("If ssh_key option is used you have to specify home, too.");
+   }
+
+   my $fh = file_write $data->{"home"} . "/.ssh/authorized_keys";
+   $fh->write($data->{"ssh_key"});
+   $fh->close;
 }
 
 =item get_uid($user)

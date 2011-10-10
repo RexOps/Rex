@@ -1,3 +1,18 @@
+rex (0.21.0) unstable; urgency=low
+  * allow multiple groups for a task
+  * every task can have its own auth information
+  * user module: add ssh key
+  * ssh port isn't fix anymore (patch from Jose Luis Martinez)
+  * use generic auth method from Net::SSH2 (patch from Jose Luis Martinez)
+  * add SCM module (Subversion and Git)
+  * file and upload now scans for environment specifiy files first
+  * added a file lookup function to build groups from
+  * fixed windows syslog bug #6, thanks to aero
+  * added -nolog parameter to logging function to disable logging at all
+  * added posibility to evaluate perl code within the -H cli parameter
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 10 Oct 2011 21:50:00 +0200
+
 rex (0.20.0) unstable; urgency=low
   * added virtualization module (from Sascha Guenther)
   * added extract function

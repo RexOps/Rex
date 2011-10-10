@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.20.0
+Version: 0.21.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.20.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.21.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,19 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Mon Oct 10 2011 Jan Gehring <jan.gehring at, gmail.com> 0.21.0-1
+- allow multiple groups for a task
+- every task can have its own auth information
+- user module: add ssh key
+- ssh port isn't fix anymore (patch from Jose Luis Martinez)
+- use generic auth method from Net::SSH2 (patch from Jose Luis Martinez)
+- add SCM module (Subversion and Git)
+- file and upload now scans for environment specifiy files first
+- added a file lookup function to build groups from
+- fixed windows syslog bug #6, thanks to aero
+- added -nolog parameter to logging function to disable logging at all
+- added posibility to evaluate perl code within the -H cli parameter
 
 * Mon Sep 26 2011 Jan Gehring <jan.gehring at, gmail.com> 0.20.0-1
 - added virtualization module (from Sascha Guenther)

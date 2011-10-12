@@ -8,7 +8,17 @@ use Rex::Commands::Run;
 
 use vars qw($CHECKOUT_COMMAND);
 
-$CHECKOUT_COMMAND = "svn --non-interactive --trust-server-cert %s checkout %s %s";
+BEGIN {
+   my $version = qx{svn --version --quiet 2>/dev/null};
+   my @parts = split(/\./, $version);
+
+   if($parts[1] <= 5) {
+      $CHECKOUT_COMMAND = "svn --non-interactive %s checkout %s %s";
+   }
+   else {
+      $CHECKOUT_COMMAND = "svn --non-interactive --trust-server-cert %s checkout %s %s";
+   }
+};
 
 sub new {
    my $that = shift;

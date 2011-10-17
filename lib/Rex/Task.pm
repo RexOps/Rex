@@ -238,18 +238,18 @@ sub run {
             Rex::Logger::init();
 
             # this must be a ssh connection
-            if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
+            if(! $tasks{$task}->{"no_ssh"}) {
                $ssh = Net::SSH2->new;
 
                my $fail_connect = 0;
 
-               Rex::Logger::info("Connecting to $server (" . $user . ")");
                CON_SSH:
-                  my $port = Rex::Config->get_port;
+                  my $port = Rex::Config->get_port || 22;
                   if($server =~ m/^(.*?):(\d+)$/) {
                      $server = $1;
                      $port   = $2;
                   }
+                  Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
                   unless($ssh->connect($server, $port, Timeout => Rex::Config->get_timeout)) {
                      ++$fail_connect;
                      sleep 1;

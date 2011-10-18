@@ -307,7 +307,6 @@ sub run {
             # close logger
             Rex::Logger::shutdown();
 
-            CORE::exit unless($IN_TRANSACTION); # exit child
          }; # [END] $forked_sub
 
          # add the worker (forked_sub) to the fork queue

@@ -12,18 +12,6 @@ Rex::Commands::Service - Manage System Services
 
 With this module you can manage Linux services.
 
-Currently this module supports
-
-=over 4
-
-=item Debian
-
-=item CentOS
-
-=item OpenSuSE
-
-=back
-
 =head1 SYNOPSIS
 
  use Rex::Commands::Service

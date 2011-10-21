@@ -27,6 +27,7 @@ lib/Rex/Commands/Pkg.pm
 lib/Rex/Commands/Process.pm
 lib/Rex/Commands/Rsync.pm
 lib/Rex/Commands/Run.pm
+lib/Rex/Commands/SCM.pm
 lib/Rex/Commands/Service.pm
 lib/Rex/Commands/Sysctl.pm
 lib/Rex/Commands/Tail.pm
@@ -40,6 +41,7 @@ lib/Rex/Fork/Manager.pm
 lib/Rex/Fork/Task.pm
 lib/Rex/FS/File.pm
 lib/Rex/Group.pm
+lib/Rex/Group/Lookup/File.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm
 lib/Rex/Hardware/Kernel.pm
@@ -96,6 +98,8 @@ lib/Rex/Pkg/SunOS/OpenCSW.pm
 lib/Rex/Pkg/SunOS/pkg.pm
 lib/Rex/Pkg/SuSE.pm
 lib/Rex/Pkg/Ubuntu.pm
+lib/Rex/SCM/Git.pm
+lib/Rex/SCM/Subversion.pm
 lib/Rex/Service.pm
 lib/Rex/Service/Debian.pm
 lib/Rex/Service/FreeBSD.pm

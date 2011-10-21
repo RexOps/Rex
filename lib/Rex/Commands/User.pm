@@ -18,7 +18,7 @@ With this module you can manage user and groups.
     create_user "root" => {
        uid => 0,
        home => '/root',
-       commenct => 'Root Account',
+       comment => 'Root Account',
        expire => '2011-05-30',
        groups  => ['root', '...'],
        password => 'blahblah',
@@ -60,22 +60,28 @@ Create or update a user.
 
 sub create_user {
    my ($user, $data) = @_;
-   Rex::User->get()->create_user(@_);
+   my $uid = Rex::User->get()->create_user(@_);
 
    if(defined $data->{"ssh_key"} && ! defined $data->{"home"}) {
       Rex::Logger::debug("If ssh_key option is used you have to specify home, too.");
       die("If ssh_key option is used you have to specify home, too.");
    }
 
-   if(! is_dir($data->{"home"} . "/.ssh")) {
-      mkdir $data->{"home"} . "/.ssh",
-         owner => $user,
-         mode  => 700;
+   if(defined $data->{"ssh_key"}) {
+
+      if(! is_dir($data->{"home"} . "/.ssh")) {
+         mkdir $data->{"home"} . "/.ssh",
+            owner => $user,
+            mode  => 700;
+      }
+
+      my $fh = file_write $data->{"home"} . "/.ssh/authorized_keys";
+      $fh->write($data->{"ssh_key"});
+      $fh->close;
+
    }
 
-   my $fh = file_write $data->{"home"} . "/.ssh/authorized_keys";
-   $fh->write($data->{"ssh_key"});
-   $fh->close;
+   return $uid;
 }
 
 =item get_uid($user)

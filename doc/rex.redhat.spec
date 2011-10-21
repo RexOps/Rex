@@ -157,6 +157,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 - added installed_packages function to get all the installed packages
 
 * Sun Jul 10 2011 Jan Gehring <jan.gehring at, gmail.com> 0.9.0-1
+- fixed running of multiple tasks by do_task
 - register tasks as function if possible
 - add "lib" to INC if exists
 - added function get_operating_system

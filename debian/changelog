@@ -1,4 +1,5 @@
 rex (0.21.0) unstable; urgency=low
+  * fixed running of multiple tasks by do_task
   * allow multiple groups for a task
   * every task can have its own auth information
   * user module: add ssh key

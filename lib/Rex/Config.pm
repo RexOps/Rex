@@ -114,6 +114,10 @@ sub get_public_key {
       return $public_key;
    }
 
+   if($^O =~ m/^MSWin/) {
+      return $ENV{'USERPROFILE'} . '/.ssh/id_rsa.pub';
+   }
+
    return $ENV{'HOME'} . '/.ssh/id_rsa.pub';
 }
 
@@ -125,6 +129,10 @@ sub set_private_key {
 sub get_private_key {
    if($private_key) {
       return $private_key;
+   }
+
+   if($^O =~ m/^MSWin/) {
+      return $ENV{'USERPROFILE'} . '/.ssh/id_rsa';
    }
 
    return $ENV{'HOME'} . '/.ssh/id_rsa';

@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::Hardware::Network::Linux;
-   
+
 use strict;
 use warnings;
 
@@ -32,7 +32,7 @@ sub get_network_devices {
 }
 
 sub get_network_configuration {
-   
+
    my $devices = get_network_devices();
 
    my $device_info = {};
@@ -58,7 +58,7 @@ sub route {
 
    my @ret = ();
 
-   my @route = run "netstat -nr";  
+   my @route = run "netstat -nr";
    if($? != 0) {
       die("Error running netstat");
    }
@@ -170,11 +170,11 @@ sub netstat {
          my ($proto, $refcnt, $flags, $type, $state, $inode, $pid, $cmd, $path);
 
          if($line =~ m/^([a-z]+)\s+(\d+)\s+\[([^\]]+)\]\s+([a-z]+)\s+([a-z]+)?\s+(\d+)\s+(\d+)\/([^\s]+)\s+(.*)$/i) {
-            ($proto, $refcnt, $flags, $type, $state, $inode, $pid, $cmd, $path) 
+            ($proto, $refcnt, $flags, $type, $state, $inode, $pid, $cmd, $path)
                = ($line =~ m/^([a-z]+)\s+(\d+)\s+\[([^\]]+)\]\s+([a-z]+)\s+([a-z]+)?\s+(\d+)\s+(\d+)\/([^\s]+)\s+(.*)$/i);
          }
          else {
-            ($proto, $refcnt, $flags, $type, $state, $inode, $path) 
+            ($proto, $refcnt, $flags, $type, $state, $inode, $path)
                = ($line =~ m/^([a-z]+)\s+(\d+)\s+\[([^\]]+)\]\s+([a-z]+)\s+([a-z]+)?\s+(\d+)\s+\-\s+(.*)$/i);
 
             $pid = "";

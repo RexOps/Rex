@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -64,7 +64,7 @@ sub execute {
 
    my $template = Rex::Template->new;
    my $parsed_template = $template->parse($create_xml, $opts);
-   
+
    Rex::Logger::debug($parsed_template);
 
    ## create storage devices
@@ -72,7 +72,7 @@ sub execute {
       if(! exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file") {
          my $size = $_->{'size'};
          if(!is_file($_->{"file"})) {
-            Rex::Logger::debug("creating storage disk: \"$_->{file}\"");            
+            Rex::Logger::debug("creating storage disk: \"$_->{file}\"");
             run "$QEMU_IMG create -f raw $_->{'file'} $size";
             if($? != 0) {
                die("Error creating storage disk: $_->{'file'}");
@@ -90,7 +90,7 @@ sub execute {
              Template doesn't exist or the qemu-img binary is missing")
           }
       }
-   } 
+   }
 
    Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
 
@@ -249,7 +249,7 @@ sub _set_storage_defaults {
       }
 
       if( ! exists $store->{"dev"} && $store->{"device"} eq "cdrom") {
-         $store->{"dev"} = "hdc"; 
+         $store->{"dev"} = "hdc";
       }
 
       if( ! exists $store->{"dev"} ) {
@@ -273,9 +273,9 @@ sub _set_storage_defaults {
          }
 
       }
-      
+
       if( exists $hyper->{"kvm"} ) {
-         
+
          if( $store->{"bus"} eq "virtio" && ! exists $store->{"address"} ) {
             $store->{"address"} = {
                type     => "pci",

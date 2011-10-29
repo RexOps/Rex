@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -14,7 +14,7 @@ use base qw(Rex::Inventory::DMIDecode::Section);
 
 __PACKAGE__->section("Physical Memory Array");
 
-__PACKAGE__->has([ 'Number Of Devices', 
+__PACKAGE__->has([ 'Number Of Devices',
                    'Error Correction Type',
                    'Maximum Capacity',
                    'Location', ], 1);

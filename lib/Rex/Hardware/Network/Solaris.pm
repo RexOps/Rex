@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::Hardware::Network::Solaris;
-   
+
 use strict;
 use warnings;
 
@@ -23,7 +23,7 @@ sub get_network_devices {
 }
 
 sub get_network_configuration {
-   
+
    my $devices = get_network_devices();
 
    my $device_info = {};
@@ -49,7 +49,7 @@ sub route {
 
    my @ret = ();
 
-   my @route = run "netstat -nr";  
+   my @route = run "netstat -nr";
    if($? != 0) {
       die("Error running netstat");
    }

@@ -22,7 +22,7 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
-	
+
 	# Add here commands to compile the package.
 	$(PERL) Makefile.PL INSTALLDIRS=vendor
 	$(MAKE) OPTIMIZE="-O2 -g -Wall"
@@ -39,7 +39,7 @@ clean:
 
 	dh_clean
 
-install: 
+install:
 	dh_testdir
 	dh_testroot
 	dh_clean -k
@@ -74,13 +74,13 @@ binary-indep: build install
 	dh_fixperms
 #	dh_makeshlibs
 	dh_installdeb
-	dh_perl 
+	dh_perl
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb --destdir=$(DESTDIR)
 
-source diff:                                                                  
+source diff:
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
 
 binary: binary-indep binary-arch

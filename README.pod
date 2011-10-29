@@ -42,7 +42,7 @@ A small example:
 
  group "frontend" => "frontend[01..09]", "varnish[01..04]";
 
- 
+
  desc "Show Unix version";
  task "uname", "server[1..9]", sub {
      say run "uname -a";
@@ -118,17 +118,17 @@ Edit the I<Rexfile>.
    needs Rex::myproject 'mw';
 
  };
- 
+
 Edit the file I<lib/Rex/myproject.pm>
 
- package Rex::myproject 
+ package Rex::myproject
 
  use Rex::Commands;
  use Rex::Commands::Run;
  use Rex::Commands::Pkg;
 
  task "fe", sub {
- 
+
     install package => [
           'apache2',
           'php5'
@@ -137,13 +137,13 @@ Edit the file I<lib/Rex/myproject.pm>
  };
 
  task 'mw', sub {
- 
+
     install package => [
           'tomcat6',
           'apache2',
           'libapache-mod_jk'
        ];
- 
+
  };
 
  1;

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -62,7 +62,7 @@ sub get {
    elsif($os eq "NetBSD") {
       my $swap_str = run "top -d1 | grep Swap:";
 
-      my ($total, $t_ent, $free, $f_ent) = 
+      my ($total, $t_ent, $free, $f_ent) =
             ($swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
 
       &$convert($total, $t_ent);
@@ -78,7 +78,7 @@ sub get {
    elsif($os =~ /FreeBSD/) {
       my $swap_str = run "top -d1 | grep Swap:";
 
-      my ($total, $t_ent, $used, $u_ent, $free, $f_ent) = 
+      my ($total, $t_ent, $used, $u_ent, $free, $f_ent) =
             ($swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
 
       &$convert($total, $t_ent);
@@ -97,7 +97,7 @@ sub get {
 
       my ($total, $used, $free) = ($free_str =~ m/^Swap:\s+(\d+)\s+(\d+)\s+(\d+)$/);
 
-      return { 
+      return {
          total => $total,
          used  => $used,
          free  => $free,

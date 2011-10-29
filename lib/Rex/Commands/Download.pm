@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -18,7 +18,7 @@ With this module you can download a remotefile via sftp, http and ftp from a hos
  task "download", "remoteserver", sub {
     download "/remote/file", "localfile";
  };
- 
+
  # http
  task "download2", sub {
     download "http://server/remote/file";
@@ -111,7 +111,7 @@ sub _sftp_download {
       Rex::Logger::info("File $remote not found");
       die("$remote not found.");
    }
-   
+
    unless(is_readable($remote)) {
       Rex::Logger::info("File $remote is not readable.");
       die("$remote is not readable.");

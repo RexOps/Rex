@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -48,7 +48,7 @@ sub is_cdrom {
 }
 
 sub is_volume {
-   
+
    my ($self) = @_;
    if( grep { ! /^false$/ } $self->get('block.is_volume') ) {
       return 1;
@@ -57,7 +57,7 @@ sub is_volume {
 }
 
 sub is_floppy {
-   
+
    my ($self) = @_;
    if( grep { /^floppy$/ } $self->get('storage.drive_type') ) {
       return 1;

@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::Cloud::Jiffybox;
-   
+
 use strict;
 use warnings;
 
@@ -18,7 +18,7 @@ use Data::Dumper;
 use Rex::Cloud::Base;
 
 use base qw(Rex::Cloud::Base);
-   
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -77,7 +77,7 @@ sub _do_request {
    unless($data->{"result"}) {
       die("Error talking to jiffybox: " . $data->{"messages"}->[0]->{"message"});
    }
-   
+
    return $data;
 }
 
@@ -117,7 +117,7 @@ sub list_operating_systems {
    Rex::Logger::debug("Listing operating systems");
 
    my $data = $self->_do_request("GET", "distributions");
- 
+
    return $self->_result_to_array($data, "os_id");
 }
 
@@ -234,7 +234,7 @@ sub list_instances {
          type => $data->{"result"}->{$instance_id}->{"plan"}->{"name"},
          dns_name => "j$instance_id.servers.jiffybox.net",
          state => $state,
-         __state => $data->{"result"}->{$instance_id}->{"status"}, 
+         __state => $data->{"result"}->{$instance_id}->{"status"},
          launch_time => undef,
          name => $data->{"result"}->{$instance_id}->{"name"},
       });

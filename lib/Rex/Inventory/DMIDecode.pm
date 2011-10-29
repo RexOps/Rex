@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -35,7 +35,7 @@ sub get_tree {
    if($section) {
       return $self->{"__dmi"}->{$section};
    }
-   
+
    return $self->{"__dmi"};
 }
 
@@ -115,7 +115,7 @@ sub _read_dmidecode {
    chomp @lines;
 
    my %section = ();
-   my $section = ""; 
+   my $section = "";
    my $new_section = 0;
    my $sub_section = "";
 
@@ -147,7 +147,7 @@ sub _read_dmidecode {
             $section{$section} = [];
             my @arr = ();
             my ($key, $val) = split(/: /, $line, 2);
-            $key =~ s/:$//; 
+            $key =~ s/:$//;
             $sub_section = $key;
             #push (@{$section{$section}}, $content);
             push (@{$section{$section}}, {$key => $val});
@@ -160,7 +160,7 @@ sub _read_dmidecode {
                $new_section = 0;
             }
             my ($key, $val) = split(/: /, $line, 2);
-            $key =~ s/:$//; 
+            $key =~ s/:$//;
             $sub_section = $key;
             my $href = $section{$section}->[-1];
             #push (@{$section{$section}}, {$key => $val});

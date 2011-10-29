@@ -192,7 +192,7 @@ rex (0.6.0) unstable; urgency=low
 rex (0.5.1) unstable; urgency=low
   * fixed chdir command
   * fixed typo in documentation
-  * documentation updates 
+  * documentation updates
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 16 May 2011 22:00:00 +0200
 

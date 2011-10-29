@@ -1,15 +1,15 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
 #
 # Some of the code is based on Net::Amazon::EC2
 #
-   
+
 package Rex::Cloud::Amazon;
-   
+
 use strict;
 use warnings;
 
@@ -73,7 +73,7 @@ sub run_instance {
    Rex::Logger::debug("Trying to start a new Amazon instance with data:");
    Rex::Logger::debug("   $_ -> " . ($data{$_}?$data{$_}:"undef")) for keys %data;
 
-   my $xml = $self->_request("RunInstances", 
+   my $xml = $self->_request("RunInstances",
                ImageId  => $data{"image_id"},
                MinCount => 1,
                MaxCount => 1,
@@ -112,7 +112,7 @@ sub attach_volume {
 
    Rex::Logger::debug("Trying to attach a new volume");
 
-   $self->_request("AttachVolume", 
+   $self->_request("AttachVolume",
       VolumeId => $data{"volume_id"},
       InstanceId => $data{"instance_id"},
       Device => $data{"name"} || "/dev/sdh");
@@ -133,7 +133,7 @@ sub delete_volume {
 
    Rex::Logger::debug("Trying to delete a volume");
 
-   $self->_request("DeleteVolume", 
+   $self->_request("DeleteVolume",
       VolumeId => $data{"volume_id"},
    );
 }
@@ -172,7 +172,7 @@ sub create_volume {
 
    Rex::Logger::debug("Creating a new volume");
 
-   my $xml = $self->_request("CreateVolume", 
+   my $xml = $self->_request("CreateVolume",
                "Size" => $data{"size"} || 1,
                "AvailabilityZone" => $data{"zone"},
                );
@@ -313,7 +313,7 @@ sub _request {
 }
 
 sub _sign {
-   my ($self, $action, %o_args) = @_;  
+   my ($self, $action, %o_args) = @_;
 
    my %args;
    for my $key (keys %o_args) {

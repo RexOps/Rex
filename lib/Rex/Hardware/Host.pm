@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -46,7 +46,7 @@ sub get {
       }
 
       return {
-      
+
          manufacturer => $bios->get_system_information()->get_manufacturer() || "",
          hostname     => $hostname || "",
          domain       => $domain || "",
@@ -116,7 +116,7 @@ sub get_operating_system {
 }
 
 sub get_operating_system_version {
-   
+
    my $op = Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system");
 
    my $is_lsb = Rex::get_cache()->can_run("lsb_release");
@@ -143,7 +143,7 @@ sub get_operating_system_version {
       my @l = run "lsb_release -r -s";
       return $l[0];
    }
-   elsif(lc($op) eq "redhat" 
+   elsif(lc($op) eq "redhat"
             or lc($op) eq "centos"
             or lc($op) eq "scientific") {
 
@@ -181,7 +181,7 @@ sub get_operating_system_version {
    }
 
    elsif($op eq "SuSE") {
-      
+
       my $fh = file_read("/etc/SuSE-release");
       my $content = $fh->read_all;
       $fh->close;

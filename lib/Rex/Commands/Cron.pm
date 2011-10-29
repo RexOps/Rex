@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,7 +15,7 @@ With this Module you can manage your cronjobs.
 =head1 SYNOPSIS
 
  use Rex::Commands::Cron;
-     
+
  cron add => "root", {
             minute => '5',
             hour   => '*',
@@ -23,9 +23,9 @@ With this Module you can manage your cronjobs.
             month => '*',
             day_of_week => '*',
          };
-           
+
  cron list => "root";
-      
+
  cron delete => "root", 3;
 
 =head1 EXPORTED FUNCTIONS
@@ -58,7 +58,7 @@ List cronjobs.
 
  use Rex::Commands::Cron;
  use Data::Dumper;
-    
+
  task "listcron", "server1", sub {
     my @crons = cron list => "root";
     print Dumper(\@crons);
@@ -70,7 +70,7 @@ This example will add a cronjob running on minute 1, 5, 19 and 40. Every hour an
 
  use Rex::Commands::Cron;
  use Data::Dumper;
-    
+
  task "addcron", "server1", sub {
      cron add => "root", {
         minute => "1,5,19,40",

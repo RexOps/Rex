@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::User::SunOS;
 
 use strict;
@@ -77,7 +77,7 @@ sub create_user {
          $cmd .= " -G " . join(",", @groups);
       }
    }
- 
+
    run "$cmd $user";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
@@ -102,14 +102,14 @@ sub create_user {
          $fh->write(qq~#!$expect_path --
 # Input: username password
 set USER [lindex \$argv 0]
-set PASS [lindex \$argv 1] 
+set PASS [lindex \$argv 1]
 
 if { \$USER == "" || \$PASS == "" }  {
    puts "Usage:  /tmp/chpasswd username password\n"
    exit 1
  }
 
-spawn passwd \$USER 
+spawn passwd \$USER
 expect "assword:"
 send "\$PASS\r"
 expect "assword:"

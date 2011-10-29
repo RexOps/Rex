@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -19,7 +19,7 @@ sub get {
    my $hw_class = _get_class();
 
    return {
- 
+
       networkdevices => $hw_class->get_network_devices(),
       networkconfiguration => $hw_class->get_network_configuration(),
 

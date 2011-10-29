@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -31,7 +31,7 @@ sub new {
 sub get {
 
    my ($self) = @_;
-   
+
    my $dmi = Rex::Inventory::DMIDecode->new;
    my ($base_board, $bios, @cpus, @dimms, @mem_arrays, $sys_info);
 

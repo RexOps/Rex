@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::Inventory::SMBios;
-   
+
 use strict;
 use warnings;
 
@@ -39,7 +39,7 @@ sub get_tree {
    if($section) {
       return $self->{"__dmi"}->{$section};
    }
-   
+
    return $self->{"__dmi"};
 }
 
@@ -124,7 +124,7 @@ sub _read_smbios {
          push(@{$section{$current_section}}, { %cur_data }) if (%cur_data);
 
          ($current_section) = ($line =~ m/\(([^\)]+)\)/);
-         
+
          if(! exists $section{$current_section}) {
             $section{$current_section} = [];
          }

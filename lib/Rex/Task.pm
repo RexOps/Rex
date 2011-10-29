@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -57,7 +57,7 @@ sub create_task {
             else {
                $groups = [ $_[1] ];
             }
-            
+
             for my $group (@{$groups}) {
                if(Rex::Group->is_group($group)) {
                   Rex::Logger::debug("\tusing group: $group -> " . join(", ", Rex::Group->get_group($group)));
@@ -137,7 +137,7 @@ sub get_desc {
 sub is_task {
    my $class = shift;
    my $task = shift;
-   
+
    if(exists $tasks{$task}) { return 1; }
    return 0;
 }
@@ -167,7 +167,7 @@ sub run {
    }
 
    @server = @new_server;
-   
+
    # overwrite servers if requested
    # this is mostly for the rex agent
    if($server_overwrite) {

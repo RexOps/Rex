@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -23,7 +23,7 @@ With this module you can sync 2 directories via the I<rsync> command.
 =head1 SYNOPSIS
 
  use Rex::Commands::Rsync;
- 
+
  sync "dir1", "dir2";
 
 =head1 EXPORTED FUNCTIONS
@@ -107,7 +107,7 @@ sub sync {
                                  exp_continue;
                               }
                            ]
-      
+
       );
    }
    else {
@@ -138,7 +138,7 @@ sub sync {
                                     Rex::Logger::debug("Finished transfer very fast");
                                     die;
                                  }
-                             
+
                               ]);
 
          $exp->expect(undef, [

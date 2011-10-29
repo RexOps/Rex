@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,19 +15,19 @@ With this Module you can manage different Cloud services. Currently it supports 
 =head1 SYNOPSIS
 
  use Rex::Commands::Cloud;
-     
+
  cloud_service "Amazon";
  cloud_auth "your-access-key", "your-private-access-key";
  cloud_region "ec2.eu-west-1.amazonaws.com";
-    
+
  task "list", sub {
     print Dumper cloud_instance_list;
     print Dumper cloud_volume_list;
  };
-      
+
  task "create", sub {
     my $vol_id = cloud_volume create => { size => 1, zone => "eu-west-1a", };
-       
+
     cloud_instance create => {
           image_id => "ami-xxxxxxx",
           name     => "test01",
@@ -36,11 +36,11 @@ With this Module you can manage different Cloud services. Currently it supports 
           zone     => "eu-west-1a",
        };
  };
-     
+
  task "destroy", sub {
     cloud_volume detach => "vol-xxxxxxx";
     cloud_volume delete => "vol-xxxxxxx";
-       
+
     cloud_instance terminate => "i-xxxxxxx";
  };
 
@@ -51,10 +51,10 @@ With this Module you can manage different Cloud services. Currently it supports 
 =cut
 
 package Rex::Commands::Cloud;
-   
+
 use strict;
 use warnings;
-   
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT $cloud_service $access_key $secret_access_key $cloud_region);
@@ -62,10 +62,10 @@ use vars qw(@EXPORT $cloud_service $access_key $secret_access_key $cloud_region)
 use Rex::Logger;
 use Rex::Config;
 use Rex::Cloud;
-    
-@EXPORT = qw(cloud_instance cloud_volume 
+
+@EXPORT = qw(cloud_instance cloud_volume
                cloud_instance_list cloud_volume_list
-               cloud_service cloud_auth cloud_region 
+               cloud_service cloud_auth cloud_region
                get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones
                get_cloud_plans
                get_cloud_operating_systems);
@@ -160,7 +160,7 @@ Get all volumes of a cloud service.
 =cut
 
 sub cloud_volume_list {
-   
+
    my $cloud = get_cloud_service($cloud_service);
    $cloud->set_auth($access_key, $secret_access_key);
    $cloud->set_endpoint($cloud_region);
@@ -179,7 +179,7 @@ Get a list of all running instances of a cloud service. This can be used for a I
 =cut
 
 sub get_cloud_instances_as_group {
-   
+
    # return funcRef
    return sub {
       my $cloud = get_cloud_service($cloud_service);

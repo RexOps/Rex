@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -11,7 +11,7 @@ use warnings;
 
 use Rex::Logger;
 
-use vars qw($user $password $port 
+use vars qw($user $password $port
             $timeout $max_connect_fails
             $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
             $path

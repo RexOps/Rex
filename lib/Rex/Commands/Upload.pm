@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -60,9 +60,9 @@ sub upload {
    }
 
    # if there is a file called filename.environment then use this file
-   # ex: 
+   # ex:
    # upload "files/hosts", "/etc/hosts";
-   # 
+   #
    # rex -E live ...
    # will first look if files/hosts.live is available, if not it will
    # use files/hosts

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,29 +15,29 @@ With this module you can checkout subversion and git repositories.
 =head1 SYNOPSIS
 
  use Rex::Commands::SCM;
-     
+
  set repository => "myrepo",
       url => "git@foo.bar:myrepo.git";
-        
+
  set repository => "myrepo2",
       url => "https://foo.bar/myrepo",
       type => "subversion",
       username => "myuser",
       password => "mypass";
-           
+
  task "checkout", sub {
     checkout "myrepo";
-        
+
     checkout "myrepo",
        path => "webapp";
-           
+
     checkout "myrepo",
        path => "webapp",
        branch => 1.6;      # branch only for git
-           
+
     checkout "myrepo2";
  };
-     
+
 
 =head1 EXPORTED FUNCTIONS
 

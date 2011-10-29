@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -16,7 +16,7 @@ use base qw(Rex::Inventory::SMBios::Section);
 
 __PACKAGE__->section("processor");
 
-__PACKAGE__->has([ { key => 'Max Speed', from => "Maximum Speed" }, 
+__PACKAGE__->has([ { key => 'Max Speed', from => "Maximum Speed" },
                    'Family',
                    { key => 'Status', from => "Processor Status" },], 1);  # is_array 1
 

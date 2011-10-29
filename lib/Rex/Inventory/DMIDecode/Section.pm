@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -34,7 +34,7 @@ sub section {
 
 sub has {
    my ($class, $item, $is_array) = @_;
-   
+
    unless(ref($item) eq "ARRAY") {
       my $_tmp = $item;
       $item = [$_tmp];

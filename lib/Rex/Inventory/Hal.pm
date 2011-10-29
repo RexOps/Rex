@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -199,7 +199,7 @@ sub _parse_hal_string {
 
       return eval $line;
    }
-   
+
    return $line;
 
 }

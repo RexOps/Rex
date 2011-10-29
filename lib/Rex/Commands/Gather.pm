@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -45,7 +45,7 @@ use vars qw(@EXPORT);
 =item get_operating_system
 
 Will return the current operating system name.
- 
+
  task "get-os", "server01", sub {
     say get_operating_system();
  };
@@ -63,7 +63,7 @@ sub get_operating_system {
 =item operating_system_is($string)
 
 Will return 1 if the operating system is $string.
- 
+
  task "is_it_suse", "server01", sub {
     if( operating_system_is("SuSE") ) {
        say "This is a SuSE system.";
@@ -89,7 +89,7 @@ sub operating_system_is {
 =item operating_system_version()
 
 Will return the os release number as an integer. For example, it will convert 5.10 to 510, 10.04 to 1004 or 6.0.3 to 603.
- 
+
  task "prepare", "server01", sub {
     if( operating_system_version() >= 510 ) {
        say "OS Release is higher or equal to 510";
@@ -131,7 +131,7 @@ You can interate over the devices as follow
 =cut
 
 sub network_interfaces {
-   
+
    my $net = Rex::Hardware::Network->get();
 
    return $net->{"networkconfiguration"};
@@ -144,7 +144,7 @@ Return an HashRef of all memory information.
 
  task "get_memory_information", "server01", sub {
     my $memory = memory();
-     
+
     say "Total:   " . $memory->{"total"};
     say "Free:    " . $memory->{"free"};
     say "Used:    " . $memory->{"used"};

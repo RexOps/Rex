@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 21;
+use Test::More tests => 24;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
@@ -52,7 +52,16 @@ ok(get("foo") eq "bar", "set/get");
 my @ret = Rex::Commands::evaluate_hostname("test[01..04]");
 ok(join(",", @ret) eq "test01,test02,test03,test04", "evaluate hostname");
 
+@ret = Rex::Commands::evaluate_hostname("test[01..04].rexify.org");
+ok(join(",", @ret) eq "test01.rexify.org,test02.rexify.org,test03.rexify.org,test04.rexify.org", "evaluate hostname / with domain");
+
 @ret = Rex::Commands::evaluate_hostname("test[1..4]");
 ok(join(",", @ret) eq "test1,test2,test3,test4", "evaluate hostname without zeros");
+
+@ret = Rex::Commands::evaluate_hostname("test[1..4].rexify.org");
+ok(join(",", @ret) eq "test1.rexify.org,test2.rexify.org,test3.rexify.org,test4.rexify.org", "evaluate hostname with domainname / without zero");
+
+@ret = Rex::Commands::evaluate_hostname("10.5.9.[8..11]");
+ok(join(",", @ret) eq "10.5.9.8,10.5.9.9,10.5.9.10,10.5.9.11", "evaluate ip");
 
 

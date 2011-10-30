@@ -1,3 +1,9 @@
+rex (0.21.1) unstable; urgency=low
+  * fix for #8 - HOME environment variable on Windows
+  * fix for #5 - hostname evaluation with ips
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 30 Oct 2011 17:00:00 +0200
+
 rex (0.21.0) unstable; urgency=low
   * fixed running of multiple tasks by do_task
   * allow multiple groups for a task

@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.21.0
+Version: 0.21.1
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.21.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.21.1.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,10 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sun Oct 30 2011 Jan Gehring <jan.gehring at, gmail.com> 0.21.1-1
+- fix for #8 - HOME environment variable on Windows
+- fix for #5 - hostname evaluation with ips
 
 * Mon Oct 10 2011 Jan Gehring <jan.gehring at, gmail.com> 0.21.0-1
 - allow multiple groups for a task

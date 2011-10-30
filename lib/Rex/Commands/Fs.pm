@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,30 +15,30 @@ With this module you can do file system tasks like creating a directory, removin
 =head1 SYNOPSIS
 
  my @files = list_files "/etc";
- 
+
  unlink("/tmp/file");
- 
+
  rmdir("/tmp");
  mkdir("/tmp");
- 
+
  my %stat = stat("/etc/passwd");
- 
+
  my $link = readlink("/path/to/a/link");
  symlink("/source", "/dest");
- 
+
  rename("oldname", "newname");
- 
+
  chdir("/tmp");
- 
+
  is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
-    
+
  chmod 755, "/tmp";
  chown "user", "/tmp";
  chgrp "group", "/tmp";
- 
+
 
 =head1 EXPORTED FUNCTIONS
 
@@ -230,7 +230,7 @@ This function will create a new directory.
 
  task "mkdir", "server01", sub {
     mkdir "/tmp";
-         
+
     mkdir "/tmp",
       owner => "root",
       group => "root",
@@ -307,7 +307,7 @@ sub mkdir {
 Change the owner of a file or a directory.
 
  chown "www-data", "/var/www/html";
-     
+
  chown "www-data", "/var/www/html",
                         recursive => 1;
 
@@ -331,7 +331,7 @@ sub chown {
 Change the group of a file or a directory.
 
  chgrp "nogroup", "/var/www/html";
-    
+
  chgrp "nogroup", "/var/www/html",
                      recursive => 1;
 
@@ -355,7 +355,7 @@ sub chgrp {
 Change the permissions of a file or a directory.
 
  chmod 755, "/var/www/html";
-    
+
  chmod 755, "/var/www/html",
                recursive => 1;
 
@@ -409,7 +409,7 @@ sub stat {
 
    if(my $sftp = Rex::get_sftp()) {
       %ret = $sftp->stat($_[0]);
-      
+
       unless(%ret) {
          Rex::Logger::debug("Can't stat $_[0]");
          die("Can't stat $_[0]");
@@ -419,7 +419,7 @@ sub stat {
    } else {
       if(my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
                $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0])) {
-         $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
+         $ret{'mode'}  = sprintf("%04o", $mode & 07777);
          $ret{'size'}  = $size;
          $ret{'uid'}   = $uid;
          $ret{'gid'}   = $gid;
@@ -452,7 +452,7 @@ This function tests if $file is a file. Returns 1 if true. 0 if false.
 
 sub is_file {
    Rex::Logger::debug("Checking if $_[0] is a file");
-   
+
    if(my $sftp = Rex::get_sftp()) {
       if( $sftp->opendir($_[0]) ) {
          return 0;
@@ -587,7 +587,7 @@ This function returns the link endpoint if $link is a symlink. If $link is not a
     eval {
        $link = readlink("/tmp/testlink");
     };
-    
+
     say "this is a link" if($link);
  };
 
@@ -617,7 +617,7 @@ This function will rename $old to $new. Will return 1 on success and 0 on failur
 
  task "rename", "server01", sub {
     rename("/tmp/old", "/tmp/new");
- }; 
+ };
 
 =cut
 
@@ -770,7 +770,7 @@ sub mount {
    my ($device, $mount_point, @options) = @_;
    my $option = { @options };
 
-   my $cmd = sprintf("mount %s %s %s %s", 
+   my $cmd = sprintf("mount %s %s %s %s",
                            $option->{"fs"}?"-t " . $option->{"fs"}:"",   # file system
                            $option->{"options"}?" -o " . join(",", @{$option->{"options"}}):"",
                            $device,
@@ -815,7 +815,7 @@ sub glob {
    else {
       return CORE::glob($glob);
    }
-   
+
 }
 
 =back

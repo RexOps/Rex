@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -25,32 +25,32 @@ With this module you can manipulate files.
  task "read-passwd2", "server01", sub {
     say cat "/etc/passwd";
  };
- 
- 
+
+
  task "write-passwd", "server01", sub {
     my $fh = file_write "/etc/passwd";
     $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
     $fh->close;
  };
-    
+
  delete_lines_matching "/var/log/auth.log", matching => "root";
  delete_lines_matching "/var/log/auth.log", matching => qr{Failed};
- delete_lines_matching "/var/log/auth.log", 
+ delete_lines_matching "/var/log/auth.log",
                         matching => "root", qr{Failed}, "nobody";
-    
+
  file "/path/on/the/remote/machine",
     source => "/path/on/local/machine";
-    
+
  file "/path/on/the/remote/machine",
     content => "foo bar";
-    
+
  file "/path/on/the/remote/machine",
     source => "/path/on/local/machine",
     owner  => "root",
     group  => "root",
     mode   => 400,
     on_change => sub { say "File was changed."; };
- 
+
 =head1 EXPORTED FUNCTIONS
 
 =over 4
@@ -78,7 +78,7 @@ use File::Basename qw(dirname);
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(file_write file_close file_read file_append 
+@EXPORT = qw(file_write file_close file_read file_append
                cat
                delete_lines_matching append_if_no_such_line
                file template
@@ -90,7 +90,7 @@ use vars qw(%file_handles);
 
 Parse a template and return the content.
 
- my $content = template("/files/templates/vhosts.tpl", 
+ my $content = template("/files/templates/vhosts.tpl",
                      name => "test.lan",
                      webmaster => 'webmaster@test.lan');
 
@@ -110,9 +110,9 @@ sub template {
    }
 
    # if there is a file called filename.environment then use this file
-   # ex: 
+   # ex:
    # $content = template("files/hosts.tpl");
-   # 
+   #
    # rex -E live ...
    # will first look if files/hosts.tpl.live is available, if not it will
    # use files/hosts.tpl
@@ -166,17 +166,17 @@ This function is the successor of I<install file>. Please use this function to u
  task "prepare", "server1", "server2", sub {
     file "/file/on/remote/machine",
        source => "/file/on/local/machine";
-       
+
     file "/etc/hosts",
        content => template("templates/etc/hosts.tpl"),
        owner   => "user",
        group   => "group",
        mode    => 700,
        on_change => sub { say "Something was changed." };
-        
+
     file "/etc/motd",
        content => `fortune`;
-      
+
     file "/etc/httpd/conf/httpd.conf",
        source => "/files/etc/httpd/conf/httpd.conf",
        on_change => sub { service httpd => "restart"; };
@@ -256,13 +256,13 @@ On failure it will die.
  eval {
     $fh = file_write("/etc/groups");
  };
- 
+
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
     exit;
  }
- 
+
  # work with the filehandle
  $fh->write("...");
  $fh->close;
@@ -304,7 +304,7 @@ sub file_append {
          $fh = $sftp->open($file, O_WRONLY | O_APPEND );
          my %stat = stat "$file";
          $fh->seek($stat{size});
-      } 
+      }
       else {
          $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
       }
@@ -330,13 +330,13 @@ On failure it will die.
  eval {
     $fh = read("/etc/groups");
  };
- 
+
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
     exit;
  }
- 
+
  # work with the filehandle
  my $content = $fh->read_all;
  $fh->close;

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -36,13 +36,13 @@ sub execute {
       Rex::Logger::debug("Unknown action $arg1");
       die("Unknown action $arg1");
    }
-  
+
    my %ret = ();
    my ($k, $v);
 
    for my $line (@{$xml->{'capabilities'}->{'guest'}}) {
 
-      $ret{$line->{'arch'}->{'name'}} = 'true'        
+      $ret{$line->{'arch'}->{'name'}} = 'true'
          if defined($line->{'arch'}->{'name'});
 
       $ret{'emulator'} = $line->{'arch'}->{'emulator'}->{'content'}
@@ -59,7 +59,7 @@ sub execute {
             $ret{$_->{'type'}} = 'true';
          }
       } else {
-         $ret{$line->{'arch'}->{'domain'}->{'type'}} = 'true'    
+         $ret{$line->{'arch'}->{'domain'}->{'type'}} = 'true'
             if defined($line->{'arch'}->{'domain'}->{'type'});
       }
    }

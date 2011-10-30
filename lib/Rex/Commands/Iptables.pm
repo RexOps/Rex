@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 =head1 NAME
 
 Rex::Commands::Iptables - Iptable Management Commands
@@ -15,36 +15,36 @@ With this Module you can manage basic Iptables rules.
 =head1 SYNOPSIS
 
  use Rex::Commands::Iptables;
-     
+
  task "firewall", sub {
     iptables_clear;
-     
+
     open_port 22;
     open_port [22, 80] => {
        dev => "eth0",
     };
-        
+
     close_port 22 => {
        dev => "eth0",
     };
     close_port "all";
-        
+
     redirect_port 80 => 10080;
     redirect_port 80 => {
        dev => "eth0",
        to  => 10080,
     };
-      
+
     default_state_rule;
     default_state_rule dev => "eth0";
-        
+
     is_nat_gateway;
-       
+
     iptables t => "nat",
              A => "POSTROUTING",
              o => "eth0",
              j => "MASQUERADE";
-    
+
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -71,7 +71,7 @@ use Rex::Commands::Gather;
 
 use Rex::Logger;
 
-@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear 
+@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear
                open_port close_port redirect_port
                default_state_rule);
 
@@ -143,7 +143,7 @@ sub redirect_port {
             to  => $option,
          });
       }
-      
+
       return;
    }
 
@@ -287,7 +287,7 @@ List all iptables rules.
 
 =cut
 sub iptables_list {
-   
+
    my (%tables, $ret);
 
    my @lines = run "/sbin/iptables-save";

@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::User::OpenBSD;
 
 use strict;
@@ -76,7 +76,7 @@ sub create_user {
          $cmd .= " -G " . join(",", @groups);
       }
    }
- 
+
    run "$cmd $user";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");

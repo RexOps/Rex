@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -78,7 +78,7 @@ sub debug {
    else {
       print {$log_fh} "[" . get_timestamp() . "] ($$) DEBUG - $msg\n" if($log_fh);
    }
-   
+
    print STDERR "[" . get_timestamp() . "] ($$) DEBUG - $msg\n" unless($::QUIET);
 
    # workaround for windows Sys::Syslog behaviour on forks
@@ -108,7 +108,7 @@ sub shutdown {
    }
 
    $log_opened = 0;
-  
+
 }
 
 1;

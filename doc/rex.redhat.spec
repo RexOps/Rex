@@ -27,9 +27,9 @@ Requires: perl-Digest-HMAC
 Requires: perl-Crypt-SSLeay
 
 %description
-Rex is a tool to ease the execution of commands on multiple remote 
-servers. You can define small tasks, chain tasks to batches, link 
-them with servers or server groups, and execute them easily in 
+Rex is a tool to ease the execution of commands on multiple remote
+servers. You can define small tasks, chain tasks to batches, link
+them with servers or server groups, and execute them easily in
 your terminal.
 
 %prep
@@ -52,7 +52,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %files
 %defattr(-,root,root, 0755)
-%doc META.yml 
+%doc META.yml
 %doc %{_mandir}/*
 %{_bindir}/*
 %{perl_vendorlib}/*

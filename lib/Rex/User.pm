@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -32,10 +32,10 @@ sub get {
    eval "use $class";
 
    if($@) {
-   
+
       Rex::Logger::info("OS not supported");
       exit 1;
-   
+
    }
 
    return $class->new;

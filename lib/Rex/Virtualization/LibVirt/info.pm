@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -28,7 +28,7 @@ sub execute {
    my $xml;
 
    my @dominfo = run "virsh dominfo $vmname";
-  
+
    if($? != 0) {
       die("Error running virsh dominfo $vmname");
    }
@@ -39,7 +39,7 @@ sub execute {
    for my $line (@dominfo) {
       ($k, $v) = split(/:\s+/, $line);
       $ret{$k} = $v;
-   } 
+   }
 
    return \%ret;
 }

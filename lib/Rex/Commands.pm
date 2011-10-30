@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,24 +15,24 @@ This module is the core commands module.
 =head1 SYNOPSIS
 
  desc "Task description";
- 
+
  task "taskname", sub { ... };
  task "taskname", "server1", ..., "server20", sub { ... };
- 
+
  group "group" => "server1", "server2", ...;
- 
+
  user "user";
- 
+
  password "password";
-     
+
  environment live => sub {
     user "root";
     password "foobar";
     pass_auth;
     group frontend => "www01", "www02";
  };
- 
- 
+
+
 
 =head1 COMMANDLIST
 
@@ -104,7 +104,7 @@ use Rex::Logger;
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments);
 use base qw(Exporter);
 
-@EXPORT = qw(task desc group 
+@EXPORT = qw(task desc group
             user password port sudo_password public_key private_key pass_auth no_ssh
             get_random do_task batch timeout max_connect_retries parallelism
             exit
@@ -183,7 +183,7 @@ If you want, you can overwrite the servers with the I<-H> command line parameter
 You can define server groups with the I<group> function.
 
  group "allserver" => "server[1..3]", "workstation[1..10]";
- 
+
  task "mytask", group => "allserver", sub {
     say "Do something";
  };
@@ -395,13 +395,13 @@ Returns a random string of $count characters on the basis of @chars.
 sub get_random {
 	my $count = shift;
 	my @chars = @_;
-	
+
 	srand();
 	my $ret = "";
 	for(1..$count) {
 		$ret .= $chars[int(rand(scalar(@chars)-1))];
 	}
-	
+
 	return $ret;
 }
 
@@ -413,7 +413,7 @@ Call $task from an other task. Will execute the given $task with the servers def
     say "Running on server1";
     do_task "task2";
  };
- 
+
  task "task2", "server2", sub {
     say "Running on server2";
  };
@@ -463,7 +463,7 @@ If you want to user password authentication, then you need to call I<pass_auth>.
 
  user "root";
  password "root";
- 
+
  pass_auth;
 
 =cut
@@ -610,33 +610,33 @@ Define an environment. With environments one can use the same task for different
  user "root";
  password "foobar";
  pass_auth;
-     
+
  # define default frontend group containing only testwww01.
  group frontend => "testwww01";
-     
- # define live environment, with different user/password 
+
+ # define live environment, with different user/password
  # and a frontend server group containing www01, www02 and www03.
  environment live => sub {
     user "root";
     password "livefoo";
     pass_auth;
-       
+
     group frontend => "www01", "www02", "www03";
  };
-     
- # define stage environment with default user and password. but with 
+
+ # define stage environment with default user and password. but with
  # a own frontend group containing only stagewww01.
  environment stage => sub {
     group frontend => "stagewww01";
  };
-    
+
  task "prepare", group => "frontend", sub {
      say run "hostname";
  };
 
-Calling this task I<rex prepare> will execute on testwww01. 
+Calling this task I<rex prepare> will execute on testwww01.
 Calling this task with I<rex -E live prepare> will execute on www01, www02, www03.
-Calling this task I<rex -E stage prepare> will execute on stagewww01. 
+Calling this task I<rex -E stage prepare> will execute on stagewww01.
 
 =cut
 sub environment {
@@ -660,7 +660,7 @@ With the LOCAL function you can do local commands within a task that is defined 
  task "mytask", "server1", "server2", sub {
      # this will call 'uptime' on the servers 'server1' and 'server2'
      say run "uptime";
-     
+
      # this will call 'uptime' on the local machine.
      LOCAL {
         say run "uptime";
@@ -692,7 +692,7 @@ sub path {
 Set a configuration parameter. These Variables can be used in templates as well.
 
  set database => "db01";
-      
+
  task "prepare", sub {
     my $db = get "database";
  };
@@ -712,7 +712,7 @@ sub set {
 Get a configuration parameter.
 
  set database => "db01";
-      
+
  task "prepare", sub {
     my $db = get "database";
  };

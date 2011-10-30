@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -40,7 +40,7 @@ sub get {
    eval "use $class";
 
    if($@) {
-   
+
       if($provider) {
          Rex::Logger::info("Provider not supported (" . $provider . ")");
       }
@@ -48,7 +48,7 @@ sub get {
          Rex::Logger::info("OS not supported (" . $host->{"operatingsystem"} . ")");
       }
       die("OS/Provider not supported");
-   
+
    }
 
    return $class->new;

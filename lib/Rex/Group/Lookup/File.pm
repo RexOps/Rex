@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -16,23 +16,23 @@ With this module you can define hostgroups out of a file.
 
  use Rex::Group::Lookup::File;
  group "webserver" => lookup_file("./hosts.lst");
- 
+
 
 =head1 EXPORTED FUNCTIONS
 
 =over 4
 
 =cut
-   
+
 package Rex::Group::Lookup::File;
-   
+
 use strict;
 use warnings;
 
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
-    
+
 @EXPORT = qw(lookup_file);
 
 

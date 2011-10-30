@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -30,7 +30,7 @@ sub get {
 
    };
 
-  
+
    if($os eq "SunOS") {
       my @data = run "echo ::memstat | mdb -k";
 
@@ -75,7 +75,7 @@ sub get {
       my $mem_str  = run "top -d1 | grep Memory:";
       my $total_mem = sysctl("hw.physmem");
 
-      my ($active, $a_ent, $wired, $w_ent, $exec, $e_ent, $file, $f_ent, $free, $fr_ent) = 
+      my ($active, $a_ent, $wired, $w_ent, $exec, $e_ent, $file, $f_ent, $free, $fr_ent) =
          ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
 
       &$convert($active, $a_ent);
@@ -98,7 +98,7 @@ sub get {
       my $mem_str  = run "top -d1 | grep Mem:";
       my $total_mem = sysctl("hw.physmem");
 
-      my ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $cache, $c_ent, $buf, $b_ent, $free, $f_ent) = 
+      my ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $cache, $c_ent, $buf, $b_ent, $free, $f_ent) =
             ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
 
       &$convert($active, $a_ent);
@@ -122,7 +122,7 @@ sub get {
 
       my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
 
-      return { 
+      return {
          total => $total,
          used  => $used,
          free  => $free,

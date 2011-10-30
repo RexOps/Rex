@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 
 =head1 NAME
 
@@ -16,11 +16,11 @@ With this module you can get information of your lvm setup.
 =head1 SYNOPSIS
 
  use Rex::Commands::LVM;
-    
+
  my @physical_devices = pvs;
  my @volume_groups = vgs;
  my @logical_volumes = lvs;
- 
+
 
 
 =head1 EXPORTED FUNCTIONS
@@ -31,14 +31,14 @@ With this module you can get information of your lvm setup.
 
 
 package Rex::Commands::LVM;
-   
+
 use strict;
 use warnings;
-   
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
-    
+
 @EXPORT = qw(pvs vgs lvs);
 
 use Rex::Commands::Run;
@@ -49,10 +49,10 @@ Get Information of all your physical volumes.
 
  use Data::Dumper;
  use Rex::Commands::LVM;
-   
+
  task "lvm", sub {
     my @physical_volumes = pvs;
-      
+
     for my $physical_volume (@physical_volumes) {
        say Dumper($physical_volume);
     }
@@ -61,7 +61,7 @@ Get Information of all your physical volumes.
 =cut
 
 sub pvs {
-   
+
    my @lines = run "pvdisplay --units b --columns --separator '|' --noheadings";
    if($? != 0) {
       die("Error running pvdisplay");
@@ -95,10 +95,10 @@ Get Information of all your volume groups.
 
  use Data::Dumper;
  use Rex::Commands::LVM;
-    
+
  task "lvm", sub {
     my @volume_groups = vgs;
-      
+
     for my $volume_group (@volume_groups) {
        say Dumper($volume_group);
     }
@@ -128,7 +128,7 @@ sub vgs {
       my ($pv_name, $vg_name, $vg_size, $vg_free, $vg_attr) = split(/\|/, $line);
       $vg_free =~ s/B$//;
       $vg_size =~ s/B$//;
-      
+
       push(@ret, {
          physical_volume => $pv_name,
          volume_group => $vg_name,
@@ -148,10 +148,10 @@ Get Information of all your logical volumes.
 
  use Data::Dumper;
  use Rex::Commands::LVM;
-    
+
  task "lvm", sub {
     my @logical_volumes = lvs;
-      
+
     for my $logical_volume (@logical_volumes) {
        say Dumper($logical_volume);
     }
@@ -195,5 +195,5 @@ sub lvs {
 
 =cut
 
-   
+
 1;

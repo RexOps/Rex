@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,7 +15,7 @@ This module is the base class for hardware/information gathering.
 =head1 SYNOPSIS
 
  use Rex::Hardware;
- 
+
  my %host_info = Rex::Hardware->get(qw/ Host /)
  my %all_info  = Rex::Hardware->get(qw/ All /)
 
@@ -72,7 +72,7 @@ sub get {
    if("all" eq "\L$modules[0]") {
 
       @modules = qw(Host Kernel Memory Network Swap);
-   
+
    }
 
    for my $mod_string (@modules) {

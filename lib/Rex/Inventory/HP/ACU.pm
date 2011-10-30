@@ -1,16 +1,16 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
 package Rex::Inventory::HP::ACU;
-    
+
 use strict;
 use warnings;
 
 use Rex::Commands::Run;
-    
+
 sub get {
 
    if(can_run("hpacucli")) {
@@ -28,11 +28,11 @@ sub get {
 # The bellow code is from Parse::HP::ACU
 #
 # Copyright 2010 Jeremy Cole.
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of either: the GNU General Public License as published
 # by the Free Software Foundation; or the Artistic License.
-# 
+#
 # See http://dev.perl.org/licenses/ for more information.
 #
 sub parse_config
@@ -144,7 +144,7 @@ sub parse_config
          next;
       }
 
-      if(defined($current_array) 
+      if(defined($current_array)
          and defined($current_logical_drive)
          and defined($current_mirror_group))
       {
@@ -196,7 +196,7 @@ sub parse_config
          }
          next;
       }
-   
+
       if(defined($current_array))
       {
          if(my ($k, $v) = &K_V($line))
@@ -215,7 +215,7 @@ sub parse_config
       }
       next;
    }
-   
+
    return $controller;
 }
 
@@ -223,7 +223,7 @@ sub K
 {
    my ($k) = @_;
 
-   $k = lc $k;   
+   $k = lc $k;
    $k =~ s/[ \/\-]/_/g;
    $k =~ s/[\(\)]//g;
 
@@ -258,5 +258,5 @@ sub K_V($)
 
    return (undef, undef);
 }
-    
+
 1;

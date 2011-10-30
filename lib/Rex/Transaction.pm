@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -59,11 +59,11 @@ Start a transaction for $codeRef. If $codeRef dies it will rollback the transact
      };
      deploy "myapp.tar.gz";
  };
-   
+
  task "restart_server", group => "frontend", sub {
      run "/etc/init.d/apache2 restart";
  };
-   
+
  task "all", group => "frontend", sub {
      transaction {
          do_task qw/deploy restart_server/;

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,7 +15,7 @@ With this module you can set and get sysctl parameters.
 =head1 SYNOPSIS
 
  use Rex::Commands::Sysctl;
- 
+
  my $data = sysctl "net.ipv4.tcp_keepalive_time";
  sysctl "net.ipv4.tcp_keepalive_time" => 1800;
 
@@ -76,7 +76,7 @@ sub sysctl {
 
    }
    else {
-   
+
       my $ret = run "/sbin/sysctl -n $key";
       if($? == 0) {
          return $ret;

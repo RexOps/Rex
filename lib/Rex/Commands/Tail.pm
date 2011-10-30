@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -52,9 +52,9 @@ Or, if you want to format the output by yourself, you can define a callback func
  task "syslog", "server01", sub {
     tail "/var/log/syslog", sub {
       my ($data) = @_;
-      
+
       my $server = Rex->get_current_connection()->{'server'};
-      
+
       print "$server>> $data\n";
     };
  };
@@ -93,7 +93,7 @@ sub tail {
                $fh->seek($old_pos);
                $data = $fh->read($new_stat{'size'} - $old_pos);
             }
-            
+
 
             my @lines = split(/\n/, $data);
             shift @lines unless $old_pos;

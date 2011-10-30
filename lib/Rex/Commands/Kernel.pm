@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,7 +15,7 @@ With this module you can load and unload kernel modules.
 =head1 SYNOPSIS
 
  kmod load => "ipmi_si";
- 
+
  kmod unload => "ipmi_si";
 
 =head1 EXPORTED FUNCTIONS
@@ -68,7 +68,7 @@ sub kmod {
    my ($action, $module, @rest) = @_;
 
    my $options = { @_ };
-   
+
    my $os = get_operating_system();
 
    my $load_command = "modprobe";
@@ -87,7 +87,7 @@ sub kmod {
       }
    } elsif($os eq "SunOS") {
       $load_command = "modload -p ";
-      
+
       if($options->{"exec_file"}) {
          $load_command .= " -e " . $options->{"exec_file"} . " ";
       }
@@ -133,7 +133,7 @@ sub kmod {
       }
       else {
          Rex::Logger::debug("Kernel Module $module unloaded.");
-      } 
+      }
    }
    else {
       Rex::Logger::info("Unknown action $action");

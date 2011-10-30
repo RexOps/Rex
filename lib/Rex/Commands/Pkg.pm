@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
                      source => "/export/files/etc/passwd"
                  };
- 
+
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS
@@ -63,9 +63,9 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
 
  task "prepare", "server01", sub {
     install package => "perl";
-    
+
     # or if you have to install more packages.
-    install package => [ 
+    install package => [
                            "perl",
                            "ntp",
                            "dbus",
@@ -76,7 +76,7 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
  };
 
 =item installing a file
- 
+
 This is deprecated since 0.9. Please use L<File> I<file> instead.
 
  task "prepare", "server01", sub {
@@ -131,17 +131,17 @@ sub install {
       Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
       Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
       Rex::Logger::debug("See http://rexify.org/api/Rex/Commands/File.pm for more information.");
-   
+
       my $source    = $option->{"source"};
       my $on_change = $option->{"on_change"} || sub {};
 
       my ($new_md5, $old_md5);
-      
+
       if($source =~ m/\.tpl$/) {
          # das ist ein template
 
          my $template = Rex::Template->new;
-         
+
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
          my $vars = $option->{"template"};
@@ -163,7 +163,7 @@ sub install {
 
       }
       else {
-         
+
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
          eval {
@@ -207,13 +207,13 @@ sub install {
 
          &$on_change;
       }
-   
+
    }
 
    elsif($type eq "package") {
-      
+
       my $pkg;
-      
+
       $pkg = Rex::Pkg->get;
 
       if(!ref($package)) {
@@ -226,13 +226,13 @@ sub install {
             $pkg->install($pkg_to_install, $option);
          }
       }
-     
+
 
    }
 
 }
 
-=item remove($type, $package, $options) 
+=item remove($type, $package, $options)
 
 This function will remove the given package from a system.
 
@@ -267,7 +267,7 @@ sub remove {
    }
 
    else {
-      
+
       Rex::Logger::info("$type not supported.");
       die("remove $type not supported");
 
@@ -280,12 +280,12 @@ sub remove {
 This function returns all installed packages and their version.
 
  task "get-installed", "server1", sub {
-    
+
      for my $pkg (installed_packages()) {
         say "name     : " . $pkg->{"name"};
         say "  version: " . $pkg->{"version"};
      }
-     
+
  };
 
 =cut
@@ -331,7 +331,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
     repository add => "repository-name",
          url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
-     
+
  };
 
 To remove a repository just delete it with its name.
@@ -362,10 +362,10 @@ sub repository {
 To set an other package provider as the default, use this function.
 
  user "root";
-     
+
  group "db" => "db[01..10]";
  package_provider_for SunOS => "blastwave";
-    
+
  task "prepare", group => "db", sub {
      install package => "vim";
  };

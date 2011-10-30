@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -31,7 +31,7 @@ sub is_installed {
       Rex::Logger::debug("$pkg is NOT installed.");
       return 0;
    }
-   
+
    Rex::Logger::debug("$pkg is installed.");
    return 1;
 }

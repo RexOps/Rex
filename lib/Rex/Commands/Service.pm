@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -15,19 +15,19 @@ With this module you can manage Linux services.
 =head1 SYNOPSIS
 
  use Rex::Commands::Service
-     
+
  service apache2 => "start";
-     
+
  service apache2 => "stop";
-     
+
  service apache2 => "restart";
-     
+
  service apache2 => "status";
-    
+
  service apache2 => "reload";
-    
+
  service apache2 => "ensure", "started";
-   
+
  service apache2 => "ensure", "stopped";
 
 =head1 EXPORTED FUNCTIONS
@@ -117,7 +117,7 @@ sub service {
    my ($services, $action, $options) = @_;
 
    if(wantarray) {
-   
+
       # func-ref zurueckgeben
       return sub {
          service($services, $action);
@@ -208,7 +208,7 @@ sub service {
       }
 
       else {
-      
+
          Rex::Logger::info("$action not supported.");
 
       }
@@ -222,10 +222,10 @@ sub service {
 To set an other service provider as the default, use this function.
 
  user "root";
-     
+
  group "db" => "db[01..10]";
  service_provider_for SunOS => "svcadm";
-    
+
  task "start", group => "db", sub {
      service ssh => "restart";
  };

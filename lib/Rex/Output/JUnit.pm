@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::Output::JUnit;
-   
+
 use strict;
 use warnings;
 
@@ -59,7 +59,7 @@ __DATA__
 <?xml version='1.0' encoding='utf-8'?>
 <testsuites>
   <testsuite name="rex" errors="<%= $::errors %>" failures="0" tests="<%= $::tests %>" time="<%= $::time_over_all %>">
-    <system-out><%= $::system_out %></system-out>                                                                                               
+    <system-out><%= $::system_out %></system-out>
     <% foreach my $item (@$::items) { %>
     <% if($item->{"status"} eq "failed") { %>
     <testcase name="<%= $item->{"name"} %>" classname="t_rex_proc" time="<%= $item->{"time"} %>">

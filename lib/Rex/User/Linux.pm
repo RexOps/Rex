@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::User::Linux;
 
 use strict;
@@ -73,7 +73,7 @@ sub create_user {
          $cmd .= " --groups " . join(",", @groups);
       }
    }
- 
+
    run "$cmd $user";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
@@ -140,7 +140,7 @@ sub get_user {
       use strict;
    }
 
-   return ( 
+   return (
       name => $data->[0],
       password => $data->[1],
       uid => $data->[2],
@@ -166,7 +166,7 @@ sub create_group {
       Rex::Logger::debug("Group $group already exists. Updating...");
       $cmd = "groupmod ";
    }
-   
+
    if(exists $data->{gid}) {
       $cmd .= " -g " . $data->{gid};
    }

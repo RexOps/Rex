@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::User::FreeBSD;
 
 use strict;
@@ -122,7 +122,7 @@ sub get_user {
       use strict;
    }
 
-   return ( 
+   return (
       name => $data->[0],
       password => $data->[1],
       uid => $data->[2],
@@ -148,7 +148,7 @@ sub create_group {
       Rex::Logger::debug("Group $group already exists. Updating...");
       $cmd = "pw groupmod ";
    }
-   
+
    if(exists $data->{gid}) {
       $cmd .= " -g " . $data->{gid};
    }

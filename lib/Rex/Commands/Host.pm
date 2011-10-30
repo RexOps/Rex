@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -76,7 +76,7 @@ sub create_host {
    }
    else {
       my @host = get_host($host);
-      if($data->{"ip"} eq $host[0]->{"ip"} 
+      if($data->{"ip"} eq $host[0]->{"ip"}
          && join(" ", @{$data->{"aliases"}}) eq join(" ", @{$host[0]->{"aliases"}})) {
 
          Rex::Logger::debug("Nothing to update for host $host");

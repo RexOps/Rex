@@ -94,6 +94,15 @@ sub create_user {
       }
    }
 
+   if(exists $data->{crypt_password}) {
+      Rex::Logger::debug("Setting encrypted password of $user");
+      run "usermod -p '" . $data->{crypt_password} . "' $user";
+      if($? != 0) {
+         die("Error setting password for $user");
+      }
+   }
+
+
    return $self->get_uid($user);
 
 }

@@ -157,7 +157,7 @@ sub _get_http {
    my $html;
    if($has_curl) {
       Rex::Logger::debug("Downloading via curl");
-      $html = qx{curl -# -L '$url' 2>/dev/null};
+      $html = qx{curl -# -L -k '$url' 2>/dev/null};
    }
    elsif($has_wget) {
       Rex::Logger::debug("Downloading via wget");

@@ -2,7 +2,6 @@
 .gitignore
 ^debian\/
 README.pod
-MANIFEST
 \..*sw.*
 .git
 blib

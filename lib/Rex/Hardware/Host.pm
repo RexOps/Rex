@@ -72,6 +72,9 @@ sub get_operating_system {
 
    if($is_lsb) {
       if(my $ret = run "lsb_release -s -i") {
+         if($ret eq "SUSE LINUX") {
+            $ret = "SuSE";
+         }
          return $ret;
       }
    }

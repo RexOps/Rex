@@ -30,7 +30,7 @@ sub get {
 
    if(exists $provider_for->{$host->{"operatingsystem"}}) {
       $provider = $provider_for->{$host->{"operatingsystem"}};
-      $class .= "::$provider";
+      $class .= "::\L$provider";
    }
 
    eval "use $class";

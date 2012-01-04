@@ -1,4 +1,5 @@
 2012-01-24 Jan Gehring <jan.gehring, gmail.com> (0.22.0)
+  * systemd service provider
   * before, around and after hooks for tasks
   * curl: Allow connections to SSL sites without certs
   * don't override db config if no import options given

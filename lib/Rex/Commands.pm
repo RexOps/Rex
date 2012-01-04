@@ -117,6 +117,7 @@ use base qw(Exporter);
             path
             set
             get
+            before after around
           );
 
 =item no_ssh([$task])
@@ -729,8 +730,58 @@ sub get {
 
 =back
 
+=cut
+
+=item before($task => sub {})
+
+Run code before connecting to the server.
+
+ before mytask => sub {
+   my ($server) = @_;
+   run "vzctl start vm$server";
+ };
 
 =cut
+sub before {
+   my ($task, $code) = @_;
+   Rex::Task->modify_task($task, "before", $code);
+}
+
+=item after($task => sub {})
+
+Run code after the task is finished.
+
+ after mytask => sub {
+   my ($server) = @_;
+   run "vzctl stop vm$server";
+ };
+
+=cut
+sub after {
+   my ($task, $code) = @_;
+   Rex::Task->modify_task($task, "after", $code);
+}
+
+=item around($task => sub {})
+
+Run code before and after the task is finished.
+
+ around mytask => sub {
+   my ($server, $position) = @_;
+
+   unless($position) {
+      say "Before Task\n";
+   }
+   else {
+      say "After Task\n";
+   }
+ };
+
+=cut
+sub around {
+   my ($task, $code) = @_;
+   Rex::Task->modify_task($task, "around", $code);
+}
 
 ######### private functions
 

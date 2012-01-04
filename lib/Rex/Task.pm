@@ -96,8 +96,25 @@ sub create_task {
          private_key => Rex::Config->get_private_key,
          public_key  => Rex::Config->get_public_key,
       },
+      before => [],
+      after  => [],
+      around => [],
    };
 
+}
+
+sub modify_task {
+   my $class = shift;
+   my $task  = shift;
+   my $key   = shift;
+   my $value = shift;
+
+   if(ref($tasks{$task}->{$key}) eq "ARRAY") {
+      push(@{ $tasks{$task}->{$key} }, $value);
+   }
+   else {
+      $tasks{$task}->{$key} = $value;
+   }
 }
 
 sub get_tasks {
@@ -237,6 +254,16 @@ sub run {
             # reconnect to logger
             Rex::Logger::init();
 
+            # before jobs
+            for my $code (@{$tasks{$task}->{"before"}}) {
+               &$code($server);
+            }
+
+            # around jobs
+            for my $code (@{$tasks{$task}->{"around"}}) {
+               &$code($server);
+            }
+
             # this must be a ssh connection
             if(! $tasks{$task}->{"no_ssh"}) {
                $ssh = Net::SSH2->new;
@@ -295,6 +322,11 @@ sub run {
             # run the task
             $ret = _exec($task, \%opts);
 
+            # around jobs
+            for my $code (@{$tasks{$task}->{"around"}}) {
+               &$code($server);
+            }
+
             # disconnect if ssh connection
             if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                Rex::Logger::debug("Disconnecting from $server");
@@ -303,6 +335,11 @@ sub run {
 
             # remove remote connection from the stack
             Rex::pop_connection();
+
+            # after jobs
+            for my $code (@{$tasks{$task}->{"after"}}) {
+               &$code($server);
+            }
 
             # close logger
             Rex::Logger::shutdown();

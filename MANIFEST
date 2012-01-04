@@ -133,6 +133,7 @@ lib/Rex/Virtualization/LibVirt/shutdown.pm
 lib/Rex/Virtualization/LibVirt/start.pm
 LICENSE
 Makefile.PL
+MANIFEST
 README
 t/01.t
 t/commands.t
@@ -140,4 +141,3 @@ t/config.t
 t/helper_hash.t
 t/host.t
 t/needs.t
-MANIFEST

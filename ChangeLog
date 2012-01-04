@@ -1,3 +1,10 @@
+2012-01-24 Jan Gehring <jan.gehring, gmail.com> (0.22.0)
+  * before, around and after hooks for tasks
+  * curl: Allow connections to SSL sites without certs
+  * don't override db config if no import options given
+  * fixed suse detection bug
+  * user: set crypted passwords
+
 2011-10-28 Jan Gehring <jan.gehring, gmail.com> (0.21.1)
   * fix for #8 - HOME environment variable on Windows
   * fix for #5 - hostname evaluation with ips

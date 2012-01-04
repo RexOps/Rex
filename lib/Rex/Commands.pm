@@ -527,6 +527,8 @@ sub logging {
 
 With I<needs> you can define dependencies between tasks. The "needed" tasks will be called with the same server configuration as the calling task.
 
+I<needs> will not execute before, around and after hooks.
+
 =over 4
 
 =item Depend on all tasks in a given package.

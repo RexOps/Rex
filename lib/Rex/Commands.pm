@@ -105,7 +105,7 @@ use vars qw(@EXPORT $current_desc $global_no_ssh $environments);
 use base qw(Exporter);
 
 @EXPORT = qw(task desc group 
-            user password port sudo_password public_key private_key pass_auth no_ssh
+            user password port sudo_password public_key private_key pass_auth key_auth no_ssh
             get_random do_task batch timeout max_connect_retries parallelism
             exit
             evaluate_hostname
@@ -460,7 +460,7 @@ sub private_key {
 
 =item pass_auth
 
-If you want to user password authentication, then you need to call I<pass_auth>.
+If you want to use password authentication, then you need to call I<pass_auth>.
 
  user "root";
  password "root";
@@ -472,6 +472,22 @@ If you want to user password authentication, then you need to call I<pass_auth>.
 sub pass_auth {
    Rex::Config->set_password_auth(1);
 }
+
+=item key_auth
+
+If you want to use pubkey authentication, then you need to call I<key_auth>.
+
+ user "root";
+ password "root";
+ 
+ pass_auth;
+
+=cut
+
+sub key_auth {
+   Rex::Config->set_key_auth(1);
+}
+
 
 =item parallelism($count)
 

@@ -13,7 +13,7 @@ use Rex::Logger;
 
 use vars qw($user $password $port 
             $timeout $max_connect_fails
-            $password_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
+            $password_auth $key_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
             $path
             $set_param
             $environment
@@ -100,8 +100,17 @@ sub set_password_auth {
    $password_auth = shift || 1;
 }
 
+sub set_key_auth {
+   my $class = shift;
+   $key_auth = shift || 1;
+}
+
 sub get_password_auth {
    return $password_auth;
+}
+
+sub get_key_auth {
+   return $key_auth;
 }
 
 sub set_public_key {

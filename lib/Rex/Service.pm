@@ -33,11 +33,12 @@ sub get {
       $class .= "::\L$provider";
    }
 
+   Rex::Logger::debug("service using class: $class");
    eval "use $class";
 
    if($@) {
    
-      Rex::Logger::info("OS not supported");
+      Rex::Logger::info("OS (" . $host->{"operatingsystem"} . ") not supported");
       exit 1;
    
    }

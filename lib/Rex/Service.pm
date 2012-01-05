@@ -25,6 +25,11 @@ sub get {
 
    my $class = "Rex::Service::" . $host->{"operatingsystem"};
 
+   if(is_redhat() && operating_system_version() >= 16) {
+      $class = "Rex::Service::Redhat::systemd";
+   }
+
+
    my $provider_for = Rex::Config->get("service_provider") || {};
    my $provider;
 

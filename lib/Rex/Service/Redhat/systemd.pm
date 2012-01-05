@@ -25,6 +25,7 @@ sub new {
 
 sub start {
    my($self, $service) = @_;
+   $service = _prepare_service_name($service);
 
    run "systemctl start $service";
 
@@ -37,6 +38,7 @@ sub start {
 
 sub restart {
    my($self, $service) = @_;
+   $service = _prepare_service_name($service);
 
    run "systemctl restart $service";
 
@@ -49,6 +51,7 @@ sub restart {
 
 sub stop {
    my($self, $service) = @_;
+   $service = _prepare_service_name($service);
 
    run "systemctl stop $service";
 
@@ -61,6 +64,7 @@ sub stop {
 
 sub reload {
    my($self, $service) = @_;
+   $service = _prepare_service_name($service);
 
    run "systemctl reload $service";
 
@@ -73,6 +77,7 @@ sub reload {
 
 sub status {
    my($self, $service) = @_;
+   $service = _prepare_service_name($service);
 
    run "systemctl status $service";
 
@@ -85,6 +90,7 @@ sub status {
 
 sub ensure {
    my ($self, $service, $what) = @_;
+   $service = _prepare_service_name($service);
 
    if($what =~  /^stop/) {
       $self->stop($service);
@@ -94,6 +100,18 @@ sub ensure {
       $self->start($service);
       run "systemctl enable $service";
    }
+}
+
+# all systemd services must end with .service
+# so it will be appended if there is no "." in the name.
+sub _prepare_service_name {
+   my ($service) = @_;
+
+   unless($service =~ m/\./) {
+      $service .= ".service";
+   }
+
+   return $service;
 }
 
 1;

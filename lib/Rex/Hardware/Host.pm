@@ -156,7 +156,7 @@ sub get_operating_system_version {
 
       chomp $content;
 
-      $content =~ m/(\d+\.\d+)/;
+      $content =~ m/(\d+(\.\d+)?)/;
 
       return $1;
 

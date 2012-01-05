@@ -40,7 +40,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system_version
-               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris);
+               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse);
 
 =item get_operating_system
 
@@ -201,6 +201,26 @@ sub is_redhat {
       return 1;
    }
 }
+
+=item is_suse
+
+ task "foo", "server1", sub {
+    if(is_suse) {
+       # do something on a suse system
+    }
+ };
+
+=cut
+sub is_suse {
+   my $os = get_operating_system();
+
+   my @suse_clones = ("OpenSuSE", "SuSE");
+
+   if(grep { /$os/i } @suse_clones) {
+      return 1;
+   }
+}
+
 
 =item is_netbsd
 

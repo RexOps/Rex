@@ -29,6 +29,9 @@ sub get {
       $class = "Rex::Service::Redhat::systemd";
    }
 
+   if(is_suse() && operating_system_version() >= 121) {
+      $class = "Rex::Service::SuSE::systemd";
+   }
 
    my $provider_for = Rex::Config->get("service_provider") || {};
    my $provider;

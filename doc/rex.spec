@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.21.1
+Version: 0.22.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.21.1.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.22.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,18 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sat Jan 07 2012 Jan Gehring <jan.gehring at, gmail.com> 0.22.0-1
+- systemd service provider (for redhat and suse)
+- before, around and after hooks for tasks
+- curl: Allow connections to SSL sites without certs
+- don't override db config if no import options given
+- fixed suse detection bug
+- user: set crypted passwords
+- added OpenSuSE 12.1 compatibility
+- fixed redhat versiond detection
+- automatically use systemd service class if opensuse >= 12.1
+- added fusioninventory-agent output to the inventory module (if available)
 
 * Sun Oct 30 2011 Jan Gehring <jan.gehring at, gmail.com> 0.21.1-1
 - fix for #8 - HOME environment variable on Windows

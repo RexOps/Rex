@@ -108,9 +108,11 @@ lib/Rex/Service/Mageia.pm
 lib/Rex/Service/NetBSD.pm
 lib/Rex/Service/OpenBSD.pm
 lib/Rex/Service/Redhat.pm
+lib/Rex/Service/Redhat/systemd.pm
 lib/Rex/Service/SunOS.pm
 lib/Rex/Service/SunOS/svcadm.pm
 lib/Rex/Service/SuSE.pm
+lib/Rex/Service/SuSE/systemd.pm
 lib/Rex/Service/Ubuntu.pm
 lib/Rex/Task.pm
 lib/Rex/Template.pm

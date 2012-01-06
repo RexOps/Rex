@@ -8,6 +8,7 @@
   * added OpenSuSE 12.1 compatibility
   * fixed redhat versiond detection
   * automatically use systemd service class if opensuse >= 12.1
+  * added fusioninventory-agent output to the inventory module (if available)
 
 2011-10-28 Jan Gehring <jan.gehring, gmail.com> (0.21.1)
   * fix for #8 - HOME environment variable on Windows

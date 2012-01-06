@@ -15,6 +15,7 @@ use Rex::Commands::Network;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Commands::LVM;
+use Rex::Commands::Run;
 
 use Rex::Inventory::HP::ACU;
 
@@ -43,13 +44,15 @@ sub get {
    $sys_info   = $dmi->get_system_information;
 
    my $hal = {};
+   my (@net_devs, @storage, @volumes);
+
    eval {
       $hal = Rex::Inventory::Hal->new;
-   };
 
-   my @net_devs = $hal->get_network_devices;
-   my @storage  = $hal->get_storage_devices;
-   my @volumes  = $hal->get_storage_volumes;
+      @net_devs = $hal->get_network_devices;
+      @storage  = $hal->get_storage_devices;
+      @volumes  = $hal->get_storage_volumes;
+   };
 
    my @routes     = route;
    my @netstat    = netstat;

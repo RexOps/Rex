@@ -770,7 +770,9 @@ sub before {
 Run code after the task is finished.
 
  after mytask => sub {
-   my ($server) = @_;
+   my ($server, $failed) = @_;
+   if($failed) { say "Connection to $server failed."; }
+
    run "vzctl stop vm$server";
  };
 

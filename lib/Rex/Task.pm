@@ -315,6 +315,12 @@ sub run {
                # auth unsuccessfull
                unless($auth_ret) {
                   Rex::Logger::info("Wrong username or password. Or wrong key.");
+                  # after jobs
+                  for my $code (@{$tasks{$task}->{"after"}}) {
+                     &$code($server, 1);
+                  }
+
+
                   CORE::exit 1;
                }
 

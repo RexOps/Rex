@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Config;
+use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
@@ -25,11 +26,11 @@ sub get {
 
    my $class = "Rex::Service::" . $host->{"operatingsystem"};
 
-   if(is_redhat() && operating_system_version() >= 16) {
+   if(is_redhat() && can_run("systemctl")) {
       $class = "Rex::Service::Redhat::systemd";
    }
 
-   if(is_suse() && operating_system_version() >= 121) {
+   if(is_suse() && can_run("systemctl")) {
       $class = "Rex::Service::SuSE::systemd";
    }
 

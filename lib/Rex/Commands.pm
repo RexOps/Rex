@@ -746,8 +746,6 @@ sub get {
    return Rex::Config->get($key);
 }
 
-=back
-
 =cut
 
 =item before($task => sub {})
@@ -772,7 +770,7 @@ Run code after the task is finished.
  after mytask => sub {
    my ($server, $failed) = @_;
    if($failed) { say "Connection to $server failed."; }
-
+    
    run "vzctl stop vm$server";
  };
 
@@ -788,7 +786,7 @@ Run code before and after the task is finished.
 
  around mytask => sub {
    my ($server, $position) = @_;
-
+   
    unless($position) {
       say "Before Task\n";
    }
@@ -853,5 +851,8 @@ sub say {
    print @_, "\n";
 }
 
+=back
+
+=cut
 
 1;

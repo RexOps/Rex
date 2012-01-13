@@ -202,8 +202,8 @@ sub run {
          $public_key  = $data->{"public_key"};
       }
    } else {
-      $user = $tasks{$task}->{"auth"}->{"user"};
-      $pass = $tasks{$task}->{"auth"}->{"password"};
+      $user        = $tasks{$task}->{"auth"}->{"user"};
+      $pass        = $tasks{$task}->{"auth"}->{"password"};
       $private_key = $tasks{$task}->{"auth"}->{"private_key"};
       $public_key  = $tasks{$task}->{"auth"}->{"public_key"};
    }
@@ -266,21 +266,36 @@ sub run {
 
             # this must be a ssh connection
             if(! $tasks{$task}->{"no_ssh"}) {
+
+               if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $server) ) {
+                  $user = Rex::Config->get_ssh_config_username(server => $server);
+               }
+
+               if( ! Rex::Config->has_private_key && Rex::Config->get_ssh_config_private_key(server => $server) ) {
+                  $private_key = Rex::Config->get_ssh_config_private_key(server => $server);
+               }
+
+               if( ! Rex::Config->has_public_key && Rex::Config->get_ssh_config_public_key(server => $server) ) {
+                  $public_key = Rex::Config->get_ssh_config_public_key(server => $server);
+               }
+
                $ssh = Net::SSH2->new;
 
                my $fail_connect = 0;
 
                CON_SSH:
-                  my $port = Rex::Config->get_port || 22;
+                  my $port = Rex::Config->get_port(server => $server) || 22;
+                  $server  = Rex::Config->get_ssh_config_hostname(server => $server) || $server;
+
                   if($server =~ m/^(.*?):(\d+)$/) {
                      $server = $1;
                      $port   = $2;
                   }
                   Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
-                  unless($ssh->connect($server, $port, Timeout => Rex::Config->get_timeout)) {
+                  unless($ssh->connect($server, $port, Timeout => Rex::Config->get_timeout(server => $server))) {
                      ++$fail_connect;
                      sleep 1;
-                     goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails); # try connecting 3 times
+                     goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails(server => $server)); # try connecting 3 times
 
                      Rex::Logger::info("Can't connect to $server");
 

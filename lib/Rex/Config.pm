@@ -17,7 +17,9 @@ use vars qw($user $password $port
             $path
             $set_param
             $environment
-            $SET_HANDLER);
+            $SET_HANDLER
+            %SSH_CONFIG_FOR);
+
 
 sub set_path {
    my $class = shift;
@@ -57,9 +59,21 @@ sub set_max_connect_fails {
 }
 
 sub get_max_connect_fails {
+   my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{connectionattempts}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{connectionattempts};
+   }
+
    return $max_connect_fails || 3;
 }
 
+sub has_user {
+   my $class = shift;
+   return $user;
+}
 
 sub get_user {
    my $class = shift;
@@ -77,6 +91,13 @@ sub get_password {
 
 sub get_port {
    my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{port}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{port};
+   }
+
    return $port;
 }
 
@@ -92,6 +113,13 @@ sub set_timeout {
 
 sub get_timeout {
    my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{connecttimeout}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{connecttimeout};
+   }
+
    return $timeout || 2;
 }
 
@@ -118,6 +146,10 @@ sub set_public_key {
    $public_key = shift;
 }
 
+sub has_public_key {
+   return $public_key;
+}
+
 sub get_public_key {
    if($public_key) {
       return $public_key;
@@ -133,6 +165,10 @@ sub get_public_key {
 sub set_private_key {
    my $class = shift;
    $private_key = shift;
+}
+
+sub has_private_key {
+   return $private_key;
 }
 
 sub get_private_key {
@@ -186,6 +222,54 @@ sub get_environment {
    return $environment || "";
 }
 
+sub get_ssh_config_username {
+   my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{user}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{user};
+   }
+
+   return 0;
+}
+
+sub get_ssh_config_hostname {
+   my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{hostname}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{hostname};
+   }
+
+   return 0;
+}
+
+sub get_ssh_config_private_key {
+   my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{identityfile}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{identityfile};
+   }
+
+   return 0;
+}
+
+sub get_ssh_config_public_key {
+   my $class = shift;
+   my $param = { @_ };
+
+   if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
+         && exists $SSH_CONFIG_FOR{$param->{server}}->{identityfile}) {
+      return $SSH_CONFIG_FOR{$param->{server}}->{identityfile} . ".pub";
+   }
+
+   return 0;
+}
+
 sub register_set_handler {
    my ($class, $handler_name, $code) = @_;
    $SET_HANDLER->{$handler_name} = $code;
@@ -223,6 +307,33 @@ sub get {
    if(exists $set_param->{$var}) {
       return $set_param->{$var};
    }
+}
+
+sub import {
+
+   if(-f $ENV{"HOME"} . "/.ssh/config") {
+      my ($host, $in_host);
+      if(open(my $fh, "<", $ENV{"HOME"} . "/.ssh/config")) {
+         while(my $line = <$fh>) {
+            chomp $line;
+            next if ($line =~ m/^#/);
+            next if ($line =~ m/^\s*$/);
+
+            if($line =~ m/^Host ([^\s]+)/) {
+               $in_host = 1;
+               $host = $1; 
+               $SSH_CONFIG_FOR{$host} = {}; 
+               next;
+            }   
+            elsif($in_host) {
+               my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+(.*)$/);
+               $SSH_CONFIG_FOR{$host}->{lc($key)} = $val;
+            }   
+         }
+         close($fh);
+      }
+   }  
+
 }
 
 1;

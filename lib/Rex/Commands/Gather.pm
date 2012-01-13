@@ -195,7 +195,7 @@ sub is_freebsd {
 sub is_redhat {
    my $os = get_operating_system();
 
-   my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific");
+   my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific", "RedHatEnterpriseServer");
 
    if(grep { /$os/i } @redhat_clones) {
       return 1;

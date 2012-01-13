@@ -99,6 +99,12 @@ sub sync {
    if(Rex::Config->get_password_auth) {
       $cmd = sprintf($cmd, 'ssh');
       push(@expect_options, [
+                              qr{Are you sure you want to continue connecting},
+                              sub {
+                                 Rex::Logger::debug("Accepting key..");
+                                 $fh->send("yes\n");
+                                 exp_continue;
+                              },
                               qr{password: $},
                               sub {
                                  Rex::Logger::debug("Want Password");
@@ -113,6 +119,12 @@ sub sync {
    else {
       $cmd = sprintf($cmd, 'ssh -i ' . Rex::Config->get_private_key);
       push(@expect_options, [
+                              qr{Are you sure you want to continue connecting},
+                              sub {
+                                 Rex::Logger::debug("Accepting key..");
+                                 $fh->send("yes\n");
+                                 exp_continue;
+                              },
                               qr{Enter passphrase for key.*: $},
                               sub {
                                  Rex::Logger::debug("Want Passphrase");

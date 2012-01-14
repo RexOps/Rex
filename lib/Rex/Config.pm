@@ -311,9 +311,18 @@ sub get {
 
 sub import {
 
-   if(exists $ENV{"HOME"} && -f $ENV{"HOME"} . "/.ssh/config") {
+   my $path;
+
+   if($^O =~ m/^MSWin/) {
+      $path = $ENV{"USERPROFILE"} . "/.ssh/config";
+   }
+   else {
+      $path = $ENV{"HOME"} . "/.ssh/config";
+   }
+
+   if(-f $path) {
       my ($host, $in_host);
-      if(open(my $fh, "<", $ENV{"HOME"} . "/.ssh/config")) {
+      if(open(my $fh, "<", $path)) {
          while(my $line = <$fh>) {
             chomp $line;
             next if ($line =~ m/^#/);
@@ -333,7 +342,6 @@ sub import {
          close($fh);
       }
    }  
-
 }
 
 1;

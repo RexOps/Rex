@@ -102,6 +102,7 @@ sub sync {
                               qr{Are you sure you want to continue connecting},
                               sub {
                                  Rex::Logger::debug("Accepting key..");
+                                 my $fh = shift;
                                  $fh->send("yes\n");
                                  exp_continue;
                               },
@@ -122,6 +123,7 @@ sub sync {
                               qr{Are you sure you want to continue connecting},
                               sub {
                                  Rex::Logger::debug("Accepting key..");
+                                 my $fh = shift;
                                  $fh->send("yes\n");
                                  exp_continue;
                               },

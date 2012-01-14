@@ -311,7 +311,7 @@ sub get {
 
 sub import {
 
-   if(-f $ENV{"HOME"} . "/.ssh/config") {
+   if(exists $ENV{"HOME"} && -f $ENV{"HOME"} . "/.ssh/config") {
       my ($host, $in_host);
       if(open(my $fh, "<", $ENV{"HOME"} . "/.ssh/config")) {
          while(my $line = <$fh>) {

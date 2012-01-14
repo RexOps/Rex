@@ -1,10 +1,14 @@
 =pod
 
-(R)?ex is a small script to ease the execution of remote commands. You can write small tasks in a file named I<Rexfile>.
+With (R)?ex you can manage all your boxes from a central point through the complete process of configuration management and software deployment.
 
 =head2 Dependencies
 
 =over 4
+
+=item *
+
+L<XML::Simple>
 
 =item *
 
@@ -24,9 +28,20 @@ Only if you want to use the DB module.
 
 =item *
 
-L<Net::Server>
+L<libwww-perl>
 
-If you want to run (R)?ex in Master/Agent mode.
+=item *
+
+L<JSON::XS>
+
+=item *
+
+L<Digest::HMAC_SHA1>
+
+=item *
+
+L<MIME::Base64>
+
 
 =back
 
@@ -50,9 +65,11 @@ A small example:
 
  desc "Write into a file";
  task "write", group => "frontend", sub {
-     my $file = file_write '/tmp/status.out';
-     $file->write("File created\n");
-     $file->close;
+    file "/path/on/the/remote/machine",
+       content => "Hello World!",
+       mode    => 600,
+       owner   => "root",
+       group   => "root";
  };
 
 =head3 Commandline

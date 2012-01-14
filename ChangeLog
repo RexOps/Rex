@@ -1,4 +1,9 @@
-2012-01-24 Jan Gehring <jan.gehring, gmail.com> (0.22.0)
+2012-01-14 Jan Gehring <jan.gehring, gmail.com> (0.23.0)
+  * Redhat Enterprise Linux Support (5/6)
+  * read ssh_config file
+  * rsync now automatically accept keys
+
+2012-01-04 Jan Gehring <jan.gehring, gmail.com> (0.22.0)
   * systemd service provider (for redhat and suse)
   * before, around and after hooks for tasks
   * curl: Allow connections to SSL sites without certs

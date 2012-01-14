@@ -1,3 +1,10 @@
+rex (0.23.0) unstable; urgency=low
+  * Redhat Enterprise Linux Support (5/6)
+  * read ssh_config file
+  * rsync now automatically accept keys
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 14 Jan 2012 12:00:00 +0200
+
 rex (0.22.0) unstable; urgency=low
   * systemd service provider (for redhat and suse)
   * before, around and after hooks for tasks

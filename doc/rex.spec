@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.22.0
+Version: 0.23.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.22.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.23.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,11 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sat Jan 14 2012 Jan Gehring <jan.gehring at, gmail.com> 0.23.0-1
+- Redhat Enterprise Linux Support (5/6)
+- read ssh_config file
+- rsync now automatically accept keys
 
 * Sat Jan 07 2012 Jan Gehring <jan.gehring at, gmail.com> 0.22.0-1
 - systemd service provider (for redhat and suse)

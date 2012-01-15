@@ -15,7 +15,7 @@ With this module you can manage user and groups.
 =head1 SYNOPSIS
 
  task "create-user", "remoteserver", sub {
-    create_user "root" => {
+    create_user "root",
        uid => 0,
        home => '/root',
        comment => 'Root Account',
@@ -23,8 +23,7 @@ With this module you can manage user and groups.
        groups  => ['root', '...'],
        password => 'blahblah',
        system => 1,
-       ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...",
-    };
+       ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -59,8 +58,18 @@ Create or update a user.
 =cut
 
 sub create_user {
-   my ($user, $data) = @_;
-   my $uid = Rex::User->get()->create_user(@_);
+   my ($user, @_data) = @_;
+
+   my $data = {};
+
+   if(! ref($_data[0])) {
+      $data = { @_data };
+   }
+   else {
+      $data = $_data[0];
+   }
+
+   my $uid = Rex::User->get()->create_user($user, $data);
 
    if(defined $data->{"ssh_key"} && ! defined $data->{"home"}) {
       Rex::Logger::debug("If ssh_key option is used you have to specify home, too.");

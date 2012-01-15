@@ -74,6 +74,26 @@ sub netstat {
    return Rex::Hardware::Network::netstat();
 }
 
+=item network
+
+Configure network.
+
+ network "eth0",
+   proto     => "static",
+   ip        => "192.168.2.10",
+   netmask   => "255.255.255.0",
+   gateway   => "192.168.2.255",
+   broadcast => "192.168.2.255",
+   network   => "192.168.2.0";
+
+  network "eth0",
+   proto => "dhcp";
+
+
+=cut
+sub network {
+}
+
 =back
 
 =cut

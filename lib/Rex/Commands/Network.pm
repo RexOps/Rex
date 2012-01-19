@@ -40,12 +40,13 @@ require Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware::Network;
+use Rex::System;
 use Data::Dumper;
 
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(route default_gateway netstat);
+@EXPORT = qw(route default_gateway netstat network);
 
 =item route
 
@@ -92,6 +93,8 @@ Configure network.
 
 =cut
 sub network {
+   my $system = Rex::System->get;
+   $system->network(@_);
 }
 
 =back

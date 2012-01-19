@@ -33,7 +33,9 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(default_language languages keyboard timezone);
+use Rex::System;
+
+@EXPORT = qw(default_language languages keyboard timezone write_boot_record);
 
 =item default_language($lang)
 
@@ -43,6 +45,8 @@ Set the default language.
 
 =cut
 sub default_language {
+   my $system = Rex::System->get;
+   $system->default_language(@_);
 }
 
 =item language($lang1, $lang2, ...);
@@ -53,6 +57,8 @@ Set all available languages on a system.
 
 =cut
 sub languages {
+   my $system = Rex::System->get;
+   $system->languages(@_);
 }
 
 =item keyboard($keymap)
@@ -63,6 +69,8 @@ Set the keymap of a system.
 
 =cut
 sub keyboard {
+   my $system = Rex::System->get;
+   $system->keyboard(@_);
 }
 
 =item timezone($timezone)
@@ -73,6 +81,21 @@ Set the timezone of a system.
 
 =cut
 sub timezone {
+   my $system = Rex::System->get;
+   $system->timezone(@_)
 }
+
+=item write_boot_record($device)
+
+This function tries to write the boot record. Currently it supports only grub (version 1).
+
+=cut
+sub write_boot_record {
+   my $system = Rex::System->get;
+   $system->write_boot_record(@_);
+}
+
+
+
 
 1;

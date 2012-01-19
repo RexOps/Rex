@@ -32,7 +32,7 @@ use warnings;
 
 require Exporter;
 use base qw(Exporter);
-use vars qw(@EXPORT %MOUNT_FOR);
+use vars qw(@EXPORT);
 
 use Rex::Logger;
 use Rex::Commands::Run;
@@ -99,8 +99,6 @@ sub partition {
 
    $option{type} ||= "primary"; # primary is default
 
-   $MOUNT_FOR{$mountpoint} = \%option;
-
    # info:
    # disk size, partition start, partition end is in MB
 
@@ -135,6 +133,10 @@ sub partition {
    # get the partition id
    my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
    my ($part_num) = ($partitions[-1] =~ m/^\s+\d+\s+(\d+)\s+/);
+
+   if($option{boot}) {
+      run "parted /dev/$disk set $part_num bios_grub on";
+   }
 
    if(can_run("mkfs.$option{fstype}")) {
       Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 

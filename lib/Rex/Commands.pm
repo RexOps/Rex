@@ -746,8 +746,6 @@ sub get {
    return Rex::Config->get($key);
 }
 
-=cut
-
 =item before($task => sub {})
 
 Run code before connecting to the server.

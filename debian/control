@@ -2,12 +2,33 @@ Source: rex
 Section: admin
 Priority: optional
 Maintainer: Jan Gehring <jan.gehring@gmail.com>
-Build-Depends: debhelper (>= 4), libnet-ssh2-perl (>= 0.33), perl (>= 5.10.0)
-Standards-Version: 3.5.1
+Build-Depends: debhelper (>= 7),
+                  libnet-ssh2-perl (>= 0.33),
+                  perl (>= 5.10.0),
+                  libjson-xs-perl,
+                  libxml-simple-perl,
+                  libwww-perl,
+                  libdigest-sha1-perl,
+                  libdigest-hmac-perl,
+                  libexpect-perl,
+                  libdbi-perl
+Standards-Version: 3.9.1
 Homepage: http://rexify.org/
 
 Package: rex
 Architecture: all
-Depends: perl (>= 5.10.0), libnet-ssh2-perl (>= 0.33), libwww-perl, libxml-simple-perl,
- libdigest-sha1-perl, libdigest-hmac-perl, libexpect-perl, libjson-xs-perl, libdbi-perl
-Description: Rex is a tool to ease the execution of commands on multiple remote servers.
+Depends: ${misc:Depends},
+            ${perl:Depends},
+            libnet-ssh2-perl (>= 0.33),
+            libwww-perl,
+            libxml-simple-perl,
+            libdigest-sha1-perl,
+            libdigest-hmac-perl,
+            libexpect-perl,
+            libjson-xs-perl,
+            libdbi-perl
+Description: Remote Execution
+ (R)?ex is a small script to ease the execution of remote commands. You can
+ write small tasks in a file named Rexfile.
+ .
+ You can find examples and howtos on http://rexify.org/.

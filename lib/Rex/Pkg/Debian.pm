@@ -27,7 +27,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("dpkg -L $pkg");
+   run("dpkg -L $pkg 2>&1 >/dev/null");
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");

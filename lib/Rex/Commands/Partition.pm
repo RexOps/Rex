@@ -149,6 +149,8 @@ sub partition {
    else {
       die("Can't format partition with $option{fstype}");
    }
+
+   return "$disk$part_num";
 }
 
 =back

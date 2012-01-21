@@ -182,6 +182,8 @@ sub hostname {
    if($hostname) {
       file "/etc/hostname",
          content => "$hostname";
+
+      run "hostname $hostname";
    }
    else {
       return cat "/etc/hostname";

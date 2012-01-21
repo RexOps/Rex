@@ -46,7 +46,7 @@ use Data::Dumper;
 use vars qw(@EXPORT);
 use base qw(Exporter);
 
-@EXPORT = qw(route default_gateway netstat network);
+@EXPORT = qw(route default_gateway netstat network hostname domainname);
 
 =item route
 
@@ -95,6 +95,26 @@ Configure network.
 sub network {
    my $system = Rex::System->get;
    $system->network(@_);
+}
+
+=item hostname($hostname)
+
+Set the hostname.
+
+=cut
+sub hostname {
+   my $system = Rex::System->get;
+   $system->hostname(@_);
+}
+
+=item domainname($domainname)
+
+Set the domainname.
+
+=cut
+sub domainname {
+   my $system = Rex::System->get;
+   $system->domainname(@_);
 }
 
 =back

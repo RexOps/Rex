@@ -13,6 +13,7 @@ use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
+use Rex::Commands::Host;
 
 sub new {
    my $that = shift;
@@ -174,6 +175,28 @@ sub write_boot_record {
    Rex::Logger::info("Writing new MBR");
    run "grub-install /dev/$hd";
 }
+
+sub hostname {
+   my ($self, $hostname) = @_;
+
+   if($hostname) {
+      file "/etc/hostname",
+         content => "$hostname";
+   }
+   else {
+      return cat "/etc/hostname";
+   }
+}
+
+sub domainname {
+   my ($self, $domainname) = @_;
+   
+   create_host $self->hostname().".$domainname", {
+      ip      => "127.0.2.1",
+      aliases => [$self->hostname()],
+   };
+}
+
 
 
 1;

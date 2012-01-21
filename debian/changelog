@@ -1,4 +1,4 @@
-rex (0.23.99.18) unstable; urgency=low
+rex (0.23.99.19) unstable; urgency=low
   * many system functions for bare metal deployment
 
  -- Jan Gehring <jan.gehring@gmail.com>  Sat, 14 Jan 2012 12:00:00 +0200

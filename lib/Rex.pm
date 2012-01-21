@@ -74,6 +74,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Cache;
 
 require Exporter;
 use base qw(Exporter);
@@ -81,7 +82,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
 
 @EXPORT = qw($VERSION);
-$VERSION = "0.23.99.15";
+$VERSION = "0.23.99.17";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -147,7 +148,7 @@ sub get_cache {
       return $CONNECTION_STACK[-1]->{"cache"};
    }
 
-   return 0;
+   return Rex::Cache->new;
 }
 
 =back

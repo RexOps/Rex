@@ -37,6 +37,7 @@ use vars qw(@EXPORT);
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Commands::File;
+use Rex::Commands::LVM;
 
 @EXPORT = qw(clearpart partition);
 
@@ -58,6 +59,17 @@ sub clearpart {
       run "parted -s /dev/$disk mklabel " . $option{initialize};
       if($? != 0) {
          die("Error setting disklabel from $disk to $option{initialize}");
+      }
+
+      if($option{initialize} eq "gpt") {
+         Rex::Logger::info("Creating bios boot partition");
+         partition("none",
+            fstype => "non-fs",
+            ondisk => $disk,
+            size   => "1");
+
+         run "parted /dev/$disk set 1 bios_grub on";
+
       }
    }
    else {
@@ -91,6 +103,17 @@ Create a partition with mountpoint $mountpoint.
     type   => "logical",
     ondisk => "sda",
     size   => 8000;
+    
+ partition "none",
+    lvm    => 1,
+    type   => "primary",
+    size   => 15000,
+    ondisk => "vda";
+    
+ partition "/",
+    fstype => "ext3",
+    size   => 10000,
+    onvg   => "vg0";
 
 
 =cut
@@ -113,11 +136,12 @@ sub partition {
 
    my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk print";
 
-   my $last_partition_end = 0;
+   my $last_partition_end = 1;
    my $unit;
    if(@output_lines) {
-      ($last_partition_end, $unit) = ($output_lines[-1] =~ m/\s+[\d\.]+[a-z]+\s+[\d\.]+[a-z]+\s+([\d\.]+)(MB|GB)/i);
-      if($unit eq "GB") { $last_partition_end = $last_partition_end * 1000; } # * 1000 because of parted
+      ($last_partition_end, $unit) = ($output_lines[-1] =~ m/\s+[\d\.]+[a-z]+\s+[\d\.]+[a-z]+\s+([\d\.]+)(kB|MB|GB)/i);
+      if($unit eq "GB") { $last_partition_end = sprintf("%i", (($last_partition_end * 1000)+1)); } # * 1000 because of parted, +1 to round up
+      if($unit eq "kB") { $last_partition_end = sprintf("%i", (($last_partition_end / 1000)+1)); } # / 1000 because of parted, +1 to round up
    }
 
    Rex::Logger::info("Last parition ending at $last_partition_end");
@@ -135,10 +159,27 @@ sub partition {
    my ($part_num) = ($partitions[-1] =~ m/^\s+\d+\s+(\d+)\s+/);
 
    if($option{boot}) {
-      run "parted /dev/$disk set $part_num bios_grub on";
+      run "parted /dev/$disk set $part_num boot on";
    }
 
-   if(can_run("mkfs.$option{fstype}")) {
+   if($option{vg}) {
+      run "parted /dev/$disk set $part_num lvm on";
+      pvcreate "/dev/$disk$part_num";
+      my @vgs = vgs();
+      if( grep { $_->{volume_group} eq $option{vg} } @vgs ) {
+         # vg exists, so extend it
+         vgextend $option{vg}, "/dev/$disk$part_num";
+      }
+      else {
+         # vg doesnt exist, create a new one
+         vgcreate $option{vg} => "/dev/$disk$part_num";
+      }
+   }
+
+   if($option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "" || ! exists $option{fstype}) {
+      # nix
+   }
+   elsif(can_run("mkfs.$option{fstype}")) {
       Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 
       run "mkfs.$option{fstype} /dev/$disk$part_num";
    }

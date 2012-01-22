@@ -39,7 +39,7 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
-@EXPORT = qw(pvs vgs lvs);
+@EXPORT = qw(pvs vgs lvs pvcreate vgcreate lvcreate vgextend);
 
 use Rex::Commands::Run;
 
@@ -191,9 +191,67 @@ sub lvs {
    return @ret;
 }
 
+
+sub pvcreate {
+   my ($dev) = @_;
+   my $s = run "pvcreate $dev";
+   if($? != 0) {
+      die("Error creating pv.\n$s\n");
+   }
+
+   return 1;
+}
+
+sub vgcreate {
+   my ($vgname, @devices) = @_;
+
+   my $s = run "vgcreate $vgname " . join(" ", @devices);
+   if($? != 0) {
+      die("Error creating vg.\n$s\n");
+   }
+
+   return 1;
+}
+
+sub lvcreate {
+   my ($lvname, %option) = @_;
+
+   if(! exists $option{size} || ! exists $option{onvg}) {
+      die("Missing parameter size or onvg.");
+   }
+
+   unless($lvname =~ m/^[a-z0-9]+$/i) {
+      die("Error in lvname. Allowed characters a-z and 0-9.");
+   }
+
+   my $size = $option{size};
+   if($size =~ m/^[0-9]+$/) { $size .= "M"; }
+   my $onvg = $option{onvg};
+
+   my $s = run "lvcreate -n $lvname -L $size $onvg";
+
+   if($? != 0) {
+      die("Error creating lv.\n$s\n");
+   }
+
+   return 1;
+}
+
+sub vgextend {
+   my ($vgname, @devices) = @_;
+
+   my $s = run "vgextend $vgname " . join(" ", @devices);
+
+   if($? != 0) {
+      die("Error extending vg.\n$s\n");
+   }
+
+   return 1;
+}
+
 =back
 
 =cut
 
-   
+
 1;

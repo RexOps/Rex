@@ -230,11 +230,27 @@ sub lvcreate {
 
    my $s = run "lvcreate -n $lvname -L $size $onvg";
 
+   my $lv_path = $option{onvg} . "/" . $lvname;
+
+   if(exists $option{fstype}) {
+      if(can_run("mkfs.$option{fstype}")) {
+         Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$lv_path"); 
+         run "mkfs.$option{fstype} /dev/$lv_path";
+      }
+      elsif($option{fstype} eq "swap") {
+         Rex::Logger::info("Creating swap space on /dev/$lv_path");
+         run "mkswap -f /dev/$lv_path";
+      }
+      else {
+         die("Can't format partition with $option{fstype}");
+      }
+   }
+
    if($? != 0) {
       die("Error creating lv.\n$s\n");
    }
 
-   return 1;
+   return $lv_path;
 }
 
 sub vgextend {

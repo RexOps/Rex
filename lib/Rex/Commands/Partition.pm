@@ -176,7 +176,7 @@ sub partition {
       }
    }
 
-   if($option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "" || ! exists $option{fstype}) {
+   if(! exists $option{fstype} || $option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "") {
       # nix
    }
    elsif(can_run("mkfs.$option{fstype}")) {

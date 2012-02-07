@@ -131,7 +131,7 @@ sub get_tasks_for {
    for my $task_name (keys %tasks) {
       my @servers = @{$tasks{$task_name}->{"server"}};
 
-      if(grep { /^$host$/ } @servers) {
+      if( (grep { /^$host$/ } @servers) || $#servers == -1) {
          push @tasks, $task_name;
       }
    }

@@ -240,6 +240,7 @@ Create a new instance.
          volume   => $data->{"volume"} || undef,
          password => $data->{"password"} || undef,
          plan_id  => $data->{"plan_id"} || undef,
+         type     => $data->{"type"} || undef,
       );
 
       if(exists $data->{"metadata"}) {

@@ -105,6 +105,7 @@ sub run_instance {
       );
    }
 
+   return $info;
 }
 
 sub attach_volume {

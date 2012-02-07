@@ -166,6 +166,8 @@ sub run_instance {
 
    $self->start_instance(instance_id => $instance_id);
 
+   return $data;
+
 }
 
 sub start_instance {

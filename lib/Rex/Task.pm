@@ -397,14 +397,35 @@ sub run {
 
       Rex::Logger::init();
 
+      # before jobs
+      for my $code (@{$tasks{$task}->{"before"}}) {
+         &$code("<local>");
+      }
+
+      # around jobs
+      for my $code (@{$tasks{$task}->{"around"}}) {
+         &$code("<local>");
+      }
+
+
       Rex::Logger::debug("This is not a remote session");
       # push a local connection
       Rex::push_connection({ssh => 0, server => "<local>", sftp => 0, cache => Rex::Cache->new});
 
       $ret = _exec($task, \%opts);
 
+      # around jobs
+      for my $code (@{$tasks{$task}->{"around"}}) {
+         &$code("<local>");
+      }
+
       # remove local connection from stack
       Rex::pop_connection();
+
+      # around jobs
+      for my $code (@{$tasks{$task}->{"after"}}) {
+         &$code("<local>");
+      }
 
       Rex::Logger::shutdown();
    }

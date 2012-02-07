@@ -256,12 +256,12 @@ sub run {
 
             # before jobs
             for my $code (@{$tasks{$task}->{"before"}}) {
-               &$code($server);
+               &$code($server, \$server, \%opts);
             }
 
             # around jobs
             for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server);
+               &$code($server, \$server, \%opts);
             }
 
             # this must be a ssh connection

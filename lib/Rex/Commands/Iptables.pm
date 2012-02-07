@@ -180,11 +180,27 @@ Write standard iptable comands.
  task "firewall", sub {
     iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
     iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
+        
+    iptables "flush";
+    iptables -F;
+    iptables flush => "filter";
+    iptables -F => "filter";
  };
 
 =cut
 sub iptables {
    my (@params) = @_;
+
+   if($params[0] eq "flush" || $params[0] eq "-flush" || $params[0] eq "-F") {
+      if($params[1]) {
+         run "iptables -F -t $params[1]";
+      }
+      else {
+         run "iptables -F";
+      }
+
+      return;
+   }
 
    my $cmd = "";
    my $n = -1;

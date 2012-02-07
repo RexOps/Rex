@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Cwd qw(getcwd);
+use Rex::Commands::Fs;
 use Rex::Commands::Run;
 
 use vars qw($CHECKOUT_COMMAND);
@@ -44,7 +45,18 @@ sub checkout {
    }
 
 
-   my $checkout_cmd = sprintf($CHECKOUT_COMMAND, $special_opts, $repo_info->{"url"}, $checkout_to);
+   my $checkout_cmd;
+
+   if(! is_dir($checkout_to)) {
+      $checkout_cmd = sprintf($CHECKOUT_COMMAND, $special_opts, $repo_info->{"url"}, $checkout_to);
+   }
+   elsif(is_dir("$checkout_to/.svn")) {
+      $checkout_cmd = "svn up $checkout_to";
+   }
+   else {
+      Rex::Logger::info("Error checking out repository.");
+      exit 1;
+   }
    Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
    Rex::Logger::info("cloning " . $repo_info->{"url"} . " to " . ($checkout_to?$checkout_to:"."));

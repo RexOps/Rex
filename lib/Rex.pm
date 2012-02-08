@@ -73,6 +73,7 @@ package Rex;
 use strict;
 use warnings;
 
+use Net::SSH2;
 use Rex::Logger;
 use Rex::Cache;
 
@@ -150,6 +151,69 @@ sub get_cache {
 
    return Rex::Cache->new;
 }
+
+sub connect {
+
+   my ($param) = { @_ };
+
+   my $server  = $param->{server};
+   my $port    = $param->{port} || 22;
+   my $timeout = $param->{timeout} || 5;
+   my $user = $param->{"user"};
+   my $pass = $param->{"password"};
+
+
+   my $ssh = Net::SSH2->new;
+
+   my $fail_connect = 0;
+   CON_SSH:
+      if($server =~ m/^(.*?):(\d+)$/) {
+         $server = $1;
+         $port   = $2;
+      }
+
+      Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
+      unless($ssh->connect($server, $port, Timeout => $timeout)) {
+         ++$fail_connect;
+         sleep 1;
+         goto CON_SSH if($fail_connect < 3); # try connecting 3 times
+
+         Rex::Logger::info("Can't connect to $server");
+
+         die("Can't connect to $server"); # kind beenden
+      }
+
+   my $auth_ret;
+   if(! exists $param->{private_key}) {
+      $auth_ret = $ssh->auth_password($user, $pass);
+   }
+   elsif(exists $param->{private_key} && exists $param->{public_key}) {
+      $auth_ret = $ssh->auth_publickey($user, 
+                              $param->{public_key}, 
+                              $param->{private_key}, 
+                              $pass);
+   }
+   else {
+      $auth_ret = $ssh->auth('username' => $user,
+                             'password' => $pass,
+                             'publickey' => $param->{public_key} || "",
+                             'privatekey' => $param->{private_key} || "");
+   }
+
+   # push a remote connection
+   Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});
+
+   Rex::Logger::debug("Current Error-Code: " . $ssh->error());
+
+   # auth unsuccessfull
+   unless($auth_ret) {
+      Rex::Logger::info("Wrong username or password. Or wrong key.");
+      # after jobs
+
+      die("Wrong username or password. Or wrong key.");
+   }
+}
+
 
 =back
 

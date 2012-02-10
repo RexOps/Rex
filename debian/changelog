@@ -1,7 +1,16 @@
-rex (0.23.99.28) unstable; urgency=low
-  * many system functions for bare metal deployment
+rex (0.24.0) unstable; urgency=low
+  * Added patches from Alexandr Ciornii for Makefile.PL and home-directory detection
+  * it is now possible to use Rex as a library
+  * fixed/simplified SCM module
+  * added iptables flush command
+  * added a simple tcp alive test
+  * allow inline templates
+  * cloud_instance returns vm info after create
+  * added cli parameters to before/around hooks
+  * fixed before/around/after hooks for lokal tasks
+  * added lvm create functions
 
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 14 Jan 2012 12:00:00 +0200
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 10 Feb 2012 22:55:00 +0200
 
 rex (0.23.0) unstable; urgency=low
   * Redhat Enterprise Linux Support (5/6)

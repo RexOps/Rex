@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.23.0
+Version: 0.24.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.23.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.24.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,18 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Fri Feb 10 2012 Jan Gehring <jan.gehring at, gmail.com> 0.24.0-1
+- Added patches from Alexandr Ciornii for Makefile.PL and home-directory detection
+- it is now possible to use Rex as a library
+- fixed/simplified SCM module
+- added iptables flush command
+- added a simple tcp alive test
+- allow inline templates
+- cloud_instance returns vm info after create
+- added cli parameters to before/around hooks
+- fixed before/around/after hooks for lokal tasks
+- added lvm create functions
 
 * Sat Jan 14 2012 Jan Gehring <jan.gehring at, gmail.com> 0.23.0-1
 - Redhat Enterprise Linux Support (5/6)

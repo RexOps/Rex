@@ -1,3 +1,15 @@
+2012-02-10 Jan Gehring <jan.gehring, gmail.com> (0.24.0)
+  * Added patches from Alexandr Ciornii for Makefile.PL and home-directory detection
+  * it is now possible to use Rex as a library
+  * fixed/simplified SCM module
+  * added iptables flush command
+  * added a simple tcp alive test
+  * allow inline templates
+  * cloud_instance returns vm info after create
+  * added cli parameters to before/around hooks
+  * fixed before/around/after hooks for lokal tasks
+  * added lvm create functions
+
 2012-01-14 Jan Gehring <jan.gehring, gmail.com> (0.23.0)
   * Redhat Enterprise Linux Support (5/6)
   * read ssh_config file

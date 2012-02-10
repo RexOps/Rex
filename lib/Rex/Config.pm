@@ -344,4 +344,20 @@ sub import {
    }  
 }
 
+no strict 'refs';
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth parallelism/;
+for my $hndl (@set_handler) {
+   __PACKAGE__->register_set_handler($hndl => sub {
+      my ($val) = @_;
+      if($hndl =~ m/^\-/) {
+         $hndl = substr($hndl, 1);
+      }
+      if($hndl eq "keyauth") { $hndl = "key_auth"; $val = 1; }
+      if($hndl eq "passwordauth") { $hndl = "password_auth"; $val = 1; }
+
+      $$hndl = $val; 
+   });
+}
+use strict;
+
 1;

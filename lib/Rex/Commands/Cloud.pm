@@ -70,6 +70,23 @@ use Rex::Cloud;
                get_cloud_plans
                get_cloud_operating_systems);
 
+Rex::Config->register_set_handler("cloud" => sub {
+   my ($name, @options) = @_;
+   my $sub_name = "cloud_$name";
+
+   if($name eq "service") {
+      cloud_service(@options);
+   }
+
+   if($name eq "auth") {
+      cloud_auth(@options);
+   }
+
+   if($name eq "region") {
+      cloud_region(@options);
+   }
+});
+
 =item cloud_service($cloud_service)
 
 Define which cloud service to use.

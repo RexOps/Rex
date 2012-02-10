@@ -33,6 +33,7 @@ use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Hardware::Network;
 use Rex::Hardware::Memory;
+use Rex::Helper::System;
 
 require Exporter;
 use base qw(Exporter);
@@ -40,7 +41,8 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system_version
-               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian);
+               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian
+               get_system_information);
 
 =item get_operating_system
 
@@ -58,6 +60,15 @@ sub get_operating_system {
 
    return $host->{"operatingsystem"} || "unknown";
 
+}
+
+=item get_system_information
+
+Will return a hash of all system information. These Information will be also used by the template function.
+
+=cut
+sub get_system_information {
+   return Rex::Helper::System::info();
 }
 
 =item operating_system_is($string)

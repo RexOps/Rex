@@ -155,11 +155,7 @@ sub get_public_key {
       return $public_key;
    }
 
-   if($^O =~ m/^MSWin/) {
-      return $ENV{'USERPROFILE'} . '/.ssh/id_rsa.pub';
-   }
-
-   return $ENV{'HOME'} . '/.ssh/id_rsa.pub';
+   return _home_dir() . '/.ssh/id_rsa.pub';
 }
 
 sub set_private_key {
@@ -176,11 +172,7 @@ sub get_private_key {
       return $private_key;
    }
 
-   if($^O =~ m/^MSWin/) {
-      return $ENV{'USERPROFILE'} . '/.ssh/id_rsa';
-   }
-
-   return $ENV{'HOME'} . '/.ssh/id_rsa';
+   return _home_dir() . '/.ssh/id_rsa';
 }
 
 sub set_parallelism {
@@ -311,18 +303,9 @@ sub get {
 
 sub import {
 
-   my $path;
-
-   if($^O =~ m/^MSWin/) {
-      $path = $ENV{"USERPROFILE"} . "/.ssh/config";
-   }
-   else {
-      $path = $ENV{"HOME"} . "/.ssh/config";
-   }
-
-   if(-f $path) {
+   if(-f _home_dir() . "/.ssh/config") {
       my ($host, $in_host);
-      if(open(my $fh, "<", $path)) {
+      if(open(my $fh, "<", _home_dir() . "/.ssh/config")) {
          while(my $line = <$fh>) {
             chomp $line;
             next if ($line =~ m/^#/);
@@ -341,7 +324,7 @@ sub import {
          }
          close($fh);
       }
-   }  
+   }
 }
 
 no strict 'refs';
@@ -359,5 +342,13 @@ for my $hndl (@set_handler) {
    });
 }
 use strict;
+
+sub _home_dir {
+   if($^O =~ m/^MSWin/) {
+      return $ENV{'USERPROFILE'};
+   }
+
+   return $ENV{'HOME'};
+}
 
 1;

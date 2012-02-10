@@ -11,13 +11,13 @@ use warnings;
 
 use Rex::Logger;
 
-use vars qw($user $password $port 
-            $timeout $max_connect_fails
-            $password_auth $key_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
-            $path
-            $set_param
-            $environment
-            $SET_HANDLER
+our ($user, $password, $port,
+            $timeout, $max_connect_fails,
+            $password_auth, $key_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
+            $path,
+            $set_param,
+            $environment,
+            $SET_HANDLER,
             %SSH_CONFIG_FOR);
 
 
@@ -155,11 +155,7 @@ sub get_public_key {
       return $public_key;
    }
 
-   if($^O =~ m/^MSWin/) {
-      return $ENV{'USERPROFILE'} . '/.ssh/id_rsa.pub';
-   }
-
-   return $ENV{'HOME'} . '/.ssh/id_rsa.pub';
+   return _home_dir() . '/.ssh/id_rsa.pub';
 }
 
 sub set_private_key {
@@ -176,11 +172,7 @@ sub get_private_key {
       return $private_key;
    }
 
-   if($^O =~ m/^MSWin/) {
-      return $ENV{'USERPROFILE'} . '/.ssh/id_rsa';
-   }
-
-   return $ENV{'HOME'} . '/.ssh/id_rsa';
+   return _home_dir() . '/.ssh/id_rsa';
 }
 
 sub set_parallelism {
@@ -311,9 +303,9 @@ sub get {
 
 sub import {
 
-   if(-f $ENV{"HOME"} . "/.ssh/config") {
+   if(-f _home_dir() . "/.ssh/config") {
       my ($host, $in_host);
-      if(open(my $fh, "<", $ENV{"HOME"} . "/.ssh/config")) {
+      if(open(my $fh, "<", _home_dir() . "/.ssh/config")) {
          while(my $line = <$fh>) {
             chomp $line;
             next if ($line =~ m/^#/);
@@ -334,6 +326,14 @@ sub import {
       }
    }  
 
+}
+
+sub _home_dir {
+   if($^O =~ m/^MSWin/) {
+      return $ENV{'USERPROFILE'};
+   }
+
+   return $ENV{'HOME'};
 }
 
 1;

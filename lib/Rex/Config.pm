@@ -11,13 +11,13 @@ use warnings;
 
 use Rex::Logger;
 
-use vars qw($user $password $port 
-            $timeout $max_connect_fails
-            $password_auth $key_auth $public_key $private_key $parallelism $log_filename $log_facility $sudo_password
-            $path
-            $set_param
-            $environment
-            $SET_HANDLER
+our ($user, $password, $port,
+            $timeout, $max_connect_fails,
+            $password_auth, $key_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
+            $path,
+            $set_param,
+            $environment,
+            $SET_HANDLER,
             %SSH_CONFIG_FOR);
 
 

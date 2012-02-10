@@ -74,9 +74,9 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "/etc/init.d/$service status";
+   my $ret = run "/etc/init.d/$service status";
 
-   if($? == 0) {
+   if($ret =~ m/online/) {
       return 1;
    }
 

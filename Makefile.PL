@@ -1,7 +1,7 @@
 use ExtUtils::MakeMaker;
 
 my %deps = (
-                  'Net::SSH2' => '>0.33',
+                  'Net::SSH2' => '0.33',
                   'DBI' => 0,
                   'XML::Simple' => 0,
                   'LWP::UserAgent' => 0,

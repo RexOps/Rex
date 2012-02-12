@@ -32,7 +32,6 @@ lib/Rex/Commands/SCM.pm
 lib/Rex/Commands/Service.pm
 lib/Rex/Commands/SimpleCheck.pm
 lib/Rex/Commands/Sysctl.pm
-lib/Rex/Commands/System.pm
 lib/Rex/Commands/Tail.pm
 lib/Rex/Commands/Upload.pm
 lib/Rex/Commands/User.pm
@@ -118,9 +117,6 @@ lib/Rex/Service/SunOS/svcadm.pm
 lib/Rex/Service/SuSE.pm
 lib/Rex/Service/SuSE/systemd.pm
 lib/Rex/Service/Ubuntu.pm
-lib/Rex/System.pm
-lib/Rex/System/Debian.pm
-lib/Rex/System/Ubuntu.pm
 lib/Rex/Task.pm
 lib/Rex/Template.pm
 lib/Rex/Transaction.pm

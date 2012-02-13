@@ -246,6 +246,9 @@ sub import {
    my ($register_to, $file, $line) = caller;
 
    if($what eq "-base" || $what eq "base") {
+      require Rex::Commands;
+      Rex::Commands->import(register_in => $register_to);
+
       require Rex::Commands::Run;
       Rex::Commands::Run->import(register_in => $register_to);
 

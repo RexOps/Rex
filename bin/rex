@@ -18,7 +18,6 @@ use Rex::Config;
 use Rex::Group;
 use Rex::Batch;
 use Rex::Task;
-use Rex::Commands;
 use Rex::Cache;
 use Rex::Logger;
 use Rex::Output;

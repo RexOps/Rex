@@ -53,14 +53,14 @@ package Rex::Commands::Fs;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use Data::Dumper;
 use Fcntl;
 use Rex::Helper::SSH2;
 use Rex::Commands::Run;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(list_files ls
             unlink rm rmdir mkdir stat readlink symlink ln rename mv chdir cd cp

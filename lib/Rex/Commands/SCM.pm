@@ -54,8 +54,8 @@ use warnings;
 use Rex::Logger;
 use Rex::Config;
 
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT %REPOS);
 @EXPORT = qw(checkout);
 

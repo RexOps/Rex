@@ -9,8 +9,8 @@ package Rex::Commands::Virtualization;
 use strict;
 use warnings;
 
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Logger;

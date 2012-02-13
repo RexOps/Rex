@@ -55,8 +55,8 @@ package Rex::Commands::Cloud;
 use strict;
 use warnings;
    
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT $cloud_service $access_key $secret_access_key $cloud_region);
 
 use Rex::Logger;

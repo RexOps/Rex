@@ -34,9 +34,9 @@ use warnings;
 use Rex::Logger;
 use Rex::Commands::Run;
 
-require Exporter;
+require Rex::Exporter;
 
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(sysctl);

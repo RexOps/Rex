@@ -46,9 +46,9 @@ use Rex::Config;
 use Data::Dumper;
 use Digest::MD5;
 
-require Exporter;
+require Rex::Exporter;
 
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(install remove installed_packages update_package_db repository package_provider_for);

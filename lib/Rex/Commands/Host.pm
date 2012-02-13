@@ -32,14 +32,14 @@ package Rex::Commands::Host;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_host get_host delete_host);
 

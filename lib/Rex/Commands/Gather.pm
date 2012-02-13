@@ -35,8 +35,8 @@ use Rex::Hardware::Network;
 use Rex::Hardware::Memory;
 use Rex::Helper::System;
 
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 
 use vars qw(@EXPORT);
 

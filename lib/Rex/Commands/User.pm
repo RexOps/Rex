@@ -37,7 +37,7 @@ package Rex::Commands::User;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
@@ -45,7 +45,7 @@ use Rex::Logger;
 use Rex::User;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_user delete_user get_uid get_user
                create_group delete_group get_group get_gid

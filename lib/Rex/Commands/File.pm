@@ -63,7 +63,7 @@ use strict;
 use warnings;
 use Fcntl;
 
-require Exporter;
+require Rex::Exporter;
 use Data::Dumper;
 use Rex::Config;
 use Rex::FS::File;
@@ -77,7 +77,7 @@ use Rex::File::Parser::Data;
 use File::Basename qw(dirname);
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(file_write file_close file_read file_append 
                cat

@@ -39,9 +39,9 @@ use warnings;
 
 use Expect;
 
-require Exporter;
+require Rex::Exporter;
 
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(sync);

@@ -11,8 +11,8 @@ use warnings;
 
 use IO::Socket;
    
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
     
 @EXPORT = qw(is_port_open);

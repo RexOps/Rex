@@ -29,13 +29,13 @@ package Rex::Commands::Upload;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use File::Basename qw(basename);
 use Rex::Config;
 use Rex::Commands::Fs;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(upload);
 

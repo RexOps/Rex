@@ -36,14 +36,14 @@ package Rex::Commands::Network;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware::Network;
 use Data::Dumper;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(route default_gateway netstat network hostname domainname);
 

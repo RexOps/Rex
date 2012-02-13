@@ -31,13 +31,13 @@ package Rex::Commands::Process;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use Data::Dumper;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(kill killall
                ps

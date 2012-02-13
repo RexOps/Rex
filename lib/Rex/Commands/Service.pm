@@ -43,10 +43,10 @@ package Rex::Commands::Service;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 use Rex::Service;
 use Rex::Logger;

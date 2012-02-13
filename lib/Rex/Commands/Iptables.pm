@@ -58,10 +58,10 @@ package Rex::Commands::Iptables;
 use strict;
 use warnings;
 
-require Exporter;
+require Rex::Exporter;
 use Data::Dumper;
 
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 use vars qw(@EXPORT);
 

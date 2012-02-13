@@ -33,10 +33,10 @@ use warnings;
 
 use Rex::Inventory;
 
-require Exporter;
+require Rex::Exporter;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(inventor inventory);
 

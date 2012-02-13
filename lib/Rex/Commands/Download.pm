@@ -61,10 +61,10 @@ BEGIN {
 
 };
 
-require Exporter;
+require Rex::Exporter;
 
 use vars qw(@EXPORT);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 use Rex::Commands::Fs;
 use File::Basename qw(basename);

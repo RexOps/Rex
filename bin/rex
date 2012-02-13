@@ -24,18 +24,7 @@ use Rex::Logger;
 use Rex::Output;
 
 # preload some modules
-use Rex::Commands::Run;
-use Rex::Commands::Fs;
-use Rex::Commands::File;
-use Rex::Commands::Download;
-use Rex::Commands::Upload;
-use Rex::Commands::Gather;
-use Rex::Commands::Kernel;
-use Rex::Commands::Pkg;
-use Rex::Commands::Service;
-use Rex::Commands::Sysctl;
-use Rex::Commands::Tail;
-use Rex::Commands::Process;
+use Rex -base;
 
 use Getopt::Std;
 

@@ -97,12 +97,12 @@ use warnings;
 
 use Data::Dumper;
 
-require Exporter;
+require Rex::Exporter;
 use Rex::Task;
 use Rex::Logger;
 
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments);
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group 
             user password port sudo_password public_key private_key pass_auth key_auth no_ssh

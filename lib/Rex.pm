@@ -83,7 +83,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
 
 @EXPORT = qw($VERSION);
-$VERSION = "0.24.1";
+$VERSION = "0.24.99.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -151,6 +151,30 @@ sub get_cache {
 
    return Rex::Cache->new;
 }
+
+=item connect
+
+Use this function to create a connection if you use Rex as a library.
+
+ use Rex;
+ use Rex::Commands::Run;
+ use Rex::Commands::Fs;
+   
+ Rex::connect(
+    server      => "remotehost",
+    user        => "root",
+    password    => "f00b4r",
+    private_key => "/path/to/private/key/file",
+    public_key  => "/path/to/public/key/file",
+ );
+    
+ if(is_file("/foo/bar")) {
+    print "Do something...\n";
+ }
+     
+ my $output = run("upime");
+
+=cut
 
 sub connect {
 

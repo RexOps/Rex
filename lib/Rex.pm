@@ -83,7 +83,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
 
 @EXPORT = qw($VERSION);
-$VERSION = "0.24.0";
+$VERSION = "0.24.1";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -192,6 +192,7 @@ sub connect {
                               $param->{public_key}, 
                               $param->{private_key}, 
                               $pass);
+      print  "h: $auth_ret\n";
    }
    else {
       $auth_ret = $ssh->auth('username' => $user,

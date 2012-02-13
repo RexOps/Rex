@@ -77,12 +77,10 @@ use Net::SSH2;
 use Rex::Logger;
 use Rex::Cache;
 
-require Exporter;
-use base qw(Exporter);
+our (@EXPORT,
+      $VERSION,
+      @CONNECTION_STACK);
 
-use vars qw(@EXPORT $VERSION @CONNECTION_STACK);
-
-@EXPORT = qw($VERSION);
 $VERSION = "0.24.99.0";
 
 sub push_connection {
@@ -239,6 +237,52 @@ sub connect {
    }
 }
 
+
+sub import {
+   my ($class, $what) = @_;
+
+   $what ||= "";
+
+   my ($register_to, $file, $line) = caller;
+
+   if($what eq "-base" || $what eq "base") {
+      require Rex::Commands::Run;
+      Rex::Commands::Run->import(register_in => $register_to);
+
+      require Rex::Commands::Fs;
+      Rex::Commands::Fs->import(register_in => $register_to);
+
+      require Rex::Commands::File;
+      Rex::Commands::File->import(register_in => $register_to);
+
+      require Rex::Commands::Download;
+      Rex::Commands::Download->import(register_in => $register_to);
+
+      require Rex::Commands::Upload;
+      Rex::Commands::Upload->import(register_in => $register_to);
+
+      require Rex::Commands::Gather;
+      Rex::Commands::Gather->import(register_in => $register_to);
+
+      require Rex::Commands::Kernel;
+      Rex::Commands::Kernel->import(register_in => $register_to);
+
+      require Rex::Commands::Pkg;
+      Rex::Commands::Pkg->import(register_in => $register_to);
+
+      require Rex::Commands::Service;
+      Rex::Commands::Service->import(register_in => $register_to);
+
+      require Rex::Commands::Sysctl;
+      Rex::Commands::Sysctl->import(register_in => $register_to);
+
+      require Rex::Commands::Tail;
+      Rex::Commands::Tail->import(register_in => $register_to);
+
+      require Rex::Commands::Process;
+      Rex::Commands::Process->import(register_in => $register_to);
+   }
+}
 
 =back
 

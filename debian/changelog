@@ -1,3 +1,8 @@
+rex (0.24.1) unstable; urgency=low
+  * fixed a dependency bug
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 13 Feb 2012 22:55:00 +0200
+
 rex (0.24.0) unstable; urgency=low
   * Added patches from Alexandr Ciornii for Makefile.PL and home-directory detection
   * it is now possible to use Rex as a library

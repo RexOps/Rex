@@ -40,7 +40,6 @@ require Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware::Network;
-use Rex::System;
 use Data::Dumper;
 
 use vars qw(@EXPORT);
@@ -73,48 +72,6 @@ Get network connection information
 =cut
 sub netstat {
    return Rex::Hardware::Network::netstat();
-}
-
-=item network
-
-Configure network.
-
- network "eth0",
-   proto     => "static",
-   ip        => "192.168.2.10",
-   netmask   => "255.255.255.0",
-   gateway   => "192.168.2.255",
-   broadcast => "192.168.2.255",
-   network   => "192.168.2.0";
-
-  network "eth0",
-   proto => "dhcp";
-
-
-=cut
-sub network {
-   my $system = Rex::System->get;
-   $system->network(@_);
-}
-
-=item hostname($hostname)
-
-Set the hostname.
-
-=cut
-sub hostname {
-   my $system = Rex::System->get;
-   $system->hostname(@_);
-}
-
-=item domainname($domainname)
-
-Set the domainname.
-
-=cut
-sub domainname {
-   my $system = Rex::System->get;
-   $system->domainname(@_);
 }
 
 =back

@@ -1,3 +1,8 @@
+rex (0.25.0) unstable; urgency=low
+  * added public repository commands to rexify
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Tue, 14 Feb 2012 22:55:00 +0200
+
 rex (0.24.1) unstable; urgency=low
   * fixed a dependency bug
 

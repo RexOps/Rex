@@ -123,6 +123,7 @@ sub add_repository {
    $fh->write("name=$desc\n");
    $fh->write("baseurl=" . $data{"url"} . "\n");
    $fh->write("enabled=1\n");
+   $fh->write("gpgcheck=" . $data{"gpgcheck"} ."\n") if defined $data{"gpgcheck"};
 
    $fh->close;
 }

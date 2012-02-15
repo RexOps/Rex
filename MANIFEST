@@ -37,6 +37,7 @@ lib/Rex/Commands/Upload.pm
 lib/Rex/Commands/User.pm
 lib/Rex/Commands/Virtualization.pm
 lib/Rex/Config.pm
+lib/Rex/Exporter.pm
 lib/Rex/File/Parser/Data.pm
 lib/Rex/File/Parser/Ini.pm
 lib/Rex/Fork/Manager.pm

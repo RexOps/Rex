@@ -1,3 +1,8 @@
+rex (0.25.2) unstable; urgency=low
+  * display the correct module name in rexify --search command
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Wed, 15 Feb 2012 20:30:00 +0200
+
 rex (0.25.1) unstable; urgency=low
   * don't use github for recipes query
 

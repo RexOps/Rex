@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.25.1
+Version: 0.25.2
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.25.1.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.25.2.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -59,7 +59,10 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %changelog
 
-* Tue Feb 14 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.1-1
+* Wed Feb 15 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.2-1
+- display the correct module name in rexify --search command
+
+* Wed Feb 15 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.1-1
 - don't use github for recipes query
 
 * Tue Feb 14 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.0-1

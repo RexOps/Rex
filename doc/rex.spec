@@ -61,6 +61,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 * Tue Feb 14 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.0-1
 - added public repository commands to rexify
+- added patch from JEEN Lee for gpgcheck on yum repositories
 
 * Mon Feb 13 2012 Jan Gehring <jan.gehring at, gmail.com> 0.24.1-1
 - fixed a dependency bug

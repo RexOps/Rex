@@ -1,5 +1,6 @@
 2012-02-13 Jan Gehring <jan.gehring, gmail.com> (0.25.0)
   * added public repository commands to rexify
+  * added patch from JEEN Lee for gpgcheck on yum repositories
 
 2012-02-13 Jan Gehring <jan.gehring, gmail.com> (0.24.1)
   * fixed a dependeny bug

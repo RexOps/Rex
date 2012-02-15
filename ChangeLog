@@ -1,5 +1,5 @@
-2012-02-13 Jan Gehring <jan.gehring, gmail.com> (0.24.99.0)
-  * started work for a public rex repository
+2012-02-13 Jan Gehring <jan.gehring, gmail.com> (0.25.0)
+  * added public repository commands to rexify
 
 2012-02-13 Jan Gehring <jan.gehring, gmail.com> (0.24.1)
   * fixed a dependeny bug

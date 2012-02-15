@@ -3,12 +3,128 @@
 use strict;
 use warnings;
 
+$|++;
+
+use LWP::Simple;
+use YAML;
+use Data::Dumper;
+
+my $opts = {}; 
+
+
+for(my $i=0; $i<@ARGV; $i++) {
+
+   if($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/) {
+      my $key = $1; 
+      if(! $ARGV[$i+1] || $ARGV[$i+1] =~ m/^\-\-/) {
+         $opts->{$key} = 1;                                                                                      
+      }   
+      else {
+         if(exists $opts->{$key}) {
+            $opts->{$key} = [ $opts->{$key} ] if (! ref $opts->{$key});
+
+            push(@{$opts->{$key}}, $ARGV[++$i]);
+         }   
+         else {
+            $opts->{$key} = $ARGV[++$i];
+         }   
+      }   
+   }   
+
+}
+
 unless($ARGV[0]) {
-   print STDERR "Usage: rexify <project-name> [<directory>]\n";
+   print STDERR "Usage: rexify <project-name> [<directory>] [<options>]\n";
+   print STDERR "\n";
+   print STDERR "Options:";
+   print STDERR "\n";
+   print STDERR "\t--search value\t\tWill search community recipes\n";
+   print STDERR "\t--use recipe\t\tWill download community recipe\n";
    exit 1;
 }
 
-my $dir = $ARGV[1] || $ARGV[0];
+sub print_found {
+   my ($name, $data) = @_;
+
+   print "* $name\n";
+   print "    Author     : " . $data->{Author} . "\n";
+   print "    Requires   : " . join(", ", @{ $data->{Requires} }) . "\n" if($data->{Requires});
+   print "    License    : " . $data->{License} . "\n" if($data->{License});
+   print "    Description: " . $data->{Description} . "\n";
+}
+
+sub download_recipe {
+   my ($name) = @_;
+
+   if(! -f "Rexfile") {
+      print STDERR "This is not a Rex project directory. There is no Rexfile.\n";
+      exit 1;
+   }
+
+   if(! -d "lib") { mkdir "lib"; }
+
+   print "Downloading $name...   ";
+   $name =~ s/::/\//g;
+   my $content = get("http://rexify.org/get/mod/$name");
+   open(my $fh, ">", "tmp-mod.tar.gz") or die($!);
+   binmode $fh;
+   print $fh $content;
+   close($fh);
+   chdir("lib");
+   system("tar xvzf ../tmp-mod.tar.gz >dl.log 2>&1");
+   unlink("dl.log");
+   chdir("..");
+   unlink("tmp-mod.tar.gz");
+
+   print "done.\n";
+
+}
+
+if(exists $opts->{search}) {
+   my $search_string = $opts->{search};
+   # only a search
+   print "Downloading recipes.yml from github... ";
+   my $recipes = get("https://raw.github.com/krimdomu/rex-recipes/master/recipes.yml");
+   print " done.\n";
+
+   print "Searching...\n\n";
+
+   my $data    = Load($recipes);
+
+   for my $mod (keys %{ $data }) {
+      if($mod =~ qr{$search_string}i) {
+         print_found($mod, $data->{$mod});
+      }
+
+      if($data->{$mod}->{Description} =~ qr{$search_string}i) {
+         print_found($mod, $data->{$mod});
+      }
+   }
+
+   exit 0;
+}
+
+if(exists $opts->{use} && $ARGV[0] eq "--use") {
+   if($opts->{use}) {
+      if(! ref $opts->{use}) {
+         $opts->{use} = [ $opts->{use} ];
+      }
+
+      for my $use_mod (@{ $opts->{use} }) {
+         download_recipe($use_mod);
+      }
+   }
+
+   exit 0;
+}
+
+
+
+my $dir = $ARGV[0];
+
+if($ARGV[1] !~ m/^\-\-/) {
+   $dir = $ARGV[1];
+}
 
 unless(-d $dir) {
    print "Created $dir\n";
@@ -21,18 +137,11 @@ unless(-d 'lib') {
    mkdir('lib');
 }
 
-unless(-d 'lib/Rex') {
-   mkdir('lib/Rex');
-}
+unless(-f 'lib' . $ARGV[0] . '.pm') {
+   open(my $fh, ">", "lib/$ARGV[0].pm") or die($!);
+   print $fh qq~package $ARGV[0];
 
-print "Created lib/Rex\n";
-
-unless(-f 'lib/Rex/' . $ARGV[0] . '.pm') {
-   open(my $fh, ">", "lib/Rex/$ARGV[0].pm") or die($!);
-   print $fh qq~package Rex::$ARGV[0];
-
-use Rex::Commands;
-use Rex::Commands::Run;
+use Rex -base;
 
 desc "Get uptime of server";
 task "uptime", group => 'servers', sub {
@@ -48,34 +157,54 @@ task "uptime", group => 'servers', sub {
    open($fh, ">", "Rexfile") or die($!);
    print $fh qq~
 
-use lib 'lib';
-
 # set your username
-user "<user>";
+set user => "<user>";
 
 # set your password
-password "<password>";
+set password => "<password>";
 
 # enable password authentication
-pass_auth;
+set -passauth;
 
 # put your server in this group
 group "servers" => "server1", "server2";
 
 
 # now load every module via ,,require''
-require Rex::$ARGV[0];
+require $ARGV[0];
 
 ~;
    close($fh);
 
+   if($opts->{use}) {
+      if(! ref $opts->{use}) {
+         $opts->{use} = [ $opts->{use} ];
+      }
+
+      for my $use_mod (@{ $opts->{use} }) {
+         download_recipe($use_mod);
+      }
+   }
+
    print STDERR "Created Rexfile.\n";
    print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
-   print STDERR "You can edit $dir/lib/Rex/$ARGV[0].pm to define tasks.\n";
+   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
    print STDERR "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
 }
 else {
-   print STDERR "It seems that this project is already rexified.\n";
+
+   if($opts->{use}) {
+      if(! ref $opts->{use}) {
+         $opts->{use} = [ $opts->{use} ];
+      }
+
+      for my $use_mod (@{ $opts->{use} }) {
+         download_recipe($use_mod);
+      }
+   }
+
+
+
    exit;
 }
 

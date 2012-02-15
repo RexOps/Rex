@@ -46,6 +46,8 @@ unless($ARGV[0]) {
 sub print_found {
    my ($name, $data) = @_;
 
+   $name =~ s/\//::/g;
+   $name =~ s/\.pm$//;
    print "* $name\n";
    print "    Author     : " . $data->{Author} . "\n";
    print "    Requires   : " . join(", ", @{ $data->{Requires} }) . "\n" if($data->{Requires});

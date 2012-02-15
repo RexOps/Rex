@@ -83,8 +83,8 @@ sub download_recipe {
 if(exists $opts->{search}) {
    my $search_string = $opts->{search};
    # only a search
-   print "Downloading recipes.yml from github... ";
-   my $recipes = get("https://raw.github.com/krimdomu/rex-recipes/master/recipes.yml");
+   print "Downloading recipes.yml ... ";
+   my $recipes = get("http://rexify.org/get/recipes");
    print " done.\n";
 
    print "Searching...\n\n";

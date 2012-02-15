@@ -117,7 +117,7 @@ sub can_run {
       return 1;
    }
 
-   my @ret = run "which $cmd";
+   my @ret = run "which $cmd >/dev/null 2>&1";
    if($? != 0) { return 0; }
 
    if( grep { /^no.*in/ } @ret ) {

@@ -214,7 +214,6 @@ sub connect {
                               $param->{public_key}, 
                               $param->{private_key}, 
                               $pass);
-      print  "h: $auth_ret\n";
    }
    else {
       $auth_ret = $ssh->auth('username' => $user,

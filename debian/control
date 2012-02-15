@@ -11,7 +11,8 @@ Build-Depends: debhelper (>= 7),
                   libdigest-sha1-perl,
                   libdigest-hmac-perl,
                   libexpect-perl,
-                  libdbi-perl
+                  libdbi-perl,
+                  libyaml-perl
 Standards-Version: 3.9.1
 Homepage: http://rexify.org/
 
@@ -26,6 +27,7 @@ Depends: ${misc:Depends},
             libdigest-hmac-perl,
             libexpect-perl,
             libjson-xs-perl,
+            libyaml-perl,
             libdbi-perl
 Description: Remote Execution
  (R)?ex is a small script to ease the execution of remote commands. You can

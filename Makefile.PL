@@ -9,6 +9,8 @@ my %deps = (
                   'Digest::HMAC_SHA1' => 0,
                   'HTTP::Date' => 0,
                   'JSON::XS' => 0,
+                  'YAML' => 0,
+                  'LWP::Simple' => 0,
 );
 
 if($^O =~ m/^MSWin/) {

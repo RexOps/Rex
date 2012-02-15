@@ -4,6 +4,27 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Commands::SimpleCheck - Simple tcp/alive checks
+
+=head1 DESCRIPTION
+
+With this module you can do simple tcp/alive checks.
+
+=head1 SYNOPSIS
+
+ if(is_port_open($remote_host, $port)) {
+    print "Port $port is open\n";
+ }
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
 package Rex::Commands::SimpleCheck;
    
 use strict;
@@ -16,7 +37,12 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
     
 @EXPORT = qw(is_port_open);
-   
+
+=item is_port_open($ip, $port)
+
+Check if something is listening on port $port of $ip.
+
+=cut
 sub is_port_open {
 
    my ($ip, $port, $type) = @_;
@@ -37,5 +63,9 @@ sub is_port_open {
    return 0;
 
 }
-   
+
+=back
+
+=cut
+
 1;

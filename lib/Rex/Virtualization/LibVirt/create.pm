@@ -14,6 +14,7 @@ use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
+use Rex::Commands::File;
 use Rex::File::Parser::Data;
 use Rex::Template;
 
@@ -96,7 +97,13 @@ sub execute {
 
    $parsed_template =~ s/[\n\r]//gms;
 
-   run "virsh define <(echo '$parsed_template')";
+   my $file_name = "/tmp/" . rand(100) . ".xml";
+
+   file "$file_name",
+      content => $parsed_template;
+
+   run "virsh define $file_name";
+   unlink($file_name);
    if($? != 0) {
      die("Error starting vm $opts->{name}");
    }

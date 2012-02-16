@@ -96,6 +96,7 @@ if(exists $opts->{search}) {
    for my $mod (keys %{ $data }) {
       if($mod =~ qr{$search_string}i) {
          print_found($mod, $data->{$mod});
+         next;
       }
 
       if($data->{$mod}->{Description} =~ qr{$search_string}i) {

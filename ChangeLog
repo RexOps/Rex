@@ -1,3 +1,7 @@
+2012-02-16 Jan Gehring <jan.gehring, gmail.com> (0.25.3)
+  * fixed a display bug in rexify --search command
+  * fixed a bug in the libvirt module if it gets executed local
+
 2012-02-15 Jan Gehring <jan.gehring, gmail.com> (0.25.2)
   * display the correct module name in rexify --search command
 

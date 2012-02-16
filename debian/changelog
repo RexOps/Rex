@@ -1,3 +1,9 @@
+rex (0.25.3) unstable; urgency=low
+  * fixed a display bug in rexify --search command
+  * fixed a bug in the libvirt module if it gets executed local
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 16 Feb 2012 19:30:00 +0200
+
 rex (0.25.2) unstable; urgency=low
   * display the correct module name in rexify --search command
 

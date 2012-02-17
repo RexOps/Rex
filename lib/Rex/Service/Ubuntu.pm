@@ -75,7 +75,12 @@ sub status {
 
    my @ret = run "service $service status";
 
-   if(grep { /stop\// } @ret) {
+   # bad... really bad ...
+   if($? != 0) {
+      return 0;
+   }
+
+   if(grep { /NOT running|stop\// } @ret) {
       return 0;
    }
 

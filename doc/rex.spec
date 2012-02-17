@@ -62,6 +62,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 * Thu Feb 16 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.3-1
 - fixed a display bug in rexify --search command
 - fixed a bug in the libvirt module if it gets executed local
+- fixed a bug in the service module for ubuntu
 
 * Wed Feb 15 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.2-1
 - display the correct module name in rexify --search command

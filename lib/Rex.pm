@@ -81,7 +81,7 @@ our (@EXPORT,
       $VERSION,
       @CONNECTION_STACK);
 
-$VERSION = "0.25.3";
+$VERSION = "0.25.0.99";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];

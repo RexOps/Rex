@@ -61,6 +61,12 @@ This function executes rsync to sync $source and $dest.
     };
  };
 
+ task "sync", "server01", sub {
+    sync "html/*", "/var/www/html", {
+      exclude => ["*.sw*", "*.tmp"]
+    };
+ };
+
 =item DOWNLOAD - Will download all from the remote directory I</var/www/html> to the local directory I<html>.
 
  task "sync", "server01", sub {
@@ -79,7 +85,11 @@ sub sync {
 
    my $params = "";
    if($opt && exists $opt->{'exclude'}) {
-      $params .= " --exclude=" . $opt->{'exclude'};
+      my $excludes = $opt->{'exclude'};
+      $excludes = [$excludes] unless ref($excludes) eq "ARRAY";
+      for my $exclude (@$excludes) {
+         $params .= " --exclude=" . $exclude;
+      }
    }
 
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {

@@ -101,7 +101,7 @@ require Rex::Exporter;
 use Rex::Task;
 use Rex::Logger;
 
-use vars qw(@EXPORT $current_desc $global_no_ssh $environments);
+use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group 
@@ -111,6 +111,7 @@ use base qw(Rex::Exporter);
             evaluate_hostname
             logging
             needs
+            include
             say
             environment
             LOCAL
@@ -270,7 +271,9 @@ sub task {
       use strict;
    }
 
-   Rex::Task->create_task($task_name, @_, $options);
+   unless($dont_register_tasks) {
+      Rex::Task->create_task($task_name, @_, $options);
+   }
 }
 
 =item desc($description)
@@ -619,6 +622,20 @@ sub needs {
       }
    }
 
+}
+
+=item include Module::Name
+
+Include a module without registering its tasks.
+
+=cut
+sub include {
+   my ($mod) = @_;
+
+   $dont_register_tasks = 1;
+   eval "use $mod;";
+   if($@) { die $@; }
+   $dont_register_tasks = 0;
 }
 
 =item environment($name => $code)

@@ -163,10 +163,10 @@ sub sudo {
       $cmd_out .= $str;
    });
 
-   $exp->spawn("sudo", $cmd);
+   $exp->spawn("sudo -p Password: $cmd");
 
    $exp->expect($timeout, [
-                              qr/Password:|\[sudo\] password for [^:]+:/i => sub {
+                              "Password:" => sub {
                                           Rex::Logger::debug("Sending password");
                                           my ($exp, $line) = @_;
                                           $exp->send($sudo_password . "\n");

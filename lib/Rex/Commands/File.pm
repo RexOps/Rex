@@ -80,7 +80,7 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(file_write file_read file_append 
-               cat
+               cat sed
                delete_lines_matching append_if_no_such_line
                file template
                extract);
@@ -480,22 +480,27 @@ This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar
 
 =cut
 sub extract {
-   my ($file) = @_;
+   my ($file, %option) = @_;
+
+   my $pre_cmd = "";
+   if($option{chdir}) {
+      $pre_cmd = "cd $option{chdir}; ";
+   }
 
    if($file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
-      run "gunzip -c $file | tar -xf -";
+      run "${pre_cmd}gunzip -c $file | tar -xf -";
    }
    elsif($file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
-      run "bunzip2 -c $file | tar -xf -";
+      run "${pre_cmd}bunzip2 -c $file | tar -xf -";
    }
    elsif($file =~ m/\.(zip|war|jar)$/) {
-      run "unzip -o $file";
+      run "${pre_cmd}unzip -o $file";
    }
    elsif($file =~ m/\.gz$/) {
-      run "gunzip $file";
+      run "${pre_cmd}gunzip $file";
    }
    elsif($file =~ m/\.bz2$/) {
-      run "bunzip2 $file";
+      run "${pre_cmd}bunzip2 $file";
    }
    else {
       Rex::Logger::info("File not supported.");
@@ -503,8 +508,19 @@ sub extract {
    }
 }
 
-=back
+=item sed($search, $replace, $file)
 
+=cut
+sub sed {
+   my ($search, $replace, $file) = @_;
+
+   my $content = cat($file);
+   $content =~ s/$search/$replace/gms;
+
+   file($file, content => $content);
+}
+
+=back
 
 =cut
 

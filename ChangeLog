@@ -1,3 +1,7 @@
+2012-02-18 Jan Gehring <jan.gehring, gmail.com> (0.25.0.99)
+  * added patch 42c42ff to specify sudo password prompt, thanks to Hiroaki Nakamura
+  * added patch 2c07817 to allow multiple exclude patterns for the rsync module, thanks to Hiroaki Nakamura
+
 2012-02-16 Jan Gehring <jan.gehring, gmail.com> (0.25.3)
   * fixed a display bug in rexify --search command
   * fixed a bug in the libvirt module if it gets executed local

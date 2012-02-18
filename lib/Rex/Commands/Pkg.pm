@@ -229,6 +229,10 @@ sub install {
      
 
    }
+   else {
+      # unknown type, be a package
+      install("package", @_); 
+   }
 
 }
 

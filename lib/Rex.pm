@@ -284,6 +284,9 @@ sub import {
       require Rex::Commands::Process;
       Rex::Commands::Process->import(register_in => $register_to);
    }
+
+   # we are always strict
+   strict->import;
 }
 
 =back

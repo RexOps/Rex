@@ -628,14 +628,22 @@ sub needs {
 
 Include a module without registering its tasks.
 
+   include qw/
+      Module::One
+      Module::Two
+   /;
+
 =cut
 sub include {
-   my ($mod) = @_;
+   my (@mods) = @_;
 
+   my $old_val = $dont_register_tasks;
    $dont_register_tasks = 1;
-   eval "use $mod;";
-   if($@) { die $@; }
-   $dont_register_tasks = 0;
+   for my $mod (@mods) {
+      eval "require $mod";
+      if($@) { die $@; }
+   }
+   $dont_register_tasks = $old_val;
 }
 
 =item environment($name => $code)

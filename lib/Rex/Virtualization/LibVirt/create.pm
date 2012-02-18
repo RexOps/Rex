@@ -402,8 +402,11 @@ __DATA__
     <% for my $disk (@{$::storage}) { %>
     <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
       <driver name="qemu" type="raw"/>
-      <% if ($disk->{file}) { %>
+      <% if ($disk->{type} eq "file") { %>
       <source file="<%= $disk->{file} %>"/>
+      <% } %>
+      <% elsif ($disk->{file} eq "block") { %>
+      <source dev="<%= $disk->{file} %>"/>
       <% } %>
       <% if(exists $disk->{readonly}) { %>
       <readonly/>

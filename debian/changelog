@@ -1,3 +1,18 @@
+rex (0.25.99.0) unstable; urgency=low
+  * added rex-agent compatibility
+  * added overmind compatibility
+  * added lvm support to libvirt module
+  * allow package installation with "install $pkg"
+  * added sed function
+  * added chdir parameter to extract function
+  * added include function to include Rex recipes without registering the
+    tasks
+  * Specify the sudo password prompt to avoid different prompts in different
+    locales. thanks to Hiroaki Nakamura
+  * Sync exclude option now takes a string or an array of strings. thanks to
+    Hiroaki Nakamura
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 19 Feb 2012 13:30:00 +0200
+
 rex (0.25.3) unstable; urgency=low
   * fixed a display bug in rexify --search command
   * fixed a bug in the libvirt module if it gets executed local

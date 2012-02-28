@@ -348,7 +348,7 @@ sub _home_dir {
       return $ENV{'USERPROFILE'};
    }
 
-   return $ENV{'HOME'};
+   return $ENV{'HOME'} || "";
 }
 
 1;

@@ -45,6 +45,14 @@ sub install {
       return 1;
    }
 
+   $self->update($pkg, $option);
+
+   return 1;
+}
+
+sub update {
+   my ($self, $pkg, $option) = @_;
+
    my $version = $option->{"version"} || "";
 
    my $f = run("urpmi --auto --quiet $pkg");

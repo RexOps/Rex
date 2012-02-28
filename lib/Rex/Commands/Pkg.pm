@@ -51,7 +51,7 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install remove installed_packages update_package_db repository package_provider_for);
+@EXPORT = qw(install update remove installed_packages update_package_db repository package_provider_for);
 
 =item install($type, $data, $options)
 
@@ -232,6 +232,31 @@ sub install {
    else {
       # unknown type, be a package
       install("package", @_); 
+   }
+
+}
+
+sub update {
+   
+   my ($type, $package, $option) = @_;
+
+   if($type eq "package") {
+      my $pkg;
+      
+      $pkg = Rex::Pkg->get;
+
+      if(!ref($package)) {
+         $package = [$package];
+      }
+
+      for my $pkg_to_install (@{$package}) {
+         Rex::Logger::info("Updating $pkg_to_install.");
+         $pkg->update($pkg_to_install, $option);
+      }
+ 
+   }
+   else {
+      update("package", @_);
    }
 
 }

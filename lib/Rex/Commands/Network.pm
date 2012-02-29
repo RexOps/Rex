@@ -45,7 +45,7 @@ use Data::Dumper;
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
-@EXPORT = qw(route default_gateway netstat network hostname domainname);
+@EXPORT = qw(route default_gateway netstat);
 
 =item route
 

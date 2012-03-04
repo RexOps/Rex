@@ -118,7 +118,7 @@ sub get {
    if(can_run("fusioninventory-agent")) {
       require XML::Simple;
       my $xml = XML::Simple->new;
-      my $fusion_inventory = run "fusioninventory-agent --stdout 2>/dev/null";
+      my $fusion_inventory = run "fusioninventory-agent --stdout";
       $fusion_inventory_xmlref = $xml->XMLin($fusion_inventory);
    }
 

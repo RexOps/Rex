@@ -12,6 +12,7 @@ use warnings;
 use Rex;
 use Rex::Commands;
 use Rex::Commands::Run;
+use Rex::Commands::Fs;
 use IO::File;
 
 sub open {
@@ -21,10 +22,24 @@ sub open {
 
    $self->{mode} = shift;
    $self->{file} = shift;
-   $self->{rndfile} = "/tmp/" . get_random('a' .. 'z') . ".tmp";
+   $self->{rndfile} = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
 
    if(my $sftp = Rex::get_sftp()) {
-      $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_CREAT | O_TRUNC );
+      if($self->{mode} eq ">") {
+         $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_CREAT | O_TRUNC );
+      }
+      elsif($self->{mode} eq ">>") {
+         cp($self->{file}, $self->{rndfile});
+         chmod(666, $self->{rndfile});
+         $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_APPEND );
+         my %stat = stat $self->{rndfile};
+         $self->{fh}->seek($stat{size});
+      }
+      else {
+         cp($self->{file}, $self->{rndfile});
+         chmod(666, $self->{rndfile});
+         $self->{fh} = $sftp->open($self->{rndfile}, O_RDONLY);
+      }
    }
    else {
       $self->{fh} = IO::File->new;
@@ -59,15 +74,19 @@ sub seek {
 }
 
 sub read {
-   my ($self, $content, $len) = @_;
+   my ($self, $len) = @_;
    $len ||= 64;
 
    my $buf;
    $self->{fh}->read($buf, $len);
+
+   return $buf;
 }
 
 sub close {
    my ($self) = @_;
+
+   return unless $self->{fh};
 
    if(ref($self->{fh}) eq "Net::SSH2::File") {
       $self->{fh} = undef;
@@ -76,7 +95,16 @@ sub close {
       $self->{fh}->close;
    }
 
-   cp($self->{rndfile}, $self->{file});
+   # use cat to not overwrite attributes/owner/group
+   if($self->{mode} eq ">" || $self->{mode} eq ">>") {
+      run "sh -c 'cat " . $self->{rndfile} . " >" . $self->{file} . "'";
+      rm($self->{rndfile});
+   }
+}
+
+sub DESTROY {
+   my ($self) = @_;
+   $self->close;
 }
 
 1;

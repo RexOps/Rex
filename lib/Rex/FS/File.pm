@@ -65,9 +65,11 @@ Write $buf into the filehandle.
 =cut
 
 sub write {
+   # sudo? sh -c 'echo $c >> $file'
+   
    my ($self, @buf) = @_;
    my $fh = $self->{'fh'};
-   if(ref($fh) eq 'Net::SSH2::File') {
+   if(ref($fh) eq 'Net::SSH2::File' || ref($fh) eq "Rex::Sudo::File") {
       if(scalar(@buf) > 1) {
          for my $line (@buf) {
             $fh->write($line);
@@ -104,7 +106,7 @@ sub seek {
 
    my $fh = $self->{'fh'};
 
-   if(ref($fh) eq 'Net::SSH2::File') {
+   if(ref($fh) eq 'Net::SSH2::File' || ref($fh) eq "Rex::Sudo::File") {
       $fh->seek($offset);
    } else {
       seek($fh, $offset, 0);
@@ -127,6 +129,9 @@ sub read {
    my $buf;
    if(ref($fh) eq 'Net::SSH2::File') {
       $fh->read($buf, $len);
+   }
+   elsif(ref($fh) eq "Rex::Sudo::File") {
+      $buf = $fh->read($len);
    } else {
       read $fh, $buf, $len;
    }
@@ -149,7 +154,6 @@ sub read_all {
    while(my $in = $self->read()) {
       $all .= $in;
    }
-
    if(wantarray) {
       return split(/\n/, $all);
    }
@@ -169,6 +173,9 @@ sub close {
    my $fh = $self->{'fh'};
    if(ref($fh) eq 'Net::SSH2::File') {
       $fh = undef;
+   }
+   elsif(ref($fh) eq 'Rex::Sudo::File') {
+      $fh->close;
    } else {
       close($fh);
    }

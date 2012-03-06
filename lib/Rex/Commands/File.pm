@@ -202,6 +202,7 @@ sub file {
    }
 
    if(exists $option->{"content"}) {
+
       my $fh = file_write($file);
       my @lines = split(qr{$/}, $option->{"content"});
       for my $line (@lines) {
@@ -266,12 +267,16 @@ On failure it will die.
 
 sub file_write {
    my ($file) = @_;
-   my $fh;
+   my ($fh,$sftp);
 
    Rex::Logger::debug("Opening file: $file for writing.");
 
-   if(my $sftp = Rex::get_sftp()) {
+   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
       $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
+   }
+   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+      require Rex::Sudo::File;
+      $fh = Rex::Sudo::File->open(">", $file);
    } else {
       open($fh, ">", $file) or die($!);
    }
@@ -290,11 +295,11 @@ sub file_write {
 
 sub file_append {
    my ($file) = @_;
-   my $fh;
+   my ($fh, $sftp);
 
    Rex::Logger::debug("Opening file: $file for appending.");
 
-   if(my $sftp = Rex::get_sftp()) {
+   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
       if(is_file($file)) {
          $fh = $sftp->open($file, O_WRONLY | O_APPEND );
          my %stat = stat "$file";
@@ -303,6 +308,10 @@ sub file_append {
       else {
          $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
       }
+   }
+   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+      require Rex::Sudo::File;
+      $fh = Rex::Sudo::File->open(">>", $file);
    } else {
       open($fh, ">>", $file) or die($!);
    }
@@ -340,12 +349,16 @@ On failure it will die.
 
 sub file_read {
    my ($file) = @_;
-   my $fh;
+   my ($fh, $sftp);
 
    Rex::Logger::debug("Opening file: $file for reading.");
 
-   if(my $sftp = Rex::get_sftp()) {
+   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
       $fh = $sftp->open($file, O_RDONLY);
+   }
+   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+      require Rex::Sudo::File;
+      $fh = Rex::Sudo::File->open("<", $file);
    } else {
       open($fh, "<", $file) or die($!);
    }

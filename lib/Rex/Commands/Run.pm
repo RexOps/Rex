@@ -72,7 +72,7 @@ sub run {
    my @ret = ();
    my $out;
 
-   if(exists Rex::get_current_connection()->{use_sudo} && Rex::get_current_connection()->{use_sudo} == 1 && ! $no_sudo) {
+   if(Rex::get_current_connection() && exists Rex::get_current_connection()->{use_sudo} && Rex::get_current_connection()->{use_sudo} == 1 && ! $no_sudo) {
       return sudo($cmd);
    }
 

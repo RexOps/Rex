@@ -128,6 +128,19 @@ sub is_ssh {
    return 0;
 }
 
+=item is_sudo
+
+Returns 1 if the current operation is executed within sudo. 
+
+=cut
+sub is_sudo {
+   if($CONNECTION_STACK[-1]) {
+      return $CONNECTION_STACK[-1]->{"use_sudo"};
+   }
+
+   return 0;
+}
+
 =item get_sftp
 
 Returns the sftp object for the current ssh connection.

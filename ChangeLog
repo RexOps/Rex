@@ -1,3 +1,14 @@
+2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.25.99.0)
+  * added rex-agent compatibility
+  * added overmind compatibility
+  * added lvm support to libvirt module
+  * allow package installation with "install $pkg"
+  * added sed function
+  * added chdir parameter to extract function
+  * added include function to include Rex recipes without registering the tasks
+  * Specify the sudo password prompt to avoid different prompts in different locales. thanks to Hiroaki Nakamura
+  * Sync exclude option now takes a string or an array of strings. thanks to Hiroaki Nakamura
+
 2012-02-16 Jan Gehring <jan.gehring, gmail.com> (0.25.3)
   * fixed a display bug in rexify --search command
   * fixed a bug in the libvirt module if it gets executed local

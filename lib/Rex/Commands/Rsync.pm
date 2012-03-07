@@ -61,6 +61,12 @@ This function executes rsync to sync $source and $dest.
     };
  };
 
+ task "sync", "server01", sub {
+    sync "html/*", "/var/www/html", {
+      exclude => ["*.sw*", "*.tmp"]
+    };
+ };
+
 =item DOWNLOAD - Will download all from the remote directory I</var/www/html> to the local directory I<html>.
 
  task "sync", "server01", sub {
@@ -79,7 +85,11 @@ sub sync {
 
    my $params = "";
    if($opt && exists $opt->{'exclude'}) {
-      $params .= " --exclude=" . $opt->{'exclude'};
+      my $excludes = $opt->{'exclude'};
+      $excludes = [$excludes] unless ref($excludes) eq "ARRAY";
+      for my $exclude (@$excludes) {
+         $params .= " --exclude=" . $exclude;
+      }
    }
 
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {
@@ -105,7 +115,9 @@ sub sync {
                                  my $fh = shift;
                                  $fh->send("yes\n");
                                  exp_continue;
-                              },
+                              }
+                            ],
+                            [,
                               qr{password: $},
                               sub {
                                  Rex::Logger::debug("Want Password");
@@ -126,7 +138,9 @@ sub sync {
                                  my $fh = shift;
                                  $fh->send("yes\n");
                                  exp_continue;
-                              },
+                              }
+                            ],
+                            [,
                               qr{Enter passphrase for key.*: $},
                               sub {
                                  Rex::Logger::debug("Want Passphrase");
@@ -143,10 +157,8 @@ sub sync {
    eval {
       my $exp = Expect->spawn($cmd) or die($!);
 
-      my $login_task = shift @expect_options;
-
       eval {
-         $exp->expect(Rex::Config->get_timeout, $login_task, [
+         $exp->expect(Rex::Config->get_timeout, @expect_options, [
                                  qr{total size is \d+\s+speedup is },
                                  sub {
                                     Rex::Logger::debug("Finished transfer very fast");

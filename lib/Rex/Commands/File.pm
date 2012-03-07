@@ -80,7 +80,7 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(file_write file_read file_append 
-               cat
+               cat sed
                delete_lines_matching append_if_no_such_line
                file template
                extract);
@@ -202,6 +202,7 @@ sub file {
    }
 
    if(exists $option->{"content"}) {
+
       my $fh = file_write($file);
       my @lines = split(qr{$/}, $option->{"content"});
       for my $line (@lines) {
@@ -266,12 +267,16 @@ On failure it will die.
 
 sub file_write {
    my ($file) = @_;
-   my $fh;
+   my ($fh,$sftp);
 
    Rex::Logger::debug("Opening file: $file for writing.");
 
-   if(my $sftp = Rex::get_sftp()) {
+   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
       $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
+   }
+   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+      require Rex::Sudo::File;
+      $fh = Rex::Sudo::File->open(">", $file);
    } else {
       open($fh, ">", $file) or die($!);
    }
@@ -290,11 +295,11 @@ sub file_write {
 
 sub file_append {
    my ($file) = @_;
-   my $fh;
+   my ($fh, $sftp);
 
    Rex::Logger::debug("Opening file: $file for appending.");
 
-   if(my $sftp = Rex::get_sftp()) {
+   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
       if(is_file($file)) {
          $fh = $sftp->open($file, O_WRONLY | O_APPEND );
          my %stat = stat "$file";
@@ -303,6 +308,10 @@ sub file_append {
       else {
          $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
       }
+   }
+   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+      require Rex::Sudo::File;
+      $fh = Rex::Sudo::File->open(">>", $file);
    } else {
       open($fh, ">>", $file) or die($!);
    }
@@ -340,12 +349,16 @@ On failure it will die.
 
 sub file_read {
    my ($file) = @_;
-   my $fh;
+   my ($fh, $sftp);
 
    Rex::Logger::debug("Opening file: $file for reading.");
 
-   if(my $sftp = Rex::get_sftp()) {
+   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
       $fh = $sftp->open($file, O_RDONLY);
+   }
+   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+      require Rex::Sudo::File;
+      $fh = Rex::Sudo::File->open("<", $file);
    } else {
       open($fh, "<", $file) or die($!);
    }
@@ -480,22 +493,27 @@ This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar
 
 =cut
 sub extract {
-   my ($file) = @_;
+   my ($file, %option) = @_;
+
+   my $pre_cmd = "";
+   if($option{chdir}) {
+      $pre_cmd = "cd $option{chdir}; ";
+   }
 
    if($file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
-      run "gunzip -c $file | tar -xf -";
+      run "${pre_cmd}gunzip -c $file | tar -xf -";
    }
    elsif($file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
-      run "bunzip2 -c $file | tar -xf -";
+      run "${pre_cmd}bunzip2 -c $file | tar -xf -";
    }
    elsif($file =~ m/\.(zip|war|jar)$/) {
-      run "unzip -o $file";
+      run "${pre_cmd}unzip -o $file";
    }
    elsif($file =~ m/\.gz$/) {
-      run "gunzip $file";
+      run "${pre_cmd}gunzip $file";
    }
    elsif($file =~ m/\.bz2$/) {
-      run "bunzip2 $file";
+      run "${pre_cmd}bunzip2 $file";
    }
    else {
       Rex::Logger::info("File not supported.");
@@ -503,8 +521,19 @@ sub extract {
    }
 }
 
-=back
+=item sed($search, $replace, $file)
 
+=cut
+sub sed {
+   my ($search, $replace, $file) = @_;
+
+   my $content = cat($file);
+   $content =~ s/$search/$replace/gms;
+
+   file($file, content => $content);
+}
+
+=back
 
 =cut
 

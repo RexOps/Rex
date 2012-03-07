@@ -44,6 +44,14 @@ sub install {
       return 1;
    }
 
+   $self->update($pkg, $option);
+
+   return 1;
+}
+
+sub update {
+   my ($self, $pkg, $option) = @_;
+
    my $version = $option->{'version'} || '';
    if($version) {
       $pkg = "=$pkg=$version";

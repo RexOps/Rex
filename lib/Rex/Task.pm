@@ -188,7 +188,12 @@ sub run {
    # overwrite servers if requested
    # this is mostly for the rex agent
    if($server_overwrite) {
-      @server = ($server_overwrite);
+      if($server_overwrite eq "<local>") {
+         @server = ();
+      }
+      else {
+         @server = ($server_overwrite);
+      }
    }
 
    my($user, $pass, $private_key, $public_key);

@@ -43,7 +43,7 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('CcqFThvdE:o:f:M:b:e:H:u:p:P:K:', \%opts);
+getopts('CcqFThvdE:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
 
 if($opts{'d'}) {
    $Rex::Logger::debug = $opts{'d'};
@@ -68,6 +68,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-e", "Run the given code fragment";
    printf "  %-15s %s\n", "-E", "Execute task on the given environment";
    printf "  %-15s %s\n", "-H", "Execute task on these hosts";
+   printf "  %-15s %s\n", "-G", "Execute task on these group";
    printf "  %-15s %s\n", "-u", "Username for the ssh connection";
    printf "  %-15s %s\n", "-p", "Password for the ssh connection";
    printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
@@ -230,6 +231,11 @@ elsif(-f $::rexfile) {
    };
 
    if($@) { print $@ . "\n"; exit 1; }
+
+   if($opts{'G'}) {
+      $::FORCE_SERVER = join(" ", Rex::Group->get_group($opts{'G'}));
+   }
+
 } else {
    Rex::Logger::info("No Rexfile found");
    CORE::exit 1;

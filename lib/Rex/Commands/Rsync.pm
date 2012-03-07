@@ -115,7 +115,9 @@ sub sync {
                                  my $fh = shift;
                                  $fh->send("yes\n");
                                  exp_continue;
-                              },
+                              }
+                            ],
+                            [,
                               qr{password: $},
                               sub {
                                  Rex::Logger::debug("Want Password");
@@ -136,7 +138,9 @@ sub sync {
                                  my $fh = shift;
                                  $fh->send("yes\n");
                                  exp_continue;
-                              },
+                              }
+                            ],
+                            [,
                               qr{Enter passphrase for key.*: $},
                               sub {
                                  Rex::Logger::debug("Want Passphrase");
@@ -153,10 +157,8 @@ sub sync {
    eval {
       my $exp = Expect->spawn($cmd) or die($!);
 
-      my $login_task = shift @expect_options;
-
       eval {
-         $exp->expect(Rex::Config->get_timeout, $login_task, [
+         $exp->expect(Rex::Config->get_timeout, @expect_options, [
                                  qr{total size is \d+\s+speedup is },
                                  sub {
                                     Rex::Logger::debug("Finished transfer very fast");

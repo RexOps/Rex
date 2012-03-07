@@ -209,7 +209,8 @@ sub service {
 
       else {
       
-         Rex::Logger::info("$action not supported.");
+         Rex::Logger::info("Execution action $action on $service.");
+         $srvc->action($service, $action);
 
       }
 

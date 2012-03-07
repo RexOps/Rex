@@ -94,4 +94,11 @@ sub ensure {
    }
 }
 
+sub action {
+   my ($self, $service, $action) = @_;
+
+   run "svcadm $action $service";
+   if($? == 0) { return 1; }
+}
+
 1;

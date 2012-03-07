@@ -100,5 +100,11 @@ sub ensure {
    }
 }
 
+sub action {
+   my ($self, $service, $action) = @_;
+
+   run "service $service $action";
+   if($? == 0) { return 1; }
+}
 
 1;

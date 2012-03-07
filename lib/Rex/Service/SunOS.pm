@@ -97,4 +97,12 @@ sub ensure {
    }
 }
 
+sub action {
+   my ($self, $service, $action) = @_;
+
+   run "/etc/init.d/$service $action";
+   if($? == 0) { return 1; }
+}
+
+
 1;

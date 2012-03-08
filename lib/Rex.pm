@@ -304,6 +304,26 @@ sub import {
 
 =back
 
+=head1 CONTRIBUTORS
+
+Many thanks to the contributors for their work (alphabetical order).
+
+=over 4
+
+=item Alexandr Ciornii
+
+=item Gilles Gaudin, for writing a french howto
+
+=item Hiroaki Nakamura
+
+=item Jeen Lee
+
+=item Jose Luis Martinez
+
+=item Sascha Guenther
+
+=back
+
 =cut
 
 1;

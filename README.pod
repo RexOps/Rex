@@ -2,69 +2,28 @@
 
 With (R)?ex you can manage all your boxes from a central point through the complete process of configuration management and software deployment.
 
-=head2 Dependencies
-
-=over 4
-
-=item *
-
-L<XML::Simple>
-
-=item *
-
-L<Net::SSH2>
-
-=item *
-
-L<Expect>
-
-Only if you want to use the Rsync module.
-
-=item *
-
-L<DBI>
-
-Only if you want to use the DB module.
-
-=item *
-
-L<libwww-perl>
-
-=item *
-
-L<JSON::XS>
-
-=item *
-
-L<Digest::HMAC_SHA1>
-
-=item *
-
-L<MIME::Base64>
-
-
-=back
-
 =head2 Usage
 
 A small example:
 
 =head3 Rexfile
 
- user "root";
- password "root";
- pass_auth;
+ set user => "root";
+ set password => "root";
+ set -passauth;
 
- group "frontend" => "frontend[01..09]", "varnish[01..04]";
-
+ group frontend => "frontend[01..09]", "varnish[01..04]";
  
  desc "Show Unix version";
- task "uname", "server[1..9]", sub {
+ task "uname", group => "frontend", sub {
      say run "uname -a";
  };
 
- desc "Write into a file";
- task "write", group => "frontend", sub {
+ desc "Install needed packages and configurations";
+ task "prepare", group => "frontend", sub {
+    install "apache2";
+    install "mysql-server";
+     
     file "/path/on/the/remote/machine",
        content => "Hello World!",
        mode    => 600,
@@ -103,92 +62,5 @@ Run Task I<uname>
  Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
 
 =back
-
-=head3 Master/Agent
-
-See https://github.com/krimdomu/Rex-Server for more information.
-
-Create a new project on the master
-
- rexify myproject
- cd myproject
-
-Edit the I<Rexfile>.
-
- use lib 'lib';
- use Rex::myproject;
-
- # put your server in this group
- group "fe" => "fe[01..05]";
- group "mw" => "mw[01..04]";
-
- desc "Deploy Frontend Server";
- task "deploy-fe", group => 'fe', sub {
-
-   needs Rex::myproject 'fe';
-
- };
-
- desc "Deploy Middleware Server";
- task "deploy-mw", group => 'mw', sub {
-
-   needs Rex::myproject 'mw';
-
- };
- 
-Edit the file I<lib/Rex/myproject.pm>
-
- package Rex::myproject 
-
- use Rex::Commands;
- use Rex::Commands::Run;
- use Rex::Commands::Pkg;
-
- task "fe", sub {
- 
-    install package => [
-          'apache2',
-          'php5'
-       ];
-
- };
-
- task 'mw', sub {
- 
-    install package => [
-          'tomcat6',
-          'apache2',
-          'libapache-mod_jk'
-       ];
- 
- };
-
- 1;
-
-Now start the rex-master server. The server will bind on any device and port 7345 (tcp)
-
- # debug mode (foreground)
- rex-master -d
-
- # daemon mode (background)
- rex-master -b
-
- # see all the options with rex-master --help
-
-
-And start the agents on your servers.
-
- # see all the options with rex-agent --help
-
- # debug mode (foreground)
- # this will start the agent with:
- #        -s your-rex-server = the master server
- #        -i 5               = 5 seconds interval
- #        -f                 = foreground
- #        -d                 = debug mode
- #        -c                 = cache dir (this directory must be writable)
- rex-agent -s your-rex-server -i 5 -f -d -c /tmp/cache
-
-Please test and reports bugs :) Any kind of feedback is welcome.
 
 =cut

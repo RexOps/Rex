@@ -328,7 +328,7 @@ sub import {
 }
 
 no strict 'refs';
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth parallelism/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;
@@ -336,7 +336,7 @@ for my $hndl (@set_handler) {
          $hndl = substr($hndl, 1);
       }
       if($hndl eq "keyauth") { $hndl = "key_auth"; $val = 1; }
-      if($hndl eq "passwordauth") { $hndl = "password_auth"; $val = 1; }
+      if($hndl eq "passwordauth" || $hndl eq "passauth") { $hndl = "password_auth"; $val = 1; }
 
       $$hndl = $val; 
    });
@@ -348,7 +348,7 @@ sub _home_dir {
       return $ENV{'USERPROFILE'};
    }
 
-   return $ENV{'HOME'};
+   return $ENV{'HOME'} || "";
 }
 
 1;

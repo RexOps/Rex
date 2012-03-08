@@ -49,6 +49,12 @@ sub install {
       return 1;
    }
 
+   return 1;
+}
+
+sub update {
+   my ($self, $pkg, $option) = @_;
+
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Installing $pkg");
@@ -61,6 +67,7 @@ sub install {
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
+
 
    return 1;
 }

@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.25.3
+Version: 0.25.99.0
 Release: 1
 License: Artistic
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.25.3.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.25.99.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -58,6 +58,17 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sun Feb 19 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.99.0-1
+- added rex-agent compatibility
+- added overmind compatibility
+- added lvm support to libvirt module
+- allow package installation with "install $pkg"
+- added sed function
+- added chdir parameter to extract function
+- added include function to include Rex recipes without registering the tasks
+- Specify the sudo password prompt to avoid different prompts in different locales. thanks to Hiroaki Nakamura
+- Sync exclude option now takes a string or an array of strings. thanks to Hiroaki Nakamura
 
 * Thu Feb 16 2012 Jan Gehring <jan.gehring at, gmail.com> 0.25.3-1
 - fixed a display bug in rexify --search command

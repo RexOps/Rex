@@ -81,7 +81,7 @@ our (@EXPORT,
       $VERSION,
       @CONNECTION_STACK);
 
-$VERSION = "0.25.3";
+$VERSION = "0.25.99.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -123,6 +123,19 @@ Returns 1 if the current connection is a ssh connection. 0 if not.
 sub is_ssh {
    if($CONNECTION_STACK[-1]) {
       return $CONNECTION_STACK[-1]->{"ssh"};
+   }
+
+   return 0;
+}
+
+=item is_sudo
+
+Returns 1 if the current operation is executed within sudo. 
+
+=cut
+sub is_sudo {
+   if($CONNECTION_STACK[-1]) {
+      return $CONNECTION_STACK[-1]->{"use_sudo"};
    }
 
    return 0;
@@ -284,6 +297,9 @@ sub import {
       require Rex::Commands::Process;
       Rex::Commands::Process->import(register_in => $register_to);
    }
+
+   # we are always strict
+   strict->import;
 }
 
 =back

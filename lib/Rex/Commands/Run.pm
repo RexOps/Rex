@@ -65,12 +65,17 @@ This function will execute the given command and returns the output.
 
 sub run {
    my $cmd = shift;
+   my $no_sudo = shift;
 
    Rex::Logger::debug("Running command: $cmd");
 
    my @ret = ();
    my $out;
-   # no can_run($cmd) if there are parameters
+
+   if(Rex::get_current_connection() && exists Rex::get_current_connection()->{use_sudo} && Rex::get_current_connection()->{use_sudo} == 1 && ! $no_sudo) {
+      return sudo($cmd);
+   }
+
    if(my $ssh = Rex::is_ssh()) {
       my @paths = Rex::Config->get_path;
       my $path="";
@@ -117,7 +122,7 @@ sub can_run {
       return 1;
    }
 
-   my @ret = run "which $cmd >/dev/null 2>&1";
+   my @ret = run "which $cmd";
    if($? != 0) { return 0; }
 
    if( grep { /^no.*in/ } @ret ) {
@@ -139,54 +144,20 @@ Run $command with I<sudo>. Define the password for sudo with I<sudo_password>.
 sub sudo {
    my ($cmd) = @_;
 
+   # if sudo is used with a code block
+   if(ref($cmd) eq "CODE") {
+      Rex::get_current_connection()->{use_sudo} = 1;
+      &$cmd();
+      Rex::get_current_connection()->{use_sudo} = 0;
+
+      return;
+   }
+
    my $exp;
    my $timeout       = Rex::Config->get_timeout;
    my $sudo_password = Rex::Config->get_sudo_password;
 
-   if(my $ssh = Rex::is_ssh()) {
-      $exp = Rex::Helper::SSH2::Expect->new($ssh);
-   }
-   else {
-      if($^O =~ m/^MSWin/) {
-         die("Expect not woring on windows");
-      }
-      else {
-         $exp = Expect->new();
-      }
-   }
-
-   $exp->log_stdout(0);
-
-   my $cmd_out = "";
-   $exp->log_file(sub {
-      my ($str) = @_;
-      $cmd_out .= $str;
-   });
-
-   $exp->spawn("sudo", $cmd);
-
-   $exp->expect($timeout, [
-                              qr/Password:|\[sudo\] password for [^:]+:/i => sub {
-                                          Rex::Logger::debug("Sending password");
-                                          my ($exp, $line) = @_;
-                                          $exp->send($sudo_password . "\n");
-
-                                          unless(ref($exp) eq "Rex::Helper::SSH2::Expect") {
-                                             exp_continue();
-                                          }
-                                       },
-                          ]);
-
-   unless(ref($exp) eq "Rex::Helper::SSH2::Expect") {
-      $exp->soft_close;
-   }
-
-   chomp $cmd_out;
-
-   if(wantarray) {
-      return split(/\n/, $cmd_out);
-   }
-   return $cmd_out;
+   return run("echo '$sudo_password' | sudo -p '' -S $cmd", 1);
 }
 
 =back

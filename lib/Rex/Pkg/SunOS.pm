@@ -46,6 +46,14 @@ sub install {
       return 1;
    }
 
+   $self->update($pkg, $option);
+
+   return 1;
+}
+
+sub update {
+   my ($self, $pkg, $option) = @_;
+
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Version option not supported.");
@@ -72,6 +80,7 @@ sub install {
    }
 
    Rex::Logger::debug("$pkg successfully installed.");
+
 
    return 1;
 }

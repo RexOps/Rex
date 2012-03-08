@@ -114,4 +114,11 @@ sub _prepare_service_name {
    return $service;
 }
 
+sub action {
+   my ($self, $service, $action) = @_;
+
+   run "systemctl $action $service";
+   if($? == 0) { return 1; }
+}
+
 1;

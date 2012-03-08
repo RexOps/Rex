@@ -27,7 +27,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("dpkg -L $pkg 2>&1 >/dev/null");
+   run("dpkg -L $pkg");
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");
@@ -45,6 +45,14 @@ sub install {
       Rex::Logger::info("$pkg is already installed");
       return 1;
    }
+
+   $self->update($pkg, $option);
+
+   return 1;
+}
+
+sub update {
+   my ($self, $pkg, $option) = @_;
 
    my $version = $option->{'version'} || '';
 

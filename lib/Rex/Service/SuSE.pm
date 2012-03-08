@@ -25,7 +25,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service start >/dev/null";
+   run "/etc/rc.d/$service start";
 
    if($? == 0) {
       return 1;
@@ -37,7 +37,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service restart >/dev/null";
+   run "/etc/rc.d/$service restart";
 
    if($? == 0) {
       return 1;
@@ -49,7 +49,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service stop >/dev/null";
+   run "/etc/rc.d/$service stop";
 
    if($? == 0) {
       return 1;
@@ -61,7 +61,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service reload >/dev/null";
+   run "/etc/rc.d/$service reload";
 
    if($? == 0) {
       return 1;
@@ -73,7 +73,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service status >/dev/null";
+   run "/etc/rc.d/$service status";
 
    if($? == 0) {
       return 1;
@@ -93,6 +93,13 @@ sub ensure {
       $self->start($service);
       run "chkconfig $service on";
    }
+}
+
+sub action {
+   my ($self, $service, $action) = @_;
+
+   run "/etc/rc.d/$service $action";
+   if($? == 0) { return 1; }
 }
 
 1;

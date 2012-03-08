@@ -32,15 +32,19 @@ L<Net::SSH2>
                            qr/Enter new UNIX password:/ => sub {
                                                               my ($exp, $line) = @_;
                                                               $exp->send($new_password);
-                                                           },
+                                                           }
+                        ],
+                        [
                            qr/Retype new UNIX password:/ => sub {
                                                               my ($exp, $line) = @_;
                                                               $exp->send($new_password);
-                                                           },
+                                                           }
+                        ],
+                        [
                            qr/passwd: password updated successfully/ => sub {
                                                                            my ($exp, $line) = @_;
                                                                            $exp->hard_close;
-                                                                        },
+                                                                        }
                         ]);
 
 =head1 CLASS METHODS

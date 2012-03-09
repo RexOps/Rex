@@ -271,10 +271,10 @@ sub file_write {
 
    Rex::Logger::debug("Opening file: $file for writing.");
 
-   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
+   if(($sftp = Rex::get_sftp()) && ! Rex::is_sudo()) {
       $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
    }
-   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+   elsif(($sftp = Rex::get_sftp()) && Rex::is_sudo()) {
       require Rex::Sudo::File;
       $fh = Rex::Sudo::File->open(">", $file);
    } else {
@@ -299,7 +299,7 @@ sub file_append {
 
    Rex::Logger::debug("Opening file: $file for appending.");
 
-   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
+   if(($sftp = Rex::get_sftp()) && ! Rex::is_sudo()) {
       if(is_file($file)) {
          $fh = $sftp->open($file, O_WRONLY | O_APPEND );
          my %stat = stat "$file";
@@ -309,7 +309,7 @@ sub file_append {
          $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
       }
    }
-   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+   elsif(($sftp = Rex::get_sftp()) && Rex::is_sudo()) {
       require Rex::Sudo::File;
       $fh = Rex::Sudo::File->open(">>", $file);
    } else {
@@ -353,10 +353,10 @@ sub file_read {
 
    Rex::Logger::debug("Opening file: $file for reading.");
 
-   if($sftp = Rex::get_sftp() && ! Rex::is_sudo()) {
+   if(($sftp = Rex::get_sftp()) && ! Rex::is_sudo()) {
       $fh = $sftp->open($file, O_RDONLY);
    }
-   elsif($sftp = Rex::get_sftp() && Rex::is_sudo()) {
+   elsif(($sftp = Rex::get_sftp()) && Rex::is_sudo()) {
       require Rex::Sudo::File;
       $fh = Rex::Sudo::File->open("<", $file);
    } else {

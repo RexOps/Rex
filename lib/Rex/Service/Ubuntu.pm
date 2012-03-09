@@ -25,7 +25,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "service $service start";
+   run "service $service start >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -37,7 +37,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "service $service restart";
+   run "service $service restart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -49,7 +49,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "service $service stop";
+   run "service $service stop >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -61,7 +61,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "service $service reload";
+   run "service $service reload >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -73,7 +73,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   my @ret = run "service $service status";
+   my @ret = run "service $service status >/dev/null";
 
    # bad... really bad ...
    if($? != 0) {
@@ -103,7 +103,7 @@ sub ensure {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "service $service $action";
+   run "service $service $action >/dev/null";
    if($? == 0) { return 1; }
 }
 

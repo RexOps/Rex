@@ -26,7 +26,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "/usr/local/etc/rc.d/$service onestart";
+   run "/usr/local/etc/rc.d/$service onestart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -38,7 +38,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "/usr/local/etc/rc.d/$service onerestart";
+   run "/usr/local/etc/rc.d/$service onerestart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -50,7 +50,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "/usr/local/etc/rc.d/$service onestop";
+   run "/usr/local/etc/rc.d/$service onestop >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -62,7 +62,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "/usr/local/etc/rc.d/$service onereload";
+   run "/usr/local/etc/rc.d/$service onereload >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -74,7 +74,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "/usr/local/etc/rc.d/$service onestatus";
+   run "/usr/local/etc/rc.d/$service onestatus >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -99,7 +99,7 @@ sub ensure {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "/usr/local/etc/rc.d/$service $action";
+   run "/usr/local/etc/rc.d/$service $action >/dev/null";
    if($? == 0) { return 1; }
 }
 

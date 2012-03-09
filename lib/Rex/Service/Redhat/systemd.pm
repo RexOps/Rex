@@ -27,7 +27,7 @@ sub start {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl start $service";
+   run "systemctl start $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -40,7 +40,7 @@ sub restart {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl restart $service";
+   run "systemctl restart $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -53,7 +53,7 @@ sub stop {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl stop $service";
+   run "systemctl stop $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -66,7 +66,7 @@ sub reload {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl reload $service";
+   run "systemctl reload $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -79,7 +79,7 @@ sub status {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl status $service";
+   run "systemctl status $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -117,7 +117,7 @@ sub _prepare_service_name {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "systemctl $action $service";
+   run "systemctl $action $service >/dev/null";
    if($? == 0) { return 1; }
 }
 

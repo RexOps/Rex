@@ -26,7 +26,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "svcadm enable $service";
+   run "svcadm enable $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -38,7 +38,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "svcadm restart $service";
+   run "svcadm restart $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -50,7 +50,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "svcadm disable $service";
+   run "svcadm disable $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -62,7 +62,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "svcadm refresh $service";
+   run "svcadm refresh $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -97,7 +97,7 @@ sub ensure {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "svcadm $action $service";
+   run "svcadm $action $service >/dev/null";
    if($? == 0) { return 1; }
 }
 

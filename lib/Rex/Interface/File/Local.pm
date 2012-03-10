@@ -24,6 +24,9 @@ sub new {
 
 sub open {
    my ($self, $mode, $file) = @_;
+
+   Rex::Logger::debug("Opening $file with mode: $mode");
+
    open($self->{fh}, $mode, $file) or return;
 
    return 1;

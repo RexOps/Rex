@@ -27,6 +27,8 @@ sub new {
 sub open {
    my ($self, $mode, $file) = @_;
 
+   Rex::Logger::debug("Opening $file with mode: $mode");
+
    my $sftp = Rex::get_sftp();
    if($mode eq ">") {
       $self->{fh} = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );

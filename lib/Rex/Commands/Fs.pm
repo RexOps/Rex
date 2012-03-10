@@ -58,8 +58,8 @@ use Data::Dumper;
 use Fcntl;
 use Rex::Helper::SSH2;
 use Rex::Commands;
-use Rex::Commands::Run;
-use Rex::Commands::File;
+use Rex::Interface::Fs;
+use Rex::Interface::Exec;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -86,34 +86,9 @@ This function list all entries (files, directories, ...) in a given directory an
 
 sub list_files {
    my $path = shift;
-   my @ret;
 
-   unless(is_dir($path)) {
-      Rex::Logger::debug("$path is not a directory.");
-      die("$path is not a directory.");
-   }
-
-   Rex::Logger::debug("Reading directory contents.");
-   if(my $sftp = Rex::get_sftp()) {
-      my $dir = $sftp->opendir($path);
-      unless($dir) {
-         die("Can't read $path");
-      }
-
-      while(my $entry  = $dir->read) {
-         push @ret, $entry->{'name'};
-      }
-   } else {
-      opendir(my $dh, $path);
-      unless($dh) {
-         die("Can't read $path");
-      }
-      while(my $entry = readdir($dh)) {
-         next if ($entry =~ /^\.\.?$/);
-         push @ret, $entry;
-      }
-      closedir($dh);
-   }
+   my $fs = Rex::Interface::Fs->create;
+   my @ret = $fs->ls($path);
 
    return @ret;
 }
@@ -141,14 +116,8 @@ This function will create a symlink from $from to $to.
 sub symlink {
    my ($from, $to) = @_;
 
-   Rex::Logger::debug("Symlinking files: $to -> $from");
-
-   run "ln -snf $from $to";
-
-   if($? != 0) {
-      die("Can't link $from -> $to");
-   }
-
+   my $fs = Rex::Interface::Fs->create;
+   $fs->ln($from, $to) or die("Can't link $from -> $to");
 }
 
 =item ln($from, $to)
@@ -174,9 +143,8 @@ This function will remove the given file.
 sub unlink {
    my @files = @_;
 
-   Rex::Logger::debug("Unlinking files: " . join(", ", @files));
-
-   run "rm " . join(" ", @files);
+   my $fs = Rex::Interface::Fs->create;
+   $fs->unlink(@files);
 }
 
 =item rm($file)
@@ -202,18 +170,13 @@ This function will remove the given directory.
 sub rmdir {
    my @dirs = @_;
 
-   Rex::Logger::debug("Removing directories: " . join(", ", @dirs));
+   my $fs = Rex::Interface::Fs->create;
 
-   if(is_file("/bin/rm")) {
-      run "/bin/rm -rf " . join(" ", @dirs);
-      unless($? == 0) {
-         Rex::Logger::debug("Can't delete " . join(", ", @dirs));
-         die("Can't delete " . join(", ", @dirs));
-      }
-   } else {
-      Rex::Logger::debug("/bin/rm not found.");
-      die("Can't find /bin/rm");
+   if(! $fs->rmdir(@dirs)) {
+      Rex::Logger::debug("Can't delete " . join(", ", @dirs));
+      die("Can't delete " . join(", ", @dirs));
    }
+
 }
 
 =item mkdir($newdir)
@@ -236,14 +199,15 @@ sub mkdir {
    my $dir = shift;
    my $options = { @_ };
 
+   my $fs = Rex::Interface::Fs->create;
+
    my $mode  = $options->{"mode"}  || 755;
    my $owner = $options->{"owner"} || "";
    my $group = $options->{"group"} || "";
    my $not_recursive = $options->{"not_recursive"} || 0;
 
    if($not_recursive) {
-      run "mkdir $dir";
-      if($? != 0) {
+      if(! $fs->mkdir($dir)) {
          Rex::Logger::debug("Can't create directory $dir");
          die("Can't create directory $dir");
       }
@@ -266,8 +230,7 @@ sub mkdir {
       $str_part .= "$part";
 
       if(! is_dir($str_part) && ! is_file($str_part)) {
-         run "mkdir $str_part";
-         if($? != 0) {
+         if(! $fs->mkdir($str_part)) {
             Rex::Logger::debug("Can't create directory $dir");
             die("Can't create directory $dir");
          }
@@ -293,15 +256,9 @@ Change the owner of a file or a directory.
 
 sub chown {
    my ($user, $file, @opts) = @_;
-   my $options = { @opts };
 
-   my $recursive = "";
-   if(exists $options->{"recursive"} && $options->{"recursive"} == 1) {
-      $recursive = " -R ";
-   }
-
-   run "chown $recursive $user $file";
-   if($? != 0) { die("Can't chown $file"); }
+   my $fs = Rex::Interface::Fs->create;
+   $fs->chown($user, $file, @opts) or die("Can't chown $file");
 }
 
 =item chgrp($group, $file)
@@ -317,15 +274,9 @@ Change the group of a file or a directory.
 
 sub chgrp {
    my ($group, $file, @opts) = @_;
-   my $options = { @opts };
 
-   my $recursive = "";
-   if(exists $options->{"recursive"} && $options->{"recursive"} == 1) {
-      $recursive = " -R ";
-   }
-
-   run "chgrp $recursive $group $file";
-   if($? != 0) { die("Can't chgrp $file"); }
+   my $fs = Rex::Interface::Fs->create;
+   $fs->chgrp($group, $file, @opts) or die("Can't chgrp $file");
 }
 
 =item chmod($mode, $file)
@@ -341,15 +292,9 @@ Change the permissions of a file or a directory.
 
 sub chmod {
    my ($mode, $file, @opts) = @_;
-   my $options = { @opts };
-
-   my $recursive = "";
-   if(exists $options->{"recursive"} && $options->{"recursive"} == 1) {
-      $recursive = " -R ";
-   }
-
-   run "chmod $recursive $mode $file";
-   if($? != 0) { die("Can't chmod $file"); }
+   
+   my $fs = Rex::Interface::Fs->create;
+   $fs->chmod($mode, $file, @opts) or die("Can't chmod $file");
 }
 
 
@@ -381,34 +326,13 @@ This function will return a hash with the following information about a file or 
 =cut
 
 sub stat {
+   my ($file) = @_;
    my %ret;
 
-   Rex::Logger::debug("Getting fs stat from $_[0]");
+   Rex::Logger::debug("Getting fs stat from $file");
 
-   if(my $sftp = Rex::get_sftp()) {
-      %ret = $sftp->stat($_[0]);
-      
-      unless(%ret) {
-         Rex::Logger::debug("Can't stat $_[0]");
-         die("Can't stat $_[0]");
-      }
-
-      $ret{'mode'} = sprintf("%04o", $ret{'mode'} & 07777);
-   } else {
-      if(my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
-               $atime, $mtime, $ctime, $blksize, $blocks) = CORE::stat($_[0])) {
-         $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
-         $ret{'size'}  = $size;
-         $ret{'uid'}   = $uid;
-         $ret{'gid'}   = $gid;
-         $ret{'atime'} = $atime;
-         $ret{'mtime'} = $mtime;
-      }
-      else {
-         Rex::Logger::debug("Can't stat $_[0]");
-         die("Can't stat $_[0]");
-      }
-   }
+   my $fs = Rex::Interface::Fs->create;
+   %ret = $fs->stat($file) or die("Can't stat $file");
 
    return %ret;
 }
@@ -429,30 +353,10 @@ This function tests if $file is a file. Returns 1 if true. 0 if false.
 =cut
 
 sub is_file {
-   Rex::Logger::debug("Checking if $_[0] is a file");
+   my ($file) = @_;
    
-   if(my $sftp = Rex::get_sftp()) {
-
-      my $rnd = get_random(8, 'a' .. 'z');
-      file "/tmp/$rnd.tmp",
-         content => "if(-f \"$_[0]\") { exit 0; } exit 1";
-      run("perl /tmp/$rnd.tmp");
-      my $ret = $?;
-      &unlink("/tmp/$rnd.tmp");
-
-      if($ret == 0) {
-         return 1;
-      }
-
-      return 0;
-
-   } else {
-      if(! -f $_[0]) {
-         return 0;
-      }
-   }
-
-   return 1;
+   my $fs = Rex::Interface::Fs->create;
+   return $fs->is_file($file);
 }
 
 =item is_dir($dir)
@@ -471,29 +375,11 @@ This function tests if $dir is a directory. Returns 1 if true. 0 if false.
 =cut
 
 sub is_dir {
-   Rex::Logger::debug("Checking if $_[0] is a directory");
+   my ($path) = @_;
 
-   if(my $sftp = Rex::get_sftp()) {
+   my $fs = Rex::Interface::Fs->create;
+   return $fs->is_dir($path);
 
-      my $rnd = get_random(8, 'a' .. 'z');
-      file "/tmp/$rnd.tmp",
-         content => "if(-d \"$_[0]\") { exit 0; } exit 1";
-      run("perl /tmp/$rnd.tmp");
-      my $ret = $?;
-      &unlink("/tmp/$rnd.tmp");
-
-      if($ret == 0) {
-         return 1;
-      }
-
-      return 0;
-   } else {
-      if( ! -d $_[0]) {
-         return 0;
-      }
-   }
-
-   return 1;
 }
 
 =item is_readable($file)
@@ -513,27 +399,11 @@ This function tests if $file is readable. It returns 1 if true. 0 if false.
 
 
 sub is_readable {
-   Rex::Logger::debug("Checking if $_[0] is readable");
+   my ($file) = @_;
+   Rex::Logger::debug("Checking if $file is readable");
 
-   if(my $ssh = Rex::is_ssh()) {
-
-      my $rnd = get_random(8, 'a' .. 'z');
-      file "/tmp/$rnd.tmp",
-         content => "if(-r \"$_[0]\") { exit 0; } exit 1";
-      run("perl /tmp/$rnd.tmp");
-      my $ret = $?;
-      &unlink("/tmp/$rnd.tmp");
-
-      if($ret == 0) {
-         return 1;
-      }
-   } else {
-      if(-r $_[0]) {
-         return 1;
-      }
-   }
-
-   return 0;
+   my $fs = Rex::Interface::Fs->create;
+   return $fs->is_readable($file);
 }
 
 =item is_writable($file)
@@ -553,27 +423,11 @@ This function tests if $file is writable. It returns 1 if true. 0 if false.
 
 
 sub is_writable {
-   Rex::Logger::debug("Checking if $_[0] is writable");
+   my ($file) = @_;
+   Rex::Logger::debug("Checking if $file is writable");
 
-   if(my $ssh = Rex::is_ssh()) {
-
-      my $rnd = get_random(8, 'a' .. 'z');
-      file "/tmp/$rnd.tmp",
-         content => "if(-w \"$_[0]\") { exit 0; } exit 1";
-      run("perl /tmp/$rnd.tmp");
-      my $ret = $?;
-      &unlink("/tmp/$rnd.tmp");
-
-      if($ret == 0) {
-         return 1;
-      }
-   } else {
-      if(-w $_[0]) {
-         return 1;
-      }
-   }
-
-   return 0;
+   my $fs = Rex::Interface::Fs->create;
+   return $fs->is_writable($file);
 }
 
 =item is_writeable($file)
@@ -603,18 +457,15 @@ This function returns the link endpoint if $link is a symlink. If $link is not a
 =cut
 
 sub readlink {
-   my $link;
-   Rex::Logger::debug("Reading link of $_[0]");
+   my ($file) = @_;
+   Rex::Logger::debug("Reading link of $file");
 
-   if(my $sftp = Rex::get_sftp()) {
-      $link = $sftp->readlink($_[0]);
-   } else {
-      $link = CORE::readlink($_[0]);
-   }
+   my $fs = Rex::Interface::Fs->create;
+   my $link = $fs->readlink($file);
 
    unless($link) {
-      Rex::Logger::debug("readlink: $_[0] is not a link.");
-      die("readlink: $_[0] is not a link.");
+      Rex::Logger::debug("readlink: $file is not a link.");
+      die("readlink: $file is not a link.");
    }
 
    return $link;
@@ -635,10 +486,8 @@ sub rename {
 
    Rex::Logger::debug("Renaming $old to $new");
 
-   my $ret;
-   run "mv $old $new";
-
-   if($? != 0) {
+   my $fs = Rex::Interface::Fs->create;
+   if(! $fs->rename($old, $new)) {
       Rex::Logger::info("Rename failed ($old -> $new)");
       die("Rename failed $old -> $new");
    }
@@ -699,7 +548,8 @@ sub df {
 
    $dev ||= "";
 
-   my @lines = run "df $dev";
+   my $exec = Rex::Interface::Exec->create;
+   my @lines = $exec->exec("df $dev");
    shift @lines;
 
    for my $line (@lines) {
@@ -734,7 +584,8 @@ Returns the disk usage of $path.
 sub du {
    my ($path) = @_;
 
-   my @lines = run "du -s $path";
+   my $exec = Rex::Interface::Exec->create;
+   my @lines = $exec->exec("du -s $path");
    my ($du) = ($lines[0] =~ m/^(\d+)/);
 
    return $du;
@@ -753,8 +604,8 @@ cp will copy $source to $destination (it is recursive)
 sub cp {
    my ($source, $dest) = @_;
 
-   run "cp -a $source $dest";
-   if($? != 0) {
+   my $fs = Rex::Interface::Fs->create;
+   if( ! $fs->cp($source, $dest)) {
       die("Copy failed from $source to $dest");
    }
 }
@@ -781,7 +632,8 @@ sub mount {
                            $device,
                            $mount_point);
 
-   run $cmd;
+   my $exec = Rex::Interface::Exec->create;
+   $exec->exec($cmd);
    if($? != 0) { die("Mount failed of $mount_point"); }
 }
 
@@ -796,7 +648,8 @@ Unmount device.
 =cut
 sub umount {
    my ($mount_point) = @_;
-   run "umount $mount_point";
+   my $exec = Rex::Interface::Exec->create;
+   $exec->exec("umount $mount_point");
 
    if($? != 0) { die("Umount failed of $mount_point"); }
 }
@@ -811,22 +664,8 @@ sub umount {
 sub glob {
    my ($glob) = @_;
 
-   if(my $ssh = Rex::is_ssh()) {
-
-      my $rnd = get_random(8, 'a' .. 'z');
-      file "/tmp/$rnd.tmp",
-         content => "use Data::Dumper; print Dumper [ glob(\"$glob\") ];";
-      my $content = run("perl /tmp/$rnd.tmp");
-      &unlink("/tmp/$rnd.tmp");
-
-      $content =~ s/^\$VAR1 =/return /;
-      my $tmp = eval $content;
-      return @{$tmp};
-   }
-   else {
-      return CORE::glob($glob);
-   }
-   
+   my $fs = Rex::Interface::Fs->create;
+   return $fs->glob($glob);
 }
 
 =back

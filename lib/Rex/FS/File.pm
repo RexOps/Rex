@@ -67,27 +67,16 @@ Write $buf into the filehandle.
 sub write {
    
    my ($self, @buf) = @_;
-   my $fh = $self->{'fh'};
-   if(ref($fh) eq 'Net::SSH2::File' || ref($fh) eq "Rex::Sudo::File") {
-      if(scalar(@buf) > 1) {
-         for my $line (@buf) {
-            $fh->write($line);
-            $fh->write($/);
-         }
+   my $fh = $self->{fh};
+
+   if(scalar(@buf) > 1) {
+      for my $line (@buf) {
+         $fh->write($line);
+         $fh->write($/);
       }
-      else {
-         $fh->write($buf[0]);
-      }
-   } else {
-      if(scalar(@buf) > 1) {
-         for my $line (@buf) {
-            print $fh $line;
-            print $fh $/;
-         }
-      }
-      else {
-         print $fh $buf[0];
-      }
+   }
+   else {
+      $fh->write($buf[0]);
    }
 }
 
@@ -104,12 +93,7 @@ sub seek {
    my ($self, $offset) = @_;
 
    my $fh = $self->{'fh'};
-
-   if(ref($fh) eq 'Net::SSH2::File' || ref($fh) eq "Rex::Sudo::File") {
-      $fh->seek($offset);
-   } else {
-      seek($fh, $offset, 0);
-   }
+   $fh->seek($offset);
 }
 
 =item read($len)
@@ -125,17 +109,7 @@ sub read {
    $len = DEFAULT_READ_LEN if(!$len);
 
    my $fh = $self->{'fh'};
-   my $buf;
-   if(ref($fh) eq 'Net::SSH2::File') {
-      $fh->read($buf, $len);
-   }
-   elsif(ref($fh) eq "Rex::Sudo::File") {
-      $buf = $fh->read($len);
-   } else {
-      read $fh, $buf, $len;
-   }
-
-   return $buf;
+   return $fh->read($len);
 }
 
 =item read_all
@@ -170,14 +144,7 @@ Close the file.
 sub close {
    my ($self) = @_;
    my $fh = $self->{'fh'};
-   if(ref($fh) eq 'Net::SSH2::File') {
-      $fh = undef;
-   }
-   elsif(ref($fh) eq 'Rex::Sudo::File') {
-      $fh->close;
-   } else {
-      close($fh);
-   }
+   $fh->close;
 }
 
 =back

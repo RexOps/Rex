@@ -67,12 +67,13 @@ require Rex::Exporter;
 use Data::Dumper;
 use Rex::Config;
 use Rex::FS::File;
-use Rex::Commands::Fs;
-use Rex::Commands::Upload;
-use Rex::Commands::MD5;
-use Rex::Commands::Run;
-use Rex::Helper::System;
+#use Rex::Commands::Fs;
+#use Rex::Commands::Upload;
+#use Rex::Commands::MD5;
+#use Rex::Commands::Run;
+#use Rex::Helper::System;
 use Rex::File::Parser::Data;
+use Rex::Interface::File;
 
 use File::Basename qw(dirname);
 
@@ -211,7 +212,7 @@ sub file {
       $fh->close;
    }
    elsif(exists $option->{"source"}) {
-      upload $option->{"source"}, "$file";
+      Rex::Commands::Upload::upload($option->{"source"}, "$file");
    }
 
    eval {
@@ -267,21 +268,11 @@ On failure it will die.
 
 sub file_write {
    my ($file) = @_;
-   my ($fh,$sftp);
 
    Rex::Logger::debug("Opening file: $file for writing.");
 
-   if(($sftp = Rex::get_sftp()) && ! Rex::is_sudo()) {
-      $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
-   }
-   elsif(($sftp = Rex::get_sftp()) && Rex::is_sudo()) {
-      require Rex::Sudo::File;
-      $fh = Rex::Sudo::File->open(">", $file);
-   } else {
-      open($fh, ">", $file) or die($!);
-   }
-
-   unless($fh) {
+   my $fh = Rex::Interface::File->create;
+   if( ! $fh->open(">", $file)) {
       Rex::Logger::debug("Can't open $file for writing.");
       die("Can't open $file for writing.");
    }
@@ -295,28 +286,12 @@ sub file_write {
 
 sub file_append {
    my ($file) = @_;
-   my ($fh, $sftp);
 
    Rex::Logger::debug("Opening file: $file for appending.");
 
-   if(($sftp = Rex::get_sftp()) && ! Rex::is_sudo()) {
-      if(is_file($file)) {
-         $fh = $sftp->open($file, O_WRONLY | O_APPEND );
-         my %stat = stat "$file";
-         $fh->seek($stat{size});
-      } 
-      else {
-         $fh = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
-      }
-   }
-   elsif(($sftp = Rex::get_sftp()) && Rex::is_sudo()) {
-      require Rex::Sudo::File;
-      $fh = Rex::Sudo::File->open(">>", $file);
-   } else {
-      open($fh, ">>", $file) or die($!);
-   }
+   my $fh = Rex::Interface::File->create;
 
-   unless($fh) {
+   if( ! $fh->open(">>", $file)) {
       Rex::Logger::debug("Can't open $file for appending.");
       die("Can't open $file for appending.");
    }
@@ -349,21 +324,12 @@ On failure it will die.
 
 sub file_read {
    my ($file) = @_;
-   my ($fh, $sftp);
 
    Rex::Logger::debug("Opening file: $file for reading.");
 
-   if(($sftp = Rex::get_sftp()) && ! Rex::is_sudo()) {
-      $fh = $sftp->open($file, O_RDONLY);
-   }
-   elsif(($sftp = Rex::get_sftp()) && Rex::is_sudo()) {
-      require Rex::Sudo::File;
-      $fh = Rex::Sudo::File->open("<", $file);
-   } else {
-      open($fh, "<", $file) or die($!);
-   }
+   my $fh = Rex::Interface::File->create;
 
-   unless($fh) {
+   if( ! $fh->open("<", $file)) {
       Rex::Logger::debug("Can't open $file for reading.");
       die("Can't open $file for reading.");
    }
@@ -403,13 +369,12 @@ Delete lines that match $regexp in $file.
 =cut
 sub delete_lines_matching {
    my ($file, @m) = @_;
-
-   if(! is_file($file)) {
+   if(! Rex::Commands::Fs::is_file($file)) {
       Rex::Logger::info("File: $file not found.");
       die("$file not found");
    }
 
-   if(! is_writable($file)) {
+   if(! Rex::Commands::Fs::is_writable($file)) {
       Rex::Logger::info("File: $file not writable.");
       die("$file not writable");
    }
@@ -452,12 +417,12 @@ Append $new_line to $file if none in @regexp is found.
 sub append_if_no_such_line {
    my ($file, $new_line, @m) = @_;
 
-   if(! is_file($file)) {
+   if(! Rex::Commands::Fs::is_file($file)) {
       Rex::Logger::info("File: $file not found.");
       die("$file not found");
    }
 
-   if(! is_writable($file)) {
+   if(! Rex::Commands::Fs::is_writable($file)) {
       Rex::Logger::info("File: $file not writable.");
       die("$file not writable");
    }
@@ -501,19 +466,19 @@ sub extract {
    }
 
    if($file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
-      run "${pre_cmd}gunzip -c $file | tar -xf -";
+      Rex::Commands::Run::run("${pre_cmd}gunzip -c $file | tar -xf -");
    }
    elsif($file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
-      run "${pre_cmd}bunzip2 -c $file | tar -xf -";
+      Rex::Commands::Run::run("${pre_cmd}bunzip2 -c $file | tar -xf -");
    }
    elsif($file =~ m/\.(zip|war|jar)$/) {
-      run "${pre_cmd}unzip -o $file";
+      Rex::Commands::Run::run("${pre_cmd}unzip -o $file");
    }
    elsif($file =~ m/\.gz$/) {
-      run "${pre_cmd}gunzip $file";
+      Rex::Commands::Run::run("${pre_cmd}gunzip $file");
    }
    elsif($file =~ m/\.bz2$/) {
-      run "${pre_cmd}bunzip2 $file";
+      Rex::Commands::Run::run("${pre_cmd}bunzip2 $file");
    }
    else {
       Rex::Logger::info("File not supported.");

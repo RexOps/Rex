@@ -24,7 +24,10 @@ sub new {
 }
 
 sub exec {
-   my ($self, $command, $path) = @_;
+   my ($self, $cmd, $path) = @_;
+
+   if($path) { $path = "PATH=$path" }
+   $path ||= "";
 
    my $exec;
    if(Rex::is_ssh()) {

@@ -38,6 +38,7 @@ use Rex::Logger;
 use Rex::Helper::SSH2;
 use Rex::Helper::SSH2::Expect;
 use Rex::Config;
+use Rex::Interface::Exec;
 
 BEGIN {
    if($^O !~ m/^MSWin/) {
@@ -65,36 +66,11 @@ This function will execute the given command and returns the output.
 
 sub run {
    my $cmd = shift;
-   my $no_sudo = shift;
 
-   Rex::Logger::debug("Running command: $cmd");
+   my $path = join(":", Rex::Config->get_path());
 
-   my @ret = ();
-   my $out;
-
-   if(Rex::is_sudo() && ! $no_sudo) {
-      return sudo($cmd);
-   }
-
-   if(my $ssh = Rex::is_ssh()) {
-      my @paths = Rex::Config->get_path;
-      my $path="";
-      if(@paths) {
-         $path = "PATH=" . join(":", @paths);
-      }
-      $out = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
-   } else {
-      if($^O =~ m/^MSWin/) {
-         $out = qx{$cmd};
-      }
-      else {
-         $out = qx{LC_ALL=C $cmd};
-      }
-   }
-
-   Rex::Logger::debug($out);
-   Rex::Logger::debug("Returncode: $?");
-
+   my $exec = Rex::Interface::Exec->create;
+   my $out = $exec->exec($cmd, $path);
    chomp $out;
 
    if(wantarray) {

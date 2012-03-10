@@ -97,7 +97,7 @@ sub close {
 
    # use cat to not overwrite attributes/owner/group
    if($self->{mode} eq ">" || $self->{mode} eq ">>") {
-      run "sh -c 'cat " . $self->{rndfile} . " >" . $self->{file} . "'";
+      run "cat " . $self->{rndfile} . " >" . $self->{file};
       rm($self->{rndfile});
    }
 }

@@ -79,7 +79,8 @@ use Rex::Cache;
 
 our (@EXPORT,
       $VERSION,
-      @CONNECTION_STACK);
+      @CONNECTION_STACK,
+      $GLOBAL_SUDO);
 
 $VERSION = "0.25.99.0";
 
@@ -134,11 +135,18 @@ Returns 1 if the current operation is executed within sudo.
 
 =cut
 sub is_sudo {
+   if($GLOBAL_SUDO) { return 1; }
+
    if($CONNECTION_STACK[-1]) {
       return $CONNECTION_STACK[-1]->{"use_sudo"};
    }
 
    return 0;
+}
+
+sub global_sudo {
+   my ($on) = @_;
+   $GLOBAL_SUDO = $on;
 }
 
 =item get_sftp

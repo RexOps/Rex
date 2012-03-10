@@ -65,7 +65,6 @@ Write $buf into the filehandle.
 =cut
 
 sub write {
-   # sudo? sh -c 'echo $c >> $file'
    
    my ($self, @buf) = @_;
    my $fh = $self->{'fh'};

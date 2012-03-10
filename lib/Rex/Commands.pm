@@ -856,6 +856,7 @@ sub exit {
    Rex::Logger::info("Exiting Rex...");
    Rex::Logger::info("Cleaning up...");
 
+   Rex::global_sudo(0);
    unlink("$::rexfile.lock") if($::rexfile);
 
    CORE::exit(@_);

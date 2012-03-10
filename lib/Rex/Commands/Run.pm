@@ -72,7 +72,7 @@ sub run {
    my @ret = ();
    my $out;
 
-   if(Rex::get_current_connection() && exists Rex::get_current_connection()->{use_sudo} && Rex::get_current_connection()->{use_sudo} == 1 && ! $no_sudo) {
+   if(Rex::is_sudo() && ! $no_sudo) {
       return sudo($cmd);
    }
 
@@ -144,11 +144,18 @@ Run $command with I<sudo>. Define the password for sudo with I<sudo_password>.
 sub sudo {
    my ($cmd) = @_;
 
+   if($cmd eq "on" || $cmd eq "-on") {
+      Rex::Logger::debug("Turning sudo globaly on");
+      Rex::global_sudo(1);
+      return;
+   }
+
    # if sudo is used with a code block
    if(ref($cmd) eq "CODE") {
+      my $old_sudo = Rex::get_current_connection()->{use_sudo} || 0;
       Rex::get_current_connection()->{use_sudo} = 1;
       &$cmd();
-      Rex::get_current_connection()->{use_sudo} = 0;
+      Rex::get_current_connection()->{use_sudo} = $old_sudo;
 
       return;
    }
@@ -157,7 +164,13 @@ sub sudo {
    my $timeout       = Rex::Config->get_timeout;
    my $sudo_password = Rex::Config->get_sudo_password;
 
-   return run("echo '$sudo_password' | sudo -p '' -S $cmd", 1);
+   my @paths = Rex::Config->get_path;
+   my $path="";
+   if(@paths) {
+      $path = "PATH=" . join(":", @paths);
+   }
+
+   return run("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'", 1);
 }
 
 =back

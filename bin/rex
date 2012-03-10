@@ -1,4 +1,4 @@
-#!perl -w
+#!/opt/local/bin/perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -43,7 +43,7 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('CcqFThvdE:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
+getopts('CcqFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
 
 if($opts{'d'}) {
    $Rex::Logger::debug = $opts{'d'};
@@ -79,6 +79,8 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
+   printf "  %-15s %s\n", "-s", "Use sudo for every command";
+   printf "  %-15s %s\n", "-S", "Password for sudo";
    printf "  %-15s %s\n", "-d", "Debug";
    printf "  %-15s %s\n", "-o", "Output Format";
    printf "  %-15s %s\n", "-c", "Turn cache ON";
@@ -199,6 +201,7 @@ elsif(-f $::rexfile) {
          } else
          {
             Rex::Logger::info("Found stale lock file. Removing it.");
+            Rex::global_sudo(0);
             unlink("$::rexfile.lock");
          }
       }
@@ -226,6 +229,14 @@ elsif(-f $::rexfile) {
    Rex::Logger::debug("Including/Parsing $::rexfile");
 
    Rex::Config->set_environment($opts{"E"}) if($opts{"E"});
+
+   # turn sudo on with cli option s is used
+   if(exists $opts{'s'}) {
+      sudo("on");
+   }
+   if(exists $opts{'S'}) {
+      sudo_password($opts{'S'});
+   }
    eval {
       do($::rexfile);
    };
@@ -355,6 +366,7 @@ if($output) {
 }
 
 # lock loeschen
+Rex::global_sudo(0);
 Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
 unlink("$::rexfile.lock")               if(! exists $opts{'F'});
 

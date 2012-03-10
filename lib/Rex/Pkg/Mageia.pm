@@ -89,7 +89,7 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   my @lines = run "rpm -qa --nosignature --nodigest --qf '\%{NAME} \%|EPOCH?{\%{EPOCH}}:{0}| \%{VERSION} \%{RELEASE} \%{ARCH}\\n'";
+   my @lines = run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
 
    my @pkg;
 

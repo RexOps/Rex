@@ -10,8 +10,12 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+require Rex::Commands;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
+use Rex::Interface::File;
+use Rex::Interface::Fs;
+use Rex::Interface::Exec;
 
 sub new {
    my $that = shift;
@@ -74,7 +78,13 @@ sub create_user {
       }
    }
  
-   run "$cmd $user";
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $fh = Rex::Interface::File->create;
+   $fh->open(">", $rnd_file);
+   $fh->write("$cmd $user\nexit \$?\n");
+   $fh->close;
+
+   run "/bin/sh $rnd_file";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
    }
@@ -83,20 +93,38 @@ sub create_user {
       die("Error creating/updating user $user");
    }
 
+   Rex::Interface::Fs->create()->unlink($rnd_file);
+
    if(exists $data->{password}) {
+      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+      $fh = Rex::Interface::File->create;
+      $fh->open(">", $rnd_file);
+      $fh->write("echo '$user:" . $data->{password} . "' | chpasswd\nexit \$?\n");
+      $fh->close;
+
       Rex::Logger::debug("Changing password of $user.");
-      run "echo '$user:" . $data->{password} . "' | chpasswd";
+      run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
+
+      Rex::Interface::Fs->create()->unlink($rnd_file);
    }
 
    if(exists $data->{crypt_password}) {
+      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+      $fh = Rex::Interface::File->create;
+      $fh->open(">", $rnd_file);
+      $fh->write("usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
+      $fh->close;
+
       Rex::Logger::debug("Setting encrypted password of $user");
-      run "usermod -p '" . $data->{crypt_password} . "' $user";
+      run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
+
+      Rex::Interface::Fs->create()->unlink($rnd_file);
    }
 
    return $self->get_uid($user);
@@ -136,10 +164,18 @@ sub get_user {
    my ($self, $user) = @_;
 
    Rex::Logger::debug("Getting information for $user");
-   my $data_str = run "perl -MData::Dumper -le'print Dumper [ getpwnam(\"$user\") ]'";
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $fh = Rex::Interface::File->create;
+   $fh->open(">", $rnd_file);
+   $fh->write(q|use Data::Dumper; print Dumper [ getpwnam($ARGV[0]) ];|);
+   $fh->close;
+
+   my $data_str = run "perl $rnd_file $user";
    if($? != 0) {
       die("Error getting  user information for $user");
    }
+
+   Rex::Interface::Fs->create()->unlink($rnd_file);
 
    my $data;
    {
@@ -199,10 +235,18 @@ sub get_group {
    my ($self, $group) = @_;
 
    Rex::Logger::debug("Getting information for $group");
-   my $data_str = run "perl -MData::Dumper -le'print Dumper [ getgrnam(\"$group\") ]'";
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $fh = Rex::Interface::File->create;
+   $fh->open(">", $rnd_file);
+   $fh->write(q|use Data::Dumper; print Dumper [ getgrnam($ARGV[0]) ];|);
+   $fh->close;
+
+   my $data_str = run "perl $rnd_file $group";
    if($? != 0) {
       die("Error getting group information");
    }
+
+   Rex::Interface::Fs->create()->unlink($rnd_file);
 
    my $data;
    {

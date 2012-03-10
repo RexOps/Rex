@@ -14,6 +14,10 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::User::OpenBSD;
+use Rex::Interface::File;
+use Rex::Interface::Fs;
+use Rex::Interface::Exec;
+
 
 use base qw(Rex::User::OpenBSD);
 
@@ -78,7 +82,13 @@ sub create_user {
       }
    }
  
-   run "$cmd $user";
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $fh = Rex::Interface::File->create;
+   $fh->open(">", $rnd_file);
+   $fh->write("$cmd $user\nexit \$?\n");
+   $fh->close;
+
+   run "/bin/sh $rnd_file";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
    }
@@ -86,6 +96,8 @@ sub create_user {
       Rex::Logger::info("Error creating/updating user $user");
       die("Error creating/updating user $user");
    }
+
+   Rex::Interface::Fs->create()->unlink($rnd_file);
 
    if(exists $data->{password}) {
       my $expect_path;
@@ -118,10 +130,18 @@ expect eof
 ~);
          $fh->close;
 
+         $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+         $fh = Rex::Interface::File->create;
+         $fh->open(">", $rnd_file);
+         $fh->write("/tmp/chpasswd $user '" . $data->{"password"} . "'\nexit \$?\n");
+         $fh->close;
+
          chmod 700, "/tmp/chpasswd";
-         run "/tmp/chpasswd $user '" . $data->{"password"} . "'";
+         run "/bin/sh $rnd_file";
+         if($? != 0) { die("Error changing user's password."); }
 
          rm "/tmp/chpasswd";
+         rm "$rnd_file";
       }
       else {
          die("No expect found in /usr/local/bin or /usr/bin. Can't set user password.");

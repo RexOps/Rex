@@ -1,0 +1,41 @@
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+   
+package Rex::Interface::Exec::Sudo;
+   
+use strict;
+use warnings;
+
+use Rex::Config;
+use Rex::Interface::Exec::Local;
+use Rex::Interface::Exec::SSH;
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
+
+   bless($self, $proto);
+
+   return $self;
+}
+
+sub exec {
+   my ($self, $command, $path) = @_;
+
+   my $exec;
+   if(Rex::is_ssh()) {
+      $exec = Rex::Interface::Exec->create("SSH");
+   }
+   else {
+      $exec = Rex::Interface::Exec->create("Local");
+   }
+
+   my $sudo_password = Rex::Config->get_sudo_password;
+   return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
+}
+
+1;

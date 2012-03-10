@@ -67,13 +67,13 @@ require Rex::Exporter;
 use Data::Dumper;
 use Rex::Config;
 use Rex::FS::File;
-#use Rex::Commands::Fs;
-#use Rex::Commands::Upload;
-#use Rex::Commands::MD5;
-#use Rex::Commands::Run;
-#use Rex::Helper::System;
+use Rex::Commands::Upload;
+use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
+
+use Rex::Interface::Exec;
 use Rex::Interface::File;
+use Rex::Interface::Fs;
 
 use File::Basename qw(dirname);
 
@@ -187,6 +187,8 @@ sub file {
 
    my $on_change = $option->{"on_change"} || sub {};
 
+   my $fs = Rex::Interface::Fs->create;
+
    my ($new_md5, $old_md5);
    eval {
       $old_md5 = md5($file);
@@ -212,7 +214,7 @@ sub file {
       $fh->close;
    }
    elsif(exists $option->{"source"}) {
-      Rex::Commands::Upload::upload($option->{"source"}, "$file");
+      upload $option->{"source"}, "$file";
    }
 
    eval {
@@ -220,15 +222,15 @@ sub file {
    };
 
    if(exists $option->{"mode"}) {
-      chmod($option->{"mode"}, $file);
+      $fs->chmod($option->{"mode"}, $file);
    }
 
    if(exists $option->{"group"}) {
-      chgrp($option->{"group"}, $file);
+      $fs->chgrp($option->{"group"}, $file);
    }
 
    if(exists $option->{"owner"}) {
-      chown($option->{"owner"}, $file);
+      $fs->chown($option->{"owner"}, $file);
    }
 
    unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
@@ -369,12 +371,14 @@ Delete lines that match $regexp in $file.
 =cut
 sub delete_lines_matching {
    my ($file, @m) = @_;
-   if(! Rex::Commands::Fs::is_file($file)) {
+   my $fs = Rex::Interface::Fs->create;
+
+   if(! $fs->is_file($file)) {
       Rex::Logger::info("File: $file not found.");
       die("$file not found");
    }
 
-   if(! Rex::Commands::Fs::is_writable($file)) {
+   if(! $fs->is_writable($file)) {
       Rex::Logger::info("File: $file not writable.");
       die("$file not writable");
    }
@@ -417,12 +421,14 @@ Append $new_line to $file if none in @regexp is found.
 sub append_if_no_such_line {
    my ($file, $new_line, @m) = @_;
 
-   if(! Rex::Commands::Fs::is_file($file)) {
+   my $fs = Rex::Interface::Fs->create;
+
+   if(! $fs->is_file($file)) {
       Rex::Logger::info("File: $file not found.");
       die("$file not found");
    }
 
-   if(! Rex::Commands::Fs::is_writable($file)) {
+   if(! $fs->is_writable($file)) {
       Rex::Logger::info("File: $file not writable.");
       die("$file not writable");
    }
@@ -465,25 +471,30 @@ sub extract {
       $pre_cmd = "cd $option{chdir}; ";
    }
 
+   my $exec = Rex::Interface::Exec->create;
+   my $cmd = "";
+
    if($file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
-      Rex::Commands::Run::run("${pre_cmd}gunzip -c $file | tar -xf -");
+      $cmd = "${pre_cmd}gunzip -c $file | tar -xf -";
    }
    elsif($file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
-      Rex::Commands::Run::run("${pre_cmd}bunzip2 -c $file | tar -xf -");
+      $cmd = "${pre_cmd}bunzip2 -c $file | tar -xf -";
    }
    elsif($file =~ m/\.(zip|war|jar)$/) {
-      Rex::Commands::Run::run("${pre_cmd}unzip -o $file");
+      $cmd = "${pre_cmd}unzip -o $file";
    }
    elsif($file =~ m/\.gz$/) {
-      Rex::Commands::Run::run("${pre_cmd}gunzip $file");
+      $cmd = "${pre_cmd}gunzip $file";
    }
    elsif($file =~ m/\.bz2$/) {
-      Rex::Commands::Run::run("${pre_cmd}bunzip2 $file");
+      $cmd = "${pre_cmd}bunzip2 $file";
    }
    else {
       Rex::Logger::info("File not supported.");
       die("File ($file) not supported.");
    }
+
+   $exec->exec($cmd);
 }
 
 =item sed($search, $replace, $file)

@@ -57,7 +57,9 @@ require Rex::Exporter;
 use Data::Dumper;
 use Fcntl;
 use Rex::Helper::SSH2;
+use Rex::Commands;
 use Rex::Commands::Run;
+use Rex::Commands::File;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -174,17 +176,7 @@ sub unlink {
 
    Rex::Logger::debug("Unlinking files: " . join(", ", @files));
 
-   if(my $sftp = Rex::get_sftp()) {
-      for my $file (@files) {
-         unless(is_file($file)) {
-            Rex::Logger::info("unlink: $file not found");
-            next;
-         }
-         $sftp->unlink($file);
-      }
-   } else {
-      CORE::unlink(@files);
-   }
+   run "rm " . join(" ", @files);
 }
 
 =item rm($file)
@@ -250,22 +242,15 @@ sub mkdir {
    my $not_recursive = $options->{"not_recursive"} || 0;
 
    if($not_recursive) {
-      if(my $sftp = Rex::get_sftp()) {
-         unless($sftp->mkdir($dir)) {
-            Rex::Logger::debug("Can't create directory $dir");
-            die("Can't create directory $dir");
-         }
+      run "mkdir $dir";
+      if($? != 0) {
+         Rex::Logger::debug("Can't create directory $dir");
+         die("Can't create directory $dir");
       }
-      else {
-         unless(CORE::mkdir($dir)) {
-            Rex::Logger::debug("Can't create directory $dir");
-            die("Can't create directory $dir");
-         }
 
-         &chown($owner, $dir) if $owner;
-         &chgrp($group, $dir) if $group;
-         &chmod($mode, $dir)  if $owner;
-      }
+      &chown($owner, $dir) if $owner;
+      &chgrp($group, $dir) if $group;
+      &chmod($mode, $dir)  if $owner;
    }
 
    my @splitted_dir = map { $_="/$_"; } split(/\//, $dir);
@@ -281,17 +266,10 @@ sub mkdir {
       $str_part .= "$part";
 
       if(! is_dir($str_part) && ! is_file($str_part)) {
-         if(my $sftp = Rex::get_sftp()) {
-            unless($sftp->mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $dir");
-               die("Can't create directory $dir");
-            }
-         }
-         else {
-            unless(CORE::mkdir($str_part)) {
-               Rex::Logger::debug("Can't create directory $dir");
-               die("Can't create directory $dir");
-            }
+         run "mkdir $str_part";
+         if($? != 0) {
+            Rex::Logger::debug("Can't create directory $dir");
+            die("Can't create directory $dir");
          }
 
          &chown($owner, $str_part) if $owner;
@@ -454,13 +432,20 @@ sub is_file {
    Rex::Logger::debug("Checking if $_[0] is a file");
    
    if(my $sftp = Rex::get_sftp()) {
-      if( $sftp->opendir($_[0]) ) {
-         return 0;
+
+      my $rnd = get_random(8, 'a' .. 'z');
+      file "/tmp/$rnd.tmp",
+         content => "if(-f \"$_[0]\") { exit 0; } exit 1";
+      run("perl /tmp/$rnd.tmp");
+      my $ret = $?;
+      &unlink("/tmp/$rnd.tmp");
+
+      if($ret == 0) {
+         return 1;
       }
 
-      if( ! $sftp->open($_[0], O_RDONLY) ) {
-         return 0;
-      }
+      return 0;
+
    } else {
       if(! -f $_[0]) {
          return 0;
@@ -489,9 +474,19 @@ sub is_dir {
    Rex::Logger::debug("Checking if $_[0] is a directory");
 
    if(my $sftp = Rex::get_sftp()) {
-      if( ! $sftp->opendir($_[0]) ) {
-         return 0;
+
+      my $rnd = get_random(8, 'a' .. 'z');
+      file "/tmp/$rnd.tmp",
+         content => "if(-d \"$_[0]\") { exit 0; } exit 1";
+      run("perl /tmp/$rnd.tmp");
+      my $ret = $?;
+      &unlink("/tmp/$rnd.tmp");
+
+      if($ret == 0) {
+         return 1;
       }
+
+      return 0;
    } else {
       if( ! -d $_[0]) {
          return 0;
@@ -521,8 +516,15 @@ sub is_readable {
    Rex::Logger::debug("Checking if $_[0] is readable");
 
    if(my $ssh = Rex::is_ssh()) {
-      net_ssh2_exec($ssh, "perl -le 'if(-r \"$_[0]\") { exit 0; } exit 1'");
-      if($? == 0) {
+
+      my $rnd = get_random(8, 'a' .. 'z');
+      file "/tmp/$rnd.tmp",
+         content => "if(-r \"$_[0]\") { exit 0; } exit 1";
+      run("perl /tmp/$rnd.tmp");
+      my $ret = $?;
+      &unlink("/tmp/$rnd.tmp");
+
+      if($ret == 0) {
          return 1;
       }
    } else {
@@ -554,8 +556,15 @@ sub is_writable {
    Rex::Logger::debug("Checking if $_[0] is writable");
 
    if(my $ssh = Rex::is_ssh()) {
-      net_ssh2_exec($ssh, "perl -le 'if(-w \"$_[0]\") { exit 0; } exit 1'");
-      if($? == 0) {
+
+      my $rnd = get_random(8, 'a' .. 'z');
+      file "/tmp/$rnd.tmp",
+         content => "if(-w \"$_[0]\") { exit 0; } exit 1";
+      run("perl /tmp/$rnd.tmp");
+      my $ret = $?;
+      &unlink("/tmp/$rnd.tmp");
+
+      if($ret == 0) {
          return 1;
       }
    } else {
@@ -627,13 +636,9 @@ sub rename {
    Rex::Logger::debug("Renaming $old to $new");
 
    my $ret;
-   if(my $sftp = Rex::get_sftp()) {
-      $ret = $sftp->rename($old, $new);
-   } else {
-      $ret = CORE::rename($old, $new);
-   }
+   run "mv $old $new";
 
-   unless($ret) {
+   if($? != 0) {
       Rex::Logger::info("Rename failed ($old -> $new)");
       die("Rename failed $old -> $new");
    }
@@ -807,7 +812,13 @@ sub glob {
    my ($glob) = @_;
 
    if(my $ssh = Rex::is_ssh()) {
-      my $content = run "perl -MData::Dumper -le'print Dumper [ glob(\"$glob\") ]'";
+
+      my $rnd = get_random(8, 'a' .. 'z');
+      file "/tmp/$rnd.tmp",
+         content => "use Data::Dumper; print Dumper [ glob(\"$glob\") ];";
+      my $content = run("perl /tmp/$rnd.tmp");
+      &unlink("/tmp/$rnd.tmp");
+
       $content =~ s/^\$VAR1 =/return /;
       my $tmp = eval $content;
       return @{$tmp};

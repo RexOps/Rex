@@ -126,27 +126,22 @@ sub sudo {
       return;
    }
 
+   my $old_sudo = Rex::get_current_connection()->{use_sudo} || 0;
+   Rex::get_current_connection()->{use_sudo} = 1;
+
+   my $ret;
+
    # if sudo is used with a code block
    if(ref($cmd) eq "CODE") {
-      my $old_sudo = Rex::get_current_connection()->{use_sudo} || 0;
-      Rex::get_current_connection()->{use_sudo} = 1;
-      &$cmd();
-      Rex::get_current_connection()->{use_sudo} = $old_sudo;
-
-      return;
+      $ret = &$cmd();
+   }
+   else {
+      $ret = run($cmd);
    }
 
-   my $exp;
-   my $timeout       = Rex::Config->get_timeout;
-   my $sudo_password = Rex::Config->get_sudo_password;
+   Rex::get_current_connection()->{use_sudo} = $old_sudo;
 
-   my @paths = Rex::Config->get_path;
-   my $path="";
-   if(@paths) {
-      $path = "PATH=" . join(":", @paths);
-   }
-
-   return run("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'", 1);
+   return $ret;
 }
 
 =back

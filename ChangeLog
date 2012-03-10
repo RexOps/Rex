@@ -1,5 +1,7 @@
-2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.25.99.0)
+2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.26.0)
+  * changed license to Apache 2.0
   * added sudo compatibility
+  * added support for custom init commands
   * added rex-agent compatibility
   * added overmind compatibility
   * added lvm support to libvirt module

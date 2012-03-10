@@ -134,7 +134,11 @@ sub rename {
    my ($self, $old, $new) = @_;
 
    my $sftp = Rex::get_sftp();
-   return $sftp->rename($old, $new);
+   $sftp->rename($old, $new);
+
+   if( (! $self->is_file($old) && ! $self->is_dir($old) ) && ( $self->is_file($new) || $self->is_dir($new)) ) {
+      return 1;
+   }
 }
 
 sub glob {

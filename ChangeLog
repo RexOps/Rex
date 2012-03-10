@@ -1,4 +1,5 @@
 2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.25.99.0)
+  * added sudo compatibility
   * added rex-agent compatibility
   * added overmind compatibility
   * added lvm support to libvirt module

@@ -104,7 +104,7 @@ sub cp {
    my ($self, $source, $dest) = @_;
 
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("cp -a $source $dest");
+   $exec->exec("cp -R $source $dest");
 
    if($? == 0) { return 1; }
 }

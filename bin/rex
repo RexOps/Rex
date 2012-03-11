@@ -1,4 +1,4 @@
-#!/opt/local/bin/perl -w
+#!perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -390,6 +390,8 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -H              Execute task on these hosts
 
+=item -G              Execute task on these group
+
 =item -u              Username for the ssh connection
 
 =item -p              Password for the ssh connection
@@ -405,6 +407,10 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 =item -h              Display this help
 
 =item -M              Load Module instead of Rexfile
+
+=item -s              Use sudo for every command
+
+=item -S              Password for sudo
 
 =item -v              Display (R)?ex Version
 

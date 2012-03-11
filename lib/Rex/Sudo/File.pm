@@ -3,6 +3,9 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
+
+
+###### DEPRECATED
    
 package Rex::Sudo::File;
    

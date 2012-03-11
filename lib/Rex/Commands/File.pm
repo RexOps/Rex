@@ -462,6 +462,11 @@ sub append_if_no_such_line {
 
 This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
+ task prepare => sub {
+    extract "/tmp/myfile.tar.gz",
+      chdir => "/etc";
+ };
+
 =cut
 sub extract {
    my ($file, %option) = @_;
@@ -498,6 +503,12 @@ sub extract {
 }
 
 =item sed($search, $replace, $file)
+
+Search some string in a file and replace it.
+
+ task sar => sub {
+    sed qr{search}, "replace", "/var/log/auth.log";
+ };
 
 =cut
 sub sed {

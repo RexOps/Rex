@@ -67,6 +67,10 @@ sub tail {
    my $file = shift;
    my $callback = shift;
 
+   if(Rex::is_sudo()) {
+      die("Can't use tail within sudo environment.");
+   }
+
    Rex::Logger::debug("Tailing: $file");
 
    if(my $ssh = Rex::is_ssh()) {

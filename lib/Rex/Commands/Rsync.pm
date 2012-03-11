@@ -117,7 +117,7 @@ sub sync {
                                  exp_continue;
                               }
                             ],
-                            [,
+                            [
                               qr{password: $},
                               sub {
                                  Rex::Logger::debug("Want Password");
@@ -140,7 +140,7 @@ sub sync {
                                  exp_continue;
                               }
                             ],
-                            [,
+                            [
                               qr{Enter passphrase for key.*: $},
                               sub {
                                  Rex::Logger::debug("Want Passphrase");

@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Fcntl;
+use File::Basename;
 require Rex::Commands;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;
@@ -39,6 +40,16 @@ sub open {
    $self->{file} = $file;
    $self->{rndfile} = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".sudo.tmp";
    if($self->_fs->is_file($file)) {
+      # resolving symlinks
+      while(my $link = $self->_fs->readlink($file)) {
+         if($link !~ m/^\//) {
+            $file = dirname($file) . "/" . $link;
+         }
+         else {
+            $file = $link;
+         }
+         $link = $self->_fs->readlink($link);
+      }
       $self->_fs->cp($file, $self->{rndfile});
       $self->_fs->chmod(666, $self->{rndfile});
    }

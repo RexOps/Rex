@@ -62,7 +62,7 @@ Get Information of all your physical volumes.
 
 sub pvs {
    
-   my @lines = run "pvdisplay --units b --columns --separator '|' --noheadings";
+   my @lines = run 'pvdisplay --units b --columns --separator "|" --noheadings';
    if($? != 0) {
       die("Error running pvdisplay");
    }
@@ -111,7 +111,7 @@ sub vgs {
    my ($vg) = @_;
 
 
-   my $cmd = "vgdisplay --units b --columns --separator '|' --noheadings -o 'pv_name,vg_name,vg_size,vg_free,vg_attr'";
+   my $cmd = 'vgdisplay --units b --columns --separator "|" --noheadings -o "pv_name,vg_name,vg_size,vg_free,vg_attr"';
    if($vg) {
       $cmd .= " $vg";
    }
@@ -163,7 +163,7 @@ sub lvs {
 
    my ($vg) = @_;
 
-   my $cmd = "lvdisplay --units b --columns --separator '|' -o 'lv_name,lv_path,lv_attr,lv_size' --noheading";
+   my $cmd = 'lvdisplay --units b --columns --separator "|" -o "lv_name,lv_path,lv_attr,lv_size" --noheading';
    if($vg) {
       $cmd .= " " . $vg;
    }

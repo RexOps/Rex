@@ -108,9 +108,39 @@ sub can_run {
    return 1;
 }
 
-=item sudo($command)
+=item sudo
 
-Run $command with I<sudo>. Define the password for sudo with I<sudo_password>.
+Run a command with I<sudo>. Define the password for sudo with I<sudo_password>.
+
+You can use this function to run one command with sudo privileges or to turn on sudo globaly.
+
+ user "unprivuser";
+ sudo_password "f00b4r";
+ sudo -on;   # turn sudo globaly on
+     
+ task prepare => sub {
+    install "apache2";
+    file "/etc/ntp.conf",
+       source => "files/etc/ntp.conf",
+       owner  => "root",
+       mode   => 640;
+ };
+
+Or, if you don't turning sudo globaly on.
+
+ task prepare => sub {
+    file "/tmp/foo.txt",
+       content => "this file was written without sudo privileges\n";
+        
+    # everything in this section will be executed with sudo privileges
+    sudo sub {
+       install "apache2";
+       file "/tmp/foo2.txt",
+          content => "this file was written with sudo privileges\n";
+    };
+ };
+
+Run only one command within sudo.
 
  task "eth1-down", sub {
    sudo "ifconfig eth1 down";

@@ -1,3 +1,8 @@
+rex (0.26.1) unstable; urgency=low
+  * fixed a bug in the libvirt module
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 13 Mar 2012 21:40:00 +0200
+
 rex (0.26.0) unstable; urgency=low
   * added sudo compatibility
   * added support for custom init commands

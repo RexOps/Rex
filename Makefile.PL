@@ -32,7 +32,7 @@ WriteMakefile1(
    VERSION_FROM => 'lib/Rex.pm',
    PREREQ_PM => \%deps,
    EXE_FILES => ['bin/rex', 'bin/rexify'],
-   LICENSE => 'GPL'
+   LICENSE => 'Apache License 2.0'
 );
 
 

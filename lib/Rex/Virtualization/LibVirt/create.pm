@@ -404,8 +404,7 @@ __DATA__
       <driver name="qemu" type="raw"/>
       <% if ($disk->{type} eq "file") { %>
       <source file="<%= $disk->{file} %>"/>
-      <% } %>
-      <% elsif ($disk->{file} eq "block") { %>
+      <% } elsif ($disk->{file} eq "block") { %>
       <source dev="<%= $disk->{file} %>"/>
       <% } %>
       <% if(exists $disk->{readonly}) { %>

@@ -39,6 +39,8 @@ sub create_task {
 
    if($::FORCE_SERVER) {
 
+      $::FORCE_SERVER = join(" ", Rex::Group->get_group(substr($::FORCE_SERVER, 1))) if($::FORCE_SERVER =~ m/^\0/);
+
       my @servers = split(/\s+/, $::FORCE_SERVER);
       push @server, Rex::Commands::evaluate_hostname($_) for @servers;
 

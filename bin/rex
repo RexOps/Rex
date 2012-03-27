@@ -237,15 +237,17 @@ elsif(-f $::rexfile) {
    if(exists $opts{'S'}) {
       sudo_password($opts{'S'});
    }
+
+   if($opts{'G'}) {
+      $::FORCE_SERVER = "\0" . $opts{'G'};
+   }
+
    eval {
       do($::rexfile);
    };
 
    if($@) { print $@ . "\n"; exit 1; }
 
-   if($opts{'G'}) {
-      $::FORCE_SERVER = join(" ", Rex::Group->get_group($opts{'G'}));
-   }
 
 } else {
    Rex::Logger::info("No Rexfile found");

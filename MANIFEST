@@ -162,4 +162,5 @@ t/commands.t
 t/config.t
 t/helper_hash.t
 t/host.t
+t/interface_fs_local.t
 t/needs.t

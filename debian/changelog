@@ -1,3 +1,8 @@
+rex (0.26.2) unstable; urgency=low
+  * fixed a cli parameter bug (-G)
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Wed, 28 Mar 2012 20:40:00 +0200
+
 rex (0.26.1) unstable; urgency=low
   * fixed a bug in the libvirt module
 

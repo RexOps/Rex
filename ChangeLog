@@ -1,3 +1,9 @@
+2012-03-28 Jan Gehring <jan.gehring, gmail.com> (0.26.2)
+  * fixed a cli parameter bug (-G)
+
+2012-03-13 Jan Gehring <jan.gehring, gmail.com> (0.26.1)
+  * fixed a bug in the libvirt module
+
 2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.26.0)
   * changed license to Apache 2.0
   * added sudo compatibility

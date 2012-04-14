@@ -682,6 +682,14 @@ Calling this task I<rex prepare> will execute on testwww01.
 Calling this task with I<rex -E live prepare> will execute on www01, www02, www03.
 Calling this task I<rex -E stage prepare> will execute on stagewww01. 
 
+You can call the function within a task to get the current environment.
+
+ task "prepare", group => "frontend", sub {
+    if(environment() eq "dev") {
+       say "i'm in the dev environment";
+    }
+ };
+
 =cut
 sub environment {
    if(@_) {

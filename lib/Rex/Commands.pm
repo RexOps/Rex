@@ -119,6 +119,7 @@ use base qw(Rex::Exporter);
             set
             get
             before after around
+            logformat
           );
 
 =item no_ssh([$task])
@@ -830,6 +831,29 @@ Run code before and after the task is finished.
 sub around {
    my ($task, $code) = @_;
    Rex::Task->modify_task($task, "around", $code);
+}
+
+
+=item logformat($format)
+
+You can define the logging format with the following parameters.
+
+%D - Appends the current date yyyy-mm-dd HH:mm:ss
+
+%h - The target host
+
+%p - The pid of the running process
+
+%l - Loglevel (INFO or DEBUG)
+
+%s - The Logstring
+
+Default is: [%D] %l - %s
+
+=cut
+sub logformat {
+   my ($format) = @_;
+   $Rex::Logger::format = $format;
 }
 
 ######### private functions

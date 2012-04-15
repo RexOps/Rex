@@ -30,9 +30,11 @@ sub exec {
    $path ||= "";
 
    my $ssh = Rex::is_ssh();
-   my $out = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
+   my ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
 
    Rex::Logger::debug($out);
+
+   if(wantarray) { return ($out, $err); }
 
    return $out;
 }

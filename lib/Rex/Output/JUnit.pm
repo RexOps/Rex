@@ -31,6 +31,10 @@ sub add {
    $option{time} = time() - $self->{time};
 
    push(@{$self->{"data"}}, { %option });
+
+   if(exists $option{error}) {
+      $self->error($option{msg});
+   }
 }
 
 sub error {
@@ -39,7 +43,7 @@ sub error {
 }
 
 
-sub print {
+sub DESTROY {
    my ($self) = @_;
 
    my $t = Rex::Template->new;
@@ -47,7 +51,7 @@ sub print {
    my $time = time() - $self->{time};
 
    print $t->parse($data, {
-      errors        => scalar(grep { $_->{"error"} == 1 } @{$self->{"data"}}),
+      errors        => scalar(grep { $_->{"error"} && $_->{"error"} == 1 } @{$self->{"data"}}),
       tests         => scalar(@{$self->{"data"}}),
       time_over_all => $time,
       system_out    => $self->{"error"} || "",

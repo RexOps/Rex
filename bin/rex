@@ -43,7 +43,14 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('CcqFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
+getopts('CcqQFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
+
+if($opts{'Q'}) {
+   my ($stdout, $stderr);
+   open(my $newout, '>', \$stdout);
+   select $newout;
+   close(STDERR);
+}
 
 if($opts{'d'}) {
    $Rex::Logger::debug = $opts{'d'};
@@ -86,6 +93,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-c", "Turn cache ON";
    printf "  %-15s %s\n", "-C", "Turn cache OFF";
    printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
+   printf "  %-15s %s\n", "-Q", "Really quiet. Output nothing.";
    print "\n";
    CORE::exit 0;
 } elsif($opts{'v'}) {
@@ -325,14 +333,12 @@ if($@) {
    Rex::Logger::info("Error running task/batch: $@");
 }
 
-if(Rex::Output->get) {
-   Rex::Output->get->print;  
-}
-
 # lock loeschen
 Rex::global_sudo(0);
 Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
 unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+
+select STDOUT;
 
 __END__
 

@@ -308,6 +308,11 @@ sub group {
    Rex::Group->create_group(@_);
 }
 
+# Register set-handler for group
+Rex::Config->register_set_handler(group => sub {
+   Rex::Commands::group(@_);
+});
+
 =item batch($name, @tasks)
 
 With the batch function you can call tasks in a batch.

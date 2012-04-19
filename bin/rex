@@ -43,7 +43,14 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('CcqFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
+getopts('CcqQFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
+
+if($opts{'Q'}) {
+   my ($stdout, $stderr);
+   open(my $newout, '>', \$stdout);
+   select $newout;
+   close(STDERR);
+}
 
 if($opts{'d'}) {
    $Rex::Logger::debug = $opts{'d'};
@@ -86,6 +93,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-c", "Turn cache ON";
    printf "  %-15s %s\n", "-C", "Turn cache OFF";
    printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
+   printf "  %-15s %s\n", "-Q", "Really quiet. Output nothing.";
    print "\n";
    CORE::exit 0;
 } elsif($opts{'v'}) {
@@ -123,9 +131,8 @@ FORCE_SERVER: {
 
 }
 
-my $output;
 if($opts{'o'}) {
-   $output = Rex::Output->get($opts{'o'});
+   Rex::Output->get($opts{'o'});
 }
 
 if($opts{'e'}) {
@@ -305,45 +312,20 @@ if($opts{'T'}) {
    }
 }
 
-my ($start_time, $end_time, $elapsed, $current_job);
 eval {
    if($opts{'b'}) {
       Rex::Logger::debug("Running batch: " . $opts{'b'});
       my $batch = $opts{'b'};
       if(Rex::Batch->is_batch($batch)) {
-         $current_job = $batch;
-         $start_time = [ gettimeofday ];
-
          Rex::Batch->run($batch);
-
-         $end_time = [ gettimeofday ];
-         $elapsed = tv_interval($start_time, $end_time);
-
-         $output->add(
-            name => $batch,
-            time => $elapsed,
-            status => "ok",
-         ) if $output;
       }
    }
 
    if(defined $ARGV[0]) {
       for my $task (@ARGV) {
          if(Rex::Task->is_task($task)) {
-            $current_job = $task;
-            $start_time = [ gettimeofday ];
-
             Rex::Logger::debug("Running task: $task");
             Rex::Task->run($task);
-
-            $end_time = [ gettimeofday ];
-            $elapsed = tv_interval($start_time, $end_time);
-
-            $output->add(
-               name => $task,
-               time => $elapsed,
-               status => "ok",
-            ) if $output;
          }
       }
    }
@@ -351,26 +333,14 @@ eval {
 
 if($@) {
    Rex::Logger::info("Error running task/batch: $@");
-   $end_time = [ gettimeofday ];
-   $elapsed = tv_interval($start_time, $end_time);
-
-   $output->error($@) if $output;
-
-   $output->add(
-      name => $current_job,
-      time => $elapsed,
-      status => "failed",
-   ) if $output;
-}
-
-if($output) {
-   $output->print;
 }
 
 # lock loeschen
 Rex::global_sudo(0);
 Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
 unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+
+select STDOUT;
 
 __END__
 

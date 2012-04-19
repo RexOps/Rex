@@ -446,8 +446,27 @@ sub _exec {
 
    Rex::Logger::debug("Executing $task");
 
-   my $code = $tasks{$task}->{'func'};
-   return &$code($opts);
+   my $ret;
+   eval {
+      my $code = $tasks{$task}->{'func'};
+      $ret = &$code($opts);
+   };
+
+   if($@) {
+      if(Rex::Output->get) {
+         Rex::Output->get->add($task, error => 1, msg => $@);
+      }
+      else {
+         die($@);
+      }
+   }
+   else {
+      if(Rex::Output->get) {
+         Rex::Output->get->add($task);
+      }
+   }
+
+   return $ret;
 }
 
 1;

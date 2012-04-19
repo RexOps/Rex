@@ -451,11 +451,17 @@ sub _exec {
    };
 
    if($@) {
-      Rex::Output->get->add($task, error => 1, msg => $@);
-      die($@) unless(Rex::Output->get);
+      if(Rex::Output->get) {
+         Rex::Output->get->add($task, error => 1, msg => $@);
+      }
+      else {
+         die($@);
+      }
    }
    else {
-      Rex::Output->get->add($task);
+      if(Rex::Output->get) {
+         Rex::Output->get->add($task);
+      }
    }
 
    return $ret;

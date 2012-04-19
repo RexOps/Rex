@@ -50,13 +50,19 @@ sub DESTROY {
    my $data = eval { local $/; <DATA>; };
    my $time = time() - $self->{time};
 
-   print $t->parse($data, {
+   my $s = $t->parse($data, {
       errors        => scalar(grep { $_->{"error"} && $_->{"error"} == 1 } @{$self->{"data"}}),
       tests         => scalar(@{$self->{"data"}}),
       time_over_all => $time,
       system_out    => $self->{"error"} || "",
       items         => $self->{"data"},
    });
+
+   print $s;
+
+   open(my $fh, ">", "junit_output.xml") or die($!);
+   print $fh $s;
+   close($fh);
 }
 
 1;

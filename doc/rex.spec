@@ -61,6 +61,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 * Thu Apr 26 2012 Jan Gehring <jan.gehring at, gmail.com> 0.26.3-1
 - fixed a notification bug in the on_change event of the file function.
+- fixed a cli parameter bug
 
 * Wed Mar 28 2012 Jan Gehring <jan.gehring at, gmail.com> 0.26.2-1
 - fixed a cli parameter bug (-G)

@@ -26,7 +26,7 @@ sub init {
       $has_syslog = 1;
    };
 
-   if($@) {
+   if($@ && Rex::Config->get_log_filename()) {
       open($log_fh, ">>", (Rex::Config->get_log_filename() . "-$$" || "rex-$$.log")) or die($!);
    }
 
@@ -47,7 +47,7 @@ sub info {
    if($has_syslog) {
       syslog("info", $msg);
    }
-   else {
+   elsif($log_fh) {
       print {$log_fh} "[" . get_timestamp() . "] ($$) INFO - $msg\n" if($log_fh);
    }
 
@@ -75,7 +75,7 @@ sub debug {
    if($has_syslog) {
       syslog("debug", $msg);
    }
-   else {
+   elsif($log_fh) {
       print {$log_fh} "[" . get_timestamp() . "] ($$) DEBUG - $msg\n" if($log_fh);
    }
    

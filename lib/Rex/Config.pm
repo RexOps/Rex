@@ -192,7 +192,7 @@ sub set_log_filename {
 
 sub get_log_filename {
    my $class = shift;
-   return $log_filename || "rex";
+   return $log_filename;
 }
 
 sub set_log_facility {

@@ -1,3 +1,6 @@
+2012-04-26 Jan Gehring <jan.gehring, gmail.com> (0.26.3)
+  * fixed a notification bug in the on_change event of the file function.
+
 2012-03-28 Jan Gehring <jan.gehring, gmail.com> (0.26.2)
   * fixed a cli parameter bug (-G)
 

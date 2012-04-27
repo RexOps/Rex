@@ -1,3 +1,9 @@
+rex (0.26.3) unstable; urgency=low
+  * fixed a notification bug in the on_change event of the file function.
+  * fixed a cli parameter bug.
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 26 Apr 2012 18:40:00 +0200
+
 rex (0.26.2) unstable; urgency=low
   * fixed a cli parameter bug (-G)
 

@@ -9,10 +9,14 @@ package Rex::Interface::Connection::SSH;
 use strict;
 use warnings;
 
+use Rex::Interface::Connection::Base;
+
+use base qw(Rex::Interface::Connection::Base);
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
-   my $self = { @_ };
+   my $self = $that->SUPER::new(@_);
 
    bless($self, $proto);
 
@@ -22,11 +26,13 @@ sub new {
 sub connect {
    my ($self, %option) = @_;
 
-   my ($user, $pass, $private_key, $public_key, $server);
+   my ($user, $pass, $private_key, $public_key, $server, $port, $timeout);
 
-   $user   = $option{user};
-   $pass   = $option{password};
-   $server = $option{server};
+   $user    = $option{user};
+   $pass    = $option{password};
+   $server  = $option{server};
+   $port    = $option{port};
+   $timeout = $option{timeout};
 
    $public_key  = Rex::Config->get_public_key;
    $private_key = Rex::Config->get_private_key;
@@ -48,7 +54,9 @@ sub connect {
    my $fail_connect = 0;
 
    CON_SSH:
-      my $port = Rex::Config->get_port(server => $server) || 22;
+      $port    ||= Rex::Config->get_port(server => $server) || 22;
+      $timeout ||= Rex::Config->get_timeout(server => $server) || 3;
+
       $server  = Rex::Config->get_ssh_config_hostname(server => $server) || $server;
 
       if($server =~ m/^(.*?):(\d+)$/) {
@@ -56,7 +64,7 @@ sub connect {
          $port   = $2;
       }
       Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
-      unless($self->{ssh}->connect($server, $port, Timeout => Rex::Config->get_timeout(server => $server))) {
+      unless($self->{ssh}->connect($server, $port, Timeout => $timeout)) {
          ++$fail_connect;
          sleep 1;
          goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails(server => $server)); # try connecting 3 times
@@ -90,6 +98,16 @@ sub connect {
                              'privatekey' => $private_key);
    }
 
+}
+
+sub disconnect {
+   my ($self) = @_;
+   $self->get_connection_object->disconnect;
+}
+
+sub error {
+   my ($self) = @_;
+   return $self->get_connection_object->error;
 }
 
 sub get_connection_object {

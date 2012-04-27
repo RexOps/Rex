@@ -257,7 +257,7 @@ sub run {
          Rex::Logger::debug("Next Server: $server");
          # push it
          my $forked_sub = sub {
-            my $ssh;
+            my $conn;
 
             # reconnect to logger
             Rex::Logger::init();
@@ -275,7 +275,7 @@ sub run {
             # this must be a ssh/remote connection
             if(! $tasks{$task}->{"no_ssh"}) {
 
-               my $conn = Rex::Interface::Connection->create("SSH");
+               $conn = Rex::Interface::Connection->create("SSH");
 
                $conn->connect(
                   user     => $user,
@@ -287,12 +287,8 @@ sub run {
                   CORE::exit(1);
                }
 
-               $ssh = $conn->get_connection_object;
-
                # push a remote connection
-               Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});
-
-               Rex::Logger::debug("Current Error-Code: " . $ssh->error());
+               Rex::push_connection({conn => $conn, ssh => $conn->get_connection_object, server => $server, sftp => $conn->get_connection_object->sftp?$conn->get_connection_object->sftp:undef, cache => Rex::Cache->new});
 
                # auth unsuccessfull
                unless($conn->is_authenticated) {
@@ -329,7 +325,7 @@ sub run {
             # disconnect if ssh connection
             if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                Rex::Logger::debug("Disconnecting from $server");
-               $ssh->disconnect() unless($IN_TRANSACTION);
+               $conn->disconnect() unless($IN_TRANSACTION);
             }
 
             # remove remote connection from the stack

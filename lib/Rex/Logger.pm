@@ -33,6 +33,10 @@ package Rex::Logger;
 use strict;
 use warnings;
 
+my $no_color = 0;
+eval "use Term::ANSIColor";
+if($@) { $no_color = 1; }
+
 my $has_syslog = 0;
 my $log_fh;
 
@@ -86,10 +90,6 @@ sub init {
       $has_syslog = 1;
    };
 
-   if($@ && Rex::Config->get_log_filename()) {
-      open($log_fh, ">>", (Rex::Config->get_log_filename() . "-$$" || "rex-$$.log")) or die($!);
-   }
-
    $log_opened = 1;
 }
 
@@ -110,10 +110,18 @@ sub info {
       syslog("info", $msg);
    }
    elsif($log_fh) {
+      open($log_fh, ">>", Rex::Config->get_log_filename()) or die($!);
+      flock($log_fh, 2);
       print {$log_fh} "$msg\n" if($log_fh);
+      close($log_fh);
    }
 
-   print STDERR "$msg\n" unless($::QUIET);
+   if($no_color) {
+      print STDERR "$msg\n" unless($::QUIET);
+   }
+   else {
+      print STDERR colored(['green'], "$msg\n") unless($::QUIET);
+   }
 
    # workaround for windows Sys::Syslog behaviour on forks
    # see: #6
@@ -140,10 +148,18 @@ sub debug {
       syslog("debug", $msg);
    }
    elsif($log_fh) {
+      open($log_fh, ">>", Rex::Config->get_log_filename()) or die($!);
+      flock($log_fh, 2);
       print {$log_fh} "$msg\n" if($log_fh);
+      close($log_fh);
    }
    
-   print STDERR "$msg\n" unless($::QUIET);
+   if($no_color) {
+      print STDERR "$msg\n" unless($::QUIET);
+   }
+   else {
+      print STDERR colored(['red'], "$msg\n") unless($::QUIET);
+   }
 
    # workaround for windows Sys::Syslog behaviour on forks
    # see: #6

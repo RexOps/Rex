@@ -512,12 +512,14 @@ Search some string in a file and replace it.
 
 =cut
 sub sed {
-   my ($search, $replace, $file) = @_;
-
+   my ($search, $replace, $file, @options) = @_;
    my $content = cat($file);
+   my $option = { @options };
+
+   my $on_change = $option->{"on_change"} || sub {};
    $content =~ s/$search/$replace/gms;
 
-   file($file, content => $content);
+   file($file, content => $content, on_change => $on_change);
 }
 
 =back

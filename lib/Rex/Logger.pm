@@ -109,7 +109,7 @@ sub info {
    if($has_syslog) {
       syslog("info", $msg);
    }
-   elsif($log_fh) {
+   else {
       open($log_fh, ">>", Rex::Config->get_log_filename()) or die($!);
       flock($log_fh, 2);
       print {$log_fh} "$msg\n" if($log_fh);

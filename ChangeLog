@@ -1,3 +1,13 @@
+2012-04-26 Jan Gehring <jan.gehring, gmail.com> (0.26.3)
+  * fixed a notification bug in the on_change event of the file function.
+  * fixed a cli parameter bug in the rexify command.
+
+2012-03-28 Jan Gehring <jan.gehring, gmail.com> (0.26.2)
+  * fixed a cli parameter bug (-G)
+
+2012-03-13 Jan Gehring <jan.gehring, gmail.com> (0.26.1)
+  * fixed a bug in the libvirt module
+
 2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.26.0)
   * changed license to Apache 2.0
   * added sudo compatibility

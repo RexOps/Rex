@@ -19,37 +19,49 @@ sub new {
 
    bless($self, $proto);
 
+   $self->{time}  = time();
+   $self->{error} = "";
+
    return $self;
 }
 
 sub add {
-   my ($self, %option) = @_;
+   my ($self, $task, %option) = @_;
+   $option{name} = $task;
+   $option{time} = time() - $self->{time};
+
    push(@{$self->{"data"}}, { %option });
+
+   if(exists $option{error}) {
+      $self->error($option{msg});
+   }
 }
 
 sub error {
    my ($self, $msg) = @_;
-   $self->{"error"} = $msg;
+   $self->{error} .= $msg . "\n";
 }
 
-sub print {
+
+sub DESTROY {
    my ($self) = @_;
 
    my $t = Rex::Template->new;
-
    my $data = eval { local $/; <DATA>; };
+   my $time = time() - $self->{time};
 
-   my $time;
-      $time += $_->{"time"} for @{$self->{"data"}};
+   my $s = $t->parse($data, {
+      errors        => scalar(grep { $_->{"error"} && $_->{"error"} == 1 } @{$self->{"data"}}),
+      tests         => scalar(@{$self->{"data"}}),
+      time_over_all => $time,
+      system_out    => $self->{"error"} || "",
+      items         => $self->{"data"},
+   });
+
+   print $s;
 
    open(my $fh, ">", "junit_output.xml") or die($!);
-   print $fh $t->parse($data, {
-      errors => scalar(grep { $_->{"status"} eq "failed" } @{$self->{"data"}}),
-      tests => scalar(@{$self->{"data"}}),
-      time_over_all => $time,
-      system_out => $self->{"error"} || "",
-      items => $self->{"data"},
-   });
+   print $fh $s;
    close($fh);
 }
 
@@ -61,12 +73,12 @@ __DATA__
   <testsuite name="rex" errors="<%= $::errors %>" failures="0" tests="<%= $::tests %>" time="<%= $::time_over_all %>">
     <system-out><%= $::system_out %></system-out>                                                                                               
     <% foreach my $item (@$::items) { %>
-    <% if($item->{"status"} eq "failed") { %>
+    <% if($item->{"error"}) { %>
     <testcase name="<%= $item->{"name"} %>" classname="t_rex_proc" time="<%= $item->{"time"} %>">
-       <failure message="not ok - <%= $item->{"name"} %>" type="Rex::Task"></failure>
+       <failure message="<%= $item->{"name"} %>" type="Rex::Task"></failure>
     </testcase>
     <% } else { %>
-    <testcase name="<%= $item->{"name"} %>" classname="t_rex_proc" time="<%= $item->{"time"} %>" />
+    <testcase name="<%= $item->{"name"} %>" classname="t_rex_task" time="<%= $item->{"time"} %>" />
     <% } %>
     <% } %>
   </testsuite>

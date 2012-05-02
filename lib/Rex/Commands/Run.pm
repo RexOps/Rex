@@ -65,13 +65,18 @@ This function will execute the given command and returns the output.
 =cut
 
 sub run {
-   my $cmd = shift;
+   my ($cmd, $code) = @_;
 
    my $path = join(":", Rex::Config->get_path());
 
    my $exec = Rex::Interface::Exec->create;
-   my $out = $exec->exec($cmd, $path);
+   my ($out, $err) = $exec->exec($cmd, $path);
    chomp $out;
+   chomp $err;
+
+   if($code) {
+      return &$code($out, $err);
+   }
 
    if(wantarray) {
       return split(/\n/, $out);

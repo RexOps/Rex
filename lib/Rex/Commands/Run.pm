@@ -104,7 +104,7 @@ This function checks if a command is in the path or is available.
 sub can_run {
    my $cmd = shift;
 
-   if($^O =~ m/^MSWin/) {
+   if(! Rex::is_ssh() && $^O =~ m/^MSWin/) {
       return 1;
    }
 

@@ -302,6 +302,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Jose Luis Martinez
 
+=item Samuele Tognini
+
 =item Sascha Guenther
 
 =back

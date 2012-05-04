@@ -54,12 +54,17 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(run can_run sudo);
 
-=item run($command)
+=item run($command [, $callback])
 
 This function will execute the given command and returns the output.
 
  task "uptime", "server01", sub {
     say run "uptime";
+    run "uptime", sub {
+       my ($stdout, $stderr) = @_;
+       my $server = Rex::get_current_connection()->{server};
+       say "[$server] $stdout\n";
+    };
  };
 
 =cut

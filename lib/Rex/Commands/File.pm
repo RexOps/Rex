@@ -517,7 +517,7 @@ sub extract {
    }
 
    if($option{group}) {
-      $fs->chown($option{group}, $to, recursive => 1);
+      $fs->chgrp($option{group}, $to, recursive => 1);
    }
 }
 

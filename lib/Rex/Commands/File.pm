@@ -458,13 +458,15 @@ sub append_if_no_such_line {
 
 }
 
-=item extract($file)
+=item extract($file [, %options])
 
 This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
  task prepare => sub {
     extract "/tmp/myfile.tar.gz",
-      chdir => "/etc";
+      owner => "root",
+      group => "root",
+      to    => "/etc";
  };
 
 =cut
@@ -472,9 +474,17 @@ sub extract {
    my ($file, %option) = @_;
 
    my $pre_cmd = "";
+   my $to = ".";
+
    if($option{chdir}) {
-      $pre_cmd = "cd $option{chdir}; ";
+      $to = $option{chdir};
    }
+
+   if($option{to}) {
+      $to = $option{to};
+   }
+
+   $pre_cmd = "cd $to; ";
 
    my $exec = Rex::Interface::Exec->create;
    my $cmd = "";
@@ -500,6 +510,15 @@ sub extract {
    }
 
    $exec->exec($cmd);
+
+   my $fs = Rex::Interface::Fs->create;
+   if($option{owner}) {
+      $fs->chown($option{owner}, $to, recursive => 1);
+   }
+
+   if($option{group}) {
+      $fs->chown($option{group}, $to, recursive => 1);
+   }
 }
 
 =item sed($search, $replace, $file)

@@ -61,6 +61,10 @@ lib/Rex/Helper/Hash.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm
+lib/Rex/Interface/Connection.pm
+lib/Rex/Interface/Connection/Base.pm
+lib/Rex/Interface/Connection/Local.pm
+lib/Rex/Interface/Connection/SSH.pm
 lib/Rex/Interface/Exec.pm
 lib/Rex/Interface/Exec/Base.pm
 lib/Rex/Interface/Exec/Local.pm

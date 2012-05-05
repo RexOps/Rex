@@ -194,16 +194,6 @@ sub file {
       $old_md5 = md5($file);
    };
 
-   unless($file =~ m/^\//) {
-      # path is relative
-      Rex::Logger::debug("Relativ path $file");
-      my ($caller_package, $caller_file, $caller_line) = caller;
-      my $d = dirname($caller_file) . "/" . $file;
-
-      Rex::Logger::debug("New filename: $d");
-      $file = $d;
-   }
-
    if(exists $option->{"content"}) {
 
       my $fh = file_write($file);
@@ -214,6 +204,16 @@ sub file {
       $fh->close;
    }
    elsif(exists $option->{"source"}) {
+      unless($option->{source} =~ m/^\//) {
+         # path is relative
+         Rex::Logger::debug("Relativ path " . $option->{source});
+         my ($caller_package, $caller_file, $caller_line) = caller;
+         my $d = dirname($caller_file) . "/" . $option->{source};
+
+         Rex::Logger::debug("New filename: $d");
+         $option->{source} = $d;
+      }
+
       upload $option->{"source"}, "$file";
    }
 

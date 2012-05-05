@@ -22,6 +22,10 @@ use Rex::Cache;
 use Rex::Logger;
 use Rex::Output;
 
+my $no_color = 0;
+eval "use Term::ANSIColor";
+if($@) { $no_color = 1; }
+
 # preload some modules
 use Rex -base;
 
@@ -81,6 +85,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
    printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection";
    printf "  %-15s %s\n", "-T", "List all known tasks.";
+   printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
    printf "  %-15s %s\n", "-h", "Display this help";
    printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
@@ -96,7 +101,7 @@ if($opts{'h'}) {
    printf "  %-15s %s\n", "-Q", "Really quiet. Output nothing.";
    print "\n";
    CORE::exit 0;
-} elsif($opts{'v'}) {
+} elsif($opts{'v'} && ! $opts{'T'}) {
    print "(R)?ex " . $Rex::VERSION . "\n";
    CORE::exit 0;
 }
@@ -305,6 +310,14 @@ if($opts{'T'}) {
    }
    for my $task (Rex::Task->get_tasks) {
       printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
+      if($opts{'v'}) {
+         if(! $no_color) {
+            print colored(['green'], "      Servers: " . join(", ", @{ Rex::Task->get_task($task)->{'server'} }) . "\n");
+         }
+         else {
+            print "      Servers: " . join(", ", @{ Rex::Task->get_task($task)->{'server'} }) . "\n";
+         }
+      }
    }
    print "Batches\n";
    for my $batch (Rex::Batch->get_batchs) {

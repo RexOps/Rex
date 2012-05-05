@@ -14,6 +14,7 @@ use Rex::Fork::Manager;
 use Rex::Cache;
 use Rex::Interface::Connection;
 use Sys::Hostname;
+use Rex::Output;
 
 use vars qw(%tasks);
 

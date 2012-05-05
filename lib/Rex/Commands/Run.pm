@@ -76,8 +76,8 @@ sub run {
 
    my $exec = Rex::Interface::Exec->create;
    my ($out, $err) = $exec->exec($cmd, $path);
-   chomp $out;
-   chomp $err;
+   chomp $out if $out;
+   chomp $err if $err;
 
    if($code) {
       return &$code($out, $err);

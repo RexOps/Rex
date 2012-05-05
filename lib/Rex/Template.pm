@@ -97,5 +97,12 @@ sub _quote {
    return $str;
 }
 
+sub is_defined {
+   my ($check_var, $default) = @_;
+   if(defined $check_var) { return $check_var; }
+
+   return $default;
+}
+
 1;
 

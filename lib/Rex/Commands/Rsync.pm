@@ -58,19 +58,24 @@ This function executes rsync to sync $source and $dest.
  task "sync", "server01", sub {
     sync "html/*", "/var/www/html", {
       exclude => "*.sw*",
+      parameters => '--backup --delete',
     };
  };
 
  task "sync", "server01", sub {
     sync "html/*", "/var/www/html", {
-      exclude => ["*.sw*", "*.tmp"]
+      exclude => ["*.sw*", "*.tmp"],
+      parameters => '--backup --delete',
     };
  };
 
 =item DOWNLOAD - Will download all from the remote directory I</var/www/html> to the local directory I<html>.
 
  task "sync", "server01", sub {
-    sync "/var/www/html/*", "html/", { download => 1 };
+    sync "/var/www/html/*", "html/", {
+      download => 1,
+      parameters => '--backup',
+    };
  };
 
 =back
@@ -90,6 +95,10 @@ sub sync {
       for my $exclude (@$excludes) {
          $params .= " --exclude=" . $exclude;
       }
+   }
+
+   if($opt && exists $opt->{parameters}) {
+      $params .= " " . $opt->{parameters};
    }
 
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {

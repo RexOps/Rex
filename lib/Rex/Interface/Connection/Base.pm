@@ -29,6 +29,11 @@ sub get_connection_object { die("Must be implemented by Interface Class"); };
 sub is_connected { die("Must be implemented by Interface Class"); };
 sub is_authenticated { die("Must be implemented by Interface Class"); };
 
+sub get_fs_connection_object {
+   my ($self) = @_;
+   return $self;
+}
+
 sub get_fs {
    my $fs = Rex::Interface::Fs->create;
    return $fs;

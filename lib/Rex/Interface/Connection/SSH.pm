@@ -98,6 +98,7 @@ sub connect {
                              'privatekey' => $private_key);
    }
 
+   $self->{sftp} = $self->{ssh}->sftp;
 }
 
 sub disconnect {
@@ -113,6 +114,11 @@ sub error {
 sub get_connection_object {
    my ($self) = @_;
    return $self->{ssh};
+}
+
+sub get_fs_connection_object {
+   my ($self) = @_;
+   return $self->{sftp};
 }
 
 sub is_connected {

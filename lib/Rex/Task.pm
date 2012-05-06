@@ -255,7 +255,7 @@ sub run {
 
       my @children;
 
-      # create form manager object
+      # create fork manager object
       my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
 
       # iterate over the server and push the worker function to the fork manager's queue
@@ -294,7 +294,12 @@ sub run {
                }
 
                # push a remote connection
-               Rex::push_connection({conn => $conn, ssh => $conn->get_connection_object, server => $server, sftp => $conn->get_connection_object->sftp?$conn->get_connection_object->sftp:undef, cache => Rex::Cache->new});
+               Rex::push_connection({
+                  conn   => $conn, 
+                  ssh    => $conn->get_connection_object, 
+                  server => $server, 
+                  cache => Rex::Cache->new(),
+               });
 
                # auth unsuccessfull
                unless($conn->is_authenticated) {
@@ -315,8 +320,19 @@ sub run {
                # this is a remote session without a ssh connection
                # for example for libvirt.
 
+               $conn = Rex::Interface::Connection->create("Fake");
+
+               $conn->connect(
+                  server   => $server,
+               );
+
                #Rex::Logger::debug("This is a remote session with NO_SSH");
-               Rex::push_connection({ssh => 0, server => $server, sftp => 0, cache => Rex::Cache->new});
+               Rex::push_connection({
+                  conn   => $conn,
+                  ssh    => 0,
+                  server => $server,
+                  cache  => Rex::Cache->new(),
+               });
 
             }
 
@@ -376,10 +392,19 @@ sub run {
          &$code("<local>");
       }
 
+      my $conn = Rex::Interface::Connection->create("Local");
+
+      $conn->connect();
+
 
       Rex::Logger::debug("This is not a remote session");
       # push a local connection
-      Rex::push_connection({ssh => 0, server => "<local>", sftp => 0, cache => Rex::Cache->new});
+      Rex::push_connection({
+         conn   => $conn,
+         ssh    => 0,
+         server => "<local>",
+         cache  => Rex::Cache->new(),
+      });
 
       $ret = _exec($task, \%opts);
 

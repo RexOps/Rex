@@ -157,7 +157,7 @@ Returns the sftp object for the current ssh connection.
 
 sub get_sftp {
    if($CONNECTION_STACK[-1]) {
-      return $CONNECTION_STACK[-1]->{"sftp"};
+      return $CONNECTION_STACK[-1]->{"conn"}->get_fs_connection_object();
    }
 
    return 0;
@@ -220,7 +220,12 @@ sub connect {
    }
 
    # push a remote connection
-   Rex::push_connection({conn => $conn, ssh => $conn->get_connection_object, server => $server, sftp => $conn->get_connection_object->sftp?$conn->get_connection_object->sftp:undef, cache => Rex::Cache->new});
+   Rex::push_connection({
+      conn   => $conn,
+      ssh    => $conn->get_connection_object,
+      server => $server,
+      cache => Rex::Cache->new(),
+   });
 
    # auth unsuccessfull
    unless($conn->is_authenticated) {

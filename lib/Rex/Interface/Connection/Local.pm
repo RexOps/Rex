@@ -18,6 +18,8 @@ sub new {
    my $proto = ref($that) || $that;
    my $self = $that->SUPER::new(@_);
 
+   $self->{server} = "<local>";
+
    bless($self, $proto);
 
    return $self;

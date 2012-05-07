@@ -95,6 +95,8 @@ sub pop_connection {
 
 =item get_current_connection
 
+This function is deprecated since 0.28! See Rex::Commands::connection.
+
 Returns the current connection as a hashRef.
 
 =over 4
@@ -112,6 +114,7 @@ The server name
 =cut
 
 sub get_current_connection {
+   Rex::Logger::debug("This function is deprecated. See Rex::Commands::connection");
    $CONNECTION_STACK[-1];
 }
 

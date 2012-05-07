@@ -24,7 +24,11 @@ sub new {
 }
 
 sub error { };
-sub connect { };
+sub connect {
+   my ($self, %option) = @_;
+   $self->{server} = $option{server};
+}
+
 sub disconnect { };
 sub get_connection_object { my ($self) = @_; return $self; };
 sub get_fs_connection_object { my ($self) = @_; return $self; };

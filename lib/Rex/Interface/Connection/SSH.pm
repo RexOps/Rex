@@ -34,6 +34,8 @@ sub connect {
    $port    = $option{port};
    $timeout = $option{timeout};
 
+   $self->{server} = $server;
+
    $public_key  = Rex::Config->get_public_key;
    $private_key = Rex::Config->get_private_key;
 

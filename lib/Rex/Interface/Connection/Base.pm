@@ -44,6 +44,9 @@ sub get_exec {
    return $exec;
 }
 
-
+sub server {
+   my ($self) = @_;
+   return $self->{server};
+}
 
 1;

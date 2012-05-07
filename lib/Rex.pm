@@ -126,7 +126,10 @@ Returns 1 if the current connection is a ssh connection. 0 if not.
 
 sub is_ssh {
    if($CONNECTION_STACK[-1]) {
-      return $CONNECTION_STACK[-1]->{"ssh"};
+      my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
+      if($ref =~ m/SSH/) {
+         return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
+      }
    }
 
    return 0;

@@ -279,62 +279,45 @@ sub run {
             }
 
             # this must be a ssh/remote connection
-            if(! $tasks{$task}->{"no_ssh"}) {
 
-               $conn = Rex::Interface::Connection->create("SSH");
+            my $conn_type = "SSH";
+            if($tasks{$task}->{"no_ssh"}) {
+               $conn_type = "Fake";
+            }
 
-               $conn->connect(
-                  user     => $user,
-                  password => $pass,
-                  server   => $server
-               );
+            $conn = Rex::Interface::Connection->create($conn_type);
 
-               unless($conn->is_connected) {
-                  CORE::exit(1);
+            $conn->connect(
+               user     => $user,
+               password => $pass,
+               server   => $server
+            );
+
+            unless($conn->is_connected) {
+               CORE::exit(1);
+            }
+
+            # push a remote connection
+            Rex::push_connection({
+               conn   => $conn, 
+               ssh    => $conn->get_connection_object, 
+               server => $server, 
+               cache => Rex::Cache->new(),
+            });
+
+            # auth unsuccessfull
+            unless($conn->is_authenticated) {
+               Rex::Logger::info("Wrong username or password. Or wrong key.");
+               # after jobs
+               for my $code (@{$tasks{$task}->{"after"}}) {
+                  &$code($server, 1);
                }
 
-               # push a remote connection
-               Rex::push_connection({
-                  conn   => $conn, 
-                  ssh    => $conn->get_connection_object, 
-                  server => $server, 
-                  cache => Rex::Cache->new(),
-               });
 
-               # auth unsuccessfull
-               unless($conn->is_authenticated) {
-                  Rex::Logger::info("Wrong username or password. Or wrong key.");
-                  # after jobs
-                  for my $code (@{$tasks{$task}->{"after"}}) {
-                     &$code($server, 1);
-                  }
-
-
-                  CORE::exit 1;
-               }
-
-               Rex::Logger::debug("Successfull auth");
-
+               CORE::exit 1;
             }
-            else {
-               # this is a remote session without a ssh connection
-               # for example for libvirt.
 
-               $conn = Rex::Interface::Connection->create("Fake");
-
-               $conn->connect(
-                  server   => $server,
-               );
-
-               #Rex::Logger::debug("This is a remote session with NO_SSH");
-               Rex::push_connection({
-                  conn   => $conn,
-                  ssh    => 0,
-                  server => $server,
-                  cache  => Rex::Cache->new(),
-               });
-
-            }
+            Rex::Logger::debug("Successfull auth");
 
             # run the task
             $ret = _exec($task, \%opts);

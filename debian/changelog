@@ -1,3 +1,13 @@
+rex (0.28.0) unstable; urgency=low
+  * fixed a bug with relative source file names inside external modules
+  * new parameter -Tv to display more information about tasks
+  * allow additional parameters for rsync
+  * more code refactoring
+  * fixed a bug in the libvirt module (thanks to SvenDowideit for reporting
+    and testing)
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Thu, 08 May 2012 18:40:00 +0200
+
 rex (0.27.0) unstable; urgency=low
   * added callback parameter to run command
   * added logformat function to define custom logging

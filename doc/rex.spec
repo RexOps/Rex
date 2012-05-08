@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.27.0
+Version: 0.28.0
 Release: 1
 License: Apache 2.0
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.27.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.28.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -57,6 +57,13 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Thu May 08 2012 Jan Gehring <jan.gehring at, gmail.com> 0.28.0-1
+- fixed a bug with relative source file names inside external modules
+- new parameter -Tv to display more information about tasks
+- allow additional parameters for rsync
+- more code refactoring
+- fixed a bug in the libvirt module (thanks to SvenDowideit for reporting and testing)
 
 * Fri May 04 2012 Jan Gehring <jan.gehring at, gmail.com> 0.27.0-1
 - added callback parameter to run command

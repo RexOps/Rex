@@ -114,7 +114,6 @@ The server name
 =cut
 
 sub get_current_connection {
-   Rex::Logger::debug("This function is deprecated. See Rex::Commands::connection");
    $CONNECTION_STACK[-1];
 }
 

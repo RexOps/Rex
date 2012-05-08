@@ -22,6 +22,7 @@ With this Module you can manage your cronjobs.
             day_of_month    => '*',
             month => '*',
             day_of_week => '*',
+            command => '/path/to/your/cronjob',
          };
            
  cron list => "root";
@@ -74,6 +75,7 @@ This example will add a cronjob running on minute 1, 5, 19 and 40. Every hour an
  task "addcron", "server1", sub {
      cron add => "root", {
         minute => "1,5,19,40",
+        command => '/path/to/your/cronjob',
      };
  };
 
@@ -86,6 +88,7 @@ This example will add a cronjob only running on the 1st, 3rd and 5th day of a mo
         month  => "1,5",
         day_of_week => "1,3",
         day_of_month => "1,3,5",
+        command => '/path/to/your/cronjob',
      };
  };
 

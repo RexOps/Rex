@@ -55,7 +55,8 @@ This function will return the md5 sum (hexadecimal) for the given file.
 sub md5 {
    my ($file) = @_;
 
-   if(is_file($file)) {
+   my $fs = Rex::Interface::Fs->create;
+   if($fs->is_file($file)) {
 
       Rex::Logger::debug("Calculating Checksum (md5) of $file");
 

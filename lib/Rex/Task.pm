@@ -12,7 +12,9 @@ use Net::SSH2;
 use Rex::Group;
 use Rex::Fork::Manager;
 use Rex::Cache;
+use Rex::Interface::Connection;
 use Sys::Hostname;
+use Rex::Output;
 
 use vars qw(%tasks);
 
@@ -38,6 +40,8 @@ sub create_task {
    my @server = ();
 
    if($::FORCE_SERVER) {
+
+      $::FORCE_SERVER = join(" ", Rex::Group->get_group(substr($::FORCE_SERVER, 1))) if($::FORCE_SERVER =~ m/^\0/);
 
       my @servers = split(/\s+/, $::FORCE_SERVER);
       push @server, Rex::Commands::evaluate_hostname($_) for @servers;
@@ -254,7 +258,7 @@ sub run {
          Rex::Logger::debug("Next Server: $server");
          # push it
          my $forked_sub = sub {
-            my $ssh;
+            my $conn;
 
             # reconnect to logger
             Rex::Logger::init();
@@ -269,71 +273,26 @@ sub run {
                &$code($server, \$server, \%opts);
             }
 
-            # this must be a ssh connection
+            # this must be a ssh/remote connection
             if(! $tasks{$task}->{"no_ssh"}) {
 
-               if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $server) ) {
-                  $user = Rex::Config->get_ssh_config_username(server => $server);
-               }
+               $conn = Rex::Interface::Connection->create("SSH");
 
-               if( ! Rex::Config->has_private_key && Rex::Config->get_ssh_config_private_key(server => $server) ) {
-                  $private_key = Rex::Config->get_ssh_config_private_key(server => $server);
-               }
+               $conn->connect(
+                  user     => $user,
+                  password => $pass,
+                  server   => $server
+               );
 
-               if( ! Rex::Config->has_public_key && Rex::Config->get_ssh_config_public_key(server => $server) ) {
-                  $public_key = Rex::Config->get_ssh_config_public_key(server => $server);
-               }
-
-               $ssh = Net::SSH2->new;
-
-               my $fail_connect = 0;
-
-               CON_SSH:
-                  my $port = Rex::Config->get_port(server => $server) || 22;
-                  $server  = Rex::Config->get_ssh_config_hostname(server => $server) || $server;
-
-                  if($server =~ m/^(.*?):(\d+)$/) {
-                     $server = $1;
-                     $port   = $2;
-                  }
-                  Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
-                  unless($ssh->connect($server, $port, Timeout => Rex::Config->get_timeout(server => $server))) {
-                     ++$fail_connect;
-                     sleep 1;
-                     goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails(server => $server)); # try connecting 3 times
-
-                     Rex::Logger::info("Can't connect to $server");
-
-                     CORE::exit; # kind beenden
-                  }
-
-               Rex::Logger::debug("Current Error-Code: " . $ssh->error());
-               Rex::Logger::info("Connected to $server, trying to authenticate.");
-
-               my $auth_ret;
-               if(Rex::Config->get_password_auth) {
-                  $auth_ret = $ssh->auth_password($user, $pass);
-               }
-               elsif(Rex::Config->get_key_auth) {
-                  $auth_ret = $ssh->auth_publickey($user, 
-                                          $public_key, 
-                                          $private_key, 
-                                          $pass);
-               }
-               else {
-                  $auth_ret = $ssh->auth('username' => $user,
-                                         'password' => $pass,
-                                         'publickey' => $public_key,
-                                         'privatekey' => $private_key);
+               unless($conn->is_connected) {
+                  CORE::exit(1);
                }
 
                # push a remote connection
-               Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});
-
-               Rex::Logger::debug("Current Error-Code: " . $ssh->error());
+               Rex::push_connection({conn => $conn, ssh => $conn->get_connection_object, server => $server, sftp => $conn->get_connection_object->sftp?$conn->get_connection_object->sftp:undef, cache => Rex::Cache->new});
 
                # auth unsuccessfull
-               unless($auth_ret) {
+               unless($conn->is_authenticated) {
                   Rex::Logger::info("Wrong username or password. Or wrong key.");
                   # after jobs
                   for my $code (@{$tasks{$task}->{"after"}}) {
@@ -367,7 +326,7 @@ sub run {
             # disconnect if ssh connection
             if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
                Rex::Logger::debug("Disconnecting from $server");
-               $ssh->disconnect() unless($IN_TRANSACTION);
+               $conn->disconnect() unless($IN_TRANSACTION);
             }
 
             # remove remote connection from the stack
@@ -444,8 +403,27 @@ sub _exec {
 
    Rex::Logger::debug("Executing $task");
 
-   my $code = $tasks{$task}->{'func'};
-   return &$code($opts);
+   my $ret;
+   eval {
+      my $code = $tasks{$task}->{'func'};
+      $ret = &$code($opts);
+   };
+
+   if($@) {
+      if(Rex::Output->get) {
+         Rex::Output->get->add($task, error => 1, msg => $@);
+      }
+      else {
+         die($@);
+      }
+   }
+   else {
+      if(Rex::Output->get) {
+         Rex::Output->get->add($task);
+      }
+   }
+
+   return $ret;
 }
 
 1;

@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.26.1
+Version: 0.27.0
 Release: 1
 License: Apache 2.0
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.26.1.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.27.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -20,7 +20,6 @@ Requires: perl-Expect
 Requires: perl-DBI
 Requires: perl >= 5.8.0
 Requires: rsync
-Requires: perl-Digest-SHA1
 Requires: perl-libwww-perl
 Requires: perl-XML-Simple
 Requires: perl-Digest-HMAC
@@ -58,6 +57,22 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Fri May 04 2012 Jan Gehring <jan.gehring at, gmail.com> 0.27.0-1
+- added callback parameter to run command
+- added logformat function to define custom logging
+- reworked the output classes for better jenkins integration
+- code refactoring
+- added coloriszed output if Term::ANSIColor is available
+- fixed a bug with older lvm versions
+- added on_change option to sed command, thanks to Samuele Tognini
+
+* Thu Apr 26 2012 Jan Gehring <jan.gehring at, gmail.com> 0.26.3-1
+- fixed a notification bug in the on_change event of the file function.
+- fixed a cli parameter bug
+
+* Wed Mar 28 2012 Jan Gehring <jan.gehring at, gmail.com> 0.26.2-1
+- fixed a cli parameter bug (-G)
 
 * Thu Mar 13 2012 Jan Gehring <jan.gehring at, gmail.com> 0.26.1-1
 - fixed a bug in the libvirt module

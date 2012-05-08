@@ -1,3 +1,22 @@
+2012-05-04 Jan Gehring <jan.gehring, gmail.com> (0.27.0)
+  * added callback parameter to run command
+  * added logformat function to define custom logging
+  * reworked the output classes for better jenkins integration
+  * code refactoring
+  * added coloriszed output if Term::ANSIColor is available
+  * fixed a bug with older lvm versions
+  * added on_change option to sed command, thanks to Samuele Tognini
+
+2012-04-26 Jan Gehring <jan.gehring, gmail.com> (0.26.3)
+  * fixed a notification bug in the on_change event of the file function.
+  * fixed a cli parameter bug in the rexify command.
+
+2012-03-28 Jan Gehring <jan.gehring, gmail.com> (0.26.2)
+  * fixed a cli parameter bug (-G)
+
+2012-03-13 Jan Gehring <jan.gehring, gmail.com> (0.26.1)
+  * fixed a bug in the libvirt module
+
 2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.26.0)
   * changed license to Apache 2.0
   * added sudo compatibility

@@ -84,9 +84,10 @@ sub create_user {
             mode  => 700;
       }
 
-      my $fh = file_write $data->{"home"} . "/.ssh/authorized_keys";
-      $fh->write($data->{"ssh_key"});
-      $fh->close;
+      file $data->{"home"} . "/.ssh/authorized_keys",
+         content => $data->{"ssh_key"},
+         owner   => $user,
+         mode    => 600;
 
    }
 

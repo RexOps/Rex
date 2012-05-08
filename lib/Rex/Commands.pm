@@ -119,6 +119,7 @@ use base qw(Rex::Exporter);
             set
             get
             before after around
+            logformat
           );
 
 =item no_ssh([$task])
@@ -306,6 +307,11 @@ Or with the expression syntax.
 sub group {
    Rex::Group->create_group(@_);
 }
+
+# Register set-handler for group
+Rex::Config->register_set_handler(group => sub {
+   Rex::Commands::group(@_);
+});
 
 =item batch($name, @tasks)
 
@@ -682,6 +688,14 @@ Calling this task I<rex prepare> will execute on testwww01.
 Calling this task with I<rex -E live prepare> will execute on www01, www02, www03.
 Calling this task I<rex -E stage prepare> will execute on stagewww01. 
 
+You can call the function within a task to get the current environment.
+
+ task "prepare", group => "frontend", sub {
+    if(environment() eq "dev") {
+       say "i'm in the dev environment";
+    }
+ };
+
 =cut
 sub environment {
    if(@_) {
@@ -822,6 +836,29 @@ Run code before and after the task is finished.
 sub around {
    my ($task, $code) = @_;
    Rex::Task->modify_task($task, "around", $code);
+}
+
+
+=item logformat($format)
+
+You can define the logging format with the following parameters.
+
+%D - Appends the current date yyyy-mm-dd HH:mm:ss
+
+%h - The target host
+
+%p - The pid of the running process
+
+%l - Loglevel (INFO or DEBUG)
+
+%s - The Logstring
+
+Default is: [%D] %l - %s
+
+=cut
+sub logformat {
+   my ($format) = @_;
+   $Rex::Logger::format = $format;
 }
 
 ######### private functions

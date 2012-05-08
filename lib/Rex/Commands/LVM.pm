@@ -163,7 +163,7 @@ sub lvs {
 
    my ($vg) = @_;
 
-   my $cmd = 'lvdisplay --units b --columns --separator "|" -o "lv_name,lv_path,lv_attr,lv_size" --noheading';
+   my $cmd = 'lvdisplay --units b --columns --separator "|" -o "lv_name,vg_name,lv_attr,lv_size" --noheading';
    if($vg) {
       $cmd .= " " . $vg;
    }
@@ -178,11 +178,11 @@ sub lvs {
       chomp $line;
       $line =~ s/^\s+//g;
 
-      my($lv_name, $lv_path, $lv_attr, $lv_size) = split(/\|/, $line);
+      my($lv_name, $vg_name, $lv_attr, $lv_size) = split(/\|/, $line);
       $lv_size =~ s/B$//;
       push(@ret, {
          name => $lv_name,
-         path => $lv_path,
+         path => "/dev/$vg_name/$lv_name",
          attributes => $lv_attr,
          size => $lv_size,
       });

@@ -82,7 +82,7 @@ our (@EXPORT,
       @CONNECTION_STACK,
       $GLOBAL_SUDO);
 
-$VERSION = "0.26.1";
+$VERSION = "0.27.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -205,51 +205,25 @@ sub connect {
    my $user = $param->{"user"};
    my $pass = $param->{"password"};
 
+   my $conn = Rex::Interface::Connection->create("SSH");
 
-   my $ssh = Net::SSH2->new;
+   $conn->connect(
+      user     => $user,
+      password => $pass,
+      server   => $server,
+      port     => $port,
+      timeout  => $timeout,
+   );
 
-   my $fail_connect = 0;
-   CON_SSH:
-      if($server =~ m/^(.*?):(\d+)$/) {
-         $server = $1;
-         $port   = $2;
-      }
-
-      Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
-      unless($ssh->connect($server, $port, Timeout => $timeout)) {
-         ++$fail_connect;
-         sleep 1;
-         goto CON_SSH if($fail_connect < 3); # try connecting 3 times
-
-         Rex::Logger::info("Can't connect to $server");
-
-         die("Can't connect to $server"); # kind beenden
-      }
-
-   my $auth_ret;
-   if(! exists $param->{private_key}) {
-      $auth_ret = $ssh->auth_password($user, $pass);
-   }
-   elsif(exists $param->{private_key} && exists $param->{public_key}) {
-      $auth_ret = $ssh->auth_publickey($user, 
-                              $param->{public_key}, 
-                              $param->{private_key}, 
-                              $pass);
-   }
-   else {
-      $auth_ret = $ssh->auth('username' => $user,
-                             'password' => $pass,
-                             'publickey' => $param->{public_key} || "",
-                             'privatekey' => $param->{private_key} || "");
+   unless($conn->is_connected) {
+      die("Connetion error or refused.");
    }
 
    # push a remote connection
-   Rex::push_connection({ssh => $ssh, server => $server, sftp => $ssh->sftp?$ssh->sftp:undef, cache => Rex::Cache->new});
-
-   Rex::Logger::debug("Current Error-Code: " . $ssh->error());
+   Rex::push_connection({conn => $conn, ssh => $conn->get_connection_object, server => $server, sftp => $conn->get_connection_object->sftp?$conn->get_connection_object->sftp:undef, cache => Rex::Cache->new});
 
    # auth unsuccessfull
-   unless($auth_ret) {
+   unless($conn->is_authenticated) {
       Rex::Logger::info("Wrong username or password. Or wrong key.");
       # after jobs
 
@@ -327,6 +301,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Jeen Lee
 
 =item Jose Luis Martinez
+
+=item Samuele Tognini
 
 =item Sascha Guenther
 

@@ -82,7 +82,7 @@ our (@EXPORT,
       @CONNECTION_STACK,
       $GLOBAL_SUDO);
 
-$VERSION = "0.27.0";
+$VERSION = "0.28.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -94,6 +94,8 @@ sub pop_connection {
 }
 
 =item get_current_connection
+
+This function is deprecated since 0.28! See Rex::Commands::connection.
 
 Returns the current connection as a hashRef.
 
@@ -123,7 +125,10 @@ Returns 1 if the current connection is a ssh connection. 0 if not.
 
 sub is_ssh {
    if($CONNECTION_STACK[-1]) {
-      return $CONNECTION_STACK[-1]->{"ssh"};
+      my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
+      if($ref =~ m/SSH/) {
+         return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
+      }
    }
 
    return 0;
@@ -157,7 +162,7 @@ Returns the sftp object for the current ssh connection.
 
 sub get_sftp {
    if($CONNECTION_STACK[-1]) {
-      return $CONNECTION_STACK[-1]->{"sftp"};
+      return $CONNECTION_STACK[-1]->{"conn"}->get_fs_connection_object();
    }
 
    return 0;
@@ -220,7 +225,12 @@ sub connect {
    }
 
    # push a remote connection
-   Rex::push_connection({conn => $conn, ssh => $conn->get_connection_object, server => $server, sftp => $conn->get_connection_object->sftp?$conn->get_connection_object->sftp:undef, cache => Rex::Cache->new});
+   Rex::push_connection({
+      conn   => $conn,
+      ssh    => $conn->get_connection_object,
+      server => $server,
+      cache => Rex::Cache->new(),
+   });
 
    # auth unsuccessfull
    unless($conn->is_authenticated) {

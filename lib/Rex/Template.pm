@@ -4,6 +4,26 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Template - Simple Template Engine.
+
+=head1 DESCRIPTION
+
+This is a simple template engine for configuration files.
+
+=head1 SYNOPSIS
+
+ my $template = Rex::Template->new;
+ print $template->parse($content, \%template_vars);
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
 package Rex::Template;
 
 
@@ -96,6 +116,27 @@ sub _quote {
 
    return $str;
 }
+
+=item is_defined($variable, $default_value)
+
+This function will check if $variable is defined. If it is defined it will return the value of $variable. If not, it will return $default_value.
+
+You can use this function inside your templates.
+
+ ServerTokens <%= is_defined($::server_tokens, "Prod") %>
+
+=cut
+
+sub is_defined {
+   my ($check_var, $default) = @_;
+   if(defined $check_var) { return $check_var; }
+
+   return $default;
+}
+
+=back
+
+=cut
 
 1;
 

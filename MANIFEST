@@ -63,6 +63,7 @@ lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm
 lib/Rex/Interface/Connection.pm
 lib/Rex/Interface/Connection/Base.pm
+lib/Rex/Interface/Connection/Fake.pm
 lib/Rex/Interface/Connection/Local.pm
 lib/Rex/Interface/Connection/SSH.pm
 lib/Rex/Interface/Exec.pm

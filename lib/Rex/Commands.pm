@@ -120,6 +120,7 @@ use base qw(Rex::Exporter);
             get
             before after around
             logformat
+            connection
           );
 
 =item no_ssh([$task])
@@ -859,6 +860,19 @@ Default is: [%D] %l - %s
 sub logformat {
    my ($format) = @_;
    $Rex::Logger::format = $format;
+}
+
+=item connection
+
+This function returns the current connection object.
+
+ task "foo", group => "baz", sub {
+    say "Current Server: " . connection->server;
+ };
+
+=cut
+sub connection {
+   return Rex::get_current_connection()->{"conn"};
 }
 
 ######### private functions

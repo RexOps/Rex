@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
-package Rex::Interface::Connection::Local;
+package Rex::Interface::Connection::Fake;
    
 use strict;
 use warnings;
@@ -18,15 +18,17 @@ sub new {
    my $proto = ref($that) || $that;
    my $self = $that->SUPER::new(@_);
 
-   $self->{server} = "<local>";
-
    bless($self, $proto);
 
    return $self;
 }
 
 sub error { };
-sub connect { };
+sub connect {
+   my ($self, %option) = @_;
+   $self->{server} = $option{server};
+}
+
 sub disconnect { };
 sub get_connection_object { my ($self) = @_; return $self; };
 sub get_fs_connection_object { my ($self) = @_; return $self; };

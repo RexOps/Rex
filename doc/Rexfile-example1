@@ -1,13 +1,11 @@
-use Rex::Commands::Run;
-use Rex::Commands::Upload;
 
-user "root";
+set user => "root";
 
-group "frontend", "server1", "server2", "server3", "server4";
-group "local", "mango", "debian01";
+group "frontend" => "server1", "server2", "server3", "server4";
+group "local"    => "mango", "debian01";
 
 desc "Show uptime";
-task "uptime", group => local, sub {
+task "uptime", group => "local", sub {
    run "uptime";
 };
 

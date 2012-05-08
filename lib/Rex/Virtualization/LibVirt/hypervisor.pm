@@ -25,8 +25,7 @@ sub execute {
 
    my ($xml, @dominfo, $dom);
    if ($arg1 eq 'capabilities') {
-    #  @dominfo = run "virsh capabilities";
-      @dominfo = run "cat /home/jan/temp/cap.txt";
+      @dominfo = run "virsh capabilities";
       if($? != 0) {
          die("Error running virsh dominfo $dom");
       }

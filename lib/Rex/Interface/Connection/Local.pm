@@ -28,7 +28,8 @@ sub new {
 sub error { };
 sub connect { };
 sub disconnect { };
-sub get_connection_object { return $self; };
+sub get_connection_object { my ($self) = @_; return $self; };
+sub get_fs_connection_object { my ($self) = @_; return $self; };
 sub is_connected { return 1; };
 sub is_authenticated { return 1; };
 

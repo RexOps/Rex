@@ -25,7 +25,8 @@ sub execute {
 
    my ($xml, @dominfo, $dom);
    if ($arg1 eq 'capabilities') {
-      @dominfo = run "virsh capabilities";
+    #  @dominfo = run "virsh capabilities";
+      @dominfo = run "cat /home/jan/temp/cap.txt";
       if($? != 0) {
          die("Error running virsh dominfo $dom");
       }
@@ -39,6 +40,10 @@ sub execute {
   
    my %ret = ();
    my ($k, $v);
+
+   if(ref($xml->{'capabilities'}->{'guest'}) ne "ARRAY") {
+      $xml->{'capabilities'}->{'guest'} = [ $xml->{'capabilities'}->{'guest'} ];
+   }
 
    for my $line (@{$xml->{'capabilities'}->{'guest'}}) {
 

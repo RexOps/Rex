@@ -82,7 +82,7 @@ our (@EXPORT,
       @CONNECTION_STACK,
       $GLOBAL_SUDO);
 
-$VERSION = "0.28.0";
+$VERSION = "0.28.99.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -315,6 +315,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Samuele Tognini
 
 =item Sascha Guenther
+
+=item Sven Dowideit
 
 =back
 

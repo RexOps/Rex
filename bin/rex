@@ -308,7 +308,10 @@ if($opts{'T'}) {
       print "   no tasks defined.\n";
       exit;
    }
-   for my $task (Rex::Task->get_tasks) {
+   if(defined $ARGV[0]) {
+     @tasks = map { Rex::Task->is_task($_) ?  $_ : () } @ARGV;
+   }
+   for my $task (@tasks) {
       printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
       if($opts{'v'}) {
          if(! $no_color) {
@@ -323,6 +326,10 @@ if($opts{'T'}) {
    for my $batch (Rex::Batch->get_batchs) {
       printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
    }
+   Rex::global_sudo(0);
+   Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
+   unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+   CORE::exit 0;
 }
 
 eval {

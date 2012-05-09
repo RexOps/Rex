@@ -93,7 +93,7 @@ sub create_user {
       Rex::Logger::debug("User $user created/updated.");
    }
    else {
-      Rex::Logger::info("Error creating/updating user $user");
+      Rex::Logger::info("Error creating/updating user $user", "warn");
       die("Error creating/updating user $user");
    }
 

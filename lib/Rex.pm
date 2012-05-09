@@ -234,7 +234,7 @@ sub connect {
 
    # auth unsuccessfull
    unless($conn->is_authenticated) {
-      Rex::Logger::info("Wrong username or password. Or wrong key.");
+      Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
       # after jobs
 
       die("Wrong username or password. Or wrong key.");

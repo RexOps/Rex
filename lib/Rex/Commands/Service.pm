@@ -142,7 +142,7 @@ sub service {
                return 1 if ! $is_multiple;
             }
             else {
-               Rex::Logger::info("Error starting $service.");
+               Rex::Logger::info("Error starting $service.", "warn");
                return 0 if ! $is_multiple;
             }
          }
@@ -156,7 +156,7 @@ sub service {
             return 1 if ! $is_multiple;
          }
          else {
-            Rex::Logger::info("Error restarting $service.");
+            Rex::Logger::info("Error restarting $service.", "warn");
             return 0 if ! $is_multiple;
          }
 
@@ -169,7 +169,7 @@ sub service {
             return 1 if ! $is_multiple;
          }
          else {
-            Rex::Logger::info("Error stopping $service.");
+            Rex::Logger::info("Error stopping $service.", "warn");
             return 0 if ! $is_multiple;
          }
 
@@ -182,7 +182,7 @@ sub service {
             return 1 if ! $is_multiple;
          }
          else {
-            Rex::Logger::info("Error $service does not support reload");
+            Rex::Logger::info("Error $service does not support reload", "warn");
             return 0 if ! $is_multiple;
          }
 

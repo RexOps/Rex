@@ -152,7 +152,7 @@ if($opts{'e'}) {
    $code = eval($code);
 
    if($@) {
-      Rex::Logger::info("Error in eval line: $@\n");
+      Rex::Logger::info("Error in eval line: $@\n", "warn");
       exit 1;
    }
 
@@ -352,7 +352,7 @@ eval {
 };
 
 if($@) {
-   Rex::Logger::info("Error running task/batch: $@");
+   Rex::Logger::info("Error running task/batch: $@", "warn");
 }
 
 # lock loeschen

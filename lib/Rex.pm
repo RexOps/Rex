@@ -316,6 +316,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Sascha Guenther
 
+=item Sven Dowideit
+
 =back
 
 =cut

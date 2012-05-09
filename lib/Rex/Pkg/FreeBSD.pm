@@ -62,7 +62,7 @@ sub update {
    my $f = run("pkg_add -r $pkg");
 
    unless($? == 0) {
-      Rex::Logger::info("Error installing $pkg.");
+      Rex::Logger::info("Error installing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error installing $pkg");
    }
@@ -83,7 +83,7 @@ sub remove {
    my $f = run("pkg_delete $pkg-$pkg_version");
 
    unless($? == 0) {
-      Rex::Logger::info("Error removing $pkg-$pkg_version.");
+      Rex::Logger::info("Error removing $pkg-$pkg_version.", "warn");
       Rex::Logger::debug($f);
       die("Error removing $pkg-$pkg_version");
    }

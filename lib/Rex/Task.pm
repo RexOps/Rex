@@ -307,7 +307,7 @@ sub run {
 
             # auth unsuccessfull
             unless($conn->is_authenticated) {
-               Rex::Logger::info("Wrong username or password. Or wrong key.");
+               Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
                # after jobs
                for my $code (@{$tasks{$task}->{"after"}}) {
                   &$code($server, 1);

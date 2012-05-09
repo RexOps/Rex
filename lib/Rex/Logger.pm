@@ -99,8 +99,8 @@ sub info {
 
    if (defined($type)) {
      CHECK_COLOR: {
-	 $type eq 'warn' && do { $color = 'yellow'; last CHECK_COLOR; };
-	 $type eq 'error' && do { $color = 'red'; last CHECK_COLOR; };
+         $type eq 'warn' && do { $color = 'yellow'; last CHECK_COLOR; };
+         $type eq 'error' && do { $color = 'red'; last CHECK_COLOR; };
        }
    }
 

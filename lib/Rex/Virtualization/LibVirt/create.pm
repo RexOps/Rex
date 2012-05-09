@@ -105,7 +105,7 @@ sub execute {
    run "virsh define $file_name";
    unlink($file_name);
    if($? != 0) {
-     die("Error starting vm $opts->{name}");
+     die("Error defining vm $opts->{name}");
    }
 
    return;

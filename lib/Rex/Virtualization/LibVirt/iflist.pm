@@ -31,14 +31,16 @@ sub execute {
       die("Error running virsh domiflist $vmname");
    }
 
-   my %ret = ();
+   my @ret = ();
    my ($k, $v);
 
    shift @iflist;
    shift @iflist;
    for my $line (@iflist) {
       my ($interface, $type, $source, $model, $mac) = split(/\s+/, $line);
-      $ret{$interface} = {
+
+      push @ret, {
+         interface => $interface,
          type => $type,
          source => $source,
          model => $model,
@@ -46,7 +48,7 @@ sub execute {
       };
    }
 
-   return \%ret;
+   return \@ret;
 }
 
 1;

@@ -31,36 +31,34 @@ sub execute {
       die("Error running virsh domblklist $vmname");
    }
 
-   my %ret = ();
-   my ($k, $v);
+   my @ret = ();
+   shift @blklist; shift @blklist; # get rid of header
 
-   shift @blklist;
-   shift @blklist;
    for my $line (@blklist) {
       my ($type, $device, $target, $source) = split(/\s+/, $line);
-      $ret{$target} = {
+      my $blk = {
+         target => $target,
          type => $type,
          device => $device,
          source => $source
       };
-   }
 
-   if (%options) {
-      if ($options{details}) {
-         my $unit = $options{unit} || 1;
-         for my $target (keys %ret) {
+      if (%options) {
+         if ($options{details}) {
+            my $unit = $options{unit} || 1;
             my @infos = run "virsh domblkinfo $vmname $target 2>/dev/null";
             if($? == 0) {
                for my $line (@infos) {
-                  my ($k, $v) = split(/:\s+/, $line);
-                  $ret{$target}->{$k} = $v / $unit;
+                  my ($k, $v) = split(/:\s+/, lc($line));
+                  $blk->{$k} = $v / $unit;
                }
             }
          }
       }
+      push @ret, $blk;
    }
 
-   return \%ret;
+   return \@ret;
 }
 
 1;

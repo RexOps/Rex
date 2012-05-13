@@ -151,6 +151,7 @@ lib/Rex/User/SunOS.pm
 lib/Rex/Virtualization/LibVirt/create.pm
 lib/Rex/Virtualization/LibVirt/delete.pm
 lib/Rex/Virtualization/LibVirt/destroy.pm
+lib/Rex/Virtualization/LibVirt/dumpxml.pm
 lib/Rex/Virtualization/LibVirt/hypervisor.pm
 lib/Rex/Virtualization/LibVirt/info.pm
 lib/Rex/Virtualization/LibVirt/list.pm
@@ -158,6 +159,7 @@ lib/Rex/Virtualization/LibVirt/option.pm
 lib/Rex/Virtualization/LibVirt/reboot.pm
 lib/Rex/Virtualization/LibVirt/shutdown.pm
 lib/Rex/Virtualization/LibVirt/start.pm
+lib/Rex/Virtualization/LibVirt/vncdisplay.pm
 LICENSE
 Makefile.PL
 MANIFEST

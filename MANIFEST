@@ -158,6 +158,7 @@ lib/Rex/Virtualization/LibVirt/option.pm
 lib/Rex/Virtualization/LibVirt/reboot.pm
 lib/Rex/Virtualization/LibVirt/shutdown.pm
 lib/Rex/Virtualization/LibVirt/start.pm
+lib/Rex/Virtualization/LibVirt/vncdisplay.pm
 LICENSE
 Makefile.PL
 MANIFEST

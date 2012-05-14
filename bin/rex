@@ -320,7 +320,9 @@ if($opts{'T'}) {
    _print_color("Batches\n", 'yellow');
    for my $batch (Rex::Batch->get_batchs) {
       printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
-      _print_color("      " . join(" ", Rex::Batch->get_batch($batch)) . "\n");
+      if($opts{'v'}) {
+          _print_color("      " . join(" ", Rex::Batch->get_batch($batch)) . "\n");
+      }
    }
    _print_color("Environments\n", "yellow");
    print "  " . join("\n  ", Rex::Commands->get_environments()) . "\n";

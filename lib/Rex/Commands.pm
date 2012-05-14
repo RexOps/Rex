@@ -921,6 +921,12 @@ sub get_environment {
    }
 }
 
+sub get_environments {
+   my $class = shift;
+
+   return sort { $a cmp $b } keys %{$environments};
+}
+
 sub say {
    return unless $_[0];
    print @_, "\n";

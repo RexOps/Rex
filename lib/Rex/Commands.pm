@@ -490,7 +490,7 @@ If you want to use pubkey authentication, then you need to call I<key_auth>.
  user "root";
  password "root";
  
- pass_auth;
+ key_auth;
 
 =cut
 

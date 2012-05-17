@@ -788,7 +788,10 @@ sub get {
 
 =item before($task => sub {})
 
-Run code before connecting to the server.
+Run code before executing the specified task. 
+(if called repeatedly, each sub will be appended to a list of 'before' functions)
+
+Note: must come after the definition of the specified task
 
  before mytask => sub {
    my ($server) = @_;
@@ -804,6 +807,9 @@ sub before {
 =item after($task => sub {})
 
 Run code after the task is finished.
+(if called repeatedly, each sub will be appended to a list of 'after' functions)
+
+Note: must come after the definition of the specified task
 
  after mytask => sub {
    my ($server, $failed) = @_;
@@ -821,6 +827,9 @@ sub after {
 =item around($task => sub {})
 
 Run code before and after the task is finished.
+(if called repeatedly, each sub will be appended to a list of 'around' functions)
+
+Note: must come after the definition of the specified task
 
  around mytask => sub {
    my ($server, $position) = @_;

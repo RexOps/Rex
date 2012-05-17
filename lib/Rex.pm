@@ -308,6 +308,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Hiroaki Nakamura
 
+=item Jean Charles Passard
+
 =item Jeen Lee
 
 =item Jose Luis Martinez

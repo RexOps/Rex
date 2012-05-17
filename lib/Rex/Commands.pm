@@ -273,9 +273,8 @@ sub task {
       use strict;
    }
 
-   unless($dont_register_tasks) {
-      Rex::Task->create_task($task_name, @_, $options);
-   }
+   $options->{'dont_register'} = $dont_register_tasks;
+   Rex::Task->create_task($task_name, @_, $options);
 }
 
 =item desc($description)

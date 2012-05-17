@@ -797,6 +797,14 @@ Run code before connecting to the server.
 =cut
 sub before {
    my ($task, $code) = @_;
+   my ($package, $file, $line) = caller;
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
    Rex::Task->modify_task($task, "before", $code);
 }
 
@@ -814,6 +822,14 @@ Run code after the task is finished.
 =cut
 sub after {
    my ($task, $code) = @_;
+   my ($package, $file, $line) = caller;
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
    Rex::Task->modify_task($task, "after", $code);
 }
 
@@ -835,6 +851,14 @@ Run code before and after the task is finished.
 =cut
 sub around {
    my ($task, $code) = @_;
+   my ($package, $file, $line) = caller;
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
    Rex::Task->modify_task($task, "around", $code);
 }
 

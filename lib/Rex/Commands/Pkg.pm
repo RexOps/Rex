@@ -135,7 +135,7 @@ sub install {
       my $source    = $option->{"source"};
       my $on_change = $option->{"on_change"} || sub {};
 
-      my ($new_md5, $old_md5);
+      my ($new_md5, $old_md5) = ("", "");
       
       if($source =~ m/\.tpl$/) {
          # das ist ein template
@@ -168,6 +168,7 @@ sub install {
 
          eval {
             $old_md5 = md5($package);
+            chomp $old_md5;
          };
          my $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
 

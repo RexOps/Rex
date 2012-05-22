@@ -224,7 +224,7 @@ sub iptables {
       run "iptables $cmd";
 
       if($? != 0) {
-         Rex::Logger::info("Error setting iptable rule: $cmd");
+         Rex::Logger::info("Error setting iptable rule: $cmd", "warn");
          die("Error setting iptable rule: $cmd");
       }
    }

@@ -273,9 +273,8 @@ sub task {
       use strict;
    }
 
-   unless($dont_register_tasks) {
-      Rex::Task->create_task($task_name, @_, $options);
-   }
+   $options->{'dont_register'} = $dont_register_tasks;
+   Rex::Task->create_task($task_name, @_, $options);
 }
 
 =item desc($description)
@@ -788,7 +787,10 @@ sub get {
 
 =item before($task => sub {})
 
-Run code before connecting to the server.
+Run code before executing the specified task. 
+(if called repeatedly, each sub will be appended to a list of 'before' functions)
+
+Note: must come after the definition of the specified task
 
  before mytask => sub {
    my ($server) = @_;
@@ -798,12 +800,23 @@ Run code before connecting to the server.
 =cut
 sub before {
    my ($task, $code) = @_;
+   my ($package, $file, $line) = caller;
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
    Rex::Task->modify_task($task, "before", $code);
 }
 
 =item after($task => sub {})
 
 Run code after the task is finished.
+(if called repeatedly, each sub will be appended to a list of 'after' functions)
+
+Note: must come after the definition of the specified task
 
  after mytask => sub {
    my ($server, $failed) = @_;
@@ -815,12 +828,23 @@ Run code after the task is finished.
 =cut
 sub after {
    my ($task, $code) = @_;
+   my ($package, $file, $line) = caller;
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
    Rex::Task->modify_task($task, "after", $code);
 }
 
 =item around($task => sub {})
 
 Run code before and after the task is finished.
+(if called repeatedly, each sub will be appended to a list of 'around' functions)
+
+Note: must come after the definition of the specified task
 
  around mytask => sub {
    my ($server, $position) = @_;
@@ -836,6 +860,14 @@ Run code before and after the task is finished.
 =cut
 sub around {
    my ($task, $code) = @_;
+   my ($package, $file, $line) = caller;
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
    Rex::Task->modify_task($task, "around", $code);
 }
 
@@ -919,6 +951,12 @@ sub get_environment {
    if(exists $environments->{$env}) {
       return $environments->{$env};
    }
+}
+
+sub get_environments {
+   my $class = shift;
+
+   return sort { $a cmp $b } keys %{$environments};
 }
 
 sub say {

@@ -60,7 +60,7 @@ sub update {
    my $f = run("DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install $pkg" . ($version?"=$version":""));
 
    unless($? == 0) {
-      Rex::Logger::info("Error installing $pkg.");
+      Rex::Logger::info("Error installing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error installing $pkg");
    }
@@ -80,7 +80,7 @@ sub remove {
    run("dpkg --purge $pkg");
 
    unless($? == 0) {
-      Rex::Logger::info("Error removing $pkg.");
+      Rex::Logger::info("Error removing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error removing $pkg");
    }

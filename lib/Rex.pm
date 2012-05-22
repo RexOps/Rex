@@ -82,7 +82,7 @@ our (@EXPORT,
       @CONNECTION_STACK,
       $GLOBAL_SUDO);
 
-$VERSION = "0.28.0";
+$VERSION = "0.28.99.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
@@ -234,7 +234,7 @@ sub connect {
 
    # auth unsuccessfull
    unless($conn->is_authenticated) {
-      Rex::Logger::info("Wrong username or password. Or wrong key.");
+      Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
       # after jobs
 
       die("Wrong username or password. Or wrong key.");
@@ -308,6 +308,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Hiroaki Nakamura
 
+=item Jean Charles Passard
+
 =item Jeen Lee
 
 =item Jose Luis Martinez
@@ -315,6 +317,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Samuele Tognini
 
 =item Sascha Guenther
+
+=item Sven Dowideit
 
 =back
 

@@ -58,7 +58,7 @@ sub update {
    my $f = run("urpmi --auto --quiet $pkg");
 
    unless($? == 0) {
-      Rex::Logger::info("Error installing $pkg.");
+      Rex::Logger::info("Error installing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error installing $pkg");
    }
@@ -75,7 +75,7 @@ sub remove {
    my $f = run("urpme --auto $pkg");
 
    unless($? == 0) {
-      Rex::Logger::info("Error removing $pkg.");
+      Rex::Logger::info("Error removing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error removing $pkg");
    }

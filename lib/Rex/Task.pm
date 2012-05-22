@@ -94,6 +94,7 @@ sub create_task {
       server => [ @server ],
       desc => $desc,
       no_ssh => ($options->{"no_ssh"}?1:0),
+      hidden => ($options->{"dont_register"}?1:0),
       auth => {
          user        => Rex::Config->get_user,
          password    => Rex::Config->get_password,
@@ -124,7 +125,7 @@ sub modify_task {
 sub get_tasks {
    my $class = shift;
 
-   return sort { $a cmp $b } keys %tasks;
+   return grep { $tasks{$_}->{hidden} == 0 } sort { $a cmp $b } keys %tasks;
 }
 
 sub get_tasks_for {
@@ -307,7 +308,7 @@ sub run {
 
             # auth unsuccessfull
             unless($conn->is_authenticated) {
-               Rex::Logger::info("Wrong username or password. Or wrong key.");
+               Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
                # after jobs
                for my $code (@{$tasks{$task}->{"after"}}) {
                   &$code($server, 1);

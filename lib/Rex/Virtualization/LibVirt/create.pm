@@ -236,6 +236,10 @@ sub _set_storage_defaults {
          $store->{"type"} = "file";
       }
 
+      if( ! exists $store->{"driver_type"} ) {
+         $store->{"driver_type"} = "raw";
+      }
+
       if( ! exists $store->{"size"} && $store->{"type"} eq "file" ) {
 
          if($store->{"file"} =~ m/swap/) {
@@ -401,7 +405,7 @@ __DATA__
 
     <% for my $disk (@{$::storage}) { %>
     <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
-      <driver name="qemu" type="raw"/>
+      <driver name="qemu" type="<%= $disk->{driver_type} %>"/>
       <% if ($disk->{type} eq "file") { %>
       <source file="<%= $disk->{file} %>"/>
       <% } elsif ($disk->{file} eq "block") { %>

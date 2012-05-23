@@ -52,6 +52,24 @@ sub hidden {
 
 sub server {
    my ($self) = @_;
+
+   my @server = @{ $self->{server} };
+
+   if(ref($server[-1]) eq "HASH") {
+      Rex::deprecated(undef, "0.40", "Defining extra credentials within the task creation is deprecated.",
+                                     "Please use set auth => task => 'taskname' instead.");
+
+      # use extra defined credentials
+      my $data = pop(@server);
+      $self->set_auth("user", $data->{'user'});
+      $self->set_auth("password", $data->{'password'});
+
+      if(exists $data->{"private_key"}) {
+         $self->set_auth("private_key", $data->{"private_key"});
+         $self->set_auth("public_key", $data->{"public_key"});
+      }
+   }
+
    if(ref($self->{server}) eq "ARRAY" && scalar(@{ $self->{server} }) > 0) {
       return $self->{server};
    }
@@ -61,6 +79,11 @@ sub server {
    else {
       return [("<local>")];
    }
+}
+
+sub set_server {
+   my ($self, @server) = @_;
+   $self->{server} = \@server;
 }
 
 sub current_server {
@@ -145,10 +168,18 @@ sub run_hook {
    }
 }
 
+sub set_auth {
+   my ($self, $key, $value) = @_;
+   $self->{auth}->{$key} = $value;
+}
+
 sub connect {
    my ($self, $server) = @_;
 
    $self->{current_server} = $server;
+
+   Rex::Logger::debug("Using user: " . $self->user);
+   Rex::Logger::debug("Using password: " . ($self->password?"***********":"<no password>"));
 
    $self->connection->connect(
       user     => $self->user,
@@ -192,13 +223,20 @@ sub disconnect {
 #####################################
 
 sub run {
-   my ($class, $task) = @_;
+   my ($class, $task, $server_overwrite, $params) = @_;
+   # someone used this function directly... bail out
+
+   Rex::deprecated("Rex::Task->run()", "0.40");
 
    if(ref($class)) {
       # this is a method call
    }
 
    else {
+      if($server_overwrite) {
+         Rex::TaskList->get_task($task)->set_server($server_overwrite);
+      }
+
       # this is a deprecated static call
       Rex::TaskList->run($task);
    }

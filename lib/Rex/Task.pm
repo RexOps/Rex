@@ -257,6 +257,8 @@ sub run {
 
       $self->disconnect($server) unless($in_transaction);
       $self->run_hook(\$server, "after");
+
+      return $ret;
    }
 
    else {

@@ -152,7 +152,7 @@ if($opts{'e'}) {
    $code = eval($code);
 
    if($@) {
-      Rex::Logger::info("Error in eval line: $@\n");
+      Rex::Logger::info("Error in eval line: $@\n", "warn");
       exit 1;
    }
 
@@ -302,27 +302,35 @@ Rex::Logger::debug("Initializing Logger from parameters found in $::rexfile");
 
 if($opts{'T'}) {
    Rex::Logger::debug("Listing Tasks and Batches");
-   print "Tasks\n";
+   _print_color("Tasks\n", "yellow");
    my @tasks = Rex::Task->get_tasks;
    unless(@tasks) {
       print "   no tasks defined.\n";
       exit;
    }
-   for my $task (Rex::Task->get_tasks) {
+   if(defined $ARGV[0]) {
+     @tasks = map { Rex::Task->is_task($_) ?  $_ : () } @ARGV;
+   }
+   for my $task (@tasks) {
       printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
       if($opts{'v'}) {
-         if(! $no_color) {
-            print colored(['green'], "      Servers: " . join(", ", @{ Rex::Task->get_task($task)->{'server'} }) . "\n");
-         }
-         else {
-            print "      Servers: " . join(", ", @{ Rex::Task->get_task($task)->{'server'} }) . "\n";
-         }
+          _print_color("      Servers: " . join(", ", @{ Rex::Task->get_task($task)->{'server'} }) . "\n");
       }
    }
-   print "Batches\n";
+   _print_color("Batches\n", 'yellow');
    for my $batch (Rex::Batch->get_batchs) {
       printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
+      if($opts{'v'}) {
+          _print_color("      " . join(" ", Rex::Batch->get_batch($batch)) . "\n");
+      }
    }
+   _print_color("Environments\n", "yellow");
+   print "  " . join("\n  ", Rex::Commands->get_environments()) . "\n";
+
+   Rex::global_sudo(0);
+   Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
+   unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+   CORE::exit 0;
 }
 
 eval {
@@ -345,7 +353,7 @@ eval {
 };
 
 if($@) {
-   Rex::Logger::info("Error running task/batch: $@");
+   Rex::Logger::info("Error running task/batch: $@", "warn");
 }
 
 # lock loeschen
@@ -355,6 +363,18 @@ unlink("$::rexfile.lock")               if(! exists $opts{'F'});
 
 select STDOUT;
 
+sub _print_color {
+    my ($msg, $color) = @_;
+    $color = 'green' if !defined($color);
+
+    if($no_color) {
+        print $msg;
+    }
+    else {
+        print colored([$color], $msg);
+    }
+};
+    
 __END__
 
 =pod

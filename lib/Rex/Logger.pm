@@ -83,7 +83,7 @@ my $log_opened = 0;
 sub init {
    return if $silent;
    eval {
-      die if(Rex::Config->get_log_filename);
+      die if(Rex::Config->get_log_filename || ! Rex::Config->get_log_facility);
       require Sys::Syslog;
       Sys::Syslog->import;
       openlog("rex", "ndelay,pid", Rex::Config->get_log_facility);
@@ -94,11 +94,19 @@ sub init {
 }
 
 sub info {
-   my ($msg) = @_;
+   my ($msg, $type) = @_;
+   my $color = 'green';
+
+   if (defined($type)) {
+     CHECK_COLOR: {
+         $type eq 'warn' && do { $color = 'yellow'; last CHECK_COLOR; };
+         $type eq 'error' && do { $color = 'red'; last CHECK_COLOR; };
+       }
+   }
+
    return if $silent;
-
+   
    $msg = format_string($msg, "INFO");
-
    # workaround for windows Sys::Syslog behaviour on forks
    # see: #6
    unless($log_opened) {
@@ -120,7 +128,7 @@ sub info {
       print STDERR "$msg\n" unless($::QUIET);
    }
    else {
-      print STDERR colored(['green'], "$msg\n") unless($::QUIET);
+      print STDERR colored([$color], "$msg\n") unless($::QUIET);
    }
 
    # workaround for windows Sys::Syslog behaviour on forks

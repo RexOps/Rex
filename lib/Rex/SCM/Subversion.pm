@@ -54,7 +54,7 @@ sub checkout {
       $checkout_cmd = "svn up $checkout_to";
    }
    else {
-      Rex::Logger::info("Error checking out repository.");
+      Rex::Logger::info("Error checking out repository.", "warn");
       exit 1;
    }
    Rex::Logger::debug("checkout_cmd: $checkout_cmd");
@@ -62,7 +62,7 @@ sub checkout {
    Rex::Logger::info("cloning " . $repo_info->{"url"} . " to " . ($checkout_to?$checkout_to:"."));
    my $out = run "$checkout_cmd";
    unless($? == 0) {
-      Rex::Logger::info("Error checking out repository.");
+      Rex::Logger::info("Error checking out repository.", "warn");
       Rex::Logger::info($out);
       exit 1;
    }

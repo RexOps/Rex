@@ -105,7 +105,7 @@ sub execute {
    run "virsh define $file_name";
    unlink($file_name);
    if($? != 0) {
-     die("Error starting vm $opts->{name}");
+     die("Error defining vm $opts->{name}");
    }
 
    return;
@@ -436,7 +436,7 @@ __DATA__
       <target port="0"/>
     </console>
     <input type="mouse" bus="ps2"/>
-    <graphics type="vnc" autoport="yes"/>
+    <graphics type="vnc" autoport="yes" listen="*"/>
     <video>
       <model type="cirrus" vram="9216" heads="1"/>
       <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>

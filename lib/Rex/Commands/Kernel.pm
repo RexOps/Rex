@@ -112,7 +112,7 @@ sub kmod {
       Rex::Logger::debug("Loading Kernel Module: $module");
       run "$load_command $module";
       unless($? == 0) {
-         Rex::Logger::info("Error loading Kernel Module: $module");
+         Rex::Logger::info("Error loading Kernel Module: $module", "warn");
          die("Error loading Kernel Module: $module");
       }
       else {
@@ -128,7 +128,7 @@ sub kmod {
 
       run "$unload_command_str $module";
       unless($? == 0) {
-         Rex::Logger::info("Error unloading Kernel Module: $module");
+         Rex::Logger::info("Error unloading Kernel Module: $module", "warn");
          die("Error unloading Kernel Module: $module");
       }
       else {

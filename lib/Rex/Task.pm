@@ -94,6 +94,7 @@ sub create_task {
       server => [ @server ],
       desc => $desc,
       no_ssh => ($options->{"no_ssh"}?1:0),
+      hidden => ($options->{"dont_register"}?1:0),
       auth => {
          user        => Rex::Config->get_user,
          password    => Rex::Config->get_password,
@@ -116,6 +117,9 @@ sub modify_task {
    if(ref($tasks{$task}->{$key}) eq "ARRAY") {
       push(@{ $tasks{$task}->{$key} }, $value);
    }
+   elsif(ref($tasks{$task}->{$key}) eq "HASH") {
+      @{$tasks{$task}->{$key}}{keys(%$value)} = values(%$value);
+   }
    else {
       $tasks{$task}->{$key} = $value;
    }
@@ -124,7 +128,7 @@ sub modify_task {
 sub get_tasks {
    my $class = shift;
 
-   return sort { $a cmp $b } keys %tasks;
+   return grep { $tasks{$_}->{hidden} == 0 } sort { $a cmp $b } keys %tasks;
 }
 
 sub get_tasks_for {
@@ -176,8 +180,6 @@ sub run {
 
    my $ret;
 
-   Rex::Logger::info("Running task: $task");
-
    # get servers belonging to the task
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;
@@ -204,6 +206,7 @@ sub run {
          @server = ($server_overwrite);
       }
    }
+   Rex::Logger::info("Running task: $task on: ".join(',', @server));
 
    my($user, $pass, $private_key, $public_key);
    if(ref($server[-1]) eq "HASH") {
@@ -275,7 +278,7 @@ sub run {
 
             # around jobs
             for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server, \$server, \%opts);
+               &$code($server, 0, \%opts);
             }
 
             # this must be a ssh/remote connection
@@ -307,10 +310,10 @@ sub run {
 
             # auth unsuccessfull
             unless($conn->is_authenticated) {
-               Rex::Logger::info("Wrong username or password. Or wrong key.");
+               Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
                # after jobs
                for my $code (@{$tasks{$task}->{"after"}}) {
-                  &$code($server, 1);
+                  &$code($server, 1, %opts);
                }
 
 
@@ -324,7 +327,7 @@ sub run {
 
             # around jobs
             for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server);
+               &$code($server, 1, \%opts);
             }
 
             # disconnect if ssh connection
@@ -338,7 +341,7 @@ sub run {
 
             # after jobs
             for my $code (@{$tasks{$task}->{"after"}}) {
-               &$code($server);
+               &$code($server, 0, \%opts);
             }
 
             # close logger
@@ -364,15 +367,17 @@ sub run {
    } else {
 
       Rex::Logger::init();
+      
+      my $server = '<local>';
 
       # before jobs
       for my $code (@{$tasks{$task}->{"before"}}) {
-         &$code("<local>");
+         &$code($server, \$server, \%opts);
       }
 
       # around jobs
       for my $code (@{$tasks{$task}->{"around"}}) {
-         &$code("<local>");
+         &$code($server, 0, \%opts);
       }
 
       my $conn = Rex::Interface::Connection->create("Local");
@@ -385,7 +390,7 @@ sub run {
       Rex::push_connection({
          conn   => $conn,
          ssh    => 0,
-         server => "<local>",
+         server => $server,
          cache  => Rex::Cache->new(),
       });
 
@@ -393,7 +398,7 @@ sub run {
 
       # around jobs
       for my $code (@{$tasks{$task}->{"around"}}) {
-         &$code("<local>");
+         &$code($server, 1, \%opts);
       }
 
       # remove local connection from stack
@@ -401,7 +406,7 @@ sub run {
 
       # around jobs
       for my $code (@{$tasks{$task}->{"after"}}) {
-         &$code("<local>");
+         &$code($server, 0, \%opts);
       }
 
       Rex::Logger::shutdown();

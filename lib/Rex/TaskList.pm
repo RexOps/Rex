@@ -168,14 +168,14 @@ sub run {
 
          Rex::Logger::init();
 
-         $task->run_hook("before");
+         $task->run_hook(\$server, "before");
          $task->connect($server);
 
          # execute code
          my $ret = $task->executor->exec;
 
          $task->disconnect($server);
-         $task->run_hook("after");
+         $task->run_hook(\$server, "after");
 
          Rex::Logger::shutdown();
 

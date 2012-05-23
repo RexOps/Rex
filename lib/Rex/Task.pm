@@ -8,11 +8,14 @@ package Rex::Task;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 use Rex::Logger;
 use Rex::TaskList;
 use Rex::Interface::Connection;
 use Rex::Interface::Executor;
+
+require Rex::Args;
 
 sub new {
    my $that = shift;
@@ -58,6 +61,11 @@ sub server {
    else {
       return [("<local>")];
    }
+}
+
+sub current_server {
+   my ($self) = @_;
+   return $self->{current_server};
 }
 
 sub desc {
@@ -130,11 +138,17 @@ sub code {
 }
 
 sub run_hook {
-   my ($self, $hook) = @_;
+   my ($self, $server, $hook) = @_;
+
+   for my $code (@{ $self->{$hook} }) {
+      &$code($$server, $server, { Rex::Args->get });
+   }
 }
 
 sub connect {
    my ($self, $server) = @_;
+
+   $self->{current_server} = $server;
 
    $self->connection->connect(
       user     => $self->user,
@@ -158,14 +172,14 @@ sub connect {
          cache => Rex::Cache->new(),
    });
 
-   $self->run_hook("around");
+   $self->run_hook(\$server, "around");
 
 }
 
 sub disconnect {
    my ($self, $server) = @_;
 
-   $self->run_hook("around");
+   $self->run_hook(\$server, "around");
    $self->connection->disconnect;
 
    # need to get rid of this

@@ -278,7 +278,7 @@ sub run {
 
             # around jobs
             for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server, \$server, \%opts);
+               &$code($server, 0, \%opts);
             }
 
             # this must be a ssh/remote connection
@@ -313,7 +313,7 @@ sub run {
                Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
                # after jobs
                for my $code (@{$tasks{$task}->{"after"}}) {
-                  &$code($server, 1);
+                  &$code($server, 1, %opts);
                }
 
 
@@ -327,7 +327,7 @@ sub run {
 
             # around jobs
             for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server);
+               &$code($server, 1, \%opts);
             }
 
             # disconnect if ssh connection
@@ -341,7 +341,7 @@ sub run {
 
             # after jobs
             for my $code (@{$tasks{$task}->{"after"}}) {
-               &$code($server);
+               &$code($server, 0, \%opts);
             }
 
             # close logger
@@ -367,15 +367,17 @@ sub run {
    } else {
 
       Rex::Logger::init();
+      
+      my $server = '<local>';
 
       # before jobs
       for my $code (@{$tasks{$task}->{"before"}}) {
-         &$code("<local>");
+         &$code($server, \$server, \%opts);
       }
 
       # around jobs
       for my $code (@{$tasks{$task}->{"around"}}) {
-         &$code("<local>");
+         &$code($server, 0, \%opts);
       }
 
       my $conn = Rex::Interface::Connection->create("Local");
@@ -388,7 +390,7 @@ sub run {
       Rex::push_connection({
          conn   => $conn,
          ssh    => 0,
-         server => "<local>",
+         server => $server,
          cache  => Rex::Cache->new(),
       });
 
@@ -396,7 +398,7 @@ sub run {
 
       # around jobs
       for my $code (@{$tasks{$task}->{"around"}}) {
-         &$code("<local>");
+         &$code($server, 1, \%opts);
       }
 
       # remove local connection from stack
@@ -404,7 +406,7 @@ sub run {
 
       # around jobs
       for my $code (@{$tasks{$task}->{"after"}}) {
-         &$code("<local>");
+         &$code($server, 0, \%opts);
       }
 
       Rex::Logger::shutdown();

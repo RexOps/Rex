@@ -436,14 +436,15 @@ You may also use an arrayRef for $task if you want to call multiple tasks.
 
 sub do_task {
    my $task = shift;
+   my $params = shift;
 
    if(ref($task) eq "ARRAY") {
       for my $t (@{$task}) {
-         Rex::Task->run($t);
+         Rex::Task->run($t, undef, $params);
       }
    }
    else {
-      return Rex::Task->run($task);
+      return Rex::Task->run($task, undef, $params);
    }
 }
 
@@ -793,7 +794,7 @@ Run code before executing the specified task.
 Note: must come after the definition of the specified task
 
  before mytask => sub {
-   my ($server) = @_;
+   my ($server, $server_ref, $params) = @_;
    run "vzctl start vm$server";
  };
 
@@ -819,7 +820,7 @@ Run code after the task is finished.
 Note: must come after the definition of the specified task
 
  after mytask => sub {
-   my ($server, $failed) = @_;
+   my ($server, $failed, $params) = @_;
    if($failed) { say "Connection to $server failed."; }
     
    run "vzctl stop vm$server";
@@ -847,7 +848,7 @@ Run code before and after the task is finished.
 Note: must come after the definition of the specified task
 
  around mytask => sub {
-   my ($server, $position) = @_;
+   my ($server, $position, $params) = @_;
    
    unless($position) {
       say "Before Task\n";

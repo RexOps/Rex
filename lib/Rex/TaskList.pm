@@ -171,14 +171,8 @@ sub run {
 
          Rex::Logger::init();
 
-         $task->run_hook(\$server, "before");
-         $task->connect($server);
-
-         # execute code
-         my $ret = $task->executor->exec;
-
-         $task->disconnect($server) unless($IN_TRANSACTION);
-         $task->run_hook(\$server, "after");
+         $task->run($server,
+                     in_transaction => $IN_TRANSACTION,);
 
          Rex::Logger::shutdown();
 

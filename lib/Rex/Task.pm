@@ -238,16 +238,29 @@ sub disconnect {
 #####################################
 
 sub run {
-   my ($class, $task, $server_overwrite, $params) = @_;
    # someone used this function directly... bail out
 
    Rex::deprecated("Rex::Task->run()", "0.40");
 
-   if(ref($class)) {
+   if(ref($_[0])) {
       # this is a method call
+      # so run the task
+      my ($self, $server, %options) = @_;
+
+      my $in_transaction = $options{in_transaction};
+      
+      $self->run_hook(\$server, "before");
+      $self->connect($server);
+
+      # execute code
+      my $ret = $self->executor->exec;
+
+      $self->disconnect($server) unless($in_transaction);
+      $self->run_hook(\$server, "after");
    }
 
    else {
+      my ($class, $task, $server_overwrite, $params) = @_;
       if($server_overwrite) {
          Rex::TaskList->get_task($task)->set_server($server_overwrite);
       }

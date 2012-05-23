@@ -117,6 +117,9 @@ sub modify_task {
    if(ref($tasks{$task}->{$key}) eq "ARRAY") {
       push(@{ $tasks{$task}->{$key} }, $value);
    }
+   elsif(ref($tasks{$task}->{$key}) eq "HASH") {
+      @{$tasks{$task}->{$key}}{keys(%$value)} = values(%$value);
+   }
    else {
       $tasks{$task}->{$key} = $value;
    }
@@ -177,8 +180,6 @@ sub run {
 
    my $ret;
 
-   Rex::Logger::info("Running task: $task");
-
    # get servers belonging to the task
    my @server = @{$tasks{$task}->{'server'}};
    Rex::Logger::debug("\tserver: $_") for @server;
@@ -205,6 +206,7 @@ sub run {
          @server = ($server_overwrite);
       }
    }
+   Rex::Logger::info("Running task: $task on: ".join(',', @server));
 
    my($user, $pass, $private_key, $public_key);
    if(ref($server[-1]) eq "HASH") {

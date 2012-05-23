@@ -54,6 +54,7 @@ sub server {
    my ($self) = @_;
 
    my @server = @{ $self->{server} };
+   my @ret = ();
 
    if(ref($server[-1]) eq "HASH") {
       Rex::deprecated(undef, "0.40", "Defining extra credentials within the task creation is deprecated.",
@@ -71,14 +72,23 @@ sub server {
    }
 
    if(ref($self->{server}) eq "ARRAY" && scalar(@{ $self->{server} }) > 0) {
-      return $self->{server};
+      for my $srv (@{ $self->{server} }) {
+         if(ref($srv) eq "CODE") {
+            push(@ret, &$srv());
+         }
+         else {
+            push(@ret, $srv);
+         }
+      }
    }
    elsif(ref($self->{server}) eq "CODE") {
-      return &{ $self->{server} }();
+      push(@ret, &{ $self->{server} }());
    }
    else {
-      return [("<local>")];
+      push(@ret, "<local>");
    }
+
+   return [@ret];
 }
 
 sub set_server {
@@ -164,7 +174,12 @@ sub run_hook {
    my ($self, $server, $hook) = @_;
 
    for my $code (@{ $self->{$hook} }) {
-      &$code($$server, $server, { Rex::Args->get });
+      if($hook eq "after") { # special case for after hooks
+         &$code($$server, ($self->connection->is_authenticated ? undef : 1));
+      }
+      else {
+         &$code($$server, $server, { Rex::Args->get });
+      }
    }
 }
 

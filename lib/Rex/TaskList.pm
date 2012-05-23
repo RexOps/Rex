@@ -18,6 +18,9 @@ use Rex::Fork::Manager;
 
 use vars qw(%tasks);
 
+# will be set from Rex::Transaction::transaction()
+our $IN_TRANSACTION = 0;
+
 sub create_task {
    my $class     = shift;
    my $task_name = shift;
@@ -174,17 +177,26 @@ sub run {
          # execute code
          my $ret = $task->executor->exec;
 
-         $task->disconnect($server);
+         $task->disconnect($server) unless($IN_TRANSACTION);
          $task->run_hook(\$server, "after");
 
          Rex::Logger::shutdown();
 
       };
 
-      $fm->add($forked_sub, 1);
+      # add the worker (forked_sub) to the fork queue
+      unless($IN_TRANSACTION) {
+         # not inside a transaction, so lets fork happyly...
+         $fm->add($forked_sub, 1);
+      }
+      else {
+         # inside a transaction, no little small funny kids, ... and no chance to get zombies :(
+         &$forked_sub();
+      }
 
    }
 
+   Rex::Logger::debug("Waiting for children to finish");
    $fm->wait_for_all;
 }
 

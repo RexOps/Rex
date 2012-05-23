@@ -196,23 +196,6 @@ sub run {
 
    if(ref($class)) {
       # this is a method call
-#      my $self = $class;
-#
-#      my @all_server = @{ $self->server };
-#
-#      for my $server (@all_server) {
-#
-#         $self->run_hook("before");
-#         $self->connect($server);
-#
-#         # execute code
-#         my $ret = $self->executor->exec($self);
-#
-#         $self->disconnect($server);
-#         $self->run_hook("after");
-#
-#      }
-
    }
 
    else {

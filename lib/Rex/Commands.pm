@@ -100,6 +100,7 @@ use Data::Dumper;
 require Rex::Exporter;
 use Rex::Task;
 use Rex::Logger;
+use Rex::Config;
 
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks);
 use base qw(Rex::Exporter);
@@ -200,6 +201,8 @@ sub task {
    my($class, $file, @tmp) = caller;
    my @_ARGS = @_;
 
+   # for things like
+   # no_ssh task ...
    if(wantarray) {
       return sub {
          my %option = @_;
@@ -274,7 +277,8 @@ sub task {
    }
 
    $options->{'dont_register'} = $dont_register_tasks;
-   Rex::Task->create_task($task_name, @_, $options);
+   Rex::TaskList->create_task($task_name, @_, $options);
+
 }
 
 =item desc($description)

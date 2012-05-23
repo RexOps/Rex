@@ -49,11 +49,14 @@ sub hidden {
 
 sub server {
    my ($self) = @_;
-   if(ref($self->{server}) eq "ARRAY") {
+   if(ref($self->{server}) eq "ARRAY" && scalar(@{ $self->{server} }) > 0) {
       return $self->{server};
    }
    elsif(ref($self->{server}) eq "CODE") {
       return &{ $self->{server} }();
+   }
+   else {
+      return [("<local>")];
    }
 }
 

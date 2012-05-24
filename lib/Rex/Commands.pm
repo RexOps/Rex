@@ -98,7 +98,7 @@ use warnings;
 use Data::Dumper;
 
 require Rex::Exporter;
-use Rex::Task;
+use Rex::TaskList;
 use Rex::Logger;
 use Rex::Config;
 
@@ -443,11 +443,11 @@ sub do_task {
 
    if(ref($task) eq "ARRAY") {
       for my $t (@{$task}) {
-         Rex::Task->run($t);
+         Rex::TaskList->run($t);
       }
    }
    else {
-      return Rex::Task->run($task);
+      return Rex::TaskList->run($task);
    }
 }
 
@@ -608,17 +608,7 @@ sub needs {
    my @tasks_to_run = @{"${self}::tasks"};
    use strict;
 
-   # cli parameter auslesen
-   # damit man sie dem task mitgeben kann
-   my @params = @ARGV[1..$#ARGV];
-   my %opts = ();
-   for my $p (@params) {
-      my($key, $val) = split(/=/, $p, 2);
-      $key = substr($key, 2);
-
-      if($val) { $opts{$key} = $val; next; }
-      $opts{$key} = 1;
-   }
+   my %opts = Rex::Args->get;
 
    for my $task (@tasks_to_run) {
       my $task_name = $task->{"name"};
@@ -812,7 +802,7 @@ sub before {
       }
    }
 
-   Rex::Task->modify_task($task, "before", $code);
+   Rex::TaskList->get_task($task)->modify("before" => $code);
 }
 
 =item after($task => sub {})
@@ -840,7 +830,7 @@ sub after {
       }
    }
 
-   Rex::Task->modify_task($task, "after", $code);
+   Rex::TaskList->get_task($task)->modify("after" => $code);
 }
 
 =item around($task => sub {})
@@ -872,7 +862,7 @@ sub around {
       }
    }
 
-   Rex::Task->modify_task($task, "around", $code);
+   Rex::TaskList->get_task($task)->modify("around" => $code);
 }
 
 

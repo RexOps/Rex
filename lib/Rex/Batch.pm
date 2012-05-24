@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-
+use Rex::TaskList;
 
 use vars qw(%batchs);
 
@@ -59,8 +59,8 @@ sub run {
 
    my @tasks = $class->get_batch($batch);
    for my $t (@tasks) {
-      if(Rex::Task->is_task($t)) {
-         Rex::Task->run($t);
+      if(Rex::TaskList->is_task($t)) {
+         Rex::TaskList->run($t);
       } else {
          print STDERR "ERROR: no task: $t\n";
          die;

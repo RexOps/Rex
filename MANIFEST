@@ -2,6 +2,7 @@ bin/rex
 bin/rexify
 ChangeLog
 lib/Rex.pm
+lib/Rex/Args.pm
 lib/Rex/Batch.pm
 lib/Rex/Cache.pm
 lib/Rex/Cloud.pm
@@ -71,6 +72,9 @@ lib/Rex/Interface/Exec/Base.pm
 lib/Rex/Interface/Exec/Local.pm
 lib/Rex/Interface/Exec/SSH.pm
 lib/Rex/Interface/Exec/Sudo.pm
+lib/Rex/Interface/Executor.pm
+lib/Rex/Interface/Executor/Base.pm
+lib/Rex/Interface/Executor/Default.pm
 lib/Rex/Interface/File.pm
 lib/Rex/Interface/File/Base.pm
 lib/Rex/Interface/File/Local.pm
@@ -140,6 +144,7 @@ lib/Rex/Service/SuSE/systemd.pm
 lib/Rex/Service/Ubuntu.pm
 lib/Rex/Sudo/File.pm
 lib/Rex/Task.pm
+lib/Rex/TaskList.pm
 lib/Rex/Template.pm
 lib/Rex/Transaction.pm
 lib/Rex/User.pm
@@ -148,10 +153,13 @@ lib/Rex/User/Linux.pm
 lib/Rex/User/NetBSD.pm
 lib/Rex/User/OpenBSD.pm
 lib/Rex/User/SunOS.pm
+lib/Rex/Virtualization/LibVirt/blklist.pm
 lib/Rex/Virtualization/LibVirt/create.pm
 lib/Rex/Virtualization/LibVirt/delete.pm
 lib/Rex/Virtualization/LibVirt/destroy.pm
+lib/Rex/Virtualization/LibVirt/dumpxml.pm
 lib/Rex/Virtualization/LibVirt/hypervisor.pm
+lib/Rex/Virtualization/LibVirt/iflist.pm
 lib/Rex/Virtualization/LibVirt/info.pm
 lib/Rex/Virtualization/LibVirt/list.pm
 lib/Rex/Virtualization/LibVirt/option.pm

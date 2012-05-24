@@ -229,7 +229,7 @@ sub run {
    my %opts = ();
    for my $p (@params) {
       my($key, $val) = split(/=/, $p, 2);
-      $key = substr($key, 2);
+      $key =~ s/^--//;
 
       if($val) { $opts{$key} = $val; next; }
       $opts{$key} = 1;

@@ -240,7 +240,6 @@ sub disconnect {
 sub run {
    # someone used this function directly... bail out
 
-   Rex::deprecated("Rex::Task->run()", "0.40");
 
    if(ref($_[0])) {
       # this is a method call
@@ -263,6 +262,8 @@ sub run {
 
    else {
       my ($class, $task, $server_overwrite, $params) = @_;
+      Rex::deprecated("Rex::Task->run()", "0.40");
+
       if($server_overwrite) {
          Rex::TaskList->get_task($task)->set_server($server_overwrite);
       }

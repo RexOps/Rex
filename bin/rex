@@ -1,4 +1,4 @@
-#!/opt/local/bin/perl -w
+#!perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -17,7 +17,7 @@ use Rex;
 use Rex::Config;
 use Rex::Group;
 use Rex::Batch;
-use Rex::Task;
+use Rex::TaskList;
 use Rex::Cache;
 use Rex::Logger;
 use Rex::Output;
@@ -193,7 +193,7 @@ if($opts{'e'}) {
    push @params, "eval-line-desc";
    push @params, {};
 
-   Rex::Task->create_task("eval-line", @params);
+   Rex::TaskList->create_task("eval-line", @params);
    Rex::Commands::do_task("eval-line");
 }
 elsif($opts{'M'}) {
@@ -306,18 +306,18 @@ Rex::Logger::debug("Initializing Logger from parameters found in $::rexfile");
 if($opts{'T'}) {
    Rex::Logger::debug("Listing Tasks and Batches");
    _print_color("Tasks\n", "yellow");
-   my @tasks = Rex::Task->get_tasks;
+   my @tasks = Rex::TaskList->get_tasks;
    unless(@tasks) {
       print "   no tasks defined.\n";
       exit;
    }
    if(defined $ARGV[0]) {
-     @tasks = map { Rex::Task->is_task($_) ?  $_ : () } @ARGV;
+     @tasks = map { Rex::TaskList->is_task($_) ?  $_ : () } @ARGV;
    }
    for my $task (@tasks) {
-      printf "  %-30s %s\n", $task, Rex::Task->get_desc($task);
+      printf "  %-30s %s\n", $task, Rex::TaskList->get_desc($task);
       if($opts{'v'}) {
-          _print_color("      Servers: " . join(", ", @{ Rex::Task->get_task($task)->{'server'} }) . "\n");
+          _print_color("      Servers: " . join(", ", @{ Rex::TaskList->get_task($task)->{'server'} }) . "\n");
       }
    }
    _print_color("Batches\n", 'yellow');
@@ -347,9 +347,9 @@ eval {
 
    if(defined $ARGV[0]) {
       for my $task (@ARGV) {
-         if(Rex::Task->is_task($task)) {
+         if(Rex::TaskList->is_task($task)) {
             Rex::Logger::debug("Running task: $task");
-            Rex::Task->run($task);
+            Rex::TaskList->run($task);
          }
       }
    }

@@ -8,104 +8,268 @@ package Rex::Task;
 
 use strict;
 use warnings;
-use Net::SSH2;
-use Rex::Group;
-use Rex::Fork::Manager;
-use Rex::Cache;
+use Data::Dumper;
+
+use Rex::Logger;
+use Rex::TaskList;
 use Rex::Interface::Connection;
-use Sys::Hostname;
-use Rex::Output;
+use Rex::Interface::Executor;
 
-use vars qw(%tasks);
+require Rex::Args;
 
-# will be set from Rex::Transaction::transaction()
-our $IN_TRANSACTION = 0;
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
 
-sub create_task {
-   my $class     = shift;
-   my $task_name = shift;
-   my $options   = pop;
-   my $desc      = pop;
+   bless($self, $proto);
 
-   Rex::Logger::debug("Creating task: $task_name");
 
-   my $func;
-   if(ref($desc) eq "CODE") {
-      $func = $desc;
-      $desc = "";
-   } else {
-      $func = pop;
+   return $self;
+}
+
+sub connection {
+   my ($self) = @_;
+
+   # connect if not already connected
+   if(! exists $self->{connection}) {
+      $self->{connection} = Rex::Interface::Connection->create($self->get_connection_type);
    }
 
-   my @server = ();
+   return $self->{connection};
+}
 
-   if($::FORCE_SERVER) {
+sub executor {
+   my ($self) = @_;
+   $self->{executor}->set_task($self);
+   return $self->{executor};
+}
 
-      $::FORCE_SERVER = join(" ", Rex::Group->get_group(substr($::FORCE_SERVER, 1))) if($::FORCE_SERVER =~ m/^\0/);
+sub hidden {
+   my ($self) = @_;
+   return $self->{hidden};
+}
 
-      my @servers = split(/\s+/, $::FORCE_SERVER);
-      push @server, Rex::Commands::evaluate_hostname($_) for @servers;
+sub server {
+   my ($self) = @_;
 
-      Rex::Logger::debug("\tserver: $_") for @server;
+   my @server = @{ $self->{server} };
+   my @ret = ();
 
+   if(ref($server[-1]) eq "HASH") {
+      Rex::deprecated(undef, "0.40", "Defining extra credentials within the task creation is deprecated.",
+                                     "Please use set auth => task => 'taskname' instead.");
+
+      # use extra defined credentials
+      my $data = pop(@server);
+      $self->set_auth("user", $data->{'user'});
+      $self->set_auth("password", $data->{'password'});
+
+      if(exists $data->{"private_key"}) {
+         $self->set_auth("private_key", $data->{"private_key"});
+         $self->set_auth("public_key", $data->{"public_key"});
+      }
+   }
+
+   if(ref($self->{server}) eq "ARRAY" && scalar(@{ $self->{server} }) > 0) {
+      for my $srv (@{ $self->{server} }) {
+         if(ref($srv) eq "CODE") {
+            push(@ret, &$srv());
+         }
+         else {
+            push(@ret, $srv);
+         }
+      }
+   }
+   elsif(ref($self->{server}) eq "CODE") {
+      push(@ret, &{ $self->{server} }());
+   }
+   else {
+      push(@ret, "<local>");
+   }
+
+   return [@ret];
+}
+
+sub set_server {
+   my ($self, @server) = @_;
+   $self->{server} = \@server;
+}
+
+sub current_server {
+   my ($self) = @_;
+   return $self->{current_server};
+}
+
+sub desc {
+   my ($self) = @_;
+   return $self->{desc};
+}
+
+sub is_remote {
+   my ($self) = @_;
+   if(scalar(@{ $self->{server} }) > 0) {
+      return 1;
+   }
+
+   return 0;
+}
+
+sub is_local {
+   my ($self) = @_;
+   return $self->is_remote() == 0 ? 1 : 0;
+}
+
+sub want_connect {
+   my ($self) = @_;
+   return $self->{no_ssh} == 0 ? 1 : 0;
+}
+
+sub get_connection_type {
+   my ($self) = @_;
+
+   if($self->is_remote && $self->want_connect) {
+      return "SSH";
+   }
+   elsif($self->is_remote) {
+      return "Fake";
+   }
+   else {
+      return "Local";
+   }
+}
+
+sub modify {
+   my ($self, $key, $value) = @_;
+
+   if(ref($self->{$key}) eq "ARRAY") {
+      push(@{ $self->{$key} }, $value);
+   }
+   else {
+      $self->{$key} = $value;
+   }
+}
+
+sub user {
+   my ($self) = @_;
+   return $self->{auth}->{user};
+}
+
+sub password {
+   my ($self) = @_;
+   return $self->{auth}->{password};
+}
+
+sub name {
+   my ($self) = @_;
+   return $self->{name};
+}
+
+sub code {
+   my ($self) = @_;
+   return $self->{func};
+}
+
+sub run_hook {
+   my ($self, $server, $hook) = @_;
+
+   for my $code (@{ $self->{$hook} }) {
+      if($hook eq "after") { # special case for after hooks
+         &$code($$server, ($self->connection->is_authenticated ? undef : 1));
+      }
+      else {
+         &$code($$server, $server, { Rex::Args->get });
+      }
+   }
+}
+
+sub set_auth {
+   my ($self, $key, $value) = @_;
+   $self->{auth}->{$key} = $value;
+}
+
+sub connect {
+   my ($self, $server) = @_;
+
+   $self->{current_server} = $server;
+
+   Rex::Logger::debug("Using user: " . $self->user);
+   Rex::Logger::debug("Using password: " . ($self->password?"***********":"<no password>"));
+
+   $self->connection->connect(
+      user     => $self->user,
+      password => $self->password,
+      server   => $server,
+   );
+
+   if($self->connection->is_authenticated) {
+      Rex::Logger::info("Successfull authenticated.");
+   }
+   else {
+      Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
+      CORE::exit(1);
+   }
+
+   # need to get rid of this
+   Rex::push_connection({
+         conn   => $self->connection, 
+         ssh    => $self->connection->get_connection_object, 
+         server => $server, 
+         cache => Rex::Cache->new(),
+   });
+
+   $self->run_hook(\$server, "around");
+
+}
+
+sub disconnect {
+   my ($self, $server) = @_;
+
+   $self->run_hook(\$server, "around");
+   $self->connection->disconnect;
+
+   # need to get rid of this
+   Rex::pop_connection();
+}
+
+#####################################
+# deprecated functions
+# for compatibility
+#####################################
+
+sub run {
+   # someone used this function directly... bail out
+
+   Rex::deprecated("Rex::Task->run()", "0.40");
+
+   if(ref($_[0])) {
+      # this is a method call
+      # so run the task
+      my ($self, $server, %options) = @_;
+
+      my $in_transaction = $options{in_transaction};
+      
+      $self->run_hook(\$server, "before");
+      $self->connect($server);
+
+      # execute code
+      my $ret = $self->executor->exec;
+
+      $self->disconnect($server) unless($in_transaction);
+      $self->run_hook(\$server, "after");
+
+      return $ret;
    }
 
    else {
-
-      if(scalar(@_) >= 1) {
-         if($_[0] eq "group") {
-            my $groups;
-            if(ref($_[1]) eq "ARRAY") {
-               $groups = $_[1];
-            }
-            else {
-               $groups = [ $_[1] ];
-            }
-            
-            for my $group (@{$groups}) {
-               if(Rex::Group->is_group($group)) {
-                  Rex::Logger::debug("\tusing group: $group -> " . join(", ", Rex::Group->get_group($group)));
-
-                  for my $server_name (Rex::Group->get_group($group)) {
-                     if(ref($server_name) eq "CODE") {
-                        push(@server, $server_name);
-                     }
-                     else {
-                        push(@server, Rex::Commands::evaluate_hostname($server_name));
-                     }
-                  }
-
-                  Rex::Logger::debug("\tserver: $_") for @server;
-               } else {
-                  Rex::Logger::info("Group $group not found!");
-                  exit 1;
-               }
-            }
-         } else {
-            push @server, Rex::Commands::evaluate_hostname($_) for @_;
-            Rex::Logger::debug("\tserver: $_") for @server;
-         }
+      my ($class, $task, $server_overwrite, $params) = @_;
+      if($server_overwrite) {
+         Rex::TaskList->get_task($task)->set_server($server_overwrite);
       }
 
+      # this is a deprecated static call
+      Rex::TaskList->run($task);
    }
-
-   $tasks{$task_name} = {
-      func => $func,
-      server => [ @server ],
-      desc => $desc,
-      no_ssh => ($options->{"no_ssh"}?1:0),
-      hidden => ($options->{"dont_register"}?1:0),
-      auth => {
-         user        => Rex::Config->get_user,
-         password    => Rex::Config->get_password,
-         private_key => Rex::Config->get_private_key,
-         public_key  => Rex::Config->get_public_key,
-      },
-      before => [],
-      after  => [],
-      around => [],
-   };
-
 }
 
 sub modify_task {
@@ -114,330 +278,22 @@ sub modify_task {
    my $key   = shift;
    my $value = shift;
 
-   if(ref($tasks{$task}->{$key}) eq "ARRAY") {
-      push(@{ $tasks{$task}->{$key} }, $value);
-   }
-   else {
-      $tasks{$task}->{$key} = $value;
-   }
-}
-
-sub get_tasks {
-   my $class = shift;
-
-   return grep { $tasks{$_}->{hidden} == 0 } sort { $a cmp $b } keys %tasks;
-}
-
-sub get_tasks_for {
-   my $class = shift;
-   my $host = shift;
-
-   my @tasks;
-   for my $task_name (keys %tasks) {
-      my @servers = @{$tasks{$task_name}->{"server"}};
-
-      if( (grep { /^$host$/ } @servers) || $#servers == -1) {
-         push @tasks, $task_name;
-      }
-   }
-
-   return sort { $a cmp $b } @tasks;
-}
-
-sub get_task {
-   my ($class, $task) = @_;
-   return $tasks{$task};
-}
-
-sub clear_tasks {
-   my $class = shift;
-   %tasks = ();
-}
-
-sub get_desc {
-   my $class = shift;
-   my $task = shift;
-
-   return $tasks{$task}->{"desc"};
+   Rex::TaskList->get_task($task)->modify($key => $value);
 }
 
 sub is_task {
-   my $class = shift;
-   my $task = shift;
-   
-   if(exists $tasks{$task}) { return 1; }
-   return 0;
+   my ($class, $task) = @_;
+   return Rex::TaskList->is_task($task);
 }
 
-sub run {
-   my $class = shift;
-   my $task = shift;
-   my $server_overwrite = shift;
-   my $params = shift;
-
-   my $ret;
-
-   Rex::Logger::info("Running task: $task");
-
-   # get servers belonging to the task
-   my @server = @{$tasks{$task}->{'server'}};
-   Rex::Logger::debug("\tserver: $_") for @server;
-
-   my @new_server;
-   for my $server_name (@server) {
-      if(ref($server_name) eq "CODE") {
-         push(@new_server, &$server_name());
-      }
-      else {
-         push(@new_server, $server_name);
-      }
-   }
-
-   @server = @new_server;
-   
-   # overwrite servers if requested
-   # this is mostly for the rex agent
-   if($server_overwrite) {
-      if($server_overwrite eq "<local>") {
-         @server = ();
-      }
-      else {
-         @server = ($server_overwrite);
-      }
-   }
-
-   my($user, $pass, $private_key, $public_key);
-   if(ref($server[-1]) eq "HASH") {
-      # use extra defined credentials
-      my $data = pop(@server);
-      $user = $data->{'user'};
-      $pass = $data->{'password'};
-      if(exists $data->{"private_key"}) {
-         $private_key = $data->{"private_key"};
-         $public_key  = $data->{"public_key"};
-      }
-   } else {
-      $user        = $tasks{$task}->{"auth"}->{"user"};
-      $pass        = $tasks{$task}->{"auth"}->{"password"};
-      $private_key = $tasks{$task}->{"auth"}->{"private_key"};
-      $public_key  = $tasks{$task}->{"auth"}->{"public_key"};
-   }
-
-   $user ||= "";
-   Rex::Logger::debug("Using user: $user");
-   Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
-
-   my $timeout = Rex::Config->get_timeout;
-
-   # parse cli parameter in the form
-   #    --key=value or --key
-   my @params = @ARGV[1..$#ARGV];
-   my %opts = ();
-   for my $p (@params) {
-      my($key, $val) = split(/=/, $p, 2);
-      $key = substr($key, 2);
-
-      if($val) { $opts{$key} = $val; next; }
-      $opts{$key} = 1;
-   }
-
-   if($params) {
-      %opts = %{$params};
-   }
-
-   # get hostname
-   my $hostname = hostname();
-   my ($shortname) = ($hostname =~ m/^([^\.]+)\.?/);
-   Rex::Logger::debug("My Hostname: " . $hostname);
-   Rex::Logger::debug("My Shortname: " . $shortname);
-
-   if(scalar(@server) > 0) {
-      # task should not run lokal
-
-      my @children;
-
-      # create fork manager object
-      my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
-
-      # iterate over the server and push the worker function to the fork manager's queue
-      for my $server (@server) {
-         Rex::Logger::debug("Next Server: $server");
-         # push it
-         my $forked_sub = sub {
-            my $conn;
-
-            # reconnect to logger
-            Rex::Logger::init();
-
-            # before jobs
-            for my $code (@{$tasks{$task}->{"before"}}) {
-               &$code($server, \$server, \%opts);
-            }
-
-            # around jobs
-            for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server, \$server, \%opts);
-            }
-
-            # this must be a ssh/remote connection
-
-            my $conn_type = "SSH";
-            if($tasks{$task}->{"no_ssh"}) {
-               $conn_type = "Fake";
-            }
-
-            $conn = Rex::Interface::Connection->create($conn_type);
-
-            $conn->connect(
-               user     => $user,
-               password => $pass,
-               server   => $server
-            );
-
-            unless($conn->is_connected) {
-               CORE::exit(1);
-            }
-
-            # push a remote connection
-            Rex::push_connection({
-               conn   => $conn, 
-               ssh    => $conn->get_connection_object, 
-               server => $server, 
-               cache => Rex::Cache->new(),
-            });
-
-            # auth unsuccessfull
-            unless($conn->is_authenticated) {
-               Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
-               # after jobs
-               for my $code (@{$tasks{$task}->{"after"}}) {
-                  &$code($server, 1);
-               }
-
-
-               CORE::exit 1;
-            }
-
-            Rex::Logger::debug("Successfull auth");
-
-            # run the task
-            $ret = _exec($task, \%opts);
-
-            # around jobs
-            for my $code (@{$tasks{$task}->{"around"}}) {
-               &$code($server);
-            }
-
-            # disconnect if ssh connection
-            if(! $tasks{$task}->{"no_ssh"} && $server ne "localhost" && $server ne $shortname) {
-               Rex::Logger::debug("Disconnecting from $server");
-               $conn->disconnect() unless($IN_TRANSACTION);
-            }
-
-            # remove remote connection from the stack
-            Rex::pop_connection();
-
-            # after jobs
-            for my $code (@{$tasks{$task}->{"after"}}) {
-               &$code($server);
-            }
-
-            # close logger
-            Rex::Logger::shutdown();
-
-         }; # [END] $forked_sub
-
-         # add the worker (forked_sub) to the fork queue
-         unless($IN_TRANSACTION) {
-            # not inside a transaction, so lets fork happyly...
-            $fm->add($forked_sub, 1);
-         }
-         else {
-            # inside a transaction, no little small funny kids, ... and no chance to get zombies :(
-            &$forked_sub();
-         }
-      } # [END] for my $server
-
-      Rex::Logger::debug("Waiting for children to finish");
-      # wait for all jobs to be finished
-      $fm->wait_for_all;
-
-   } else {
-
-      Rex::Logger::init();
-
-      # before jobs
-      for my $code (@{$tasks{$task}->{"before"}}) {
-         &$code("<local>");
-      }
-
-      # around jobs
-      for my $code (@{$tasks{$task}->{"around"}}) {
-         &$code("<local>");
-      }
-
-      my $conn = Rex::Interface::Connection->create("Local");
-
-      $conn->connect();
-
-
-      Rex::Logger::debug("This is not a remote session");
-      # push a local connection
-      Rex::push_connection({
-         conn   => $conn,
-         ssh    => 0,
-         server => "<local>",
-         cache  => Rex::Cache->new(),
-      });
-
-      $ret = _exec($task, \%opts);
-
-      # around jobs
-      for my $code (@{$tasks{$task}->{"around"}}) {
-         &$code("<local>");
-      }
-
-      # remove local connection from stack
-      Rex::pop_connection();
-
-      # around jobs
-      for my $code (@{$tasks{$task}->{"after"}}) {
-         &$code("<local>");
-      }
-
-      Rex::Logger::shutdown();
-   }
-
-   return $ret;
+sub get_tasks {
+   my ($class, @tmp) = @_;
+   return Rex::TaskList->get_tasks(@tmp);
 }
 
-sub _exec {
-   my $task = shift;
-   my $opts = shift;
-
-   Rex::Logger::debug("Executing $task");
-
-   my $ret;
-   eval {
-      my $code = $tasks{$task}->{'func'};
-      $ret = &$code($opts);
-   };
-
-   if($@) {
-      if(Rex::Output->get) {
-         Rex::Output->get->add($task, error => 1, msg => $@);
-      }
-      else {
-         die($@);
-      }
-   }
-   else {
-      if(Rex::Output->get) {
-         Rex::Output->get->add($task);
-      }
-   }
-
-   return $ret;
+sub get_desc {
+   my ($class, @tmp) = @_;
+   return Rex::TaskList->get_desc(@tmp);
 }
 
 1;

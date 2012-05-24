@@ -241,6 +241,26 @@ sub connect {
    }
 }
 
+sub deprecated {
+   my ($func, $version, @msg) = @_;
+
+   if($func) {
+      Rex::Logger::info("The call to $func is deprecated.");
+   }
+
+   if(@msg) {
+      for (@msg) {
+         Rex::Logger::info($_);
+      }
+   }
+
+   Rex::Logger::info("");
+
+   Rex::Logger::info("Please rewrite your code. This function will disappear in (R)?ex version $version.");
+   Rex::Logger::info("If you need assistance please join #rex on irc.freenode.net or our google group.");
+
+}
+
 
 sub import {
    my ($class, $what) = @_;

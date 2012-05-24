@@ -1,4 +1,4 @@
-#!perl -w
+#!/opt/local/bin/perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -48,6 +48,9 @@ if($#ARGV < 0) {
 }
 
 getopts('CcqQFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:', \%opts);
+
+require Rex::Args;
+Rex::Args->import;
 
 if($opts{'Q'}) {
    my ($stdout, $stderr);

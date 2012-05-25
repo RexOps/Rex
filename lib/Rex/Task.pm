@@ -24,6 +24,13 @@ sub new {
 
    bless($self, $proto);
 
+   if(! exists $self->{name}) {
+      die("You have to define a task name.");
+   }
+
+   $self->{no_ssh} ||= 0;
+   $self->{func}   ||= sub {};
+   $self->{executor} ||= Rex::Interface::Executor->create;
 
    return $self;
 }
@@ -31,12 +38,11 @@ sub new {
 sub connection {
    my ($self) = @_;
 
-   # connect if not already connected
    if(! exists $self->{connection}) {
       $self->{connection} = Rex::Interface::Connection->create($self->get_connection_type);
    }
 
-   return $self->{connection};
+   $self->{connection};
 }
 
 sub executor {
@@ -106,9 +112,14 @@ sub desc {
    return $self->{desc};
 }
 
+sub set_desc {
+   my ($self, $desc) = @_;
+   $self->{desc} = $desc;
+}
+
 sub is_remote {
    my ($self) = @_;
-   if(scalar(@{ $self->{server} }) > 0) {
+   if(exists $self->{server} && scalar(@{ $self->{server} }) > 0) {
       return 1;
    }
 
@@ -148,16 +159,35 @@ sub modify {
    else {
       $self->{$key} = $value;
    }
+
+   if($key eq "no_ssh") {
+      delete $self->{connection};
+      $self->connection;
+   }
 }
 
 sub user {
    my ($self) = @_;
-   return $self->{auth}->{user};
+   if(exists $self->{auth} && $self->{auth}->{user}) {
+      return $self->{auth}->{user};
+   }
+}
+
+sub set_user {
+   my ($self, $user) = @_;
+   $self->{auth}->{user} = $user;
 }
 
 sub password {
    my ($self) = @_;
-   return $self->{auth}->{password};
+   if(exists $self->{auth} && $self->{auth}->{password}) {
+      return $self->{auth}->{password};
+   }
+}
+
+sub set_password {
+   my ($self, $password) = @_;
+   $self->{auth}->{password} = $password;
 }
 
 sub name {
@@ -168,6 +198,11 @@ sub name {
 sub code {
    my ($self) = @_;
    return $self->{func};
+}
+
+sub set_code {
+   my ($self, $code) = @_;
+   $self->{func} = $code;
 }
 
 sub run_hook {
@@ -242,9 +277,16 @@ sub run {
 
 
    if(ref($_[0])) {
+      my ($self, $server, %options) = @_;
+
+      if(! $_[1]) {
+         # run is called without any server.
+         # so just connect to any servers.
+         return Rex::TaskList->run($self->name);
+      }
+
       # this is a method call
       # so run the task
-      my ($self, $server, %options) = @_;
 
       my $in_transaction = $options{in_transaction};
       

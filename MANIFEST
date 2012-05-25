@@ -178,3 +178,4 @@ t/helper_hash.t
 t/host.t
 t/interface_fs_local.t
 t/needs.t
+t/task.t

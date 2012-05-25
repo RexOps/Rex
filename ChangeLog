@@ -12,6 +12,10 @@
   * Added blklist command (LibVirt) - Jean Charles Passard
   * Added vncdisplay command (LibVirt) - Sven Dowideit
   * Fixed a bug with hooks and packages #41 - Jan Gehring
+  * Refactored Task Module. Task is now an object - Jan Gehring
+  * Added module to parse cli parameters - Jan Gehring
+  * Added driver_type for kvm disks
+  * fixed a md5 check bug for 'install file =>'
 
 2012-05-08 Jan Gehring <jan.gehring, gmail.com> (0.28.0)
   * fixed a bug with relative source file names inside external modules

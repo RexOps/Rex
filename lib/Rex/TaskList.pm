@@ -171,7 +171,11 @@ sub run {
 
          Rex::Logger::init();
 
-         $task->run($server,
+         # create a single task object for the run on $server
+
+         my $run_task = Rex::Task->new( %{$task->get_data} );
+
+         $run_task->run($server,
                      in_transaction => $IN_TRANSACTION,);
 
          Rex::Logger::shutdown();

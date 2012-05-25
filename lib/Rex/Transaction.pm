@@ -47,6 +47,7 @@ use base qw(Exporter);
 
 use Rex::Logger;
 use Rex::TaskList;
+use Data::Dumper;
 
 @EXPORT = qw(transaction on_rollback);
 

@@ -78,6 +78,8 @@ sub new {
    $self->{func}   ||= sub {};
    $self->{executor} ||= Rex::Interface::Executor->create;
 
+   $self->{connection} = undef;
+
    return $self;
 }
 
@@ -89,7 +91,7 @@ Returns the current connection object.
 sub connection {
    my ($self) = @_;
 
-   if(! exists $self->{connection}) {
+   if(! exists $self->{connection} || ! $self->{connection}) {
       $self->{connection} = Rex::Interface::Connection->create($self->get_connection_type);
    }
 
@@ -440,8 +442,28 @@ sub disconnect {
    $self->run_hook(\$server, "around");
    $self->connection->disconnect;
 
+   delete $self->{connection};
+
    # need to get rid of this
    Rex::pop_connection();
+}
+
+sub get_data {
+   my ($self) = @_;
+
+   return {
+      func => $self->{func},
+      server => $self->{server},
+      desc => $self->{desc},
+      no_ssh => $self->{no_ssh},
+      hidden => $self->{hidden},
+      auth => $self->{auth},
+      before => $self->{before},
+      after  => $self->{after},
+      around => $self->{around},
+      name => $self->{name},
+      executor => $self->{executor},
+   };
 }
 
 #####################################

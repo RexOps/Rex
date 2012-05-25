@@ -8,6 +8,7 @@ use Rex;
 use Rex::Config;
 use Rex::Group;
 use Rex::Task;
+use Rex::TaskList;
 use Rex::Commands;
 use Rex::Commands::Run;
 use Rex::Commands::Upload;
@@ -31,12 +32,13 @@ task("test2", sub {
 
 package main;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
 use_ok 'Rex::Group';
 use_ok 'Rex::Task';
+use_ok 'Rex::TaskList';
 use_ok 'Rex::Commands';
 use_ok 'Rex::Commands::Run';
 use_ok 'Rex::Commands::Upload';
@@ -91,9 +93,9 @@ task("test4", sub {
 });
 
 
-ok(Rex::Task->run("test"), "testing needs");
-ok(Rex::Task->run("test2"), "testing needs");
-ok(Rex::Task->run("test3"), "testing needs - local namespace");
+ok(Rex::TaskList->run("test"), "testing needs");
+ok(Rex::TaskList->run("test2"), "testing needs");
+ok(Rex::TaskList->run("test3"), "testing needs - local namespace");
 
 
 

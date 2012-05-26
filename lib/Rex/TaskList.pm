@@ -198,4 +198,25 @@ sub run {
    $fm->wait_for_all;
 }
 
+sub modify {
+   my ($class, $type, $task, $code, $package, $file, $line) = @_;
+
+   if($package ne "main") {
+      if($task !~ m/:/) {
+         #do we need to detect for base -Rex ?
+         $package =~ s/^Rex:://;
+         $package =~ s/::/:/g;
+         $task = $package . ":" . $task;
+      }
+   }
+
+   my $taskref = Rex::TaskList->get_task($task);
+   if (defined($taskref)) {
+      $taskref->modify($type => $code);
+   } else {
+      Rex::Logger::info("can't add $type $task, as its not yet defined\nsee $file line $line");
+   }
+}
+
+
 1;

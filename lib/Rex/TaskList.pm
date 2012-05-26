@@ -158,8 +158,11 @@ sub is_task {
 }
 
 sub run {
-   my ($class, $task_name) = @_;
+   my ($class, $task_name, %option) = @_;
    my $task = $class->get_task($task_name);
+
+   $option{params} ||= { Rex::Args->get };
+
 
    my @all_server = @{ $task->server };
 
@@ -176,7 +179,8 @@ sub run {
          my $run_task = Rex::Task->new( %{$task->get_data} );
 
          $run_task->run($server,
-                     in_transaction => $IN_TRANSACTION,);
+                     in_transaction => $IN_TRANSACTION,
+                     params => $option{params});
 
          Rex::Logger::shutdown();
 

@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Output;
+use Rex::Args;
 
 use Rex::Interface::Executor::Base;
 use base qw(Rex::Interface::Executor::Base);
@@ -27,6 +28,8 @@ sub new {
 
 sub exec {
    my ($self, $opts) = @_;
+
+   $opts ||= { Rex::Args->get };
 
    my $task = $self->{task};
 

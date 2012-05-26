@@ -487,7 +487,7 @@ sub run {
       if(! $_[1]) {
          # run is called without any server.
          # so just connect to any servers.
-         return Rex::TaskList->run($self->name);
+         return Rex::TaskList->run($self->name, %options);
       }
 
       # this is a method call

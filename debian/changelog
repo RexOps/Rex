@@ -1,4 +1,4 @@
-rex (0.28.99.0) unstable; urgency=low
+rex (0.29.0) unstable; urgency=low
   * Fixed wrong error message in LibVirt/create.pm - Sven Dowideit
   * Added dumpxml command (LibVirt) - Sven Dowideit
   * Updated docs - Sven Dowideit

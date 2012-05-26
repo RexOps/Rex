@@ -371,7 +371,7 @@ sub run_hook {
 
    for my $code (@{ $self->{$hook} }) {
       if($hook eq "after") { # special case for after hooks
-         &$code($$server, ($self->connection->is_authenticated ? undef : 1));
+         &$code($$server, ($self->{"__was_authenticated"} ? undef : 1), { Rex::Args->get });
       }
       else {
          &$code($$server, $server, { Rex::Args->get });
@@ -413,6 +413,7 @@ sub connect {
 
    if($self->connection->is_authenticated) {
       Rex::Logger::info("Successfull authenticated.");
+      $self->{"__was_authenticated"} = 1;
    }
    else {
       Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
@@ -498,7 +499,7 @@ sub run {
       $self->connect($server);
 
       # execute code
-      my $ret = $self->executor->exec;
+      my $ret = $self->executor->exec($options{params});
 
       $self->disconnect($server) unless($in_transaction);
       $self->run_hook(\$server, "after");
@@ -515,7 +516,7 @@ sub run {
       }
 
       # this is a deprecated static call
-      Rex::TaskList->run($task);
+      Rex::TaskList->run($task, params => $params);
    }
 }
 

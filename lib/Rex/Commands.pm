@@ -795,7 +795,7 @@ Note: must come after the definition of the specified task
 sub before {
    my ($task, $code) = @_;
    my ($package, $file, $line) = caller;
-   Rex::TaskList->modify('around', $task, $code, $package, $file, $line);
+   Rex::TaskList->modify('before', $task, $code, $package, $file, $line);
 }
 
 =item after($task => sub {})
@@ -817,7 +817,7 @@ sub after {
    my ($task, $code) = @_;
    my ($package, $file, $line) = caller;
 
-   Rex::TaskList->modify('around', $task, $code, $package, $file, $line);
+   Rex::TaskList->modify('after', $task, $code, $package, $file, $line);
 }
 
 =item around($task => sub {})

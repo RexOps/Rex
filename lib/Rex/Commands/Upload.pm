@@ -76,7 +76,7 @@ sub upload {
    }
 
    if(my $ssh = Rex::is_ssh()) {
-      Rex::Logger::info("Uploadling $local -> $remote");
+      Rex::Logger::info("Uploading $local -> $remote");
       if(is_dir($remote)) {
          $remote = $remote . '/' . basename($local);
       }

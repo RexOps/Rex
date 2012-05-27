@@ -296,7 +296,7 @@ sub _request {
    my $res = $ua->post("http://" . $self->{'__endpoint'}, \%param);
 
    if($res->code >= 500) {
-      Rex::Logger::info("Error on request");
+      Rex::Logger::info("Error on request", "warn");
       Rex::Logger::debug($res->content);
       return;
    }

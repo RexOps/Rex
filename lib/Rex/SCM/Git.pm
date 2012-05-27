@@ -32,7 +32,7 @@ sub checkout {
       Rex::Logger::info("cloning " . $repo_info->{"url"} . " to " . ($checkout_to?$checkout_to:"."));
       my $out = run "$clone_cmd";
       unless($? == 0) {
-         Rex::Logger::info("Error cloning repository.");
+         Rex::Logger::info("Error cloning repository.", "warn");
          Rex::Logger::info($out);
          exit 1;
       }
@@ -69,7 +69,7 @@ sub checkout {
       run "git pull origin $branch";
    }
    else {
-      Rex::Logger::info("Error checking out repository.");
+      Rex::Logger::info("Error checking out repository.", "warn");
       exit 1;
    }
 }

@@ -28,9 +28,10 @@ sub net_ssh2_exec {
    my $in_err;
    while(1) {
       my $buf;
-      my $buf_err;
+      my $buf_err="";
       $chan->read($buf, 20);
-      $chan->read($buf_err, 20, 1);
+      # due to problem on some systems reading stderr, removed until i've found a solution
+      #$chan->read($buf_err, 20, 1);
       $in .= $buf;
       $in_err .= $buf_err;
 

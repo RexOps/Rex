@@ -85,7 +85,7 @@ sub checkout {
 
    eval "use $class;";
    if($@) {
-      Rex::Logger::info("Error loading SCM: $@\n");
+      Rex::Logger::info("Error loading SCM: $@\n", "warn");
       die("Error loading SCM: $@");
    }
 

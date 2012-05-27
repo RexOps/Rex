@@ -63,7 +63,7 @@ sub update {
    my $f = run(". /etc/profile; /usr/sbin/pkg_add $pkg$version");
 
    unless($? == 0) {
-      Rex::Logger::info("Error installing $pkg.");
+      Rex::Logger::info("Error installing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error installing $pkg");
    }
@@ -84,7 +84,7 @@ sub remove {
    my $f = run("/usr/sbin/pkg_delete $pkg-$pkg_version");
 
    unless($? == 0) {
-      Rex::Logger::info("Error removing $pkg-$pkg_version.");
+      Rex::Logger::info("Error removing $pkg-$pkg_version.", "warn");
       Rex::Logger::debug($f);
       die("Error removing $pkg-$pkg_version");
    }

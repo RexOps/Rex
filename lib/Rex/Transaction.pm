@@ -46,6 +46,8 @@ use vars qw(@EXPORT @ROLLBACKS);
 use base qw(Exporter);
 
 use Rex::Logger;
+use Rex::TaskList;
+use Data::Dumper;
 
 @EXPORT = qw(transaction on_rollback);
 
@@ -79,7 +81,7 @@ sub transaction(&) {
    Rex::Logger::debug("Cleaning ROLLBACKS array");
    @ROLLBACKS = ();
 
-   $Rex::Task::IN_TRANSACTION = 1;
+   $Rex::TaskList::IN_TRANSACTION = 1;
 
    eval {
       &$code();
@@ -103,7 +105,7 @@ sub transaction(&) {
       die("Transaction failed. Rollback done.");
    }
 
-   $Rex::Task::IN_TRANSACTION = 0;
+   $Rex::TaskList::IN_TRANSACTION = 0;
 
    return $ret;
 

@@ -38,7 +38,7 @@ sub execute {
       my $func = $FUNC_MAP->{$opt};
       run "virsh $func $dom $val";
       if($? != 0) {
-         Rex::Logger::info("Error setting $opt to $val on $dom ($@)");
+         Rex::Logger::info("Error setting $opt to $val on $dom ($@)", "warn");
       }
 
    }

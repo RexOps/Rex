@@ -1,3 +1,24 @@
+rex (0.29.0) unstable; urgency=low
+  * Fixed wrong error message in LibVirt/create.pm - Sven Dowideit
+  * Added dumpxml command (LibVirt) - Sven Dowideit
+  * Updated docs - Sven Dowideit
+  * Default listening on all ip's for vnc (LibVirt) - Sven Dowideit
+  * Added more colorized output options - Samuele Tognini
+  * Fixed a logging bug - Samuele Tognini
+  * -Tv command line option output information about requested task - Samuele Tognini
+  * -Tv command line option output information about batches and environments - Samuele Tognini
+  * Updated some error messages output - Samuele Tognini
+  * Added iflist command (LibVirt) - Jean Charles Passard
+  * Added blklist command (LibVirt) - Jean Charles Passard
+  * Added vncdisplay command (LibVirt) - Sven Dowideit
+  * Fixed a bug with hooks and packages #41 - Jan Gehring
+  * Refactored Task Module. Task is now an object - Jan Gehring
+  * Added module to parse cli parameters - Jan Gehring
+  * Added driver_type for kvm disks
+  * fixed a md5 check bug for 'install file =>'
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 25 May 2012 17:30:00 +0200
+
 rex (0.28.0) unstable; urgency=low
   * fixed a bug with relative source file names inside external modules
   * new parameter -Tv to display more information about tasks

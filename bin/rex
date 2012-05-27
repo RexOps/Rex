@@ -257,6 +257,14 @@ elsif(-f $::rexfile) {
       $::FORCE_SERVER = "\0" . $opts{'G'};
    }
 
+   if(-f "vars.db") {
+      unlink("vars.db");
+   }
+
+   if(-f "vars.db.lock") {
+      unlink("vars.db.lock");
+   }
+
    eval {
       do($::rexfile);
    };
@@ -363,6 +371,17 @@ if($@) {
 Rex::global_sudo(0);
 Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
 unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+
+# delete shared variable db
+if(-f "vars.db") {
+   unlink("vars.db");
+}
+
+if(-f "vars.db.lock") {
+   unlink("vars.db.lock");
+}
+
+
 
 select STDOUT;
 

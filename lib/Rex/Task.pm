@@ -212,8 +212,14 @@ Returns true (1) if the task will be executed remotely.
 =cut
 sub is_remote {
    my ($self) = @_;
-   if(exists $self->{server} && scalar(@{ $self->{server} }) > 0) {
-      return 1;
+   if(exists $self->{current_server}) {
+      if($self->{current_server} ne '<local>') {
+         return 1;
+      }
+   } else {
+      if(exists $self->{server} && scalar(@{ $self->{server} }) > 0) {
+         return 1;
+      }
    }
 
    return 0;

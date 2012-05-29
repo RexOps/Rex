@@ -175,6 +175,18 @@ sub set_server {
    $self->{server} = \@server;
 }
 
+=item delete_server
+
+Delete every server registered to the task.
+
+=cut
+sub delete_server {
+   my ($self) = @_;
+   delete $self->{current_server};
+   delete $self->{server};
+   $self->rethink_connection;
+}
+
 =item current_server
 
 Returns the current server on which the tasks gets executed right now.
@@ -182,7 +194,7 @@ Returns the current server on which the tasks gets executed right now.
 =cut
 sub current_server {
    my ($self) = @_;
-   return $self->{current_server};
+   return $self->{current_server} || "<local>";
 }
 
 =item desc
@@ -287,10 +299,13 @@ sub modify {
       $self->{$key} = $value;
    }
 
-   if($key eq "no_ssh") {
-      delete $self->{connection};
-      $self->connection;
-   }
+   $self->rethink_connection;
+}
+
+sub rethink_connection {
+   my($self) = @_;
+   delete $self->{connection};
+   $self->connection;
 }
 
 =item user
@@ -380,7 +395,11 @@ sub run_hook {
          &$code($$server, ($self->{"__was_authenticated"} ? undef : 1), { Rex::Args->get });
       }
       else {
+         my $old_server = $$server if $server;
          &$code($$server, $server, { Rex::Args->get });
+         if($old_server && $old_server ne $$server) {
+            $self->{current_server} = $$server;
+         }
       }
    }
 }

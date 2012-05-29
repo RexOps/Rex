@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 23;
+use Test::More tests => 31;
 
 use_ok 'Rex::Task';
 use_ok 'Rex::Commands';
@@ -56,5 +56,41 @@ ok($t1->connection->is_connected, "connection established");
 $t1->run("localtest");
 ok($test_var eq "localtest", "task run");
 $t1->disconnect();
+
+my $before_hook = 0;
+$t1->delete_server;
+ok($t1->is_remote == 0, "task is no more remote");
+ok($t1->is_local == 1, "task is now local");
+
+$t1->modify(before => sub {
+   my $server = shift;
+   my $server_ref = shift;
+
+   $before_hook = 1;
+   $$server_ref = "local02";
+});
+
+my $server = $t1->current_server;
+$t1->run_hook(\$server, "before");
+
+ok($before_hook == 1, "run before hook");
+ok($t1->is_remote == 1, "task is now remote");
+ok($t1->is_local == 0, "task is no more local");
+
+$t1->modify(before => sub {
+   my $server = shift;
+   my $server_ref = shift;
+
+   $before_hook = 2;
+   $$server_ref = "<local>";
+});
+
+$server = $t1->current_server;
+$t1->run_hook(\$server, "before");
+
+ok($before_hook == 2, "run before hook - right direction");
+ok($t1->is_remote == 0, "task is no not remote");
+ok($t1->is_local == 1, "task is now local");
+
 
 

@@ -142,6 +142,10 @@ lib/Rex/Service/SunOS/svcadm.pm
 lib/Rex/Service/SuSE.pm
 lib/Rex/Service/SuSE/systemd.pm
 lib/Rex/Service/Ubuntu.pm
+lib/Rex/Shared/Var.pm
+lib/Rex/Shared/Var/Array.pm
+lib/Rex/Shared/Var/Hash.pm
+lib/Rex/Shared/Var/Scalar.pm
 lib/Rex/Sudo/File.pm
 lib/Rex/Task.pm
 lib/Rex/TaskList.pm
@@ -178,4 +182,5 @@ t/helper_hash.t
 t/host.t
 t/interface_fs_local.t
 t/needs.t
+t/shared.t
 t/task.t

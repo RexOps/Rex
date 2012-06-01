@@ -16,6 +16,10 @@ rex (0.29.0) unstable; urgency=low
   * Added module to parse cli parameters - Jan Gehring
   * Added driver_type for kvm disks
   * fixed a md5 check bug for 'install file =>'
+  * fixed bug #50 (extract function)
+  * if no rexfile is in the current path try to guess the rexfile from the taskname - Sven Dowideit
+  * added experimental feature: shared variables - Jan Gehring
+
 
  -- Jan Gehring <jan.gehring@gmail.com>  Fri, 25 May 2012 17:30:00 +0200
 

@@ -76,6 +76,9 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 - Added module to parse cli parameters - Jan Gehring
 - Added driver_type for kvm disks
 - fixed a md5 check bug for 'install file =>'
+- fixed bug #50 (extract function)
+- if no rexfile is in the current path try to guess the rexfile from the taskname - Sven Dowideit
+- added experimental feature: shared variables - Jan Gehring
 
 * Thu May 08 2012 Jan Gehring <jan.gehring at, gmail.com> 0.28.0-1
 - fixed a bug with relative source file names inside external modules

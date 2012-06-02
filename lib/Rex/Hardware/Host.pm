@@ -41,8 +41,13 @@ sub get {
          ($domain) = run("LC_ALL=C domainname");
       }
       else {
-         ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
-         ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f");
+         ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f 2>/dev/null");
+         ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f 2>/dev/null");
+
+         if(! $hostname || $hostname eq "") {
+            Rex::Logger::debug("Error getting hostname and domainname. There is something wrong with your /etc/hosts file.");
+            $hostname = Rex::get_cache()->run("LC_ALL=C hostname");
+         }
       }
 
       return {

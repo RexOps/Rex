@@ -32,6 +32,8 @@ package Rex::Hardware;
 use strict;
 use warnings;
 
+use Rex::Logger;
+
 =item get(@modules)
 
 Returns a hash with the wanted information.

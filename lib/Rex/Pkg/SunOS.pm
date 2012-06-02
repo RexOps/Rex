@@ -74,7 +74,7 @@ sub update {
    my $f = run($cmd);
 
    unless($? == 0) {
-      Rex::Logger::info("Error installing $pkg.");
+      Rex::Logger::info("Error installing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error installing $pkg");
    }
@@ -97,7 +97,7 @@ sub remove {
    my $f = run($cmd . " $pkg");
 
    unless($? == 0) {
-      Rex::Logger::info("Error removing $pkg.");
+      Rex::Logger::info("Error removing $pkg.", "warn");
       Rex::Logger::debug($f);
       die("Error removing $pkg");
    }

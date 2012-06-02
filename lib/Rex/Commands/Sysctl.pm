@@ -82,7 +82,7 @@ sub sysctl {
          return $ret;
       }
       else {
-         Rex::Logger::info("Error getting sysctl key: $key");
+         Rex::Logger::info("Error getting sysctl key: $key", "warn");
          die("Error getting sysctl key: $key");
       }
 

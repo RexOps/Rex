@@ -50,6 +50,8 @@ With this module you can manage your virtualization.
     
  set virtualization => "LibVirt";
     
+ use Data::Dumper;   
+
  print Dumper vm list => "all";
  print Dumper vm list => "running";
     
@@ -77,7 +79,7 @@ With this module you can manage your virtualization.
             dev    => "vda",
          }   
       ];  
-          
+       
  print Dumper vm hypervisor => "capabilities";
 
 =head1 EXPORTED FUNCTIONS

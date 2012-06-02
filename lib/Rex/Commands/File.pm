@@ -499,10 +499,10 @@ sub extract {
       $cmd = "${pre_cmd}unzip -o $file";
    }
    elsif($file =~ m/\.gz$/) {
-      $cmd = "${pre_cmd}gunzip $file";
+      $cmd = "${pre_cmd}gunzip -f $file";
    }
    elsif($file =~ m/\.bz2$/) {
-      $cmd = "${pre_cmd}bunzip2 $file";
+      $cmd = "${pre_cmd}bunzip2 -f $file";
    }
    else {
       Rex::Logger::info("File not supported.");

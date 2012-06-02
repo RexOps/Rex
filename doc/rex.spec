@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.28.0
+Version: 0.29.0
 Release: 1
 License: Apache 2.0
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.28.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.29.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
@@ -57,6 +57,28 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Fri May 25 2012 Jan Gehring <jan.gehring at, gmail.com> 0.29.0-1
+- Fixed wrong error message in LibVirt/create.pm - Sven Dowideit
+- Added dumpxml command (LibVirt) - Sven Dowideit
+- Updated docs - Sven Dowideit
+- Default listening on all ip's for vnc (LibVirt) - Sven Dowideit
+- Added more colorized output options - Samuele Tognini
+- Fixed a logging bug - Samuele Tognini
+- -Tv command line option output information about requested task - Samuele Tognini
+- -Tv command line option output information about batches and environments - Samuele Tognini
+- Updated some error messages output - Samuele Tognini
+- Added iflist command (LibVirt) - Jean Charles Passard
+- Added blklist command (LibVirt) - Jean Charles Passard
+- Added vncdisplay command (LibVirt) - Sven Dowideit
+- Fixed a bug with hooks and packages #41 - Jan Gehring
+- Refactored Task Module. Task is now an object - Jan Gehring
+- Added module to parse cli parameters - Jan Gehring
+- Added driver_type for kvm disks
+- fixed a md5 check bug for 'install file =>'
+- fixed bug #50 (extract function)
+- if no rexfile is in the current path try to guess the rexfile from the taskname - Sven Dowideit
+- added experimental feature: shared variables - Jan Gehring
 
 * Thu May 08 2012 Jan Gehring <jan.gehring at, gmail.com> 0.28.0-1
 - fixed a bug with relative source file names inside external modules

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -47,8 +47,8 @@ use Rex::User;
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
-@EXPORT = qw(create_user delete_user get_uid get_user
-               create_group delete_group get_group get_gid
+@EXPORT = qw(create_user delete_user get_uid get_user user_list
+               user_groups create_group delete_group get_group get_gid
                );
 
 =item create_user($user => {})
@@ -112,6 +112,26 @@ Returns all information about $user.
 
 sub get_user {
    Rex::User->get()->get_user(@_);
+}
+
+=item user_group($user)
+
+Returns group membership about $user.
+
+=cut
+
+sub user_groups {
+   Rex::User->get()->user_groups(@_);
+}
+
+=item list_user()
+
+Returns user list via getent passwd
+
+=cut
+
+sub user_list {
+   Rex::User->get()->user_list(@_);
 }
 
 

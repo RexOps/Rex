@@ -468,6 +468,8 @@ This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar
       group => "root",
       to    => "/etc";
  };
+ 
+ can use the type=> option if the file suffix has been changed. (types as per https://metacpan.org/module/Archive::Extract)
 
 =cut
 sub extract {
@@ -475,6 +477,7 @@ sub extract {
 
    my $pre_cmd = "";
    my $to = ".";
+   my $type = "";
 
    if($option{chdir}) {
       $to = $option{chdir};
@@ -484,24 +487,31 @@ sub extract {
       $to = $option{to};
    }
 
+   if($option{type}) {
+      $type = $option{type};
+   }
+
    $pre_cmd = "cd $to; ";
 
    my $exec = Rex::Interface::Exec->create;
    my $cmd = "";
 
-   if($file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
+   if($type eq 'tgz' || $file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
       $cmd = "${pre_cmd}gunzip -c $file | tar -xf -";
    }
-   elsif($file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
+   elsif($type eq 'tbz' || $file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
       $cmd = "${pre_cmd}bunzip2 -c $file | tar -xf -";
    }
-   elsif($file =~ m/\.(zip|war|jar)$/) {
+   elsif($type eq 'tar' || $file =~ m/\.(tar|box)/) {
+      $cmd = "${pre_cmd}tar -xf $file";
+   }
+   elsif($type eq 'zip' || $file =~ m/\.(zip|war|jar)$/) {
       $cmd = "${pre_cmd}unzip -o $file";
    }
-   elsif($file =~ m/\.gz$/) {
+   elsif($type eq 'gz' || $file =~ m/\.gz$/) {
       $cmd = "${pre_cmd}gunzip -f $file";
    }
-   elsif($file =~ m/\.bz2$/) {
+   elsif($type eq 'bz2' || $file =~ m/\.bz2$/) {
       $cmd = "${pre_cmd}bunzip2 -f $file";
    }
    else {

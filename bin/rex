@@ -118,7 +118,7 @@ if($opts{'f'}) {
    Rex::Logger::debug("Using Rexfile: " . $opts{'f'});
    $::rexfile = $opts{'f'};
 } else {
-   if ((! -e $::rexfile) && ($ARGV[0] =~ /:/)) {
+   if ((! -e $::rexfile) && ($ARGV[0] && $ARGV[0] =~ /:/)) {
       #if there is no Rexfile, and the user asks for a longer path task, see if we can use it as the Rexfile
       #eg: rex -H $host Misc:Example:prepare --bar=baz
       $::rexfile = $ARGV[0];

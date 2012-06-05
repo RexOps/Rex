@@ -35,4 +35,10 @@ sub is_group {
    if(defined $groups{$group_name}) { return 1; }
    return 0;
 }
+
+sub get_groups {
+   my $class = shift;
+   return %groups;
+}
+
 1;

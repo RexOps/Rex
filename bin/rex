@@ -347,6 +347,12 @@ if($opts{'T'}) {
    _print_color("Environments\n", "yellow") if(Rex::Commands->get_environments);
    print "  " . join("\n  ", Rex::Commands->get_environments()) . "\n";
 
+   my %groups = Rex::Group->get_groups;
+   _print_color("Server Groups\n", "yellow") if(keys %groups);
+   for my $group (keys %groups) {
+      printf "  %-30s %s\n", $group, join(", ", @{ $groups{$group} });
+   }
+
    Rex::global_sudo(0);
    Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
    unlink("$::rexfile.lock")               if(! exists $opts{'F'});

@@ -4,12 +4,31 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Config - Handles the configuration.
+
+=head1 DESCRIPTION
+
+This module holds all configuration parameters for Rex.
+
+With this module you can specify own configuration parameters for your modules.
+
+=head1 EXPORTED METHODS
+
+=over 4
+
+=cut
+
+
 package Rex::Config;
 
 use strict;
 use warnings;
 
 use Rex::Logger;
+use YAML;
+use Data::Dumper;
 
 our ($user, $password, $port,
             $timeout, $max_connect_fails,
@@ -17,7 +36,7 @@ our ($user, $password, $port,
             $path,
             $set_param,
             $environment,
-            $SET_HANDLER,
+            $SET_HANDLER, $HOME_CONFIG,
             %SSH_CONFIG_FOR);
 
 
@@ -262,6 +281,20 @@ sub get_ssh_config_public_key {
    return 0;
 }
 
+=item register_set_handler($handler_name, $code)
+
+Register a handler that gets called by I<set>.
+
+ Rex::Config->register_set_handler("foo", sub {
+    my ($value) = @_;
+    print "The user set foo -> $value\n";
+ });
+
+And now you can use this handler in your I<Rexfile> like this:
+
+ set foo => "bar";
+
+=cut
 sub register_set_handler {
    my ($class, $handler_name, $code) = @_;
    $SET_HANDLER->{$handler_name} = $code;
@@ -301,8 +334,34 @@ sub get {
    }
 }
 
-sub import {
+=item register_config_handler($topic, $code)
 
+With this function it is possible to register own sections in the users config file ($HOME/.rex/config.yml).
+
+Example:
+
+ Rex::Config->register_config_handler("foo", sub {
+   my ($param) = @_;
+   print "bar is: " . $param->{bar} . "\n";
+ });
+
+And now the user can set this in his configuration file:
+
+ base:
+    user: theuser
+    password: thepassw0rd
+ foo:
+    bar: baz
+
+=cut
+sub register_config_handler {
+   my ($class, $topic, $code) = @_;
+
+   if(! ref($HOME_CONFIG)) { $HOME_CONFIG = {}; }
+   $HOME_CONFIG->{$topic} = $code;
+}
+
+sub import {
    if(-f _home_dir() . "/.ssh/config") {
       my ($host, $in_host);
       if(open(my $fh, "<", _home_dir() . "/.ssh/config")) {
@@ -325,9 +384,54 @@ sub import {
          close($fh);
       }
    }
+
+   if(-f _home_dir() . "/.rex/config.yml") {
+      my $yaml = eval { local(@ARGV, $/) = (_home_dir() . "/.rex/config.yml"); <>; };
+      my $ref;
+      eval {
+         $ref = Load($yaml);
+      };
+
+      if($@) {
+         print STDERR "Error loading " . _home_dir() . "/.rex/config.yml\n";
+         print STDERR "$@\n";
+         exit 2;
+      }
+
+      for my $key (keys %{ $HOME_CONFIG }) {
+         if(exists $ref->{$key}) {
+            my $code = $HOME_CONFIG->{$key};
+            &$code($ref->{$key});
+         }
+      }
+   }
 }
 
 no strict 'refs';
+__PACKAGE__->register_config_handler(base => sub {
+   my ($param) = @_;
+
+   for my $key (keys %{ $param }) {
+
+      if($key eq "keyauth") {
+         $key_auth = $param->{keyauth};
+         next;
+      }
+
+      if($key eq "passwordauth") {
+         $password_auth = $param->{passwordauth};
+         next;
+      }
+
+      if($key eq "passauth") {
+         $password_auth = $param->{passauth};
+         next;
+      }
+
+      $$key = $param->{$key};
+   }
+});
+
 my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
@@ -341,6 +445,7 @@ for my $hndl (@set_handler) {
       $$hndl = $val; 
    });
 }
+
 use strict;
 
 sub _home_dir {
@@ -350,5 +455,9 @@ sub _home_dir {
 
    return $ENV{'HOME'} || "";
 }
+
+=back
+
+=cut
 
 1;

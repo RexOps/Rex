@@ -36,7 +36,7 @@ our ($user, $password, $port,
             $path,
             $set_param,
             $environment,
-            $SET_HANDLER, $HOME_CONFIG,
+            $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
             %SSH_CONFIG_FOR);
 
 
@@ -359,6 +359,10 @@ sub register_config_handler {
 
    if(! ref($HOME_CONFIG)) { $HOME_CONFIG = {}; }
    $HOME_CONFIG->{$topic} = $code;
+
+   if(ref($HOME_CONFIG_YAML) && exists $HOME_CONFIG_YAML->{$topic}) {
+      &$code($HOME_CONFIG_YAML->{$topic});
+   }
 }
 
 sub import {
@@ -387,9 +391,8 @@ sub import {
 
    if(-f _home_dir() . "/.rex/config.yml") {
       my $yaml = eval { local(@ARGV, $/) = (_home_dir() . "/.rex/config.yml"); <>; };
-      my $ref;
       eval {
-         $ref = Load($yaml);
+         $HOME_CONFIG_YAML = Load($yaml);
       };
 
       if($@) {
@@ -399,9 +402,9 @@ sub import {
       }
 
       for my $key (keys %{ $HOME_CONFIG }) {
-         if(exists $ref->{$key}) {
+         if(exists $HOME_CONFIG_YAML->{$key}) {
             my $code = $HOME_CONFIG->{$key};
-            &$code($ref->{$key});
+            &$code($HOME_CONFIG_YAML->{$key});
          }
       }
    }

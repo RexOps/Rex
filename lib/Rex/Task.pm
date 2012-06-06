@@ -417,6 +417,27 @@ sub set_auth {
    $self->{auth}->{$key} = $value;
 }
 
+=item parallelism
+
+Get the parallelism count of a task.
+
+=cut
+sub parallelism {
+   my ($self) = @_;
+   return $self->{parallelism};
+}
+
+
+=item set_parallelism($count)
+
+Set the parallelism of the task.
+
+=cut
+sub set_parallelism {
+   my ($self, $para) = @_;
+   $self->{parallelism} = $para;
+}
+
 =item connect($server)
 
 Initiate the connection to $server.
@@ -497,7 +518,7 @@ sub get_data {
 # for compatibility
 #####################################
 
-=begin run($server, %options)
+=item run($server, %options)
 
 Run the task on $server.
 

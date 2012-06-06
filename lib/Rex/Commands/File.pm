@@ -185,14 +185,17 @@ sub file {
    my ($file, @options) = @_;
    my $option = { @options };
 
+   my $need_md5 = ($option->{"on_change"} ? 1 : 0);
    my $on_change = $option->{"on_change"} || sub {};
 
    my $fs = Rex::Interface::Fs->create;
 
    my ($new_md5, $old_md5);
-   eval {
-      $old_md5 = md5($file);
-   };
+   if($need_md5) {
+      eval {
+         $old_md5 = md5($file);
+      };
+   }
 
    if(exists $option->{"content"}) {
 
@@ -217,9 +220,11 @@ sub file {
       upload $option->{"source"}, "$file";
    }
 
-   eval {
-      $new_md5 = md5($file);
-   };
+   if($need_md5) {
+      eval {
+         $new_md5 = md5($file);
+      };
+   }
 
    if(exists $option->{"mode"}) {
       $fs->chmod($option->{"mode"}, $file);
@@ -233,15 +238,17 @@ sub file {
       $fs->chown($option->{"owner"}, $file);
    }
 
-   unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
-      $old_md5 ||= "";
-      $new_md5 ||= "";
+   if($need_md5) {
+      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+         $old_md5 ||= "";
+         $new_md5 ||= "";
 
-      Rex::Logger::debug("File $file has been changed... Running on_change");
-      Rex::Logger::debug("old: $old_md5");
-      Rex::Logger::debug("new: $new_md5");
+         Rex::Logger::debug("File $file has been changed... Running on_change");
+         Rex::Logger::debug("old: $old_md5");
+         Rex::Logger::debug("new: $new_md5");
 
-      &$on_change($file);
+         &$on_change($file);
+      }
    }
 }
 

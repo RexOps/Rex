@@ -166,7 +166,7 @@ sub run {
 
    my @all_server = @{ $task->server };
 
-   my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
+   my $fm = Rex::Fork::Manager->new(max => $task->parallelism || Rex::Config->get_parallelism);
 
    for my $server (@all_server) {
 

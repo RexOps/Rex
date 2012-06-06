@@ -47,6 +47,10 @@ sub create_user {
       $cmd = "usermod ";
    }
 
+   if(exists $data->{non_uniq}) { 
+      $cmd .= " -o ";
+   }
+
    if(exists $data->{uid}) {
       $cmd .= " --uid " . $data->{uid};
    }

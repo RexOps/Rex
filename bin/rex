@@ -11,7 +11,9 @@ use strict;
 use warnings;
 
 use FindBin;
+use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);
+use Cwd qw(getcwd);
 
 use Rex;
 use Rex::Config;
@@ -275,7 +277,38 @@ elsif(-f $::rexfile) {
    }
 
    eval {
-      do($::rexfile);
+      my $ok = do($::rexfile);
+      if(! $ok) {
+         Rex::Logger::info("There seems to be an error on some of your required files.", "error");
+         my @dir = (dirname($::rexfile));
+         for my $d (@dir) {
+            opendir(my $dh, $d) or die($!);
+            while(my $entry = readdir($dh)) {
+               if($entry =~ m/^\./) {
+                  next;
+               }
+
+               if(-d "$d/$entry") {
+                  push(@dir, "$d/$entry");
+                  next;
+               }
+
+               if($entry =~ m/Rexfile/ || $entry =~ m/\.pm$/) {
+                  # check files for syntax errors
+                  my $check_out = qx{PERL5LIB=lib:\$PERL5LIB $^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
+                  if($? > 0) {
+                     print "$d/$entry\n";
+                     print "--------------------------------------------------------------------------------\n";
+                     print $check_out;
+                     print "\n";
+                  }
+               }
+            }
+            closedir($dh);
+         }
+
+         exit 1;
+      }
    };
 
    if($@) { print $@ . "\n"; exit 1; }

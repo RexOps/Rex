@@ -144,11 +144,13 @@ sub get_timeout {
 
 sub set_password_auth {
    my $class = shift;
+   $key_auth = 0;
    $password_auth = shift || 1;
 }
 
 sub set_key_auth {
    my $class = shift;
+   $password_auth = 0;
    $key_auth = shift || 1;
 }
 
@@ -435,7 +437,7 @@ __PACKAGE__->register_config_handler(base => sub {
    }
 });
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;

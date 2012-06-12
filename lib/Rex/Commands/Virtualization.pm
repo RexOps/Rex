@@ -18,6 +18,14 @@ use Rex::Config;
 
 @EXPORT = qw(vm);
 
+Rex::Config->register_config_handler(virtualization => sub {
+   my ($param) = @_;
+
+   if(exists $param->{type}) {
+      Rex::Config->set(virtualization => $param->{type});
+   }
+});
+
 sub vm {
    my ($action, $vmname, %opt) = @_;
 

@@ -153,4 +153,23 @@ sub glob {
    return @{$tmp};
 }
 
+sub upload {
+   my ($self, $source, $target) = @_;
+
+   my $ssh = Rex::is_ssh();
+   unless($ssh->scp_put($source, $target)) {
+      Rex::Logger::debug("upload: $target is not writable");
+      die("upload: $target is not writable.");
+   }
+}
+
+sub download {
+   my ($self, $source, $target) = @_;
+
+   my $ssh = Rex::is_ssh();
+   if(!$ssh->scp_get($source, $target)) {
+      die($ssh->error);
+   }
+}
+
 1;

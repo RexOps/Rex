@@ -22,6 +22,16 @@ sub new {
    return $self;
 }
 
+sub upload {
+   my ($self, $source, $target) = @_;
+   $self->cp($source, $target);
+}
+
+sub download {
+   my ($self, $source, $target) = @_;
+   $self->cp($source, $target);
+}
+
 sub ls {
    my ($self, $path) = @_;
 

@@ -421,7 +421,7 @@ sub delete_lines_matching {
 Append $new_line to $file if none in @regexp is found.
 
  task "add-group", sub {
-    append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2";
+    append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2", on_change => sub { service sshd => "restart"; };
  };
 
 =cut
@@ -442,13 +442,20 @@ sub append_if_no_such_line {
 
    my $nl = $/;
    my @content = split(/$nl/, cat ($file));
+   my $i;
+   my $on_change = sub {};
 
    for my $line (@content) {
+      $i = 0;
       for my $match (@m) {
+         $i++;
          if(! ref($match) eq "Regexp") {
             $match = qr{$match};
          }
-
+         if ( $match eq "on_change" && ref($m[$i]) eq "CODE" ) {
+             $on_change = $m[$i];
+             next;
+         }
          if($line =~ $match) {
             return 0;
          }
@@ -463,6 +470,7 @@ sub append_if_no_such_line {
    $fh->write(join($nl, @content));
    $fh->close;
 
+   &$on_change();
 }
 
 =item extract($file [, %options])

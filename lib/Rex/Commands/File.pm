@@ -536,6 +536,11 @@ sub extract {
    if($option{group}) {
       $fs->chgrp($option{group}, $to, recursive => 1);
    }
+
+   if($option{mode}) {
+      $fs->chmod($option{mode}, $to, recursive => 1);
+   }
+
 }
 
 =item sed($search, $replace, $file)

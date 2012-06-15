@@ -78,7 +78,7 @@ sub download {
    if(my $ssh = Rex::is_ssh()) {
       $self->_exec("cp $source $rnd_file");
       $ssh->scp_get($rnd_file, $target);
-      $self->rm($rnd_file);
+      $self->unlink($rnd_file);
    }
    else {
       $self->cp($source, $target);

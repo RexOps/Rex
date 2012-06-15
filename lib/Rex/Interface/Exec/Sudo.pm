@@ -38,7 +38,7 @@ sub exec {
    }
 
    my $sudo_password = Rex::Config->get_sudo_password;
-   return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd' 2>&1");
+   return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
 }
 
 1;

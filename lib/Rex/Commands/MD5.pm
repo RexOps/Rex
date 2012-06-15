@@ -86,6 +86,7 @@ sub md5 {
       Rex::Interface::Fs->create->unlink($rnd_file);
 
       Rex::Logger::debug("MD5SUM ($file): $md5");
+      $md5 =~ s/[\r\n]//gms;
       return $md5;
    
    }

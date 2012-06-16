@@ -15,6 +15,9 @@ use Rex::Commands::Fs;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
+use Rex::User::Linux;
+
+use base qw(Rex::User::Linux);
 
 sub new {
    my $that = shift;

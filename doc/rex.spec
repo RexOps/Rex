@@ -5,16 +5,17 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.29.0
+Version: 0.30.0
 Release: 1
 License: Apache 2.0
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.29.0.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.30.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
 BuildRequires: perl >= 5.8.0
 BuildRequires: perl(ExtUtils::MakeMaker)
+Requires: libssh2 >= 1.2.8
 Requires: perl-Net-SSH2
 Requires: perl-Expect
 Requires: perl-DBI
@@ -57,6 +58,17 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sun Jun 17 2012 Jan Gehring <jan.gehring at, gmail.com> 0.30.0-1
+- rex -T now show the server groups as well
+- new option "type" for the extract function - Sven Dowideit
+- Added user_list and user_groups - Jean Charles Passard
+- fixed the problem with pass_auth and rsync (#30)
+- Better Error Messages for compile failures in modules
+- Added support for task specific parallelism
+- fixed upload and download to work in sudo environments
+- add mode to extract function
+- Added the on_change support to the append_if_no_such_line - Samuele Tognini
 
 * Fri May 25 2012 Jan Gehring <jan.gehring at, gmail.com> 0.29.0-1
 - Fixed wrong error message in LibVirt/create.pm - Sven Dowideit

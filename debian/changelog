@@ -1,3 +1,16 @@
+rex (0.30.0) unstable; urgency=low
+  * rex -T now show the server groups as well
+  * new option "type" for the extract function - Sven Dowideit
+  * Added user_list and user_groups - Jean Charles Passard
+  * fixed the problem with pass_auth and rsync (#30)
+  * Better Error Messages for compile failures in modules
+  * Added support for task specific parallelism
+  * fixed upload and download to work in sudo environments
+  * add mode to extract function
+  * Added the on_change support to the append_if_no_such_line - Samuele Tognini
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 17 Jun 2012 12:15:00 +0200
+
 rex (0.29.0) unstable; urgency=low
   * Fixed wrong error message in LibVirt/create.pm - Sven Dowideit
   * Added dumpxml command (LibVirt) - Sven Dowideit

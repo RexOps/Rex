@@ -482,9 +482,13 @@ This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar
       owner => "root",
       group => "root",
       to    => "/etc";
+
+    extract "/tmp/foo.tgz",
+      type => "tgz",
+      mode => "g+rwX";
  };
  
- can use the type=> option if the file suffix has been changed. (types as per https://metacpan.org/module/Archive::Extract)
+Can use the type=> option if the file suffix has been changed. (types are tgz, tbz, zip, gz, bz2)
 
 =cut
 sub extract {

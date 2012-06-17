@@ -188,6 +188,13 @@ sub user_groups {
       use strict;
    }
 
+   my $wantarray = wantarray();
+
+   if(defined $wantarray && ! $wantarray) {
+      # arrayref
+      return $data;
+   }
+
    return @{ $data };
 }
 

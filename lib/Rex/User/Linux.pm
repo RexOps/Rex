@@ -187,7 +187,8 @@ sub user_groups {
       $data = eval $data_str;
       use strict;
    }
-   return $data->[0];
+
+   return @{ $data };
 }
 
 sub user_list {

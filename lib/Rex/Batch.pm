@@ -42,7 +42,7 @@ sub get_desc {
 
 sub get_batchs {
    my $class = shift;
-   return sort { $a cmp $b } keys %batchs;
+   my @a = sort { $a cmp $b } keys %batchs;
 }
 
 sub is_batch {

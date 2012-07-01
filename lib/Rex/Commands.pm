@@ -101,6 +101,7 @@ require Rex::Exporter;
 use Rex::TaskList;
 use Rex::Logger;
 use Rex::Config;
+use Rex;
 
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks);
 use base qw(Rex::Exporter);
@@ -201,6 +202,13 @@ sub task {
    my($class, $file, @tmp) = caller;
    my @_ARGS = @_;
 
+   if(! @_) {
+      if(my $t = Rex::get_current_connection) {
+         return $t->{task};
+      }
+      return;
+   }
+
    # for things like
    # no_ssh task ...
    if(wantarray) {
@@ -278,7 +286,6 @@ sub task {
 
    $options->{'dont_register'} = $dont_register_tasks;
    Rex::TaskList->create_task($task_name, @_, $options);
-
 }
 
 =item desc($description)

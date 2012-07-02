@@ -30,13 +30,21 @@ sub exec {
 
    $cmd = "LC_ALL=C $path " . $cmd;
 
-   my ($out, $err) = connection->exec($cmd);
+   my $resp = connection->post("/execute", {exec => $cmd});
 
-   Rex::Logger::debug($out);
+   if($resp->{ok}) {
+      $? = $resp->{retval};
+      my ($out, $err) =  ($resp->{output}, "");
 
-   if(wantarray) { return ($out, $err); }
+      if(wantarray) { return ($out, $err); }
 
-   return $out;
+      Rex::Logger::debug($out);
+      return $out;
+   }
+   else {
+      $? = 1;
+   }
+
 }
 
 1;

@@ -9,6 +9,7 @@ package Rex::Interface::File::HTTP;
 use strict;
 use warnings;
 
+use Data::Dumper;
 use MIME::Base64;
 use Rex::Commands;
 use Rex::Interface::Fs;
@@ -30,6 +31,14 @@ sub open {
 
    $self->{__file} = $file;
    $self->{__current_pos} = 0;
+
+   if($mode eq ">>") {
+      my $fs = Rex::Interface::Fs->create;
+      eval {
+         my %stat = $fs->stat($file);
+         $self->{__current_pos} = $stat{size};
+      };
+   }
 
    Rex::Logger::debug("Opening $file with mode: $mode");
    my $resp = connection->post("/file/open", {path => $file, mode => $mode});

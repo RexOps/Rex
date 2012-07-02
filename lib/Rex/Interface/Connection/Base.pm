@@ -28,6 +28,7 @@ sub disconnect { die("Must be implemented by Interface Class"); };
 sub get_connection_object { die("Must be implemented by Interface Class"); };
 sub is_connected { die("Must be implemented by Interface Class"); };
 sub is_authenticated { die("Must be implemented by Interface Class"); };
+sub get_connection_type { die("Must be implemented by Interface Class") };
 
 sub get_fs_connection_object {
    my ($self) = @_;

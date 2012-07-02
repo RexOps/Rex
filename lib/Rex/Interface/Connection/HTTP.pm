@@ -75,16 +75,6 @@ sub is_authenticated { return 1; };
 
 sub exec {
    my ($self, $cmd) = @_;
-   my $resp = $self->post("/execute", {exec => $cmd});
-
-   if($resp->{ok}) {
-      $? = 0;
-      return ($resp->{output}, "");
-   }
-   else {
-      $? = 1;
-   }
-
 }
 
 sub ua { shift->{ua}; }
@@ -138,5 +128,6 @@ sub get {
 
 }
 
+sub get_connection_type { return "HTTP"; }
 
 1;

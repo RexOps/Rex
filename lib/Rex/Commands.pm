@@ -730,8 +730,19 @@ With the LOCAL function you can do local commands within a task that is defined 
 
 sub LOCAL (&) {
    my $cur_conn = Rex::get_current_connection();
-   Rex::push_connection({ssh => 0, server => $cur_conn->{"server"}});
+   my $local_connect = Rex::Interface::Connection->create("Local");
+
+   Rex::push_connection({
+         conn   => $local_connect,
+         ssh    => 0,
+         server => $cur_conn->{server}, 
+         cache => Rex::Cache->new(),
+         task  => task(),
+   });
+
+
    $_[0]->();
+
    Rex::pop_connection();
 }
 

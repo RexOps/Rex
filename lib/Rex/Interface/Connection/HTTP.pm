@@ -40,6 +40,11 @@ sub connect {
    $self->{server} = $server;
    $self->{port} = $port;
 
+   if($server =~ m/([^:]+):(\d+)/) {
+      $server = $self->{server} = $1;
+      $port   = $self->{port}   = $2;
+   }
+
    if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $server) ) {
       $user = Rex::Config->get_ssh_config_username(server => $server);
    }

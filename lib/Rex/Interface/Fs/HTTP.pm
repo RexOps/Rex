@@ -28,6 +28,11 @@ sub new {
 
 sub ls {
    my ($self, $path) = @_;
+
+   my $resp = connection->post("/fs/ls", {path => $path});
+   if($resp->{ok}) {
+      return @{ $resp->{ls} };
+   }
 }
 
 sub is_dir {

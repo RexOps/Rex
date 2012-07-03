@@ -45,15 +45,21 @@ sub connect {
       $port   = $self->{port}   = $2;
    }
 
+   $self->{__user} = $user;
+   $self->{__pass} = $pass;
+
    if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $server) ) {
       $user = Rex::Config->get_ssh_config_username(server => $server);
    }
 
    $self->{ua} = LWP::UserAgent->new;
-   my $resp = $self->post("/login", {
-      user => $user,
-      password => $pass,
-   });
+   $self->ua->credentials(
+      "$server:$port",
+      "Rex::Endpoint::HTTP",
+      $user => $pass,
+   );
+
+   my $resp = $self->post("/login");
    if($resp->{ok}) {
       Rex::Logger::info("Connected to $server, trying to authenticate.");
    }
@@ -98,6 +104,7 @@ sub post {
    my ($self, $service, $data, $header) = @_;
 
    $header ||= {};
+   $data ||= {};
 
    if(! ref($data)) {
       die("Invalid 2nd argument. must be arrayRef or hashRef!\npost(\$service, \$ref)");

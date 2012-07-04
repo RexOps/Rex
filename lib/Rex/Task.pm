@@ -341,6 +341,8 @@ sub user {
    if(exists $self->{auth} && $self->{auth}->{user}) {
       return $self->{auth}->{user};
    }
+   #use the current shell's username (not sudo's)
+   return getlogin || getpwuid($<) || "Kilroy";
 }
 
 =item set_user($user)

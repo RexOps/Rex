@@ -185,14 +185,17 @@ sub file {
    my ($file, @options) = @_;
    my $option = { @options };
 
+   my $need_md5 = ($option->{"on_change"} ? 1 : 0);
    my $on_change = $option->{"on_change"} || sub {};
 
    my $fs = Rex::Interface::Fs->create;
 
    my ($new_md5, $old_md5);
-   eval {
-      $old_md5 = md5($file);
-   };
+   if($need_md5) {
+      eval {
+         $old_md5 = md5($file);
+      };
+   }
 
    if(exists $option->{"content"}) {
 
@@ -217,9 +220,11 @@ sub file {
       upload $option->{"source"}, "$file";
    }
 
-   eval {
-      $new_md5 = md5($file);
-   };
+   if($need_md5) {
+      eval {
+         $new_md5 = md5($file);
+      };
+   }
 
    if(exists $option->{"mode"}) {
       $fs->chmod($option->{"mode"}, $file);
@@ -233,15 +238,17 @@ sub file {
       $fs->chown($option->{"owner"}, $file);
    }
 
-   unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
-      $old_md5 ||= "";
-      $new_md5 ||= "";
+   if($need_md5) {
+      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+         $old_md5 ||= "";
+         $new_md5 ||= "";
 
-      Rex::Logger::debug("File $file has been changed... Running on_change");
-      Rex::Logger::debug("old: $old_md5");
-      Rex::Logger::debug("new: $new_md5");
+         Rex::Logger::debug("File $file has been changed... Running on_change");
+         Rex::Logger::debug("old: $old_md5");
+         Rex::Logger::debug("new: $new_md5");
 
-      &$on_change($file);
+         &$on_change($file);
+      }
    }
 }
 
@@ -414,7 +421,7 @@ sub delete_lines_matching {
 Append $new_line to $file if none in @regexp is found.
 
  task "add-group", sub {
-    append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2";
+    append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2", on_change => sub { service sshd => "restart"; };
  };
 
 =cut
@@ -435,13 +442,20 @@ sub append_if_no_such_line {
 
    my $nl = $/;
    my @content = split(/$nl/, cat ($file));
+   my $i;
+   my $on_change = sub {};
 
    for my $line (@content) {
+      $i = 0;
       for my $match (@m) {
+         $i++;
          if(! ref($match) eq "Regexp") {
             $match = qr{$match};
          }
-
+         if ( $match eq "on_change" && ref($m[$i]) eq "CODE" ) {
+             $on_change = $m[$i];
+             next;
+         }
          if($line =~ $match) {
             return 0;
          }
@@ -456,6 +470,7 @@ sub append_if_no_such_line {
    $fh->write(join($nl, @content));
    $fh->close;
 
+   &$on_change();
 }
 
 =item extract($file [, %options])
@@ -467,9 +482,13 @@ This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar
       owner => "root",
       group => "root",
       to    => "/etc";
+
+    extract "/tmp/foo.tgz",
+      type => "tgz",
+      mode => "g+rwX";
  };
  
- can use the type=> option if the file suffix has been changed. (types as per https://metacpan.org/module/Archive::Extract)
+Can use the type=> option if the file suffix has been changed. (types are tgz, tbz, zip, gz, bz2)
 
 =cut
 sub extract {
@@ -529,6 +548,11 @@ sub extract {
    if($option{group}) {
       $fs->chgrp($option{group}, $to, recursive => 1);
    }
+
+   if($option{mode}) {
+      $fs->chmod($option{mode}, $to, recursive => 1);
+   }
+
 }
 
 =item sed($search, $replace, $file)

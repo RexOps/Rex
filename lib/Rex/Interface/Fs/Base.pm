@@ -32,6 +32,9 @@ sub is_file     { die("Must be implemented by Interface Class"); }
 sub is_dir      { die("Must be implemented by Interface Class"); }
 sub is_readable { die("Must be implemented by Interface Class"); }
 sub is_writable { die("Must be implemented by Interface Class"); }
+sub upload { die("Must be implemented by Interface Class"); }
+sub download { die("Must be implemented by Interface Class"); }
+
 
 sub ln {
    my ($self, $from, $to) = @_;

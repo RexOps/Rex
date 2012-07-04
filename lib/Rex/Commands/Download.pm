@@ -67,6 +67,7 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 use Rex::Commands::Fs;
+use Rex::Interface::Fs;
 use File::Basename qw(basename);
 
 @EXPORT = qw(download);
@@ -101,6 +102,9 @@ sub _sftp_download {
    my $remote = shift;
    my $local = shift;
 
+
+   my $fs = Rex::Interface::Fs->create;
+
    Rex::Logger::debug("Downloading via SFTP");
    unless($local) {
       $local = basename($remote);
@@ -117,22 +121,11 @@ sub _sftp_download {
       die("$remote is not readable.");
    }
 
-   if(my $ssh = Rex::is_ssh()) {
-      if(-d $local) {
-         $local = $local . '/' . basename($remote);
-      }
-      Rex::Logger::debug("Downloading $remote -> $local");
-
-      if(!$ssh->scp_get($remote, $local)) {
-         die($ssh->error);
-      }
-   } else {
-      Rex::Logger::debug("Copying $remote -> $local");
-      system("cp $remote $local >/dev/null 2>&1");
-      if($? > 0) {
-         die("Error copying file $remote to $local");
-      }
+   if(-d $local) {
+      $local = $local . '/' . basename($remote);
    }
+
+   $fs->download($remote, $local);
 
 }
 

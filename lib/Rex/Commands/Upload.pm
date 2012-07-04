@@ -33,6 +33,7 @@ require Rex::Exporter;
 use File::Basename qw(basename);
 use Rex::Config;
 use Rex::Commands::Fs;
+use Rex::Interface::Fs;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -52,6 +53,9 @@ Perform an upload. If $remote is a directory the file will be uploaded to that d
 sub upload {
    my $local = shift;
    my $remote = shift;
+
+
+   my $fs = Rex::Interface::Fs->create;
 
    # if remote not set, use name of local.
    # must be done before the next line.
@@ -75,26 +79,10 @@ sub upload {
       die("File $local not found.");
    }
 
-   if(my $ssh = Rex::is_ssh()) {
-      Rex::Logger::info("Uploading $local -> $remote");
-      if(is_dir($remote)) {
-         $remote = $remote . '/' . basename($local);
-      }
-
-      unless($ssh->scp_put($local, $remote)) {
-         Rex::Logger::debug("upload: $remote is not writable");
-         die("upload: $remote is not writable.");
-      }
-   } else {
-      if(-d $remote) {
-         $remote = $remote . '/' . basename($remote);
-      }
-      system("cp $local $remote");
-      if($? != 0) {
-         Rex::Logger::debug("upload: $remote is not writable");
-         die("upload: $remote is not writable.");
-      }
+   if(is_dir($remote)) {
+      $remote = $remote . '/' . basename($local);
    }
+   $fs->upload($local, $remote);
 }
 
 =back

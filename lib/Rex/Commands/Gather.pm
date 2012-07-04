@@ -41,7 +41,7 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system_version
-               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian
+               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia
                get_system_information);
 
 =item get_operating_system
@@ -231,6 +231,24 @@ sub is_suse {
       return 1;
    }
 }
+
+=item is_mageia
+
+ task "foo", "server1", sub {
+    if(is_mageia) {
+       # do something on a mageia system
+    }
+ };
+
+=cut
+sub is_mageia {
+   my $os = get_operating_system();
+
+   if($os =~ m/mageia/i) {
+      return 1;
+   }
+}
+
 
 =item is_debian
 

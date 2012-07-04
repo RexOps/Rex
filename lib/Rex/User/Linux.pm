@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::User::Linux;
 
 use strict;
@@ -47,6 +47,10 @@ sub create_user {
       $cmd = "usermod ";
    }
 
+   if(exists $data->{non_uniq}) { 
+      $cmd .= " -o ";
+   }
+
    if(exists $data->{uid}) {
       $cmd .= " --uid " . $data->{uid};
    }
@@ -77,7 +81,7 @@ sub create_user {
          $cmd .= " --groups " . join(",", @groups);
       }
    }
- 
+
    my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
@@ -160,6 +164,67 @@ sub get_uid {
    return $data{uid};
 }
 
+sub user_groups {
+   my ($self, $user) = @_;
+
+   Rex::Logger::debug("Getting group membership of $user");
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $fh = Rex::Interface::File->create;
+   $fh->open(">", $rnd_file);
+   $fh->write(q|use Data::Dumper; print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx/groups $ARGV[0]/ ];|);
+   $fh->close;
+
+   my $data_str = run "perl $rnd_file $user";
+   if($? != 0) {
+      die("Error getting  user list");
+   }
+
+   Rex::Interface::Fs->create()->unlink($rnd_file);
+
+   my $data;
+   {
+      no strict;
+      $data = eval $data_str;
+      use strict;
+   }
+
+   my $wantarray = wantarray();
+
+   if(defined $wantarray && ! $wantarray) {
+      # arrayref
+      return $data;
+   }
+
+   return @{ $data };
+}
+
+sub user_list {
+   my $self = shift;
+
+   Rex::Logger::debug("Getting user list");
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $fh = Rex::Interface::File->create;
+   $fh->open(">", $rnd_file);
+   $fh->write(q|use Data::Dumper; print Dumper [ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx/getent passwd/ ];|);
+   $fh->close;
+
+   my $data_str = run "perl $rnd_file";
+   if($? != 0) {
+      die("Error getting  user list");
+   }
+
+   Rex::Interface::Fs->create()->unlink($rnd_file);
+
+   my $data;
+   {
+      no strict;
+      $data = eval $data_str;
+      use strict;
+   }
+
+   return @$data;
+}
+
 sub get_user {
    my ($self, $user) = @_;
 
@@ -184,7 +249,7 @@ sub get_user {
       use strict;
    }
 
-   return ( 
+   return (
       name => $data->[0],
       password => $data->[1],
       uid => $data->[2],
@@ -210,7 +275,7 @@ sub create_group {
       Rex::Logger::debug("Group $group already exists. Updating...");
       $cmd = "groupmod ";
    }
-   
+
    if(exists $data->{gid}) {
       $cmd .= " -g " . $data->{gid};
    }

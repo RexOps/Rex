@@ -55,6 +55,37 @@ sub ls {
    return @{$tmp};
 }
 
+sub upload {
+   my ($self, $source, $target) = @_;
+
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+
+   if(my $ssh = Rex::is_ssh()) {
+      $ssh->scp_put($source, $rnd_file);
+      $self->_exec("mv $rnd_file $target");
+   }
+   else {
+      $self->cp($source, $target);
+   }
+
+}
+
+sub download {
+   my ($self, $source, $target) = @_;
+
+   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+
+   if(my $ssh = Rex::is_ssh()) {
+      $self->_exec("cp $source $rnd_file");
+      $ssh->scp_get($rnd_file, $target);
+      $self->unlink($rnd_file);
+   }
+   else {
+      $self->cp($source, $target);
+   }
+
+}
+
 sub is_dir {
    my ($self, $path) = @_;
 

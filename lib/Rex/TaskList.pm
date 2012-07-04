@@ -106,6 +106,7 @@ sub create_task {
       around => [],
       name => $task_name,
       executor => Rex::Interface::Executor->create,
+      connection_type => Rex::Config->get_connection_type,
    );
 
 }
@@ -166,7 +167,7 @@ sub run {
 
    my @all_server = @{ $task->server };
 
-   my $fm = Rex::Fork::Manager->new(max => Rex::Config->get_parallelism);
+   my $fm = Rex::Fork::Manager->new(max => $task->parallelism || Rex::Config->get_parallelism);
 
    for my $server (@all_server) {
 

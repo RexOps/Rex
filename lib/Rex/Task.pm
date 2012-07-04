@@ -247,6 +247,17 @@ sub is_local {
    return $self->is_remote() == 0 ? 1 : 0;
 }
 
+=item is_http
+
+Returns true (1) if the task gets executed over http protocol.
+
+=cut
+
+sub is_http {
+   my ($self) = @_;
+   return ($self->{"connection_type"} && lc($self->{"connection_type"}) eq "http");
+}
+
 =item want_connect
 
 Returns true (1) if the task will establish a connection to a remote system.
@@ -273,7 +284,10 @@ Fake - will not create any connections. But it populates the connection properti
 sub get_connection_type {
    my ($self) = @_;
 
-   if($self->is_remote && $self->want_connect) {
+   if($self->is_http) {
+      return "HTTP";
+   }
+   elsif($self->is_remote && $self->want_connect) {
       return "SSH";
    }
    elsif($self->is_remote) {
@@ -417,6 +431,27 @@ sub set_auth {
    $self->{auth}->{$key} = $value;
 }
 
+=item parallelism
+
+Get the parallelism count of a task.
+
+=cut
+sub parallelism {
+   my ($self) = @_;
+   return $self->{parallelism};
+}
+
+
+=item set_parallelism($count)
+
+Set the parallelism of the task.
+
+=cut
+sub set_parallelism {
+   my ($self, $para) = @_;
+   $self->{parallelism} = $para;
+}
+
 =item connect($server)
 
 Initiate the connection to $server.
@@ -451,6 +486,7 @@ sub connect {
          ssh    => $self->connection->get_connection_object, 
          server => $server, 
          cache => Rex::Cache->new(),
+         task  => $self,
    });
 
    $self->run_hook(\$server, "around");
@@ -489,6 +525,7 @@ sub get_data {
       around => $self->{around},
       name => $self->{name},
       executor => $self->{executor},
+      connection_type => $self->{connection_type},
    };
 }
 
@@ -497,7 +534,7 @@ sub get_data {
 # for compatibility
 #####################################
 
-=begin run($server, %options)
+=item run($server, %options)
 
 Run the task on $server.
 

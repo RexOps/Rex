@@ -133,6 +133,7 @@ sub install {
       Rex::Logger::debug("See http://rexify.org/api/Rex/Commands/File.pm for more information.");
    
       my $source    = $option->{"source"};
+      my $need_md5  = ($option->{"on_change"} ? 1 : 0);
       my $on_change = $option->{"on_change"} || sub {};
 
       my ($new_md5, $old_md5) = ("", "");
@@ -149,41 +150,51 @@ sub install {
          my %merge2 = Rex::Hardware->get(qw/ All /);
          my %template_vars = (%merge1, %merge2);
 
-         eval {
-            $old_md5 = md5($package);
-         };
+         if($need_md5) {
+            eval {
+               $old_md5 = md5($package);
+            };
+         }
 
          my $fh = file_write($package);
          $fh->write($template->parse($content, \%template_vars));
          $fh->close;
 
-         eval {
-            $new_md5 = md5($package);
-         };
+         if($need_md5) {
+            eval {
+               $new_md5 = md5($package);
+            };
+         }
 
       }
       else {
          
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
-         eval {
-            $old_md5 = md5($package);
-            chomp $old_md5;
-         };
-         my $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
-
-         unless($local_md5 eq $old_md5) {
-            Rex::Logger::debug("MD5 is different $local_md5 -> $old_md5 (uploading)");
+         my $local_md5 = "";
+         if($option->{force}) {
             upload $source, $package;
          }
          else {
-            Rex::Logger::debug("MD5 is equal. Not uploading $source -> $package");
+            eval {
+               $old_md5 = md5($package);
+               chomp $old_md5;
+            };
+
+            $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
+
+            unless($local_md5 eq $old_md5) {
+               Rex::Logger::debug("MD5 is different $local_md5 -> $old_md5 (uploading)");
+               upload $source, $package;
+            }
+            else {
+               Rex::Logger::debug("MD5 is equal. Not uploading $source -> $package");
+            }
+
+            eval {
+               $new_md5 = md5($package);
+            };
          }
-
-         eval {
-            $new_md5 = md5($package);
-         };
-
       }
 
       if(exists $option->{"owner"}) {
@@ -198,15 +209,17 @@ sub install {
          chmod $option->{"mode"}, $package;
       }
 
-      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
-         $old_md5 ||= "";
-         $new_md5 ||= "";
+      if($need_md5) {
+         unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+            $old_md5 ||= "";
+            $new_md5 ||= "";
 
-         Rex::Logger::debug("File $package has been changed... Running on_change");
-         Rex::Logger::debug("old: $old_md5");
-         Rex::Logger::debug("new: $new_md5");
+            Rex::Logger::debug("File $package has been changed... Running on_change");
+            Rex::Logger::debug("old: $old_md5");
+            Rex::Logger::debug("new: $new_md5");
 
-         &$on_change;
+            &$on_change;
+         }
       }
    
    }

@@ -59,10 +59,11 @@ sub DESTROY {
    });
 
    print $s;
-
-   open(my $fh, ">", "junit_output.xml") or die($!);
-   print $fh $s;
-   close($fh);
+   if($s) {
+      open(my $fh, ">", "junit_output.xml") or die($!);
+      print $fh $s;
+      close($fh);
+   }
 }
 
 1;

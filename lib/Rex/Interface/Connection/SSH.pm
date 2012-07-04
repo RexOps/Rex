@@ -84,15 +84,18 @@ sub connect {
    $self->{connected} = 1;
 
    if(Rex::Config->get_password_auth) {
+      Rex::Logger::debug("Using password authentication.");
       $self->{auth_ret} = $self->{ssh}->auth_password($user, $pass);
    }
    elsif(Rex::Config->get_key_auth) {
-      $self->{auth_ret} = $self->{ssh}->auth_publickey($user, 
-                              $public_key, 
-                              $private_key, 
+      Rex::Logger::debug("Using key authentication.");
+      $self->{auth_ret} = $self->{ssh}->auth_publickey($user,
+                              $public_key,
+                              $private_key,
                               $pass);
    }
    else {
+      Rex::Logger::debug("Trying to guess the authentication method.");
       $self->{auth_ret} = $self->{ssh}->auth(
                              'username' => $user,
                              'password' => $pass,
@@ -132,5 +135,7 @@ sub is_authenticated {
    my ($self) = @_;
    return $self->{auth_ret};
 }
+
+sub get_connection_type { return "SSH"; }
 
 1;

@@ -11,7 +11,9 @@ use strict;
 use warnings;
 
 use FindBin;
+use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);
+use Cwd qw(getcwd);
 
 use Rex;
 use Rex::Config;
@@ -118,7 +120,7 @@ if($opts{'f'}) {
    Rex::Logger::debug("Using Rexfile: " . $opts{'f'});
    $::rexfile = $opts{'f'};
 } else {
-   if ((! -e $::rexfile) && ($ARGV[0] =~ /:/)) {
+   if ((! -e $::rexfile) && ($ARGV[0] && $ARGV[0] =~ /:/)) {
       #if there is no Rexfile, and the user asks for a longer path task, see if we can use it as the Rexfile
       #eg: rex -H $host Misc:Example:prepare --bar=baz
       $::rexfile = $ARGV[0];
@@ -226,7 +228,7 @@ elsif(-f $::rexfile) {
          {
             Rex::Logger::info("Found stale lock file. Removing it.");
             Rex::global_sudo(0);
-            unlink("$::rexfile.lock");
+            CORE::unlink("$::rexfile.lock");
          }
       }
       
@@ -267,15 +269,46 @@ elsif(-f $::rexfile) {
    }
 
    if(-f "vars.db") {
-      unlink("vars.db");
+      CORE::unlink("vars.db");
    }
 
    if(-f "vars.db.lock") {
-      unlink("vars.db.lock");
+      CORE::unlink("vars.db.lock");
    }
 
    eval {
-      do($::rexfile);
+      my $ok = do($::rexfile);
+      if(! $ok) {
+         Rex::Logger::info("There seems to be an error on some of your required files.", "error");
+         my @dir = (dirname($::rexfile));
+         for my $d (@dir) {
+            opendir(my $dh, $d) or die($!);
+            while(my $entry = readdir($dh)) {
+               if($entry =~ m/^\./) {
+                  next;
+               }
+
+               if(-d "$d/$entry") {
+                  push(@dir, "$d/$entry");
+                  next;
+               }
+
+               if($entry =~ m/Rexfile/ || $entry =~ m/\.pm$/) {
+                  # check files for syntax errors
+                  my $check_out = qx{PERL5LIB=lib:\$PERL5LIB $^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
+                  if($? > 0) {
+                     print "$d/$entry\n";
+                     print "--------------------------------------------------------------------------------\n";
+                     print $check_out;
+                     print "\n";
+                  }
+               }
+            }
+            closedir($dh);
+         }
+
+         exit 1;
+      }
    };
 
    if($@) { print $@ . "\n"; exit 1; }
@@ -337,19 +370,25 @@ if($opts{'T'}) {
           _print_color("      Servers: " . join(", ", @{ Rex::TaskList->get_task($task)->{'server'} }) . "\n");
       }
    }
-   _print_color("Batches\n", 'yellow');
+   _print_color("Batches\n", 'yellow') if(Rex::Batch->get_batchs);
    for my $batch (Rex::Batch->get_batchs) {
       printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
       if($opts{'v'}) {
           _print_color("      " . join(" ", Rex::Batch->get_batch($batch)) . "\n");
       }
    }
-   _print_color("Environments\n", "yellow");
+   _print_color("Environments\n", "yellow") if(Rex::Commands->get_environments);
    print "  " . join("\n  ", Rex::Commands->get_environments()) . "\n";
+
+   my %groups = Rex::Group->get_groups;
+   _print_color("Server Groups\n", "yellow") if(keys %groups);
+   for my $group (keys %groups) {
+      printf "  %-30s %s\n", $group, join(", ", @{ $groups{$group} });
+   }
 
    Rex::global_sudo(0);
    Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
-   unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+   CORE::unlink("$::rexfile.lock")               if(! exists $opts{'F'});
    CORE::exit 0;
 }
 
@@ -379,15 +418,15 @@ if($@) {
 # lock loeschen
 Rex::global_sudo(0);
 Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
-unlink("$::rexfile.lock")               if(! exists $opts{'F'});
+CORE::unlink("$::rexfile.lock")               if(! exists $opts{'F'});
 
 # delete shared variable db
 if(-f "vars.db") {
-   unlink("vars.db");
+   CORE::unlink("vars.db");
 }
 
 if(-f "vars.db.lock") {
-   unlink("vars.db.lock");
+   CORE::unlink("vars.db.lock");
 }
 
 

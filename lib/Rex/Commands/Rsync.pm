@@ -116,7 +116,7 @@ sub sync {
    my @expect_options = ();
 
    if(Rex::Config->get_password_auth) {
-      $cmd = sprintf($cmd, 'ssh');
+      $cmd = sprintf($cmd, 'ssh -o StrictHostKeyChecking=no ');
       push(@expect_options, [
                               qr{Are you sure you want to continue connecting},
                               sub {
@@ -139,7 +139,7 @@ sub sync {
       );
    }
    else {
-      $cmd = sprintf($cmd, 'ssh -i ' . Rex::Config->get_private_key);
+      $cmd = sprintf($cmd, 'ssh -i ' . Rex::Config->get_private_key . " -o StrictHostKeyChecking=no ");
       push(@expect_options, [
                               qr{Are you sure you want to continue connecting},
                               sub {

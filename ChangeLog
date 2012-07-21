@@ -1,3 +1,7 @@
+2012-07-21 Jan Gehring <jan.gehring, gmail.com> (0.30.1)
+  * fixed a cli parameter bug for custom user authentication
+  * fixed a batch display bug
+
 2012-06-15 Jan Gehring <jan.gehring, gmail.com> (0.30.0)
   * rex -T now show the server groups as well
   * new option "type" for the extract function - Sven Dowideit

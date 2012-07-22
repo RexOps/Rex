@@ -176,6 +176,7 @@ Makefile.PL
 MANIFEST
 README
 t/01.t
+t/auth.t
 t/commands.t
 t/config.t
 t/file.t

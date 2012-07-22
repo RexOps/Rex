@@ -1,3 +1,9 @@
+rex (0.30.1) unstable; urgency=low
+  * fixed a cli parameter bug for custom user authentication
+  * fixed a batch display bug
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 21 Jul 2012 11:15:00 +0200
+
 rex (0.30.0) unstable; urgency=low
   * rex -T now show the server groups as well
   * new option "type" for the extract function - Sven Dowideit

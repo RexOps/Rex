@@ -326,6 +326,9 @@ CHECK_OVERWRITE: {
 
    if($opts{'u'}) {
       Rex::Commands::user($opts{'u'});
+      for my $task (Rex::TaskList->get_tasks) {
+         Rex::TaskList->get_task($task)->set_user($opts{'u'});
+      }
    }
 
    if($opts{'p'}) {
@@ -334,14 +337,27 @@ CHECK_OVERWRITE: {
       unless($opts{'P'}) {
          $pass_auth = 1;
       }
+
+      for my $task (Rex::TaskList->get_tasks) {
+         $task->set_password($opts{'p'});
+      }
+
    }
 
    if($opts{'P'}) {
       Rex::Commands::private_key($opts{'P'});
+
+      for my $task (Rex::TaskList->get_tasks) {
+         $task->set_auth("private_key", $opts{'P'});
+      }
    }
 
    if($opts{'K'}) {
       Rex::Commands::public_key($opts{'K'});
+
+      for my $task (Rex::TaskList->get_tasks) {
+         $task->set_auth("public_key", $opts{'K'});
+      }
    }
 
    if($pass_auth) {

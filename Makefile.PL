@@ -11,6 +11,7 @@ my %deps = (
                   'JSON::XS' => 0,
                   'YAML' => 0,
                   'LWP::Simple' => 0,
+                  'DB_File' => 0,
 );
 
 if($^O =~ m/^MSWin/) {

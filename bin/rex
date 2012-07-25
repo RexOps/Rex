@@ -339,7 +339,7 @@ CHECK_OVERWRITE: {
       }
 
       for my $task (Rex::TaskList->get_tasks) {
-         $task->set_password($opts{'p'});
+         Rex::TaskList->get_task($task)->set_password($opts{'p'});
       }
 
    }
@@ -349,6 +349,7 @@ CHECK_OVERWRITE: {
 
       for my $task (Rex::TaskList->get_tasks) {
          $task->set_auth("private_key", $opts{'P'});
+         Rex::TaskList->get_task($task)->set_auth("private_key", $opts{'P'});
       }
    }
 
@@ -356,7 +357,7 @@ CHECK_OVERWRITE: {
       Rex::Commands::public_key($opts{'K'});
 
       for my $task (Rex::TaskList->get_tasks) {
-         $task->set_auth("public_key", $opts{'K'});
+         Rex::TaskList->get_task($task)->set_auth("public_key", $opts{'K'});
       }
    }
 

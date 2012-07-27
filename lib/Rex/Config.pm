@@ -33,6 +33,7 @@ use Data::Dumper;
 our ($user, $password, $port,
             $timeout, $max_connect_fails,
             $password_auth, $key_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
+            $ca_file, $ca_cert, $ca_key,
             $path,
             $set_param,
             $environment,
@@ -289,6 +290,22 @@ sub get_connection_type {
    return $connection_type || "SSH";
 }
 
+sub get_ca {
+   my $class = shift;
+   return $ca_file || "";
+}
+
+sub get_ca_cert {
+   my $class = shift;
+   return $ca_cert || "";
+}
+
+sub get_ca_key {
+   my $class = shift;
+   return $ca_key || "";
+}
+
+
 =item register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
@@ -443,7 +460,7 @@ __PACKAGE__->register_config_handler(base => sub {
    }
 });
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;
@@ -453,6 +470,9 @@ for my $hndl (@set_handler) {
       if($hndl eq "keyauth") { $hndl = "key_auth"; $val = 1; }
       if($hndl eq "passwordauth" || $hndl eq "passauth") { $hndl = "password_auth"; $val = 1; }
       if($hndl eq "connection") { $hndl = "connection_type"; }
+      if($hndl eq "ca") { $hndl = "ca_file"; }
+      if($hndl eq "cert") { $hndl = "ca_cert"; }
+      if($hndl eq "key") { $hndl = "ca_key"; }
 
       $$hndl = $val; 
    });

@@ -258,6 +258,12 @@ sub is_http {
    return ($self->{"connection_type"} && lc($self->{"connection_type"}) eq "http");
 }
 
+sub is_https {
+   my ($self) = @_;
+   return ($self->{"connection_type"} && lc($self->{"connection_type"}) eq "https");
+}
+
+
 =item want_connect
 
 Returns true (1) if the task will establish a connection to a remote system.
@@ -286,6 +292,9 @@ sub get_connection_type {
 
    if($self->is_http) {
       return "HTTP";
+   }
+   elsif($self->is_https) {
+      return "HTTPS";
    }
    elsif($self->is_remote && $self->want_connect) {
       return "SSH";

@@ -34,7 +34,7 @@ sub connect {
    $user    = $option{user};
    $pass    = $option{password};
    $server  = $option{server};
-   $port    = $option{port} || 80;
+   $port    = $self->_get_port($option{port});
    $timeout = $option{timeout};
 
    $self->{server} = $server;
@@ -52,7 +52,6 @@ sub connect {
       $user = Rex::Config->get_ssh_config_username(server => $server);
    }
 
-   $self->{ua} = LWP::UserAgent->new;
    $self->ua->credentials(
       "$server:$port",
       "Rex::Endpoint::HTTP",
@@ -83,12 +82,17 @@ sub exec {
    my ($self, $cmd) = @_;
 }
 
-sub ua { shift->{ua}; }
+sub ua { 
+   my ($self) = @_;
+   return $self->{ua} if $self->{ua};
+
+   $self->{ua} = LWP::UserAgent->new;
+}
 
 sub upload {
    my ($self, $data) = @_;
 
-   my $res = $self->ua->post("http://" . $self->{server} . ":" . $self->{port} . "/fs/upload",
+   my $res = $self->ua->post($self->_get_proto . "://" . $self->{server} . ":" . $self->{port} . "/fs/upload",
                Content_Type => "multipart/form-data",
                Content => $data);
 
@@ -110,13 +114,13 @@ sub post {
       die("Invalid 2nd argument. must be arrayRef or hashRef!\npost(\$service, \$ref)");
    }
 
-   my $res = $self->ua->post("http://" . $self->{server} . ":" . $self->{port} . "$service", %{$header}, Content => encode_json($data));
+   my $res = $self->ua->post($self->_get_proto . "://" . $self->{server} . ":" . $self->{port} . "$service", %{$header}, Content => encode_json($data));
 
    if($res->is_success) {
       return decode_json($res->decoded_content);
    }
    else {
-      die("Error requesting $service.");
+      die("Error requesting $service.\n\nError: " . $res->{_content});
    }
 
 }
@@ -124,7 +128,7 @@ sub post {
 sub get {
    my ($self, $service) = @_;
 
-   my $res = $self->ua->get("http://" . $self->{server} . ":" . $self->{port} . "$service");
+   my $res = $self->ua->get($self->_get_proto . "://" . $self->{server} . ":" . $self->{port} . "$service");
 
    if($res->is_success) {
       return decode_json($res->decoded_content);
@@ -136,5 +140,14 @@ sub get {
 }
 
 sub get_connection_type { return "HTTP"; }
+
+sub _get_proto {
+   return "http";
+}
+
+sub _get_port {
+   my ($self, $port) = @_;
+   return $port || 80;
+}
 
 1;

@@ -136,6 +136,19 @@ sub is_authenticated {
    return $self->{auth_ret};
 }
 
-sub get_connection_type { return "SSH"; }
+sub get_connection_type {
+   my ($self) = @_;
+
+   my $type = "SSH";
+
+   if(Rex::is_ssh() && ! Rex::is_sudo()) {
+      $type = "SSH";
+   }
+   elsif(Rex::is_sudo()) {
+      $type = "Sudo";
+   }
+ 
+   return $type;
+}
 
 1;

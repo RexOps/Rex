@@ -34,7 +34,7 @@ sub net_ssh2_exec {
       $chan->read($buf, 20);
       # due to problem on some systems reading stderr, removed until i've found a solution
       if($READ_STDERR) {
-         $chan->read($buf_err, 20, 1);
+         $chan->read($buf_err, 500, 1);
       }
       $in .= $buf;
       $in_err .= $buf_err;

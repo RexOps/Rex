@@ -101,6 +101,7 @@ require Rex::Exporter;
 use Rex::TaskList;
 use Rex::Logger;
 use Rex::Config;
+use Rex;
 
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks);
 use base qw(Rex::Exporter);
@@ -201,6 +202,13 @@ sub task {
    my($class, $file, @tmp) = caller;
    my @_ARGS = @_;
 
+   if(! @_) {
+      if(my $t = Rex::get_current_connection) {
+         return $t->{task};
+      }
+      return;
+   }
+
    # for things like
    # no_ssh task ...
    if(wantarray) {
@@ -278,7 +286,6 @@ sub task {
 
    $options->{'dont_register'} = $dont_register_tasks;
    Rex::TaskList->create_task($task_name, @_, $options);
-
 }
 
 =item desc($description)
@@ -723,8 +730,19 @@ With the LOCAL function you can do local commands within a task that is defined 
 
 sub LOCAL (&) {
    my $cur_conn = Rex::get_current_connection();
-   Rex::push_connection({ssh => 0, server => $cur_conn->{"server"}});
+   my $local_connect = Rex::Interface::Connection->create("Local");
+
+   Rex::push_connection({
+         conn   => $local_connect,
+         ssh    => 0,
+         server => $cur_conn->{server}, 
+         cache => Rex::Cache->new(),
+         task  => task(),
+   });
+
+
    $_[0]->();
+
    Rex::pop_connection();
 }
 

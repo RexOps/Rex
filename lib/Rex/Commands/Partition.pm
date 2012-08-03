@@ -176,6 +176,8 @@ sub partition {
       }
    }
 
+   run "partprobe";
+
    if(! exists $option{fstype} || $option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "") {
       # nix
    }

@@ -136,4 +136,6 @@ sub is_authenticated {
    return $self->{auth_ret};
 }
 
+sub get_connection_type { return "SSH"; }
+
 1;

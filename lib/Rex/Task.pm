@@ -247,6 +247,17 @@ sub is_local {
    return $self->is_remote() == 0 ? 1 : 0;
 }
 
+=item is_http
+
+Returns true (1) if the task gets executed over http protocol.
+
+=cut
+
+sub is_http {
+   my ($self) = @_;
+   return ($self->{"connection_type"} && lc($self->{"connection_type"}) eq "http");
+}
+
 =item want_connect
 
 Returns true (1) if the task will establish a connection to a remote system.
@@ -273,7 +284,10 @@ Fake - will not create any connections. But it populates the connection properti
 sub get_connection_type {
    my ($self) = @_;
 
-   if($self->is_remote && $self->want_connect) {
+   if($self->is_http) {
+      return "HTTP";
+   }
+   elsif($self->is_remote && $self->want_connect) {
       return "SSH";
    }
    elsif($self->is_remote) {
@@ -318,6 +332,8 @@ sub user {
    if(exists $self->{auth} && $self->{auth}->{user}) {
       return $self->{auth}->{user};
    }
+   #use the current shell's username (not sudo's)
+   return getlogin || getpwuid($<) || "Kilroy";
 }
 
 =item set_user($user)
@@ -472,6 +488,7 @@ sub connect {
          ssh    => $self->connection->get_connection_object, 
          server => $server, 
          cache => Rex::Cache->new(),
+         task  => $self,
    });
 
    $self->run_hook(\$server, "around");
@@ -510,6 +527,7 @@ sub get_data {
       around => $self->{around},
       name => $self->{name},
       executor => $self->{executor},
+      connection_type => $self->{connection_type},
    };
 }
 

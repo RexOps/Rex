@@ -106,6 +106,7 @@ sub create_task {
       around => [],
       name => $task_name,
       executor => Rex::Interface::Executor->create,
+      connection_type => Rex::Config->get_connection_type,
    );
 
 }

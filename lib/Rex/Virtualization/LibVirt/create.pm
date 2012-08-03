@@ -70,27 +70,28 @@ sub execute {
 
    ## create storage devices
    for (@{$opts->{'storage'}}) {
-      if(! exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file") {
-         my $size = $_->{'size'};
-         if(!is_file($_->{"file"})) {
-            Rex::Logger::debug("creating storage disk: \"$_->{file}\"");            
-            run "$QEMU_IMG create -f raw $_->{'file'} $size";
-            if($? != 0) {
-               die("Error creating storage disk: $_->{'file'}");
-            }
-         }
-         else {
-            Rex::Logger::info("$_->{file} already exists. Using this.");
-         }
-      } elsif($_->{'template'} && $_->{'type'} eq "file") {
-          Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
-          Rex::Logger::info("Please wait ...");
-          run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
-          if($? != 0) {
-             die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
-             Template doesn't exist or the qemu-img binary is missing")
+      if(!is_file($_->{"file"})) {
+          if(! exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file") {
+             my $size = $_->{'size'};
+             Rex::Logger::debug("creating storage disk: \"$_->{file}\"");            
+                run "$QEMU_IMG create -f raw $_->{'file'} $size";
+                if($? != 0) {
+                   die("Error creating storage disk: $_->{'file'}");
+                }
+          } elsif($_->{'template'} && $_->{'type'} eq "file") {
+              Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
+              Rex::Logger::info("Please wait ...");
+              run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
+              if($? != 0) {
+                 die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
+                 Template doesn't exist or the qemu-img binary is missing: ")
+              }
           }
-      }
+     }
+     else {
+        Rex::Logger::info("$_->{file} already exists. Using this.");
+     }
+
    } 
 
    Rex::Logger::info("creating domain: \"$opts->{'name'}\"");

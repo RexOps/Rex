@@ -10,20 +10,23 @@ use strict;
 use warnings;
 
 use Rex;
+use Data::Dumper;
 
 sub create {
    my ($class, $type) = @_;
 
    unless($type) {
-      if(Rex::is_ssh() && ! Rex::is_sudo()) {
-         $type = "SSH";
-      }
-      elsif(Rex::is_sudo()) {
-         $type = "Sudo";
-      }
-      else {
-         $type = "Local";
-      }
+      #$type = Rex::Commands::task()->get_connection_type;
+      $type = Rex::get_current_connection()->{conn}->get_connection_type; #Rex::Commands::task()->get_connection_type;
+      #if(Rex::is_ssh() && ! Rex::is_sudo()) {
+      #   $type = "SSH";
+      #}
+      #elsif(Rex::is_sudo()) {
+      #   $type = "Sudo";
+      #}
+      #else {
+      #   $type = "Local";
+      #}
    }
 
    my $class_name = "Rex::Interface::Fs::$type";

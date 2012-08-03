@@ -36,6 +36,7 @@ our ($user, $password, $port,
             $path,
             $set_param,
             $environment,
+            $connection_type,
             $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
             %SSH_CONFIG_FOR);
 
@@ -283,6 +284,11 @@ sub get_ssh_config_public_key {
    return 0;
 }
 
+sub get_connection_type {
+   my $class = shift;
+   return $connection_type || "SSH";
+}
+
 =item register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
@@ -437,7 +443,7 @@ __PACKAGE__->register_config_handler(base => sub {
    }
 });
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;
@@ -446,6 +452,7 @@ for my $hndl (@set_handler) {
       }
       if($hndl eq "keyauth") { $hndl = "key_auth"; $val = 1; }
       if($hndl eq "passwordauth" || $hndl eq "passauth") { $hndl = "password_auth"; $val = 1; }
+      if($hndl eq "connection") { $hndl = "connection_type"; }
 
       $$hndl = $val; 
    });

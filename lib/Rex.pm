@@ -76,6 +76,7 @@ use warnings;
 use Net::SSH2;
 use Rex::Logger;
 use Rex::Cache;
+use Rex::Interface::Connection;
 
 our (@EXPORT,
       $VERSION,
@@ -114,6 +115,18 @@ The server name
 =cut
 
 sub get_current_connection {
+
+   # if no connection available, use local connect
+   unless(@CONNECTION_STACK) {
+      my $conn = Rex::Interface::Connection->create("Local");
+
+      Rex::push_connection({
+         conn   => $conn,
+         ssh    => $conn->get_connection_object,
+         cache => Rex::Cache->new(),
+      });
+   }
+
    $CONNECTION_STACK[-1];
 }
 

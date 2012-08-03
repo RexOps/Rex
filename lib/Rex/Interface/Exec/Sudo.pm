@@ -12,6 +12,7 @@ use warnings;
 use Rex::Config;
 use Rex::Interface::Exec::Local;
 use Rex::Interface::Exec::SSH;
+use Rex::Commands;
 
 sub new {
    my $that = shift;
@@ -37,7 +38,7 @@ sub exec {
       $exec = Rex::Interface::Exec->create("Local");
    }
 
-   my $sudo_password = Rex::Config->get_sudo_password;
+   my $sudo_password = task->{auth}->{sudo_password};
    return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
 }
 

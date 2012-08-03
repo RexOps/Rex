@@ -100,6 +100,7 @@ sub create_task {
          password    => Rex::Config->get_password,
          private_key => Rex::Config->get_private_key,
          public_key  => Rex::Config->get_public_key,
+         sudo_password => Rex::Config->get_sudo_password,
       },
       before => [],
       after  => [],

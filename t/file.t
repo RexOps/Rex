@@ -1,14 +1,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 use Data::Dumper;
 
 use_ok 'Rex';
 use_ok 'Rex::Commands::File';
 use_ok 'Rex::Commands::Fs';
+use_ok 'Rex::Commands::Gather';
 Rex::Commands::File->import;
 Rex::Commands::Fs->import;
+Rex::Commands::Gather->import;
 
 file("test.txt",
    content => "blah blah\nfoo bar");
@@ -28,7 +30,7 @@ file("test.txt",
    mode => 777);
 
 my %stats = Rex::Commands::Fs::stat("test.txt");
-ok($stats{mode} eq "0777", "fs chmod ok");
+ok($stats{mode} eq "0777" || is_windows(), "fs chmod ok");
 
 my $changed = 0;
 append_if_no_such_line("test.txt", "change", qr{change}, 

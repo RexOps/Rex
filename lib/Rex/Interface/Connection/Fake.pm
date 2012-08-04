@@ -35,6 +35,6 @@ sub get_fs_connection_object { my ($self) = @_; return $self; };
 sub is_connected { return 1; };
 sub is_authenticated { return 1; };
 
-sub get_connection_type { return "Fake"; }
+sub get_connection_type { return "Local"; }
 
 1;

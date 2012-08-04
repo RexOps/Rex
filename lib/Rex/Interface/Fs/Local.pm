@@ -59,7 +59,7 @@ sub rmdir {
    Rex::Logger::debug("Removing directories: " . join(", ", @dirs));
    my $exec = Rex::Interface::Exec->create;
    if($^O =~ m/^MSWin/) {
-      $exec->exec("del /Q /S /F " . join(" ", @dirs));
+      $exec->exec("rd /Q /S " . join(" ", @dirs));
    }
    else {
       $exec->exec("/bin/rm -rf " . join(" ", @dirs));

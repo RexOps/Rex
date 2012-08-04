@@ -83,7 +83,7 @@ our (@EXPORT,
       @CONNECTION_STACK,
       $GLOBAL_SUDO);
 
-$VERSION = "0.30.3";
+$VERSION = "0.31.0";
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];

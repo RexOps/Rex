@@ -392,22 +392,27 @@ sub register_config_handler {
 
 sub import {
    if(-f _home_dir() . "/.ssh/config") {
-      my ($host, $in_host);
+      my (@host, $in_host);
       if(open(my $fh, "<", _home_dir() . "/.ssh/config")) {
          while(my $line = <$fh>) {
             chomp $line;
             next if ($line =~ m/^#/);
             next if ($line =~ m/^\s*$/);
 
-            if($line =~ m/^Host ([^\s]+)/) {
+            if($line =~ m/^Host (.*)$/) {
+               my $host_tmp = $1; 
+               @host = split(/\s+/, $host_tmp);
                $in_host = 1;
-               $host = $1; 
-               $SSH_CONFIG_FOR{$host} = {}; 
+               for my $h (@host) {
+                  $SSH_CONFIG_FOR{$h} = {}; 
+               }
                next;
             }   
             elsif($in_host) {
                my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+(.*)$/);
-               $SSH_CONFIG_FOR{$host}->{lc($key)} = $val;
+               for my $h (@host) {
+                  $SSH_CONFIG_FOR{$h}->{lc($key)} = $val;
+               }
             }   
          }
          close($fh);

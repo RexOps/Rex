@@ -267,7 +267,12 @@ sub get_ssh_config_private_key {
 
    if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
          && exists $SSH_CONFIG_FOR{$param->{server}}->{identityfile}) {
-      return $SSH_CONFIG_FOR{$param->{server}}->{identityfile};
+
+      my $file = $SSH_CONFIG_FOR{$param->{server}}->{identityfile};
+      my $home_dir = _home_dir();
+      $file =~ s/^~/$home_dir/;
+      
+      return $file;
    }
 
    return 0;
@@ -279,7 +284,10 @@ sub get_ssh_config_public_key {
 
    if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
          && exists $SSH_CONFIG_FOR{$param->{server}}->{identityfile}) {
-      return $SSH_CONFIG_FOR{$param->{server}}->{identityfile} . ".pub";
+      my $file = $SSH_CONFIG_FOR{$param->{server}}->{identityfile} . ".pub";
+      my $home_dir = _home_dir();
+      $file =~ s/^~/$home_dir/;
+      return $file;
    }
 
    return 0;

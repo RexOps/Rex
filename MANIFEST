@@ -65,10 +65,13 @@ lib/Rex/Helper/System.pm
 lib/Rex/Interface/Connection.pm
 lib/Rex/Interface/Connection/Base.pm
 lib/Rex/Interface/Connection/Fake.pm
+lib/Rex/Interface/Connection/HTTP.pm
+lib/Rex/Interface/Connection/HTTPS.pm
 lib/Rex/Interface/Connection/Local.pm
 lib/Rex/Interface/Connection/SSH.pm
 lib/Rex/Interface/Exec.pm
 lib/Rex/Interface/Exec/Base.pm
+lib/Rex/Interface/Exec/HTTP.pm
 lib/Rex/Interface/Exec/Local.pm
 lib/Rex/Interface/Exec/SSH.pm
 lib/Rex/Interface/Exec/Sudo.pm
@@ -77,11 +80,13 @@ lib/Rex/Interface/Executor/Base.pm
 lib/Rex/Interface/Executor/Default.pm
 lib/Rex/Interface/File.pm
 lib/Rex/Interface/File/Base.pm
+lib/Rex/Interface/File/HTTP.pm
 lib/Rex/Interface/File/Local.pm
 lib/Rex/Interface/File/SSH.pm
 lib/Rex/Interface/File/Sudo.pm
 lib/Rex/Interface/Fs.pm
 lib/Rex/Interface/Fs/Base.pm
+lib/Rex/Interface/Fs/HTTP.pm
 lib/Rex/Interface/Fs/Local.pm
 lib/Rex/Interface/Fs/SSH.pm
 lib/Rex/Interface/Fs/Sudo.pm

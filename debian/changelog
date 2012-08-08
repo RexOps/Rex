@@ -1,3 +1,13 @@
+rex (0.31.1) unstable; urgency=low
+  * fixed a bug for task with the no_ssh attribute
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 04 Aug 2012 20:00:00 +0200
+
+rex (0.31.0) unstable; urgency=low
+  * added http transport layer
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 04 Aug 2012 20:00:00 +0200
+
 rex (0.30.1) unstable; urgency=low
   * fixed a cli parameter bug for custom user authentication
   * fixed a batch display bug

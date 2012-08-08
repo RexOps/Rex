@@ -53,6 +53,22 @@ sub ls {
    return @ret;
 }
 
+sub rmdir {
+   my ($self, @dirs) = @_;
+
+   Rex::Logger::debug("Removing directories: " . join(", ", @dirs));
+   my $exec = Rex::Interface::Exec->create;
+   if($^O =~ m/^MSWin/) {
+      $exec->exec("rd /Q /S " . join(" ", @dirs));
+   }
+   else {
+      $exec->exec("/bin/rm -rf " . join(" ", @dirs));
+   }
+
+   if($? == 0) { return 1; }
+}
+
+
 sub is_dir {
    my ($self, $path) = @_;
    if(-d $path) { return 1; }

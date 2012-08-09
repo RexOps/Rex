@@ -1,0 +1,46 @@
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+   
+package Rex::Group::Entry::Server;
+   
+use strict;
+use warnings;
+
+use overload
+   'eq' => sub { shift->is_eq(@_); },
+   'ne' => sub { shift->is_ne(@_); },
+   '""' => sub { shift->to_s(@_); };
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
+
+   bless($self, $proto);
+
+   return $self;
+}
+
+sub to_s {
+   my ($self) = @_;
+   return $self->{name};
+}
+
+sub is_eq {
+   my ($self, $comp) = @_;
+   if($comp eq $self->to_s) {
+      return 1;
+   }
+}
+
+sub is_ne {
+   my ($self, $comp) = @_;
+   if($comp ne $self->to_s) {
+      return 1;
+   }
+}
+
+1;

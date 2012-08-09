@@ -10,15 +10,17 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Group::Entry::Server;
 
 use vars qw(%groups);
+use Data::Dumper;
 
 sub create_group {
    my $class = shift;
    my $group_name = shift;
    my @server = @_;
 
-   @{$groups{$group_name}} = @server;
+   @{$groups{$group_name}} = map { $_ = Rex::Group::Entry::Server->new(name => $_); } @server;
 }
 
 sub get_group {

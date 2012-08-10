@@ -121,7 +121,9 @@ sub create_task {
             }
          }
          else {
-            push(@server, map { $_ = Rex::Group::Entry::Server->new(name => $_); } @_);
+            for my $entry (@_) {
+               push(@server, Rex::Group::Entry::Server->new(name => $entry));
+            }
          }
       }
 

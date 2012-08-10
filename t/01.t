@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
@@ -11,6 +11,7 @@ use_ok 'Rex::TaskList';
 use_ok 'Rex::Commands';
 use_ok 'Rex::Commands::Run';
 use_ok 'Rex::Commands::Upload';
+use_ok 'Rex::Group::Entry::Server';
 
 Rex::Commands->import();
 

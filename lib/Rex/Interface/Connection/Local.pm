@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Interface::Connection::Base;
+use Rex::Group::Entry::Server;
 
 use base qw(Rex::Interface::Connection::Base);
 
@@ -18,7 +19,7 @@ sub new {
    my $proto = ref($that) || $that;
    my $self = $that->SUPER::new(@_);
 
-   $self->{server} = "<local>";
+   $self->{server} = Rex::Group::Entry::Server->new(name => "<local>");
 
    bless($self, $proto);
 

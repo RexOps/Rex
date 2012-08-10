@@ -35,6 +35,7 @@ use Rex::Logger;
 use Rex::TaskList;
 use Rex::Interface::Connection;
 use Rex::Interface::Executor;
+use Rex::Group::Entry::Server;
 
 require Rex::Args;
 
@@ -164,7 +165,7 @@ sub server {
       push(@ret, &{ $self->{server} }());
    }
    else {
-      push(@ret, "<local>");
+      push(@ret, Rex::Group::Entry::Server->new(name => "<local>"));
    }
 
    return [@ret];
@@ -199,7 +200,7 @@ Returns the current server on which the tasks gets executed right now.
 =cut
 sub current_server {
    my ($self) = @_;
-   return $self->{current_server} || "<local>";
+   return $self->{current_server} || Rex::Group::Entry::Server->new(name => "<local>");
 }
 
 =item desc
@@ -476,12 +477,16 @@ Initiate the connection to $server.
 sub connect {
    my ($self, $server) = @_;
 
+   if(ref($server) ne "Rex::Group::Entry::Server") {
+      $server = Rex::Group::Entry::Server->new(name => $server);
+   }
    $self->{current_server} = $server;
 
    my $user = $self->user;
    my $password = $self->password;
    my $public_key = "";
    my $private_key = "";
+
 
    # auth info inside the server object overwrite the tasks auth info
    if($server->has_auth) {
@@ -573,6 +578,10 @@ sub run {
 
    if(ref($_[0])) {
       my ($self, $server, %options) = @_;
+
+      if(ref($server) ne "Rex::Group::Entry::Server") {
+         $server = Rex::Group::Entry::Server->new(name => $server);
+      }
 
       if(! $_[1]) {
          # run is called without any server.

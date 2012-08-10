@@ -124,6 +124,7 @@ use base qw(Rex::Exporter);
             logformat
             connection
             auth
+            FALSE TRUE
           );
 
 =item no_ssh([$task])
@@ -963,12 +964,25 @@ sub auth {
 
    my $group = Rex::Group->get_group_object($entity);
    if(! $group) {
-      Rex::Logger::info("Group $group not found.");
+      Rex::Logger::debug("No group $entity found, looking for a task.");
+      $group = Rex::TaskList->get_task($entity);
+   }
+
+   if(! $group) {
+      Rex::Logger::info("Group or Task $group not found.");
       CORE::exit 1;
    }
 
-   Rex::Logger::debug("Setting auth info for group $entity");
+   Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");
    $group->set_auth(%data);
+}
+
+sub TRUE {
+   return 1;
+}
+
+sub FALSE {
+   return 0;
 }
 
 =back

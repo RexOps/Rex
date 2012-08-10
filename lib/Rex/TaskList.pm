@@ -20,6 +20,7 @@ use vars qw(%tasks);
 
 # will be set from Rex::Transaction::transaction()
 our $IN_TRANSACTION = 0;
+our $DEFAULT_AUTH = 1;
 
 sub create_task {
    my $class     = shift;
@@ -129,19 +130,12 @@ sub create_task {
 
    }
 
-   $tasks{$task_name} = Rex::Task->new(
+   my %task_hash = (
       func => $func,
       server => [ @server ],
       desc => $desc,
       no_ssh => ($options->{"no_ssh"}?1:0),
       hidden => ($options->{"dont_register"}?1:0),
-      auth => {
-         user        => Rex::Config->get_user,
-         password    => Rex::Config->get_password,
-         private_key => Rex::Config->get_private_key,
-         public_key  => Rex::Config->get_public_key,
-         sudo_password => Rex::Config->get_sudo_password,
-      },
       before => [],
       after  => [],
       around => [],
@@ -149,6 +143,18 @@ sub create_task {
       executor => Rex::Interface::Executor->create,
       connection_type => Rex::Config->get_connection_type,
    );
+
+   if($DEFAULT_AUTH) {
+      $task_hash{auth} = {
+         user        => Rex::Config->get_user,
+         password    => Rex::Config->get_password,
+         private_key => Rex::Config->get_private_key,
+         public_key  => Rex::Config->get_public_key,
+         sudo_password => Rex::Config->get_sudo_password,
+      };
+   }
+
+   $tasks{$task_name} = Rex::Task->new(%task_hash);
 
 }
 

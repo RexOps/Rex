@@ -276,7 +276,7 @@ sub deprecated {
 
 
 sub import {
-   my ($class, $what) = @_;
+   my ($class, $what, $addition1) = @_;
 
    $what ||= "";
 
@@ -321,6 +321,12 @@ sub import {
 
       require Rex::Commands::Process;
       Rex::Commands::Process->import(register_in => $register_to);
+   }
+   elsif($what eq "-feature" || $what eq "feature") {
+      # remove default task auth
+      if($addition1 eq "0.31") {
+         $Rex::TaskList::DEFAULT_AUTH = 0;
+      }
    }
 
    # we are always strict

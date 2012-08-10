@@ -347,8 +347,6 @@ sub user {
    if(exists $self->{auth} && $self->{auth}->{user}) {
       return $self->{auth}->{user};
    }
-   #use the current shell's username (not sudo's)
-   return getlogin || getpwuid($<) || "Kilroy";
 }
 
 =item set_user($user)
@@ -448,6 +446,25 @@ sub set_auth {
    $self->{auth}->{$key} = $value;
 }
 
+=item merge_auth($server)
+
+Merges the authentication information from $server into the task.
+Tasks authentication information have precedence.
+
+=cut
+sub merge_auth {
+   my ($self, $server) = @_;
+
+   # merge auth hashs
+   # task auth as precedence
+   my $auth = $self->{auth};
+   for my $key (keys %{ $auth }) {
+      $auth->{$key} ||= $server->{auth}->{$key};
+   }
+
+   return $auth;
+}
+
 =item parallelism
 
 Get the parallelism count of a task.
@@ -487,22 +504,13 @@ sub connect {
    my $public_key = "";
    my $private_key = "";
 
+   my $auth = $self->merge_auth($server);
 
-   # auth info inside the server object overwrite the tasks auth info
-   if($server->has_auth) {
-      $user = $server->get_user;
-      $password = $server->get_password;
-      $private_key = $server->get_private_key;
-      $public_key = $server->get_public_key;
-   }
+   # task specific auth rules over all
+   my %connect_hash = %{ $auth };
+   $connect_hash{server} = $server;
 
-   $self->connection->connect(
-      user     => $user,
-      password => $password,
-      server   => $server,
-      private_key => $private_key,
-      public_key => $public_key,
-   );
+   $self->connection->connect(%connect_hash);
 
    if($self->connection->is_authenticated) {
       Rex::Logger::info("Successfull authenticated.");

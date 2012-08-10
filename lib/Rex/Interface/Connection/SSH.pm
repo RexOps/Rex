@@ -41,24 +41,6 @@ sub connect {
 
    $self->{server} = $server;
 
-   $public_key  ||= Rex::Config->get_public_key;
-   $private_key ||= Rex::Config->get_private_key;
-
-   if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $server) ) {
-      Rex::Logger::debug("Checking for a user in .ssh/config");
-      $user = Rex::Config->get_ssh_config_username(server => $server);
-   }
-
-   if( ! Rex::Config->has_private_key && Rex::Config->get_ssh_config_private_key(server => $server) ) {
-      Rex::Logger::debug("Checking for a private key in .ssh/config");
-      $private_key = Rex::Config->get_ssh_config_private_key(server => $server);
-   }
-
-   if( ! Rex::Config->has_public_key && Rex::Config->get_ssh_config_public_key(server => $server) ) {
-      Rex::Logger::debug("Checking for a public key in .ssh/config");
-      $public_key = Rex::Config->get_ssh_config_public_key(server => $server);
-   }
-
    $self->{ssh} = Net::SSH2->new;
 
    my $fail_connect = 0;

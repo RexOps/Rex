@@ -9,6 +9,9 @@ package Rex::Group::Entry::Server;
 use strict;
 use warnings;
 
+use Rex::Logger;
+use Rex::Config;
+
 use overload
    'eq' => sub { shift->is_eq(@_); },
    'ne' => sub { shift->is_ne(@_); },
@@ -67,7 +70,17 @@ sub get_auth {
 
 sub get_user {
    my ($self) = @_;
-   return $self->{auth}->{user};
+
+   if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $self->to_s) ) {
+      Rex::Logger::debug("Checking for a user in .ssh/config");
+      return Rex::Config->get_ssh_config_username(server => $self->to_s);
+   }
+
+   if(exists $self->{auth}->{user}) {
+      return $self->{auth}->{user};
+   }
+
+   return getlogin || getpwuid($<) || "Kilroy";
 }
 
 sub get_password {
@@ -77,12 +90,24 @@ sub get_password {
 
 sub get_public_key {
    my ($self) = @_;
-   return $self->{auth}->{public_key};
+
+   if( ! Rex::Config->has_public_key && Rex::Config->get_ssh_config_public_key(server => $self->to_s) ) {
+      Rex::Logger::debug("Checking for a public key in .ssh/config");
+      return Rex::Config->get_ssh_config_public_key(server => $self->to_s);
+   }
+
+   return $self->{auth}->{public_key} || Rex::Config->get_public_key;
 }
 
 sub get_private_key {
    my ($self) = @_;
-   return $self->{auth}->{private_key};
+
+   if( ! Rex::Config->has_private_key && Rex::Config->get_ssh_config_private_key(server => $self->to_s) ) {
+      Rex::Logger::debug("Checking for a private key in .ssh/config");
+      return Rex::Config->get_ssh_config_private_key(server => $self->to_s);
+   }
+
+   return $self->{auth}->{private_key} || Rex::Config->get_private_key;
 }
 
 1;

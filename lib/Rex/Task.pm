@@ -443,7 +443,14 @@ Set the authentication of the task.
 =cut
 sub set_auth {
    my ($self, $key, $value) = @_;
-   $self->{auth}->{$key} = $value;
+
+   if(scalar(@_) > 3) {
+      my $_d = shift;
+      $self->{auth} = { @_ };
+   }
+   else {
+      $self->{auth}->{$key} = $value;
+   }
 }
 
 =item merge_auth($server)

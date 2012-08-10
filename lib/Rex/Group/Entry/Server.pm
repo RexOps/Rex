@@ -129,10 +129,6 @@ sub merge_auth {
    my %new_auth;
    my @keys = qw/user password private_key public_key/;
 
-   if(ref($other_auth) eq "HASH" && scalar keys %{ $other_auth }) {
-      @keys = keys %{ $other_auth };
-   }
-
    for my $key (@keys) {
       my $call = "get_$key";
       if(ref($self)->can($call)) {
@@ -143,7 +139,7 @@ sub merge_auth {
       }
 
       # other_auth has presedence
-      if($other_auth->{$key}) {
+      if(exists $other_auth->{$key}) {
          $new_auth{$key} = $other_auth->{$key};
       }
    }

@@ -102,7 +102,7 @@ sub get_user {
       return $user;
    }
 
-   return $ENV{"USER"};
+   return getlogin || getpwuid($<) || "Kilroy";
 }
 
 sub get_password {

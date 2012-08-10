@@ -457,12 +457,9 @@ sub merge_auth {
 
    # merge auth hashs
    # task auth as precedence
-   my $auth = $self->{auth};
-   for my $key (keys %{ $auth }) {
-      $auth->{$key} ||= $server->{auth}->{$key};
-   }
+   my %auth = $server->merge_auth($self->{auth});
 
-   return $auth;
+   return \%auth;
 }
 
 =item parallelism

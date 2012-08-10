@@ -71,43 +71,85 @@ sub get_auth {
 sub get_user {
    my ($self) = @_;
 
+   if(exists $self->{auth}->{user}) {
+      return $self->{auth}->{user};
+   }
+
    if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $self->to_s) ) {
       Rex::Logger::debug("Checking for a user in .ssh/config");
       return Rex::Config->get_ssh_config_username(server => $self->to_s);
    }
 
-   if(exists $self->{auth}->{user}) {
-      return $self->{auth}->{user};
-   }
-
-   return getlogin || getpwuid($<) || "Kilroy";
+   return Rex::Config->get_user;
 }
 
 sub get_password {
    my ($self) = @_;
-   return $self->{auth}->{password};
+
+   if(exists $self->{auth}->{password}) {
+      return $self->{auth}->{password};
+   }
+
+   return Rex::Config->get_password;
 }
 
 sub get_public_key {
    my ($self) = @_;
+
+   if(exists $self->{auth}->{public_key}) {
+      return $self->{auth}->{public_key};
+   }
 
    if( ! Rex::Config->has_public_key && Rex::Config->get_ssh_config_public_key(server => $self->to_s) ) {
       Rex::Logger::debug("Checking for a public key in .ssh/config");
       return Rex::Config->get_ssh_config_public_key(server => $self->to_s);
    }
 
-   return $self->{auth}->{public_key} || Rex::Config->get_public_key;
+   return Rex::Config->get_public_key;
 }
 
 sub get_private_key {
    my ($self) = @_;
+
+   if(exists $self->{auth}->{private_key}) {
+      return $self->{auth}->{private_key};
+   }
 
    if( ! Rex::Config->has_private_key && Rex::Config->get_ssh_config_private_key(server => $self->to_s) ) {
       Rex::Logger::debug("Checking for a private key in .ssh/config");
       return Rex::Config->get_ssh_config_private_key(server => $self->to_s);
    }
 
-   return $self->{auth}->{private_key} || Rex::Config->get_private_key;
+   return Rex::Config->get_private_key;
 }
+
+sub merge_auth {
+   my ($self, $other_auth) = @_;
+
+   my %new_auth;
+   my @keys = qw/user password private_key public_key/;
+
+   if(ref($other_auth) eq "HASH" && scalar keys %{ $other_auth }) {
+      @keys = keys %{ $other_auth };
+   }
+
+   for my $key (@keys) {
+      my $call = "get_$key";
+      if(ref($self)->can($call)) {
+         $new_auth{$key} = $self->$call();
+      }
+      else {
+         $new_auth{$key} = $other_auth->{$key};
+      }
+
+      # other_auth has presedence
+      if($other_auth->{$key}) {
+         $new_auth{$key} = $other_auth->{$key};
+      }
+   }
+
+   return %new_auth;
+}
+
 
 1;

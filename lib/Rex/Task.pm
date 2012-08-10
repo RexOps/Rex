@@ -478,13 +478,25 @@ sub connect {
 
    $self->{current_server} = $server;
 
-   Rex::Logger::debug("Using user: " . $self->user);
-   Rex::Logger::debug("Using password: " . ($self->password?"***********":"<no password>"));
+   my $user = $self->user;
+   my $password = $self->password;
+   my $public_key = "";
+   my $private_key = "";
+
+   # auth info inside the server object overwrite the tasks auth info
+   if($server->has_auth) {
+      $user = $server->get_user;
+      $password = $server->get_password;
+      $private_key = $server->get_private_key;
+      $public_key = $server->get_public_key;
+   }
 
    $self->connection->connect(
-      user     => $self->user,
-      password => $self->password,
+      user     => $user,
+      password => $password,
       server   => $server,
+      private_key => $private_key,
+      public_key => $public_key,
    );
 
    if($self->connection->is_authenticated) {

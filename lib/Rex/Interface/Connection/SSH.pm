@@ -33,21 +33,29 @@ sub connect {
    $server  = $option{server};
    $port    = $option{port};
    $timeout = $option{timeout};
+   $public_key = $option{public_key};
+   $private_key = $option{private_key};
+
+   Rex::Logger::debug("Using user: " . $user);
+   Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
 
    $self->{server} = $server;
 
-   $public_key  = Rex::Config->get_public_key;
-   $private_key = Rex::Config->get_private_key;
+   $public_key  ||= Rex::Config->get_public_key;
+   $private_key ||= Rex::Config->get_private_key;
 
    if( ! Rex::Config->has_user && Rex::Config->get_ssh_config_username(server => $server) ) {
+      Rex::Logger::debug("Checking for a user in .ssh/config");
       $user = Rex::Config->get_ssh_config_username(server => $server);
    }
 
    if( ! Rex::Config->has_private_key && Rex::Config->get_ssh_config_private_key(server => $server) ) {
+      Rex::Logger::debug("Checking for a private key in .ssh/config");
       $private_key = Rex::Config->get_ssh_config_private_key(server => $server);
    }
 
    if( ! Rex::Config->has_public_key && Rex::Config->get_ssh_config_public_key(server => $server) ) {
+      Rex::Logger::debug("Checking for a public key in .ssh/config");
       $public_key = Rex::Config->get_ssh_config_public_key(server => $server);
    }
 

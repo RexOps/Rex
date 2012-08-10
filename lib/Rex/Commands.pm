@@ -959,10 +959,16 @@ sub say {
 }
 
 sub auth {
-   my (%data) = @_;
+   my ($_d, $entity, %data) = @_;
 
-   my $entity = $data{for};
+   my $group = Rex::Group->get_group_object($entity);
+   if(! $group) {
+      Rex::Logger::info("Group $group not found.");
+      CORE::exit 1;
+   }
 
+   Rex::Logger::debug("Setting auth info for group $entity");
+   $group->set_auth(%data);
 }
 
 =back

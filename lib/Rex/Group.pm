@@ -10,6 +10,8 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+
+use attributes;
 use Rex::Group::Entry::Server;
 
 use vars qw(%groups);
@@ -31,8 +33,17 @@ sub get_servers {
    return @{ $self->{servers} };
 }
 
+sub set_auth {
+   my ($self, %data) = @_;
+   $self->{auth} = \%data;
 
+   map { $_->set_auth(%{ $self->get_auth }) } $self->get_servers;
+}
 
+sub get_auth {
+   my ($self) = @_;
+   return $self->{auth};
+}
 
 
 ################################################################################
@@ -72,6 +83,13 @@ sub get_groups {
    }
 
    return %ret;
+}
+
+sub get_group_object {
+   my $class = shift;
+   my $name = shift;
+
+   return $groups{$name};
 }
 
 1;

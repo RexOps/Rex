@@ -206,8 +206,6 @@ sub run {
 
    my @all_server = @{ $task->server };
 
-   print Dumper(\@all_server);
-
    my $fm = Rex::Fork::Manager->new(max => $task->parallelism || Rex::Config->get_parallelism);
 
    for my $server (@all_server) {

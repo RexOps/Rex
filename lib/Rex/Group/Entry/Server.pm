@@ -14,6 +14,8 @@ use overload
    'ne' => sub { shift->is_ne(@_); },
    '""' => sub { shift->to_s(@_); };
 
+use attributes;
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -26,7 +28,7 @@ sub new {
 
 sub get_servers {
    my ($self) = @_;
-   return map { $_ = Rex::Group::Entry::Server->new(name => $_); } Rex::Commands::evaluate_hostname($self->to_s);
+   return map { $_ = Rex::Group::Entry::Server->new(name => $_, auth => $self->{auth}); } Rex::Commands::evaluate_hostname($self->to_s);
 }
 
 sub to_s {
@@ -46,6 +48,41 @@ sub is_ne {
    if($comp ne $self->to_s) {
       return 1;
    }
+}
+
+sub has_auth {
+   my ($self) = @_;
+   return exists $self->{auth};
+}
+
+sub set_auth {
+   my ($self, %auth) = @_;
+   $self->{auth} = \%auth;
+}
+
+sub get_auth {
+   my ($self) = @_;
+   return $self->{auth};
+}
+
+sub get_user {
+   my ($self) = @_;
+   return $self->{auth}->{user};
+}
+
+sub get_password {
+   my ($self) = @_;
+   return $self->{auth}->{password};
+}
+
+sub get_public_key {
+   my ($self) = @_;
+   return $self->{auth}->{public_key};
+}
+
+sub get_private_key {
+   my ($self) = @_;
+   return $self->{auth}->{private_key};
 }
 
 1;

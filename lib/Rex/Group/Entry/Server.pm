@@ -24,6 +24,11 @@ sub new {
    return $self;
 }
 
+sub get_servers {
+   my ($self) = @_;
+   return map { $_ = Rex::Group::Entry::Server->new(name => $_); } Rex::Commands::evaluate_hostname($self->to_s);
+}
+
 sub to_s {
    my ($self) = @_;
    return $self->{name};

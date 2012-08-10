@@ -151,7 +151,12 @@ sub server {
             push(@ret, &$srv());
          }
          else {
-            push(@ret, $srv);
+            if(ref($srv) eq "Rex::Group::Entry::Server") {
+               push(@ret, $srv->get_servers);
+            }
+            else {
+               push(@ret, $srv);
+            }
          }
       }
    }

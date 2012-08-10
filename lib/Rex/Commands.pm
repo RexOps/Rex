@@ -123,6 +123,7 @@ use base qw(Rex::Exporter);
             before after around
             logformat
             connection
+            auth
           );
 
 =item no_ssh([$task])
@@ -955,6 +956,13 @@ sub get_environments {
 sub say {
    return unless $_[0];
    print @_, "\n";
+}
+
+sub auth {
+   my (%data) = @_;
+
+   my $entity = $data{for};
+
 }
 
 =back

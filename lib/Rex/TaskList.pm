@@ -39,6 +39,8 @@ sub create_task {
 
    my @server = ();
 
+=begin
+
    if($::FORCE_SERVER) {
 
       $::FORCE_SERVER = join(" ", Rex::Group->get_group(substr($::FORCE_SERVER, 1))) if($::FORCE_SERVER =~ m/^\0/);
@@ -84,6 +86,42 @@ sub create_task {
          } else {
             push @server, Rex::Commands::evaluate_hostname($_) for @_;
             Rex::Logger::debug("\tserver: $_") for @server;
+         }
+      }
+
+   }
+
+=cut
+
+   if($::FORCE_SERVER) {
+
+      my @servers = split(/\s+/, $::FORCE_SERVER);
+      push(@server, map { Rex::Group::Entry::Server->new(name => $_); } @servers);
+
+      Rex::Logger::debug("\tserver: $_") for @server;
+
+   }
+
+   else {
+
+      if(scalar(@_) >= 1) {
+         if($_[0] eq "group") {
+            my $groups;
+            if(ref($_[1]) eq "ARRAY") {
+               $groups = $_[1];
+            }
+            else {
+               $groups = [ $_[1] ];
+            }
+    
+            for my $group (@{$groups}) {
+               if(Rex::Group->is_group($group)) {
+                  push(@server, Rex::Group->get_group($group));
+               }
+            }
+         }
+         else {
+            push(@server, map { $_ = Rex::Group::Entry::Server->new(name => $_); } @_);
          }
       }
 
@@ -167,6 +205,8 @@ sub run {
 
 
    my @all_server = @{ $task->server };
+
+   print Dumper(\@all_server);
 
    my $fm = Rex::Fork::Manager->new(max => $task->parallelism || Rex::Config->get_parallelism);
 

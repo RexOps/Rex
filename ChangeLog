@@ -1,8 +1,7 @@
 2012-08-04 Jan Gehring <jan.gehring, gmail.com> (0.31.0)
   * fixed a bug for task with the no_ssh attribute
-
-2012-08-04 Jan Gehring <jan.gehring, gmail.com> (0.31.0)
   * added http transport layer
+  * added possibility to modify task and server authentication
 
 2012-07-21 Jan Gehring <jan.gehring, gmail.com> (0.30.1)
   * fixed a cli parameter bug for custom user authentication

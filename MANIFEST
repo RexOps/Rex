@@ -45,6 +45,7 @@ lib/Rex/Fork/Manager.pm
 lib/Rex/Fork/Task.pm
 lib/Rex/FS/File.pm
 lib/Rex/Group.pm
+lib/Rex/Group/Entry/Server.pm
 lib/Rex/Group/Lookup/File.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm
@@ -180,11 +181,13 @@ LICENSE
 Makefile.PL
 MANIFEST
 README
+t/0.31.t
 t/01.t
 t/auth.t
 t/commands.t
 t/config.t
 t/file.t
+t/group.t
 t/helper_hash.t
 t/host.t
 t/interface_fs_local.t

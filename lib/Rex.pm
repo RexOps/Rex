@@ -165,6 +165,9 @@ sub is_sudo {
 sub global_sudo {
    my ($on) = @_;
    $GLOBAL_SUDO = $on;
+
+   # turn cache on
+   $Rex::Cache::USE = 1;
 }
 
 =item get_sftp

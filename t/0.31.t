@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 100;
+use Test::More tests => 113;
 use Data::Dumper;
 
 
@@ -93,9 +93,10 @@ for my $server (@all_server) {
    ok($auth->{public_key} eq "pub.key3", "merge_auth - pub");
    ok($auth->{private_key} eq "priv.key3", "merge_auth - priv");
    ok($auth->{auth_type} eq "try", "merge_auth - auth_type");
+   ok(! $auth->{sudo}, "merge_auth - sudo");
 }
 
-auth(for => "authtest1", user => "deploy", password => "baz", private_key => FALSE(), public_key => FALSE());
+auth(for => "authtest1", user => "deploy", password => "baz", private_key => FALSE(), public_key => FALSE(), sudo => TRUE());
 
 $task = Rex::TaskList->get_task("authtest1");
 @all_server = @{ $task->server };
@@ -107,5 +108,6 @@ for my $server (@all_server) {
    ok($auth->{public_key} == FALSE(), "merge_auth - pub");
    ok($auth->{private_key} == FALSE(), "merge_auth - priv");
    ok($auth->{auth_type} eq "pass", "merge_auth - auth_type");
+   ok($auth->{sudo} == TRUE(), "merge_auth - sudo");
 }
 

@@ -26,7 +26,7 @@ sub new {
 sub connect {
    my ($self, %option) = @_;
 
-   my ($user, $pass, $private_key, $public_key, $server, $port, $timeout, $auth_type);
+   my ($user, $pass, $private_key, $public_key, $server, $port, $timeout, $auth_type, $is_sudo);
 
    $user    = $option{user};
    $pass    = $option{password};
@@ -36,6 +36,9 @@ sub connect {
    $public_key = $option{public_key};
    $private_key = $option{private_key};
    $auth_type   = $option{auth_type};
+   $is_sudo     = $option{sudo};
+
+   $self->{is_sudo} = $is_sudo;
 
    Rex::Logger::debug("Using user: " . $user);
    Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
@@ -131,6 +134,10 @@ sub get_connection_type {
    my ($self) = @_;
 
    my $type = "SSH";
+
+   if($self->{is_sudo} && $self->{is_sudo} == 1) {
+      return "Sudo";
+   }
 
    if(Rex::is_ssh() && ! Rex::is_sudo()) {
       $type = "SSH";

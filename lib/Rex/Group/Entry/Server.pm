@@ -148,11 +148,20 @@ sub get_auth_type {
    return "try";
 }
 
+sub get_sudo {
+   my ($self) = @_;
+   if(exists $self->{auth}->{sudo}) {
+      return $self->{auth}->{sudo};
+   }
+
+   return 0;
+}
+
 sub merge_auth {
    my ($self, $other_auth) = @_;
 
    my %new_auth;
-   my @keys = qw/user password private_key public_key auth_type/;
+   my @keys = qw/user password private_key public_key auth_type sudo/;
 
    for my $key (@keys) {
       my $call = "get_$key";

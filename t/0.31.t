@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 77;
+use Test::More tests => 100;
 use Data::Dumper;
 
 
@@ -21,6 +21,8 @@ user("root3");
 password("pass3");
 private_key("priv.key3");
 public_key("pub.key3");
+
+key_auth();
 
 
 no warnings;
@@ -42,12 +44,36 @@ ok($servers[5] eq "serv06", "get_group with evaluation");
 
 task("authtest1", group => "foo", sub {});
 task("authtest2", group => "bar", sub {});
+task("authtest3", "srv001", sub {});
+
+my $task = Rex::TaskList->get_task("authtest3");
+my @all_server = @{ $task->server };
+
+for my $server (@all_server) {
+   my $auth = $task->merge_auth($server);
+   ok($auth->{user} eq "root3", "merge_auth - user");
+   ok($auth->{password} eq "pass3", "merge_auth - pass");
+   ok($auth->{public_key} eq "pub.key3", "merge_auth - pub");
+   ok($auth->{private_key} eq "priv.key3", "merge_auth - priv");
+   ok($auth->{auth_type} eq "key", "merge_auth - auth");
+}
+
+pass_auth();
+
+for my $server (@all_server) {
+   my $auth = $task->merge_auth($server);
+   ok($auth->{user} eq "root3", "merge_auth - user");
+   ok($auth->{password} eq "pass3", "merge_auth - pass");
+   ok($auth->{public_key} eq "pub.key3", "merge_auth - pub");
+   ok($auth->{private_key} eq "priv.key3", "merge_auth - priv");
+   ok($auth->{auth_type} eq "pass", "merge_auth - auth");
+}
 
 auth(for => "bar", user => "jan", password => "foo");
 
-my $task = Rex::TaskList->get_task("authtest1");
+$task = Rex::TaskList->get_task("authtest1");
 
-my @all_server = @{ $task->server };
+@all_server = @{ $task->server };
 
 for my $server (@all_server) {
    my $auth = $task->merge_auth($server);
@@ -66,6 +92,7 @@ for my $server (@all_server) {
    ok($auth->{password} eq "foo", "merge_auth - pass");
    ok($auth->{public_key} eq "pub.key3", "merge_auth - pub");
    ok($auth->{private_key} eq "priv.key3", "merge_auth - priv");
+   ok($auth->{auth_type} eq "try", "merge_auth - auth_type");
 }
 
 auth(for => "authtest1", user => "deploy", password => "baz", private_key => FALSE(), public_key => FALSE());
@@ -79,5 +106,6 @@ for my $server (@all_server) {
    ok($auth->{password} eq "baz", "merge_auth - pass");
    ok($auth->{public_key} == FALSE(), "merge_auth - pub");
    ok($auth->{private_key} == FALSE(), "merge_auth - priv");
+   ok($auth->{auth_type} eq "pass", "merge_auth - auth_type");
 }
 

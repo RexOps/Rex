@@ -492,6 +492,7 @@ If you want to use password authentication, then you need to call I<pass_auth>.
 =cut
 
 sub pass_auth {
+   if(wantarray) { return "pass"; }
    Rex::Config->set_password_auth(1);
 }
 
@@ -507,9 +508,9 @@ If you want to use pubkey authentication, then you need to call I<key_auth>.
 =cut
 
 sub key_auth {
+   if(wantarray) { return "key"; }
    Rex::Config->set_key_auth(1);
 }
-
 
 =item parallelism($count)
 

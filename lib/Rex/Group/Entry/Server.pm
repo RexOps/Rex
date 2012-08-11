@@ -96,7 +96,7 @@ sub get_password {
 sub get_public_key {
    my ($self) = @_;
 
-   if(exists $self->{auth}->{public_key}) {
+   if(exists $self->{auth}->{public_key} && -f $self->{auth}->{public_key}) {
       return $self->{auth}->{public_key};
    }
 
@@ -111,7 +111,7 @@ sub get_public_key {
 sub get_private_key {
    my ($self) = @_;
 
-   if(exists $self->{auth}->{private_key}) {
+   if(exists $self->{auth}->{private_key} && -f $self->{auth}->{public_key}) {
       return $self->{auth}->{private_key};
    }
 
@@ -123,11 +123,36 @@ sub get_private_key {
    return Rex::Config->get_private_key;
 }
 
+sub get_auth_type {
+   my ($self) = @_;
+
+   if(exists $self->{auth}->{auth_type} && $self->{auth}->{auth_type}) {
+      return $self->{auth}->{auth_type};
+   }
+
+   if(exists $self->{auth}->{public_key} &&  -f $self->{auth}->{public_key}
+         && exists $self->{auth}->{private_key} &&  -f $self->{auth}->{private_key}) {
+      return "try";
+   }
+   elsif(exists $self->{auth}->{user} && $self->{auth}->{user}
+         && exists $self->{auth}->{password} && $self->{auth}->{password} ne "") {
+      return "try";
+   }
+   elsif(Rex::Config->get_password_auth) {
+      return "pass";
+   }
+   elsif(Rex::Config->get_key_auth) {
+      return "key";
+   }
+
+   return "try";
+}
+
 sub merge_auth {
    my ($self, $other_auth) = @_;
 
    my %new_auth;
-   my @keys = qw/user password private_key public_key/;
+   my @keys = qw/user password private_key public_key auth_type/;
 
    for my $key (@keys) {
       my $call = "get_$key";

@@ -26,7 +26,7 @@ sub new {
 sub connect {
    my ($self, %option) = @_;
 
-   my ($user, $pass, $private_key, $public_key, $server, $port, $timeout);
+   my ($user, $pass, $private_key, $public_key, $server, $port, $timeout, $auth_type);
 
    $user    = $option{user};
    $pass    = $option{password};
@@ -35,6 +35,7 @@ sub connect {
    $timeout = $option{timeout};
    $public_key = $option{public_key};
    $private_key = $option{private_key};
+   $auth_type   = $option{auth_type};
 
    Rex::Logger::debug("Using user: " . $user);
    Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
@@ -73,11 +74,11 @@ sub connect {
 
    $self->{connected} = 1;
 
-   if(Rex::Config->get_password_auth) {
+   if($auth_type eq "pass") {
       Rex::Logger::debug("Using password authentication.");
       $self->{auth_ret} = $self->{ssh}->auth_password($user, $pass);
    }
-   elsif(Rex::Config->get_key_auth) {
+   elsif($auth_type eq "key") {
       Rex::Logger::debug("Using key authentication.");
       $self->{auth_ret} = $self->{ssh}->auth_publickey($user,
                               $public_key,

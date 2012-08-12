@@ -160,9 +160,14 @@ Run only one command within sudo.
 sub sudo {
    my ($cmd) = @_;
 
-   if($cmd eq "on" || $cmd eq "-on") {
+   if($cmd eq "on" || $cmd eq "-on" || $cmd eq "1") {
       Rex::Logger::debug("Turning sudo globaly on");
       Rex::global_sudo(1);
+      return;
+   }
+   elsif($cmd eq "0") {
+      Rex::Logger::debug("Turning sudo globaly off");
+      Rex::global_sudo(0);
       return;
    }
 

@@ -466,9 +466,16 @@ sub merge_auth {
    # task auth as precedence
    my %auth = $server->merge_auth($self->{auth});
 
-   $self->{auth} = \%auth;
-
    return \%auth;
+}
+
+sub get_sudo_password {
+   my ($self) = @_;
+
+   my $server = $self->connection->server;
+   my %auth = $server->merge_auth($self->{auth});
+
+   return $auth{sudo_password};
 }
 
 =item parallelism

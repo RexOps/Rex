@@ -38,7 +38,7 @@ sub exec {
       $exec = Rex::Interface::Exec->create("Local");
    }
 
-   my $sudo_password = task->{auth}->{sudo_password};
+   my $sudo_password = task->get_sudo_password;
    return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
 }
 

@@ -157,11 +157,22 @@ sub get_sudo {
    return 0;
 }
 
+sub get_sudo_password {
+   my ($self) = @_;
+   if(exists $self->{auth}->{sudo_password}) {
+      return $self->{auth}->{sudo_password};
+   }
+
+   Rex::Config->get_sudo_password;
+}
+
+
+
 sub merge_auth {
    my ($self, $other_auth) = @_;
 
    my %new_auth;
-   my @keys = qw/user password private_key public_key auth_type sudo/;
+   my @keys = qw/user password private_key public_key auth_type sudo sudo_password/;
 
    for my $key (@keys) {
       my $call = "get_$key";

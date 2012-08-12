@@ -466,6 +466,8 @@ sub merge_auth {
    # task auth as precedence
    my %auth = $server->merge_auth($self->{auth});
 
+   $self->{auth} = \%auth;
+
    return \%auth;
 }
 

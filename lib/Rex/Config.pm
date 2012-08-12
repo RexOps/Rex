@@ -124,7 +124,7 @@ sub get_port {
 
 sub get_sudo_password {
    my $class = shift;
-   return $sudo_password;
+   return $sudo_password || $password || "";
 }
 
 sub set_timeout {

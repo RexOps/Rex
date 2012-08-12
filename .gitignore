@@ -13,3 +13,9 @@ debian/*.log
 *.old
 *.bak
 README
+MYMETA.yml
+MYMETA.json
+create_pod.sh
+doc/bootstrap.pod
+doc/html
+*.txt

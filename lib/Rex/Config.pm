@@ -38,6 +38,7 @@ our ($user, $password, $port,
             $set_param,
             $environment,
             $connection_type,
+            $distributor,
             $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
             %SSH_CONFIG_FOR);
 
@@ -314,6 +315,16 @@ sub get_ca_key {
 }
 
 
+sub set_distributor {
+   my $class = shift;
+   $distributor = shift;
+}
+
+sub get_distributor {
+   my $class = shift;
+   return $distributor || "Base";
+}
+
 =item register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
@@ -473,7 +484,7 @@ __PACKAGE__->register_config_handler(base => sub {
    }
 });
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key distributor/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;

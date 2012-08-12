@@ -125,6 +125,7 @@ use base qw(Rex::Exporter);
             connection
             auth
             FALSE TRUE
+            set_distributor
           );
 
 =item no_ssh([$task])
@@ -287,7 +288,7 @@ sub task {
    }
 
    $options->{'dont_register'} = $dont_register_tasks;
-   Rex::TaskList->create_task($task_name, @_, $options);
+   Rex::TaskList->create()->create_task($task_name, @_, $options);
 }
 
 =item desc($description)
@@ -399,7 +400,7 @@ sub auth {
    my $group = Rex::Group->get_group_object($entity);
    if(! $group) {
       Rex::Logger::debug("No group $entity found, looking for a task.");
-      $group = Rex::TaskList->get_task($entity);
+      $group = Rex::TaskList->create()->get_task($entity);
    }
 
    if(! $group) {
@@ -497,11 +498,11 @@ sub do_task {
 
    if(ref($task) eq "ARRAY") {
       for my $t (@{$task}) {
-         Rex::TaskList->run($t);
+         Rex::TaskList->create()->run($t);
       }
    }
    else {
-      return Rex::TaskList->run($task);
+      return Rex::TaskList->create()->run($task);
    }
 }
 
@@ -565,6 +566,17 @@ Will execute the tasks in parallel on the given servers. $count is the thread co
 
 sub parallelism {
    Rex::Config->set_parallelism($_[0]);
+}
+
+=item set_distributor($distributor)
+
+This sets the task distribution module. Default is "Base".
+
+Possible values are: Base, Gearman
+
+=cut
+sub set_distributor {
+   Rex::Config->set_distributor($_[0]);
 }
 
 =item logging
@@ -861,7 +873,7 @@ Note: must come after the definition of the specified task
 sub before {
    my ($task, $code) = @_;
    my ($package, $file, $line) = caller;
-   Rex::TaskList->modify('before', $task, $code, $package, $file, $line);
+   Rex::TaskList->create()->modify('before', $task, $code, $package, $file, $line);
 }
 
 =item after($task => sub {})
@@ -883,7 +895,7 @@ sub after {
    my ($task, $code) = @_;
    my ($package, $file, $line) = caller;
 
-   Rex::TaskList->modify('after', $task, $code, $package, $file, $line);
+   Rex::TaskList->create()->modify('after', $task, $code, $package, $file, $line);
 }
 
 =item around($task => sub {})
@@ -909,7 +921,7 @@ sub around {
    my ($task, $code) = @_;
    my ($package, $file, $line) = caller;
    
-   Rex::TaskList->modify('around', $task, $code, $package, $file, $line);
+   Rex::TaskList->create()->modify('around', $task, $code, $package, $file, $line);
 }
 
 

@@ -607,7 +607,7 @@ sub run {
       if(! $_[1]) {
          # run is called without any server.
          # so just connect to any servers.
-         return Rex::TaskList->run($self->name, %options);
+         return Rex::TaskList->create()->run($self->name, %options);
       }
 
       # this is a method call
@@ -632,11 +632,11 @@ sub run {
       Rex::deprecated("Rex::Task->run()", "0.40");
 
       if($server_overwrite) {
-         Rex::TaskList->get_task($task)->set_server($server_overwrite);
+         Rex::TaskList->create()->get_task($task)->set_server($server_overwrite);
       }
 
       # this is a deprecated static call
-      Rex::TaskList->run($task, params => $params);
+      Rex::TaskList->create()->run($task, params => $params);
    }
 }
 
@@ -646,22 +646,22 @@ sub modify_task {
    my $key   = shift;
    my $value = shift;
 
-   Rex::TaskList->get_task($task)->modify($key => $value);
+   Rex::TaskList->create()->get_task($task)->modify($key => $value);
 }
 
 sub is_task {
    my ($class, $task) = @_;
-   return Rex::TaskList->is_task($task);
+   return Rex::TaskList->create()->is_task($task);
 }
 
 sub get_tasks {
    my ($class, @tmp) = @_;
-   return Rex::TaskList->get_tasks(@tmp);
+   return Rex::TaskList->create()->get_tasks(@tmp);
 }
 
 sub get_desc {
    my ($class, @tmp) = @_;
-   return Rex::TaskList->get_desc(@tmp);
+   return Rex::TaskList->create()->get_desc(@tmp);
 }
 
 =back

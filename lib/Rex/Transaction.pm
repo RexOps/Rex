@@ -81,7 +81,7 @@ sub transaction(&) {
    Rex::Logger::debug("Cleaning ROLLBACKS array");
    @ROLLBACKS = ();
 
-   $Rex::TaskList::IN_TRANSACTION = 1;
+   Rex::TaskList->create()->set_in_transaction(1);
 
    eval {
       &$code();
@@ -105,7 +105,7 @@ sub transaction(&) {
       die("Transaction failed. Rollback done.");
    }
 
-   $Rex::TaskList::IN_TRANSACTION = 0;
+   Rex::TaskList->set_in_transaction(0);
 
    return $ret;
 

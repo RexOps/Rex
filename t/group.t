@@ -32,7 +32,7 @@ my @servers = Rex::Group->get_group("forcetest1");
 ok($servers[0] eq "bla1", "forceserver - 1");
 
 
-my $task = Rex::TaskList->get_task("tasktest3");
+my $task = Rex::TaskList->create()->get_task("tasktest3");
 my @all_server = @{ $task->server };
 
 ok($all_server[0] eq "server1", "forceserver - task - 0");

@@ -39,19 +39,19 @@ public_key("pub.key3");
 task("testa3", sub {
 });
 
-my $auth = Rex::TaskList->get_task("testa1")->{auth};
+my $auth = Rex::TaskList->create()->get_task("testa1")->{auth};
 ok($auth->{user} eq "root1");
 ok($auth->{password} eq "pass1");
 ok($auth->{private_key} eq "priv.key1");
 ok($auth->{public_key} eq "pub.key1");
 
-$auth = Rex::TaskList->get_task("testa2")->{auth};
+$auth = Rex::TaskList->create()->get_task("testa2")->{auth};
 ok($auth->{user} eq "root2");
 ok($auth->{password} eq "pass2");
 ok($auth->{private_key} eq "priv.key2");
 ok($auth->{public_key} eq "pub.key2");
 
-$auth = Rex::TaskList->get_task("testa3")->{auth};
+$auth = Rex::TaskList->create()->get_task("testa3")->{auth};
 ok($auth->{user} eq "root3");
 ok($auth->{password} eq "pass3");
 ok($auth->{private_key} eq "priv.key3");

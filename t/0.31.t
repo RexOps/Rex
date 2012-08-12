@@ -26,7 +26,7 @@ key_auth();
 
 
 no warnings;
-ok($Rex::TaskList::DEFAULT_AUTH == 0, "default auth off");
+ok(Rex::TaskList->create()->is_default_auth() == 0, "default auth off");
 use warnings;
 
 
@@ -46,7 +46,7 @@ task("authtest1", group => "foo", sub {});
 task("authtest2", group => "bar", sub {});
 task("authtest3", "srv001", sub {});
 
-my $task = Rex::TaskList->get_task("authtest3");
+my $task = Rex::TaskList->create()->get_task("authtest3");
 my @all_server = @{ $task->server };
 
 for my $server (@all_server) {
@@ -71,7 +71,7 @@ for my $server (@all_server) {
 
 auth(for => "bar", user => "jan", password => "foo");
 
-$task = Rex::TaskList->get_task("authtest1");
+$task = Rex::TaskList->create()->get_task("authtest1");
 
 @all_server = @{ $task->server };
 
@@ -83,7 +83,7 @@ for my $server (@all_server) {
    ok($auth->{private_key} eq "priv.key3", "merge_auth - priv");
 }
 
-$task = Rex::TaskList->get_task("authtest2");
+$task = Rex::TaskList->create()->get_task("authtest2");
 @all_server = @{ $task->server };
 
 for my $server (@all_server) {
@@ -98,7 +98,7 @@ for my $server (@all_server) {
 
 auth(for => "authtest1", user => "deploy", password => "baz", private_key => FALSE(), public_key => FALSE(), sudo => TRUE());
 
-$task = Rex::TaskList->get_task("authtest1");
+$task = Rex::TaskList->create()->get_task("authtest1");
 @all_server = @{ $task->server };
 
 for my $server (@all_server) {

@@ -93,9 +93,9 @@ task("test4", sub {
 });
 
 
-ok(Rex::TaskList->run("test"), "testing needs");
-ok(Rex::TaskList->run("test2"), "testing needs");
-ok(Rex::TaskList->run("test3"), "testing needs - local namespace");
+ok(Rex::TaskList->create()->run("test"), "testing needs");
+ok(Rex::TaskList->create()->run("test2"), "testing needs");
+ok(Rex::TaskList->create()->run("test3"), "testing needs - local namespace");
 
 
 

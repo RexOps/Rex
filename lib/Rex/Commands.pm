@@ -368,6 +368,51 @@ sub password {
    Rex::Config->set_password(@_);
 }
 
+=item auth(for => $entity, %data)
+
+With this function you can modify/set special authentication parameters for tasks and groups. If you want to modify a task's or group's authentication you first have to create it.
+
+ group frontends => "web[01..10]";
+ group backends => "be[01..05]";
+      
+ auth for => "frontends" => 
+                  user => "root",
+                  password => "foobar";
+    
+ auth for => "backends" =>
+                  user => "admin",
+                  private_key => "/path/to/id_rsa",
+                  public_key => "/path/to/id_rsa.pub",
+                  sudo => TRUE;
+    
+ task "prepare", group => ["frontends", "backends"], sub {
+    # do something
+ };
+    
+ auth for => "prepare" =>
+                  user => "root";
+
+=cut
+sub auth {
+   my ($_d, $entity, %data) = @_;
+
+   my $group = Rex::Group->get_group_object($entity);
+   if(! $group) {
+      Rex::Logger::debug("No group $entity found, looking for a task.");
+      $group = Rex::TaskList->get_task($entity);
+   }
+
+   if(! $group) {
+      Rex::Logger::info("Group or Task $group not found.");
+      CORE::exit 1;
+   }
+
+   Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");
+   $group->set_auth(%data);
+}
+
+
+
 =item port($port)
 
 Set the port where the ssh server is listening.
@@ -958,24 +1003,6 @@ sub get_environments {
 sub say {
    return unless $_[0];
    print @_, "\n";
-}
-
-sub auth {
-   my ($_d, $entity, %data) = @_;
-
-   my $group = Rex::Group->get_group_object($entity);
-   if(! $group) {
-      Rex::Logger::debug("No group $entity found, looking for a task.");
-      $group = Rex::TaskList->get_task($entity);
-   }
-
-   if(! $group) {
-      Rex::Logger::info("Group or Task $group not found.");
-      CORE::exit 1;
-   }
-
-   Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");
-   $group->set_auth(%data);
 }
 
 sub TRUE {

@@ -207,7 +207,7 @@ sub run {
 sub modify {
    my ($self, $type, $task, $code, $package, $file, $line) = @_;
 
-   if($package ne "main") {
+   if($package ne "main" && $package ne "Rex::CLI") {
       if($task !~ m/:/) {
          #do we need to detect for base -Rex ?
          $package =~ s/^Rex:://;

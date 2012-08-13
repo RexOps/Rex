@@ -253,7 +253,7 @@ sub task {
       $options->{"no_ssh"} = 1;
    }
 
-   if($class ne "main") {
+   if($class ne "main" && $class ne "Rex::CLI") {
       $task_name = $class . ":" . $task_name;
    }
 
@@ -279,7 +279,7 @@ sub task {
       Rex::Logger::debug("Registering task: ${class}::$task_name_save");
       *{"${class}::$task_name_save"} = $_[-2];
       use strict;
-   } elsif($class ne "main" && ! $class->can($task_name_save) && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
+   } elsif(($class ne "main" && $class ne "Rex::CLI") && ! $class->can($task_name_save) && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
       # if not in main namespace, register the task as a sub
       no strict 'refs';
       Rex::Logger::debug("Registering task (not main namespace): ${class}::$task_name_save");

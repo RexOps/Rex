@@ -356,6 +356,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Jose Luis Martinez
 
+=item Nikolay Fetisov
+
 =item Samuele Tognini
 
 =item Sascha Guenther

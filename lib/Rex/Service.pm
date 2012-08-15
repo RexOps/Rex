@@ -34,6 +34,10 @@ sub get {
       $class = "Rex::Service::SuSE::systemd";
    }
 
+   if(is_alt() && can_run("systemctl")) {
+      $class = "Rex::Service::ALT::systemd";
+   }
+
    my $provider_for = Rex::Config->get("service_provider") || {};
    my $provider;
 

@@ -100,6 +100,10 @@ sub get_operating_system {
       return "Gentoo";
    }
 
+   if(is_file("/etc/altlinux-release")) {
+      return "ALT";
+   }
+
    if(is_file("/etc/redhat-release")) {
       my $fh = file_read("/etc/redhat-release");
       my $content = $fh->read_all;
@@ -197,6 +201,18 @@ sub get_operating_system_version {
       chomp $content;
 
       $content =~ m/VERSION = (\d+\.\d+)/m;
+
+      return $1;
+
+   }
+   elsif($op eq "ALT" ) {
+      my $fh = file_read("/etc/altlinux-release");
+      my $content = $fh->read_all;
+      $fh->close;
+
+      chomp $content;
+
+      $content =~ m/(\d+(\.\d+)*)/;
 
       return $1;
 

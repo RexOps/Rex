@@ -368,6 +368,15 @@ For Debian: If you have no source repository, or if you don't want to add it, ju
          source     => 1;
  };
 
+For ALT Linux: If repository is unsigned, just remove the I<sign_key> parameter.
+
+ task "add-repo", "server1", "server2", sub {
+    repository "add" => "altlinux-sisyphus",
+         url        => "ftp://ftp.altlinux.org/pub/distributions/ALTLinux/Sisyphus",
+         sign_key   => "alt",
+         arch       => "noarch, x86_64",
+         repository => "classic";
+ };
 
 For CentOS, Mageia and SuSE only the name and the url are needed.
 

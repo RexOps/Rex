@@ -62,6 +62,7 @@ use vars qw(@EXPORT $cloud_service $access_key $secret_access_key $cloud_region)
 use Rex::Logger;
 use Rex::Config;
 use Rex::Cloud;
+use Rex::Group::Entry::Server;
     
 @EXPORT = qw(cloud_instance cloud_volume 
                cloud_instance_list cloud_volume_list
@@ -208,7 +209,7 @@ sub get_cloud_instances_as_group {
       my @ret;
 
       for my $instance (@list) {
-         push(@ret, $instance->{"ip"});
+         push(@ret, Rex::Group::Entry::Server->new(name => $instance->{"ip"}));
       }
 
       return @ret;

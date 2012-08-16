@@ -30,7 +30,10 @@ sub new {
 
 sub get_servers {
    my ($self) = @_;
-   return @{ $self->{servers} };
+
+   my @servers = map { ref($_->to_s) eq "CODE" ? &{ $_->to_s } : $_ } @{ $self->{servers} };
+
+   return @servers;
 }
 
 sub set_auth {

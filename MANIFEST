@@ -1,10 +1,12 @@
 bin/rex
 bin/rexify
 ChangeLog
+CONTRIBUTORS
 lib/Rex.pm
 lib/Rex/Args.pm
 lib/Rex/Batch.pm
 lib/Rex/Cache.pm
+lib/Rex/CLI.pm
 lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm
 lib/Rex/Cloud/Base.pm
@@ -119,6 +121,7 @@ lib/Rex/Logger.pm
 lib/Rex/Output.pm
 lib/Rex/Output/JUnit.pm
 lib/Rex/Pkg.pm
+lib/Rex/Pkg/ALT.pm
 lib/Rex/Pkg/Debian.pm
 lib/Rex/Pkg/FreeBSD.pm
 lib/Rex/Pkg/Gentoo.pm
@@ -135,6 +138,8 @@ lib/Rex/Pkg/Ubuntu.pm
 lib/Rex/SCM/Git.pm
 lib/Rex/SCM/Subversion.pm
 lib/Rex/Service.pm
+lib/Rex/Service/ALT.pm
+lib/Rex/Service/ALT/systemd.pm
 lib/Rex/Service/Debian.pm
 lib/Rex/Service/FreeBSD.pm
 lib/Rex/Service/Gentoo.pm
@@ -155,6 +160,7 @@ lib/Rex/Shared/Var/Scalar.pm
 lib/Rex/Sudo/File.pm
 lib/Rex/Task.pm
 lib/Rex/TaskList.pm
+lib/Rex/TaskList/Base.pm
 lib/Rex/Template.pm
 lib/Rex/Transaction.pm
 lib/Rex/User.pm
@@ -180,6 +186,8 @@ lib/Rex/Virtualization/LibVirt/vncdisplay.pm
 LICENSE
 Makefile.PL
 MANIFEST
+MYMETA.json
+MYMETA.yml
 README
 t/0.31.t
 t/01.t

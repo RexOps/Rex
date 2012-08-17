@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 11;
+use Data::Dumper;
 
 use_ok 'Rex::Args';
 
-push(@ARGV, qw(-h -T -dv -u user -p pass -t 5));
+push(@ARGV, qw(-h -T -dv -u user -p pass -t 5 foo --name=thename --num=5));
 
 Rex::Args->import(
    C => {},
@@ -43,4 +44,12 @@ ok(exists $opts{v} && $opts{v}, "single parameter (4) (multiple)");
 ok(exists $opts{u} && $opts{u} eq "user", "parameter with option (1) / string");
 ok(exists $opts{p} && $opts{p} eq "pass", "parameter with option (2) / string");
 ok(exists $opts{t} && $opts{t} == 5, "parameter with option (3) / integer");
+
+ok($ARGV[0] eq "foo", "got the taskname");
+
+my %params = Rex::Args->get;
+
+ok(exists $params{name} && $params{name} eq "thename", "got task parameter (1)");
+ok(exists $params{num} && $params{num} == 5, "got task parameter (2)");
+
 

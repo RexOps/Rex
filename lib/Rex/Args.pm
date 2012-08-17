@@ -31,7 +31,7 @@ sub import {
    my @params = @ARGV;
    for my $p (@params) {
       # shift off @ARGV
-      shift @ARGV;
+      my $shift = shift @ARGV;
 
       if(length($p) >= 2 && substr($p, 0, 1) eq "-") {
          my $name_param = substr($p, 1, 2);
@@ -70,6 +70,8 @@ sub import {
          }
       }
       else {
+         # unshift the last parameter
+         unshift @ARGV, $shift;
          last;
       }
    }

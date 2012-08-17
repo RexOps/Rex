@@ -54,7 +54,7 @@ Setting this variable to 1 will enable debug logging.
 =cut
 our $debug = 0;
 
-=item $silen
+=item $silent
 
 If you set this variable to 1 nothing will be logged.
 

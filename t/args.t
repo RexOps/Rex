@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Data::Dumper;
 
 use_ok 'Rex::Args';
@@ -48,6 +48,9 @@ ok(exists $opts{t} && $opts{t} == 5, "parameter with option (3) / integer");
 ok($ARGV[0] eq "foo", "got the taskname");
 
 my %params = Rex::Args->get;
+
+ok($ARGV[1] eq "--name=thename", "got the whole parameter (1)");
+ok($ARGV[2] eq "--num=5", "got the whole parameter (2)");
 
 ok(exists $params{name} && $params{name} eq "thename", "got task parameter (1)");
 ok(exists $params{num} && $params{num} == 5, "got task parameter (2)");

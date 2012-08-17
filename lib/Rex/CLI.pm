@@ -29,6 +29,11 @@ my $no_color = 0;
 eval "use Term::ANSIColor";
 if($@) { $no_color = 1; }
 
+# no colors under windows
+if($^O =~ m/MSWin/) {
+   $no_color = 1;
+}
+
 # preload some modules
 use Rex -base;
 

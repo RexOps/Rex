@@ -126,6 +126,7 @@ use base qw(Rex::Exporter);
             auth
             FALSE TRUE
             set_distributor
+            report
           );
 
 =item no_ssh([$task])
@@ -958,6 +959,20 @@ This function returns the current connection object.
 =cut
 sub connection {
    return Rex::get_current_connection()->{"conn"};
+}
+
+=item report($string)
+
+=cut
+sub report {
+   my ($str, $type) = @_;
+
+   if($str eq "-on" || $str eq "on") {
+      $type ||= "Base";
+      $str = "Createing $type reporting class";
+   }
+
+   Rex::Report->create($type)->report($str);
 }
 
 ######### private functions

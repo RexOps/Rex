@@ -23,6 +23,8 @@ use Rex::Cache;
 use Rex::Logger;
 use Rex::Output;
 
+use Data::Dumper;
+
 my $no_color = 0;
 eval "use Term::ANSIColor";
 if($@) { $no_color = 1; }
@@ -48,10 +50,38 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-getopts('CcqQFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:t:', \%opts);
+#getopts('CcqQFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:t:', \%opts);
 
 require Rex::Args;
-Rex::Args->import;
+
+Rex::Args->import(
+   C => {},
+   c => {},
+   q => {},
+   Q => {},
+   F => {},
+   T => {},
+   h => {},
+   v => {},
+   d => {},
+   s => {},
+   S => { type => "string" },
+   E => { type => "string" },
+   o => { type => "string" },
+   f => { type => "string" },
+   M => { type => "string" },
+   b => { type => "string" },
+   e => { type => "string" },
+   H => { type => "string" },
+   u => { type => "string" },
+   p => { type => "string" },
+   P => { type => "string" },
+   K => { type => "string" },
+   G => { type => "string" },
+   t => { type => "integer" },
+);
+
+%opts = Rex::Args->getopts;
 
 sub new {
    my $that = shift;

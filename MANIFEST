@@ -4,6 +4,9 @@ ChangeLog
 CONTRIBUTORS
 lib/Rex.pm
 lib/Rex/Args.pm
+lib/Rex/Args/Integer.pm
+lib/Rex/Args/Single.pm
+lib/Rex/Args/String.pm
 lib/Rex/Batch.pm
 lib/Rex/Cache.pm
 lib/Rex/CLI.pm
@@ -135,6 +138,8 @@ lib/Rex/Pkg/SunOS/OpenCSW.pm
 lib/Rex/Pkg/SunOS/pkg.pm
 lib/Rex/Pkg/SuSE.pm
 lib/Rex/Pkg/Ubuntu.pm
+lib/Rex/Report.pm
+lib/Rex/Report/Base.pm
 lib/Rex/SCM/Git.pm
 lib/Rex/SCM/Subversion.pm
 lib/Rex/Service.pm
@@ -186,11 +191,10 @@ lib/Rex/Virtualization/LibVirt/vncdisplay.pm
 LICENSE
 Makefile.PL
 MANIFEST
-MYMETA.json
-MYMETA.yml
 README
 t/0.31.t
 t/01.t
+t/args.t
 t/auth.t
 t/commands.t
 t/config.t
@@ -200,5 +204,6 @@ t/helper_hash.t
 t/host.t
 t/interface_fs_local.t
 t/needs.t
+t/report.t
 t/shared.t
 t/task.t

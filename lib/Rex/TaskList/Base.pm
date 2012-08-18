@@ -50,10 +50,15 @@ sub create_task {
 
    if($::FORCE_SERVER) {
 
-      my @servers = split(/\s+/, $::FORCE_SERVER);
-      push(@server, map { Rex::Group::Entry::Server->new(name => $_); } @servers);
+      if($::FORCE_SERVER =~ m/^\0/) {
+         push(@server, map { Rex::Group::Entry::Server->new(name => $_); } Rex::Group->get_group(substr($::FORCE_SERVER, 1)));
+      }
+      else {
+         my @servers = split(/\s+/, $::FORCE_SERVER);
+         push(@server, map { Rex::Group::Entry::Server->new(name => $_); } @servers);
 
-      Rex::Logger::debug("\tserver: $_") for @server;
+         Rex::Logger::debug("\tserver: $_") for @server;
+      }
 
    }
 

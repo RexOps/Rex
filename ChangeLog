@@ -1,3 +1,7 @@
+2012-08-16 Jan Gehring <jan.gehring, gmail.com> (0.31.5)
+  * fixed cli parameter bug (-G)
+  * fixed logging bug with %h
+
 2012-08-04 Jan Gehring <jan.gehring, gmail.com> (0.31.0)
   * fixed a bug for task with the no_ssh attribute
   * added http transport layer

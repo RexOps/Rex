@@ -214,7 +214,7 @@ sub format_string {
    my ($s, $level) = @_;
 
    my $date = get_timestamp;
-   my $host = Rex::get_current_connection() ? Rex::get_current_connection()->{server} : "<local>";
+   my $host = Rex::get_current_connection() ? Rex::get_current_connection()->{conn}->server : "<local>";
    my $pid = $$;
 
    my $line = $format;

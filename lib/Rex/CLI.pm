@@ -53,8 +53,6 @@ if($#ARGV < 0) {
    @ARGV = qw(-h);
 }
 
-#getopts('CcqQFThvdsS:E:o:f:M:b:e:H:u:p:P:K:G:t:', \%opts);
-
 require Rex::Args;
 
 sub new {

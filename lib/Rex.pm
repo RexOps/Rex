@@ -327,7 +327,7 @@ sub import {
    }
    elsif($what eq "-feature" || $what eq "feature") {
       # remove default task auth
-      if($addition1 eq "0.31") {
+      if($addition1  >= 0.31) {
          Rex::TaskList->create()->set_default_auth(0);
       }
    }

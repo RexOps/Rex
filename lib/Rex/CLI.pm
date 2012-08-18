@@ -37,8 +37,6 @@ if($^O =~ m/MSWin/) {
 # preload some modules
 use Rex -base;
 
-use Getopt::Std;
-
 BEGIN {
 
    if(-d "lib") {
@@ -59,35 +57,6 @@ if($#ARGV < 0) {
 
 require Rex::Args;
 
-Rex::Args->import(
-   C => {},
-   c => {},
-   q => {},
-   Q => {},
-   F => {},
-   T => {},
-   h => {},
-   v => {},
-   d => {},
-   s => {},
-   S => { type => "string" },
-   E => { type => "string" },
-   o => { type => "string" },
-   f => { type => "string" },
-   M => { type => "string" },
-   b => { type => "string" },
-   e => { type => "string" },
-   H => { type => "string" },
-   u => { type => "string" },
-   p => { type => "string" },
-   P => { type => "string" },
-   K => { type => "string" },
-   G => { type => "string" },
-   t => { type => "integer" },
-);
-
-%opts = Rex::Args->getopts;
-
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -99,6 +68,38 @@ sub new {
 }
 
 sub __run__ {
+
+   my ($self, %more_args) = @_;
+
+   Rex::Args->import(
+      C => {},
+      c => {},
+      q => {},
+      Q => {},
+      F => {},
+      T => {},
+      h => {},
+      v => {},
+      d => {},
+      s => {},
+      S => { type => "string" },
+      E => { type => "string" },
+      o => { type => "string" },
+      f => { type => "string" },
+      M => { type => "string" },
+      b => { type => "string" },
+      e => { type => "string" },
+      H => { type => "string" },
+      u => { type => "string" },
+      p => { type => "string" },
+      P => { type => "string" },
+      K => { type => "string" },
+      G => { type => "string" },
+      t => { type => "integer" },
+      %more_args,
+   );
+
+   %opts = Rex::Args->getopts;
 
    if($opts{'Q'}) {
       my ($stdout, $stderr);
@@ -125,37 +126,9 @@ sub __run__ {
    }
 
    if($opts{'h'}) {
-      print "(R)?ex - (Remote)? Execution\n";
-      printf "  %-15s %s\n", "-b", "Run batch";
-      printf "  %-15s %s\n", "-e", "Run the given code fragment";
-      printf "  %-15s %s\n", "-E", "Execute task on the given environment";
-      printf "  %-15s %s\n", "-H", "Execute task on these hosts";
-      printf "  %-15s %s\n", "-G", "Execute task on these group";
-      printf "  %-15s %s\n", "-u", "Username for the ssh connection";
-      printf "  %-15s %s\n", "-p", "Password for the ssh connection";
-      printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
-      printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection";
-      printf "  %-15s %s\n", "-T", "List all known tasks.";
-      printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
-      printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
-      printf "  %-15s %s\n", "-h", "Display this help";
-      printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
-      printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
-      printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
-      printf "  %-15s %s\n", "-s", "Use sudo for every command";
-      printf "  %-15s %s\n", "-S", "Password for sudo";
-      printf "  %-15s %s\n", "-d", "Debug";
-      printf "  %-15s %s\n", "-o", "Output Format";
-      printf "  %-15s %s\n", "-c", "Turn cache ON";
-      printf "  %-15s %s\n", "-C", "Turn cache OFF";
-      printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
-      printf "  %-15s %s\n", "-Q", "Really quiet. Output nothing.";
-      printf "  %-15s %s\n", "-t", "Number of threads to use.";
-      print "\n";
-      CORE::exit 0;
+      $self->__help__;
    } elsif($opts{'v'} && ! $opts{'T'}) {
-      print "(R)?ex " . $Rex::VERSION . "\n";
-      CORE::exit 0;
+      $self->__version__;
    }
 
    if($opts{'q'}) {
@@ -515,6 +488,45 @@ sub __run__ {
 
 
 
+}
+
+sub __help__ {
+
+   print "(R)?ex - (Remote)? Execution\n";
+   printf "  %-15s %s\n", "-b", "Run batch";
+   printf "  %-15s %s\n", "-e", "Run the given code fragment";
+   printf "  %-15s %s\n", "-E", "Execute task on the given environment";
+   printf "  %-15s %s\n", "-H", "Execute task on these hosts";
+   printf "  %-15s %s\n", "-G", "Execute task on these group";
+   printf "  %-15s %s\n", "-u", "Username for the ssh connection";
+   printf "  %-15s %s\n", "-p", "Password for the ssh connection";
+   printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
+   printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection";
+   printf "  %-15s %s\n", "-T", "List all known tasks.";
+   printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
+   printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
+   printf "  %-15s %s\n", "-h", "Display this help";
+   printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
+   printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
+   printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";
+   printf "  %-15s %s\n", "-s", "Use sudo for every command";
+   printf "  %-15s %s\n", "-S", "Password for sudo";
+   printf "  %-15s %s\n", "-d", "Debug";
+   printf "  %-15s %s\n", "-o", "Output Format";
+   printf "  %-15s %s\n", "-c", "Turn cache ON";
+   printf "  %-15s %s\n", "-C", "Turn cache OFF";
+   printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
+   printf "  %-15s %s\n", "-Q", "Really quiet. Output nothing.";
+   printf "  %-15s %s\n", "-t", "Number of threads to use.";
+   print "\n";
+
+   CORE::exit 0;
+
+}
+
+sub __version__ {
+   print "(R)?ex " . $Rex::VERSION . "\n";
+   CORE::exit 0;
 }
 
 1;

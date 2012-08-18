@@ -9,6 +9,8 @@ package Rex::Interface::Executor;
 use strict;
 use warnings;
 
+use Data::Dumper;
+
 sub create {
    my ($class, $type) = @_;
 

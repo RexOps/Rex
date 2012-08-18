@@ -11,10 +11,12 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Output;
-use Rex::Args;
+use Data::Dumper;
 
 use Rex::Interface::Executor::Base;
 use base qw(Rex::Interface::Executor::Base);
+
+require Rex::Args;
 
 sub new {
    my $that = shift;

@@ -55,6 +55,10 @@ sub import {
                   CORE::exit 1;
                }
             }
+            elsif(exists $args{$name_param}->{func}) {
+               Rex::Logger::debug("   is a function - executing now");
+               $args{$name_param}->{func}->();
+            }
 
             my $c = "Rex::Args::\u$type";
             eval "use $c";

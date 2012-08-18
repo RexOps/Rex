@@ -16,3 +16,5 @@ pm_toblib
 ^\.DS_*
 \.sh$
 MANIFEST\..*
+MYMETA.json
+MYMETA.yml

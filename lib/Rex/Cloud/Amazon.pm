@@ -148,13 +148,22 @@ sub terminate_instance {
                "InstanceId.1" => $data{"instance_id"});
 }
 
+sub start_instance {
+   my ($self, %data) = @_;
+
+   Rex::Logger::debug("Trying to start an instance");
+
+   $self->_request("StartInstances",
+               "InstanceId.1" => $data{instance_id});
+}
+
 sub stop_instance {
-   my ($self, $id) = @_;
+   my ($self, %data) = @_;
 
    Rex::Logger::debug("Trying to stop an instance");
 
    $self->_request("StopInstances",
-               "InstanceId.1" => $id);
+               "InstanceId.1" => $data{instance_id});
 }
 
 sub add_tag {
@@ -306,6 +315,7 @@ sub _request {
       eval {
          no warnings;
          $ret = $res->content;
+         Rex::Logger::debug($ret);
          use warnings;
       };
 

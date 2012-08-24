@@ -126,6 +126,7 @@ use base qw(Rex::Exporter);
             auth
             FALSE TRUE
             set_distributor
+            template_function
             report
           );
 
@@ -578,6 +579,15 @@ Possible values are: Base, Gearman
 =cut
 sub set_distributor {
    Rex::Config->set_distributor($_[0]);
+}
+
+=item set_template_function(sub { ... })
+
+This function sets the template processing function. So it is possible to change the template engine. For example to Template::Toolkit.
+
+=cut
+sub template_function {
+   Rex::Config->set_template_function($_[0]);
 }
 
 =item logging

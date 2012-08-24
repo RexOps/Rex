@@ -39,6 +39,7 @@ our ($user, $password, $port,
             $environment,
             $connection_type,
             $distributor,
+            $template_function,
             $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
             %SSH_CONFIG_FOR);
 
@@ -325,6 +326,24 @@ sub get_distributor {
    return $distributor || "Base";
 }
 
+sub set_template_function {
+   my $class = shift;
+   ($template_function) = @_;
+}
+
+sub get_template_function {
+   if(ref($template_function) eq "CODE") {
+      return $template_function;
+   }
+
+   return sub {
+         my ($content, $template_vars) = @_;
+         use Rex::Template;
+         my $template = Rex::Template->new;
+         return $template->parse($content, $template_vars);
+   };
+}
+
 =item register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
@@ -484,7 +503,7 @@ __PACKAGE__->register_config_handler(base => sub {
    }
 });
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key distributor/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key distributor template_function/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;

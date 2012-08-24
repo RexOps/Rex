@@ -141,8 +141,6 @@ sub install {
       if($source =~ m/\.tpl$/) {
          # das ist ein template
 
-         my $template = Rex::Template->new;
-         
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
          my $vars = $option->{"template"};
@@ -157,7 +155,7 @@ sub install {
          }
 
          my $fh = file_write($package);
-         $fh->write($template->parse($content, \%template_vars));
+         $fh->write(Rex::Config->get_template_function()->($content, \%template_vars));
          $fh->close;
 
          if($need_md5) {

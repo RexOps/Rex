@@ -122,7 +122,6 @@ sub template {
       $file = "$file." . Rex::Config->get_environment;
    }
 
-   my $template = Rex::Template->new;
    my $content;
 
    if(-f $file) {
@@ -142,7 +141,7 @@ sub template {
 
    my %template_vars = _get_std_template_vars($param);
 
-   return $template->parse($content, \%template_vars);
+   return Rex::Config->get_template_function()->($content, \%template_vars);
 }
 
 sub _get_std_template_vars {

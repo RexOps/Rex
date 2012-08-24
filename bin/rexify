@@ -165,6 +165,8 @@ task "uptime", group => 'servers', sub {
 
    open($fh, ">", "Rexfile") or die($!);
    print $fh qq~
+# enable new Features
+use Rex -feature => 0.31;
 
 # set your username
 set user => "<user>";
@@ -176,7 +178,7 @@ set password => "<password>";
 set -passauth;
 
 # put your server in this group
-group "servers" => "server1", "server2";
+set group => "servers" => "server1", "server2";
 
 
 # now load every module via ,,require''

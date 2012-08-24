@@ -18,6 +18,10 @@ sub get {
 
    my $hw_class = _get_class();
 
+   unless($hw_class) {
+      return {};
+   }
+
    return {
  
       networkdevices => $hw_class->get_network_devices(),
@@ -47,6 +51,11 @@ sub _get_class {
 
    my $hw_class = "Rex::Hardware::Network::$os_type";
    eval "use $hw_class;";
+
+   if($@) {
+      Rex::Logger::debug("No network information on $os_type");
+      return;
+   }
 
    return $hw_class;
 }

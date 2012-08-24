@@ -60,6 +60,7 @@ use Rex::Helper::SSH2;
 use Rex::Commands;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
+use Rex::Interface::File;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -635,6 +636,44 @@ sub mount {
    my $exec = Rex::Interface::Exec->create;
    $exec->exec($cmd);
    if($? != 0) { die("Mount failed of $mount_point"); }
+
+   if(exists $option->{persistent}) {
+      if(! exists $option->{fs}) {
+         # no fs given, so get it from mount output
+         my ($line) = grep { /^$device/ } $exec->exec("mount");
+         my ($_d, $_o, $_p, $_t, $fs_type) = split(/\s+/, $line);
+         $option->{fs} = $fs_type;
+
+         my ($_options) = ($line =~ m/\((.+?)\)/);
+         $option->{options} = $_options;
+      }
+
+      my $fh = Rex::Interface::File->create;
+
+      if( ! $fh->open("<", "/etc/fstab")) {
+         Rex::Logger::debug("Can't open /etc/fstab for reading.");
+         die("Can't open /etc/fstab for reading.");
+      }
+
+      my $f = Rex::FS::File->new(fh => $fh);
+      my @content = $f->read_all;
+      $f->close;
+
+      my @new_content = grep { ! /^$device\s/ } @content;
+      push(@new_content, "$device\t$mount_point\t$option->{fs}\n$option->{options}\t0 0\n");
+
+      $fh = Rex::Interface::File->create;
+
+      if( ! $fh->open(">", "/etc/fstab")) {
+         Rex::Logger::debug("Can't open /etc/fstab for writing.");
+         die("Can't open /etc/fstab for writing.");
+      }
+
+      $f = Rex::FS::File->new(fh => $fh);
+      $f->write(join("\n", @new_content));
+      $f->close;
+
+   }
 }
 
 =item umount($mount_point)

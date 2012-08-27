@@ -216,6 +216,8 @@ sub mkdir {
       &chown($owner, $dir) if $owner;
       &chgrp($group, $dir) if $group;
       &chmod($mode, $dir)  if $owner;
+
+      return;
    }
 
    my @splitted_dir = map { $_="/$_"; } split(/\//, $dir);

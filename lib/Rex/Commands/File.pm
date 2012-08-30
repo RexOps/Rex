@@ -105,10 +105,16 @@ sub template {
       # path is relative and no template
       Rex::Logger::debug("Relativ path $file");
       my ($caller_package, $caller_file, $caller_line) = caller;
-      my $d = dirname($caller_file) . "/" . $file;
 
-      Rex::Logger::debug("New filename: $d");
-      $file = $d;
+      # check if it is a module
+      if(-f "lib/$caller_package/Module.pm") {
+         $file = "lib/$caller_package/$file";
+      }
+      else {
+         $file = dirname($caller_file) . "/" . $file;
+      }
+
+      Rex::Logger::debug("New filename: $file");
    }
 
    # if there is a file called filename.environment then use this file

@@ -30,7 +30,17 @@ sub exec {
    $path ||= "";
 
    my $ssh = Rex::is_ssh();
-   my ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
+
+   my ($shell) = net_ssh2_exec($ssh, "echo \$SHELL");
+   $shell ||= "bash";
+
+   my ($out, $err);
+   if($shell !~ m/bash/) {
+      ($out, $err) = net_ssh2_exec($ssh, $cmd);
+   }
+   else {
+      ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
+   }
 
    Rex::Logger::debug($out);
    Rex::Logger::debug("========= ERR ============");

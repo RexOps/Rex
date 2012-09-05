@@ -31,7 +31,15 @@ sub get {
    };
 
 
-   if($os eq "SunOS") {
+   if($os eq "Windows") {
+      my $conn = Rex::get_current_connection()->{conn};
+      return {
+         used => $conn->post("/os/swap/used")->{used},
+         total => $conn->post("/os/swap/max")->{max},
+         free => $conn->post("/os/swap/free")->{free},
+      };
+   }
+   elsif($os eq "SunOS") {
       my ($swap_str) = run("swap -s");
 
       my ($used, $u_ent, $avail, $a_ent) = ($swap_str =~ m/(\d+)([a-z]) used, (\d+)([a-z]) avail/);

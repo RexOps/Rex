@@ -348,7 +348,7 @@ Returns true if the target system is a Linux System.
 sub is_linux {
 
    my $host = Rex::Hardware::Host->get();
-   if($host->{"kernelname"} =~ m/Linux/) {
+   if(exists $host->{kernelname} && $host->{kernelname} && $host->{kernelname} =~ m/Linux/) {
       return 1;
    }
 }
@@ -392,7 +392,7 @@ Returns true if the target system is a Solaris System.
 sub is_solaris {
 
    my $host = Rex::Hardware::Host->get();
-   if($host->{"kernelname"} =~ m/SunOS/) {
+   if(exists $host->{kernelname} && $host->{kernelname} && $host->{"kernelname"} =~ m/SunOS/) {
       return 1;
    }
 }
@@ -405,7 +405,7 @@ Returns true if the target system is a Windows System.
 sub is_windows {
 
    my $host = Rex::Hardware::Host->get();
-   if($host->{"operatingsystem"} =~ m/^MSWin/) {
+   if($host->{"operatingsystem"} =~ m/^MSWin/ || $host->{operatingsystem} eq "Windows") {
       return 1;
    }
 

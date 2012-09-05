@@ -28,7 +28,9 @@ sub exec {
    if($path) { $path = "PATH=$path" }
    $path ||= "";
 
-   $cmd = "LC_ALL=C $path " . $cmd;
+   # let the other side descide if LC_ALL=C should be used
+   # for example, this will not work on windows
+   #$cmd = "LC_ALL=C $path " . $cmd;
 
    my $resp = connection->post("/execute", {exec => $cmd});
 

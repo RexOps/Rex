@@ -32,7 +32,11 @@ sub get {
       my $os = Rex::get_cache()->call_sub("Rex::Hardware::Host", "get_operating_system");
 
       my ($domain, $hostname);
-      if($os eq "NetBSD" || $os eq "OpenBSD") {
+      if($os eq "Windows") {
+         ($hostname) = grep { $_=$1 if /^COMPUTERNAME=(.*)$/ } split(/\r?\n/, Rex::get_cache()->run("env"));
+         ($domain)   = grep { $_=$1 if /^USERDOMAIN=(.*)$/ } split(/\r?\n/, Rex::get_cache()->run("env"));
+      }
+      elsif($os eq "NetBSD" || $os eq "OpenBSD") {
          ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
          ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
       }
@@ -82,6 +86,11 @@ sub get_operating_system {
          }
          return $ret;
       }
+   }
+
+   if(is_dir("c:/")) {
+      # windows
+      return "Windows";
    }
 
    if(is_file("/etc/debian_version")) {

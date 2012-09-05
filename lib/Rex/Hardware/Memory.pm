@@ -30,8 +30,15 @@ sub get {
 
    };
 
-  
-   if($os eq "SunOS") {
+   if($os eq "Windows") {
+      my $conn = Rex::get_current_connection()->{conn};
+      return {
+         used => $conn->post("/os/memory/used")->{used},
+         total => $conn->post("/os/memory/max")->{max},
+         free => $conn->post("/os/memory/free")->{free},
+      };
+   }
+   elsif($os eq "SunOS") {
       my @data = run "echo ::memstat | mdb -k";
 
       my ($free_cache) = grep { $_=$1 if /^Free \(cache[^\d]+\d+\s+(\d+)/ } @data;

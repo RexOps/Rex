@@ -20,6 +20,12 @@ use Rex::Config;
 
 Rex::Config->register_config_handler(virtualization => sub {
    my ($param) = @_;
+   
+   if (ref($param) eq '') {
+      #support 'set virtualization => 'LibVirt', but leave the way open for using a hash in future
+      #other virtualisation drivers may need more settings...
+      $param = {type=>$param};
+   }
 
    if(exists $param->{type}) {
       Rex::Config->set(virtualization => $param->{type});
@@ -56,7 +62,7 @@ With this module you can manage your virtualization.
 
  use Rex::Commands::Virtualization;
     
- set virtualization => "LibVirt";
+ set virtualization => {type => "LibVirt"};
     
  use Data::Dumper;   
 

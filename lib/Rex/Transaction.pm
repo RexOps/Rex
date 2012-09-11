@@ -105,7 +105,7 @@ sub transaction(&) {
       die("Transaction failed. Rollback done.");
    }
 
-   Rex::TaskList->set_in_transaction(0);
+   Rex::TaskList->create()->set_in_transaction(0);
 
    return $ret;
 

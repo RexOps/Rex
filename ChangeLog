@@ -1,3 +1,6 @@
+2012-08-30 Jan Gehring <jan.gehring, gmail.com> (0.32.1)
+  * fixed a bug in the transaction module
+
 2012-08-21 Jan Gehring <jan.gehring, gmail.com> (0.32.0)
   * made the worker model exchangeable
   * added a reporting base class

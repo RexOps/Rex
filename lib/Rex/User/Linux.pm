@@ -58,7 +58,11 @@ sub create_user {
    if(exists $data->{home}) {
       $cmd .= " -d " . $data->{home};
 
-      if(exists $data->{"no-create-home"} || exists $data->{"no_create_home"}) {
+      if(
+         (exists $data->{"no-create-home"} && $data->{"no-create-home"})
+            ||
+         (exists $data->{"no_create_home"} && $data->{"no_create_home"})
+        ) {
          $cmd .= " -M";
       }
       elsif(!is_dir($data->{home})) {

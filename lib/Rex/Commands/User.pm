@@ -23,6 +23,7 @@ With this module you can manage user and groups.
        groups  => ['root', '...'],
        password => 'blahblah',
        system => 1,
+       no_create_home => TRUE,
        ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
@@ -78,16 +79,37 @@ sub create_user {
 
    if(defined $data->{"ssh_key"}) {
 
-      if(! is_dir($data->{"home"} . "/.ssh")) {
-         mkdir $data->{"home"} . "/.ssh",
-            owner => $user,
-            mode  => 700;
+      if(
+            ! ( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
+
+            && 
+
+            ! ( exists $data->{"no_create_home"} && $data->{"no_create_home"} )
+
+            &&
+      
+            ! is_dir($data->{"home"} . "/.ssh")
+        ) {
+
+         eval {
+            mkdir $data->{"home"} . "/.ssh",
+               owner => $user,
+               mode  => 700,
+               not_recursive => 1;
+         } or do {
+            # error creating .ssh directory
+            Rex::Logger::debug("Not creating .ssh directory because parent doesn't exists.");
+         };
       }
 
-      file $data->{"home"} . "/.ssh/authorized_keys",
-         content => $data->{"ssh_key"},
-         owner   => $user,
-         mode    => 600;
+      if(is_dir($data->{"home"} . "/.ssh")) {
+
+         file $data->{"home"} . "/.ssh/authorized_keys",
+            content => $data->{"ssh_key"},
+            owner   => $user,
+            mode    => 600;
+
+      }
 
    }
 
@@ -147,7 +169,18 @@ Delete a user from the system.
 =cut
 
 sub delete_user {
-   Rex::User->get()->rm_user(@_);
+   my ($user, @_data) = @_;
+
+   my $data = {};
+
+   if(! ref($_data[0])) {
+      $data = { @_data };
+   }
+   else {
+      $data = $_data[0];
+   }
+
+   Rex::User->get()->rm_user($user, $data);
 }
 
 =item create_group($group, {})

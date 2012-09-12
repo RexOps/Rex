@@ -128,6 +128,7 @@ use base qw(Rex::Exporter);
             set_distributor
             template_function
             report
+            make
           );
 
 =item no_ssh([$task])
@@ -1048,6 +1049,10 @@ sub TRUE {
 
 sub FALSE {
    return 0;
+}
+
+sub make(&) {
+   return $_[0];
 }
 
 =back

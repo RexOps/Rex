@@ -33,9 +33,11 @@ sub exec {
    my ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
 
    Rex::Logger::debug($out);
-   Rex::Logger::debug("========= ERR ============");
-   Rex::Logger::debug($err);
-   Rex::Logger::debug("========= ERR ============");
+   if($err) {
+      Rex::Logger::debug("========= ERR ============");
+      Rex::Logger::debug($err);
+      Rex::Logger::debug("========= ERR ============");
+   }
 
    if(wantarray) { return ($out, $err); }
 

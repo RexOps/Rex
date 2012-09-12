@@ -39,9 +39,12 @@ sub exec {
       my ($out, $err) =  ($resp->{output}, "");
 
       Rex::Logger::debug($out);
-      Rex::Logger::debug("========= ERR ============");
-      Rex::Logger::debug($err);
-      Rex::Logger::debug("========= ERR ============");
+
+      if($err) {
+         Rex::Logger::debug("========= ERR ============");
+         Rex::Logger::debug($err);
+         Rex::Logger::debug("========= ERR ============");
+      }
 
       if(wantarray) { return ($out, $err); }
 

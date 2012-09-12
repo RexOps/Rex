@@ -179,6 +179,10 @@ sub partition {
    }
 
    run "partprobe";
+   while(! -e "/dev/$disk$part_num") {
+      Rex::Logger::debug("Waiting on /dev/$disk$part_num to appear...");
+      sleep 1;
+   }
 
    if(! exists $option{fstype} || $option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "") {
       # nix

@@ -77,24 +77,37 @@ use Net::SSH2;
 use Rex::Logger;
 use Rex::Cache;
 use Rex::Interface::Connection;
+use Cwd qw(getcwd);
 
 our (@EXPORT,
       $VERSION,
       @CONNECTION_STACK,
-      $GLOBAL_SUDO);
+      $GLOBAL_SUDO,
+      $MODULE_PATHS);
 
 $VERSION = "0.32.1";
+
+my $cur_dir = getcwd;
 
 push(@INC, sub {
 
    my $mod_to_load = $_[1];
    $mod_to_load =~ s/\.pm//g;
+
    if(-d "lib/$mod_to_load" && -f "lib/$mod_to_load/Module.pm") {
+      $MODULE_PATHS->{$mod_to_load} = {path => "$cur_dir/lib/$mod_to_load"};
       open(my $fh, "lib/$mod_to_load/Module.pm");
       return $fh;
    }
 
 });
+
+sub get_module_path {
+   my ($module) = @_;
+   if(exists $MODULE_PATHS->{$module}) {
+      return $MODULE_PATHS->{$module}->{path};
+   }
+}
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];

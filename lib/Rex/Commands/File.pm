@@ -107,8 +107,9 @@ sub template {
       my ($caller_package, $caller_file, $caller_line) = caller;
 
       # check if it is a module
-      if(-f "lib/$caller_package/Module.pm") {
-         $file = "lib/$caller_package/$file";
+      my $module_path = Rex::get_module_path($caller_package);
+      if($module_path) {
+         $file = "$module_path/$file";
       }
       else {
          $file = dirname($caller_file) . "/" . $file;

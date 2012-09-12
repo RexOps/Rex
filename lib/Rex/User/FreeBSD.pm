@@ -49,7 +49,18 @@ sub create_user {
    }
 
    if($data->{"home"}) {
-      $cmd .= " -d " . $data->{"home"} . " -m ";
+      $cmd .= " -d " . $data->{"home"};
+      
+      if(
+         ! (
+            (exists $data->{"no-create-home"} && $data->{"no-create-home"})
+               ||
+            (exists $data->{"no_create_home"} && $data->{"no_create_home"})
+         )
+        ) {
+         $cmd .= " -m ";
+      }
+
    }
 
    if($data->{"comment"}) {

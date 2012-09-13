@@ -66,7 +66,12 @@ sub import {
                die("No Argumentclass $type found!");
             }
 
-            $rex_opts{$name_param} = $c->get;
+            if(exists $rex_opts{$name_param} && $type eq "Single") {
+               $rex_opts{$name_param}++;
+            }
+            else {
+               $rex_opts{$name_param} = $c->get;
+            }
          }
          else {
             Rex::Logger::debug("Option not known: $name_param ($p)");

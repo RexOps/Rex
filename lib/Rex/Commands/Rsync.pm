@@ -88,6 +88,17 @@ sub sync {
    my $current_connection = Rex::get_current_connection();
    my $cmd;
 
+   if(! exists $opt->{download} && $source !~ m/^\//) {
+      # relative path, calculate from module root
+
+      my ($caller_package, $caller_file, $caller_line) = caller;
+      my $module_path = Rex::get_module_path($caller_package);
+
+      if($module_path) {
+         $source = "$module_path/$source";
+      }
+   }
+
    my $params = "";
    if($opt && exists $opt->{'exclude'}) {
       my $excludes = $opt->{'exclude'};

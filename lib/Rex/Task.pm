@@ -37,6 +37,7 @@ use Rex::Interface::Connection;
 use Rex::Interface::Executor;
 use Rex::Group::Entry::Server;
 use Rex::Profiler;
+use Rex::Hardware;
 
 require Rex::Commands;
 
@@ -632,8 +633,15 @@ sub run {
       $self->run_hook(\$server, "before");
       $self->connect($server);
 
+      # get and cache all os info
+      Rex::Hardware->get(qw/All/);
+
       # execute code
       my $ret = $self->executor->exec($options{params});
+
+
+      # reset all os info
+      Rex::Hardware->reset;
 
       $self->disconnect($server) unless($in_transaction);
       $self->run_hook(\$server, "after");

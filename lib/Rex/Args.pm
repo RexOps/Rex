@@ -102,6 +102,13 @@ sub import {
 
 sub getopts { return %rex_opts; }
 
+sub is_opt {
+   my ($class, $opt) = @_;
+   if(exists $rex_opts{$opt}) {
+      return $rex_opts{$opt};
+   }
+}
+
 sub get { return %task_opts; }
 
 1;

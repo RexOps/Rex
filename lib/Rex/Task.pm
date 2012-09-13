@@ -633,8 +633,10 @@ sub run {
       $self->run_hook(\$server, "before");
       $self->connect($server);
 
-      # get and cache all os info
-      Rex::Hardware->get(qw/All/);
+      if(Rex::Args->is_opt("c")) {
+         # get and cache all os info
+         Rex::Hardware->get(qw/All/);
+      }
 
       # execute code
       my $ret = $self->executor->exec($options{params});

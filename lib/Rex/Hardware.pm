@@ -34,6 +34,8 @@ use warnings;
 
 use Rex::Logger;
 
+require Rex::Args;
+
 =item get(@modules)
 
 Returns a hash with the wanted information.
@@ -81,7 +83,7 @@ sub get {
 
    for my $mod_string (@modules) {
 
-      if(exists $hw_info{$mod_string}) {
+      if(exists $hw_info{$mod_string} && Rex::Args->is_opt("c")) {
          $hardware_information{$mod_string} = $hw_info{$mod_string};
       }
 
@@ -98,7 +100,10 @@ sub get {
          }
 
          $hardware_information{$mod_string} = $mod->get();
-         $hw_info{$mod_string} = $hardware_information{$mod_string};
+
+         if(Rex::Args->is_opt("c")) {
+            $hw_info{$mod_string} = $hardware_information{$mod_string};
+         }
 
       }
 

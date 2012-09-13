@@ -147,6 +147,8 @@ sub rm_user {
 
    Rex::Logger::debug("Removing user $user");
 
+   my %user_info = $self->get_user($user);
+
    my $cmd = "userdel";
 
    if(exists $data->{delete_home}) {
@@ -154,6 +156,12 @@ sub rm_user {
    }
 
    run $cmd . " " . $user;
+
+   if(exists $data->{delete_home} && is_dir($user_info{home})) {
+      Rex::Logger::debug("userdel doesn't deleted home. removing it now by hand...");
+      rmdir $user_info{home};  
+   }
+
    if($? != 0) {
       die("Error deleting user $user");
    }

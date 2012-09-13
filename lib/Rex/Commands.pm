@@ -972,6 +972,15 @@ sub connection {
    return Rex::get_current_connection()->{"conn"};
 }
 
+=item profiler
+
+Returns the profiler object for the current connection.
+
+=cut
+sub profiler {
+   return Rex::get_current_connection()->{"profiler"};
+}
+
 =item report($string)
 
 =cut

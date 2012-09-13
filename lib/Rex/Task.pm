@@ -36,6 +36,9 @@ use Rex::TaskList;
 use Rex::Interface::Connection;
 use Rex::Interface::Executor;
 use Rex::Group::Entry::Server;
+use Rex::Profiler;
+
+require Rex::Commands;
 
 require Rex::Args;
 
@@ -519,11 +522,15 @@ sub connect {
 
    my $auth = $self->merge_auth($server);
 
+   my $profiler = Rex::Profiler->new;
+
    # task specific auth rules over all
    my %connect_hash = %{ $auth };
    $connect_hash{server} = $server;
 
-   $self->connection->connect(%connect_hash);
+   $profiler->start("connect");
+      $self->connection->connect(%connect_hash);
+   $profiler->end("connect");
 
    if($self->connection->is_authenticated) {
       Rex::Logger::info("Successfull authenticated.");
@@ -541,6 +548,7 @@ sub connect {
          server => $server, 
          cache => Rex::Cache->new(),
          task  => $self,
+         profiler => $profiler,
    });
 
    $self->run_hook(\$server, "around");
@@ -557,6 +565,12 @@ sub disconnect {
 
    $self->run_hook(\$server, "around");
    $self->connection->disconnect;
+
+   my %args = Rex::Args->getopts;
+
+   if(defined $args{'d'} && $args{'d'} > 1) {
+      Rex::Commands::profiler()->report;
+   }
 
    delete $self->{connection};
 

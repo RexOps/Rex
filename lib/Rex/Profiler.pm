@@ -63,7 +63,7 @@ sub report {
 
       $avg = $all / scalar(@{ $self->{__data}->{$info} });
 
-      print "      min: $min / max: $max / avg: $avg\n";
+      print "      min: $min / max: $max / avg: $avg / all: $all\n";
 
       print "   Overview:\n";
 

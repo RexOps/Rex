@@ -66,7 +66,7 @@ Available modules:
 
 =cut
 
-my %hw_info = ();
+our %hw_info = ();
 
 sub get {
    my($class, @modules) = @_;
@@ -110,6 +110,13 @@ sub get {
 sub reset {
    my ($class) = @_;
    %hw_info = ();
+}
+
+sub cache {
+   my ($class, $mod) = @_;
+   if(exists $hw_info{$mod}) {
+      return $hw_info{$mod};
+   }
 }
 
 =back

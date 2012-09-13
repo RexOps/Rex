@@ -13,10 +13,17 @@ use Rex::Hardware::Host;
 use Rex::Commands::Run;
 use Rex::Commands::Sysctl;
 
+require Rex::Hardware;
+
 sub get {
+
+   if(my $ret = Rex::Hardware->cache("Memory")) {
+      return $ret;
+   }
+
    my $os = Rex::Hardware::Host::get_operating_system();
 
-    my $convert = sub {
+   my $convert = sub {
 
       if($_[1] eq "G") {
          $_[0] = $_[0] * 1024 * 1024 * 1024;

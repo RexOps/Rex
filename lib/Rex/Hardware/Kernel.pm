@@ -11,7 +11,13 @@ use warnings;
 
 use Rex::Commands::Run;
 
+require Rex::Hardware;
+
 sub get {
+
+   if(my $ret = Rex::Hardware->cache("Kernel")) {
+      return $ret;
+   }
 
    return {
       architecture => run ("LC_ALL=C uname -m"),

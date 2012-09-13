@@ -14,7 +14,13 @@ use Data::Dumper;
 use Rex::Commands::Gather;
 use Rex::Logger;
 
+require Rex::Hardware;
+
 sub get {
+
+   if(my $ret = Rex::Hardware->cache("Network")) {
+      return $ret;
+   }
 
    my $hw_class = _get_class();
 

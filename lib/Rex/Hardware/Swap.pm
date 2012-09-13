@@ -12,7 +12,13 @@ use warnings;
 use Rex::Commands::Run;
 use Rex::Hardware::Host;
 
+require Rex::Hardware;
+
 sub get {
+
+   if(my $ret = Rex::Hardware->cache("Swap")) {
+      return $ret;
+   }
 
    my $os = Rex::Hardware::Host::get_operating_system();
 

@@ -17,7 +17,13 @@ use Rex::Logger;
 
 use Rex::Inventory::Bios;
 
+require Rex::Hardware;
+
 sub get {
+
+   if(my $ret = Rex::Hardware->cache("Host")) {
+      return $ret;
+   }
 
    if(Rex::is_ssh || $^O !~ m/^MSWin/i) {
 

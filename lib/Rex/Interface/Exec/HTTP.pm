@@ -32,7 +32,9 @@ sub exec {
    # for example, this will not work on windows
    #$cmd = "LC_ALL=C $path " . $cmd;
 
+   Rex::Commands::profiler()->start("exec: $cmd");
    my $resp = connection->post("/execute", {exec => $cmd});
+   Rex::Commands::profiler()->stop("exec: $cmd");
 
    if($resp->{ok}) {
       $? = $resp->{retval};

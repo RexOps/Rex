@@ -28,6 +28,7 @@ sub exec {
 
    my $out;
 
+   Rex::Commands::profiler()->start("exec: $cmd");
    if($^O =~ m/^MSWin/) {
       $out = qx{$cmd};
    }
@@ -37,6 +38,7 @@ sub exec {
 
       $out = qx{LC_ALL=C $path $cmd};
    }
+   Rex::Commands::profiler()->stop("exec: $cmd");
 
    Rex::Logger::debug($out);
 

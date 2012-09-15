@@ -38,7 +38,7 @@ sub exec {
 
       $out = qx{LC_ALL=C $path $cmd};
    }
-   Rex::Commands::profiler()->stop("exec: $cmd");
+   Rex::Commands::profiler()->end("exec: $cmd");
 
    Rex::Logger::debug($out);
 

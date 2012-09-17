@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Commands;
 
 sub new {
    my $that = shift;

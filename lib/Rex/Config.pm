@@ -428,6 +428,31 @@ sub register_config_handler {
    }
 }
 
+sub read_config_file {
+   my ($config_file) = @_;
+   $config_file ||= _home_dir() . "/.rex/config.yml";
+
+   if(-f $config_file) {
+      my $yaml = eval { local(@ARGV, $/) = ($config_file); <>; };
+      eval {
+         $HOME_CONFIG_YAML = Load($yaml);
+      };
+
+      if($@) {
+         print STDERR "Error loading $config_file\n";
+         print STDERR "$@\n";
+         exit 2;
+      }
+
+      for my $key (keys %{ $HOME_CONFIG }) {
+         if(exists $HOME_CONFIG_YAML->{$key}) {
+            my $code = $HOME_CONFIG->{$key};
+            &$code($HOME_CONFIG_YAML->{$key});
+         }
+      }
+   }
+}
+
 sub import {
    if(-f _home_dir() . "/.ssh/config") {
       my (@host, $in_host);
@@ -457,25 +482,7 @@ sub import {
       }
    }
 
-   if(-f _home_dir() . "/.rex/config.yml") {
-      my $yaml = eval { local(@ARGV, $/) = (_home_dir() . "/.rex/config.yml"); <>; };
-      eval {
-         $HOME_CONFIG_YAML = Load($yaml);
-      };
-
-      if($@) {
-         print STDERR "Error loading " . _home_dir() . "/.rex/config.yml\n";
-         print STDERR "$@\n";
-         exit 2;
-      }
-
-      for my $key (keys %{ $HOME_CONFIG }) {
-         if(exists $HOME_CONFIG_YAML->{$key}) {
-            my $code = $HOME_CONFIG->{$key};
-            &$code($HOME_CONFIG_YAML->{$key});
-         }
-      }
-   }
+   read_config_file();   
 }
 
 no strict 'refs';

@@ -101,9 +101,10 @@ require Rex::Exporter;
 use Rex::TaskList;
 use Rex::Logger;
 use Rex::Config;
+use Rex::Profiler;
 use Rex;
 
-use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks);
+use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group 
@@ -978,7 +979,13 @@ Returns the profiler object for the current connection.
 
 =cut
 sub profiler {
-   return Rex::get_current_connection()->{"profiler"};
+   my $c_profiler = Rex::get_current_connection()->{"profiler"};
+   unless($c_profiler) {
+      $c_profiler = $profiler || Rex::Profiler->new;
+      $profiler = $c_profiler;
+   }
+
+   return $c_profiler;
 }
 
 =item report($string)

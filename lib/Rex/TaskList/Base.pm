@@ -183,6 +183,7 @@ sub run {
 
          # create a single task object for the run on $server
 
+         Rex::Logger::info("Running task $task_name");
          my $run_task = Rex::Task->new( %{$task->get_data} );
 
          $run_task->run($server,

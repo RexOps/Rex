@@ -33,7 +33,6 @@ sub exec {
    Rex::Commands::profiler()->start("exec: $cmd");
 
    my $ssh = Rex::is_ssh();
-   my ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
 
    my ($shell) = net_ssh2_exec($ssh, "echo \$SHELL");
    $shell ||= "bash";

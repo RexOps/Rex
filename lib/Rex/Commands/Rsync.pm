@@ -114,12 +114,12 @@ sub sync {
 
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {
       Rex::Logger::debug("Downloading $source -> $dest");
-      $cmd = "rsync $params -a -e '\%s' --verbose --stats " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
+      $cmd = "rsync -a -e '\%s' --verbose --stats $params " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
                      . $source . " " . $dest;
    }
    else {
       Rex::Logger::debug("Uploading $source -> $dest");
-      $cmd = "rsync $params -a -e '\%s' --verbose --stats $source " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
+      $cmd = "rsync -a -e '\%s' --verbose --stats $params $source " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
                      . $dest;
    }
 

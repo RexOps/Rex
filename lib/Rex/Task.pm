@@ -534,7 +534,7 @@ sub connect {
    $profiler->end("connect");
 
    if($self->connection->is_authenticated) {
-      Rex::Logger::info("Successfull authenticated.");
+      Rex::Logger::info("Successfully authenticated.");
       $self->{"__was_authenticated"} = 1;
    }
    else {

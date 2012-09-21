@@ -113,7 +113,6 @@ sub info {
 
    return if $silent;
    
-   $msg = format_string($msg, "INFO");
    if(defined($type)) {
       $msg = format_string($msg, uc($type));
    }

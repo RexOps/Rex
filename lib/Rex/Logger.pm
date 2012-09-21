@@ -114,6 +114,12 @@ sub info {
    return if $silent;
    
    $msg = format_string($msg, "INFO");
+   if(defined($type)) {
+      $msg = format_string($msg, uc($type));
+   }
+   else {
+      $msg = format_string($msg, "INFO");
+   }
    # workaround for windows Sys::Syslog behaviour on forks
    # see: #6
    unless($log_opened) {

@@ -138,6 +138,7 @@ lib/Rex/Pkg/SunOS/OpenCSW.pm
 lib/Rex/Pkg/SunOS/pkg.pm
 lib/Rex/Pkg/SuSE.pm
 lib/Rex/Pkg/Ubuntu.pm
+lib/Rex/Profiler.pm
 lib/Rex/Report.pm
 lib/Rex/Report/Base.pm
 lib/Rex/SCM/Git.pm
@@ -199,11 +200,15 @@ t/auth.t
 t/commands.t
 t/config.t
 t/file.t
+t/fs.t
 t/group.t
 t/helper_hash.t
 t/host.t
 t/interface_fs_local.t
 t/needs.t
+t/partition.t
 t/report.t
 t/shared.t
 t/task.t
+t/template.t
+t/virtualization.t

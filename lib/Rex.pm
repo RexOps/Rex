@@ -370,6 +370,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Alexandr Ciornii
 
+=item Anders Ossowicki
+
 =item Gilles Gaudin, for writing a french howto
 
 =item Hiroaki Nakamura
@@ -379,6 +381,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Jeen Lee
 
 =item Jose Luis Martinez
+
+=item Laird Liu
 
 =item Nikolay Fetisov
 

@@ -510,6 +510,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-s", "Use sudo for every command";
    printf "  %-15s %s\n", "-S", "Password for sudo";
    printf "  %-15s %s\n", "-d", "Debug";
+   printf "  %-15s %s\n", "-dd", "More Debug (includes Profiling Output)";
    printf "  %-15s %s\n", "-o", "Output Format";
    printf "  %-15s %s\n", "-c", "Turn cache ON";
    printf "  %-15s %s\n", "-C", "Turn cache OFF";

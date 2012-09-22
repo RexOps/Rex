@@ -63,6 +63,8 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -d              Debug
 
+=item -dd             More Debug (includes Profiling Output)
+
 =item -o <module>     Create a compatible output for the given module
 
 =item -C              Turn cache OFF

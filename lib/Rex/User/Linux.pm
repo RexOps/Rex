@@ -63,11 +63,17 @@ sub create_user {
             ||
          (exists $data->{"no_create_home"} && $data->{"no_create_home"})
         ) {
-         $cmd .= " -M";
+         if(! $self->get_uid($user)) {
+            $cmd .= " -M";
+         }
       }
       elsif(!is_dir($data->{home})) {
          $cmd .= " -m";
       }
+   }
+
+   if(exists $data->{shell}) {
+      $cmd .= " --shell " . $data->{shell};
    }
 
    if(exists $data->{comment}) {
@@ -75,7 +81,7 @@ sub create_user {
    }
 
    if(exists $data->{expire}) {
-      $cmd .= " --expiredate '" . $data->{expiredate} . "'";
+      $cmd .= " --expiredate '" . $data->{expire} . "'";
    }
 
    if(exists $data->{groups}) {

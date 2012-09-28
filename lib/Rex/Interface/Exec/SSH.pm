@@ -38,7 +38,7 @@ sub exec {
    $shell ||= "bash";
 
    my ($out, $err);
-   if($shell !~ m/bash/) {
+   if($shell !~ m/\/bash/ && $shell !~ m/\/sh/) {
       ($out, $err) = net_ssh2_exec($ssh, $cmd);
    }
    else {

@@ -1,4 +1,4 @@
-2012-09-22 Jan Gehring <jan.gehring, gmail.com> (0.33.0)
+2012-09-22 Jan Gehring <jan.gehring, gmail.com> (0.33.1)
   * speed improvements
   * profiler class
   * mounts can now be persisted in /etc/fstab - Laird Liu
@@ -9,6 +9,8 @@
   * create_user got a new option "no_create_home"
   * it is now possible to use other template engines.
   * it is now easier to write independant modules
+  * fixed expire date for create_user
+  * check shell before executing things
 
 2012-08-30 Jan Gehring <jan.gehring, gmail.com> (0.32.1)
   * fixed a bug in the transaction module

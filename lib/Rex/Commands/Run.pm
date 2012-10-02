@@ -45,7 +45,10 @@ BEGIN {
       eval "use Expect";
    }
    else {
-      Rex::Logger::debug("Running under windows, Expect not supported.");
+      # this fails sometimes on windows...
+      eval {
+         Rex::Logger::debug("Running under windows, Expect not supported.");
+      };
    }
 }
 

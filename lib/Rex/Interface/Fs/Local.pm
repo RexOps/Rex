@@ -126,7 +126,17 @@ sub readlink {
 
 sub rename {
    my ($self, $old, $new) = @_;
-   return CORE::rename($old, $new);
+
+   my $exec = Rex::Interface::Exec->create;
+
+   if($^O =~ m/^MSWin/) {
+      $exec->exec("move $old $new");
+   }
+   else {
+      $exec->exec("/bin/mv $old $new");
+   }
+
+   if($? == 0) { return 1; }
 }
 
 sub glob {

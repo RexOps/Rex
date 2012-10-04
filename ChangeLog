@@ -1,3 +1,6 @@
+2012-10-04 Jan Gehring <jan.gehring, gmail.com> (0.33.3)
+  * fixed rename() bug, #67
+
 2012-10-02 Jan Gehring <jan.gehring, gmail.com> (0.33.2)
   * fixed windows bug
 

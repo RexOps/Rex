@@ -77,6 +77,7 @@ sub __run__ {
       F => {},
       T => {},
       h => {},
+      k => {},
       v => {},
       d => {},
       s => {},
@@ -172,66 +173,8 @@ sub __run__ {
       Rex::Output->get($opts{'o'});
    }
 
-   if($opts{'e'}) {
-      Rex::Logger::debug("Executing command line code");
-      Rex::Logger::debug("\t" . $opts{'e'});
-
-      # execute the given code
-      my $code = "sub { \n";
-      $code   .= $opts{'e'} . "\n";
-      $code   .= "}";
-
-      $code = eval($code);
-
-      if($@) {
-         Rex::Logger::info("Error in eval line: $@\n", "warn");
-         exit 1;
-      }
-
-      my $pass_auth = 0;
-
-      if($opts{'u'}) {
-         Rex::Commands::user($opts{'u'});
-      }
-
-      if($opts{'p'}) {
-         Rex::Commands::password($opts{'p'});
-
-         unless($opts{'P'}) {
-            $pass_auth = 1;
-         }
-      }
-
-      if($opts{'P'}) {
-         Rex::Commands::private_key($opts{'P'});
-      }
-
-      if($opts{'K'}) {
-         Rex::Commands::public_key($opts{'K'});
-      }
-
-      if($pass_auth) {
-         pass_auth;
-      }
-
-      my @params = ();
-      if($opts{'H'}) {
-         push @params, split(/\s+/, $opts{'H'});
-      }
-      push @params, $code;
-      push @params, "eval-line-desc";
-      push @params, {};
-
-      Rex::TaskList->create()->create_task("eval-line", @params);
-      Rex::Commands::do_task("eval-line");
-   }
-   elsif($opts{'M'}) {
-      Rex::Logger::debug("Loading Rex-Module: " . $opts{'M'});
-      my $mod = $opts{'M'};
-      $mod =~ s{::}{/}g;
-      require "$mod.pm";
-   }
-   elsif(-f $::rexfile) {
+   # Load Rexfile before exec in order to suppport group exec
+   if(-f $::rexfile) {
       Rex::Logger::debug("$::rexfile exists");
 
       if($^O !~ m/^MSWin/) {
@@ -300,6 +243,7 @@ sub __run__ {
 
       eval {
          my $ok = do($::rexfile);
+         Rex::Logger::info("eval your Rexfile.");
          if(! $ok) {
             Rex::Logger::info("There seems to be an error on some of your required files.", "error");
             my @dir = (dirname($::rexfile));
@@ -335,10 +279,69 @@ sub __run__ {
 
       if($@) { print $@ . "\n"; exit 1; }
 
+   }
+   if($opts{'e'}) {
+      Rex::Logger::debug("Executing command line code");
+      Rex::Logger::debug("\t" . $opts{'e'});
 
-   } else {
-      Rex::Logger::info("No Rexfile found");
-      CORE::exit 1;
+      # execute the given code
+      my $code = "sub { \n";
+      $code   .= $opts{'e'} . "\n";
+      $code   .= "}";
+
+      $code = eval($code);
+
+      if($@) {
+         Rex::Logger::info("Error in eval line: $@\n", "warn");
+         exit 1;
+      }
+
+      my $pass_auth = 0;
+
+      if($opts{'u'}) {
+         Rex::Commands::user($opts{'u'});
+      }
+
+      if($opts{'p'}) {
+         Rex::Commands::password($opts{'p'});
+
+         unless($opts{'P'}) {
+            $pass_auth = 1;
+         }
+      }
+
+      if($opts{'P'}) {
+         Rex::Commands::private_key($opts{'P'});
+      }
+
+      if($opts{'K'}) {
+         Rex::Commands::public_key($opts{'K'});
+      }
+
+      if($opts{'k'}) {
+         Rex::Commands::krb5_auth();
+      }
+
+      if($pass_auth) {
+         pass_auth;
+      }
+
+      my @params = ();
+      if($opts{'H'}) {
+         push @params, split(/\s+/, $opts{'H'});
+      }
+      push @params, $code;
+      push @params, "eval-line-desc";
+      push @params, {};
+
+      Rex::TaskList->create()->create_task("eval-line", @params);
+      Rex::Commands::do_task("eval-line");
+   }
+   elsif($opts{'M'}) {
+      Rex::Logger::debug("Loading Rex-Module: " . $opts{'M'});
+      my $mod = $opts{'M'};
+      $mod =~ s{::}{/}g;
+      require "$mod.pm";
    }
 
    #### check if some parameters should be overwritten from the command line
@@ -500,6 +503,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-p", "Password for the ssh connection";
    printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
    printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection";
+   printf "  %-15s %s\n", "-k", "Kerberos Auth for the ssh connection";
    printf "  %-15s %s\n", "-T", "List all known tasks.";
    printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";

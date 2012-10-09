@@ -144,6 +144,9 @@ sub get_auth_type {
    elsif(Rex::Config->get_key_auth) {
       return "key";
    }
+   elsif(Rex::Config->get_krb5_auth) {
+      return "krb5";
+   }
 
    return "try";
 }

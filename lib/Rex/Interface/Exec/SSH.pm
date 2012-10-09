@@ -34,15 +34,15 @@ sub exec {
 
    my $ssh = Rex::is_ssh();
 
-   my ($shell) = net_ssh2_exec($ssh, "echo \$SHELL");
+   my ($shell) = net_ssh_exec($ssh, "echo \$SHELL");
    $shell ||= "bash";
 
    my ($out, $err);
    if($shell !~ m/\/bash/ && $shell !~ m/\/sh/) {
-      ($out, $err) = net_ssh2_exec($ssh, $cmd);
+      ($out, $err) = net_ssh_exec($ssh, $cmd);
    }
    else {
-      ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
+      ($out, $err) = net_ssh_exec($ssh, "LC_ALL=C $path " . $cmd);
    }
 
    Rex::Commands::profiler()->end("exec: $cmd");

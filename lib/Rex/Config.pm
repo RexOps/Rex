@@ -32,7 +32,7 @@ use Data::Dumper;
 
 our ($user, $password, $port,
             $timeout, $max_connect_fails,
-            $password_auth, $key_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
+            $password_auth, $key_auth, $public_key, $private_key, $krb5_auth, $parallelism, $log_filename, $log_facility, $sudo_password,
             $ca_file, $ca_cert, $ca_key,
             $path,
             $set_param,
@@ -158,12 +158,23 @@ sub set_key_auth {
    $key_auth = shift || 1;
 }
 
+sub set_krb5_auth {
+   my $class = shift;
+   $password_auth = 0;
+   $key_auth = 0;
+   $krb5_auth = shift || 1;
+}
+
 sub get_password_auth {
    return $password_auth;
 }
 
 sub get_key_auth {
    return $key_auth;
+}
+
+sub get_krb5_auth {
+   return $krb5_auth;
 }
 
 sub set_public_key {
@@ -506,11 +517,16 @@ __PACKAGE__->register_config_handler(base => sub {
          next;
       }
 
+      if($key eq "krb5") {
+         $password_auth = $param->{krb5};
+         next;
+      }
+
       $$key = $param->{$key};
    }
 });
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key distributor template_function/;
+my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth -krb5 parallelism sudo_password connection ca cert key distributor template_function/;
 for my $hndl (@set_handler) {
    __PACKAGE__->register_set_handler($hndl => sub {
       my ($val) = @_;
@@ -518,6 +534,7 @@ for my $hndl (@set_handler) {
          $hndl = substr($hndl, 1);
       }
       if($hndl eq "keyauth") { $hndl = "key_auth"; $val = 1; }
+      if($hndl eq "krb5") { $hndl = "krb5_auth"; $val = 1; }
       if($hndl eq "passwordauth" || $hndl eq "passauth") { $hndl = "password_auth"; $val = 1; }
       if($hndl eq "connection") { $hndl = "connection_type"; }
       if($hndl eq "ca") { $hndl = "ca_file"; }

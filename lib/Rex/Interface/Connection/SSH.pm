@@ -40,12 +40,16 @@ sub connect {
 
    $self->{is_sudo} = $is_sudo;
 
-   Rex::Logger::debug("Using user: " . $user);
-   Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
+   if($auth_type eq 'krb5') {
+      Rex::Logger::debug("Using krb5");
+   } else {
+      Rex::Logger::debug("Using user: " . $user);
+      Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
+   };
 
    $self->{server} = $server;
 
-   $self->{ssh} = Net::SSH2->new;
+   $self->{ssh} = Net::SSH2->new unless $auth_type eq 'krb5';
 
    my $fail_connect = 0;
 
@@ -60,20 +64,35 @@ sub connect {
          $port   = $2;
       }
       Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
-      unless($self->{ssh}->connect($server, $port, Timeout => $timeout)) {
-         ++$fail_connect;
-         sleep 1;
-         goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails(server => $server)); # try connecting 3 times
+      if($auth_type eq 'krb5') {
+          $self->{ssh} = Net::OpenSSH->new($server, port => $port, user => $user, timeout => $timeout);
+          if($self->{ssh}->error) {
+             ++$fail_connect;
+             sleep 1;
+             goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails(server => $server)); # try connecting 3 times
 
-         Rex::Logger::info("Can't connect to $server", "warn");
+             Rex::Logger::info("Can't connect to $server", "warn");
 
-         $self->{connected} = 0;
+             $self->{connected} = 0;
 
-         return;
+             return;
+          }
+       } else {
+         unless($self->{ssh}->connect($server, $port, Timeout => $timeout)) {
+            ++$fail_connect;
+            sleep 1;
+            goto CON_SSH if($fail_connect < Rex::Config->get_max_connect_fails(server => $server)); # try connecting 3 times
+   
+            Rex::Logger::info("Can't connect to $server", "warn");
+   
+            $self->{connected} = 0;
+   
+            return;
+         }
       }
 
    Rex::Logger::debug("Current Error-Code: " . $self->{ssh}->error());
-   Rex::Logger::info("Connected to $server, trying to authenticate.");
+   Rex::Logger::info("Connected to $server, trying to authenticate.") if $auth_type ne 'krb5';
 
    $self->{connected} = 1;
 
@@ -87,6 +106,10 @@ sub connect {
                               $public_key,
                               $private_key,
                               $pass);
+   }
+   elsif($auth_type eq "krb5") {
+      Rex::Logger::debug("Using krb5 authentication. Already successed at connection");
+      $self->{auth_ret} = 1;
    }
    else {
       Rex::Logger::debug("Trying to guess the authentication method.");
@@ -102,6 +125,7 @@ sub connect {
 
 sub disconnect {
    my ($self) = @_;
+   return if ref($self->get_connection_object) eq 'Net::OpenSSH';
    $self->get_connection_object->disconnect;
 }
 

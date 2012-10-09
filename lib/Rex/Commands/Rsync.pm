@@ -126,7 +126,7 @@ sub sync {
    my $pass = Rex::Config->get_password;
    my @expect_options = ();
 
-   if(Rex::Config->get_password_auth) {
+   if(Rex::Config->get_password_auth || Rex::Config->get_krb5_auth) {
       $cmd = sprintf($cmd, 'ssh -o StrictHostKeyChecking=no ');
       push(@expect_options, [
                               qr{Are you sure you want to continue connecting},

@@ -73,11 +73,17 @@ package Rex;
 use strict;
 use warnings;
 
-use Net::SSH2;
 use Rex::Logger;
 use Rex::Cache;
 use Rex::Interface::Connection;
 use Cwd qw(getcwd);
+use Try::Tiny;
+try {
+   require Net::SSH2;
+} catch {
+   print "No Net::SSH2, use Net::OpenSSH\n";
+   require Net::OpenSSH;
+};
 
 our (@EXPORT,
       $VERSION,

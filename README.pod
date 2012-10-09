@@ -9,8 +9,7 @@ A small example:
 =head3 Rexfile
 
  set user => "root";
- set password => "root";
- set -passauth;
+ set -krb5;
 
  group frontend => "frontend[01..09]", "varnish[01..04]";
  
@@ -19,6 +18,13 @@ A small example:
      say run "uname -a";
  };
 
+ desc "Wrong command";
+ task "ps", sub {
+     run "pa aux|grep ngin[x]", sub {
+        my ($out, $err) = @_;
+        say $err ? $err : $out;
+     };
+ };
  desc "Install needed packages and configurations";
  task "prepare", group => "frontend", sub {
     install "apache2";
@@ -40,6 +46,8 @@ A small example:
 Run commands directly from command line
 
  bash# rex -e 'say run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
+ bash# rex -e 'say run "uptime";' -H "frontend[01..10] middleware[01..05]" -k
+ bash# rex -e 'say run "uptime";' -G "frontend" -k
 
 =item *
 

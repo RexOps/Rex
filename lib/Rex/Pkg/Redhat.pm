@@ -125,7 +125,7 @@ sub add_repository {
    my $name = $data{"name"};
    my $desc = $data{"description"} || $data{"name"};
 
-   my $fh = file_write "/etc/yum.repos.d/rex.repo";
+   my $fh = file_write "/etc/yum.repos.d/${name}.repo";
 
    $fh->write("# This file is managed by Rex\n");
    $fh->write("[$name]\n");
@@ -139,7 +139,7 @@ sub add_repository {
 
 sub rm_repository {
    my ($self, $name) = @_;
-   unlink "/etc/yum.repos.d/rex.repo";
+   unlink "/etc/yum.repos.d/${name}.repo";
 }
 
 

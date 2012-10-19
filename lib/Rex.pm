@@ -82,8 +82,8 @@ try {
    require Net::SSH2;
 } catch {
    print "No Net::SSH2, use Net::OpenSSH\n";
-   require Net::OpenSSH;
 };
+use Net::OpenSSH;
 
 our (@EXPORT,
       $VERSION,

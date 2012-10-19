@@ -17,6 +17,7 @@ use Rex::Commands;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use IO::File;
+use Net::SFTP::Foreign::Constants qw(:flags);
 
 sub open {
    my $that = shift;
@@ -28,20 +29,38 @@ sub open {
    $self->{rndfile} = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
 
    if(my $sftp = Rex::get_sftp()) {
-      if($self->{mode} eq ">") {
-         $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_CREAT | O_TRUNC );
-      }
-      elsif($self->{mode} eq ">>") {
-         cp($self->{file}, $self->{rndfile});
-         chmod(666, $self->{rndfile});
-         $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_APPEND );
-         my %stat = stat $self->{rndfile};
-         $self->{fh}->seek($stat{size});
-      }
-      else {
-         cp($self->{file}, $self->{rndfile});
-         chmod(666, $self->{rndfile});
-         $self->{fh} = $sftp->open($self->{rndfile}, O_RDONLY);
+      if( ref($sftp) eq 'Net::SFTP::Foreign' ) {
+         if($self->{mode} eq ">") {
+            $self->{fh} = $sftp->open($self->{rndfile}, SSH2_FXF_WRITE | SSH2_FXF_CREAT | SSH2_FXF_TRUNC );
+         }
+         elsif($self->{mode} eq ">>") {
+            cp($self->{file}, $self->{rndfile});
+            chmod(666, $self->{rndfile});
+            $self->{fh} = $sftp->open($self->{rndfile}, SSH2_FXF_WRITE | SSH2_FXF_APPEND );
+            my %stat = stat $self->{rndfile};
+            $self->{fh}->seek($stat{size});
+         }
+         else {
+            cp($self->{file}, $self->{rndfile});
+            chmod(666, $self->{rndfile});
+            $self->{fh} = $sftp->open($self->{rndfile}, SSH2_FXF_READ);
+         }
+      } else {
+         if($self->{mode} eq ">") {
+            $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_CREAT | O_TRUNC );
+         }
+         elsif($self->{mode} eq ">>") {
+            cp($self->{file}, $self->{rndfile});
+            chmod(666, $self->{rndfile});
+            $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_APPEND );
+            my %stat = stat $self->{rndfile};
+            $self->{fh}->seek($stat{size});
+         }
+         else {
+            cp($self->{file}, $self->{rndfile});
+            chmod(666, $self->{rndfile});
+            $self->{fh} = $sftp->open($self->{rndfile}, O_RDONLY);
+         }
       }
    }
    else {

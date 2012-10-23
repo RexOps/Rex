@@ -38,6 +38,7 @@ sub exec {
       $path ||= "";
 
       $out = qx{LC_ALL=C $path $cmd};
+      $? >>= 8;
    }
    Rex::Commands::profiler()->end("exec: $cmd");
 

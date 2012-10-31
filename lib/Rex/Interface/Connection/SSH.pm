@@ -65,7 +65,7 @@ sub connect {
       }
       Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
       if($auth_type eq 'krb5') {
-          $self->{ssh} = Net::OpenSSH->new($server, port => $port, user => $user, timeout => $timeout);
+          $self->{ssh} = Net::OpenSSH->new($server, port => $port, user => $user, timeout => $timeout, master_opts => [-o => "StrictHostKeyChecking=no"]);
           if($self->{ssh}->error) {
              ++$fail_connect;
              sleep 1;

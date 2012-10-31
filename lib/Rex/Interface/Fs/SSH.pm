@@ -83,7 +83,8 @@ sub is_file {
    if( ref($sftp) eq 'Net::SFTP::Foreign' ) {
       if( $sftp->open($file, SSH2_FXF_READ) ) {
          $ret = 1;
-   else {
+      }
+   } else {
       if( $sftp->open($file, O_RDONLY) ) {
          # return true if $file can be opened read only
          $ret = 1;

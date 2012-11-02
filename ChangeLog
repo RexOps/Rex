@@ -1,3 +1,12 @@
+2012-11-02 Jan Gehring <jan.gehring, gmail.com> (0.34.0)
+  * Enhanced lookup_file function. Comments (#) and empty lines are now skipped. (chenryn)
+  * get_network_devices now detects ppp devices (under linux). (bokutin)
+  * Fixed pkg_info execution on FreeBSD (bokutin)
+  * Set $? to match effective command return value (joris)
+  * If a task is defined multiple times it will now print out a warning.
+  * Fixed mount bug #75
+  * Fixed Redhat Repo bug #73
+
 2012-10-04 Jan Gehring <jan.gehring, gmail.com> (0.33.3)
   * fixed rename() bug, #67
 

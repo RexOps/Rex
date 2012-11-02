@@ -37,7 +37,7 @@ sub create_task {
    my $desc      = pop;
 
    if(exists $self->{tasks}->{$task_name}) {
-      Rex::Logger::info("Task $task_name already exists. Overwriting...", "warn"):
+      Rex::Logger::info("Task $task_name already exists. Overwriting...", "warn");
    }
 
    Rex::Logger::debug("Creating task: $task_name");

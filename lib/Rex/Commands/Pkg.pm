@@ -403,7 +403,7 @@ sub repository {
       $pkg->add_repository(%data);
    }
    elsif($action eq "remove" || $action eq "delete") {
-      $pkg->rm_repository(%data);
+      $pkg->rm_repository($name);
    }
 }
 

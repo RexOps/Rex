@@ -622,6 +622,15 @@ Mount devices.
     mount "/dev/sda6", "/mnt/sda6",
                fs => "ext3",
                options => [qw/noatime async/];
+    #
+    # mount persistent with entry in /etc/fstab
+      
+    mount "/dev/sda6", "/mnt/sda6",
+               fs => "ext3",
+               options => [qw/noatime async/],
+               persistent => TRUE;
+ 
+
  };
 
 =cut
@@ -662,7 +671,14 @@ sub mount {
       $f->close;
 
       my @new_content = grep { ! /^$device\s/ } @content;
-      push(@new_content, "$device\t$mount_point\t$option->{fs}\n$option->{options}\t0 0\n");
+
+      if(ref($option->{options}) eq "ARRAY") {
+         my $mountops = join(",", @{$option->{"options"}});
+         push(@new_content, "$device\t$mount_point\t$option->{fs}\t$mountops\t0 0\n");
+      }
+      else {
+         push(@new_content, "$device\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n");
+      }
 
       $fh = Rex::Interface::File->create;
 

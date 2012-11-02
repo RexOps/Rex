@@ -372,6 +372,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Anders Ossowicki
 
+=item Chenryn
+
 =item Gilles Gaudin, for writing a french howto
 
 =item Hiroaki Nakamura
@@ -379,6 +381,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Jean Charles Passard
 
 =item Jeen Lee
+
+=item Joris
 
 =item Jose Luis Martinez
 
@@ -391,6 +395,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Sascha Guenther
 
 =item Sven Dowideit
+
+=item Tomohiro Hosaka
 
 =back
 

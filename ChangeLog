@@ -1,4 +1,5 @@
 2012-11-02 Jan Gehring <jan.gehring, gmail.com> (0.34.0)
+  * Use Storable module for shared variables
   * Enhanced lookup_file function. Comments (#) and empty lines are now skipped. (chenryn)
   * get_network_devices now detects ppp devices (under linux). (bokutin)
   * Fixed pkg_info execution on FreeBSD (bokutin)

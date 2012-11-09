@@ -12,10 +12,14 @@ use warnings;
 use Data::Dumper;
 
 use Fcntl qw(:DEFAULT :flock);
-use DB_File;
 use Data::Dumper;
 
-use XML::Simple;
+use Storable;
+
+sub __lock(&);
+sub __retr;
+sub __store;
+
 
 sub TIEHASH {
    my $self = {
@@ -30,129 +34,71 @@ sub STORE {
    my $key = shift;
    my $value = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
+   return __lock {
+      my $ref = __retr;
+      my $ret = $ref->{$self->{varname}}->{$key} = $value;
+      __store $ref;
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
-
-   my $xml_string = $hash{$self->{varname}};
-   my $ref = {};
-   if($xml_string) {
-      $ref = XMLin($xml_string);
-   }
-
-   $ref->{$key} = $value;
-
-   $hash{$self->{varname}} = XMLout($ref);
-
-   untie %hash;
-   close($dblock);
-
-   return $_[1];
-
+      return $ret;
+   };
+   
 }
 
 sub FETCH {
    my $self = shift;
    my $key = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
+   return __lock {
+      my $ref = __retr;
+      return $ref->{$self->{varname}}->{$key};
+   };
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
-
-   my $xml_string = $hash{$self->{varname}};
-   my $ref = {};
-   if($xml_string) {
-      $ref = XMLin($xml_string);
-   }
-
-   my $ret = $ref->{$key};
-
-   untie %hash;
-   close($dblock);
-
-   return $ret;
 }
 
 sub DELETE {
    my $self = shift;
    my $key = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
-
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
-
-   my $xml_string = $hash{$self->{varname}};
-   my $ref = {};
-   if($xml_string) {
-      $ref = XMLin($xml_string);
-   }
-
-   delete $ref->{$key};
-
-   $hash{$self->{varname}} = XMLout($ref);
-
-   untie %hash;
-   close($dblock);
+   __lock {
+      my $ref = __retr;
+      delete $ref->{$self->{varname}}->{$key};
+      __store $ref;
+   };
 
 }
 
 sub CLEAR {
    my $self = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
+   __lock {
+      my $ref = __retr;
+      $ref->{$self->{varname}} = {};
+      __store $ref;
+   };
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
-
-   $hash{$self->{varname}} = XMLout({});
-
-   untie %hash;
-   close($dblock);
 }
 
 sub EXISTS {
    my $self = shift;
    my $key = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
+   return __lock {
+      my $ref = __retr;
+      return exists $ref->{$self->{varname}}->{$key};
+   };
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
-
-   my $ref = XMLin($hash{$self->{varname}});
-   my $ret = exists $ref->{$key};
-
-   untie %hash;
-   close($dblock);
-
-   return $ret;
 }
 
 sub FIRSTKEY {
    my $self = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
+   return __lock {
+      my $ref = __retr;
+      $self->{__iter__} = $ref->{$self->{varname}};
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
-
-   my $ref = XMLin($hash{$self->{varname}});
-   $self->{__iter__} = $ref;
-
-   untie %hash;
-   close($dblock);
-
-   my $temp = keys %{ $self->{__iter__} };
-   return scalar each %{ $self->{__iter__} };
+      my $temp = keys %{ $self->{__iter__} };
+      return scalar each %{ $self->{__iter__} };
+   };
 
 }
 
@@ -168,6 +114,31 @@ sub DESTROY {
 }
 
 
+sub __lock(&) {
 
+   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
+   flock($dblock, LOCK_SH) or die($!);
+
+   my $ret = &{ $_[0] }();
+
+   close($dblock);
+   
+   return $ret;
+}
+
+sub __store {
+   my $ref = shift;
+   store($ref, "vars.db");
+}
+
+sub __retr {
+
+   if(! -f "vars.db") {
+      return {};
+   }
+
+   return retrieve("vars.db");
+
+}
 
 1;

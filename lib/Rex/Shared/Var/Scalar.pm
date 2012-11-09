@@ -10,8 +10,13 @@ use strict;
 use warnings;
 
 use Fcntl qw(:DEFAULT :flock);
-use DB_File;
 use Data::Dumper;
+
+use Storable;
+
+sub __lock(&);
+sub __retr;
+sub __store;
 
 sub TIESCALAR {
    my $self = {
@@ -22,35 +27,54 @@ sub TIESCALAR {
 
 sub STORE {
    my $self = shift;
+   my $value = shift;
 
-   sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-   flock($dblock, LOCK_SH) or die($!);
+   return __lock {
+      my $ref = __retr;
+      my $ret = $ref->{$self->{varname}} = $value;
+      __store $ref;
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
+      return $ret;
+   };
 
-   $hash{$self->{varname}} = $_[0];
-
-   untie %hash;
-   close($dblock);
-
-   return $_[1];
 }
 
 sub FETCH {
    my $self = shift;
+
+   return __lock {
+      my $ref = __retr;
+      return $ref->{$self->{varname}};
+   };
+
+}
+
+sub __lock(&) {
+
    sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
    flock($dblock, LOCK_SH) or die($!);
 
-   my %hash;
-   tie(%hash, "DB_File", "vars.db", O_RDWR | O_CREAT) or die("Can't tie: $!");
+   my $ret = &{ $_[0] }();
 
-   my $ret = $hash{$self->{varname}};
-
-   untie %hash;
    close($dblock);
-
+   
    return $ret;
+}
+
+sub __store {
+   my $ref = shift;
+   print Dumper($ref);
+   store($ref, "vars.db");
+}
+
+sub __retr {
+
+   if(! -f "vars.db") {
+      return {};
+   }
+
+   return retrieve("vars.db");
+
 }
 
 1;

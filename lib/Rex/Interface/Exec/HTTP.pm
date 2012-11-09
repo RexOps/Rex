@@ -34,7 +34,7 @@ sub exec {
 
    Rex::Commands::profiler()->start("exec: $cmd");
    my $resp = connection->post("/execute", {exec => $cmd});
-   Rex::Commands::profiler()->stop("exec: $cmd");
+   Rex::Commands::profiler()->end("exec: $cmd");
 
    if($resp->{ok}) {
       $? = $resp->{retval};

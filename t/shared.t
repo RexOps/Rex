@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 BEGIN {
-   use Test::More tests => 8;
+   use Test::More tests => 9;
 
    use_ok 'Rex::Shared::Var';
    Rex::Shared::Var->import;
@@ -15,6 +15,9 @@ ok($scalar eq "scalar", "scalar test");
 
 @array = qw(one two three four);
 ok(join("-", @array) eq "one-two-three-four", "array test");
+
+push(@array, "five");
+ok($array[-1] eq "five", "array push");
 
 %hash = (
    name => "joe",

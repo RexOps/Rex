@@ -37,6 +37,7 @@ use Rex::Logger;
 use Rex::Template;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
+use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
@@ -394,7 +395,27 @@ To remove a repository just delete it with its name.
 =cut
 
 sub repository {
-   my ($action, $name, %data) = @_;
+   my ($action, $name, @__data) = @_;
+
+   my %data;
+
+   if(ref($__data[0])) {
+      if(! exists $__data[0]->{get_operating_system()}) {
+         if(exists $__data[0]->{default}) {
+            %data = $__data[0]->{default};
+         }
+         else {
+            die("No repository information found for os: " . get_operating_system());
+         }
+      }
+      else {
+         %data = %{ $__data[0]->{get_operating_system()} };
+      }
+   }
+   else {
+      %data = @__data;
+   }
+
    my $pkg = Rex::Pkg->get;
 
    $data{"name"} = $name;

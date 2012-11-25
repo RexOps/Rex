@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.34.0";
+$VERSION = "0.34.1";
 
 my $cur_dir = getcwd;
 
@@ -373,6 +373,10 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Anders Ossowicki
 
 =item Chenryn
+
+=item Dominik Danter
+
+=item Dominik Schulz
 
 =item Gilles Gaudin, for writing a french howto
 

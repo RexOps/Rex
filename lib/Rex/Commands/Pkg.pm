@@ -123,8 +123,9 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
 
 sub install {
 
-   my ($type, $package, $option) = @_;
-
+   my $type = shift;
+   my $package = shift;
+   my $option = ( @_ == 1 ) ? shift : { @_ };   
 
    if($type eq "file") {
 
@@ -243,7 +244,7 @@ sub install {
    }
    else {
       # unknown type, be a package
-      install("package", @_); 
+      install("package", $type, $package, $option); 
    }
 
 }

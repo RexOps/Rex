@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::list;
+package Rex::Virtualization::VBox::list;
 
 use strict;
 use warnings;
@@ -19,30 +19,30 @@ sub execute {
    my @domains;
 
    if($arg1 eq "all") {
-      @domains = run "virsh list --all";
+      @domains = run "VBoxManage list vms";
       if($? != 0) {
-         die("Error running virsh list --all");
+         die("Error running VBoxManage list vms");
       }
    } elsif($arg1 eq "running") {
-      @domains = run "virsh list";
+      @domains = run "VBoxManage runningvms";
       if($? != 0) {
-         die("Error running virsh list");
+         die("Error running VBoxManage runningvms");
       }
    } else {
       return;
    }
 
-   ## remove header of the output
-   shift @domains; shift @domains;
-
    my @ret = ();
    for my $line (@domains) {
-      my ($id, $name, $status) = $line =~ m:^\s{0,2}(\d+|\-)\s+([A-Za-z0-9-._]+)\s+(.*)$:;
+      my ($name, $id) = $line =~ m:^"([^"]+)"\s*\{([^\}]+)\}$:;
+
+      my @status = grep { $_=$1 if /^VMState="([^"]+)"$/ } run "VBoxManage showvminfo '{$id}' --machinereadable";
+      my $status;
 
       push( @ret, {
          id     => $id,
          name   => $name,
-         status => $status
+         status => $status[0],
       });
    }
 

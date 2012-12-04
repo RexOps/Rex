@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::info;
+package Rex::Virtualization::VBox::info;
 
 use strict;
 use warnings;
@@ -27,7 +27,7 @@ sub execute {
 
    my $xml;
 
-   my @dominfo = run "virsh dominfo $vmname";
+   my @dominfo = run "VBoxManage showvminfo '$vmname' --machinereadable";
   
    if($? != 0) {
       die("Error running virsh dominfo $vmname");
@@ -37,7 +37,9 @@ sub execute {
    my ($k, $v);
 
    for my $line (@dominfo) {
-      ($k, $v) = split(/:\s+/, $line);
+      ($k, $v) = split(/=/, $line);
+      $k =~ s/^"|"$//g;
+      $v =~ s/^"|"$//g;
       $ret{$k} = $v;
    } 
 

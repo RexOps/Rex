@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::option;
+package Rex::Virtualization::VBox::option;
 
 use strict;
 use warnings;
@@ -13,8 +13,8 @@ use Rex::Logger;
 use Rex::Commands::Run;
 
 my $FUNC_MAP = {
-   max_memory  => "setmaxmem",
-   memory      => "setmem",
+   max_memory  => "memory",
+   memory      => "memory",
 };
 
 sub execute {
@@ -30,13 +30,16 @@ sub execute {
    for my $opt (keys %opt) {
       my $val = $opt{$opt};
 
+      my $func;
       unless(exists $FUNC_MAP->{$opt}) {
-         Rex::Logger::info("$opt can't be set right now.");
-         next;
+         Rex::Logger::info("$opt unknown. using as option for VBoxManage.");
+         $func = $opt;
+      }
+      else {
+         $func = $FUNC_MAP->{$opt};
       }
 
-      my $func = $FUNC_MAP->{$opt};
-      run "virsh $func $dom $val";
+      run "VBoxManage modifyvm '$dom' --$func $val";
       if($? != 0) {
          Rex::Logger::info("Error setting $opt to $val on $dom ($@)", "warn");
       }

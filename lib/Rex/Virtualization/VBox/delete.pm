@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::delete;
+package Rex::Virtualization::VBox::delete;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "virsh undefine $dom";
+   run "VBoxManage unregistervm '$dom' --delete";
    if($? != 0) {
       die("Error destroying vm $dom");
    }

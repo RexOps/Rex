@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::reboot;
+package Rex::Virtualization::VBox::reboot;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "virsh reboot $dom";
+   run "VBoxManage controlvm '$dom' reset";
    if($? != 0) {
       die("Error rebooting vm $dom");
    }

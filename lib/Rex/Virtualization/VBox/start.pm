@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::start;
+package Rex::Virtualization::VBox::start;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "virsh start $dom";
+   run "VBoxManage startvm '$dom'";
    if($? != 0) {
       die("Error starting vm $dom");
    }

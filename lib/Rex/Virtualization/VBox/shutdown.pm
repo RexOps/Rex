@@ -4,7 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::LibVirt::shutdown;
+package Rex::Virtualization::VBox::shutdown;
 
 use strict;
 use warnings;
@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "virsh shutdown $dom";
+   run "VBoxManage controlvm '$dom' acpipowerbutton";
    if($? != 0) {
       die("Error shutdown vm $dom");
    }

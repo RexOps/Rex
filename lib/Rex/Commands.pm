@@ -404,12 +404,22 @@ sub auth {
    my $group = Rex::Group->get_group_object($entity);
    if(! $group) {
       Rex::Logger::debug("No group $entity found, looking for a task.");
-      $group = Rex::TaskList->create()->get_task($entity);
+      if(ref($entity) eq "Regexp") {
+         my @tasks = Rex::TaskList->create()->get_tasks;
+         my @selected_tasks = grep { m/$entity/ } @tasks;
+         for my $t (@selected_tasks) {
+            auth($_d, $t, %data);
+         }
+         return;
+      }
+      else {
+         $group = Rex::TaskList->create()->get_task($entity);
+      }
    }
 
    if(! $group) {
-      Rex::Logger::info("Group or Task $group not found.");
-      CORE::exit 1;
+      Rex::Logger::info("Group or Task $entity not found.");
+      return;
    }
 
    Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");

@@ -35,7 +35,7 @@ use warnings;
 
 use Rex;
 
-my $no_color = 0;
+our $no_color = 0;
 eval "use Term::ANSIColor";
 if($@) { $no_color = 1; }
 

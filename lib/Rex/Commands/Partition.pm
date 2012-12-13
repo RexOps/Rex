@@ -192,24 +192,41 @@ sub partition {
    }
    elsif(can_run("mkfs.$option{fstype}")) {
       Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 
-      run "mkfs.$option{fstype} /dev/$disk$part_num";
+
+      my $add_opts = "";
+
+      if(exists $option{label} || exists $option{lable}) {
+         my $label = $option{label} || $option{lable};
+         $add_opts .= " -L $label ";
+      }
+
+      run "mkfs.$option{fstype} $add_opts /dev/$disk$part_num";
    }
    elsif($option{fstype} eq "swap") {
       Rex::Logger::info("Creating swap space on /dev/$disk$part_num");
-      run "mkswap /dev/$disk$part_num";
+
+      my $add_opts = "";
+
+      if(exists $option{label} || exists $option{lable}) {
+         my $label = $option{label} || $option{lable};
+         $add_opts .= " -L $label ";
+      }
+
+      run "mkswap $add_opts /dev/$disk$part_num";
    }
    else {
       die("Can't format partition with $option{fstype}");
    }
 
    if(exists $option{mount} && $option{mount}) {
-      mount "$disk$part_num", $mountpoint,
+      mount "/dev/$disk$part_num", $mountpoint,
                   fs => $option{fstype};
    }
 
    if(exists $option{mount_persistent} && $option{mount_persistent}) {
-      mount "$disk$part_num", $mountpoint,
+      mount "/dev/$disk$part_num", $mountpoint,
                   fs => $option{fstype},
+                  label => $option{label} || "",
                   persistent => 1;
    }
 

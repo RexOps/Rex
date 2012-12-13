@@ -672,12 +672,24 @@ sub mount {
 
       my @new_content = grep { ! /^$device\s/ } @content;
 
+      $option->{options} ||= "defaults";
+
       if(ref($option->{options}) eq "ARRAY") {
          my $mountops = join(",", @{$option->{"options"}});
-         push(@new_content, "$device\t$mount_point\t$option->{fs}\t$mountops\t0 0\n");
+         if($option->{label}) {
+            push(@new_content, "LABEL=" . $option->{label} . "\t$mount_point\t$option->{fs}\t$mountops\t0 0\n");
+         }
+         else {
+            push(@new_content, "$device\t$mount_point\t$option->{fs}\t$mountops\t0 0\n");
+         }
       }
       else {
-         push(@new_content, "$device\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n");
+         if($option->{label}) {
+            push(@new_content, "LABEL=" . $option->{label} . "\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n");
+         }
+         else {
+            push(@new_content, "$device\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n");
+         }
       }
 
       $fh = Rex::Interface::File->create;

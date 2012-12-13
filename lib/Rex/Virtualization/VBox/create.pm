@@ -27,7 +27,7 @@ sub execute {
 
    my $opts = \%opt;
    $opts->{name} = $name;
-   $opts->{type} ||= "Linux 2.6"; # default to Linux 2.6
+   $opts->{type} ||= "Linux26"; # default to Linux 2.6
 
    unless($opts) {
       die("You have to define the create options!");
@@ -52,6 +52,15 @@ sub execute {
       }
    }
 
+   # memory
+   run "VBoxManage modifyvm '$name' --memory " . $opts->{memory};
+
+   # cpus
+   run "VBoxManage modifyvm '$name' --cpus " . $opts->{cpus};
+
+   # boot
+   run "VBoxManage modifyvm '$name' --boot1 " . $opts->{boot};
+
    return;
 }
 
@@ -67,7 +76,11 @@ sub _set_defaults {
    }
 
    if( ! exists $opts->{"memory"} ) {
-      $opts->{"memory"} = 512 * 1024;
+      $opts->{"memory"} = 512;
+   }
+   else {
+      # default is byte
+      $opts->{memory} = $opts->{memory} / 1024;
    }
 
    if( ! exists $opts->{"cpus"} ) {
@@ -75,7 +88,12 @@ sub _set_defaults {
    }
 
    if( ! exists $opts->{"boot"} ) {
-      $opts->{"boot"} = "hd";
+      $opts->{"boot"} = "disk";
+   }
+
+   # normalize
+   if($opts->{boot} eq "hd") {
+      $opts->{boot} = "disk";
    }
 
    _set_storage_defaults($opts);

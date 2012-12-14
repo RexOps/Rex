@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.34.1";
+$VERSION = "0.34.2";
 
 my $cur_dir = getcwd;
 
@@ -258,6 +258,7 @@ sub connect {
       server   => $server,
       port     => $port,
       timeout  => $timeout,
+      %{ $param },
    );
 
    unless($conn->is_connected) {

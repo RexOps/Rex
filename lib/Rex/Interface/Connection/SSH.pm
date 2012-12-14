@@ -77,11 +77,11 @@ sub connect {
 
    $self->{connected} = 1;
 
-   if($auth_type eq "pass") {
+   if($auth_type && $auth_type eq "pass") {
       Rex::Logger::debug("Using password authentication.");
       $self->{auth_ret} = $self->{ssh}->auth_password($user, $pass);
    }
-   elsif($auth_type eq "key") {
+   elsif($auth_type && $auth_type eq "key") {
       Rex::Logger::debug("Using key authentication.");
       $self->{auth_ret} = $self->{ssh}->auth_publickey($user,
                               $public_key,
@@ -93,8 +93,8 @@ sub connect {
       $self->{auth_ret} = $self->{ssh}->auth(
                              'username' => $user,
                              'password' => $pass,
-                             'publickey' => $public_key,
-                             'privatekey' => $private_key);
+                             'publickey' => $public_key || "",
+                             'privatekey' => $private_key || "");
    }
 
    $self->{sftp} = $self->{ssh}->sftp;

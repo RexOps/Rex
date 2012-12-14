@@ -93,8 +93,8 @@ sub connect {
       $self->{auth_ret} = $self->{ssh}->auth(
                              'username' => $user,
                              'password' => $pass,
-                             'publickey' => $public_key,
-                             'privatekey' => $private_key);
+                             'publickey' => $public_key || "",
+                             'privatekey' => $private_key || "");
    }
 
    $self->{sftp} = $self->{ssh}->sftp;

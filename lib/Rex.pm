@@ -258,6 +258,7 @@ sub connect {
       server   => $server,
       port     => $port,
       timeout  => $timeout,
+      %{ $param },
    );
 
    unless($conn->is_connected) {

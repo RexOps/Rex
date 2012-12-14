@@ -126,9 +126,16 @@ sub install {
 
    my $type = shift;
    my $package = shift;
-   my $option = ( @_ == 1 ) ? shift : { @_ };   
+   my $option;
 
    if($type eq "file") {
+
+      if(ref($_[0]) eq "HASH") {
+         $option = shift;
+      }
+      else {
+         $option = { @_ };
+      }
 
       Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
       Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
@@ -226,6 +233,13 @@ sub install {
 
    elsif($type eq "package") {
       
+      if(ref($_[0]) eq "HASH") {
+         $option = shift;
+      }
+      elsif($_[0]) {
+         $option = { @_ };
+      }
+
       my $pkg;
       
       $pkg = Rex::Pkg->get;
@@ -245,7 +259,7 @@ sub install {
    }
    else {
       # unknown type, be a package
-      install("package", $type, $package, $option); 
+      install("package", $type, $package, @_); 
    }
 
 }
@@ -311,8 +325,10 @@ sub remove {
 
    else {
       
-      Rex::Logger::info("$type not supported.");
-      die("remove $type not supported");
+      #Rex::Logger::info("$type not supported.");
+      #die("remove $type not supported");
+      # no type given, assume package
+      remove("package", $type, $option);
 
    }
 

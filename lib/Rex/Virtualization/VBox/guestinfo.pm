@@ -47,19 +47,6 @@ sub execute {
    }
 
    return {
-      net => \@netinfo,=> $ip,
-         mac => $mac,
-         netmask => $netmask,
-         status => $status,
-         broadcast => $broadcast,
-      });
-   }
-  
-   if($? != 0) {
-      die("Error running VBoxManage guestproperty $vmname");
-   }
-
-   return {
       net => \@netinfo,
    };
 }

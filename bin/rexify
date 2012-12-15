@@ -14,6 +14,7 @@ $|++;
 use LWP::Simple;
 use YAML;
 use Data::Dumper;
+use Rex::Commands::File;
 
 my $opts = {}; 
 
@@ -46,6 +47,11 @@ if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
    print STDERR "\n";
    print STDERR "\t--search value\t\tWill search community recipes\n";
    print STDERR "\t--use recipe\t\tWill download community recipe\n";
+   print STDERR "\t--template template\t\tUse a custom template to create the Rexfile skeleton\n";
+
+   print STDERR "\n";
+   print STDERR "Custom Templates:\n";
+   print STDERR "   box - Template to use for Rex::Commands::Box projects.\n";
    exit 1;
 }
 
@@ -148,44 +154,21 @@ unless(-d 'lib') {
 
 unless(-f 'lib' . $ARGV[0] . '.pm') {
    open(my $fh, ">", "lib/$ARGV[0].pm") or die($!);
-   print $fh qq~package $ARGV[0];
-
-use Rex -base;
-
-desc "Get uptime of server";
-task "uptime", group => 'servers', sub {
-   say run "uptime";
-};
-
-1;
-~;
+   print $fh template('@libfile', lib => $ARGV[0]);
    close($fh);
 
    print STDERR "Created lib/Rex/$ARGV[0].pm\n";
 
-   open($fh, ">", "Rexfile") or die($!);
-   print $fh qq~
-# enable new Features
-use Rex -feature => 0.31;
-
-# set your username
-set user => "<user>";
-
-# set your password
-set password => "<password>";
-
-# enable password authentication
-set -passauth;
-
-# put your server in this group
-set group => "servers" => "server1", "server2";
-
-
-# now load every module via ,,require''
-require $ARGV[0];
-
-~;
-   close($fh);
+   if($opts->{template}) {
+      open($fh, ">", "Rexfile") or die($!);
+      print $fh template('@' . $opts->{template}, lib => $ARGV[0]);
+      close($fh);
+   }
+   else {
+      open($fh, ">", "Rexfile") or die($!);
+      print $fh template('@rexfile', lib => $ARGV[0]);
+      close($fh);
+   }
 
    if($opts->{use}) {
       if(! ref $opts->{use}) {
@@ -218,4 +201,118 @@ else {
 
    exit;
 }
+
+__DATA__
+
+@rexfile
+# enable new Features
+use Rex -feature => 0.31;
+
+# set your username
+set user => "<user>";
+
+# set your password
+set password => "<password>";
+
+# enable password authentication
+set -passauth;
+
+# put your server in this group
+set group => "servers" => "server1", "server2";
+
+
+# now load every module via ,,require''
+require <%= $::lib %>;
+
+@end
+
+@libfile
+package <%= $::lib %>;
+
+use Rex -base;
+
+desc "Get uptime of server";
+task "uptime", group => 'servers', sub {
+   say run "uptime";
+};
+
+1;
+@end
+
+@box
+use strict;
+use warnings;
+
+use Rex::Commands::Box;
+
+set user => '<user>';
+set password => '<password>';
+set -passauth;
+
+#
+# CALL:
+# rex init --name=<%= $::lib %> --url=http://box.rexify.org/ubuntu-server-12.10-amd64.box
+desc "Initialize and start the VM: rex init --name=vmname [--url=http://...]";
+task "init", sub {
+
+   my $param = shift;
+
+   box {
+      my ($box) = @_;
+      $box->name($param->{name});
+
+      # where to download the base image
+      $box->url($param->{url});
+
+      # default is nat
+      #$box->network(1 => {
+      #   type => "bridged",
+      #   bridge => "eth0",
+      #});
+
+      # only works with network type = nat
+      # if a key ssh is present, rex will use this to log into the vm
+      # you need this if you run VirtualBox not on your local host.
+      $box->forward_port(ssh => [2222 => 22]);
+
+      # share a folder from the host system
+      #$box->share_folder("sharename" => "/path/on/host/system");
+
+      # define the authentication to the box
+      # if you're downloading one from box.rexify.org this is the default.
+      $box->auth(
+         user => "root",
+         password => "box",
+      );
+
+      # if you want to provision the machine, 
+      # you can define the tasks to do that
+      $box->setup(qw/install_webserver/);
+   };
+
+};
+
+#
+# CALL:
+# rex down --name=<%= $::lib %>
+desc "Stop the VM: rex down --name=vmname";
+task "down", sub {
+   
+   my $param = shift;
+
+   my $box = Rex::Commands::Box->new(name => $param->{name});
+   $box->stop;
+};
+
+
+task "install_webserver", sub {
+
+   # install packages / customize the vm
+   install "apache2";
+
+};
+
+require <%= $::lib %>;
+
+@end
 

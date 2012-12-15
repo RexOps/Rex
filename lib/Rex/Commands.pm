@@ -102,6 +102,7 @@ use Rex::TaskList;
 use Rex::Logger;
 use Rex::Config;
 use Rex::Profiler;
+use Rex::Report;
 use Rex;
 
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler);

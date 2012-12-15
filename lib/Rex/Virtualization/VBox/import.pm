@@ -22,7 +22,17 @@ sub execute {
    my $dom = $arg1;
    Rex::Logger::debug("importing: $dom -> ". $opt{file});
 
-   run "VBoxManage import '" . $opt{file} . "' --vsys 0 --vmname '" . $dom . "'";
+   my $add_cmd = "";
+
+   if(exists $opt{cpus}) {
+      $add_cmd .= " --cpus $opt{cpus} ";
+   }
+
+   if(exists $opt{memory}) {
+      $add_cmd .= " --memory $opt{memory} ";
+   }
+
+   run "VBoxManage import '" . $opt{file} . "' --vsys 0 --vmname '" . $dom . "' $add_cmd ";
 }
 
 1;

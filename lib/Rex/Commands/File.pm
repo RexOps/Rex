@@ -70,6 +70,7 @@ use Rex::FS::File;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
+use Rex::Helper::System;
 
 use Rex::Interface::Exec;
 use Rex::Interface::File;

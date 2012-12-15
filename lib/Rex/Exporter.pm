@@ -19,11 +19,20 @@ sub import {
    my ($mod_to_register, %option) = @_;
    my ($mod_to_register_in, $file, $line) = caller;
 
-   if($option{register_in}) {
+   if(exists $option{register_in} && $option{register_in}) {
       $mod_to_register_in = $option{register_in};
    }
 
+   my $no_import = "";
+   if(exists $option{"-no"} && $option{"-no"}) {
+      $no_import = "," . join(",", @{ $option{"-no"} }) . ",";
+   }
+
    for my $reg_func (@{ $_[0] . "::EXPORT" }) {
+      if($no_import =~ m/,$reg_func,/) {
+         next;
+      }
+
       *{ $mod_to_register_in . "::" . $reg_func } = *{ $mod_to_register . "::" . $reg_func };
    }
 }

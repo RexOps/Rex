@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -18,12 +18,11 @@ use Rex::Commands::File;
 
 my $opts = {}; 
 
-my $SEARCH_SERVER = "http://rexify.org/get/recipes";
-my $RECIPE_SERVER = "http://rexify.org/get/mod/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.35/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.35/get/mod/%s";
 
-#my $SEARCH_SERVER = "http://localhost:3000/get/recipes";
-#my $RECIPE_SERVER = "http://localhost:3000/get/mod/%s";
-
+#my $SEARCH_SERVER = "http://localhost:3000/api/0.35/get/recipes";
+#my $RECIPE_SERVER = "http://localhost:3000/api/0.35/get/mod/%s";
 
 
 for(my $i=0; $i<@ARGV; $i++) {

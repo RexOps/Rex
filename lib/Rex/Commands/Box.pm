@@ -27,6 +27,7 @@ set virtualization => "VBox";
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
+#@EXPORT = qw(box $box);
 @EXPORT = qw(box);
 
 sub new {
@@ -40,10 +41,22 @@ sub new {
 sub box(&) {
    my $code = shift;
 
+   #### too much black magic...
+   #my ($caller_box) = do {
+   #   my $pkg = caller();
+   #   no strict 'refs';
+   #   \*{ $pkg . "::box" };
+   #};
+
    my $self = {};
    bless($self, __PACKAGE__);
 
-   &$code($self);
+   #local( *$caller_box );
+   #*$caller_box = \$self;
+
+   $code->($self);
+
+   #*$caller_box = \{}; # undef $box
 
    $self->_import;
 }

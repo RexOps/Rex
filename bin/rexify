@@ -1,4 +1,4 @@
-#!perl -w
+#!/usr/bin/env perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -18,10 +18,29 @@ use Rex::Commands::File;
 
 my $opts = {}; 
 
+my $SEARCH_SERVER = "http://rexify.org/get/recipes";
+my $RECIPE_SERVER = "http://rexify.org/get/mod/%s";
+
+#my $SEARCH_SERVER = "http://localhost:3000/get/recipes";
+#my $RECIPE_SERVER = "http://localhost:3000/get/mod/%s";
+
+
 
 for(my $i=0; $i<@ARGV; $i++) {
 
-   if($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/) {
+   if($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)=/) {
+      my $key = $1;
+      my ($c_key, $val) = split(/=/, $ARGV[$i]);
+
+      if(exists $opts->{$key}) {
+         $opts->{$key} = [ $opts->{$key} ] if (! ref $opts->{$key});
+         push(@{$opts->{$key}}, $val);
+      }
+      else {
+         $opts->{$key} = $val || 0;
+      }
+   }
+   elsif($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/) {
       my $key = $1; 
       if(! $ARGV[$i+1] || $ARGV[$i+1] =~ m/^\-\-/) {
          $opts->{$key} = 1;                                                                                      
@@ -45,9 +64,9 @@ if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
    print STDERR "\n";
    print STDERR "Options:";
    print STDERR "\n";
-   print STDERR "\t--search value\t\tWill search community recipes\n";
-   print STDERR "\t--use recipe\t\tWill download community recipe\n";
-   print STDERR "\t--template template\t\tUse a custom template to create the Rexfile skeleton\n";
+   print STDERR "\t--search=value\t\tWill search community recipes\n";
+   print STDERR "\t--use=recipe\t\tWill download community recipe\n";
+   print STDERR "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
 
    print STDERR "\n";
    print STDERR "Custom Templates:\n";
@@ -79,7 +98,7 @@ sub download_recipe {
 
    print "Downloading $name...   ";
    $name =~ s/::/\//g;
-   my $content = get("http://rexify.org/get/mod/$name");
+   my $content = get(sprintf($RECIPE_SERVER, $name));
    open(my $fh, ">", "tmp-mod.tar.gz") or die($!);
    binmode $fh;
    print $fh $content;
@@ -98,7 +117,7 @@ if(exists $opts->{search}) {
    my $search_string = $opts->{search};
    # only a search
    print "Downloading recipes.yml ... ";
-   my $recipes = get("http://rexify.org/get/recipes");
+   my $recipes = get($SEARCH_SERVER);
    print " done.\n";
 
    print "Searching...\n\n";

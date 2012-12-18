@@ -15,6 +15,7 @@ lib/Rex/Cloud/Amazon.pm
 lib/Rex/Cloud/Base.pm
 lib/Rex/Cloud/Jiffybox.pm
 lib/Rex/Commands.pm
+lib/Rex/Commands/Box.pm
 lib/Rex/Commands/Cloud.pm
 lib/Rex/Commands/Cron.pm
 lib/Rex/Commands/DB.pm
@@ -189,6 +190,19 @@ lib/Rex/Virtualization/LibVirt/reboot.pm
 lib/Rex/Virtualization/LibVirt/shutdown.pm
 lib/Rex/Virtualization/LibVirt/start.pm
 lib/Rex/Virtualization/LibVirt/vncdisplay.pm
+lib/Rex/Virtualization/VBox/create.pm
+lib/Rex/Virtualization/VBox/delete.pm
+lib/Rex/Virtualization/VBox/destroy.pm
+lib/Rex/Virtualization/VBox/forward_port.pm
+lib/Rex/Virtualization/VBox/guestinfo.pm
+lib/Rex/Virtualization/VBox/import.pm
+lib/Rex/Virtualization/VBox/info.pm
+lib/Rex/Virtualization/VBox/list.pm
+lib/Rex/Virtualization/VBox/option.pm
+lib/Rex/Virtualization/VBox/reboot.pm
+lib/Rex/Virtualization/VBox/share_folder.pm
+lib/Rex/Virtualization/VBox/shutdown.pm
+lib/Rex/Virtualization/VBox/start.pm
 LICENSE
 Makefile.PL
 MANIFEST

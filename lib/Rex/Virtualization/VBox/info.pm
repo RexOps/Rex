@@ -30,7 +30,7 @@ sub execute {
    my @dominfo = run "VBoxManage showvminfo '$vmname' --machinereadable";
   
    if($? != 0) {
-      die("Error running virsh dominfo $vmname");
+      die("Error running VBoxManage showvminfo $vmname");
    }
 
    my %ret = ();

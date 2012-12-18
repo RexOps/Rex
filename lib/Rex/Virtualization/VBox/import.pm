@@ -32,7 +32,11 @@ sub execute {
       $add_cmd .= " --memory $opt{memory} ";
    }
 
-   run "VBoxManage import '" . $opt{file} . "' --vsys 0 --vmname '" . $dom . "' $add_cmd ";
+   run "VBoxManage import '" . $opt{file} . "' --vsys 0 --vmname '" . $dom . "' $add_cmd 2>&1";
+
+   if($? != 0) {
+      die("Error importing VM $opt{file}");
+   }
 }
 
 1;

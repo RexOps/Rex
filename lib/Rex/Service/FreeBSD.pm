@@ -90,7 +90,7 @@ sub ensure {
       $self->stop($service);
       delete_lines_matching "/etc/rc.conf", matching => qr/${service}_enable="YES"/;
    }
-   elsif($what =~ /^start/) {
+   elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
       append_if_no_such_line "/etc/rc.conf", "${service}_enable=\"YES\"\n";
    }

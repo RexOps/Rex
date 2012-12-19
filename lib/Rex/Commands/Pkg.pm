@@ -408,6 +408,26 @@ To remove a repository just delete it with its name.
     repository remove => "repository-name";
  };
 
+You can also use one call to repository to add repositories on multiple platforms:
+
+ task "add-repo", "server1", "server2", sub {
+   repository add => myrepo => {
+      Ubuntu => {
+         url => "http://foo.bar/repo",
+         distro => "precise",
+         repository => "foo",
+      },
+      Debian => {
+         url => "http://foo.bar/repo",
+         distro => "squeeze",
+         repository => "foo",
+      },
+      CentOS => {
+         url => "http://foo.bar/repo",
+      },
+   };
+ };
+
 
 =cut
 
@@ -442,6 +462,10 @@ sub repository {
    }
    elsif($action eq "remove" || $action eq "delete") {
       $pkg->rm_repository($name);
+   }
+
+   if(exists $data{after}) {
+      $data{after}->();
    }
 }
 

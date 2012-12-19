@@ -15,14 +15,17 @@ use LWP::Simple;
 use YAML;
 use Data::Dumper;
 use Rex::Commands::File;
+use JSON::XS;
 
 my $opts = {}; 
 
 my $SEARCH_SERVER = "http://modules.rexify.org/api/0.35/get/recipes";
 my $RECIPE_SERVER = "http://modules.rexify.org/api/0.35/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.35/get/dep/%s";
 
 #my $SEARCH_SERVER = "http://localhost:3000/api/0.35/get/recipes";
 #my $RECIPE_SERVER = "http://localhost:3000/api/0.35/get/mod/%s";
+#my $DEPEND_SERVER = "http://localhost:3000/api/0.35/get/dep/%s";
 
 
 for(my $i=0; $i<@ARGV; $i++) {
@@ -94,6 +97,18 @@ sub download_recipe {
    }
 
    if(! -d "lib") { mkdir "lib"; }
+
+   print "Getting dependencies for $name...\n";
+   my $deps = decode_json(get(sprintf($DEPEND_SERVER, $name)));
+   if(scalar(@{ $deps }) > 0) {
+      print "   Found: \n" . join("\n      - ", @{ $deps }) . "\n";
+      for my $dep (@{ $deps }) {
+         download_recipe($dep);
+      }
+   }
+   else {
+      print "   None found.\n";
+   }
 
    print "Downloading $name...   ";
    $name =~ s/::/\//g;

@@ -397,6 +397,11 @@ sub get {
    }
 }
 
+sub get_all {
+   my ($class) = @_;
+   return $set_param;
+}
+
 =item register_config_handler($topic, $code)
 
 With this function it is possible to register own sections in the users config file ($HOME/.rex/config.yml).

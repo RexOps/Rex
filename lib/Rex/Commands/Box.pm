@@ -4,6 +4,54 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Commands::Box - Functions / Class to manage Virtual Machines
+
+=head1 DESCRIPTION
+
+This is a Module to manage Virtual Machines or Cloud Instances in a simple way. Currently it supports only VirtualBox.
+
+=head1 SYNOPSIS
+
+ task mytask => sub {
+    
+    box {
+       my ($box) = @_;
+       $box->name("vmname");
+       $box->url("http://box.rexify.org/box/base-image.box");
+          
+       $box->network(1 => {
+         type => "nat",
+       });
+           
+       $box->network(1 => {
+         type => "bridged",
+         bridge => "eth0",
+       });
+          
+       $box->forward_port(ssh => [2222, 22]);
+          
+       $box->share_folder(myhome => "/home/myuser");
+          
+       $box->auth(
+         user => "root",
+         password => "box",
+       );
+         
+       $box->setup(qw/task_to_customize_box/);
+       
+    };
+    
+ };
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
+
 package Rex::Commands::Box;
 
 use Rex::Commands -no => [qw/auth/];
@@ -29,6 +77,14 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 #@EXPORT = qw(box $box);
 @EXPORT = qw(box);
+
+=item new(name => $vmname)
+
+Constructor if used in OO mode.
+
+ my $box = Rex::Commands::Box->new(name => "vmname");
+
+=cut
 
 sub new {
    my $class = shift;
@@ -61,11 +117,21 @@ sub box(&) {
    $self->_import;
 }
 
+=item name($vmname)
+
+Sets the name of the virtual machine.
+
+=cut
 sub name {
    my ($self, $name) = @_;
    $self->{name} = $name;
 }
 
+=item setup(@tasks)
+
+Sets the tasks that should be executed as soon as the VM is available throu SSH.
+
+=cut
 sub setup {
    my ($self, @tasks) = @_;
    $self->{__tasks} = \@tasks;
@@ -150,17 +216,32 @@ sub _import {
    }
 }
 
+=item stop()
+
+Stops the VM.
+
+=cut
 sub stop {
    my ($self) = @_;
    vm shutdown => $self->{name};
 }
 
+=item start()
+
+Starts the VM.
+
+=cut
 sub start {
    my ($self) = @_;
    vm start => $self->{name};
 
 }
 
+=item provision([@tasks])
+
+Execute's the given tasks on the VM.
+
+=cut
 sub provision {
    my ($self, @tasks) = @_;
 
@@ -179,37 +260,105 @@ sub provision {
    }
 }
 
+=item cpus($count)
+
+Set the amount of CPUs for the VM.
+
+=cut
 sub cpus {
    my ($self, $cpus) = @_;
    $self->{cpus} = $cpus;
 }
 
+=item forward_port(%option)
+
+Set ports to be forwarded to the VM. This only work with VirtualBox in NAT network mode.
+
+ $box->forward_port(
+    name => [$from_host_port, $to_vm_port],
+    name2 => [$from_host_port_2, $to_vm_port_2],
+    ...
+ );
+
+=cut
 sub forward_port {
    my ($self, %option) = @_;
    $self->{__forward_port} = \%option;
 }
 
+=item share_folder(%option)
+
+Creates a shared folder inside the VM with the content from a folder from the Host machine. This only works with VirtualBox.
+
+ $box->share_folder(
+    name => "/path/on/host",
+    name2 => "/path_2/on/host",
+ );
+
+=cut
 sub share_folder {
    my ($self, %option) = @_;
    $self->{__shared_folder} = \%option;
 }
 
+=item memory($memory_size)
+
+Sets the memory of a VM in megabyte.
+
+=cut
 sub memory {
    my ($self, $mem) = @_;
    $self->{memory} = $mem;
 }
 
+=item network(%option)
+
+Configure the network for a VM.
+
+Currently it supports 2 modes. I<nat> and I<bridged>. Currently it supports only one network card.
+
+ $box->network(
+    1 => {
+       type => "nat",
+    },
+ }
+    
+ $box->network(
+    1 => {
+       type => "bridged",
+       bridge => "eth0",
+    },
+ );
+
+=cut
 sub network {
    my ($self, %option) = @_;
    $self->{__network} = \%option;
 }
 
+=item url($url)
+
+The URL where to download the Base VM Image. You can use self-made images or prebuild images from http://box.rexify.org/.
+
+=cut
 sub url {
    my ($self, $url, $force) = @_;
    $self->{url} = $url;
    $self->{force} = $force;
 }
 
+=item auth(%option)
+
+Configure the authentication to the VM.
+
+ $box->auth(
+    user => $user,
+    password => $password,
+    private_key => $private_key,
+    public_key => $public_key,
+ );
+
+=cut
 sub auth {
    my ($self, %auth) = @_;
    $self->{__auth} = \%auth;
@@ -232,7 +381,14 @@ sub _download {
       Rex::Logger::info("Downloading $self->{url} to /tmp/$filename");
       mkdir "tmp";
       run "wget -c -qO /tmp/$filename $self->{url}";
+      if($? != 0) {
+         die("Downloading of $self->{url} failed. Please verify if wget is installed and if you have the right permissions to download this box.");
+      }
    }
 }
+
+=back
+
+=cut
 
 1;

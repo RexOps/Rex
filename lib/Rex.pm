@@ -177,6 +177,22 @@ sub is_ssh {
    return 0;
 }
 
+=item is_local
+
+Returns 1 if the current connection is local. Otherwise 0.
+
+=cut
+sub is_local {
+   if($CONNECTION_STACK[-1]) {
+      my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
+      if($ref =~ m/Local/) {
+         return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
+      }
+   }
+
+   return 0;
+}
+
 =item is_sudo
 
 Returns 1 if the current operation is executed within sudo. 

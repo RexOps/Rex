@@ -60,7 +60,10 @@ use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 
 use LWP::UserAgent;
+use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
+
+$|++;
 
 ################################################################################
 # Setup Virtualization
@@ -250,8 +253,11 @@ sub provision {
    }
 
    my $server = $self->{info}->{net}->[0]->{ip};
-   if($self->{__forward_port} && $self->{__forward_port}->{ssh}) {
+   if($self->{__forward_port} && $self->{__forward_port}->{ssh} && ! Rex::is_local()) {
       $server = connection->server . ":" . $self->{__forward_port}->{ssh}->[0];
+   }
+   elsif($self->{__forward_port} && $self->{__forward_port}->{ssh} && Rex::is_local()) {
+      $server = "127.0.0.1:" . $self->{__forward_port}->{ssh}->[0];
    }
 
    for my $task (@tasks) {
@@ -380,9 +386,59 @@ sub _download {
    if($force) {
       Rex::Logger::info("Downloading $self->{url} to /tmp/$filename");
       mkdir "tmp";
-      run "wget -c -qO /tmp/$filename $self->{url}";
-      if($? != 0) {
-         die("Downloading of $self->{url} failed. Please verify if wget is installed and if you have the right permissions to download this box.");
+      if(Rex::is_local()) {
+         my $ua = LWP::UserAgent->new();
+         my $final_data = "";
+         my $current_size = 0;
+         my $current_modulo = 0;
+         my $start_time = [gettimeofday()];
+         open(my $fh, ">", "/tmp/$filename") or die($!);
+         my $resp = $ua->get($self->{url}, ':content_cb' => sub {
+            my ($data, $response, $protocol) = @_;
+
+            $current_size += length($data);
+
+            my $content_length = $response->header("content-length");
+
+            print $fh $data;
+
+            my $current_time = [gettimeofday()];
+            my $time_diff = tv_interval($start_time, $current_time);
+
+            my $bytes_per_seconds = $current_size / $time_diff;
+
+            my $mbytes_per_seconds = $bytes_per_seconds / 1024 / 1024;
+
+            my $mbytes_current = $current_size / 1024 / 1024;
+            my $mbytes_total = $content_length / 1024 / 1024;
+
+            my $left_bytes = $content_length - $current_size;
+
+            my $time_one_byte  = $time_diff / $current_size;
+            my $time_all_bytes = $time_one_byte * ($content_length - $current_size);
+
+            if( (($current_size / (1024 * 1024)) % (1024 * 1024)) > $current_modulo ) {
+               print ".";
+               $current_modulo++;
+
+               if( $current_modulo % 10 == 0) {
+                  printf(". %.2f MBytes/s (%.2f MByte / %.2f MByte) %.2f secs left\n", $mbytes_per_seconds, $mbytes_current, $mbytes_total, $time_all_bytes);
+               }
+
+            }
+
+         });
+         close($fh);
+
+         print " done.\n";
+
+      }
+      else {
+         run "wget -c -qO /tmp/$filename $self->{url}";
+
+         if($? != 0) {
+            die("Downloading of $self->{url} failed. Please verify if wget is installed and if you have the right permissions to download this box.");
+         }
       }
    }
 }

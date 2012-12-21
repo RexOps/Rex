@@ -32,7 +32,7 @@ sub execute {
 
       my $func;
       unless(exists $FUNC_MAP->{$opt}) {
-         Rex::Logger::info("$opt unknown. using as option for VBoxManage.");
+         Rex::Logger::debug("$opt unknown. using as option for VBoxManage.");
          $func = $opt;
       }
       else {

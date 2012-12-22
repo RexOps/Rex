@@ -1,4 +1,4 @@
-2012-12-22 Jan Gehring <jan.gehring, gmail.com> (0.35.0)
+2012-12-22 Jan Gehring <jan.gehring, gmail.com> (0.35.1)
   * VirtualBox support for virtualization module
   * new command - Rex::Commands::Box
   * auth for - supports regular expresions

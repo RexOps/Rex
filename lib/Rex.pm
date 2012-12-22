@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.35.0";
+$VERSION = "0.35.1";
 
 my $cur_dir = getcwd;
 

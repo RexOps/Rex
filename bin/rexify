@@ -181,7 +181,7 @@ if(exists $opts->{"create-module"}) {
 
 
    my $module_name = $dir;
-   $dir =~ s/::/\//;;
+   $dir =~ s/::/\//g;
 
    print "Creating module $module_name...\n";
 

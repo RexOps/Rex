@@ -20,7 +20,7 @@ use Rex::Config;
 
 Rex::Config->register_config_handler(virtualization => sub {
    my ($param) = @_;
-   
+
    if (ref($param) eq '') {
       #support 'set virtualization => 'LibVirt', but leave the way open for using a hash in future
       #other virtualisation drivers may need more settings...
@@ -62,7 +62,8 @@ With this module you can manage your virtualization.
 
  use Rex::Commands::Virtualization;
     
- set virtualization => {type => "LibVirt"};
+ set virtualization => "LibVirt";
+ set virtualization => "VBox";
     
  use Data::Dumper;   
 
@@ -109,6 +110,25 @@ This module exports only the I<vm> function. You can manage everything with this
 =head1 EXAMPLES
 
 =head2 Creating a Virtual Machine
+
+Create a (VirtualBox) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size beeing a file on disk.
+With a cdrom as an iso image and a natted network. The bootorder is set to "dvd".
+
+ vm create => "vm01",
+      storage     => [
+         {   
+            file   => "/mnt/data/vbox/vm01.img",
+            size   => "10G",
+         },
+         {
+            file => "/mnt/iso/debian6.iso",
+         }
+      ],
+      memory => 512,
+      type => "Linux26", 
+      cpus => 1,
+      boot => "dvd";
+
 
 Create a (KVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size beeing a file on disk.
 With a cdrom as an iso image and a bridged network on the bridge virbr0. The Bootorder is set to "cdrom".

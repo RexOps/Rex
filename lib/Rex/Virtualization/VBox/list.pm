@@ -24,7 +24,7 @@ sub execute {
          die("Error running VBoxManage list vms");
       }
    } elsif($arg1 eq "running") {
-      @domains = run "VBoxManage runningvms";
+      @domains = run "VBoxManage list runningvms";
       if($? != 0) {
          die("Error running VBoxManage runningvms");
       }

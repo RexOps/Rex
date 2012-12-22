@@ -39,16 +39,36 @@ sub execute {
 
    ### add controller
    run "VBoxManage storagectl \"$name\" --name \"SATA Controller\" --add sata --controller IntelAhci";
+   run "VBoxManage storagectl \"$name\" --name \"IDE Controller\" --add ide --controller PIIX4";
 
    ### create hds
+   my $hdd_ports = {
+      "sata" => 0,
+      "ide"  => 0,
+   };
+
    for my $hd (@{ $opts->{storage} }) {
       if($hd->{type} eq "file") {
          my $filename = $hd->{file};
          my $size     = $hd->{size};
          my $format   = $hd->{format};
          if(! $filename) { die("You have to specify 'file'."); }
-         run "VBoxManage createhd --filename \"$filename\" --size $size --format $format";
-         run "VBoxManage storageattach \"$name\" --storagectl \"SATA Controller\" --port 0 --device 0 --type hdd --medium \"$filename\"";
+
+         if($hd->{device} eq "disk") {
+
+            if(! -f $filename) {
+               run "VBoxManage createhd --filename \"$filename\" --size $size --format $format 2>&1";
+            }
+
+            run "VBoxManage storageattach \"$name\" --storagectl \"SATA Controller\" --port " . $hdd_ports->{sata} . " --device 0 --type hdd --medium \"$filename\"";
+            $hdd_ports->{sata}++;
+         }
+
+         if($hd->{device} eq "cdrom") {
+            run "VBoxManage storageattach \"$name\" --storagectl \"IDE Controller\" --port " . $hdd_ports->{ide} . " --device 0 --type dvddrive --medium \"$filename\"";
+            $hdd_ports->{sata}++;
+         }
+
       }
    }
 
@@ -79,8 +99,8 @@ sub _set_defaults {
       $opts->{"memory"} = 512;
    }
    else {
-      # default is byte
-      $opts->{memory} = $opts->{memory} / 1024;
+      # default is mega byte
+      $opts->{memory} = $opts->{memory};
    }
 
    if( ! exists $opts->{"cpus"} ) {

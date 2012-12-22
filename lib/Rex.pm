@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.34.99.0";
+$VERSION = "0.35.0";
 
 my $cur_dir = getcwd;
 
@@ -414,6 +414,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Jose Luis Martinez
 
 =item Laird Liu
+
+=item Mario Domgoergen
 
 =item Nikolay Fetisov
 

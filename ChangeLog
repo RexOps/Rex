@@ -1,3 +1,12 @@
+2012-12-22 Jan Gehring <jan.gehring, gmail.com> (0.35.0)
+  * VirtualBox support for virtualization module
+  * new command - Rex::Commands::Box
+  * auth for - supports regular expresions
+  * repository function now supports multiple distributions in one call
+  * Unwrapped double looping over files and regexes and adding $new_line
+    if not present in absence of regexes - Mario Domgoergen
+  * Better handling of $option parameter for 'install' - joris
+
 2012-12-14 Jan Gehring <jan.gehring, gmail.com> (0.34.2)
   * fixed login for Rex::connect
 

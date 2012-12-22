@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "VBoxManage startvm '$dom'";
+   run "VBoxManage startvm \"$dom\"";
    if($? != 0) {
       die("Error starting vm $dom");
    }

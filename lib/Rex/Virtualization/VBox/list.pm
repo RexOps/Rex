@@ -36,7 +36,7 @@ sub execute {
    for my $line (@domains) {
       my ($name, $id) = $line =~ m:^"([^"]+)"\s*\{([^\}]+)\}$:;
 
-      my @status = grep { $_=$1 if /^VMState="([^"]+)"$/ } run "VBoxManage showvminfo '{$id}' --machinereadable";
+      my @status = grep { $_=$1 if /^VMState="([^"]+)"$/ } run "VBoxManage showvminfo \"{$id}\" --machinereadable";
       my $status;
 
       push( @ret, {

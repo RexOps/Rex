@@ -57,7 +57,7 @@ sub _get_property {
    my ($got_value) = (0);
 
    while($got_value != 1) {
-      my @a_tmp = run "VBoxManage guestproperty get '$vmname' '$prop'";
+      my @a_tmp = run "VBoxManage guestproperty get \"$vmname\" \"$prop\"";
 
       if($a_tmp[0] =~ m/No value set/) {
          sleep 1;

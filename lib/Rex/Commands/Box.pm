@@ -160,7 +160,7 @@ sub _import {
 
       my $filename = basename($self->{url});
 
-      Rex::Logger::info("Importing VM /tmp/$filename");
+      Rex::Logger::info("Importing VM ./tmp/$filename");
       vm import => $self->{name}, file => "./tmp/$filename", %{ $self };
 
       #unlink "./tmp/$filename";

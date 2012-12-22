@@ -43,12 +43,12 @@ sub execute {
          }
 
          my $from_path = $option->{$folder};
-         run "VBoxManage sharedfolder add '$dom' --name '$folder' --automount --hostpath '$from_path'";
+         run "VBoxManage sharedfolder add \"$dom\" --name \"$folder\" --automount --hostpath \"$from_path\"";
       }
    }
    else {
       if($option ne "-all") {
-         run "VBoxManage sharedfolder remove '$dom' --name '$option'";
+         run "VBoxManage sharedfolder remove \"$dom\" --name \"$option\"";
       }
       else {
          # if no name is given, remove all redirects
@@ -57,7 +57,7 @@ sub execute {
          my @keys = grep { m/^SharedFolderNameMachineMapping/ } keys %{ $info };
 
          for my $k (@keys) {
-            run "VBoxManage sharedfolder delete '$dom' --name '$info->{$k}'";
+            run "VBoxManage sharedfolder delete \"$dom\" --name \"$info->{$k}\"";
          }
       }
       

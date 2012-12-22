@@ -39,7 +39,7 @@ sub execute {
          $func = $FUNC_MAP->{$opt};
       }
 
-      run "VBoxManage modifyvm '$dom' --$func $val";
+      run "VBoxManage modifyvm \"$dom\" --$func \"$val\"";
       if($? != 0) {
          Rex::Logger::info("Error setting $opt to $val on $dom ($@)", "warn");
       }

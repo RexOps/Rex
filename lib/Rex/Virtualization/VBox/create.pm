@@ -35,10 +35,10 @@ sub execute {
 
    _set_defaults($opts);
 
-   run "VBoxManage createvm --name '" . $name . "' --ostype '" . $opts->{type} . "' --register";
+   run "VBoxManage createvm --name \"" . $name . "\" --ostype \"" . $opts->{type} . "\" --register";
 
    ### add controller
-   run "VBoxManage storagectl '$name' --name 'SATA Controller' --add sata --controller IntelAhci";
+   run "VBoxManage storagectl \"$name\" --name \"SATA Controller\" --add sata --controller IntelAhci";
 
    ### create hds
    for my $hd (@{ $opts->{storage} }) {
@@ -47,19 +47,19 @@ sub execute {
          my $size     = $hd->{size};
          my $format   = $hd->{format};
          if(! $filename) { die("You have to specify 'file'."); }
-         run "VBoxManage createhd --filename '$filename' --size $size --format $format";
-         run "VBoxManage storageattach '$name' --storagectl 'SATA Controller' --port 0 --device 0 --type hdd --medium $filename";
+         run "VBoxManage createhd --filename \"$filename\" --size $size --format $format";
+         run "VBoxManage storageattach \"$name\" --storagectl \"SATA Controller\" --port 0 --device 0 --type hdd --medium \"$filename\"";
       }
    }
 
    # memory
-   run "VBoxManage modifyvm '$name' --memory " . $opts->{memory};
+   run "VBoxManage modifyvm \"$name\" --memory " . $opts->{memory};
 
    # cpus
-   run "VBoxManage modifyvm '$name' --cpus " . $opts->{cpus};
+   run "VBoxManage modifyvm \"$name\" --cpus " . $opts->{cpus};
 
    # boot
-   run "VBoxManage modifyvm '$name' --boot1 " . $opts->{boot};
+   run "VBoxManage modifyvm \"$name\" --boot1 " . $opts->{boot};
 
    return;
 }

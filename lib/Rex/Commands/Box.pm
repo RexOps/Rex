@@ -393,6 +393,7 @@ sub _download {
          my $current_modulo = 0;
          my $start_time = [gettimeofday()];
          open(my $fh, ">", "./tmp/$filename") or die($!);
+         binmode $fh;
          my $resp = $ua->get($self->{url}, ':content_cb' => sub {
             my ($data, $response, $protocol) = @_;
 

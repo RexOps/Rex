@@ -161,9 +161,9 @@ sub _import {
       my $filename = basename($self->{url});
 
       Rex::Logger::info("Importing VM /tmp/$filename");
-      vm import => $self->{name}, file => "/tmp/$filename", %{ $self };
+      vm import => $self->{name}, file => "./tmp/$filename", %{ $self };
 
-      unlink "/tmp/$filename";
+      #unlink "./tmp/$filename";
    }
 
    my $vminfo = vm info => $self->{name};
@@ -376,15 +376,15 @@ sub _download {
    my $filename = basename($self->{url});
    my $force = $self->{force} || FALSE;
 
-   if(is_file("/tmp/$filename")) {
-      Rex::Logger::info("File already downloaded. Use --force to overwrite.");
+   if(is_file("./tmp/$filename")) {
+      Rex::Logger::info("File already downloaded. Please remove the file ./tmp/$filename if you want to download a fresh copy.");
    }
    else {
       $force = TRUE;
    }
 
    if($force) {
-      Rex::Logger::info("Downloading $self->{url} to /tmp/$filename");
+      Rex::Logger::info("Downloading $self->{url} to ./tmp/$filename");
       mkdir "tmp";
       if(Rex::is_local()) {
          my $ua = LWP::UserAgent->new();
@@ -392,7 +392,7 @@ sub _download {
          my $current_size = 0;
          my $current_modulo = 0;
          my $start_time = [gettimeofday()];
-         open(my $fh, ">", "/tmp/$filename") or die($!);
+         open(my $fh, ">", "./tmp/$filename") or die($!);
          my $resp = $ua->get($self->{url}, ':content_cb' => sub {
             my ($data, $response, $protocol) = @_;
 
@@ -434,7 +434,7 @@ sub _download {
 
       }
       else {
-         run "wget -c -qO /tmp/$filename $self->{url}";
+         run "wget -c -qO ./tmp/$filename $self->{url}";
 
          if($? != 0) {
             die("Downloading of $self->{url} failed. Please verify if wget is installed and if you have the right permissions to download this box.");

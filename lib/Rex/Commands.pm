@@ -396,6 +396,10 @@ sub password {
 
 With this function you can modify/set special authentication parameters for tasks and groups. If you want to modify a task's or group's authentication you first have to create it.
 
+If you want to set special login information for a group you have to activate that feature first.
+
+ use Rex -feature => 0.31; # activate setting auth for a group
+  
  group frontends => "web[01..10]";
  group backends => "be[01..05]";
       
@@ -439,6 +443,14 @@ sub auth {
    if(! $group) {
       Rex::Logger::info("Group or Task $entity not found.");
       return;
+   }
+
+   if(ref($group) eq "Rex::Group") {
+      Rex::Logger::debug("=================================================");
+      Rex::Logger::debug("You're setting special login credentials for a Group.");
+      Rex::Logger::debug("Please remember that the default auth information/task auth information has precedense.");
+      Rex::Logger::debug("If you want to overwrite this behaviour please use ,,use Rex -feature => 0.31;'' in your Rexfile.");
+      Rex::Logger::debug("=================================================");
    }
 
    Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");

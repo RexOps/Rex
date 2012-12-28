@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.35.1";
+$VERSION = "0.35.2";
 
 my $cur_dir = getcwd;
 
@@ -375,6 +375,7 @@ sub import {
    elsif($what eq "-feature" || $what eq "feature") {
       # remove default task auth
       if($addition1  >= 0.31) {
+         Rex::Logger::debug("activating featureset >= 0.31");
          Rex::TaskList->create()->set_default_auth(0);
       }
    }

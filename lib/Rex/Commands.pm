@@ -448,7 +448,7 @@ sub auth {
    if(ref($group) eq "Rex::Group") {
       Rex::Logger::debug("=================================================");
       Rex::Logger::debug("You're setting special login credentials for a Group.");
-      Rex::Logger::debug("Please remember that the default auth information/task auth information has precedense.");
+      Rex::Logger::debug("Please remember that the default auth information/task auth information has precedence.");
       Rex::Logger::debug("If you want to overwrite this behaviour please use ,,use Rex -feature => 0.31;'' in your Rexfile.");
       Rex::Logger::debug("=================================================");
    }

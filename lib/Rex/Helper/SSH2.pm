@@ -10,18 +10,23 @@ use strict;
 use warnings;
 
 require Exporter;
+use Data::Dumper;
 
 use base qw(Exporter);
 
 use vars qw(@EXPORT);
-@EXPORT = qw(net_ssh2_exec net_ssh2_exec_output);
+@EXPORT = qw(net_ssh2_exec net_ssh2_exec_output net_ssh2_shell_exec);
 
 our $READ_STDERR = 0;
+our $REQUIRE_TTY = 1;
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
 
    my $chan = $ssh->channel;
+   if($REQUIRE_TTY) {
+      $chan->pty("vt100");
+   }
    $chan->blocking(1);
 
    $chan->exec($cmd);
@@ -44,6 +49,12 @@ sub net_ssh2_exec {
 
    $chan->close;
    $? = $chan->exit_status;
+
+   # if used with $chan->pty() we have to remove \r
+   if($REQUIRE_TTY) {
+      $in =~ s/\r//g;
+      $in_err =~ s/\r//g;
+   }
 
    if(wantarray) {
       return ($in, $in_err);

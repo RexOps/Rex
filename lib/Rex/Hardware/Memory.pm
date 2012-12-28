@@ -132,7 +132,7 @@ sub get {
    }
    else {
       # default for linux
-      my $free_str = [ grep { /^Mem:/ } split(/\n/, run("LC_ALL=C free -m")) ]->[0];
+      my $free_str = [ grep { /^Mem:/ } run("LC_ALL=C free -m") ]->[0];
 
       my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
 

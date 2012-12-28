@@ -87,7 +87,7 @@ sub run {
    }
 
    if(wantarray) {
-      return split(/\n/, $out);
+      return split(/\r?\n/, $out);
    }
 
    return $out;

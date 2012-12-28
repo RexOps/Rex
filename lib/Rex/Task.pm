@@ -523,6 +523,8 @@ sub connect {
 
    my $auth = $self->merge_auth($server);
 
+   Rex::Logger::debug(Dumper($auth));
+
    my $profiler = Rex::Profiler->new;
 
    # task specific auth rules over all

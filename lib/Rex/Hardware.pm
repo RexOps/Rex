@@ -16,8 +16,8 @@ This module is the base class for hardware/information gathering.
 
  use Rex::Hardware;
  
- my %host_info = Rex::Hardware->get(qw/ Host /)
- my %all_info  = Rex::Hardware->get(qw/ All /)
+ my %host_info = Rex::Hardware->get(qw/ Host /);
+ my %all_info  = Rex::Hardware->get(qw/ All /);
 
 =head1 CLASS METHODS
 

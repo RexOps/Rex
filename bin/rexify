@@ -192,6 +192,9 @@ sub install_perl_module {
       print "[failed]\n";
       print "!! Please install $mod manually. See rexify-install.log for more details.\n";
    }
+   else {
+      print "[ok]\n";
+   }
 }
 
 if(exists $opts->{search}) {

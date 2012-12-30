@@ -553,6 +553,10 @@ sub do_task {
 
 =item run_task($task_name, %option)
 
+Run a task on a given host.
+
+ my $return = run_task "taskname", on => "192.168.3.56";
+
 =cut
 
 sub run_task {

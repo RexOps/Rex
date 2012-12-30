@@ -254,7 +254,7 @@ sub list_instances {
          state => $instance_set->{"instancesSet"}->{"item"}->{"instanceState"}->{"name"},
          launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
          name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
-         private_ip => $instance_set->{"instancesSet"}->{"item"}->{"private-ip-address"},
+         private_ip => $instance_set->{"instancesSet"}->{"item"}->{"privateIpAddress"},
       });
    }
 

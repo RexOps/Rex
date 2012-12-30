@@ -169,7 +169,7 @@ sub install_perl_module {
    my $out = qx($cmd --help 2>&1);
    if($? != 0) {
       $cmd = "cpan";
-      $out = qx($cmd --help 2>&1);
+      $out = qx($cmd -h 2>&1);
 
       if($? != 0) {
          print "[failed]\n";

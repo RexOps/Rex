@@ -259,11 +259,8 @@ Create a new instance.
          password => $data->{"password"} || undef,
          plan_id  => $data->{"plan_id"} || undef,
          type     => $data->{"type"} || undef,
+         %{ $data },
       );
-
-      if(exists $data->{"metadata"}) {
-         $data_hash{"metadata"} = $data->{"metadata"};
-      }
 
       $cloud->run_instance(%data_hash);
    }

@@ -557,6 +557,20 @@ Run a task on a given host.
 
  my $return = run_task "taskname", on => "192.168.3.56";
 
+Do something on server5 if memory is less than 100 MB free on server3.
+
+ task "prepare", "server5", sub {
+    my $free_mem = run_task "get_free_mem", on => "server3";
+    if($free_mem < 100) {
+       say "Less than 100 MB free mem on server3";
+       # create a new server instance on server5 to unload server3
+    }
+ };
+    
+ task "get_free_mem", sub {
+     return memory->{free};
+ };
+
 =cut
 
 sub run_task {

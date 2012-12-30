@@ -165,19 +165,26 @@ sub install_perl_module {
 
    print "Trying to install $mod... ";
 
-   my $out = qx(cpanm --help 2>&1);
+   my $cmd = "cpanm";
+   my $out = qx($cmd --help 2>&1);
    if($? != 0) {
-      print "[failed]\n";
-      print "!! Found no cpanm. Please install $mod manually.\n";
-      return;
+      $cmd = "cpan";
+      $out = qx($cmd --help 2>&1);
+
+      if($? != 0) {
+         print "[failed]\n";
+         print "Can't find cpanm or cpan. Please install $mod manually.\n";
+         return;
+      }
+
    }
 
    my $cpanm_opts = "";
    if(exists $opts->{sudo}) {
-      $cpanm_opts .= " --sudo ";
+      $cmd = "sudo $cmd";
    }
 
-   $out = qx(cpanm $cpanm_opts $mod 2>&1);
+   $out = qx($cmd $cpanm_opts $mod 2>&1);
    open(my $log, ">>", "rexify-install.log") or die($!);
    print $log $out;
    close($log);

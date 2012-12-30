@@ -23,13 +23,15 @@ $Rex::Logger::silent = 1;
 
 my $opts = {}; 
 
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.35/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.35/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.35/get/dep/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.36/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.36/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.36/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.36/get/perldep/%s";
 
-#my $SEARCH_SERVER = "http://localhost:3000/api/0.35/get/recipes";
-#my $RECIPE_SERVER = "http://localhost:3000/api/0.35/get/mod/%s";
-#my $DEPEND_SERVER = "http://localhost:3000/api/0.35/get/dep/%s";
+#my $SEARCH_SERVER = "http://localhost:3000/api/0.36/get/recipes";
+#my $RECIPE_SERVER = "http://localhost:3000/api/0.36/get/mod/%s";
+#my $DEPEND_SERVER = "http://localhost:3000/api/0.36/get/dep/%s";
+#my $PERL_DEPEND_SERVER = "http://localhost:3000/api/0.36/get/perldep/%s";
 
 
 for(my $i=0; $i<@ARGV; $i++) {
@@ -72,8 +74,10 @@ if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
    print STDERR "\n";
    print STDERR "\t--search=value\t\tWill search community recipes\n";
    print STDERR "\t--use=recipe\t\tWill download community recipe\n";
-   print STDERR "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
+   print STDERR "\t--template=template\tUse a custom template to create the Rexfile skeleton\n";
    print STDERR "\t--create-module\t\tCreate a module skeleton.\n";
+   print STDERR "\t--sudo\t\t\tTo use sudo for Perl Module installation.\n";
+   print STDERR "\t--no-install-perl-deps\tUse this if you don't want that rexify tries to install Perl Modules.\n";
 
    print STDERR "\n";
    print STDERR "Custom Templates:\n";
@@ -106,13 +110,27 @@ sub download_recipe {
    print "Getting dependencies for $name...\n";
    my $deps = decode_json(get(sprintf($DEPEND_SERVER, $name)));
    if(scalar(@{ $deps }) > 0) {
-      print "   Found: \n" . join("\n      - ", @{ $deps }) . "\n";
+      print "   Found: \n      - " . join("\n      - ", @{ $deps }) . "\n";
       for my $dep (@{ $deps }) {
          download_recipe($dep);
       }
    }
    else {
       print "   None found.\n";
+   }
+
+   if( ! exists $opts->{"no-install-perl-deps"}) {
+      print "Getting perl dependencies for $name...\n";
+      my $perl_deps = decode_json(get(sprintf($PERL_DEPEND_SERVER, $name)));
+      if(scalar(@{ $perl_deps }) > 0) {
+         print "   Found: \n      - " . join("\n      - ", @{ $perl_deps }) . "\n";
+         for my $dep (@{ $perl_deps }) {
+            install_perl_module($dep);
+         }
+      }
+      else {
+         print "   None found.\n";
+      }
    }
 
    print "Downloading $name...   ";
@@ -130,6 +148,43 @@ sub download_recipe {
 
    print "done.\n";
 
+}
+
+sub install_perl_module {
+   my ($mod) = @_;
+
+   print "Checking $mod: ";
+   eval "use $mod";
+   if($@) {
+      print "[failed]\n";
+   }
+   else {
+      print "[ok]\n";
+      return;
+   }
+
+   print "Trying to install $mod... ";
+
+   my $out = qx(cpanm --help 2>&1);
+   if($? != 0) {
+      print "[failed]\n";
+      print "!! Found no cpanm. Please install $mod manually.\n";
+      return;
+   }
+
+   my $cpanm_opts = "";
+   if(exists $opts->{sudo}) {
+      $cpanm_opts .= " --sudo ";
+   }
+
+   $out = qx(cpanm $cpanm_opts $mod 2>&1);
+   open(my $log, ">>", "rexify-install.log") or die($!);
+   print $log $out;
+   close($log);
+   if($? != 0) {
+      print "[failed]\n";
+      print "!! Please install $mod manually. See rexify-install.log for more details.\n";
+   }
 }
 
 if(exists $opts->{search}) {

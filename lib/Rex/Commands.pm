@@ -110,11 +110,11 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group 
             user password port sudo_password public_key private_key pass_auth key_auth no_ssh
-            get_random do_task batch timeout max_connect_retries parallelism
+            get_random batch timeout max_connect_retries parallelism
+            do_task run_task needs
             exit
             evaluate_hostname
             logging
-            needs
             include
             say
             environment
@@ -549,6 +549,21 @@ sub do_task {
    else {
       return Rex::TaskList->create()->run($task);
    }
+}
+
+=item run_task($task_name, %option)
+
+=cut
+
+sub run_task {
+   my ($task_name, %option) = @_;
+
+   if(exists $option{on}) {
+      Rex::Logger::info("Running task $task_name on $option{on}");
+      my $task = Rex::TaskList->create()->get_task($task_name);
+      $task->run($option{on});
+   }
+
 }
 
 =item public_key($key)

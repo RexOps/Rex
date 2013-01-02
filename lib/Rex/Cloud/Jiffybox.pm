@@ -185,6 +185,7 @@ sub terminate_instance {
 
    my $instance_id = $data{"instance_id"};
    Rex::Logger::debug("Terminating instance $instance_id");
+   $self->stop_instance(%data);
    $self->_do_request("DELETE", "jiffyBoxes/$instance_id");
 
 }
@@ -196,6 +197,25 @@ sub stop_instance {
    Rex::Logger::debug("Stopping instance $instance_id");
    $self->_do_request("PUT", "jiffyBoxes/$instance_id", status => "SHUTDOWN");
 
+   my $sleep_countdown = 10;
+   sleep $sleep_countdown; # wait 10 seconds
+
+   my ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
+
+   while($data->{"state"} ne "STOPPED") {
+      Rex::Logger::debug("Waiting for instance to be stopped...");
+      ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
+
+      sleep $sleep_countdown;
+
+      --$sleep_countdown;
+
+      if($sleep_countdown <= 3) {
+         $sleep_countdown = 7;
+      }
+   }
+  
+   return 1;
 }
 
 

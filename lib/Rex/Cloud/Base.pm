@@ -22,7 +22,11 @@ sub new {
 }
 
 sub set_auth { Rex::Logger::debug("Not implemented"); }
-sub set_endpoint { Rex::Logger::debug("Not implemented"); }
+
+sub set_endpoint {
+   my ($self, $endpoint) = @_;
+   $self->{__endpoint} = $endpoint;
+}
 
 sub list_plans { Rex::Logger::debug("Not implemented"); }
 sub list_operating_systems { Rex::Logger::debug("Not implemented"); }

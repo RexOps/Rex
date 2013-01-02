@@ -22,6 +22,7 @@ my %CLOUD_SERVICE;
 sub register_cloud_service {
    my ($class, $service_name, $service_class) = @_;
    $CLOUD_SERVICE{"\L$service_name"} = $service_class;
+   return 1;
 }
 
 sub get_cloud_service {

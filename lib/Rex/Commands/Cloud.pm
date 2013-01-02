@@ -57,7 +57,7 @@ use warnings;
    
 require Rex::Exporter;
 use base qw(Rex::Exporter);
-use vars qw(@EXPORT $cloud_service $access_key $secret_access_key $cloud_region);
+use vars qw(@EXPORT $cloud_service $cloud_region @cloud_auth);
 
 use Rex::Logger;
 use Rex::Config;
@@ -118,13 +118,21 @@ sub cloud_service {
 }
 
 
-=item cloud_auth($access_key, $secret_access_key)
+=item cloud_auth($param1, $param2, ...)
 
 Set the authentication for the cloudservice.
 
+For example for Amazon it is:
+
+ cloud_auth($access_key, $secret_access_key);
+
+For JiffyBox:
+
+ cloud_auth($auth_key);
+
 =cut
 sub cloud_auth {
-   ($access_key, $secret_access_key) = @_;
+   @cloud_auth = @_;
 }
 
 =item cloud_region($region)
@@ -155,7 +163,7 @@ Get all instances of a cloud service.
 sub cloud_instance_list {
 
    my $cloud = get_cloud_service($cloud_service);
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->list_instances();
@@ -180,7 +188,7 @@ Get all volumes of a cloud service.
 sub cloud_volume_list {
    
    my $cloud = get_cloud_service($cloud_service);
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->list_volumes();
@@ -201,7 +209,7 @@ sub get_cloud_instances_as_group {
    # return funcRef
    return sub {
       my $cloud = get_cloud_service($cloud_service);
-      $cloud->set_auth($access_key, $secret_access_key);
+      $cloud->set_auth(@cloud_auth);
       $cloud->set_endpoint($cloud_region);
 
       my @list = $cloud->list_running_instances();
@@ -228,7 +236,7 @@ sub cloud_instance {
    my ($action, $data) = @_;
    my $cloud = get_cloud_service($cloud_service);
 
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    if($action eq "list") {
@@ -313,7 +321,7 @@ sub get_cloud_regions {
 
    my $cloud = get_cloud_service($cloud_service);
 
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->get_regions;
@@ -330,7 +338,7 @@ sub cloud_volume {
    my ($action, $data) = @_;
    my $cloud = get_cloud_service($cloud_service);
 
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
 
@@ -410,7 +418,7 @@ sub get_cloud_availability_zones {
 
    my $cloud = get_cloud_service($cloud_service);
 
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->get_availability_zones();
@@ -425,7 +433,7 @@ Retrieve information of the available cloud plans. If supported.
 sub get_cloud_plans {
    my $cloud = get_cloud_service($cloud_service);
 
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->list_plans;
@@ -439,7 +447,7 @@ Retrieve information of the available cloud plans. If supported.
 sub get_cloud_operating_systems {
    my $cloud = get_cloud_service($cloud_service);
 
-   $cloud->set_auth($access_key, $secret_access_key);
+   $cloud->set_auth(@cloud_auth);
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->list_operating_systems;

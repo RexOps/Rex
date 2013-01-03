@@ -8,6 +8,8 @@ lib/Rex/Args/Integer.pm
 lib/Rex/Args/Single.pm
 lib/Rex/Args/String.pm
 lib/Rex/Batch.pm
+lib/Rex/Box.pm
+lib/Rex/Box/VBox.pm
 lib/Rex/Cache.pm
 lib/Rex/CLI.pm
 lib/Rex/Cloud.pm
@@ -213,6 +215,12 @@ t/0.31.t
 t/01.t
 t/args.t
 t/auth.t
+t/base.t
+t/base_args.t
+t/base_box.t
+t/base_cloud.t
+t/base_inventory.t
+t/base_inventory_smbios.t
 t/box.t
 t/commands.t
 t/config-ssh.t

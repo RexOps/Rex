@@ -1,4 +1,4 @@
-use Test::More tests => 170;
+use Test::More tests => 169;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Cache';
@@ -20,7 +20,6 @@ use_ok 'Rex::Commands::Network';
 use_ok 'Rex::Commands::Partition';
 use_ok 'Rex::Commands::Pkg';
 use_ok 'Rex::Commands::Process';
-use_ok 'Rex::Commands::Rsync';
 use_ok 'Rex::Commands::Run';
 use_ok 'Rex::Commands::SCM';
 use_ok 'Rex::Commands::Service';

@@ -70,6 +70,7 @@ use Rex::FS::File;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
+use Rex::Helper::System;
 
 use Rex::Interface::Exec;
 use Rex::Interface::File;
@@ -424,7 +425,9 @@ sub delete_lines_matching {
 
 =item append_if_no_such_line($file, $new_line, @regexp)
 
-Append $new_line to $file if none in @regexp is found.
+Append $new_line to $file if none in @regexp is found. If no regexp is
+supplied, the line is appended unless there already an identical line
+in $file.
 
  task "add-group", sub {
     append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2", on_change => sub { service sshd => "restart"; };
@@ -446,37 +449,35 @@ sub append_if_no_such_line {
       die("$file not writable");
    }
 
-   my $nl = $/;
-   my @content = split(/$nl/, cat ($file));
-   my $i;
-   my $on_change = sub {};
-
-   for my $line (@content) {
-      $i = 0;
-      for my $match (@m) {
-         $i++;
-         if(! ref($match) eq "Regexp") {
-            $match = qr{$match};
-         }
-         if ( $match eq "on_change" && ref($m[$i]) eq "CODE" ) {
-             $on_change = $m[$i];
-             next;
-         }
-         if($line =~ $match) {
-            return 0;
-         }
+   my $on_change;
+   for (my $i = 0; $i<$#m; $i++ ) {
+      if ( $m[$i] eq "on_change" && ref($m[$i+1]) eq "CODE" ) {
+         $on_change = $m[$i+1];
+         splice(@m,$i,2);
+         last;
       }
    }
 
-   push @content, $new_line;
+   if ( !@m ) {
+      push @m, qr{^\Q$new_line\E$}m;
+   }
+
+   my $content = cat ($file);
+   for my $match (@m) {
+      if ( $content =~ /$match/m ) {
+         return 0;
+      }
+   }
+
+   $content .= "$new_line\n";
    my $fh = file_write $file;
    unless($fh) {
       die("Can't open $file for writing");
    }
-   $fh->write(join($nl, @content));
+   $fh->write($content);
    $fh->close;
 
-   &$on_change();
+   &$on_change() if defined $on_change;
 }
 
 =item extract($file [, %options])

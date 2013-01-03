@@ -89,7 +89,7 @@ sub ensure {
       $self->stop($service);
       run "rc-update del $service";
    }
-   elsif($what =~ /^start/) {
+   elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
       run "rc-update add $service";
    }

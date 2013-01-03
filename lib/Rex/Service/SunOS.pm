@@ -90,7 +90,7 @@ sub ensure {
       $self->stop($service);
       run "rm /etc/rc*.d/S*$service";
    }
-   elsif($what =~ /^start/) {
+   elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
       my ($runlevel) = grep { $_=$1 if m/run\-level (\d)/ } run "who -r";
       ln "/etc/init.d/$service", "/etc/rc${runlevel}.d/S99$service";

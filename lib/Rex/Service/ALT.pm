@@ -86,7 +86,7 @@ sub ensure {
       $self->stop($service);
       run "/sbin/chkconfig $service off";
    }
-   elsif($what =~ /^start/) {
+   elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
       run "/sbin/chkconfig $service on";
    }

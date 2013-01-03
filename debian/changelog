@@ -1,24 +1,19 @@
-rex (0.33.1) unstable; urgency=low
+rex (0.35.1) unstable; urgency=low
   * package updated
 
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 22 Sep 2012 13:00:00 +0200
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 22 Dec 2012 22:40:00 +0200
 
-rex (0.32.1) unstable; urgency=low
-  * package updated
-  
- -- Jan Gehring <jan.gehring@gmail.com>  Thu, 30 Aug 2012 14:30:00 +0200
-
-rex (0.32.0) unstable; urgency=low
-  * package updated
-  
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 18 Aug 2012 20:30:00 +0200
-
-rex (0.31.5) unstable; urgency=low
-  * package updated
-  
- -- Jan Gehring <jan.gehring@gmail.com>  Thu, 16 Aug 2012 20:00:00 +0200
-
-rex (0.31.4) unstable; urgency=low
+rex (0.34.2) unstable; urgency=low
   * package updated
 
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 04 Aug 2012 20:00:00 +0200
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 14 Nov 2012 12:30:00 +0200
+
+rex (0.34.1) unstable; urgency=low
+  * package updated
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sun, 25 Nov 2012 20:30:00 +0200
+
+rex (0.34.0) unstable; urgency=low
+  * package updated
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Fri, 02 Nov 2012 12:00:00 +0200

@@ -14,13 +14,39 @@ $|++;
 use LWP::Simple;
 use YAML;
 use Data::Dumper;
+use Rex::Logger;
+use Rex::Commands::Fs;
+use Rex::Commands::File;
+use JSON::XS;
+
+$Rex::Logger::silent = 1;
 
 my $opts = {}; 
+
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.35/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.35/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.35/get/dep/%s";
+
+#my $SEARCH_SERVER = "http://localhost:3000/api/0.35/get/recipes";
+#my $RECIPE_SERVER = "http://localhost:3000/api/0.35/get/mod/%s";
+#my $DEPEND_SERVER = "http://localhost:3000/api/0.35/get/dep/%s";
 
 
 for(my $i=0; $i<@ARGV; $i++) {
 
-   if($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/) {
+   if($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)=/) {
+      my $key = $1;
+      my ($c_key, $val) = split(/=/, $ARGV[$i]);
+
+      if(exists $opts->{$key}) {
+         $opts->{$key} = [ $opts->{$key} ] if (! ref $opts->{$key});
+         push(@{$opts->{$key}}, $val);
+      }
+      else {
+         $opts->{$key} = $val || 0;
+      }
+   }
+   elsif($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/) {
       my $key = $1; 
       if(! $ARGV[$i+1] || $ARGV[$i+1] =~ m/^\-\-/) {
          $opts->{$key} = 1;                                                                                      
@@ -44,8 +70,14 @@ if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
    print STDERR "\n";
    print STDERR "Options:";
    print STDERR "\n";
-   print STDERR "\t--search value\t\tWill search community recipes\n";
-   print STDERR "\t--use recipe\t\tWill download community recipe\n";
+   print STDERR "\t--search=value\t\tWill search community recipes\n";
+   print STDERR "\t--use=recipe\t\tWill download community recipe\n";
+   print STDERR "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
+   print STDERR "\t--create-module\t\tCreate a module skeleton.\n";
+
+   print STDERR "\n";
+   print STDERR "Custom Templates:\n";
+   print STDERR "   box - Template to use for Rex::Commands::Box projects.\n";
    exit 1;
 }
 
@@ -71,9 +103,21 @@ sub download_recipe {
 
    if(! -d "lib") { mkdir "lib"; }
 
+   print "Getting dependencies for $name...\n";
+   my $deps = decode_json(get(sprintf($DEPEND_SERVER, $name)));
+   if(scalar(@{ $deps }) > 0) {
+      print "   Found: \n" . join("\n      - ", @{ $deps }) . "\n";
+      for my $dep (@{ $deps }) {
+         download_recipe($dep);
+      }
+   }
+   else {
+      print "   None found.\n";
+   }
+
    print "Downloading $name...   ";
    $name =~ s/::/\//g;
-   my $content = get("http://rexify.org/get/mod/$name");
+   my $content = get(sprintf($RECIPE_SERVER, $name));
    open(my $fh, ">", "tmp-mod.tar.gz") or die($!);
    binmode $fh;
    print $fh $content;
@@ -92,7 +136,7 @@ if(exists $opts->{search}) {
    my $search_string = $opts->{search};
    # only a search
    print "Downloading recipes.yml ... ";
-   my $recipes = get("http://rexify.org/get/recipes");
+   my $recipes = get($SEARCH_SERVER);
    print " done.\n";
 
    print "Searching...\n\n";
@@ -127,6 +171,37 @@ if(exists $opts->{use} && $ARGV[0] eq "--use") {
    exit 0;
 }
 
+if(exists $opts->{"create-module"}) {
+   my $dir = $ARGV[0];
+
+   if($dir =~ m/\-\-create\-module/) {
+      print "USAGE: $0 Module::Name --create-module\n";
+      exit 1;
+   }
+
+
+   my $module_name = $dir;
+   $dir =~ s/::/\//g;
+
+   print "Creating module $module_name...\n";
+
+   print "   mkdir $dir\n";
+   mkdir $dir, recursive => 1;
+   chdir $dir;
+
+   print "   Creating template file: __module__.pm\n";
+   file "__module__.pm",
+      content => template('@module.pm.tpl', dir => $dir, module_name => $module_name);
+
+   print "   Creating template file: meta.yml\n";
+   file "meta.yml",
+      content => template('@meta.yml.tpl', dir => $dir, module_name => $module_name);
+
+   print "\n";
+   print "Your module has been created in $dir.\n";
+   
+   exit 0;
+}
 
 
 my $dir = $ARGV[0];
@@ -148,44 +223,21 @@ unless(-d 'lib') {
 
 unless(-f 'lib' . $ARGV[0] . '.pm') {
    open(my $fh, ">", "lib/$ARGV[0].pm") or die($!);
-   print $fh qq~package $ARGV[0];
-
-use Rex -base;
-
-desc "Get uptime of server";
-task "uptime", group => 'servers', sub {
-   say run "uptime";
-};
-
-1;
-~;
+   print $fh template('@libfile', lib => $ARGV[0]);
    close($fh);
 
    print STDERR "Created lib/Rex/$ARGV[0].pm\n";
 
-   open($fh, ">", "Rexfile") or die($!);
-   print $fh qq~
-# enable new Features
-use Rex -feature => 0.31;
-
-# set your username
-set user => "<user>";
-
-# set your password
-set password => "<password>";
-
-# enable password authentication
-set -passauth;
-
-# put your server in this group
-set group => "servers" => "server1", "server2";
-
-
-# now load every module via ,,require''
-require $ARGV[0];
-
-~;
-   close($fh);
+   if($opts->{template}) {
+      open($fh, ">", "Rexfile") or die($!);
+      print $fh template('@' . $opts->{template}, lib => $ARGV[0]);
+      close($fh);
+   }
+   else {
+      open($fh, ">", "Rexfile") or die($!);
+      print $fh template('@rexfile', lib => $ARGV[0]);
+      close($fh);
+   }
 
    if($opts->{use}) {
       if(! ref $opts->{use}) {
@@ -219,3 +271,174 @@ else {
    exit;
 }
 
+__DATA__
+
+@rexfile
+# enable new Features
+use Rex -feature => 0.31;
+
+# set your username
+set user => "<user>";
+
+# set your password
+set password => "<password>";
+
+# enable password authentication
+set -passauth;
+
+# put your server in this group
+set group => "servers" => "server1", "server2";
+
+
+# now load every module via ,,require''
+require <%= $::lib %>;
+
+@end
+
+@libfile
+package <%= $::lib %>;
+
+use Rex -base;
+
+desc "Get uptime of server";
+task "uptime", group => 'servers', sub {
+   say run "uptime";
+};
+
+1;
+@end
+
+@box
+use strict;
+use warnings;
+
+use Rex::Commands::Box;
+
+set user => '<user>';
+set password => '<password>';
+set -passauth;
+
+#
+# CALL:
+# rex init --name=<%= $::lib %> --url=http://box.rexify.org/ubuntu-server-12.10-amd64.box
+desc "Initialize and start the VM: rex init --name=vmname [--url=http://...]";
+task "init", sub {
+
+   my $param = shift;
+
+   box {
+      my ($box) = @_;
+      $box->name($param->{name});
+
+      # where to download the base image
+      $box->url($param->{url});
+
+      # default is nat
+      #$box->network(1 => {
+      #   type => "bridged",
+      #   bridge => "eth0",
+      #});
+
+      # only works with network type = nat
+      # if a key ssh is present, rex will use this to log into the vm
+      # you need this if you run VirtualBox not on your local host.
+      $box->forward_port(ssh => [2222 => 22]);
+
+      # share a folder from the host system
+      #$box->share_folder("sharename" => "/path/on/host/system");
+
+      # define the authentication to the box
+      # if you're downloading one from box.rexify.org this is the default.
+      $box->auth(
+         user => "root",
+         password => "box",
+      );
+
+      # if you want to provision the machine, 
+      # you can define the tasks to do that
+      $box->setup(qw/install_webserver/);
+   };
+
+};
+
+#
+# CALL:
+# rex down --name=<%= $::lib %>
+desc "Stop the VM: rex down --name=vmname";
+task "down", sub {
+   
+   my $param = shift;
+
+   my $box = Rex::Commands::Box->new(name => $param->{name});
+   $box->stop;
+};
+
+
+task "install_webserver", sub {
+
+   # install packages / customize the vm
+   install "apache2";
+
+};
+
+require <%= $::lib %>;
+
+@end
+
+@module.pm.tpl
+package <%= $::module_name %>;
+
+use Rex -base;
+
+task example => sub {
+   my $output = run "uptime";
+   say $output;
+};
+
+1;
+
+=pod
+
+=head1 NAME
+
+$::module_name - {{ SHORT DESCRIPTION }}
+
+=head1 DESCRIPTION
+
+{{ LONG DESCRIPTION }}
+
+=head1 USAGE
+
+{{ USAGE DESCRIPTION }}
+
+ include qw/<%= $::module_name %>/;
+  
+ task yourtask => sub {
+    <%= $::module_name %>::example();
+ };
+
+=head1 TASKS
+
+=over 4
+
+=item example
+
+This is an example Task. This task just output's the uptime of the system.
+
+=back
+
+=cut
+
+@end
+
+@meta.yml.tpl
+Name: <%= $::module_name %>
+Description: {{ DESCRIPTION }}
+Author: {{ your name <your.name@email.com> }}
+License: {{ THE LICENSE }}
+
+# Only if you have dependencies to other Rex Modules.
+Require:
+   - Other::Rex::Module
+   - 2nd::Rex::Module
+@end

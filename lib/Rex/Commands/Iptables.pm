@@ -303,10 +303,13 @@ List all iptables rules.
 
 =cut
 sub iptables_list {
-   
-   my (%tables, $ret);
-
    my @lines = run "/sbin/iptables-save";
+   _iptables_list(@lines);
+}
+   
+sub _iptables_list {
+   my (%tables, $ret);
+   my (@lines) = @_;
 
    my ($current_table);
    for my $line (@lines) {
@@ -322,12 +325,13 @@ sub iptables_list {
          next;
       }
 
-      my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/(\-\-?[^\s]+\s[^\s]+)/i, $line);
+      #my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/(\-\-?[^\s]+\s[^\s]+)/i, $line);
+      my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/^\-\-?|\s+\-\-?/i, $line); 
 
       my @option = ();
       for my $part (@parts) {
          my ($key, $value) = split(/\s/, $part, 2);
-         $key =~ s/^\-+//;
+         #$key =~ s/^\-+//;
          push(@option, $key => $value);
       }
 

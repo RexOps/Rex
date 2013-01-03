@@ -96,7 +96,7 @@ sub ensure {
       $self->stop($service);
       run "systemctl disable $service";
    }
-   elsif($what =~ /^start/) {
+   elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
       run "systemctl enable $service";
    }

@@ -21,7 +21,7 @@ sub get_network_devices {
 
    for my $dev (@proc_net_dev) {
       my $ifconfig = run("ifconfig $dev");
-      if($ifconfig =~ m/Link encap:Ethernet/m) {
+      if($ifconfig =~ m/Link encap:(?:Ethernet|Point-to-Point Protocol)/m) {
          push(@device_list, $dev);
       }
    }

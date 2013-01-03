@@ -34,6 +34,7 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
+use Data::Dumper;
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Commands::File;
@@ -133,9 +134,6 @@ sub partition {
 
    my $disk = $option{ondisk};
 
-   my ($size_line) = grep { /^Disk \/dev\/$disk:/ } run "parted /dev/$disk print";
-   my ($disk_size) = ($size_line =~ m/(\d+)s$/);
-
    my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk print";
 
    my $last_partition_end = 1;
@@ -158,7 +156,7 @@ sub partition {
 
    # get the partition id
    my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
-   my ($part_num) = ($partitions[-1] =~ m/^\s+\d+\s+(\d+)\s+/);
+   my ($part_num) = ($partitions[-1] =~ m/sd\w+(\d+)/);
 
    if($option{boot}) {
       run "parted /dev/$disk set $part_num boot on";
@@ -179,8 +177,13 @@ sub partition {
    }
 
    run "partprobe";
-   while(! -e "/dev/$disk$part_num") {
+   my $found_part=0;
+   while($found_part == 0) {
       Rex::Logger::debug("Waiting on /dev/$disk$part_num to appear...");
+
+      run "ls -l /dev/$disk$part_num";
+      if($? == 0) { $found_part = 1; last; }
+
       sleep 1;
    }
 
@@ -189,24 +192,41 @@ sub partition {
    }
    elsif(can_run("mkfs.$option{fstype}")) {
       Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 
-      run "mkfs.$option{fstype} /dev/$disk$part_num";
+
+      my $add_opts = "";
+
+      if(exists $option{label} || exists $option{lable}) {
+         my $label = $option{label} || $option{lable};
+         $add_opts .= " -L $label ";
+      }
+
+      run "mkfs.$option{fstype} $add_opts /dev/$disk$part_num";
    }
    elsif($option{fstype} eq "swap") {
       Rex::Logger::info("Creating swap space on /dev/$disk$part_num");
-      run "mkswap /dev/$disk$part_num";
+
+      my $add_opts = "";
+
+      if(exists $option{label} || exists $option{lable}) {
+         my $label = $option{label} || $option{lable};
+         $add_opts .= " -L $label ";
+      }
+
+      run "mkswap $add_opts /dev/$disk$part_num";
    }
    else {
       die("Can't format partition with $option{fstype}");
    }
 
    if(exists $option{mount} && $option{mount}) {
-      mount "$disk$part_num", $mountpoint,
+      mount "/dev/$disk$part_num", $mountpoint,
                   fs => $option{fstype};
    }
 
    if(exists $option{mount_persistent} && $option{mount_persistent}) {
-      mount "$disk$part_num", $mountpoint,
+      mount "/dev/$disk$part_num", $mountpoint,
                   fs => $option{fstype},
+                  label => $option{label} || "",
                   persistent => 1;
    }
 

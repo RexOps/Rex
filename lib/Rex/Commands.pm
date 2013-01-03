@@ -102,6 +102,7 @@ use Rex::TaskList;
 use Rex::Logger;
 use Rex::Config;
 use Rex::Profiler;
+use Rex::Report;
 use Rex;
 
 use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler);
@@ -281,13 +282,31 @@ sub task {
    if(! $class->can($task_name_save) && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
       no strict 'refs';
       Rex::Logger::debug("Registering task: ${class}::$task_name_save");
-      *{"${class}::$task_name_save"} = $_[-2];
+
+      my $code = $_[-2];
+      *{"${class}::$task_name_save"} = sub {
+         if(ref($_[0]) eq "HASH") {
+            $code->(@_);
+         }
+         else {
+            $code->({ @_ });
+         }
+      };
       use strict;
    } elsif(($class ne "main" && $class ne "Rex::CLI") && ! $class->can($task_name_save) && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/) {
       # if not in main namespace, register the task as a sub
       no strict 'refs';
       Rex::Logger::debug("Registering task (not main namespace): ${class}::$task_name_save");
-      *{"${class}::$task_name_save"} = $_[-2];
+      my $code = $_[-2];
+      *{"${class}::$task_name_save"} = sub {
+         if(ref($_[0]) eq "HASH") {
+            $code->(@_);
+         }
+         else {
+            $code->({ @_ });
+         }
+      };
+
       use strict;
    }
 
@@ -404,12 +423,22 @@ sub auth {
    my $group = Rex::Group->get_group_object($entity);
    if(! $group) {
       Rex::Logger::debug("No group $entity found, looking for a task.");
-      $group = Rex::TaskList->create()->get_task($entity);
+      if(ref($entity) eq "Regexp") {
+         my @tasks = Rex::TaskList->create()->get_tasks;
+         my @selected_tasks = grep { m/$entity/ } @tasks;
+         for my $t (@selected_tasks) {
+            auth($_d, $t, %data);
+         }
+         return;
+      }
+      else {
+         $group = Rex::TaskList->create()->get_task($entity);
+      }
    }
 
    if(! $group) {
-      Rex::Logger::info("Group or Task $group not found.");
-      CORE::exit 1;
+      Rex::Logger::info("Group or Task $entity not found.");
+      return;
    }
 
    Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");

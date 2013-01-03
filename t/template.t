@@ -1,11 +1,13 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6;
+use Test::More tests => 9;
 use_ok 'Rex::Template';
 use_ok 'Rex::Config';
 
 my $t = Rex::Template->new;
+
+Rex::Config->set(foo => "bar");
 
 my $content = 'one two three';
 
@@ -29,4 +31,10 @@ ok($t->parse($content, {logged_in => 1}) eq $content_ok, "if condition");
 $content = 'Hello this is <%= $::name %>';
 ok(Rex::Config->get_template_function()->($content, {name => "baz"}) eq "Hello this is baz", "get template function");
 
+ok($t->parse($content, name => "bar") eq "Hello this is bar", "simple variable without hashRef");
+
+$content = 'Hello this is <%= $::foo %>';
+ok($t->parse($content) eq "Hello this is bar", "get keys from Rex::Config");
+
+ok($t->parse($content, {foo => "baz"}) eq "Hello this is baz", "overwrite keys from Rex::Config");
 

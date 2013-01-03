@@ -30,6 +30,7 @@ package Rex::Template;
 use strict;
 use warnings;
 
+use Rex::Config;
 use Rex::Logger;
 
 sub new {
@@ -45,10 +46,25 @@ sub new {
 sub parse {
    my $self = shift;
    my $data = shift;
-   my $vars = shift;
+
+   my $vars = {};
+
+   if(ref($_[0]) eq "HASH") {
+      $vars = shift;
+   }
+   else {
+      $vars = { @_ };
+   }
 
    my $new_data;
    my $r="";
+
+   my $config_values = Rex::Config->get_all;
+   for my $key (keys %{ $config_values }) {
+      if(! exists $vars->{$key}) {
+         $vars->{$key} = $config_values->{$key};
+      }
+   }
 
    $new_data = join("\n", map {
       my ($code, $type, $text) = ($_ =~ m/(\<%)*([+=])*(.+)%\>/s);

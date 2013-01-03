@@ -37,6 +37,7 @@ use Rex::Logger;
 use Rex::Template;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
+use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
@@ -123,10 +124,18 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
 
 sub install {
 
-   my ($type, $package, $option) = @_;
-
+   my $type = shift;
+   my $package = shift;
+   my $option;
 
    if($type eq "file") {
+
+      if(ref($_[0]) eq "HASH") {
+         $option = shift;
+      }
+      else {
+         $option = { @_ };
+      }
 
       Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
       Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
@@ -224,6 +233,13 @@ sub install {
 
    elsif($type eq "package") {
       
+      if(ref($_[0]) eq "HASH") {
+         $option = shift;
+      }
+      elsif($_[0]) {
+         $option = { @_ };
+      }
+
       my $pkg;
       
       $pkg = Rex::Pkg->get;
@@ -243,7 +259,7 @@ sub install {
    }
    else {
       # unknown type, be a package
-      install("package", @_); 
+      install("package", $type, $package, @_); 
    }
 
 }
@@ -309,8 +325,10 @@ sub remove {
 
    else {
       
-      Rex::Logger::info("$type not supported.");
-      die("remove $type not supported");
+      #Rex::Logger::info("$type not supported.");
+      #die("remove $type not supported");
+      # no type given, assume package
+      remove("package", $type, $option);
 
    }
 
@@ -390,11 +408,51 @@ To remove a repository just delete it with its name.
     repository remove => "repository-name";
  };
 
+You can also use one call to repository to add repositories on multiple platforms:
+
+ task "add-repo", "server1", "server2", sub {
+   repository add => myrepo => {
+      Ubuntu => {
+         url => "http://foo.bar/repo",
+         distro => "precise",
+         repository => "foo",
+      },
+      Debian => {
+         url => "http://foo.bar/repo",
+         distro => "squeeze",
+         repository => "foo",
+      },
+      CentOS => {
+         url => "http://foo.bar/repo",
+      },
+   };
+ };
+
 
 =cut
 
 sub repository {
-   my ($action, $name, %data) = @_;
+   my ($action, $name, @__data) = @_;
+
+   my %data;
+
+   if(ref($__data[0])) {
+      if(! exists $__data[0]->{get_operating_system()}) {
+         if(exists $__data[0]->{default}) {
+            %data = $__data[0]->{default};
+         }
+         else {
+            die("No repository information found for os: " . get_operating_system());
+         }
+      }
+      else {
+         %data = %{ $__data[0]->{get_operating_system()} };
+      }
+   }
+   else {
+      %data = @__data;
+   }
+
    my $pkg = Rex::Pkg->get;
 
    $data{"name"} = $name;
@@ -403,7 +461,11 @@ sub repository {
       $pkg->add_repository(%data);
    }
    elsif($action eq "remove" || $action eq "delete") {
-      $pkg->rm_repository(%data);
+      $pkg->rm_repository($name);
+   }
+
+   if(exists $data{after}) {
+      $data{after}->();
    }
 }
 

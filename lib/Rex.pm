@@ -91,7 +91,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.33.1";
+$VERSION = "0.35.1";
 
 my $cur_dir = getcwd;
 
@@ -100,10 +100,16 @@ push(@INC, sub {
    my $mod_to_load = $_[1];
    $mod_to_load =~ s/\.pm//g;
 
-   if(-d "lib/$mod_to_load" && -f "lib/$mod_to_load/Module.pm") {
+   if(-d "lib/$mod_to_load" && ( -f "lib/$mod_to_load/Module.pm" || -f "lib/$mod_to_load/__module__.pm")) {
       $MODULE_PATHS->{$mod_to_load} = {path => "$cur_dir/lib/$mod_to_load"};
-      open(my $fh, "lib/$mod_to_load/Module.pm");
-      return $fh;
+      if(-f "lib/$mod_to_load/__module__.pm") {
+         open(my $fh, "lib/$mod_to_load/__module__.pm");
+         return $fh;
+      }
+      else {
+         open(my $fh, "lib/$mod_to_load/Module.pm");
+         return $fh;
+      }
    }
 
 });
@@ -170,6 +176,22 @@ sub is_ssh {
    if($CONNECTION_STACK[-1]) {
       my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
       if($ref =~ m/SSH/) {
+         return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
+      }
+   }
+
+   return 0;
+}
+
+=item is_local
+
+Returns 1 if the current connection is local. Otherwise 0.
+
+=cut
+sub is_local {
+   if($CONNECTION_STACK[-1]) {
+      my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
+      if($ref =~ m/Local/) {
          return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
       }
    }
@@ -264,6 +286,7 @@ sub connect {
       server   => $server,
       port     => $port,
       timeout  => $timeout,
+      %{ $param },
    );
 
    unless($conn->is_connected) {
@@ -378,6 +401,12 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Anders Ossowicki
 
+=item Chenryn
+
+=item Dominik Danter
+
+=item Dominik Schulz
+
 =item Gilles Gaudin, for writing a french howto
 
 =item Hiroaki Nakamura
@@ -386,9 +415,13 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Jeen Lee
 
+=item Joris
+
 =item Jose Luis Martinez
 
 =item Laird Liu
+
+=item Mario Domgoergen
 
 =item Nikolay Fetisov
 
@@ -397,6 +430,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Sascha Guenther
 
 =item Sven Dowideit
+
+=item Tomohiro Hosaka
 
 =back
 

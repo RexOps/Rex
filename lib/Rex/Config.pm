@@ -408,6 +408,11 @@ sub get {
    }
 }
 
+sub get_all {
+   my ($class) = @_;
+   return $set_param;
+}
+
 =item register_config_handler($topic, $code)
 
 With this function it is possible to register own sections in the users config file ($HOME/.rex/config.yml).
@@ -464,16 +469,19 @@ sub read_config_file {
    }
 }
 
-sub import {
-   if(-f _home_dir() . "/.ssh/config") {
+sub read_ssh_config_file {
+   my ($config_file) = @_;
+   $config_file ||= _home_dir() . '/.ssh/config';
+   
+   if(-f $config_file) {
       my (@host, $in_host);
-      if(open(my $fh, "<", _home_dir() . "/.ssh/config")) {
+      if(open(my $fh, '<', $config_file)) {
          while(my $line = <$fh>) {
             chomp $line;
             next if ($line =~ m/^#/);
             next if ($line =~ m/^\s*$/);
 
-            if($line =~ m/^Host (.*)$/) {
+            if($line =~ m/^Host\s+=?\s*(.*)$/) {
                my $host_tmp = $1; 
                @host = split(/\s+/, $host_tmp);
                $in_host = 1;
@@ -483,7 +491,9 @@ sub import {
                next;
             }   
             elsif($in_host) {
-               my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+(.*)$/);
+               my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+=?\s*(.*)$/);
+               $val =~ s/^\s+//;
+               $val =~ s/\s+$//;
                for my $h (@host) {
                   $SSH_CONFIG_FOR{$h}->{lc($key)} = $val;
                }
@@ -492,7 +502,10 @@ sub import {
          close($fh);
       }
    }
+}
 
+sub import {
+   read_ssh_config_file();
    read_config_file();   
 }
 

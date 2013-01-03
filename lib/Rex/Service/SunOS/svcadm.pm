@@ -89,7 +89,7 @@ sub ensure {
    if($what =~  /^stop/) {
       $self->stop($service);
    }
-   elsif($what =~ /^start/) {
+   elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
    }
 }

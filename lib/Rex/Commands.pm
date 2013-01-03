@@ -571,15 +571,30 @@ Do something on server5 if memory is less than 100 MB free on server3.
      return memory->{free};
  };
 
+If called without a hostname the task is run localy.
+
+ # this task will run on server5
+ task "prepare", "server5", sub {
+    # this will call task check_something. but this task will run on localhost.
+    my $check = run_task "check_something";
+ }
+   
+ task "check_something", "server4", sub {
+    return "foo";
+ };
+
 =cut
 
 sub run_task {
    my ($task_name, %option) = @_;
 
    if(exists $option{on}) {
-      Rex::Logger::info("Running task $task_name on $option{on}");
       my $task = Rex::TaskList->create()->get_task($task_name);
       $task->run($option{on});
+   }
+   else {
+      my $task = Rex::TaskList->create()->get_task($task_name);
+      $task->run("<local>");
    }
 
 }

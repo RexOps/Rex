@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 13;
 use Data::Dumper;
 
 use_ok 'Rex';
@@ -32,15 +32,17 @@ file("test.txt",
 my %stats = Rex::Commands::Fs::stat("test.txt");
 ok($stats{mode} eq "0777" || is_windows(), "fs chmod ok");
 
+ok(file_exists("test.txt") == 1, "file exists");
+
 my $changed = 0;
-append_if_no_such_line("test.txt", "change", qr{change}, 
+append_if_no_such_line("test.txt", "change", qr{change},
    on_change => sub {
       $changed = 1;
    });
 
 ok($changed == 1, "something was changed in the file");
 
-append_if_no_such_line("test.txt", "change", qr{change}, 
+append_if_no_such_line("test.txt", "change", qr{change},
    on_change => sub {
       $changed = 0;
    });
@@ -48,6 +50,8 @@ append_if_no_such_line("test.txt", "change", qr{change},
 ok($changed == 1, "nothing was changed in the file");
 
 
+file_unlink("test.txt");
 
-Rex::Commands::Fs::unlink("test.txt");
+ok(! -e "test.txt", "file is deleted");
+
 

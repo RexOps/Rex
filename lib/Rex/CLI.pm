@@ -77,6 +77,7 @@ sub __run__ {
       F => {},
       T => {},
       h => {},
+      k => {},
       v => {},
       d => {},
       s => {},
@@ -317,6 +318,10 @@ sub __run__ {
          Rex::Commands::public_key($opts{'K'});
       }
 
+      if($opts{'k'}) {
+         Rex::Commands::krb5_auth();
+      }
+
       if($pass_auth) {
          pass_auth;
       }
@@ -498,6 +503,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-p", "Password for the ssh connection";
    printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";
    printf "  %-15s %s\n", "-K", "Public Keyfile for the ssh connection";
+   printf "  %-15s %s\n", "-k", "Kerberos Auth for the ssh connection";
    printf "  %-15s %s\n", "-T", "List all known tasks.";
    printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";

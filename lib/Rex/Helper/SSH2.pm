@@ -14,9 +14,31 @@ require Exporter;
 use base qw(Exporter);
 
 use vars qw(@EXPORT);
-@EXPORT = qw(net_ssh2_exec net_ssh2_exec_output);
+@EXPORT = qw(net_ssh_exec net_ssh2_exec_output);
 
 our $READ_STDERR = 0;
+
+sub net_ssh_exec {
+   my $ssh = shift;
+   my ($out, $err);
+   if(ref($ssh) eq 'Net::SSH2') {
+      ($out, $err) = net_ssh2_exec($ssh, @_);
+   } elsif(ref($ssh) eq 'Net::OpenSSH') {
+      ($out, $err) = net_openssh_exec($ssh, @_);
+   }
+
+   if(wantarray) {
+      return ($out, $err);
+   }
+
+   return $out;
+}
+
+sub net_openssh_exec {
+   my ($ssh, $cmd) = @_;
+   my ($out, $err) = $ssh->capture2($cmd);
+   return ($out, $err);
+}
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
@@ -81,6 +103,5 @@ sub net_ssh2_exec_output {
    $? = $chan->exit_status;
 
 }
-
 
 1;

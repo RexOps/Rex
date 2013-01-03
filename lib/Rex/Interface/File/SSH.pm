@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Fcntl;
+use Net::SFTP::Foreign::Constants qw(:flags);
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;
 use base qw(Rex::Interface::File::Base);
@@ -30,17 +31,32 @@ sub open {
    Rex::Logger::debug("Opening $file with mode: $mode");
 
    my $sftp = Rex::get_sftp();
-   if($mode eq ">") {
-      $self->{fh} = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
-   }
-   elsif($mode eq ">>") {
-      $self->{fh} = $sftp->open($file, O_WRONLY | O_APPEND );
-      my $fs = Rex::Interface::Fs->create;
-      my %stat = $fs->stat($file);
-      $self->{fh}->seek($stat{size});
-   }
-   elsif($mode eq "<") {
-      $self->{fh} = $sftp->open($file, O_RDONLY);
+   if( ref($sftp) eq 'Net::SFTP::Foreign' ) {
+      if($mode eq ">") {
+         $self->{fh} = $sftp->open($file, SSH2_FXF_WRITE | SSH2_FXF_CREAT | SSH2_FXF_TRUNC );
+      }
+      elsif($mode eq ">>") {
+         $self->{fh} = $sftp->open($file, SSH2_FXF_WRITE | SSH2_FXF_APPEND );
+         my $fs = Rex::Interface::Fs->create;
+         my %stat = $fs->stat($file);
+         $self->{fh}->seek($stat{size});
+      }
+      elsif($mode eq "<") {
+         $self->{fh} = $sftp->open($file, SSH2_FXF_READ);
+      }
+   } else {
+      if($mode eq ">") {
+         $self->{fh} = $sftp->open($file, O_WRONLY | O_CREAT | O_TRUNC );
+      }
+      elsif($mode eq ">>") {
+         $self->{fh} = $sftp->open($file, O_WRONLY | O_APPEND );
+         my $fs = Rex::Interface::Fs->create;
+         my %stat = $fs->stat($file);
+         $self->{fh}->seek($stat{size});
+      }
+      elsif($mode eq "<") {
+         $self->{fh} = $sftp->open($file, O_RDONLY);
+      }
    }
 
    return $self->{fh};

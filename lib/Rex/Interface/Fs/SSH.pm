@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Fcntl;
+use Net::SFTP::Foreign::Constants qw(:flags);
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::Base;
 use base qw(Rex::Interface::Fs::Base);
@@ -79,9 +80,15 @@ sub is_file {
    if( $sftp->opendir($file) ) {
    }
 
-   if( $sftp->open($file, O_RDONLY) ) {
-      # return true if $file can be opened read only
-      $ret = 1;
+   if( ref($sftp) eq 'Net::SFTP::Foreign' ) {
+      if( $sftp->open($file, SSH2_FXF_READ) ) {
+         $ret = 1;
+      }
+   } else {
+      if( $sftp->open($file, O_RDONLY) ) {
+         # return true if $file can be opened read only
+         $ret = 1;
+      }
    }
    Rex::Commands::profiler()->end("is_file: $file");
 

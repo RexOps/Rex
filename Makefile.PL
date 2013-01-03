@@ -2,6 +2,8 @@ use ExtUtils::MakeMaker;
 
 my %deps = (
                   'Net::SSH2' => '0.33',
+		  'Net::OpenSSH' => '0.57',
+		  'Net::SFTP::Foreign' => '1.73',
                   'DBI' => 0,
                   'XML::Simple' => 0,
                   'LWP::UserAgent' => 0,
@@ -23,7 +25,7 @@ else {
 WriteMakefile1(
    META_MERGE => {
       resources => {
-         repository => 'https://github.com/krimdomu/Rex',
+         repository => 'https://github.com/chenryn/Rex',
       },
    },
    #BUILD_REQUIRES => {

@@ -590,11 +590,11 @@ sub run_task {
 
    if(exists $option{on}) {
       my $task = Rex::TaskList->create()->get_task($task_name);
-      $task->run($option{on});
+      $task->run($option{on}, params => { %option });
    }
    else {
       my $task = Rex::TaskList->create()->get_task($task_name);
-      $task->run("<local>");
+      $task->run("<local>", params => { %option });
    }
 
 }

@@ -63,10 +63,10 @@ use Rex::Commands::Virtualization;
 $|++;
 
 ################################################################################
-# Setup Virtualization
+# Setup Box-Type
 ################################################################################
 
-set virtualization => "VBox";
+set box => "VBox";
 
 ################################################################################
 # BEGIN of class methods
@@ -89,7 +89,7 @@ Constructor if used in OO mode.
 sub new {
    my $class = shift;
 
-   my $type = Rex::Config->get("virtualization");
+   my $type = Rex::Config->get("box");
    my $klass = "Rex::Box::${type}";
    eval "use $klass;";
 

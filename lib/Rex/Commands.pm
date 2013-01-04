@@ -583,6 +583,12 @@ If called without a hostname the task is run localy.
     return "foo";
  };
 
+If you want to add custom parameters for the task you can do it this way.
+
+ task "prepare", "server5", sub {
+   run_task "check_something", on => "foo", params => { param1 => "value1", param2 => "value2" };
+ };
+
 =cut
 
 sub run_task {
@@ -590,11 +596,21 @@ sub run_task {
 
    if(exists $option{on}) {
       my $task = Rex::TaskList->create()->get_task($task_name);
-      $task->run($option{on}, params => { %option });
+      if(exists $option{params}) {
+         $task->run($option{on}, params => $option{params});
+      }
+      else {
+         $task->run($option{on});
+      }
    }
    else {
       my $task = Rex::TaskList->create()->get_task($task_name);
-      $task->run("<local>", params => { %option });
+      if(exists $option{params}) {
+         $task->run("<local>", params => $option{params});
+      }
+      else {
+         $task->run("<local>");
+      }
    }
 
 }

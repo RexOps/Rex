@@ -18,6 +18,8 @@ use File::Basename qw(basename);
 
 use base qw(Rex::Box);
 
+set virtualization => "VBox";
+
 $|++;
 
 ################################################################################

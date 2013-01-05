@@ -111,7 +111,7 @@ sub get_installed {
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "zypper ref";
+   run "zypper -n ref -fd";
    if($? != 0) {
       die("Error updating package repository");
    }

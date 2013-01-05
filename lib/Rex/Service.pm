@@ -16,6 +16,12 @@ use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Logger;
 
+my %SERVICE_PROVIDER;
+sub register_service_provider {
+   my ($class, $service_name, $service_class) = @_;
+   $SERVICE_PROVIDER{"\L$service_name"} = $service_class;
+   return 1;
+}
 sub get {
 
    my $host = Rex::Hardware::Host->get();
@@ -41,9 +47,12 @@ sub get {
    my $provider_for = Rex::Config->get("service_provider") || {};
    my $provider;
 
-   if(exists $provider_for->{$host->{"operatingsystem"}}) {
+   if(ref($provider_for) && exists $provider_for->{$host->{"operatingsystem"}}) {
       $provider = $provider_for->{$host->{"operatingsystem"}};
       $class .= "::\L$provider";
+   }
+   elsif(exists $SERVICE_PROVIDER{$provider_for}) {
+      $class = $SERVICE_PROVIDER{$provider_for};
    }
 
    Rex::Logger::debug("service using class: $class");

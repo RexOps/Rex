@@ -17,6 +17,13 @@ use Rex::Logger;
 
 use Data::Dumper;
 
+my %PKG_PROVIDER;
+sub register_package_provider {
+   my ($class, $service_name, $service_class) = @_;
+   $PKG_PROVIDER{"\L$service_name"} = $service_class;
+   return 1;
+}
+
 sub get {
 
    my ($self) = @_;
@@ -32,11 +39,15 @@ sub get {
    my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
 
    my $provider;
-   if(exists $pkg_provider_for->{$host->{"operatingsystem"}}) {
+   if(ref($pkg_provider_for) && exists $pkg_provider_for->{$host->{"operatingsystem"}}) {
       $provider = $pkg_provider_for->{$host->{"operatingsystem"}};
       $class .= "::$provider";
    }
+   elsif(exists $PKG_PROVIDER{$pkg_provider_for}) {
+      $class = $PKG_PROVIDER{$pkg_provider_for};
+   }
 
+   Rex::Logger::debug("Using $class for package management");
    eval "use $class";
 
    if($@) {

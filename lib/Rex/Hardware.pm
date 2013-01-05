@@ -70,6 +70,13 @@ Available modules:
 
 our %hw_info = ();
 
+my %HW_PROVIDER;
+sub register_hardware_provider {
+   my ($class, $service_name, $service_class) = @_;
+   $HW_PROVIDER{"\L$service_name"} = $service_class;
+   return 1;
+}
+
 sub get {
    my($class, @modules) = @_;
 
@@ -78,6 +85,7 @@ sub get {
    if("all" eq "\L$modules[0]") {
 
       @modules = qw(Host Kernel Memory Network Swap);
+      push(@modules, keys(%HW_PROVIDER));
    
    }
 
@@ -90,11 +98,15 @@ sub get {
       else {
 
          my $mod = "Rex::Hardware::$mod_string";
-         Rex::Logger::debug("Loading Rex::Hardware::$mod_string");
-         eval "use Rex::Hardware::$mod_string";
+         if(exists $HW_PROVIDER{$mod_string}) {
+            $mod = $HW_PROVIDER{$mod_string};
+         }
+
+         Rex::Logger::debug("Loading $mod");
+         eval "use $mod";
 
          if($@) {
-            Rex::Logger::info("Rex::Hardware::$mod_string not found.");
+            Rex::Logger::info("$mod not found.");
             Rex::Logger::debug("$@");
             next;
          }

@@ -6,7 +6,7 @@
    
 package Rex::Box::VBox;
 
-use Rex::Box;
+use Rex::Box::Base;
 use Rex::Commands -no => [qw/auth/];
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
@@ -16,7 +16,7 @@ use LWP::UserAgent;
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 
-use base qw(Rex::Box);
+use base qw(Rex::Box::Base);
 
 set virtualization => "VBox";
 

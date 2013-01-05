@@ -28,6 +28,12 @@ Rex::Config->register_config_handler(virtualization => sub {
    }
 });
 
+sub register_vm_provider {
+   my ($class, $service_name, $service_class) = @_;
+   $VM_PROVIDER{"\L$service_name"} = $service_class;
+   return 1;
+}
+
 sub create {
    my ($class, $wanted_provider) = @_;
 

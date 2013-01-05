@@ -25,6 +25,11 @@ sub register_cloud_service {
    return 1;
 }
 
+sub register_cloud_provider {
+   my $class = shift;
+   $class->register_cloud_service(@_);
+}
+
 sub get_cloud_service {
 
    my ($service) = @_;

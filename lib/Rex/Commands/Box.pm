@@ -75,6 +75,7 @@ set box => "VBox";
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
+use Rex::Box;
 #@EXPORT = qw(box $box);
 @EXPORT = qw(box);
 
@@ -88,12 +89,7 @@ Constructor if used in OO mode.
 
 sub new {
    my $class = shift;
-
-   my $type = Rex::Config->get("box");
-   my $klass = "Rex::Box::${type}";
-   eval "use $klass;";
-
-   return $klass->new(@_); 
+   return Rex::Box->create(@_);
 }
 
 sub box(&) {
@@ -106,7 +102,7 @@ sub box(&) {
    #   \*{ $pkg . "::box" };
    #};
 
-   my $self = __PACKAGE__->new;
+   my $self = Rex::Box->create;
 
    #local( *$caller_box );
    #*$caller_box = \$self;

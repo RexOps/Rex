@@ -23,10 +23,10 @@ $Rex::Logger::silent = 1;
 
 my $opts = {}; 
 
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.36/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.36/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.36/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.36/get/perldep/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.37/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.37/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.37/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.37/get/perldep/%s";
 
 #my $SEARCH_SERVER = "http://localhost:3000/api/0.36/get/recipes";
 #my $RECIPE_SERVER = "http://localhost:3000/api/0.36/get/mod/%s";

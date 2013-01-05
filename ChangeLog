@@ -1,3 +1,12 @@
+2013-01-05 Jan Gehring <jan.gehring, gmail.com> (0.37.0)
+  * box module is now plugable
+  * run_task now accepts additional parameters
+  * virtualization module is now plugable
+  * hardware provider now plugable
+  * package provider now plugable
+  * service provider now plugable
+  * fixed zypper ref call for SuSE on unsigned repositories
+
 2012-12-22 Jan Gehring <jan.gehring, gmail.com> (0.36.0)
   * added run_task a new function to run tasks on specific hosts
   * added feature to install perl dependencies via cpanm/cpan with rexify

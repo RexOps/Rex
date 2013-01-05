@@ -52,5 +52,20 @@ With this module you can manage LibVirt.
 
 package Rex::Virtualization::LibVirt;
 
+use strict;
+use warnings;
+
+use Rex::Virtualization::Base;
+use base qw(Rex::Virtualization::Base);
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
+
+   bless($self, $proto);
+
+   return $self;
+}
 
 1;

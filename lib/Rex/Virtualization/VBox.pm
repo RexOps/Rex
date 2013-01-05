@@ -71,6 +71,20 @@ For VirtualBox memory declaration is always in megabyte.
 
 package Rex::Virtualization::VBox;
 
+use strict;
+use warnings;
 
+use Rex::Virtualization::Base;
+use base qw(Rex::Virtualization::Base);
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
+
+   bless($self, $proto);
+
+   return $self;
+}
 
 1;

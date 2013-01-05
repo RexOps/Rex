@@ -14,40 +14,16 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Logger;
-use Rex::Config;
+use Rex::Virtualization;
 
 @EXPORT = qw(vm);
 
-Rex::Config->register_config_handler(virtualization => sub {
-   my ($param) = @_;
-
-   if (ref($param) eq '') {
-      #support 'set virtualization => 'LibVirt', but leave the way open for using a hash in future
-      #other virtualisation drivers may need more settings...
-      $param = {type=>$param};
-   }
-
-   if(exists $param->{type}) {
-      Rex::Config->set(virtualization => $param->{type});
-   }
-});
 
 sub vm {
    my ($action, $vmname, %opt) = @_;
 
-   my $type = Rex::Config->get("virtualization");
-
-   Rex::Logger::debug("Using $type for virtualization");
-
-   my $mod = "Rex::Virtualization::${type}::${action}";
-   eval "use $mod;";
-
-   if($@) {
-      Rex::Logger::info("No module/action $type/$action available.");
-      die("No module/action $type/$action available.");
-   }
-
-   return $mod->execute($vmname, %opt);
+   my $vm_obj = Rex::Virtualization->create();
+   return $vm_obj->execute($action, $vmname, %opt);
 }
 
 =head1 NAME

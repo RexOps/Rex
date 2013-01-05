@@ -178,6 +178,8 @@ lib/Rex/User/Linux.pm
 lib/Rex/User/NetBSD.pm
 lib/Rex/User/OpenBSD.pm
 lib/Rex/User/SunOS.pm
+lib/Rex/Virtualization.pm
+lib/Rex/Virtualization/Base.pm
 lib/Rex/Virtualization/LibVirt.pm
 lib/Rex/Virtualization/LibVirt/blklist.pm
 lib/Rex/Virtualization/LibVirt/create.pm
@@ -221,6 +223,7 @@ t/base_box.t
 t/base_cloud.t
 t/base_inventory.t
 t/base_inventory_smbios.t
+t/base_virt.t
 t/box.t
 t/commands.t
 t/config-ssh.t

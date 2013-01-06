@@ -80,6 +80,7 @@ sub __run__ {
       v => {},
       d => {},
       s => {},
+      m => {},
       S => { type => "string" },
       E => { type => "string" },
       o => { type => "string" },
@@ -104,6 +105,11 @@ sub __run__ {
       open(my $newout, '>', \$stdout);
       select $newout;
       close(STDERR);
+   }
+
+   if($opts{'m'}) {
+      $no_color = 1;
+      $Rex::Logger::no_color = 1;
    }
 
    if($opts{'d'}) {
@@ -390,7 +396,16 @@ sub __run__ {
 
    Rex::Logger::debug("Initializing Logger from parameters found in $::rexfile");
 
-   if($opts{'T'}) {
+   if($opts{'T'} && $opts{'m'}) {
+      # create machine readable tasklist
+      my @tasks = Rex::TaskList->create()->get_tasks;
+      for my $task (@tasks) {
+         my $desc = Rex::TaskList->create()->get_desc($task);
+         $desc =~ s/'/\\'/gms;
+         print "'$task'" . " = '$desc'\n";
+      }
+   }
+   elsif($opts{'T'}) {
       Rex::Logger::debug("Listing Tasks and Batches");
       _print_color("Tasks\n", "yellow");
       my @tasks = Rex::TaskList->create()->get_tasks;

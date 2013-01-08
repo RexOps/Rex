@@ -33,6 +33,8 @@ use warnings;
 use Rex::Config;
 use Rex::Logger;
 
+our $DO_CHOMP = 0;
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -89,7 +91,9 @@ sub parse {
       } 
       
       else {
-
+         if($DO_CHOMP) {
+            chomp $_;
+         }
          $_ = '$r .= "' . _quote($_) . '";';
 
       }

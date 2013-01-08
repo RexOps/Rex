@@ -132,7 +132,29 @@ sub get {
    }
    else {
       # default for linux
+      if(! can_run("free")) {
+          return {
+            total => 0,
+            used  => 0,
+            free  => 0,
+            shared => 0,
+            buffers => 0,
+            cached => 0,
+         };
+      }
+
       my $free_str = [ grep { /^Mem:/ } run("LC_ALL=C free -m") ]->[0];
+
+      if(! $free_str) {
+         return {
+            total => 0,
+            used  => 0,
+            free  => 0,
+            shared => 0,
+            buffers => 0,
+            cached => 0,
+         };
+      }
 
       my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
 

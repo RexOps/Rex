@@ -107,7 +107,25 @@ sub get {
    }
    else {
       # linux as default
+      if(! can_run("free")) {
+          return {
+            total => 0,
+            used  => 0,
+            free  => 0,
+            shared => 0,
+            buffers => 0,
+            cached => 0,
+         };
+      }
+
       my $free_str = [ grep { /^Swap:/ } run("LC_ALL=C free -m") ]->[0];
+      if(! $free_str) {
+         return {
+            total => 0,
+            used  => 0,
+            free  => 0,
+         };
+      }
       $free_str =~ s/\r//g;
       my ($total, $used, $free) = ($free_str =~ m/^Swap:\s+(\d+)\s+(\d+)\s+(\d+)$/);
 

@@ -172,4 +172,10 @@ sub share_folder {
    $self->{__shared_folder} = \%option;
 }
 
+sub get_group {
+   my ($self, @boxnames) = @_;
+
+   return ("127.0.0.1:2222");
+}
+
 1;

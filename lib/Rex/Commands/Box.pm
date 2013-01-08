@@ -14,11 +14,13 @@ This is a Module to manage Virtual Machines or Cloud Instances in a simple way. 
 
 =head1 SYNOPSIS
 
+ group vm => Rex::Commands::Box->get_group(qw/boxname1 boxname2/);
+   
  task mytask => sub {
     
     box {
        my ($box) = @_;
-       $box->name("vmname");
+       $box->name("boxname");
        $box->url("http://box.rexify.org/box/base-image.box");
           
        $box->network(1 => {
@@ -114,6 +116,11 @@ sub box(&) {
    $self->import_vm();
 
    $self->provision_vm();
+}
+
+sub get_group {
+   my ($class, @boxnames) = @_;
+   return (ref $class->new)->get_group();
 }
 
 1;

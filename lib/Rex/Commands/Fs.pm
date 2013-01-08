@@ -295,7 +295,6 @@ Change the permissions of a file or a directory.
 
 sub chmod {
    my ($mode, $file, @opts) = @_;
-   
    my $fs = Rex::Interface::Fs->create;
    $fs->chmod($mode, $file, @opts) or die("Can't chmod $file");
 }
@@ -518,7 +517,7 @@ This function will change the current workdirectory to $newdir. This function cu
 =cut
 
 sub chdir {
-   Rex::Logger::info("chdir behaviour will be changed in the future.");
+   Rex::Logger::debug("chdir behaviour will be changed in the future.");
    CORE::chdir($_[0]);
 }
 

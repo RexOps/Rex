@@ -125,6 +125,11 @@ sub parse {
       Rex::Logger::debug($new_data);
       eval($new_data);
 
+      # undef the vars
+      for my $var (keys %{$vars}) {
+         $$var = undef;
+      }
+
       if($@) {
          Rex::Logger::info($@);
       }

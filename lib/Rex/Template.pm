@@ -68,10 +68,17 @@ sub parse {
       }
    }
 
+   my $do_chomp = 0;
    $new_data = join("\n", map {
       my ($code, $type, $text) = ($_ =~ m/(\<%)*([+=])*(.+)%\>/s);
 
       if($code) {
+         my $pcmd = substr($text, -1);
+         if($pcmd eq "-") {
+            $text = substr($text, 0, -1);
+            $do_chomp = 1;
+         }
+
          my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
 
          if($var_name && ! ref($vars->{$var_name})) {
@@ -91,10 +98,12 @@ sub parse {
       } 
       
       else {
-         if($DO_CHOMP) {
+         if($DO_CHOMP || $do_chomp) {
             chomp $_;
+            $do_chomp = 0;
          }
          $_ = '$r .= "' . _quote($_) . '";';
+
 
       }
 

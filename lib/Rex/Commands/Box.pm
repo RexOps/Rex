@@ -79,7 +79,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 use Rex::Box;
 #@EXPORT = qw(box $box);
-@EXPORT = qw(box);
+@EXPORT = qw(box get_box_group_for);
 
 =item new(name => $vmname)
 
@@ -121,6 +121,10 @@ sub box(&) {
 sub get_group {
    my ($class, @boxnames) = @_;
    return (ref $class->new)->get_group();
+}
+
+sub get_box_group_for {
+   return __PACKAGE__->get_group;
 }
 
 1;

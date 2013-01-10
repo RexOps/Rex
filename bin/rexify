@@ -18,6 +18,7 @@ use Rex::Logger;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use JSON::XS;
+use Cwd qw(getcwd);
 
 $Rex::Logger::silent = 1;
 
@@ -275,6 +276,14 @@ if(defined $ARGV[1] && $ARGV[1] !~ m/^\-\-/) {
    $dir = $ARGV[1];
 }
 
+if(exists $opts->{template} && -f $opts->{template} && $opts->{template} !~ m/^\//) {
+   my $cwd = getcwd;
+   $opts->{template} = "$cwd/" . $opts->{template};
+}
+elsif(exists $opts->{template} && $opts->{template} !~ m/^\//) {
+   $opts->{template} = '@' . $opts->{template};
+}
+
 unless(-d $dir) {
    print "Created $dir\n";
    mkdir($dir);
@@ -295,7 +304,7 @@ unless(-f 'lib' . $ARGV[0] . '.pm') {
 
    if($opts->{template}) {
       open($fh, ">", "Rexfile") or die($!);
-      print $fh template('@' . $opts->{template}, lib => $ARGV[0]);
+      print $fh template($opts->{template}, lib => $ARGV[0]);
       close($fh);
    }
    else {

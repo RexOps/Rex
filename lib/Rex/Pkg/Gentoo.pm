@@ -11,6 +11,9 @@ use warnings;
 
 use Rex::Commands::Run;
 use Rex::Commands::File;
+use Rex::Pkg::Base;
+use base qw(Rex::Pkg::Base);
+
 
 sub new {
    my $that = shift;
@@ -112,6 +115,11 @@ sub get_installed {
    }
 
    return @ret;
+}
+
+sub update_system {
+   my ($self) = @_;
+   run "emerge --update --deep --with-bdeps=y --newuse world";
 }
 
 sub update_pkg_db {

@@ -12,6 +12,9 @@ use warnings;
 use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
+use Rex::Pkg::Base;
+use base qw(Rex::Pkg::Base);
+
 
 sub new {
    my $that = shift;
@@ -109,6 +112,11 @@ sub get_installed {
    }
 
    return @pkg;
+}
+
+sub update_system {
+   my ($self) = @_;
+   run "yum -y upgrade";
 }
 
 sub update_pkg_db {

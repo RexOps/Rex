@@ -13,6 +13,9 @@ use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
 
+use Rex::Pkg::Base;
+use base qw(Rex::Pkg::Base);
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -69,6 +72,11 @@ sub update {
    Rex::Logger::debug("$pkg successfully installed.");
 
    return 1;
+}
+
+sub update_system {
+   my ($self) = @_;
+   run("apt-get -y upgrade");
 }
 
 sub remove {

@@ -10,6 +10,9 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Pkg::Base;
+use base qw(Rex::Pkg::Base);
+
 
 sub new {
    my $that = shift;
@@ -106,6 +109,11 @@ sub get_installed {
    }
 
    return @pkg;
+}
+
+sub update_system {
+   my ($self) = @_;
+   run "zypper -n up";
 }
 
 sub update_pkg_db {

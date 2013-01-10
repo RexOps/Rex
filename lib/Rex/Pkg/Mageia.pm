@@ -10,6 +10,9 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Pkg::Base;
+use base qw(Rex::Pkg::Base);
+
 
 sub new {
    my $that = shift;
@@ -66,6 +69,11 @@ sub update {
    Rex::Logger::debug("$pkg successfully installed.");
 
    return 1;
+}
+
+sub update_system {
+   my ($self) = @_;
+   run "urpmi --auto --quiet --auto-update";
 }
 
 sub remove {

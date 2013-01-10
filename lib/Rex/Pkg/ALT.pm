@@ -10,6 +10,9 @@ use warnings;
 use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
+use Rex::Pkg::Base;
+use base qw(Rex::Pkg::Base);
+
 
 sub new {
    my $that = shift;

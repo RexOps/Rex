@@ -538,24 +538,24 @@ sub connect {
    if($self->connection->is_authenticated) {
       Rex::Logger::info("Successfully authenticated.") if($self->connection->get_connection_type ne "Local");
       $self->{"__was_authenticated"} = 1;
+
+      Rex::push_connection({
+            conn   => $self->connection, 
+            ssh    => $self->connection->get_connection_object, 
+            server => $server, 
+            cache => Rex::Cache->new(),
+            task  => $self,
+            profiler => $profiler,
+      });
    }
    else {
       Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
-      CORE::exit(1);
+      return 0;
    }
-
-   # need to get rid of this
-   Rex::push_connection({
-         conn   => $self->connection, 
-         ssh    => $self->connection->get_connection_object, 
-         server => $server, 
-         cache => Rex::Cache->new(),
-         task  => $self,
-         profiler => $profiler,
-   });
 
    $self->run_hook(\$server, "around");
 
+   return 1;
 }
 
 =item disconnect
@@ -577,7 +577,6 @@ sub disconnect {
 
    delete $self->{connection};
 
-   # need to get rid of this
    Rex::pop_connection();
 }
 
@@ -633,24 +632,29 @@ sub run {
       my $in_transaction = $options{in_transaction};
       
       $self->run_hook(\$server, "before");
-      $self->connect($server);
+      if($self->connect($server)) {
 
-      if(Rex::Args->is_opt("c")) {
-         # get and cache all os info
-         Rex::Hardware->get(qw/All/);
+         if(Rex::Args->is_opt("c")) {
+            # get and cache all os info
+            Rex::Hardware->get(qw/All/);
+         }
+
+         # execute code
+         my $ret = $self->executor->exec($options{params});
+
+
+         # reset all os info
+         Rex::Hardware->reset;
+
+         $self->disconnect($server) unless($in_transaction);
+         $self->run_hook(\$server, "after");
+
+         return $ret;
       }
-
-      # execute code
-      my $ret = $self->executor->exec($options{params});
-
-
-      # reset all os info
-      Rex::Hardware->reset;
-
-      $self->disconnect($server) unless($in_transaction);
-      $self->run_hook(\$server, "after");
-
-      return $ret;
+      else {
+         $self->run_hook(\$server, "after");
+         return;
+      }
    }
 
    else {

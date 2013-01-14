@@ -79,6 +79,7 @@ sub run_instance {
                MaxCount => 1,
                KeyName  => $data{"key"},
                InstanceType => $data{"type"} || "m1.small",
+               SecurityGroup => $data{"group"} || "default",
                "Placement.AvailabilityZone" => $data{"zone"} || "");
 
    my $ref = $self->_xml($xml);
@@ -255,6 +256,7 @@ sub list_instances {
          launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
          name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
          private_ip => $instance_set->{"instancesSet"}->{"item"}->{"privateIpAddress"},
+         security_group => $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"},
       });
    }
 

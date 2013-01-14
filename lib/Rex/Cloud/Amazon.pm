@@ -79,7 +79,7 @@ sub run_instance {
                MaxCount => 1,
                KeyName  => $data{"key"},
                InstanceType => $data{"type"} || "m1.small",
-               SecurityGroup => $data{"group"} || "default",
+               SecurityGroup => $data{"security_group"} || "default",
                "Placement.AvailabilityZone" => $data{"zone"} || "");
 
    my $ref = $self->_xml($xml);

@@ -1,3 +1,6 @@
+2013-01-15 Jan Gehring <jan.gehring, gmail.com> (0.37.1)
+  * fixed template bug in modules
+
 2013-01-05 Jan Gehring <jan.gehring, gmail.com> (0.37.0)
   * box module is now plugable
   * run_task now accepts additional parameters

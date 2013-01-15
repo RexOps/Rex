@@ -113,8 +113,6 @@ push(@INC, sub {
 
 sub get_module_path {
    my ($module) = @_;
-   use Data::Dumper;
-   print Dumper($MODULE_PATHS);
    if(exists $MODULE_PATHS->{$module}) {
       return $MODULE_PATHS->{$module}->{path};
    }

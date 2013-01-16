@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.37.1";
+$VERSION = "0.37.2";
 
 my $cur_dir = getcwd;
 
@@ -382,6 +382,12 @@ sub import {
          Rex::Logger::debug("activating featureset >= 0.31");
          Rex::TaskList->create()->set_default_auth(0);
       }
+
+      if($addition1 >= 0.35) {
+         Rex::Logger::debug("activating featureset >= 0.35");
+         $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
+      }
+
    }
 
    # we are always strict

@@ -132,7 +132,7 @@ Return an HashRef of all the networkinterfaces and their configuration.
     my $net_info = network_interfaces();
  };
 
-You can interate over the devices as follow
+You can iterate over the devices as follow
 
  my $net_info = network_interfaces();
  for my $dev ( keys %{ $net_info } ) {

@@ -85,7 +85,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.37.0";
+$VERSION = "0.37.2";
 
 my $cur_dir = getcwd;
 
@@ -96,6 +96,9 @@ push(@INC, sub {
 
    if(-d "lib/$mod_to_load" && ( -f "lib/$mod_to_load/Module.pm" || -f "lib/$mod_to_load/__module__.pm")) {
       $MODULE_PATHS->{$mod_to_load} = {path => "$cur_dir/lib/$mod_to_load"};
+      my $mod_package_name = $mod_to_load;
+      $mod_package_name =~ s/\//::/g;
+      $MODULE_PATHS->{$mod_package_name} = {path => "$cur_dir/lib/$mod_to_load"};
       if(-f "lib/$mod_to_load/__module__.pm") {
          open(my $fh, "lib/$mod_to_load/__module__.pm");
          return $fh;
@@ -379,6 +382,12 @@ sub import {
          Rex::Logger::debug("activating featureset >= 0.31");
          Rex::TaskList->create()->set_default_auth(0);
       }
+
+      if($addition1 >= 0.35) {
+         Rex::Logger::debug("activating featureset >= 0.35");
+         $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
+      }
+
    }
 
    # we are always strict

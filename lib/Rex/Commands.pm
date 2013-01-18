@@ -133,6 +133,8 @@ use base qw(Rex::Exporter);
             make
           );
 
+our $REGISTER_SUB_HASH_PARAMTER = 0;
+
 =item no_ssh([$task])
 
 Disable ssh for all tasks or a specified task.
@@ -289,7 +291,12 @@ sub task {
             $code->(@_);
          }
          else {
-            $code->({ @_ });
+            if($REGISTER_SUB_HASH_PARAMTER) {
+               $code->({ @_ });
+            }
+            else {
+               $code->(@_);
+            }
          }
       };
       use strict;

@@ -185,7 +185,7 @@ This function is the successor of I<install file>. Please use this function to u
        on_change => sub { service httpd => "restart"; };
  };
 
-If I<source> is relative it will search from the location of your I<Rexfile>.
+If I<source> is relative it will search from the location of your I<Rexfile> or the I<.pm> file if you use Perl packages.
 
 =cut
 sub file {
@@ -482,7 +482,7 @@ sub append_if_no_such_line {
 
 =item extract($file [, %options])
 
-This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
+This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
  task prepare => sub {
     extract "/tmp/myfile.tar.gz",
@@ -495,7 +495,7 @@ This function extracts a file. Supported formats are .tar.gz, .tgz, .tar.Z, .tar
       mode => "g+rwX";
  };
  
-Can use the type=> option if the file suffix has been changed. (types are tgz, tbz, zip, gz, bz2)
+Can use the type=> option if the file suffix has been changed. (types are tar, tgz, tbz, zip, gz, bz2)
 
 =cut
 sub extract {

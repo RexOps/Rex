@@ -57,7 +57,7 @@ task("test", sub {
       return 1;
    }
 
-   return 0;
+   ok(1==-1);
 });
 
 desc("Test 2");
@@ -69,7 +69,7 @@ task("test2", sub {
       return 1;
    }
 
-   return 0;
+   ok(1==-1);
 
 });
 
@@ -83,7 +83,7 @@ task("test3", sub {
       return 1;
    }
 
-   return 0;
+   ok(1==-1);
 });
 
 desc("Test 4");

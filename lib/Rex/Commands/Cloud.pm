@@ -267,7 +267,7 @@ Create a new instance.
          password => $data->{"password"} || undef,
          plan_id  => $data->{"plan_id"} || undef,
          type     => $data->{"type"} || undef,
-         security_group => $data{"security_group"} || undef,
+         security_group => $data->{"security_group"} || undef,
          %{ $data },
       );
 

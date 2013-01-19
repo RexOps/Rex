@@ -40,6 +40,8 @@ sub connect {
 
    $self->{is_sudo} = $is_sudo;
 
+   $self->{__auth_info__} = \%option;
+
    Rex::Logger::debug("Using user: " . $user);
    Rex::Logger::debug("Using password: " . ($pass?"***********":"<no password>"));
 
@@ -98,6 +100,13 @@ sub connect {
    }
 
    $self->{sftp} = $self->{ssh}->sftp;
+}
+
+sub reconnect {
+   my ($self) = @_;
+   Rex::Logger::debug("Reconnecting SSH");
+
+   $self->connect(%{ $self->{__auth_info__} });
 }
 
 sub disconnect {

@@ -76,6 +76,7 @@ use warnings;
 use Net::SSH2;
 use Rex::Logger;
 use Rex::Cache;
+use Data::Dumper;
 use Rex::Interface::Connection;
 use Cwd qw(getcwd);
 
@@ -85,7 +86,7 @@ our (@EXPORT,
       $GLOBAL_SUDO,
       $MODULE_PATHS);
 
-$VERSION = "0.37.2";
+$VERSION = "0.37.99.0";
 
 my $cur_dir = getcwd;
 
@@ -125,6 +126,15 @@ sub push_connection {
 sub pop_connection {
    pop @CONNECTION_STACK;
    Rex::Logger::debug("Connections in queue: " . scalar(@CONNECTION_STACK));
+}
+
+sub reconnect_lost_connections {
+   if(@CONNECTION_STACK > 0) {
+      Rex::Logger::debug("Need to reinitialize connections.");
+      for (@CONNECTION_STACK) {
+         $_->{conn}->reconnect;
+      }
+   }
 }
 
 =item get_current_connection

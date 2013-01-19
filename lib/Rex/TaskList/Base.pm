@@ -214,6 +214,8 @@ sub run {
 
    Rex::Logger::debug("Waiting for children to finish");
    $fm->wait_for_all;
+
+   Rex::reconnect_lost_connections();
 }
 
 sub modify {

@@ -124,6 +124,10 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
 
 sub install {
 
+   if(! @_) {
+      return "install";
+   }
+
    my $type = shift;
    my $package = shift;
    my $option;

@@ -23,7 +23,8 @@ sub register_box_provider {
 sub create {
    my ($class, @opts) = @_;
 
-   my $type = Rex::Config->get("box");
+   my $type = Rex::Config->get("box_type") || "VBox";
+   my $options = Rex::Config->get("box_options") || {};
 
    my $klass = "Rex::Box::${type}";
 
@@ -39,7 +40,7 @@ sub create {
       die("Box Class $klass not found.");
    }
 
-   return $klass->new(@opts); 
+   return $klass->new(@opts, options => $options); 
 }
 
 

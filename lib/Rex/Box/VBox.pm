@@ -6,11 +6,13 @@
    
 package Rex::Box::VBox;
 
+use Data::Dumper;
 use Rex::Box::Base;
 use Rex::Commands -no => [qw/auth/];
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
+use Rex::Commands::SimpleCheck;
 
 use LWP::UserAgent;
 use Time::HiRes qw(tv_interval gettimeofday);
@@ -36,7 +38,9 @@ Constructor if used in OO mode.
 
 sub new {
    my $class = shift;
-   my $self = { @_ };
+   my $proto = ref($class) || $class;
+   my $self = $proto->SUPER::new(@_);
+
    bless($self, ref($class) || $class);
 
    return $self;
@@ -115,6 +119,8 @@ sub import_vm {
    $self->{info} = vm guestinfo => $self->{name};
 }
 
+
+
 =item provision_vm([@tasks])
 
 Execute's the given tasks on the VM.
@@ -127,13 +133,25 @@ sub provision_vm {
       @tasks = @{ $self->{__tasks} };
    }
 
-   my $server = $self->{info}->{net}->[0]->{ip};
-   if($self->{__forward_port} && $self->{__forward_port}->{ssh} && ! Rex::is_local()) {
-      $server = connection->server . ":" . $self->{__forward_port}->{ssh}->[0];
+   my $server = $self->ip;
+
+   my ($ip, $port) = split(/:/, $server);
+   $port ||= 22;
+
+   print "Waiting for SSH to come up on $ip:$port.";
+   while( ! is_port_open ($ip, $port) ) {
+      print ".";
+      sleep 1;
    }
-   elsif($self->{__forward_port} && $self->{__forward_port}->{ssh} && Rex::is_local()) {
-      $server = "127.0.0.1:" . $self->{__forward_port}->{ssh}->[0];
+
+   my $i=5;
+   while($i != 0) {
+      sleep 1;
+      print ".";
+      $i--;
    }
+
+   print "\n";
 
    for my $task (@tasks) {
       Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
@@ -172,10 +190,39 @@ sub share_folder {
    $self->{__shared_folder} = \%option;
 }
 
-sub get_group {
-   my ($self, @boxnames) = @_;
+sub list_boxes {
+   my ($self) = @_;
+   
+   my $vms = vm list => "all";
 
-   return ("127.0.0.1:2222");
+   return @{ $vms };
+}
+
+=item info
+
+Returns a hashRef of vm information.
+
+=cut
+sub info {
+   my ($self) = @_;
+   $self->{info} = vm guestinfo => $self->{name};
+   return $self->{info};
+}
+
+sub ip {
+   my ($self) = @_;
+
+   $self->{info} = vm guestinfo => $self->{name};
+
+   my $server = $self->{info}->{net}->[0]->{ip};
+   if($self->{__forward_port} && $self->{__forward_port}->{ssh} && ! Rex::is_local()) {
+      $server = connection->server . ":" . $self->{__forward_port}->{ssh}->[0];
+   }
+   elsif($self->{__forward_port} && $self->{__forward_port}->{ssh} && Rex::is_local()) {
+      $server = "127.0.0.1:" . $self->{__forward_port}->{ssh}->[0];
+   }
+
+   return $server;
 }
 
 1;

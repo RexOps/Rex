@@ -25,9 +25,26 @@ sub new {
 
    bless($self, $proto);
 
+   # default auth for rex boxes
+   $self->{__auth} = {
+      user        => Rex::Config->get_user(),
+      password    => Rex::Config->get_password(),
+      private_key => Rex::Config->get_private_key(),
+      public_key  => Rex::Config->get_public_key(),
+   };
+
    return $self;
 }
 
+=item info
+
+Returns a hashRef of vm information.
+
+=cut
+sub info {
+   my ($self) = @_;
+   return $self->{info};
+}
 
 =item name($vmname)
 
@@ -80,6 +97,25 @@ sub start {
    my ($self) = @_;
    vm start => $self->{name};
 
+}
+
+=item ip()
+
+Return the ip:port to which rex will connect to.
+
+=cut
+sub ip { die("Must be implemented by box class.") }
+
+=item status()
+
+Returns the status of a VM.
+
+Valid return values are "running" and "stopped".
+
+=cut
+sub status {
+   my ($self) = @_;
+   return vm status => $self->{name};
 }
 
 =item provision_vm([@tasks])

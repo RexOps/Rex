@@ -162,8 +162,11 @@ sub get_box {
    my ($box_name) = @_;
    my $box = Rex::Box->create(name => $box_name);
 
+   $box->info;
+
    if($box->status eq "stopped") {
       $box->start;
+      $box->wait_for_ssh;
    }
 
    if( -f ".box.cache") {
@@ -191,6 +194,8 @@ sub get_box {
 
    my $old_q = $::QUIET;
    $::QUIET = 1;
+
+
    $vm_infos{$box_name} = run_task "get_sys_info", on => $box->ip;
    $::QUIET = $old_q;
 
@@ -232,8 +237,11 @@ sub boxes {
             $box->name($vm);
 
             for my $key (keys %{ $vm_ref }) {
-               if(ref($vm_ref->{$key})) {
+               if(ref($vm_ref->{$key}) eq "HASH") {
                   $box->$key(%{ $vm_ref->{$key} });
+               }
+               elsif(ref($vm_ref->{$key}) eq "ARRAY") {
+                  $box->$key(@{ $vm_ref->{$key} });
                }
                else {
                   $box->$key($vm_ref->{$key});
@@ -288,6 +296,9 @@ sub import {
       # set special box options, like amazon out
       if(exists $yaml_ref->{"\L$type"}) {
          set box_options => $yaml_ref->{"\L$type"};
+      }
+      elsif(exists $yaml_ref->{$type}) {
+         set box_options => $yaml_ref->{$type};
       }
 
       $VM_STRUCT = $yaml_ref;

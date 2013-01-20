@@ -189,13 +189,6 @@ sub start {
    Rex::Logger::info("Starting instance: " . $self->{name});
 
    cloud_instance start => $self->{info}->{id};
-
-   my $server = $self->ip;
-
-   my ($ip, $port) = split(/:/, $server);
-   $port ||= 22;
-
-   $self->wait_for_ssh($ip, $port);
 }
 
 sub stop {

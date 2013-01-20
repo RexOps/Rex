@@ -205,7 +205,18 @@ Returns a hashRef of vm information.
 =cut
 sub info {
    my ($self) = @_;
-   $self->{info} = vm guestinfo => $self->{name};
+   $self->ip;
+
+   my $vm_info = vm info => $self->{name};
+
+   # get forwarded ports
+   my @forwarded_ports = grep { m/^Forwarding/ } keys %{ $vm_info };
+
+   for my $fwp (@forwarded_ports) {
+      my ($name, $proto, $host_ip, $host_port, $vm_ip, $vm_port) = split(/,/, $vm_info->{$fwp});
+      $self->forward_port($name => [$host_port, $vm_port]);
+   }
+
    return $self->{info};
 }
 
@@ -221,6 +232,8 @@ sub ip {
    elsif($self->{__forward_port} && $self->{__forward_port}->{ssh} && Rex::is_local()) {
       $server = "127.0.0.1:" . $self->{__forward_port}->{ssh}->[0];
    }
+
+   $self->{info}->{ip} = $server;
 
    return $server;
 }

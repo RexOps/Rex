@@ -86,6 +86,7 @@ Stops the VM.
 =cut
 sub stop {
    my ($self) = @_;
+   $self->info;
    vm shutdown => $self->{name};
 }
 
@@ -96,6 +97,7 @@ Starts the VM.
 =cut
 sub start {
    my ($self) = @_;
+   $self->info;
    vm start => $self->{name};
 
 }
@@ -204,6 +206,11 @@ sub auth {
 
 sub wait_for_ssh {
    my ($self, $ip, $port) = @_;
+
+   if(! $ip) {
+      ($ip, $port) = split(/:/, $self->ip);
+      $port ||= 22;
+   }
 
    print "Waiting for SSH to come up on $ip:$port.";
    while( ! is_port_open ($ip, $port) ) {

@@ -13,6 +13,7 @@ use Rex::Commands -no => [qw/auth/];
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
+use Rex::Commands::SimpleCheck;
 
 use LWP::UserAgent;
 use Time::HiRes qw(tv_interval gettimeofday);
@@ -199,6 +200,25 @@ Configure the authentication to the VM.
 sub auth {
    my ($self, %auth) = @_;
    $self->{__auth} = \%auth;
+}
+
+sub wait_for_ssh {
+   my ($self, $ip, $port) = @_;
+
+   print "Waiting for SSH to come up on $ip:$port.";
+   while( ! is_port_open ($ip, $port) ) {
+      print ".";
+      sleep 1;
+   }
+
+   my $i=5;
+   while($i != 0) {
+      sleep 1;
+      print ".";
+      $i--;
+   }
+
+   print "\n";
 }
 
 sub _download {

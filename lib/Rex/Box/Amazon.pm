@@ -12,7 +12,6 @@ use Rex::Commands -no => [qw/auth/];
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Cloud;
-use Rex::Commands::SimpleCheck;
 
 use LWP::UserAgent;
 use Time::HiRes qw(tv_interval gettimeofday);
@@ -134,20 +133,7 @@ sub provision_vm {
    my ($ip, $port) = split(/:/, $server);
    $port ||= 22;
 
-   print "Waiting for SSH to come up on $ip:$port.";
-   while( ! is_port_open ($ip, $port) ) {
-      print ".";
-      sleep 1;
-   }
-
-   my $i=5;
-   while($i != 0) {
-      sleep 1;
-      print ".";
-      $i--;
-   }
-
-   print "\n";
+   $self->wait_for_ssh($ip, $port);
 
    for my $task (@tasks) {
       Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
@@ -174,13 +160,18 @@ sub list_boxes {
    
    my @vms = cloud_instance_list;
 
-   return grep { $_->{name} && $_->{state} ne "terminated" && $_->{state} ne "shutting-down" } @vms; # only vms with names...
+   my @ret = grep { $_->{name} 
+                 && $_->{state} ne "terminated" 
+                 && $_->{state} ne "shutting-down"
+               } @vms; # only vms with names...
+
+   return @ret;
 }
 
 sub status {
    my ($self) = @_;
 
-   ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
+   $self->info;
 
    if($self->{info}->{state} eq "running") {
       return "running";
@@ -193,15 +184,26 @@ sub status {
 sub start {
    my ($self) = @_;
    
-   ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
+   $self->info;
+
+   Rex::Logger::info("Starting instance: " . $self->{name});
 
    cloud_instance start => $self->{info}->{id};
+
+   my $server = $self->ip;
+
+   my ($ip, $port) = split(/:/, $server);
+   $port ||= 22;
+
+   $self->wait_for_ssh($ip, $port);
 }
 
 sub stop {
    my ($self) = @_;
    
-   ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
+   Rex::Logger::info("Stopping instance: " . $self->{name});
+
+   $self->info;
 
    cloud_instance stop => $self->{info}->{id};
 }

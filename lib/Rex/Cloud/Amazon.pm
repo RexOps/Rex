@@ -156,6 +156,15 @@ sub start_instance {
 
    $self->_request("StartInstances",
                "InstanceId.1" => $data{instance_id});
+
+   my ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+
+   while($info->{"state"} ne "running") {
+      Rex::Logger::debug("Waiting for instance to be started...");
+      ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+      sleep 5;
+   }
+
 }
 
 sub stop_instance {
@@ -165,6 +174,15 @@ sub stop_instance {
 
    $self->_request("StopInstances",
                "InstanceId.1" => $data{instance_id});
+
+   my ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+
+   while($info->{"state"} ne "stopped") {
+      Rex::Logger::debug("Waiting for instance to be stopped...");
+      ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+      sleep 5;
+   }
+
 }
 
 sub add_tag {

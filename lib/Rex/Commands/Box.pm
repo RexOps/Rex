@@ -56,6 +56,9 @@ This is a Module to manage Virtual Machines or Cloud Instances in a simple way. 
 
 package Rex::Commands::Box;
 
+use strict;
+use warnings;
+
 use YAML;
 use Data::Dumper;
 
@@ -74,7 +77,7 @@ $|++;
 
 require Exporter;
 use base qw(Exporter);
-use vars qw(@EXPORT %vm_infos);
+use vars qw(@EXPORT %vm_infos $VM_STRUCT);
 use Rex::Box;
 #@EXPORT = qw(box $box);
 @EXPORT = qw(box list_boxes get_box boxes);
@@ -132,7 +135,27 @@ sub box(&) {
 
 sub list_boxes {
    my $box = Rex::Box->create;
-   $box->list_boxes;
+   my @ret = $box->list_boxes;
+
+   if( -f ".box.cache") {
+      my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
+      $yaml_str .= "\n";
+      my $yaml_ref = Load($yaml_str);
+      
+      for my $box (keys %{ $yaml_ref }) {
+         my ($found_box) = grep { $_->{name} eq $box } @ret;
+         if(! $found_box) {
+            $yaml_ref->{$box} = undef;
+            delete $yaml_ref->{$box};
+         }
+      }
+
+      open(my $fh, ">", ".box.cache") or die($!);
+      print $fh Dump($yaml_ref);
+      close($fh);
+   }
+
+   return @ret;
 }
 
 sub get_box {
@@ -141,6 +164,14 @@ sub get_box {
 
    if($box->status eq "stopped") {
       $box->start;
+   }
+
+   if( -f ".box.cache") {
+      Rex::Logger::debug("Loading box information of cache file: .box.cache.");
+      my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
+      $yaml_str .= "\n";
+      my $yaml_ref = Load($yaml_str);
+      %vm_infos = %{ $yaml_ref };
    }
 
    if(exists $vm_infos{$box_name}) {
@@ -171,6 +202,10 @@ sub get_box {
    kill 9, $pid;
    print "\n";
 
+   open(my $fh, ">", ".box.cache") or die($!);
+   print $fh Dump(\%vm_infos);
+   close($fh);
+
    return $vm_infos{$box_name};
 }
 
@@ -182,26 +217,12 @@ sub boxes {
    }
 
    if($action eq "init") {
-      my $file = shift @data;
-      if(! $file) {
-         die("Error: You have to set a box configuration file.");
+
+      if(-f ".box.cache") {
+         unlink ".box.cache";
       }
 
-      if(! -f $file) {
-         die("Error: Wrong configuration file: $file.");
-      }
-
-      my $yaml_str = eval { local(@ARGV, $/) = ($file); <>; };
-      $yaml_str .= "\n";
-
-      my $yaml_ref = Load($yaml_str);
-
-      my $type = Rex::Config->get("box_type") || "VBox";
-
-      # set special box options, like amazon out
-      if($yaml_ref->{"\L$type"}) {
-         set box_options => $yaml_ref->{"\L$type"};
-      }
+      my $yaml_ref = $VM_STRUCT;
 
       for my $vm (keys %{ $yaml_ref->{vms} }) {
          my $vm_ref = $yaml_ref->{vms}->{$vm};
@@ -221,10 +242,60 @@ sub boxes {
          };
       }
    }
+
+   if($action eq "stop") {
+      for my $box (@data) {
+         my $o = Rex::Commands::Box->new(name => $box);
+         $o->stop;
+      }
+   }
+
+   if($action eq "start") {
+      for my $box (@data) {
+         my $o = Rex::Commands::Box->new(name => $box);
+         $o->start;
+      }
+   }
+
 }
 
 Rex::TaskList->create()->create_task("get_sys_info", sub {
    return { get_system_information() };
 }, { dont_register => 1 });
+
+sub import {
+   my ($class, %option) = @_;
+
+   if($option{init_file}) {
+      my $file = $option{init_file};
+
+      if(! -f $file) {
+         die("Error: Wrong configuration file: $file.");
+      }
+
+      my $yaml_str = eval { local(@ARGV, $/) = ($file); <>; };
+      $yaml_str .= "\n";
+
+      my $yaml_ref = Load($yaml_str);
+
+      if(! exists $yaml_ref->{type}) {
+         die("You have to define a type.");
+      }
+
+      my $type = ucfirst $yaml_ref->{type};
+      set box_type => $type;
+
+      # set special box options, like amazon out
+      if(exists $yaml_ref->{"\L$type"}) {
+         set box_options => $yaml_ref->{"\L$type"};
+      }
+
+      $VM_STRUCT = $yaml_ref;
+
+      @_ = ($class);
+   }
+
+   __PACKAGE__->export_to_level(1, @_);
+}
 
 1;

@@ -430,6 +430,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Jeen Lee
 
+=item Jonathan Delgado
+
 =item Joris
 
 =item Jose Luis Martinez

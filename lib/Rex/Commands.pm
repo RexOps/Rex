@@ -891,6 +891,8 @@ sub environment {
       if(Rex::Config->get_environment eq $name) {
          &$code();
       }
+
+      return 1;
    }
    else {
       return Rex::Config->get_environment;

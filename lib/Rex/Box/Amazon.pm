@@ -53,7 +53,8 @@ sub import_vm {
    # check if machine already exists
 
    # Rex::Logger::debug("VM already exists. Don't import anything.");
-   my @vms = cloud_instance_list;
+   #my @vms = cloud_instance_list;
+   my @vms = $self->list_boxes;
 
    my $vminfo;
    my $vm_exists = 0;

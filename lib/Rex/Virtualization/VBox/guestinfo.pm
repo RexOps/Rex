@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Virtualization::VBox::status;
 
 sub execute {
    my ($class, $vmname) = @_;
@@ -20,6 +21,12 @@ sub execute {
    }
 
    Rex::Logger::debug("Getting info of guest: $vmname");
+
+   my $status = Rex::Virtualization::VBox::status->execute($vmname);
+   if($status eq "stopped") {
+      Rex::Logger::debug("VM is not running, no guestinfo available.");
+      return {};
+   }
 
    # getting info of network interfaces
    my $netcount = _get_property($vmname, "/VirtualBox/GuestInfo/Net/Count");

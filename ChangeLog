@@ -1,3 +1,8 @@
+2013-01-19 Jan Gehring <jan.gehring, gmail.com> (0.38.0)
+  * added security groups to amazon cloud - Jonathan Delgado
+  * updated pod documentation - jorisd
+  * fixed a problem with do_task() and lost ssh connections
+
 2013-01-15 Jan Gehring <jan.gehring, gmail.com> (0.37.1)
   * fixed template bug in modules
 

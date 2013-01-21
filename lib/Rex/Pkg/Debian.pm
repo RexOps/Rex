@@ -135,11 +135,24 @@ sub add_repository {
 
    my $fh = file_write "/etc/apt/sources.list.d/$name.list";
    $fh->write("# This file is managed by Rex\n");
-   $fh->write("deb " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   if(exists $data{"arch"}) {
+      $fh->write("deb [arch=" . $data{"arch"} . "] " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   }
+   else {
+      $fh->write("deb " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
+   }
    if(exists $data{"source"} && $data{"source"}) {
       $fh->write("deb-src " . $data{"url"} . " " . $data{"distro"} . " " . $data{"repository"} . "\n");
    }
    $fh->close;
+
+   if(exists $data{"key_url"}) {
+      run "wget -O - " . $data{"key_url"} . " | sudo apt-key add -";
+   }
+
+   if(exists $data{"key-id"} && $data{"key_server"}) {
+      run "apt-key adv --keyserver " . $data{"key_server"} . " --recv-keys " . $data{"key_id"};
+   }
 }
 
 sub rm_repository {

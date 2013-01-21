@@ -147,7 +147,7 @@ sub add_repository {
    $fh->close;
 
    if(exists $data{"key_url"}) {
-      run "wget -O - " . $data{"key_url"} . " | sudo apt-key add -";
+      run "wget -O - " . $data{"key_url"} . " | apt-key add -";
    }
 
    if(exists $data{"key-id"} && $data{"key_server"}) {

@@ -387,15 +387,29 @@ sub import {
    }
 
    if($what eq "-feature" || $what eq "feature") {
-      # remove default task auth
-      if($addition1  >= 0.31) {
-         Rex::Logger::debug("activating featureset >= 0.31");
-         Rex::TaskList->create()->set_default_auth(0);
+
+      if(! ref($addition1)) {
+         $addition1 = [$addition1];
       }
 
-      if($addition1 >= 0.35) {
-         Rex::Logger::debug("activating featureset >= 0.35");
-         $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
+      for my $add (@{ $addition1 }) {
+
+         # remove default task auth
+         if($add =~ m/^\d+\.\d+$/ && $add  >= 0.31) {
+            Rex::Logger::debug("activating featureset >= 0.31");
+            Rex::TaskList->create()->set_default_auth(0);
+         }
+
+         if($add =~ m/^\d+\.\d+$/ && $add >= 0.35) {
+            Rex::Logger::debug("activating featureset >= 0.35");
+            $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
+         }
+
+         if($add eq "local_template_vars") {
+            Rex::Logger::debug("activating featureset local_template_vars");
+            $Rex::Template::BE_LOCAL = 1;
+         }
+
       }
 
    }

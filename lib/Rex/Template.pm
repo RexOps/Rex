@@ -34,6 +34,7 @@ use Rex::Config;
 use Rex::Logger;
 
 our $DO_CHOMP = 0;
+our $BE_LOCAL = 0;
 
 sub new {
    my $that = shift;
@@ -122,8 +123,40 @@ sub parse {
          }
       }
 
-      Rex::Logger::debug($new_data);
-      eval($new_data);
+      if($BE_LOCAL == 1) {
+         my $var_data = '
+        
+        return sub {
+           my $r = "";
+           my (
+         
+         ';
+
+         my @code_values;
+         for my $var (keys %{$vars}) {
+            Rex::Logger::debug("Registering local: $var");
+            $var_data .= '$' . $var . ", \n";
+            push(@code_values, $vars->{$var});
+         }
+
+         $var_data .= '$this_is_really_nothing) = @_;';
+         $var_data .= "\n";
+
+         $var_data .= $new_data;
+
+         $var_data .= "\n";
+         $var_data .= ' return $r;';
+         $var_data .= "\n};";
+
+         my $tpl_code = eval($var_data);
+         $r = $tpl_code->(@code_values);
+
+      }
+      else {
+         Rex::Logger::debug($new_data);
+         $r = eval($new_data);
+      }
+
 
       # undef the vars
       for my $var (keys %{$vars}) {

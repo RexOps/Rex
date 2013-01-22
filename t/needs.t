@@ -3,6 +3,8 @@ package MyTest;
 use strict;
 use warnings;
 
+$::QUIET = 1; $::QUIET = 1;
+
 
 use Rex;
 use Rex::Config;

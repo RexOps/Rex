@@ -38,7 +38,7 @@ ok($t->parse($content) eq "Hello this is bar", "get keys from Rex::Config");
 
 ok($t->parse($content, {foo => "baz"}) eq "Hello this is baz", "overwrite keys from Rex::Config");
 
-$Rex::Template::BE_LOCAL = 1;
+$Rex::Template::BE_LOCAL = 1; $Rex::Template::BE_LOCAL = 1;
 
 $content = 'Hello this is <%= $foo %>';
 ok($t->parse($content, {foo => "baz"}) eq "Hello this is baz", "local vars");

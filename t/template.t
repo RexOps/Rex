@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 use_ok 'Rex::Template';
 use_ok 'Rex::Config';
 
@@ -37,4 +37,12 @@ $content = 'Hello this is <%= $::foo %>';
 ok($t->parse($content) eq "Hello this is bar", "get keys from Rex::Config");
 
 ok($t->parse($content, {foo => "baz"}) eq "Hello this is baz", "overwrite keys from Rex::Config");
+
+$Rex::Template::BE_LOCAL = 1;
+
+$content = 'Hello this is <%= $foo %>';
+ok($t->parse($content, {foo => "baz"}) eq "Hello this is baz", "local vars");
+
+$content = '<%= join(",", @{ $arr }) %>';
+ok($t->parse($content, {arr => [qw/one two three/]}) eq "one,two,three", "local var with array");
 

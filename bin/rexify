@@ -394,7 +394,7 @@ set -passauth;
 
 #
 # CALL:
-# rex init --name=<%= $::lib %> --url=http://box.rexify.org/ubuntu-server-12.10-amd64.box
+# rex init --name=<%= $::lib %> --url=http://box.rexify.org/box/ubuntu-server-12.10-amd64.ova
 desc "Initialize and start the VM: rex init --name=vmname [--url=http://...]";
 task "init", sub {
 

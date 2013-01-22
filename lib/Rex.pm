@@ -79,6 +79,7 @@ use Rex::Cache;
 use Data::Dumper;
 use Rex::Interface::Connection;
 use Cwd qw(getcwd);
+use Rex::Config;
 
 our (@EXPORT,
       $VERSION,
@@ -111,6 +112,13 @@ push(@INC, sub {
    }
 
 });
+
+my $home = $ENV{'HOME'};
+if($^O =~ m/^MSWin/) {
+   $home = $ENV{'USERPROFILE'};
+}
+
+push(@INC, "$home/.rex/recipes");
 
 sub get_module_path {
    my ($module) = @_;

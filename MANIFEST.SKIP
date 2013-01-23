@@ -18,3 +18,4 @@ pm_toblib
 MANIFEST\..*
 MYMETA.json
 MYMETA.yml
+.DS_Store

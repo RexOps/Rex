@@ -9,6 +9,7 @@ lib/Rex/Args/Single.pm
 lib/Rex/Args/String.pm
 lib/Rex/Batch.pm
 lib/Rex/Box.pm
+lib/Rex/Box/Amazon.pm
 lib/Rex/Box/Base.pm
 lib/Rex/Box/VBox.pm
 lib/Rex/Cache.pm
@@ -129,6 +130,7 @@ lib/Rex/Output.pm
 lib/Rex/Output/JUnit.pm
 lib/Rex/Pkg.pm
 lib/Rex/Pkg/ALT.pm
+lib/Rex/Pkg/Base.pm
 lib/Rex/Pkg/Debian.pm
 lib/Rex/Pkg/FreeBSD.pm
 lib/Rex/Pkg/Gentoo.pm
@@ -210,6 +212,7 @@ lib/Rex/Virtualization/VBox/reboot.pm
 lib/Rex/Virtualization/VBox/share_folder.pm
 lib/Rex/Virtualization/VBox/shutdown.pm
 lib/Rex/Virtualization/VBox/start.pm
+lib/Rex/Virtualization/VBox/status.pm
 LICENSE
 Makefile.PL
 MANIFEST

@@ -154,9 +154,19 @@ sub partition {
 
    run "parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";
 
+   if($? != 0) {
+      die("Error creating partition.");
+   }
+
+   run "partprobe";
+
    # get the partition id
    my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
-   my ($part_num) = ($partitions[-1] =~ m/sd\w+(\d+)/);
+   my ($part_num) = ($partitions[-1] =~ m/$disk(\d+)/);
+
+   if(! $part_num) {
+      die("Error getting partition number.");
+   }
 
    if($option{boot}) {
       run "parted /dev/$disk set $part_num boot on";
@@ -176,7 +186,6 @@ sub partition {
       }
    }
 
-   run "partprobe";
    my $found_part=0;
    while($found_part == 0) {
       Rex::Logger::debug("Waiting on /dev/$disk$part_num to appear...");

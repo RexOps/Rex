@@ -14,7 +14,11 @@ This is a Module to manage Virtual Machines or Cloud Instances in a simple way. 
 
 =head1 SYNOPSIS
 
- group vm => Rex::Commands::Box->get_group(qw/boxname1 boxname2/);
+ use Rex::Commands::Box;
+    
+ set box => "VBox";
+   
+ group all_my_boxes => map { get_box($_->{name})->{ip} } list_boxes;
    
  task mytask => sub {
     
@@ -96,11 +100,11 @@ Rex::Config->register_set_handler("box", sub {
 
 
 
-=item new(name => $vmname)
+=item new(name => $box_name)
 
 Constructor if used in OO mode.
 
- my $box = Rex::Commands::Box->new(name => "vmname");
+ my $box = Rex::Commands::Box->new(name => "box_name");
 
 =cut
 
@@ -108,6 +112,39 @@ sub new {
    my $class = shift;
    return Rex::Box->create(@_);
 }
+
+=item box(sub {})
+
+With this function you can create a new Rex/Box. The first parameter of this function is the Box object. With this object you can define your box.
+
+ box {
+    my ($box) = @_;
+    $box->name("boxname");
+    $box->url("http://box.rexify.org/box/base-image.box");
+       
+    $box->network(1 => {
+      type => "nat",
+    });
+        
+    $box->network(1 => {
+      type => "bridged",
+      bridge => "eth0",
+    });
+       
+    $box->forward_port(ssh => [2222, 22]);
+       
+    $box->share_folder(myhome => "/home/myuser");
+       
+    $box->auth(
+      user => "root",
+      password => "box",
+    );
+      
+    $box->setup(qw/task_to_customize_box/);
+ };
+ 
+
+=cut
 
 sub box(&) {
    my $code = shift;
@@ -133,6 +170,17 @@ sub box(&) {
    $self->provision_vm();
 }
 
+=item list_boxes
+
+This function returns an array of hashes containing all information that can be gathered from the hypervisor about the Rex/Box. This function doesn't start a Rex/Box.
+
+ use Data::Dumper;
+ task "get_infos", sub {
+    my @all_boxes = list_boxes;
+    print Dumper(\@all_boxes);
+ };
+
+=cut
 sub list_boxes {
    my $box = Rex::Box->create;
    my @ret = $box->list_boxes;
@@ -158,6 +206,17 @@ sub list_boxes {
    return @ret;
 }
 
+=item get_box($box_name)
+
+This function tries to gather all information of a Rex/Box. This function also starts a Rex/Box to gather all information of the running system.
+
+ use Data::Dumper;
+ task "get_box_info", sub {
+    my $data = get_box($box_name);
+    print Dumper($data);
+ };
+
+=cut
 sub get_box {
    my ($box_name) = @_;
    my $box = Rex::Box->create(name => $box_name);
@@ -214,6 +273,39 @@ sub get_box {
    return $vm_infos{$box_name};
 }
 
+=item boxes($action, @data)
+
+With this function you can control your boxes. Currently there are 3 actions.
+
+=over 4
+
+=item init
+
+This action can only  be used if you're using a YAML file to describe your Rex/Boxes.
+
+ task "prepare_boxes", sub {
+    boxes "init";
+ };
+
+=item start
+
+This action start one or more Rex/Boxes.
+
+ task "start_boxes", sub {
+    boxes "start", "box1", "box2";
+ };
+
+=item stop
+
+This action stop one or more Rex/Boxes.
+
+ task "stop_boxes", sub {
+    boxes "stop", "box1", "box2";
+ };
+
+=back
+
+=cut
 sub boxes {
    my ($action, @data) = @_;
 
@@ -308,5 +400,9 @@ sub import {
 
    __PACKAGE__->export_to_level(1, @_);
 }
+
+=back
+
+=cut
 
 1;

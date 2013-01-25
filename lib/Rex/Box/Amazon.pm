@@ -4,6 +4,80 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Box::Amazon - Rex/Boxes Amazon Module
+
+=head1 DESCRIPTION
+
+This is a Rex/Boxes module to use Amazon EC2.
+
+=head1 EXAMPLES
+
+To use this module inside your Rexfile you can use the following commands.
+
+ use Rex::Commands::Boxes;
+ set box => "Amazon", {
+    access_key => "your-access-key",
+    private_access_key => "your-private-access-key",
+    region => "ec2.eu-west-1.amazonaws.com",
+    zone => "eu-west-1a",
+    authkey => "default",
+ };
+   
+ task "prepare_box", sub {
+    box {
+       my ($box) = @_;
+          
+       $box->name("mybox");
+       $box->ami("ami-c1aaabb5");
+       $box->type("m1.large"); 
+           
+       $box->security_group("default");
+           
+       $box->auth(
+          user => "root",
+          password => "box",
+       );
+           
+       $box->setup("setup_task");
+    };
+ };
+
+If you want to use a YAML file you can use the following template.
+
+ type: Amazon
+ amazon:
+    access_key: your-access-key
+    private_access_key: your-private-access-key
+    region: ec2.eu-west-1.amazonaws.com
+    zone: eu-west-1a
+    auth_key: default
+ vms:
+    vmone:
+       ami: ami-c1aaabb5
+       type: m1.large
+       security_group: default
+       setup: setup_task
+
+And then you can use it the following way in your Rexfile.
+
+ use Rex::Commands::Box init_file => "file.yml";
+    
+ task "prepare_vms", sub {
+    boxes "init";
+ };
+
+
+=head1 METHODS
+
+See also the Methods of Rex::Box::Base. This module inherits all methods of it.
+
+=over 4
+
+=cut
+
+
 package Rex::Box::Amazon;
 
 use Data::Dumper;
@@ -117,11 +191,6 @@ sub security_group {
    $self->{security_group} = $sec_group;
 }
 
-=item provision_vm([@tasks])
-
-Execute's the given tasks on the VM.
-
-=cut
 sub provision_vm {
    my ($self, @tasks) = @_;
 
@@ -221,5 +290,9 @@ sub ip {
 
    return $self->{info}->{ip};
 }
+
+=back
+
+=cut
 
 1;

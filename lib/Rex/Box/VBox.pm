@@ -4,6 +4,81 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
+=head1 NAME
+
+Rex::Box::VBox - Rex/Boxes VirtualBox Module
+
+=head1 DESCRIPTION
+
+This is a Rex/Boxes module to use VirtualBox VMs.
+
+=head1 EXAMPLES
+
+To use this module inside your Rexfile you can use the following commands.
+
+ use Rex::Commands::Boxes;
+ set box => "VBox";
+   
+ task "prepare_box", sub {
+    box {
+       my ($box) = @_;
+          
+       $box->name("mybox");
+       $box->url("http://box.rexify.org/box/ubuntu-server-12.10-amd64.ova");
+          
+       $box->network(1 => {
+          type => "nat",
+       });
+          
+       $box->network(1 => {
+          type => "bridged",
+          bridge => "eth0",
+       });
+           
+       $box->forward_port(ssh => [2222, 22]);
+          
+       $box->share_folder(myhome => "/home/myuser");
+           
+       $box->auth(
+          user => "root",
+          password => "box",
+       );
+           
+       $box->setup("setup_task");
+    };
+ };
+
+If you want to use a YAML file you can use the following template.
+
+ type: VBox
+ vms:
+    vmone:
+       url: http://box.rexify.org/box/ubuntu-server-12.10-amd64.ova
+       forward_port:
+          ssh:
+             - 2222
+             - 22
+       share_folder:
+          myhome: /home/myhome
+       setup: setup_task
+
+And then you can use it the following way in your Rexfile.
+
+ use Rex::Commands::Box init_file => "file.yml";
+    
+ task "prepare_vms", sub {
+    boxes "init";
+ };
+
+
+=head1 METHODS
+
+See also the Methods of Rex::Box::Base. This module inherits all methods of it.
+
+=over 4
+
+=cut
+
 package Rex::Box::VBox;
 
 use Data::Dumper;
@@ -121,11 +196,6 @@ sub import_vm {
 
 
 
-=item provision_vm([@tasks])
-
-Execute's the given tasks on the VM.
-
-=cut
 sub provision_vm {
    my ($self, @tasks) = @_;
 
@@ -220,6 +290,12 @@ sub info {
    return $self->{info};
 }
 
+=item ip
+
+This method return the ip of a vm on which the ssh daemon is listening.
+
+=cut
+
 sub ip {
    my ($self) = @_;
 
@@ -237,5 +313,9 @@ sub ip {
 
    return $server;
 }
+
+=back
+
+=cut
 
 1;

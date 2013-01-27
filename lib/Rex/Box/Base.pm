@@ -3,7 +3,23 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
+=head1 NAME
+
+Rex::Box::Base - Rex/Boxes Base Module
+
+=head1 DESCRIPTION
+
+This is a Rex/Boxes base module.
+
+=head1 METHODS
+
+These methods are shared across all other Rex::Box modules.
+
+=over 4
+
+=cut
+  
 package Rex::Box::Base;
 
 use strict;
@@ -69,9 +85,7 @@ sub setup {
 
 =item import_vm()
 
-This method must be overwriten and called at the end of the method.
-
- $self::SUPER->import_vm();
+This method must be overwriten by the implementing class.
 
 =cut
 sub import_vm {

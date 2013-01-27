@@ -34,6 +34,7 @@ use Rex::Commands::SimpleCheck;
 use LWP::UserAgent;
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
+use Data::Dumper;
 
 sub new {
    my $that = shift;
@@ -303,7 +304,14 @@ sub _download {
          });
          close($fh);
 
-         print " done.\n";
+         if($resp->is_success) {
+            print " done.\n";
+         }
+         else {
+            Rex::Logger::info("Error downloading box image.", "warn");
+            unlink "./tmp/$filename";
+         }
+
 
       }
       else {

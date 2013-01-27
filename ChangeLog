@@ -1,7 +1,13 @@
-2013-01-19 Jan Gehring <jan.gehring, gmail.com> (0.38.0)
+2013-01-27 Jan Gehring <jan.gehring, gmail.com> (0.38.0)
   * added security groups to amazon cloud - Jonathan Delgado
   * updated pod documentation - jorisd
   * fixed a problem with do_task() and lost ssh connections
+  * rexify command now allows usage of local templates
+  * added architecture and apt key to Pkg::Debian - Daniel Baeurer
+  * added updated_system command to update a system
+  * box: added function to list all vms
+  * box: amazon support
+  * box: describe boxes with an YAML file
 
 2013-01-15 Jan Gehring <jan.gehring, gmail.com> (0.37.1)
   * fixed template bug in modules

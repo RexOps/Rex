@@ -48,7 +48,7 @@ sub lookup_file {
    my ($file) = @_;
 
    open(my $fh, "<", $file) or die($!);
-   my @content = grep { !/^$/ } grep { !/^\s*$/ } grep { !/^#/ } <$fh>;
+   my @content = grep { !/^\s*$|^#/ } <$fh>;
    close($fh);
 
    chomp @content;

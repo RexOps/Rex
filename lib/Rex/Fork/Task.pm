@@ -6,6 +6,13 @@
 
 package Rex::Fork::Task;
 
+BEGIN {
+
+   use Rex::Shared::Var;
+   share qw(@PROCESS_LIST);
+
+};
+
 use strict;
 use warnings;
 use POSIX ":sys_wait_h";
@@ -30,9 +37,25 @@ sub start {
    else {
       $self->{chld} = 1;
       my $func = $self->{task};
-      &$func($self);
-      $self->{'running'} = 0;
-      exit;
+      if($Rex::WITH_EXIT_STATUS) {
+         eval {
+            &$func($self);
+            1;
+         } or do {
+            push(@PROCESS_LIST, 1);
+            $self->{'running'} = 0;
+            exit();
+         };
+
+         $self->{'running'} = 0;
+         push(@PROCESS_LIST, 0);
+         exit();
+      }
+      else {
+         &$func($self);
+         $self->{'running'} = 0;
+         exit();
+      }
    }
 }
 

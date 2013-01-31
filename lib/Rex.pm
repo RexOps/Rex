@@ -85,7 +85,8 @@ our (@EXPORT,
       $VERSION,
       @CONNECTION_STACK,
       $GLOBAL_SUDO,
-      $MODULE_PATHS);
+      $MODULE_PATHS,
+      $WITH_EXIT_STATUS);
 
 $VERSION = "0.38.0";
 
@@ -416,6 +417,11 @@ sub import {
          if($add eq "local_template_vars") {
             Rex::Logger::debug("activating featureset local_template_vars");
             $Rex::Template::BE_LOCAL = 1;
+         }
+
+         if($add eq "exit_status") {
+            Rex::Logger::debug("activating featureset exit_status");
+            $Rex::WITH_EXIT_STATUS = 1;
          }
 
       }

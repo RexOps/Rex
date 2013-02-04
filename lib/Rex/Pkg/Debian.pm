@@ -150,7 +150,7 @@ sub add_repository {
       run "wget -O - " . $data{"key_url"} . " | apt-key add -";
    }
 
-   if(exists $data{"key-id"} && $data{"key_server"}) {
+   if(exists $data{"key_id"} && $data{"key_server"}) {
       run "apt-key adv --keyserver " . $data{"key_server"} . " --recv-keys " . $data{"key_id"};
    }
 }

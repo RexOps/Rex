@@ -52,7 +52,7 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install update remove installed_packages update_package_db repository package_provider_for);
+@EXPORT = qw(install update remove installed_packages is_installed update_package_db repository package_provider_for);
 
 =item install($type, $data, $options)
 
@@ -377,6 +377,27 @@ This function returns all installed packages and their version.
 sub installed_packages {
    my $pkg = Rex::Pkg->get;
    return $pkg->get_installed;
+}
+
+=item is_installed
+
+This function tests if $package is installed. Returns 1 if true. 0 if false. 
+
+ task "isinstalled", "server01", sub {
+    if( is_installed("rex") ) {
+       say "Rex is installed";
+    }
+    else {
+       say "Rex is not installed";
+    }
+ };
+
+=cut
+
+sub is_installed {
+   my $package = shift;
+   my $pkg = Rex::Pkg->get;
+   return $pkg->is_installed($package);
 }
 
 =item update_package_db

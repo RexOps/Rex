@@ -39,7 +39,13 @@ sub exec {
    }
 
    my $sudo_password = task->get_sudo_password;
-   return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
+   if(defined($sudo_password) && length($sudo_password)) {
+      return $exec->exec("echo '$sudo_password' | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
+   } else {
+      # support password-less sudo for restrictive sudo configurations
+      # where no (password-less) sh is allowed
+      return $exec->exec("sudo $cmd");
+   }
 }
 
 1;

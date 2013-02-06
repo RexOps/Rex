@@ -182,6 +182,17 @@ sub __run__ {
    if(-f $::rexfile) {
       Rex::Logger::debug("$::rexfile exists");
 
+      Rex::Logger::debug("Checking Rexfile Syntax...");
+      
+      my $out = qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $::rexfile 2>&1};
+      if($? > 0) {
+         print $out;
+      }
+
+      if($? != 0) {
+         exit 1;
+      }
+
       if($^O !~ m/^MSWin/) {
          if(-f "$::rexfile.lock" && ! exists $opts{'F'}) {
             Rex::Logger::debug("Found $::rexfile.lock");
@@ -198,16 +209,6 @@ sub __run__ {
             }
          }
          
-         Rex::Logger::debug("Checking Rexfile Syntax...");
-         my $out = qx{PERL5LIB=lib:\$PERL5LIB $^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $::rexfile 2>&1};
-         if($? > 0) {
-            print $out;
-         }
-
-         if($? != 0) {
-            exit 1;
-         }
-
          Rex::Logger::debug("Creating lock-file ($::rexfile.lock)");
          open(my $f, ">$::rexfile.lock") or die($!);
          print $f $$; 
@@ -266,7 +267,7 @@ sub __run__ {
 
                   if($entry =~ m/Rexfile/ || $entry =~ m/\.pm$/) {
                      # check files for syntax errors
-                     my $check_out = qx{PERL5LIB=lib:\$PERL5LIB $^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
+                     my $check_out = qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
                      if($? > 0) {
                         print "$d/$entry\n";
                         print "--------------------------------------------------------------------------------\n";

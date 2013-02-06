@@ -467,6 +467,12 @@ sub __run__ {
       Rex::Logger::info("Error running task/batch: $@", "warn");
    }
 
+   my @exit_codes;
+
+   if($Rex::WITH_EXIT_STATUS) {
+      @exit_codes = @Rex::Fork::Task::PROCESS_LIST;
+   }
+
    # lock loeschen
    Rex::global_sudo(0);
    Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
@@ -481,9 +487,15 @@ sub __run__ {
       CORE::unlink("vars.db.lock");
    }
 
-
-
    select STDOUT;
+
+   if($Rex::WITH_EXIT_STATUS) {
+      for my $exit_code (@exit_codes) {
+         if($exit_code != 0) {
+            exit($exit_code);
+         }
+      }
+   }
 
    sub _print_color {
        my ($msg, $color) = @_;

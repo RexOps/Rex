@@ -467,7 +467,7 @@ sub read_ssh_config_file {
       if(open(my $fh, '<', $config_file)) {
          while(my $line = <$fh>) {
             chomp $line;
-            next if ($line =~ m/^#/);
+            next if ($line =~ m/^\s*#/);
             next if ($line =~ m/^\s*$/);
 
             if($line =~ m/^Host\s+=?\s*(.*)$/) {

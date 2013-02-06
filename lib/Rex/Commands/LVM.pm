@@ -220,8 +220,8 @@ sub lvcreate {
       die("Missing parameter size or onvg.");
    }
 
-   unless($lvname =~ m/^[a-z0-9]+$/i) {
-      die("Error in lvname. Allowed characters a-z and 0-9.");
+   unless($lvname =~ m/^[a-z0-9\-_]+$/i) {
+      die("Error in lvname. Allowed characters a-z, 0-9 and _- .");
    }
 
    my $size = $option{size};

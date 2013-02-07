@@ -11,7 +11,7 @@ use warnings;
 
 $|++;
 
-use LWP::Simple;
+use LWP::UserAgent;
 use YAML;
 use Data::Dumper;
 use Rex::Config;
@@ -32,6 +32,10 @@ my $RECIPE_SERVER = "http://modules.rexify.org/api/0.39/get/mod/%s";
 my $DEPEND_SERVER = "http://modules.rexify.org/api/0.39/get/dep/%s";
 my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.39/get/perldep/%s";
 
+my $AUTH_USER;
+my $AUTH_PASSWORD;
+my $AUTH_REALM;
+
 Rex::Config->register_config_handler("module_server", sub {
    my ($param) = @_;
 
@@ -49,6 +53,18 @@ Rex::Config->register_config_handler("module_server", sub {
 
    if(exists $param->{perl_dependencies}) {
       $PERL_DEPEND_SERVER = $param->{perl_dependencies};
+   }
+
+   if(exists $param->{username}) {
+      $AUTH_USER = $param->{username};
+   }
+
+   if(exists $param->{password}) {
+      $AUTH_PASSWORD = $param->{password};
+   }
+
+   if(exists $param->{realm}) {
+      $AUTH_REALM = $param->{realm};
    }
 
 });
@@ -361,6 +377,30 @@ else {
 
 
    exit;
+}
+
+sub get {
+   my ($url) = @_;
+
+   my $ua = LWP::UserAgent->new;
+
+   if($AUTH_USER && $AUTH_PASSWORD) {
+      my ($netloc) = ($RECIPE_SERVER =~ m/^https?:\/\/([^\/]+)\//);
+      unless($netloc =~ m/\:\d+$/)  {
+         if($netloc =~ m/^https/) {
+            $netloc .= ":443";
+         }
+         else {
+            $netloc .= ":80";
+         }
+      }
+      $ua->credentials($netloc, $AUTH_REALM, $AUTH_USER, $AUTH_PASSWORD);
+   }
+
+   my $resp = $ua->get($url);
+   if($resp->is_success) {
+      return $resp->decoded_content;
+   }
 }
 
 __DATA__

@@ -14,6 +14,7 @@ $|++;
 use LWP::Simple;
 use YAML;
 use Data::Dumper;
+use Rex::Config;
 use Rex::Logger;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
@@ -24,16 +25,33 @@ $Rex::Logger::silent = 1;
 
 my $opts = {}; 
 
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.37/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.37/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.37/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.37/get/perldep/%s";
+######
+# default server
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.39/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.39/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.39/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.39/get/perldep/%s";
 
-#my $SEARCH_SERVER = "http://localhost:3000/api/0.36/get/recipes";
-#my $RECIPE_SERVER = "http://localhost:3000/api/0.36/get/mod/%s";
-#my $DEPEND_SERVER = "http://localhost:3000/api/0.36/get/dep/%s";
-#my $PERL_DEPEND_SERVER = "http://localhost:3000/api/0.36/get/perldep/%s";
+Rex::Config->register_config_handler("module_server", sub {
+   my ($param) = @_;
 
+   if(exists $param->{search}) {
+      $SEARCH_SERVER = $param->{search};
+   }
+
+   if(exists $param->{recipes}) {
+      $RECIPE_SERVER = $param->{recipes};
+   }
+
+   if(exists $param->{dependencies}) {
+      $DEPEND_SERVER = $param->{dependencies};
+   }
+
+   if(exists $param->{perl_dependencies}) {
+      $PERL_DEPEND_SERVER = $param->{perl_dependencies};
+   }
+
+});
 
 for(my $i=0; $i<@ARGV; $i++) {
 

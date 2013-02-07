@@ -138,6 +138,11 @@ sub _http_download {
    Rex::Logger::debug("saving file to $local");
 
    my $content = _get_http($remote);
+
+   if(-d $local) {
+      $local = $local . '/' . basename($remote);
+   }
+
    open(my $fh, ">", $local) or die($!);
    binmode $fh;
    print $fh $content;

@@ -1,3 +1,13 @@
+2013-02-07 Jan Gehring <jan.gehring, gmail.com> (0.39.0)
+  * don't need PERL5LIB env any more, fixed bug #95
+  * match comments better - Naveed Massjouni
+  * more allowed characters in lvname - Samuele Tognini
+  * new feature flag: exit_status - rex will now return a number higher than 0
+    if a task execution fails.
+  * new function: is_installed - Daniel Baeurer
+  * optimized lookup_file function - Franky Van Liedekerke
+  * rexify command now allows usage of private module server
+
 2013-01-27 Jan Gehring <jan.gehring, gmail.com> (0.38.0)
   * added security groups to amazon cloud - Jonathan Delgado
   * updated pod documentation - jorisd

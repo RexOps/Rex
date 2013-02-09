@@ -12,6 +12,7 @@ my %deps = (
                   'YAML' => 0,
                   'LWP::Simple' => 0,
                   'Storable' => 0,
+                  'Net::SSH2::Expect' => '0.2',
 );
 
 if($^O =~ m/^MSWin/) {

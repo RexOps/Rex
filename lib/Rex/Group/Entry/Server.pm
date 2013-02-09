@@ -19,6 +19,14 @@ use overload
 
 use attributes;
 
+sub function {
+   my ($class, $name, $code) = @_;
+
+   no strict "refs";
+   *{ $class . "::" . $name } = $code;
+   use strict;
+}
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;

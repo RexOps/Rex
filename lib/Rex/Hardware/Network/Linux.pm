@@ -17,7 +17,7 @@ sub get_network_devices {
 
    my @device_list;
 
-   my @proc_net_dev = grep  { ! /^$/ } map { $1 if /^\s+([^:]+)\:/ } run("cat /proc/net/dev");
+   my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } run("cat /proc/net/dev");
 
    for my $dev (@proc_net_dev) {
       my $ifconfig = run("ifconfig $dev");

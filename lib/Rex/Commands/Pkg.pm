@@ -52,7 +52,7 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install update remove installed_packages is_installed update_package_db repository package_provider_for);
+@EXPORT = qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for);
 
 =item install($type, $data, $options)
 

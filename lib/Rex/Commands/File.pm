@@ -218,10 +218,20 @@ sub file {
          # path is relative
          Rex::Logger::debug("Relativ path " . $option->{source});
          my ($caller_package, $caller_file, $caller_line) = caller;
-         my $d = dirname($caller_file) . "/" . $option->{source};
 
-         Rex::Logger::debug("New filename: $d");
-         $option->{source} = $d;
+         # check if it is a module
+         my $module_path = Rex::get_module_path($caller_package);
+         my $new_source;
+         if($module_path) {
+            $new_source = "$module_path/" . $option->{source};
+         }
+         else {
+            $new_source = $option->{source};
+            my $d = dirname($caller_file) . "/" . $option->{source};
+         }
+
+         Rex::Logger::debug("New filename: $new_source");
+         $option->{source} = $new_source;
       }
 
       upload $option->{"source"}, "$file";

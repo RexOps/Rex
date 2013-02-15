@@ -38,6 +38,9 @@ sub create {
    my ($class, $wanted_provider) = @_;
 
    $wanted_provider ||= Rex::Config->get("virtualization");
+   if(ref($wanted_provider)) {
+      $wanted_provider = $wanted_provider->{type} || "LibVirt";
+   }
 
    my $klass = "Rex::Virtualization::$wanted_provider";
 

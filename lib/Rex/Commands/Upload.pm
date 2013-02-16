@@ -70,6 +70,9 @@ sub upload {
    # rex -E live ...
    # will first look if files/hosts.live is available, if not it will
    # use files/hosts
+
+   my $old_local = $local; # for the upload location use the given name
+
    if(-f "$local." . Rex::Config->get_environment) {
       $local = "$local." . Rex::Config->get_environment;
    }
@@ -80,7 +83,7 @@ sub upload {
    }
 
    if(is_dir($remote)) {
-      $remote = $remote . '/' . basename($local);
+      $remote = $remote . '/' . basename($old_local);
    }
    $fs->upload($local, $remote);
 }

@@ -63,6 +63,17 @@ sub upload {
       $remote = basename($local);
    }
 
+   if($local !~ m/^\//) {
+      # relative path, calculate from module root
+
+      my ($caller_package, $caller_file, $caller_line) = caller;
+      my $module_path = Rex::get_module_path($caller_package);
+
+      if($module_path) {
+         $local = "$module_path/$local";
+      }
+   }
+
    # if there is a file called filename.environment then use this file
    # ex: 
    # upload "files/hosts", "/etc/hosts";

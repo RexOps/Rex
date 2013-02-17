@@ -895,7 +895,7 @@ sub environment {
       return 1;
    }
    else {
-      return Rex::Config->get_environment;
+      return Rex::Config->get_environment || "default";
    }
 }
 
@@ -981,6 +981,11 @@ Or in a template
 =cut
 sub get {
    my ($key) = @_;
+
+   if(ref($key)) {
+      return $key->{value};
+   }
+
    return Rex::Config->get($key);
 }
 

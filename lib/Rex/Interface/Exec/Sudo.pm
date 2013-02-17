@@ -71,10 +71,10 @@ print "\\n"
    
    if($SUDO_WITHOUT_SH) {
       if($sudo_password) {
-         return $exec->exec("perl $random_file $crypt | sudo -p '' -S '$locales $cmd'");
+         return $exec->exec("perl $random_file $crypt | sudo -p '' -S $locales $cmd");
       }
       else {
-         return $exec->exec("sudo '$locales $cmd'");
+         return $exec->exec("sudo $locales $cmd");
       }
    }
    else {

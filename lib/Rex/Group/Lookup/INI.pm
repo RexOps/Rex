@@ -67,9 +67,7 @@ sub groups_file {
       chomp;
       s/\n|\r//g;
 
-      if(/^#/ || /^;/ || /^$/ || /^\s*$/) {
-         next;
-      }
+      (/^#|^;|^\s*$/) && (next);
 
       if (/^\[(.*)\]/) {
          $section = $1;next;

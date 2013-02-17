@@ -26,7 +26,21 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "VBoxManage startvm \"$dom\"";
+   my $virt_settings = Rex::Config->get("virtualization");
+   my $headless = 0;
+   if(ref($virt_settings)) {
+      if(exists $virt_settings->{headless} && $virt_settings->{headless}) {
+         $headless = 1;
+      }
+   }
+
+   if($headless) {
+      run "VBoxHeadless --startvm \"$dom\"";
+   }
+   else {
+      run "VBoxManage startvm \"$dom\"";
+   }
+
    if($? != 0) {
       die("Error starting vm $dom");
    }

@@ -33,7 +33,7 @@ sub get {
 
    my $env = environment;
    my $yaml_path = $self->{path};
-   my @files = ("$server.yml", "$env/$server.yml", "$env/default.yml", "default.yml");
+   my @files = ("$env/$server.yml", "$env/default.yml", "$server.yml", "default.yml");
 
    for my $file (@files) {
       Rex::Logger::debug("CMDB - Opening $file");

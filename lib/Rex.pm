@@ -424,6 +424,16 @@ sub import {
             $Rex::WITH_EXIT_STATUS = 1;
          }
 
+         if($add eq "sudo_without_sh") {
+            Rex::Logger::debug("using sudo without sh. this might break some things.");
+            $Rex::Interface::Sudo::SUDO_WITHOUT_SH = 1;
+         }
+
+         if($add eq "sudo_without_locales") {
+            Rex::Logger::debug("Using sudo without locales. this _will_ break things!");
+            $Rex::Interface::Sudo::SUDO_WITHOUT_LOCALE = 1;
+         }
+
       }
 
    }

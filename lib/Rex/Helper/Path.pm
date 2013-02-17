@@ -9,7 +9,6 @@ package Rex::Helper::Path;
 use strict;
 use warnings;
 
-use Rex -base;
 use File::Basename qw(dirname);
 
 #

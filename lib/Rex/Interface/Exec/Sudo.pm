@@ -18,6 +18,9 @@ use Rex::Interface::File::SSH;
 
 use Rex::Commands;
 
+our $SUDO_WITHOUT_SH = 0;
+our $SUDO_WITHOUT_LOCALE = 0;
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -58,9 +61,20 @@ print \$ARGV[0] ^ \$rnd;
 print "\\n"
    ~);
    $file->close;
-   
 
-   return $exec->exec("perl $random_file $crypt | sudo -p '' -S sh -c 'LC_ALL=C $path $cmd'");
+   my $locales = "LC_ALL=C";
+
+   if($SUDO_WITHOUT_LOCALE) {
+      Rex::Logger::debug("Using sudo without locales. If the locale is NOT C or en_US it will break many things!");
+      $locales = "";
+   }
+   
+   if($SUDO_WITHOUT_SH) {
+      return $exec->exec("sudo '$locales $cmd'");
+   }
+   else {
+      return $exec->exec("perl $random_file $crypt | sudo -p '' -S sh -c '$locales $path $cmd'");
+   }
 }
 
 1;

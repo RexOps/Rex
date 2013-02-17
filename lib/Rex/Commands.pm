@@ -982,8 +982,8 @@ Or in a template
 sub get {
    my ($key) = @_;
 
-   if(ref($key)) {
-      return $key->{value};
+   if(ref($key) eq "Rex::Value") {
+      return $key->value;
    }
 
    return Rex::Config->get($key);

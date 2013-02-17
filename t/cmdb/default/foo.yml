@@ -1,0 +1,3 @@
+vhost:
+   name: foohost
+   doc_root: /var/www

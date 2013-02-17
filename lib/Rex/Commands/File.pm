@@ -71,6 +71,7 @@ use Rex::Commands::Upload;
 use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
 use Rex::Helper::System;
+use Rex::Helper::Path;
 
 use Rex::Interface::Exec;
 use Rex::Interface::File;
@@ -105,16 +106,8 @@ sub template {
    unless($file =~ m/^\// || $file =~ m/^\@/) {
       # path is relative and no template
       Rex::Logger::debug("Relativ path $file");
-      my ($caller_package, $caller_file, $caller_line) = caller;
 
-      # check if it is a module
-      my $module_path = Rex::get_module_path($caller_package);
-      if($module_path) {
-         $file = "$module_path/$file";
-      }
-      else {
-         $file = dirname($caller_file) . "/" . $file;
-      }
+      $file = Rex::Helper::Path::get_file_path($file, caller());
 
       Rex::Logger::debug("New filename: $file");
    }
@@ -214,26 +207,7 @@ sub file {
       $fh->close;
    }
    elsif(exists $option->{"source"}) {
-      unless($option->{source} =~ m/^\//) {
-         # path is relative
-         Rex::Logger::debug("Relativ path " . $option->{source});
-         my ($caller_package, $caller_file, $caller_line) = caller;
-
-         # check if it is a module
-         my $module_path = Rex::get_module_path($caller_package);
-         my $new_source;
-         if($module_path) {
-            $new_source = "$module_path/" . $option->{source};
-         }
-         else {
-            $new_source = $option->{source};
-            my $d = dirname($caller_file) . "/" . $option->{source};
-         }
-
-         Rex::Logger::debug("New filename: $new_source");
-         $option->{source} = $new_source;
-      }
-
+      $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
       upload $option->{"source"}, "$file";
    }
 

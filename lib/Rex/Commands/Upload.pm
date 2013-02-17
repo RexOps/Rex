@@ -34,6 +34,7 @@ use File::Basename qw(basename);
 use Rex::Config;
 use Rex::Commands::Fs;
 use Rex::Interface::Fs;
+use Rex::Helper::Path;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -63,16 +64,7 @@ sub upload {
       $remote = basename($local);
    }
 
-   if($local !~ m/^\//) {
-      # relative path, calculate from module root
-
-      my ($caller_package, $caller_file, $caller_line) = caller;
-      my $module_path = Rex::get_module_path($caller_package);
-
-      if($module_path) {
-         $local = "$module_path/$local";
-      }
-   }
+   $local = Rex::Helper::Path::get_file_path($local, caller());
 
    # if there is a file called filename.environment then use this file
    # ex: 

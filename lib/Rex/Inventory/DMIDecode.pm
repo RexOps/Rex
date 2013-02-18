@@ -111,7 +111,13 @@ sub _read_dmidecode {
 
    my ($self) = @_;
 
-   my @lines = run "dmidecode 2>/dev/null";
+   my @lines;
+   if($self->{lines}) {
+      @lines = @{ $self->{lines} };
+   }
+   else {
+      @lines = run "dmidecode 2>/dev/null";
+   }
    chomp @lines;
 
    my %section = ();
@@ -127,7 +133,8 @@ sub _read_dmidecode {
       next if $l =~ m/^$/;
       last if $l =~ m/^End Of Table$/;
 
-
+      # for openbsd
+      $l =~ s/        /\t/g;
 
       unless(substr($l, 0, 1) eq "\t") {
          $section = $l;

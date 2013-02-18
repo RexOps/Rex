@@ -12,7 +12,7 @@ use warnings;
 use Rex::Config;
 use Rex::Interface::Exec::Local;
 use Rex::Interface::Exec::SSH;
-
+use Rex::Helper::Encode;
 use Rex::Interface::File::Local;
 use Rex::Interface::File::SSH;
 
@@ -54,15 +54,30 @@ sub exec {
    my $random_file = "/tmp/" . get_random(16, 'a' .. 'z') . ".sudo.tmp";
 
    $file->open('>', $random_file);
-   $file->write(qq~#!/usr/bin/perl
+   $file->write(<<EOF);
+#!/usr/bin/perl
 unlink \$0;
+
+for (0..255) {
+  \$escapes{chr(\$_)} = sprintf("%%%02X", \$_);
+}
+
+my \$txt = \$ARGV[0];
+
+\$txt=~ s/%([0-9A-Fa-f]{2})/chr(hex(\$1))/eg;
+
 my \$rnd = '$random_string';
-print \$ARGV[0] ^ \$rnd;
+print \$txt ^ \$rnd;
 print "\\n"
-   ~);
+
+EOF
+
+
    $file->close;
 
    my $locales = "LC_ALL=C";
+
+   my $enc_pw = Rex::Helper::Encode::url_encode($crypt);
 
    if($SUDO_WITHOUT_LOCALE) {
       Rex::Logger::debug("Using sudo without locales. If the locale is NOT C or en_US it will break many things!");
@@ -71,15 +86,17 @@ print "\\n"
    
    if($SUDO_WITHOUT_SH) {
       if($sudo_password) {
-         return $exec->exec("perl $random_file $crypt | sudo -p '' -S $locales $cmd");
+         return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S $locales $cmd");
       }
       else {
          return $exec->exec("sudo $locales $cmd");
       }
    }
    else {
-      return $exec->exec("perl $random_file $crypt | sudo -p '' -S sh -c '$locales $path $cmd'");
+      return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S sh -c '$locales $path $cmd'");
    }
 }
 
 1;
+
+

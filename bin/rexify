@@ -27,10 +27,10 @@ my $opts = {};
 
 ######
 # default server
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.39/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.39/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.39/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.39/get/perldep/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.40/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.40/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.40/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.40/get/perldep/%s";
 
 my $AUTH_USER;
 my $AUTH_PASSWORD;
@@ -407,7 +407,7 @@ __DATA__
 
 @rexfile
 # enable new Features
-use Rex -feature => 0.31;
+use Rex -feature => 0.40;
 
 # set your username
 set user => "<user>";
@@ -444,6 +444,7 @@ task "uptime", group => 'servers', sub {
 use strict;
 use warnings;
 
+use Rex -feature => 0.40;
 use Rex::Commands::Box;
 
 set user => '<user>';

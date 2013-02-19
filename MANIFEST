@@ -18,6 +18,8 @@ lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm
 lib/Rex/Cloud/Base.pm
 lib/Rex/Cloud/Jiffybox.pm
+lib/Rex/CMDB.pm
+lib/Rex/CMDB/YAML.pm
 lib/Rex/Commands.pm
 lib/Rex/Commands/Box.pm
 lib/Rex/Commands/Cloud.pm
@@ -57,6 +59,7 @@ lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Group/Entry/Server.pm
 lib/Rex/Group/Lookup/File.pm
+lib/Rex/Group/Lookup/INI.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm
 lib/Rex/Hardware/Kernel.pm
@@ -69,7 +72,9 @@ lib/Rex/Hardware/Network/OpenBSD.pm
 lib/Rex/Hardware/Network/Solaris.pm
 lib/Rex/Hardware/Swap.pm
 lib/Rex/Helper/Array.pm
+lib/Rex/Helper/Encode.pm
 lib/Rex/Helper/Hash.pm
+lib/Rex/Helper/Path.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm
@@ -181,6 +186,7 @@ lib/Rex/User/Linux.pm
 lib/Rex/User/NetBSD.pm
 lib/Rex/User/OpenBSD.pm
 lib/Rex/User/SunOS.pm
+lib/Rex/Value.pm
 lib/Rex/Virtualization.pm
 lib/Rex/Virtualization/Base.pm
 lib/Rex/Virtualization/LibVirt.pm
@@ -229,14 +235,23 @@ t/base_inventory.t
 t/base_inventory_smbios.t
 t/base_virt.t
 t/box.t
+t/cmdb.t
+t/cmdb/default.yml
+t/cmdb/default/default.yml
+t/cmdb/default/foo.yml
+t/cmdb/foo.yml
 t/commands.t
 t/config-ssh.t
 t/config.t
+t/dmi.linux.out
+t/dmi.obsd.out
+t/dmi.t
 t/file.t
 t/fs.t
 t/group.t
 t/helper_hash.t
 t/host.t
+t/ini.t
 t/interface_fs_local.t
 t/iptables.t
 t/libvirt.t
@@ -246,5 +261,6 @@ t/report.t
 t/shared.t
 t/task.t
 t/template.t
+t/test.ini
 t/vbox.t
 t/virtualization.t

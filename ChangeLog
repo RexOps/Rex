@@ -1,3 +1,13 @@
+2013-02-19 Jan Gehring <jan.gehring, gmail.com> (0.40.0)
+  * fixed bug and refactored file path calculation #103 and #102
+  * added ini style groups #99 - Franky Van Liedekerke
+  * VirtualBox Headless mode #105
+  * added default environment "default"
+  * basic cmdb via YAML #107
+  * crypt sudo password
+  * sudo without locales and password #98 - Dominik Schulz
+  * fixed dmidecode on openbsd
+
 2013-02-07 Jan Gehring <jan.gehring, gmail.com> (0.39.0)
   * don't need PERL5LIB env any more, fixed bug #95
   * match comments better - Naveed Massjouni

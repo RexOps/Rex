@@ -88,7 +88,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.39.99.1";
+$VERSION = "0.40.0";
 
 my $cur_dir = getcwd;
 
@@ -413,6 +413,13 @@ sub import {
             Rex::Logger::debug("activating featureset >= 0.35");
             $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
          }
+
+         if($add =~ m/^\d+\.\d+$/ && $add >= 0.40) {
+            Rex::Logger::debug("activating featureset >= 0.40");
+            $Rex::Template::BE_LOCAL = 1;
+            $Rex::WITH_EXIT_STATUS = 1;
+         }
+
 
          if($add eq "local_template_vars") {
             Rex::Logger::debug("activating featureset local_template_vars");

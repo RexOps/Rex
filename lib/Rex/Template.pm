@@ -90,8 +90,11 @@ sub parse {
 
          my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
 
-         if($var_name && ! ref($vars->{$var_name})) {
+         if($var_name && ! ref($vars->{$var_name}) && ! $BE_LOCAL) {
             $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
+         }
+         elsif($var_name && ! ref($vars->{$var_name}) && $BE_LOCAL) {
+            $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1$2/g;
          }
          else {
             $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;

@@ -11,7 +11,6 @@ use warnings;
 
 require Exporter;
 use Data::Dumper;
-use Data::Printer;
 
 use base qw(Exporter);
 
@@ -19,13 +18,14 @@ use vars qw(@EXPORT);
 @EXPORT = qw(net_ssh2_exec net_ssh2_exec_output net_ssh2_shell_exec);
 
 our $READ_STDERR = 1;
-our $REQUIRE_TTY = 1;
+our $REQUIRE_TTY = 0;
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
 
    my $chan = $ssh->channel;
 
+   # Turned this off due to issues with $in and $in_err being combined.
    if($REQUIRE_TTY) {
       $chan->pty("vt100");
    }

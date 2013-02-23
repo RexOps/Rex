@@ -42,7 +42,14 @@ sub exec {
       ($out, $err) = net_ssh2_exec($ssh, $cmd);
    }
    else {
-      ($out, $err) = net_ssh2_exec($ssh, "LC_ALL=C $path " . $cmd);
+
+      my $new_cmd = "LC_ALL=C $path $cmd";
+
+      if(Rex::Config->get_source_global_profile) {
+         $new_cmd = ". /etc/profile; $new_cmd";
+      }
+
+      ($out, $err) = net_ssh2_exec($ssh, $new_cmd);
    }
 
    Rex::Commands::profiler()->end("exec: $cmd");

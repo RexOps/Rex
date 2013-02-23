@@ -41,7 +41,8 @@ our ($user, $password, $port,
             $distributor,
             $template_function,
             $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
-            %SSH_CONFIG_FOR);
+            %SSH_CONFIG_FOR,
+            $source_global_profile);
 
 
 sub set_path {
@@ -74,6 +75,15 @@ sub set_port {
 sub set_sudo_password {
    my $class = shift;
    $sudo_password = shift;
+}
+
+sub set_source_global_profile {
+   my $class = shift;
+   $source_global_profile = shift;
+}
+
+sub get_source_global_profile {
+   return $source_global_profile;
 }
 
 sub set_max_connect_fails {

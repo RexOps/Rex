@@ -37,7 +37,13 @@ sub exec {
       if($path) { $path = "PATH=$path" }
       $path ||= "";
 
-      $out = qx{LC_ALL=C $path $cmd};
+      my $new_cmd = "LC_ALL=C $path $cmd";
+
+      if(Rex::Config->get_source_global_profile) {
+         $new_cmd = ". /etc/profile; $new_cmd";
+      }
+
+      $out = qx{$new_cmd};
       $? >>= 8;
    }
    Rex::Commands::profiler()->end("exec: $cmd");

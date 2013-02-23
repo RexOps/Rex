@@ -33,7 +33,13 @@ sub exec {
    #$cmd = "LC_ALL=C $path " . $cmd;
 
    Rex::Commands::profiler()->start("exec: $cmd");
-   my $resp = connection->post("/execute", {exec => $cmd});
+
+   my $new_cmd = $cmd;
+   if(Rex::Config->get_source_global_profile) {
+      $new_cmd = ". /etc/profile; $new_cmd";
+   }
+
+   my $resp = connection->post("/execute", {exec => $new_cmd});
    Rex::Commands::profiler()->end("exec: $cmd");
 
    if($resp->{ok}) {

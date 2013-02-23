@@ -93,7 +93,13 @@ EOF
       }
    }
    else {
-      return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S sh -c '$locales $path $cmd'");
+      my $new_cmd = "$locales $path $cmd";
+
+      if(Rex::Config->get_source_global_profile) {
+         $new_cmd = ". /etc/profile; $new_cmd";
+      }
+
+      return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S sh -c '$new_cmd'");
    }
 }
 

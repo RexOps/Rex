@@ -63,7 +63,7 @@ sub daemonize {
 daemonize();
 
 unlink "$filename";
-system("VBoxHeadless --startvm \"$dom\"");
+system("VBoxHeadless --startvm \\\"$dom\\\"");
 
 
 EOF

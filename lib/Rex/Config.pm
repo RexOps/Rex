@@ -382,6 +382,9 @@ sub set {
    }
 
    if(ref($data) eq "HASH") {
+      if(! ref($set_param->{$var})) {
+         $set_param->{$var} = {};
+      }
       for my $key (keys %{$data}) {
          $set_param->{$var}->{$key} = $data->{$key};
       }

@@ -11,6 +11,9 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Commands::File;
+use Rex::Commands;
+use Cwd 'getcwd';
 
 sub execute {
    my ($class, $arg1, %opt) = @_;
@@ -35,7 +38,37 @@ sub execute {
    }
 
    if($headless) {
-      run "VBoxHeadless --startvm \"$dom\"";
+      my $filename;
+
+      if(! Rex::is_ssh() && $^O =~ m/^MSWin/) {
+         # not connected via ssh, running on windows, use other path
+         $filename = get_random(8, 'a' .. 'z') . ".tmp";
+      }
+      else {
+         $filename = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
+      }
+
+      file("$filename",
+         content => <<EOF);
+sub daemonize {
+   chdir '/';
+
+   defined(my \$pid = fork) or die "Can't fork: $!";
+
+   exit if \$pid;
+   setsid                  or die "Can't start a new session: $!";
+   open STDERR, '>&STDOUT' or die "Can't dup stdout: $!";
+}
+
+daemonize();
+
+unlink "$filename";
+system("VBoxHeadless --startvm \"$dom\"");
+
+
+EOF
+
+      run "perl $filename";
    }
    else {
       run "VBoxManage startvm \"$dom\"";

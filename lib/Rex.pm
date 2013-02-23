@@ -469,6 +469,10 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Dominik Schulz
 
+=item Fran Rodriguez
+
+=item Ferenc Erki
+
 =item Franky Van Liedekerke
 
 =item Gilles Gaudin, for writing a french howto

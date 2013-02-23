@@ -118,6 +118,10 @@ sub new {
 
    bless($self, ref($class) || $class);
 
+   if(exists $self->{options} && exists $self->{options}->{headless} && $self->{options}->{headless}) {
+      set virtualization => { type => "VBox", headless => TRUE };
+   }
+
    return $self;
 }
 

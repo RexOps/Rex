@@ -37,16 +37,13 @@ sub execute {
       }
    }
 
-   if($headless) {
-      my $filename;
+   if($headless && $^O =~ m/^MSWin/ && ! Rex::is_ssh()) {
+      Rex::Logger::info("Right now it is not possible to run VBoxHeadless under Windows.");
+      $headless = 0;
+   }
 
-      if(! Rex::is_ssh() && $^O =~ m/^MSWin/) {
-         # not connected via ssh, running on windows, use other path
-         $filename = get_random(8, 'a' .. 'z') . ".tmp";
-      }
-      else {
-         $filename = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
-      }
+   if($headless) {
+      my $filename = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
 
       file("$filename",
          content => <<EOF);

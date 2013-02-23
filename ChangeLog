@@ -1,4 +1,4 @@
-2013-02-19 Jan Gehring <jan.gehring, gmail.com> (0.40.0)
+2013-02-23 Jan Gehring <jan.gehring, gmail.com> (0.40.0)
   * fixed bug and refactored file path calculation #103 and #102
   * added ini style groups #99 - Franky Van Liedekerke
   * VirtualBox Headless mode #105
@@ -7,6 +7,8 @@
   * crypt sudo password
   * sudo without locales and password #98 - Dominik Schulz
   * fixed dmidecode on openbsd
+  * export update_system sub - Ferenc Erki
+  * fixing regex which gets name interfaces - Fran Rodriguez
 
 2013-02-07 Jan Gehring <jan.gehring, gmail.com> (0.39.0)
   * don't need PERL5LIB env any more, fixed bug #95

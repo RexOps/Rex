@@ -47,21 +47,37 @@ sub execute {
 
       file("$filename",
          content => <<EOF);
-sub daemonize {
-   chdir '/';
+use POSIX();
 
-   defined(my \$pid = fork) or die "Can't fork: $!";
+my \$pid = fork();
+if (defined \$pid && \$pid == 0 ) {
+   # child
+   chdir "/";
+   umask 0;
+   POSIX::setsid();
+   local \$SIG{'HUP'} = 'IGNORE';
+   my \$spid = fork();
+   if (defined \$spid && \$spid == 0 ) {
 
-   exit if \$pid;
-   setsid                  or die "Can't start a new session: $!";
-   open STDERR, '>&STDOUT' or die "Can't dup stdout: $!";
+      open( STDIN,  "</dev/null" );
+      open( STDOUT, "+>/dev/null" );
+      open( STDERR, "+>/dev/null" );
+
+      # 2nd child
+      unlink "$filename";
+      exec("VBoxHeadless --startvm \\\"$dom\\\"");
+      exit;
+
+
+   }
+
+   exit; # end first child (2nd parent)
+}
+else {
+   waitpid( \$pid, 0 );
 }
 
-daemonize();
-
-unlink "$filename";
-system("VBoxHeadless --startvm \\\"$dom\\\"");
-
+exit;
 
 EOF
 

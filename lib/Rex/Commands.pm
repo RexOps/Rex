@@ -131,8 +131,6 @@ use base qw(Rex::Exporter);
             template_function
             report
             make
-            pre_run_command
-            post_run_command
             source_global_profile
           );
 

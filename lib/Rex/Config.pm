@@ -42,8 +42,28 @@ our ($user, $password, $port,
             $template_function,
             $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
             %SSH_CONFIG_FOR,
+            $sudo_without_locales,
+            $sudo_without_sh,
             $source_global_profile);
 
+
+sub get_sudo_without_locales {
+   return $sudo_without_locales;
+}
+
+sub get_sudo_without_sh {
+   return $sudo_without_sh;
+}
+
+sub set_sudo_without_locales {
+   my $class = shift;
+   $sudo_without_locales = shift;
+}
+
+sub set_sudo_without_sh {
+   my $class = shift;
+   $sudo_without_sh = shift;
+}
 
 sub set_path {
    my $class = shift;
@@ -136,7 +156,17 @@ sub get_port {
 
 sub get_sudo_password {
    my $class = shift;
-   return $sudo_password || $password || "";
+   if($sudo_password) {
+      return $sudo_password;
+   }
+   elsif(! defined $sudo_password) {
+      return "";
+   }
+   else {
+      return $password;
+   }
+
+   return "";
 }
 
 sub set_timeout {

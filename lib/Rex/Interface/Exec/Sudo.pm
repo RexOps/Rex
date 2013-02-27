@@ -18,9 +18,6 @@ use Rex::Interface::File::SSH;
 
 use Rex::Commands;
 
-our $SUDO_WITHOUT_SH = 0;
-our $SUDO_WITHOUT_LOCALE = 0;
-
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -79,12 +76,12 @@ EOF
 
    my $enc_pw = Rex::Helper::Encode::url_encode($crypt);
 
-   if($SUDO_WITHOUT_LOCALE) {
+   if(Rex::Config->get_sudo_without_locales()) {
       Rex::Logger::debug("Using sudo without locales. If the locale is NOT C or en_US it will break many things!");
       $locales = "";
    }
    
-   if($SUDO_WITHOUT_SH) {
+   if(Rex::Config->get_sudo_without_sh()) {
       if($sudo_password) {
          return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S $locales $cmd");
       }

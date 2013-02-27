@@ -88,7 +88,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.40.0";
+$VERSION = "0.40.1";
 
 my $cur_dir = getcwd;
 
@@ -433,12 +433,12 @@ sub import {
 
          if($add eq "sudo_without_sh") {
             Rex::Logger::debug("using sudo without sh. this might break some things.");
-            $Rex::Interface::Sudo::SUDO_WITHOUT_SH = 1;
+            Rex::Config->set_sudo_without_sh(1);
          }
 
          if($add eq "sudo_without_locales") {
             Rex::Logger::debug("Using sudo without locales. this _will_ break things!");
-            $Rex::Interface::Sudo::SUDO_WITHOUT_LOCALE = 1;
+            Rex::Config->set_sudo_without_locales(1);
          }
 
       }

@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Config;
+use Data::Dumper;
 
 use overload
    'eq' => sub { shift->is_eq(@_); },

@@ -1,3 +1,7 @@
+2013-02-27 Jan Gehring <jan.gehring, gmail.com> (0.40.1)
+  * fixed #114 - used only once warnings
+  * fixed #115 - passwordless sudo didn't work
+
 2013-02-23 Jan Gehring <jan.gehring, gmail.com> (0.40.0)
   * fixed bug and refactored file path calculation #103 and #102
   * added ini style groups #99 - Franky Van Liedekerke

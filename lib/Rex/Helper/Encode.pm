@@ -16,7 +16,7 @@ for (0..255) {
 
 sub url_encode{
    my ($txt)=@_;
-   $txt =~ s/([^;\/?:@&=+\$,A-Za-z0-9\-_.!~*'()])/$escapes{$1}/g;
+   $txt =~ s/([^A-Za-z0-9_])/$escapes{$1}/g;
    return $txt;
 }
 

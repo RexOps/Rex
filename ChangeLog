@@ -1,3 +1,6 @@
+2013-03-02 Jan Gehring <jan.gehring, gmail.com> (0.40.2)
+  * fixed #117 - encode everything except a-z, 0-9 and _
+
 2013-02-27 Jan Gehring <jan.gehring, gmail.com> (0.40.1)
   * fixed #114 - used only once warnings
   * fixed #115 - passwordless sudo didn't work

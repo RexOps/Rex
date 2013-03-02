@@ -83,7 +83,7 @@ EOF
    
    if(Rex::Config->get_sudo_without_sh()) {
       if($sudo_password) {
-         return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S $locales $cmd");
+         return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S $locales $cmd");
       }
       else {
          return $exec->exec("sudo $locales $cmd");
@@ -96,7 +96,7 @@ EOF
          $new_cmd = ". /etc/profile; $new_cmd";
       }
 
-      return $exec->exec("perl $random_file $enc_pw | sudo -p '' -S sh -c '$new_cmd'");
+      return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S sh -c '$new_cmd'");
    }
 }
 

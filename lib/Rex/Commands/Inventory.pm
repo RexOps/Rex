@@ -45,7 +45,7 @@ use base qw(Rex::Exporter);
 This function returns an hashRef of all gathered hardware. Use the Data::Dumper module to see its structure.
 
  task "get-inventory", sub {
-    my $inventory = inventor();
+    my $inventory = inventory();
     print Dumper($inventory);
  };
 

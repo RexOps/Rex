@@ -45,13 +45,17 @@ sub exec {
    }
 
    my $sudo_password = task->get_sudo_password;
-   my $random_string = get_random(length($sudo_password), 'a' .. 'z');
-   my $crypt = $sudo_password ^ $random_string;
+   my $enc_pw;
+   my $random_file = "";
 
-   my $random_file = "/tmp/" . get_random(16, 'a' .. 'z') . ".sudo.tmp";
+   if($sudo_password) {
+      my $random_string = get_random(length($sudo_password), 'a' .. 'z');
+      my $crypt = $sudo_password ^ $random_string;
 
-   $file->open('>', $random_file);
-   $file->write(<<EOF);
+      my $random_file = "/tmp/" . get_random(16, 'a' .. 'z') . ".sudo.tmp";
+
+      $file->open('>', $random_file);
+      $file->write(<<EOF);
 #!/usr/bin/perl
 unlink \$0;
 
@@ -70,11 +74,16 @@ print "\\n"
 EOF
 
 
-   $file->close;
+      $file->close;
+
+
+      $enc_pw = Rex::Helper::Encode::url_encode($crypt);
+   }
+   else {
+      $enc_pw = "";
+   }
 
    my $locales = "LC_ALL=C";
-
-   my $enc_pw = Rex::Helper::Encode::url_encode($crypt);
 
    if(Rex::Config->get_sudo_without_locales()) {
       Rex::Logger::debug("Using sudo without locales. If the locale is NOT C or en_US it will break many things!");
@@ -82,7 +91,7 @@ EOF
    }
    
    if(Rex::Config->get_sudo_without_sh()) {
-      if($sudo_password) {
+      if($enc_pw) {
          return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S $locales $cmd");
       }
       else {
@@ -96,7 +105,13 @@ EOF
          $new_cmd = ". /etc/profile; $new_cmd";
       }
 
-      return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S sh -c '$new_cmd'");
+      if($enc_pw) {
+         return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S sh -c '$new_cmd'");
+      }
+      else {
+         return $exec->exec("sudo -p '' -S sh -c '$new_cmd'");
+      }
+
    }
 }
 

@@ -88,9 +88,17 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.40.2";
+$VERSION = "0.40.3";
 
 my $cur_dir = getcwd;
+
+BEGIN {
+
+   if(-d "lib") {
+      use lib "lib";
+   }
+
+};
 
 push(@INC, sub {
 

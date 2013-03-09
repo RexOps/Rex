@@ -88,7 +88,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.40.3";
+$VERSION = "0.40.4";
 
 my $cur_dir = getcwd;
 

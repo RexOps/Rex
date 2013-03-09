@@ -251,7 +251,7 @@ sub __run__ {
          my $ok = do($::rexfile);
          Rex::Logger::info("eval your Rexfile.");
          if(! $ok) {
-            Rex::Logger::info("There seems to be an error on some of your required files.", "error");
+            Rex::Logger::info("There seems to be an error on some of your required files. $@", "error");
             my @dir = (dirname($::rexfile));
             for my $d (@dir) {
                opendir(my $dh, $d) or die($!);

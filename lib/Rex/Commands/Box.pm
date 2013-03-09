@@ -182,28 +182,36 @@ This function returns an array of hashes containing all information that can be 
 
 =cut
 sub list_boxes {
-   my $box = Rex::Box->create;
-   my @ret = $box->list_boxes;
+   my $ref = LOCAL {
+      my $box = Rex::Box->create;
+      my @ret = $box->list_boxes;
 
-   if( -f ".box.cache") {
-      my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
-      $yaml_str .= "\n";
-      my $yaml_ref = Load($yaml_str);
-      
-      for my $box (keys %{ $yaml_ref }) {
-         my ($found_box) = grep { $_->{name} eq $box } @ret;
-         if(! $found_box) {
-            $yaml_ref->{$box} = undef;
-            delete $yaml_ref->{$box};
+      if( -f ".box.cache") {
+         my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
+         $yaml_str .= "\n";
+         my $yaml_ref = Load($yaml_str);
+         
+         for my $box (keys %{ $yaml_ref }) {
+            my ($found_box) = grep { $_->{name} eq $box } @ret;
+            if(! $found_box) {
+               $yaml_ref->{$box} = undef;
+               delete $yaml_ref->{$box};
+            }
          }
+
+         open(my $fh, ">", ".box.cache") or die($!);
+         print $fh Dump($yaml_ref);
+         close($fh);
       }
 
-      open(my $fh, ">", ".box.cache") or die($!);
-      print $fh Dump($yaml_ref);
-      close($fh);
-   }
+      if(wantarray) {
+         return @ret;
+      }
 
-   return @ret;
+      return \@ret;
+   };
+
+   return @{ $ref };
 }
 
 =item get_box($box_name)
@@ -219,58 +227,61 @@ This function tries to gather all information of a Rex/Box. This function also s
 =cut
 sub get_box {
    my ($box_name) = @_;
-   my $box = Rex::Box->create(name => $box_name);
 
-   $box->info;
+   return LOCAL {
+      my $box = Rex::Box->create(name => $box_name);
+      $box->info;
 
-   if($box->status eq "stopped") {
-      $box->start;
-      $box->wait_for_ssh;
-   }
-
-   if( -f ".box.cache") {
-      Rex::Logger::debug("Loading box information of cache file: .box.cache.");
-      my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
-      $yaml_str .= "\n";
-      my $yaml_ref = Load($yaml_str);
-      %vm_infos = %{ $yaml_ref };
-   }
-
-   if(exists $vm_infos{$box_name}) {
-      return $vm_infos{$box_name};
-   }
-
-   my $pid = fork;
-   if($pid == 0) {
-      print "Gathering system information from $box_name.\nThis may take a while..";
-      while(1) {
-         print ".";
-         sleep 1;
+      if($box->status eq "stopped") {
+         $box->start;
+         $box->wait_for_ssh;
       }
 
-      exit;
-   }
+      if( -f ".box.cache") {
+         Rex::Logger::debug("Loading box information of cache file: .box.cache.");
+         my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
+         $yaml_str .= "\n";
+         my $yaml_ref = Load($yaml_str);
+         %vm_infos = %{ $yaml_ref };
+      }
 
-   my $old_q = $::QUIET;
-   $::QUIET = 1;
+      if(exists $vm_infos{$box_name}) {
+         return $vm_infos{$box_name};
+      }
+
+      my $pid = fork;
+      if($pid == 0) {
+         print "Gathering system information from $box_name.\nThis may take a while..";
+         while(1) {
+            print ".";
+            sleep 1;
+         }
+
+         exit;
+      }
+
+      my $old_q = $::QUIET;
+      $::QUIET = 1;
 
 
-   $vm_infos{$box_name} = run_task "get_sys_info", on => $box->ip;
-   $::QUIET = $old_q;
+      $vm_infos{$box_name} = run_task "get_sys_info", on => $box->ip;
+      $::QUIET = $old_q;
 
-   my $box_info = $box->info;
-   for my $key (keys %{ $box_info }) {
-      $vm_infos{$box_name}->{$key} = $box_info->{$key};
-   }
+      my $box_info = $box->info;
+      for my $key (keys %{ $box_info }) {
+         $vm_infos{$box_name}->{$key} = $box_info->{$key};
+      }
 
-   kill 9, $pid;
-   print "\n";
+      kill 9, $pid;
+      print "\n";
 
-   open(my $fh, ">", ".box.cache") or die($!);
-   print $fh Dump(\%vm_infos);
-   close($fh);
+      open(my $fh, ">", ".box.cache") or die($!);
+      print $fh Dump(\%vm_infos);
+      close($fh);
 
-   return $vm_infos{$box_name};
+      return $vm_infos{$box_name};
+   };
+
 }
 
 =item boxes($action, @data)

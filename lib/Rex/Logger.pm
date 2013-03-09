@@ -91,6 +91,7 @@ sub init {
    return if $silent;
    eval {
       die if(Rex::Config->get_log_filename || ! Rex::Config->get_log_facility);
+
       require Sys::Syslog;
       Sys::Syslog->import;
       openlog("rex", "ndelay,pid", Rex::Config->get_log_facility);

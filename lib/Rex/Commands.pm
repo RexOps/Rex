@@ -929,9 +929,11 @@ sub LOCAL (&) {
    });
 
 
-   $_[0]->();
+   my $ret = $_[0]->();
 
    Rex::pop_connection();
+
+   return $ret;
 }
 
 =item path(@path)

@@ -267,7 +267,7 @@ sub set_log_facility {
 
 sub get_log_facility {
    my $class = shift;
-   return $log_facility;
+   return $log_facility || "local0";
 }
 
 sub set_environment {

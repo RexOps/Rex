@@ -262,5 +262,6 @@ t/shared.t
 t/task.t
 t/template.t
 t/test.ini
+t/url_encode.t
 t/vbox.t
 t/virtualization.t

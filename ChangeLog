@@ -1,3 +1,7 @@
+2013-03-10 Jan Gehring <jan.gehring, gmail.com> (0.40.4)
+  * fixed get_box() command if task is run on a remote host
+  * fixed sudo without password
+
 2013-03-09 Jan Gehring <jan.gehring, gmail.com> (0.40.3)
   * fixed loading of files in lib directory
     @INC sometime got populated too late

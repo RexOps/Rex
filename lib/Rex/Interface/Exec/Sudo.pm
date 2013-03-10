@@ -52,7 +52,7 @@ sub exec {
       my $random_string = get_random(length($sudo_password), 'a' .. 'z');
       my $crypt = $sudo_password ^ $random_string;
 
-      my $random_file = "/tmp/" . get_random(16, 'a' .. 'z') . ".sudo.tmp";
+      $random_file = "/tmp/" . get_random(16, 'a' .. 'z') . ".sudo.tmp";
 
       $file->open('>', $random_file);
       $file->write(<<EOF);
@@ -91,6 +91,7 @@ EOF
    }
    
    if(Rex::Config->get_sudo_without_sh()) {
+      Rex::Logger::debug("Using sudo without sh will break things like file editing.");
       if($enc_pw) {
          return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S $locales $cmd");
       }

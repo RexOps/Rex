@@ -579,10 +579,12 @@ sub pass_auth {
 
 If you want to use pubkey authentication, then you need to call I<key_auth>.
 
- user "root";
- password "root";
+ user "bob";
+ private_key "/home/bob/.ssh/id_rsa"; # passphrase-less key
+ public_key "/home/bob/.ssh/id_rsa.pub";
  
- pass_auth;
+ 
+ key_auth;
 
 =cut
 

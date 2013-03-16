@@ -132,6 +132,7 @@ use base qw(Rex::Exporter);
             report
             make
             source_global_profile
+            last_command_output
           );
 
 our $REGISTER_SUB_HASH_PARAMTER = 0;
@@ -1133,6 +1134,23 @@ If this option is set, every run() command will first source /etc/profile before
 sub source_global_profile {
    my ($source) = @_;
    Rex::Config->set_source_global_profile($source);
+}
+
+=item last_command_output
+
+This function returns the output of the last "run" command.
+
+On a debian system this example will return the output of I<apt-get install foobar>.
+
+ task "mytask", "myserver", sub {
+    install "foobar";
+    say last_command_output();
+ };
+
+=cut
+
+sub last_command_output {
+   return $Rex::Commands::Run::LAST_OUTPUT->[0];
 }
 
 ######### private functions

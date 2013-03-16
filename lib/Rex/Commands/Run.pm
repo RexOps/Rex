@@ -87,6 +87,9 @@ sub run {
 
    $LAST_OUTPUT = [$out, $err];
 
+   $out ||= "";
+   $err ||= "";
+
    if($code) {
       return &$code($out, $err);
    }

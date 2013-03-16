@@ -18,15 +18,14 @@ use vars qw(@EXPORT);
 @EXPORT = qw(net_ssh2_exec net_ssh2_exec_output net_ssh2_shell_exec);
 
 our $READ_STDERR = 1;
-our $REQUIRE_TTY = 0;
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
 
    my $chan = $ssh->channel;
 
-   # Turned this off due to issues with $in and $in_err being combined.
-   if($REQUIRE_TTY) {
+   # REQUIRE_TTY can be turned off by feature no_tty
+   if(! Rex::Config->get_no_tty) {
       $chan->pty("vt100");
    }
    $chan->blocking(1);
@@ -48,7 +47,7 @@ sub net_ssh2_exec {
    $? = $chan->exit_status;
 
    # if used with $chan->pty() we have to remove \r
-   if($REQUIRE_TTY) {
+   if(! Rex::Config->get_no_tty) {
       $in =~ s/\r//g if $in;
       $in_err =~ s/\r//g if $in_err;
    }

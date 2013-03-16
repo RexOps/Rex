@@ -449,6 +449,11 @@ sub import {
             Rex::Config->set_sudo_without_locales(1);
          }
 
+         if($add eq "no_tty") {
+            Rex::Logger::debug("Disabling pty usage for ssh");
+            Rex::Config->set_no_tty(1);
+         }
+
       }
 
    }
@@ -504,6 +509,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Mario Domgoergen
 
 =item Nikolay Fetisov
+
+=item Peter H. Ezetta
 
 =item Samuele Tognini
 

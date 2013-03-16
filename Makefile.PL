@@ -12,6 +12,7 @@ my %deps = (
                   'YAML' => 0,
                   'LWP::Simple' => 0,
                   'Storable' => 0,
+                  'IPC::Open3' => 0,
 );
 
 if($^O =~ m/^MSWin/) {

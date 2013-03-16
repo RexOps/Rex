@@ -64,6 +64,8 @@ Available modules:
 
 =item Swap
 
+=item VirtInfo
+
 =back
 
 =cut
@@ -84,12 +86,14 @@ sub get {
 
    if("all" eq "\L$modules[0]") {
 
-      @modules = qw(Host Kernel Memory Network Swap);
+      @modules = qw(Host Kernel Memory Network Swap VirtInfo);
       push(@modules, keys(%HW_PROVIDER));
    
    }
 
    for my $mod_string (@modules) {
+
+      Rex::Commands::profiler()->start("hardware: $mod_string");
 
       if(exists $hw_info{$mod_string} && Rex::Args->is_opt("c")) {
          $hardware_information{$mod_string} = $hw_info{$mod_string};
@@ -118,6 +122,8 @@ sub get {
          }
 
       }
+
+      Rex::Commands::profiler()->end("hardware: $mod_string");
 
    }
 

@@ -17,13 +17,15 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 @EXPORT = qw(net_ssh2_exec net_ssh2_exec_output net_ssh2_shell_exec);
 
-our $READ_STDERR = 0;
-our $REQUIRE_TTY = 1;
+our $READ_STDERR = 1;
+our $REQUIRE_TTY = 0;
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
 
    my $chan = $ssh->channel;
+
+   # Turned this off due to issues with $in and $in_err being combined.
    if($REQUIRE_TTY) {
       $chan->pty("vt100");
    }
@@ -32,19 +34,14 @@ sub net_ssh2_exec {
    $chan->exec($cmd);
 
    my $in;
-   my $in_err;
-   while(1) {
-      my $buf;
-      my $buf_err="";
-      $chan->read($buf, 20);
-      # due to problem on some systems reading stderr, removed until i've found a solution
-      if($READ_STDERR) {
-         $chan->read($buf_err, 500, 1);
-      }
-      $in .= $buf;
-      $in_err .= $buf_err;
+   my $in_err = "";
 
-      last unless $buf;
+   while ( my $len = $chan->read(my $buf, 20) ) {
+		$in .= $buf;
+   }
+
+   while ( my $len = $chan->read(my $buf_err, 20, 1) ) {
+	    $in_err .= $buf_err;
    }
 
    $chan->close;
@@ -52,8 +49,8 @@ sub net_ssh2_exec {
 
    # if used with $chan->pty() we have to remove \r
    if($REQUIRE_TTY) {
-      $in =~ s/\r//g;
-      $in_err =~ s/\r//g;
+      $in =~ s/\r//g if $in;
+      $in_err =~ s/\r//g if $in_err;
    }
 
    if(wantarray) {

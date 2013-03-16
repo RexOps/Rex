@@ -518,6 +518,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Sven Dowideit
 
+=item Tokuhiro Matsuno
+
 =item Tomohiro Hosaka
 
 =back

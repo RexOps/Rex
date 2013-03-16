@@ -89,13 +89,27 @@ our (@EXPORT,
       $WITH_EXIT_STATUS);
 
 $VERSION = "0.40.4";
-
-my $cur_dir = getcwd;
+my $cur_dir;
 
 BEGIN {
 
-   if(-d "lib") {
-      use lib "lib";
+   sub _home_dir {
+      if($^O =~ m/^MSWin/) {
+         return $ENV{'USERPROFILE'};
+      }
+
+      return $ENV{'HOME'} || "";
+   }
+
+   $cur_dir = getcwd;
+
+   if(-d "$cur_dir/lib") {
+      push(@INC, "$cur_dir/lib");
+   }
+
+   my $home_dir = _home_dir();
+   if(-d "$home_dir/.rex/recipes") {
+      push(@INC, "$home_dir/.rex/recipes");
    }
 
 };
@@ -105,17 +119,25 @@ push(@INC, sub {
    my $mod_to_load = $_[1];
    $mod_to_load =~ s/\.pm//g;
 
-   if(-d "lib/$mod_to_load" && ( -f "lib/$mod_to_load/Module.pm" || -f "lib/$mod_to_load/__module__.pm")) {
-      $MODULE_PATHS->{$mod_to_load} = {path => "$cur_dir/lib/$mod_to_load"};
-      my $mod_package_name = $mod_to_load;
-      $mod_package_name =~ s/\//::/g;
-      $MODULE_PATHS->{$mod_package_name} = {path => "$cur_dir/lib/$mod_to_load"};
-      if(-f "lib/$mod_to_load/__module__.pm") {
-         open(my $fh, "lib/$mod_to_load/__module__.pm");
-         return $fh;
-      }
-      else {
-         open(my $fh, "lib/$mod_to_load/Module.pm");
+   my @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") } 
+                     grep { -d } @INC;
+
+   push(@search_in, "lib/$mod_to_load/__module__.pm", "lib/$mod_to_load/Module.pm");
+
+   for my $file (@search_in) {
+      if(-f $file) {
+         my ($path) = ($file =~ m/^(.*)\/.+?$/);
+         if($path !~ m/\//) {
+            $path = $cur_dir . "/$path";
+         }
+
+         # module found, register path
+         $MODULE_PATHS->{$mod_to_load} = {path => $path};
+         my $mod_package_name = $mod_to_load;
+         $mod_package_name =~ s/\//::/g;
+         $MODULE_PATHS->{$mod_package_name} = {path => $path};
+
+         open(my $fh, $file);
          return $fh;
       }
    }
@@ -461,6 +483,8 @@ sub import {
    # we are always strict
    strict->import;
 }
+
+
 
 =back
 

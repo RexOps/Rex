@@ -302,6 +302,10 @@ sub __run__ {
          exit 1;
       }
 
+      if(exists $opts{'t'}) {
+         parallelism($opts{'t'});
+      }
+
       my $pass_auth = 0;
 
       if($opts{'u'}) {

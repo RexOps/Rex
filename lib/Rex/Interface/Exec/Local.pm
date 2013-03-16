@@ -69,7 +69,7 @@ sub exec {
 
    $? >>= 8;
 
-   Rex::Logger::debug($out);
+   Rex::Logger::debug($out) if($out);
    if($err) {
       Rex::Logger::debug("========= ERR ============");
       Rex::Logger::debug($err);

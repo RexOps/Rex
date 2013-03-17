@@ -100,95 +100,45 @@ This example will delete the 4th cronjob. It starts counting by zero (0).
      cron delete => "root", 3;
  };
 
+Managing Environment Variables inside cron.
+
+ task "mycron", "server1", sub {
+     cron env => user => add => {
+        MYVAR => "foo",
+     };
+         
+     cron env => user => delete => "MYVAR";
+      
+     cron env => user => "list";
+ };
+
 =cut
 
 sub cron {
 
-   my ($action, $user, $config) = @_;
+   my ($action, $user, $config, @more) = @_;
 
+   my $c = Rex::Cron->create();
    if($action eq "list") {
-      my @lines;
-
-      if(operating_system_is("SunOS")) {
-         @lines = run "crontab -l $user";
-      }
-      else {
-         @lines = run "crontab -u $user -l";
-      }
-      my @ret = ();
-
-      for my $line (@lines) {
-         if($line =~ m/^$/) { next; }
-         if($line =~ m/^#/) { next; }
-         if($line =~ m/^\s+#/) { next; }
-         if($line =~ m/^\s*$/) { next; }
-
-         if(exists $config->{"as_text"}) {
-            push(@ret, $line);
-         }
-         else {
-            my ($minute, $hour, $day_of_month, $month, $day_of_week, $cmd) = split(/\s+/, $line, 6);
-            push(@ret, {
-               minute       => $minute,
-               hour         => $hour,
-               day_of_month => $day_of_month,
-               month        => $month,
-               day_of_week  => $day_of_week,
-               command      => $cmd,
-            });
-         }
-      }
-
-      return @ret;
+      $c->read_user_cron($user);
+      return $c->list;
    }
+
    elsif($action eq "add") {
-      my @lines;
-      if(operating_system_is("SunOS")) {
-         @lines = run "crontab -l $user";
-      }
-      else {
-         @lines = run "crontab -u $user -l";
-      }
-
-
-      my $new_cron = sprintf("%s %s %s %s %s %s", $config->{"minute"} || "*",
-                                                  $config->{"hour"} || "*",
-                                                  $config->{"day_of_month"} || "*",
-                                                  $config->{"month"} || "*",
-                                                  $config->{"day_of_week"} || "*",
-                                                  $config->{"command"} || "*",
-                                                  );
-
-      push (@lines, $new_cron);
-      my $fh = file_write "/tmp/cron.rex.tmp";
-      $fh->write(join("\n", @lines) . "\n");
-      $fh->close;
-
-      if(operating_system_is("SunOS")) {
-         run "crontab /tmp/cron.rex.tmp";
-      }
-      else {
-         run "crontab -u $user /tmp/cron.rex.tmp";
-      }
-      unlink "/tmp/cron.rex.tmp";
+      $c->add(%{ $config });
+      my $rnd_file = $c->write_cron;
+      $c->activate_user_cron($rnd_file);
    }
+
    elsif($action eq "delete") {
-      my @crons = cron(list => $user, {as_text => 1});
+      my $to_delete = $config;
+      $c->delete($to_delete);
+      my $rnd_file = $c->write_cron;
+      $c->activate_user_cron($rnd_file);
+   }
 
-      splice(@crons, $config, 1);
-
-      my $fh = file_write "/tmp/cron.rex.tmp";
-      $fh->write(join("\n", @crons) . "\n");
-      $fh->close;
-
-      if(operating_system_is("SunOS")) {
-         run "crontab /tmp/cron.rex.tmp";
-      }
-      else {
-         run "crontab -u $user /tmp/cron.rex.tmp";
-      }
-
-      unlink "/tmp/cron.rex.tmp";
+   elsif($action eq "env") {
+      my $env_action = $config;
    }
 
 }

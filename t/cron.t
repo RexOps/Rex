@@ -1,4 +1,4 @@
-use Test::More tests => 254;
+use Test::More tests => 267;
 
 use Data::Dumper;
 
@@ -6,6 +6,7 @@ use_ok 'Rex::Cron';
 use_ok 'Rex::Cron::Base';
 use_ok 'Rex::Cron::Linux';
 use_ok 'Rex::Cron::SunOS';
+use_ok 'Rex::Commands::Cron';
 
 my @lines = eval { local(@ARGV) = ("t/cron.ex"); <>; };
 chomp @lines;
@@ -384,5 +385,29 @@ ok($cron[0]->{day_of_month} eq "*", "the third job / day");
 ok($cron[0]->{month} eq "*", "the third job / month");
 ok($cron[0]->{day_of_week} eq "*", "the third job / day_of_month of week");
 ok($cron[0]->{command} eq 'DISPLAY=:0 LANG=de_DE.UTF-8 zenity --info --text "Beispiel für das Starten eines Programmes mit GUI"', "the third job / cmd");
+
+
+@cron = $c->list_envs;
+
+ok($cron[0]->{name} eq "BARVAR", "1st env name");
+ok($cron[0]->{value} eq "BARVAL", "1st env name");
+ok($cron[0]->{line} eq 'BARVAR="BARVAL"', "1st env name");
+
+ok($cron[1]->{name} eq "FOOVAR", "2nd env name");
+ok($cron[1]->{value} eq "FOOVAL", "2nd env name");
+ok($cron[1]->{line} eq 'FOOVAR="FOOVAL"', "2nd env name");
+
+ok($cron[2]->{name} eq "SHELL", "3rd env name");
+ok($cron[2]->{value} eq "/bin/bash", "3rd env name");
+ok($cron[2]->{line} eq 'SHELL=/bin/bash', "3rd env name");
+
+$c->delete_env(1);
+$c->delete_env(0);
+
+@cron = $c->list_envs;
+
+ok($cron[0]->{name} eq "SHELL", "3rd env name");
+ok($cron[0]->{value} eq "/bin/bash", "3rd env name");
+ok($cron[0]->{line} eq 'SHELL=/bin/bash', "3rd env name");
 
 

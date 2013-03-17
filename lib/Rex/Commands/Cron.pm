@@ -104,7 +104,8 @@ Managing Environment Variables inside cron.
         MYVAR => "foo",
      };
          
-     cron env => user => delete => "MYVAR";
+     cron env => user => delete => $index;
+     cron env => user => delete => 1;
       
      cron env => user => "list";
  };
@@ -137,6 +138,32 @@ sub cron {
 
    elsif($action eq "env") {
       my $env_action = $config;
+
+      if($env_action eq "add") {
+         my $data = shift @more;
+
+         for my $key (keys %{ $data }) {
+            $c->add_env(
+               $key => $data->{$key},
+            );
+         }
+
+         my $rnd_file = $c->write_cron;
+         $c->activate_user_cron($rnd_file, $user);
+      }
+
+      elsif($env_action eq "list") {
+         return $c->list_envs;
+      }
+
+      elsif($env_action eq "delete") {
+         my $num = shift @more;
+         $c->delete_env($num);
+
+         my $rnd_file = $c->write_cron;
+         $c->activate_user_cron($rnd_file, $user);
+      }
+
    }
 
 }

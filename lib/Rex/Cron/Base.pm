@@ -37,6 +37,12 @@ sub list_jobs {
    my @ret = map { $_ = { line => $_->{line}, %{ $_->{cron} } } } grep { $_->{type} eq "job" } @jobs;
 }
 
+sub list_envs {
+   my ($self) = @_;
+   my @jobs = @{ $self->{cron} };
+   my @ret = grep { $_->{type} eq "env" } @jobs;
+}
+
 sub add {
    my ($self, %config) = @_;
 
@@ -76,6 +82,29 @@ sub add_env {
 sub delete_job {
    my ($self, $num) = @_;
    my @jobs = $self->list_jobs;
+
+   my $i = 0;
+   my $to_delete;
+   for my $j (@{ $self->{cron} }) {
+      if($j->{line} eq $jobs[$num]->{line}) {
+         $to_delete = $i;
+         last;
+      }
+
+      $i++;
+   }
+
+   unless(defined $to_delete) {
+      die("Cron Entry $num not found.");
+   }
+
+   $self->delete($to_delete);
+}
+
+sub delete_env {
+   my ($self, $num) = @_;
+
+   my @jobs = $self->list_envs;
 
    my $i = 0;
    my $to_delete;

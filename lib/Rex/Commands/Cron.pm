@@ -44,10 +44,7 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-use Rex::Commands::Gather;
-use Rex::Commands::Run;
-use Rex::Commands::Fs;
-use Rex::Commands::File;
+use Rex::Cron;
 
 @EXPORT = qw(cron);
 
@@ -119,22 +116,23 @@ sub cron {
    my ($action, $user, $config, @more) = @_;
 
    my $c = Rex::Cron->create();
+   $c->read_user_cron($user); # this must always be the first action
+
    if($action eq "list") {
-      $c->read_user_cron($user);
       return $c->list;
    }
 
    elsif($action eq "add") {
       $c->add(%{ $config });
       my $rnd_file = $c->write_cron;
-      $c->activate_user_cron($rnd_file);
+      $c->activate_user_cron($rnd_file, $user);
    }
 
    elsif($action eq "delete") {
       my $to_delete = $config;
       $c->delete($to_delete);
       my $rnd_file = $c->write_cron;
-      $c->activate_user_cron($rnd_file);
+      $c->activate_user_cron($rnd_file, $user);
    }
 
    elsif($action eq "env") {

@@ -12,7 +12,7 @@ chomp @lines;
 
 my $c = Rex::Cron::Base->new;
 $c->parse_cron(@lines);
-my @cron = $c->list;
+my @cron = $c->list_raw;
 
 ok($cron[0]->{type} eq "comment", "first line is a comment");
 
@@ -98,7 +98,7 @@ $c->add(
    command => "bar",
 );
 
-@cron = $c->list;
+@cron = $c->list_raw;
 
 ok($cron[14]->{type} eq "job", "the 6th job");
 ok($cron[14]->{cron}->{minute} eq "1", "the 6th job / min");
@@ -140,7 +140,7 @@ unlink $file;
 
 $c = Rex::Cron::Base->new;
 $c->parse_cron(@lines);
-@cron = $c->list;
+@cron = $c->list_raw;
 
 ok($cron[0]->{type} eq "comment", "first line is a comment");
 
@@ -241,7 +241,7 @@ ok($cron[16]->{line} eq "* 5,6,7 * */2 * bar", "the 8th job / cron line");
 $c->delete(14);
 $c->delete(9);
 
-@cron = $c->list;
+@cron = $c->list_raw;
 
 ok($cron[0]->{type} eq "comment", "first line is a comment");
 

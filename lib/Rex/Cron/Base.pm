@@ -27,6 +27,12 @@ sub new {
 
 sub list {
    my ($self) = @_;
+   my @ret = map { $_ = $_->{cron} } @{ $self->{cron} };
+   return @ret;
+}
+
+sub list_raw {
+   my ($self) = @_;
    return @{ $self->{cron} };
 }
 
@@ -80,7 +86,7 @@ sub write_cron {
 sub activate_user_cron {
    my ($self, $file, $user) = @_;
    run "crontab -u $user $file";
-   unlink $file;
+#   unlink $file;
 }
 
 sub read_user_cron {

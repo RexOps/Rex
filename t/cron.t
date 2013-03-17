@@ -1,4 +1,4 @@
-use Test::More tests => 214;
+use Test::More tests => 254;
 
 use Data::Dumper;
 
@@ -12,7 +12,7 @@ chomp @lines;
 
 my $c = Rex::Cron::Base->new;
 $c->parse_cron(@lines);
-my @cron = $c->list_raw;
+my @cron = $c->list;
 
 ok($cron[0]->{type} eq "comment", "first line is a comment");
 
@@ -98,7 +98,7 @@ $c->add(
    command => "bar",
 );
 
-@cron = $c->list_raw;
+@cron = $c->list;
 
 ok($cron[14]->{type} eq "job", "the 6th job");
 ok($cron[14]->{cron}->{minute} eq "1", "the 6th job / min");
@@ -140,7 +140,7 @@ unlink $file;
 
 $c = Rex::Cron::Base->new;
 $c->parse_cron(@lines);
-@cron = $c->list_raw;
+@cron = $c->list;
 
 ok($cron[0]->{type} eq "comment", "first line is a comment");
 
@@ -241,7 +241,7 @@ ok($cron[16]->{line} eq "* 5,6,7 * */2 * bar", "the 8th job / cron line");
 $c->delete(14);
 $c->delete(9);
 
-@cron = $c->list_raw;
+@cron = $c->list;
 
 ok($cron[0]->{type} eq "comment", "first line is a comment");
 
@@ -316,5 +316,73 @@ ok($cron[14]->{cron}->{month} eq "*/2", "the 8th job / month");
 ok($cron[14]->{cron}->{day_of_week} eq "*", "the 8th job / day_of_month of week");
 ok($cron[14]->{cron}->{command} eq "bar", "the 8th job / cmd");
 ok($cron[14]->{line} eq "* 5,6,7 * */2 * bar", "the 8th job / cron line");
+
+
+$c->add_env(
+   "FOOVAR" => "FOOVAL",
+);
+
+$c->add_env(
+   "BARVAR" => "BARVAL",
+);
+
+@cron = $c->list;
+
+ok($cron[0]->{type} eq "env", "1st line is now env");
+ok($cron[0]->{name} eq "BARVAR", "1st line / name");
+ok($cron[0]->{value} eq "BARVAL", "1st line / value");
+ok($cron[0]->{line} eq 'BARVAR="BARVAL"', "1st line / value");
+
+ok($cron[1]->{type} eq "env", "2nd line is now env");
+ok($cron[1]->{name} eq "FOOVAR", "2nd line / name");
+ok($cron[1]->{value} eq "FOOVAL", "2nd line / value");
+ok($cron[1]->{line} eq 'FOOVAR="FOOVAL"', "2nd line / value");
+
+@cron = $c->list_jobs;
+
+ok($cron[0]->{minute} == 5, "the first job / min");
+ok($cron[0]->{hour} eq "9-20", "the first job / hour");
+ok($cron[0]->{day_of_month} eq "*", "the first job / day");
+ok($cron[0]->{month} eq "*", "the first job / month");
+ok($cron[0]->{day_of_week} eq "*", "the first job / day_of_month of week");
+ok($cron[0]->{command} eq "/home/username/script/script1.sh > /dev/null", "the first job / cmd");
+
+ok($cron[1]->{minute} eq "59", "the second job / min");
+ok($cron[1]->{hour} eq "23", "the second job / hour");
+ok($cron[1]->{day_of_month} eq "*", "the second job / day");
+ok($cron[1]->{month} eq "*", "the second job / month");
+ok($cron[1]->{day_of_week} eq "0,4", "the second job / day_of_month of week");
+ok($cron[1]->{command} eq "cp /pfad/zu/datei /pfad/zur/kopie", "the second job / cmd");
+
+ok($cron[2]->{minute} eq "*", "the third job / min");
+ok($cron[2]->{hour} eq "*", "the third job / hour");
+ok($cron[2]->{day_of_month} eq "*", "the third job / day");
+ok($cron[2]->{month} eq "*", "the third job / month");
+ok($cron[2]->{day_of_week} eq "*", "the third job / day_of_month of week");
+ok($cron[2]->{command} eq 'DISPLAY=:0 LANG=de_DE.UTF-8 zenity --info --text "Beispiel für das Starten eines Programmes mit GUI"', "the third job / cmd");
+
+$c->delete_job(1);
+$c->delete_job(0);
+
+@cron = $c->list;
+
+ok($cron[0]->{type} eq "env", "1st line is now env");
+ok($cron[0]->{name} eq "BARVAR", "1st line / name");
+ok($cron[0]->{value} eq "BARVAL", "1st line / value");
+ok($cron[0]->{line} eq 'BARVAR="BARVAL"', "1st line / value");
+
+ok($cron[1]->{type} eq "env", "2nd line is now env");
+ok($cron[1]->{name} eq "FOOVAR", "2nd line / name");
+ok($cron[1]->{value} eq "FOOVAL", "2nd line / value");
+ok($cron[1]->{line} eq 'FOOVAR="FOOVAL"', "2nd line / value");
+
+@cron = $c->list_jobs;
+
+ok($cron[0]->{minute} eq "*", "the third job / min");
+ok($cron[0]->{hour} eq "*", "the third job / hour");
+ok($cron[0]->{day_of_month} eq "*", "the third job / day");
+ok($cron[0]->{month} eq "*", "the third job / month");
+ok($cron[0]->{day_of_week} eq "*", "the third job / day_of_month of week");
+ok($cron[0]->{command} eq 'DISPLAY=:0 LANG=de_DE.UTF-8 zenity --info --text "Beispiel für das Starten eines Programmes mit GUI"', "the third job / cmd");
 
 

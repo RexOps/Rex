@@ -119,7 +119,7 @@ sub cron {
    $c->read_user_cron($user); # this must always be the first action
 
    if($action eq "list") {
-      return $c->list;
+      return $c->list_jobs;
    }
 
    elsif($action eq "add") {
@@ -130,7 +130,7 @@ sub cron {
 
    elsif($action eq "delete") {
       my $to_delete = $config;
-      $c->delete($to_delete);
+      $c->delete_job($to_delete);
       my $rnd_file = $c->write_cron;
       $c->activate_user_cron($rnd_file, $user);
    }

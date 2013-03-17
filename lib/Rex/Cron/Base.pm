@@ -14,6 +14,7 @@ use Rex::Commands;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
+use Data::Dumper;
 
 sub new {
    my $that = shift;
@@ -27,13 +28,13 @@ sub new {
 
 sub list {
    my ($self) = @_;
-   my @ret = map { $_ = $_->{cron} } @{ $self->{cron} };
-   return @ret;
+   return @{ $self->{cron} };
 }
 
-sub list_raw {
+sub list_jobs {
    my ($self) = @_;
-   return @{ $self->{cron} };
+   my @jobs = @{ $self->{cron} };
+   my @ret = map { $_ = { line => $_->{line}, %{ $_->{cron} } } } grep { $_->{type} eq "job" } @jobs;
 }
 
 sub add {
@@ -60,6 +61,38 @@ sub add {
       line => $new_cron,
       cron => \%config,
    });
+}
+
+sub add_env {
+   my ($self, $name, $value) = @_;
+   unshift(@{ $self->{cron} }, {
+      type  => "env",
+      line  => "$name=\"$value\"",
+      name  => $name,
+      value => $value,
+   });
+}
+
+sub delete_job {
+   my ($self, $num) = @_;
+   my @jobs = $self->list_jobs;
+
+   my $i = 0;
+   my $to_delete;
+   for my $j (@{ $self->{cron} }) {
+      if($j->{line} eq $jobs[$num]->{line}) {
+         $to_delete = $i;
+         last;
+      }
+
+      $i++;
+   }
+
+   unless(defined $to_delete) {
+      die("Cron Entry $num not found.");
+   }
+
+   $self->delete($to_delete);
 }
 
 sub delete {

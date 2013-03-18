@@ -76,9 +76,6 @@ sub is_file {
 
    Rex::Commands::profiler()->start("is_file: $file");
    my $sftp = Rex::get_sftp();
-   if( $sftp->opendir($file) ) {
-   }
-
    if( $sftp->open($file, O_RDONLY) ) {
       # return true if $file can be opened read only
       $ret = 1;

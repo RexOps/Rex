@@ -332,8 +332,22 @@ sub boxes {
 
       my $yaml_ref = $VM_STRUCT;
 
-      for my $vm (keys %{ $yaml_ref->{vms} }) {
-         my $vm_ref = $yaml_ref->{vms}->{$vm};
+      my @vms;
+
+      if(ref $yaml_ref->{vms} eq "HASH") {
+         for my $vm (keys %{ $yaml_ref->{vms} }) {
+            push(@vms, {
+               name => $vm,
+               %{ $yaml_ref->{vms}->{$vm} }
+            });
+         }
+      }
+      else {
+         @vms = @{ $yaml_ref->{vms} };
+      }
+
+      for my $vm_ref (@vms) {
+         my $vm = $vm_ref->{name};
          box {
             my ($box) = @_;
 

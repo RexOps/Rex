@@ -1208,7 +1208,7 @@ sub get_environments {
 }
 
 sub say {
-   return unless $_[0];
+   return unless defined $_[0];
    print @_, "\n";
 }
 

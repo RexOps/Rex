@@ -560,7 +560,7 @@ sub sed {
    my $content = cat($file);
    my $option = { @options };
 
-   my $on_change = $option->{"on_change"} || sub {};
+   my $on_change = $option->{"on_change"} || undef;
    $content =~ s/$search/$replace/gms;
 
    file($file, content => $content, on_change => $on_change);

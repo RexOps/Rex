@@ -93,6 +93,7 @@ sub __run__ {
       p => { type => "string" },
       P => { type => "string" },
       K => { type => "string" },
+      g => { type => "string" },
       G => { type => "string" },
       t => { type => "integer" },
       %more_args,

@@ -56,9 +56,9 @@ Will return the current operating system name.
 
 sub get_operating_system {
 
-   my $host = Rex::Hardware::Host->get();
+   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-   return $host->{"operatingsystem"} || "unknown";
+   return $operatingsystem || "unknown";
 
 }
 
@@ -87,9 +87,9 @@ sub operating_system_is {
 
    my ($os) = @_;
 
-   my $host = Rex::Hardware::Host->get();
+   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-   if($host->{"operatingsystem"} eq $os) {
+   if($operatingsystem eq $os) {
       return 1;
    }
 
@@ -113,16 +113,13 @@ sub operating_system_version {
 
    my ($os) = @_;
 
-   my $host = Rex::Hardware::Host->get();
+   my $host = Rex::Hardware::Host->get_operating_system_version();
 
-   my $v = $host->{"operatingsystemrelease"};
-   $v =~ s/[\.,]//g;
+   my $operatingsystemrelease =~ s/[\.,]//g;
 
-   return $v;
+   return $operatingsystemrelease;
 
 }
-
-
 
 =item network_interfaces
 
@@ -188,7 +185,7 @@ Returns true if the target system is a FreeBSD.
 
 =cut
 sub is_freebsd {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
    if($os =~ m/FreeBSD/i) {
       return 1;
    }
@@ -204,7 +201,7 @@ sub is_freebsd {
 
 =cut
 sub is_redhat {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
 
    my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific", "RedHatEnterpriseServer");
 
@@ -223,7 +220,7 @@ sub is_redhat {
 
 =cut
 sub is_suse {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
 
    my @suse_clones = ("OpenSuSE", "SuSE");
 
@@ -242,7 +239,7 @@ sub is_suse {
 
 =cut
 sub is_mageia {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
 
    if($os =~ m/mageia/i) {
       return 1;
@@ -260,7 +257,7 @@ sub is_mageia {
 
 =cut
 sub is_debian {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
 
    my @debian_clones = ("Debian", "Ubuntu");
 
@@ -279,7 +276,7 @@ sub is_debian {
 
 =cut
 sub is_alt {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
 
    my @alt_clones = ("ALT");
 
@@ -304,7 +301,7 @@ Returns true if the target system is a NetBSD.
 
 =cut
 sub is_netbsd {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
    if($os =~ m/NetBSD/i) {
       return 1;
    }
@@ -325,7 +322,7 @@ Returns true if the target system is an OpenBSD.
 
 =cut
 sub is_openbsd {
-   my $os = get_operating_system();
+   my $os = @_ ? shift : get_operating_system();
    if($os =~ m/OpenBSD/i) {
       return 1;
    }

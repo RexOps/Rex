@@ -476,7 +476,7 @@ sub __run__ {
    my @exit_codes;
 
    if($Rex::WITH_EXIT_STATUS) {
-      @exit_codes = @Rex::Fork::Task::PROCESS_LIST;
+      @exit_codes = Rex::TaskList->create()->get_exit_codes();
    }
 
    # lock loeschen

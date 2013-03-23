@@ -19,6 +19,7 @@ use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
+use Rex::Commands::Download;
 
 @EXPORT = qw(sync_up sync_down);
 
@@ -28,9 +29,122 @@ sub sync_up {
    #
    # first, get all files on source side
    #
-   my @dirs = ($source);
-   my @local_files = ();
+   my @local_files = _get_local_files($source);
 
+   #print Dumper(\@local_files);
+
+   #
+   # second, get all files from destination side
+   #
+
+   my @remote_files = _get_remote_files($dest);
+
+   #print Dumper(\@remote_files);
+
+   #
+   # third, get the difference
+   #
+
+   my @diff = _diff_files(\@local_files, \@remote_files);
+
+   #print Dumper(\@diff);
+
+   #
+   # fourth, upload the different files
+   #
+
+   for my $file (@diff) {
+      my ($dir)        = ($file->{path} =~ m/(.*)\/[^\/]+$/);
+      my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);
+
+      my (%dir_stat, %file_stat);
+      LOCAL {
+         %dir_stat  = stat($dir);
+         %file_stat = stat($file->{path});
+      };
+
+      if($remote_dir) {
+         mkdir "$dest/$remote_dir",
+            mode  => $dir_stat{mode};
+      }
+
+      Rex::Logger::debug("(sync_up) Uploading $file->{path} to $dest/$file->{name}");
+      if($file->{path} =~ m/\.tpl$/) {
+         file "$dest/" . $file->{name},
+            content => template($file->{path}),
+            mode    => $file_stat{mode};
+      }
+      else {
+         file "$dest/" . $file->{name},
+            source => $file->{path},
+            mode   => $file_stat{mode};
+      }
+   }
+
+}
+
+sub sync_down {
+   my ($source, $dest, $options) = @_;
+
+   #
+   # first, get all files on dest side
+   #
+   my @local_files = _get_local_files($dest);
+
+   #print Dumper(\@local_files);
+
+   #
+   # second, get all files from source side
+   #
+
+   my @remote_files = _get_remote_files($source);
+
+   #print Dumper(\@remote_files);
+
+   #
+   # third, get the difference
+   #
+
+   my @diff = _diff_files(\@remote_files, \@local_files);
+
+   #print Dumper(\@diff);
+
+   #
+   # fourth, upload the different files
+   #
+
+   for my $file (@diff) {
+      my ($dir)        = ($file->{path} =~ m/(.*)\/[^\/]+$/);
+      my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);
+
+      my (%dir_stat, %file_stat);
+      %dir_stat  = stat($dir);
+      %file_stat = stat($file->{path});
+
+      LOCAL {
+         if($remote_dir) {
+            mkdir "$dest/$remote_dir",
+               mode  => $dir_stat{mode};
+         }
+      };
+
+      Rex::Logger::debug("(sync_down) Downloading $file->{path} to $dest/$file->{name}");
+      download($file->{path}, "$dest/$file->{name}");
+
+      LOCAL {
+         chmod $file_stat{mode}, "$dest/$file->{name}";
+      };
+   }
+
+
+}
+
+
+sub _get_local_files {
+   my ($source) = @_;
+
+   my @dirs = ($source);
+   my @local_files;
    LOCAL {
       for my $dir (@dirs) {
          for my $entry (list_files($dir)) {
@@ -53,14 +167,14 @@ sub sync_up {
       }
    };
 
-   #print Dumper(\@local_files);
+   return @local_files;
+}
 
-   #
-   # second, get all files from destination side
-   #
+sub _get_remote_files {
+   my ($dest) = @_;
 
    my @remote_dirs = ($dest);
-   my @remote_files = ();
+   my @remote_files;
 
    if(can_run("md5sum")) {
       # if md5sum executable is available
@@ -72,7 +186,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-unlink $0;
+#unlink $0;
 
 my $dest = $ARGV[0];
 my @dirs = ($dest);   
@@ -137,51 +251,21 @@ print Dumper(\@tree);
       }
    }
 
-   #print Dumper(\@remote_files);
-
-   #
-   # third, get the difference
-   #
-
-   my @diff;
-
-   for my $local_file (@local_files) {
-      my @data = grep { ($_->{name} eq $local_file->{name}) && ($_->{md5} eq $local_file->{md5}) } @remote_files;
-      if(scalar @data == 0) {
-         push(@diff, $local_file);
-      }
-   }
-
-   #print Dumper(\@diff);
-
-   #
-   # fourth, upload the different files
-   #
-
-   for my $file (@diff) {
-      my ($dir)        = ($file->{path} =~ m/(.*)\/[^\/]+$/);
-      my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);
-
-      my (%dir_stat, %file_stat);
-      LOCAL {
-         %dir_stat  = stat($dir);
-         %file_stat = stat($file->{path});
-      };
-
-      if($remote_dir) {
-         mkdir "$dest/$remote_dir",
-            mode  => $dir_stat{mode};
-      }
-
-      file "$dest/" . $file->{name},
-         source => $file->{path},
-         mode   => $file_stat{mode};
-   }
-
+   return @remote_files;
 }
 
-sub sync_down {
-   my ($source, $dest, $options) = @_;
+sub _diff_files {
+   my ($files1, $files2) = @_;
+   my @diff;
+
+   for my $file1 (@{ $files1 }) {
+      my @data = grep { ($_->{name} eq $file1->{name}) && ($_->{md5} eq $file1->{md5}) } @{ $files2 };
+      if(scalar @data == 0) {
+         push(@diff, $file1);
+      }
+   }
+
+   return @diff;
 }
 
 1;

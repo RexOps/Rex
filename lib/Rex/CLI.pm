@@ -47,7 +47,7 @@ BEGIN {
 
 $|++;
 
-my %opts;
+my (%opts, @help);
 
 if($#ARGV < 0) {
    @ARGV = qw(-h);
@@ -93,7 +93,6 @@ sub __run__ {
       p => { type => "string" },
       P => { type => "string" },
       K => { type => "string" },
-      g => { type => "string" },
       G => { type => "string" },
       t => { type => "integer" },
       %more_args,
@@ -550,8 +549,17 @@ sub __help__ {
    printf "  %-15s %s\n", "-t", "Number of threads to use.";
    print "\n";
 
+   for my $code (@help) {
+      &$code();
+   }
+
    CORE::exit 0;
 
+}
+
+sub add_help {
+   my ($self, $code) = @_;
+   push(@help, $code);
 }
 
 sub __version__ {

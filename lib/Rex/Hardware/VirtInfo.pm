@@ -37,11 +37,9 @@ sub get {
          $virtualization_type = "xen";
          $virtualization_role = "guest";
 
-         if (is_file("/proc/xen/capabilities")) {
-            my $string = run "cat /proc/xen/capabilities";
-            if ($string =~ /control_d/){
-               $virtualization_role = "host";
-            }
+         my $xen_cap = run "cat /proc/xen/capabilities";
+         if ($xen_cap =~ /control_d/){
+            $virtualization_role = "host";
          }
       }
 

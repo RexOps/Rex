@@ -132,6 +132,7 @@ use base qw(Rex::Exporter);
             report
             make
             source_global_profile
+            last_command_output
           );
 
 our $REGISTER_SUB_HASH_PARAMTER = 0;
@@ -663,10 +664,12 @@ sub pass_auth {
 
 If you want to use pubkey authentication, then you need to call I<key_auth>.
 
- user "root";
- password "root";
+ user "bob";
+ private_key "/home/bob/.ssh/id_rsa"; # passphrase-less key
+ public_key "/home/bob/.ssh/id_rsa.pub";
  
- pass_auth;
+ 
+ key_auth;
 
 =cut
 
@@ -1135,6 +1138,23 @@ sub source_global_profile {
    Rex::Config->set_source_global_profile($source);
 }
 
+=item last_command_output
+
+This function returns the output of the last "run" command.
+
+On a debian system this example will return the output of I<apt-get install foobar>.
+
+ task "mytask", "myserver", sub {
+    install "foobar";
+    say last_command_output();
+ };
+
+=cut
+
+sub last_command_output {
+   return $Rex::Commands::Run::LAST_OUTPUT->[0];
+}
+
 ######### private functions
 
 sub evaluate_hostname {
@@ -1188,7 +1208,7 @@ sub get_environments {
 }
 
 sub say {
-   return unless $_[0];
+   return unless defined $_[0];
    print @_, "\n";
 }
 

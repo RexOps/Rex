@@ -12,6 +12,9 @@ use warnings;
 use Rex::Logger;
 use Rex::Commands;
 
+use Symbol 'gensym';
+use IPC::Open3;
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -27,13 +30,10 @@ sub exec {
 
    Rex::Logger::debug("Executing: $cmd");
 
-   my $out;
+   my ($out, $err);
 
    Rex::Commands::profiler()->start("exec: $cmd");
-   if($^O =~ m/^MSWin/) {
-      $out = qx{$cmd};
-   }
-   else {
+   if($^O !~ m/^MSWin/) {
       if($path) { $path = "PATH=$path" }
       $path ||= "";
 
@@ -43,12 +43,42 @@ sub exec {
          $new_cmd = ". /etc/profile; $new_cmd";
       }
 
-      $out = qx{$new_cmd};
-      $? >>= 8;
+      $cmd = $new_cmd;
    }
+
+   my($writer, $reader, $error);
+   $error = gensym;
+
+   if(Rex::Config->get_no_tty) {
+      my $pid = open3($writer, $reader, $error, $cmd);
+
+      while(my $output = <$reader>) {
+         $out .= $output;
+      }
+
+      while(my $errout = <$error>) {
+         $err .= $errout;
+      }
+
+      waitpid($pid, 0) or die($!);
+   }
+   else {
+      $cmd .= " 2>&1";
+      $out = qx{$cmd};
+   }
+
+   $? >>= 8;
+
+   Rex::Logger::debug($out) if($out);
+   if($err) {
+      Rex::Logger::debug("========= ERR ============");
+      Rex::Logger::debug($err);
+      Rex::Logger::debug("========= ERR ============");
+   }
+
    Rex::Commands::profiler()->end("exec: $cmd");
 
-   Rex::Logger::debug($out);
+   if(wantarray) { return ($out, $err); }
 
    return $out;
 }

@@ -27,19 +27,21 @@ sub new {
 }
 
 sub is_installed {
+
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("dpkg -L $pkg");
+   my @pkg_info = $self->get_installed($pkg);
 
-   unless($? == 0) {
+   unless(@pkg_info) {
       Rex::Logger::debug("$pkg is NOT installed.");
       return 0;
    }
    
    Rex::Logger::debug("$pkg is installed.");
    return 1;
+
 }
 
 sub install {
@@ -101,22 +103,25 @@ sub remove {
 
 
 sub get_installed {
-   my ($self) = @_;
-
-   my @lines = run 'dpkg-query -W --showformat "\${Status} \${Package}|\${Version}\n"';
-
-   my @pkg;
+   my ($self, $pkg) = @_;
+   my @pkgs;
+   my $dpkg_cmd = 'dpkg-query -W --showformat "\${Status} \${Package}|\${Version}\n"';
+   if ($pkg) {
+       $dpkg_cmd .= " ". $pkg;
+   }
+   
+   my @lines = run $dpkg_cmd;
 
    for my $line (@lines) {
       if($line =~ m/^install ok installed ([^\|]+)\|(.*)$/) {
-         push(@pkg, {
+         push(@pkgs, {
             name    => $1,
             version => $2,
          });
       }
    }
 
-   return @pkg;
+   return @pkgs;
 }
 
 sub update_pkg_db {

@@ -50,6 +50,10 @@ lib/Rex/Commands/Upload.pm
 lib/Rex/Commands/User.pm
 lib/Rex/Commands/Virtualization.pm
 lib/Rex/Config.pm
+lib/Rex/Cron.pm
+lib/Rex/Cron/Base.pm
+lib/Rex/Cron/Linux.pm
+lib/Rex/Cron/SunOS.pm
 lib/Rex/Exporter.pm
 lib/Rex/File/Parser/Data.pm
 lib/Rex/File/Parser/Ini.pm
@@ -71,6 +75,7 @@ lib/Rex/Hardware/Network/NetBSD.pm
 lib/Rex/Hardware/Network/OpenBSD.pm
 lib/Rex/Hardware/Network/Solaris.pm
 lib/Rex/Hardware/Swap.pm
+lib/Rex/Hardware/VirtInfo.pm
 lib/Rex/Helper/Array.pm
 lib/Rex/Helper/Encode.pm
 lib/Rex/Helper/Hash.pm
@@ -243,6 +248,8 @@ t/cmdb/foo.yml
 t/commands.t
 t/config-ssh.t
 t/config.t
+t/cron.ex
+t/cron.t
 t/dmi.linux.out
 t/dmi.obsd.out
 t/dmi.t
@@ -254,8 +261,10 @@ t/host.t
 t/ini.t
 t/interface_fs_local.t
 t/iptables.t
+t/last_command_output.t
 t/libvirt.t
 t/needs.t
+t/no_tty.t
 t/partition.t
 t/report.t
 t/shared.t

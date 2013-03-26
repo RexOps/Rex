@@ -44,6 +44,7 @@ our ($user, $password, $port,
             %SSH_CONFIG_FOR,
             $sudo_without_locales,
             $sudo_without_sh,
+            $no_tty,
             $source_global_profile);
 
 
@@ -382,6 +383,15 @@ sub get_template_function {
          my $template = Rex::Template->new;
          return $template->parse($content, $template_vars);
    };
+}
+
+sub set_no_tty {
+   shift;
+   $no_tty = shift;
+}
+
+sub get_no_tty {
+   return $no_tty;
 }
 
 =item register_set_handler($handler_name, $code)

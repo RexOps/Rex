@@ -44,10 +44,7 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-use Rex::Commands::Gather;
-use Rex::Commands::Run;
-use Rex::Commands::Fs;
-use Rex::Commands::File;
+use Rex::Cron;
 
 @EXPORT = qw(cron);
 
@@ -100,95 +97,73 @@ This example will delete the 4th cronjob. It starts counting by zero (0).
      cron delete => "root", 3;
  };
 
+Managing Environment Variables inside cron.
+
+ task "mycron", "server1", sub {
+     cron env => user => add => {
+        MYVAR => "foo",
+     };
+         
+     cron env => user => delete => $index;
+     cron env => user => delete => 1;
+      
+     cron env => user => "list";
+ };
+
 =cut
 
 sub cron {
 
-   my ($action, $user, $config) = @_;
+   my ($action, $user, $config, @more) = @_;
+
+   my $c = Rex::Cron->create();
+   $c->read_user_cron($user); # this must always be the first action
 
    if($action eq "list") {
-      my @lines;
-
-      if(operating_system_is("SunOS")) {
-         @lines = run "crontab -l $user";
-      }
-      else {
-         @lines = run "crontab -u $user -l";
-      }
-      my @ret = ();
-
-      for my $line (@lines) {
-         if($line =~ m/^$/) { next; }
-         if($line =~ m/^#/) { next; }
-         if($line =~ m/^\s+#/) { next; }
-         if($line =~ m/^\s*$/) { next; }
-
-         if(exists $config->{"as_text"}) {
-            push(@ret, $line);
-         }
-         else {
-            my ($minute, $hour, $day_of_month, $month, $day_of_week, $cmd) = split(/\s+/, $line, 6);
-            push(@ret, {
-               minute       => $minute,
-               hour         => $hour,
-               day_of_month => $day_of_month,
-               month        => $month,
-               day_of_week  => $day_of_week,
-               command      => $cmd,
-            });
-         }
-      }
-
-      return @ret;
+      return $c->list_jobs;
    }
+
    elsif($action eq "add") {
-      my @lines;
-      if(operating_system_is("SunOS")) {
-         @lines = run "crontab -l $user";
-      }
-      else {
-         @lines = run "crontab -u $user -l";
-      }
-
-
-      my $new_cron = sprintf("%s %s %s %s %s %s", $config->{"minute"} || "*",
-                                                  $config->{"hour"} || "*",
-                                                  $config->{"day_of_month"} || "*",
-                                                  $config->{"month"} || "*",
-                                                  $config->{"day_of_week"} || "*",
-                                                  $config->{"command"} || "*",
-                                                  );
-
-      push (@lines, $new_cron);
-      my $fh = file_write "/tmp/cron.rex.tmp";
-      $fh->write(join("\n", @lines) . "\n");
-      $fh->close;
-
-      if(operating_system_is("SunOS")) {
-         run "crontab /tmp/cron.rex.tmp";
-      }
-      else {
-         run "crontab -u $user /tmp/cron.rex.tmp";
-      }
-      unlink "/tmp/cron.rex.tmp";
+      $c->add(%{ $config });
+      my $rnd_file = $c->write_cron;
+      $c->activate_user_cron($rnd_file, $user);
    }
+
    elsif($action eq "delete") {
-      my @crons = cron(list => $user, {as_text => 1});
+      my $to_delete = $config;
+      $c->delete_job($to_delete);
+      my $rnd_file = $c->write_cron;
+      $c->activate_user_cron($rnd_file, $user);
+   }
 
-      splice(@crons, $config, 1);
+   elsif($action eq "env") {
+      my $env_action = $config;
 
-      my $fh = file_write "/tmp/cron.rex.tmp";
-      $fh->write(join("\n", @crons) . "\n");
-      $fh->close;
+      if($env_action eq "add") {
+         my $data = shift @more;
 
-      if(operating_system_is("SunOS")) {
-         run "crontab /tmp/cron.rex.tmp";
+         for my $key (keys %{ $data }) {
+            $c->add_env(
+               $key => $data->{$key},
+            );
+         }
+
+         my $rnd_file = $c->write_cron;
+         $c->activate_user_cron($rnd_file, $user);
       }
-      else {
-         run "crontab -u $user /tmp/cron.rex.tmp";
+
+      elsif($env_action eq "list") {
+         return $c->list_envs;
       }
 
-      unlink "/tmp/cron.rex.tmp";
+      elsif($env_action eq "delete") {
+         my $num = shift @more;
+         $c->delete_env($num);
+
+         my $rnd_file = $c->write_cron;
+         $c->activate_user_cron($rnd_file, $user);
+      }
+
    }
 
 }

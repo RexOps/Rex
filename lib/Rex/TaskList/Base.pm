@@ -260,4 +260,9 @@ sub is_transaction {
    return $self->{IN_TRANSACTION};
 }
 
+sub get_exit_codes {
+   my ($self) = @_;
+   return @Rex::Fork::Task::PROCESS_LIST;
+}
+
 1;

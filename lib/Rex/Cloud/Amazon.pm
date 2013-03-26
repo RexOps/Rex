@@ -274,7 +274,11 @@ sub list_instances {
          launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
          name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
          private_ip => $instance_set->{"instancesSet"}->{"item"}->{"privateIpAddress"},
-         security_group => $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"},
+         (security_group =>
+            ref $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"} eq 'ARRAY'
+                ? join ',', map {$_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}}
+                :$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"}
+        ),
       });
    }
 

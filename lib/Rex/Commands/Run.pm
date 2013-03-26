@@ -72,6 +72,9 @@ This function will execute the given command and returns the output.
 
 =cut
 
+our $LAST_OUTPUT;   # this variable stores the last output of a run.
+                    # so that it is possible to get for example the output of an apt-get update
+                    # that is called through >> install "foo" <<
 sub run {
    my ($cmd, $code) = @_;
 
@@ -81,6 +84,11 @@ sub run {
    my ($out, $err) = $exec->exec($cmd, $path);
    chomp $out if $out;
    chomp $err if $err;
+
+   $LAST_OUTPUT = [$out, $err];
+
+   $out ||= "";
+   $err ||= "";
 
    if($code) {
       return &$code($out, $err);

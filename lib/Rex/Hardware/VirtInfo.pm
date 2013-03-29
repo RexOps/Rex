@@ -23,13 +23,13 @@ sub get {
 
       my ($product_name,$bios_vendor,$sys_vendor,$self_status,$cpuinfo,$modules) = ('','','','','','');
 
-      $product_name = run "cat /sys/devices/virtual/dmi/id/product_name";
-      $bios_vendor  = run "cat /sys/devices/virtual/dmi/id/bios_vendor";
-      $sys_vendor   = run "cat /sys/devices/virtual/dmi/id/sys_vendor";
+      $product_name = run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null";
+      $bios_vendor  = run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null";
+      $sys_vendor   = run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null";
 
-      $self_status  = run "cat /proc/self/status";
-      $cpuinfo      = run "cat /proc/cpuinfo";
-      $modules      = run "cat /proc/modules";
+      $self_status  = run "cat /proc/self/status 2>/dev/null";
+      $cpuinfo      = run "cat /proc/cpuinfo 2>/dev/null";
+      $modules      = run "cat /proc/modules 2>/dev/null";
 
       my ($virtualization_type, $virtualization_role) = ('','');
 
@@ -38,7 +38,7 @@ sub get {
          $virtualization_role = "guest";
 
          if (is_file("/proc/xen/capabilities")) {
-            my $string = run "cat /proc/xen/capabilities";
+            my $string = run "cat /proc/xen/capabilities 2>/dev/null";
             if ($string =~ /control_d/){
                $virtualization_role = "host";
             }

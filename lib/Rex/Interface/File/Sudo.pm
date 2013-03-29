@@ -51,7 +51,7 @@ sub open {
          $link = $self->_fs->readlink($link);
       }
       $self->_fs->cp($file, $self->{rndfile});
-      $self->_fs->chmod(666, $self->{rndfile});
+      $self->_fs->chmod(600, $self->{rndfile});
    }
 
    $self->{fh}->open($mode, $self->{rndfile});

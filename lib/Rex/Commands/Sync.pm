@@ -63,21 +63,49 @@ sub sync_up {
          %file_stat = stat($file->{path});
       };
 
+      # check for overwrites
+      my %file_perm = (mode => $file_stat{mode});
+      if(exists $options->{files} && exists $options->{files}->{mode}) {
+         $file_perm{mode} = $options->{files}->{mode};
+      }
+
+      if(exists $options->{files} && exists $options->{files}->{owner}) {
+         $file_perm{owner} = $options->{files}->{owner};
+      }
+
+      if(exists $options->{files} && exists $options->{files}->{group}) {
+         $file_perm{group} = $options->{files}->{group};
+      }
+
+      my %dir_perm = (mode => $dir_stat{mode});
+      if(exists $options->{directories} && exists $options->{directories}->{mode}) {
+         $dir_perm{mode} = $options->{directories}->{mode};
+      }
+
+      if(exists $options->{directories} && exists $options->{directories}->{owner}) {
+         $dir_perm{owner} = $options->{directories}->{owner};
+      }
+
+      if(exists $options->{directories} && exists $options->{directories}->{group}) {
+         $dir_perm{group} = $options->{directories}->{group};
+      }
+      ## /check for overwrites
+
       if($remote_dir) {
          mkdir "$dest/$remote_dir",
-            mode  => $dir_stat{mode};
+            %dir_perm;
       }
 
       Rex::Logger::debug("(sync_up) Uploading $file->{path} to $dest/$file->{name}");
       if($file->{path} =~ m/\.tpl$/) {
          file "$dest/" . $file->{name},
             content => template($file->{path}),
-            mode    => $file_stat{mode};
+            %file_perm;
       }
       else {
          file "$dest/" . $file->{name},
             source => $file->{path},
-            mode   => $file_stat{mode};
+            %file_perm;
       }
    }
 
@@ -143,6 +171,8 @@ sub sync_down {
 sub _get_local_files {
    my ($source) = @_;
 
+   if(! -d $source) { die("$source : no such directory."); }
+
    my @dirs = ($source);
    my @local_files;
    LOCAL {
@@ -172,6 +202,8 @@ sub _get_local_files {
 
 sub _get_remote_files {
    my ($dest) = @_;
+
+   if(! is_dir($dest) ) { die("$dest : no such directory."); }
 
    my @remote_dirs = ($dest);
    my @remote_files;

@@ -536,6 +536,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Peter H. Ezetta
 
+=item RenatoCRON
+
 =item Samuele Tognini
 
 =item Sascha Guenther

@@ -29,20 +29,22 @@ package Rex::Commands::Gather;
 use strict;
 use warnings;
 
+use Data::Dumper;
 use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Hardware::Network;
 use Rex::Hardware::Memory;
 use Rex::Helper::System;
+use Rex::Commands;
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system_version
+@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system operating_system_version
                is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt 
-               get_system_information);
+               get_system_information dump_system_information);
 
 =item get_operating_system
 
@@ -62,6 +64,10 @@ sub get_operating_system {
 
 }
 
+sub operating_system {
+   return get_operating_system();
+}
+
 =item get_system_information
 
 Will return a hash of all system information. These Information will be also used by the template function.
@@ -70,6 +76,20 @@ Will return a hash of all system information. These Information will be also use
 sub get_system_information {
    return Rex::Helper::System::info();
 }
+
+=item dump_system_information 
+
+This function dumps all known system information on stdout.
+
+=cut
+sub dump_system_information {
+   my ($info) = @_;
+   my %sys_info = get_system_information();
+
+   inspect(\%sys_info, { prepend_key => '$', key_value_sep => " = ", no_root => 1 });
+}
+
+
 
 =item operating_system_is($string)
 

@@ -1,16 +1,18 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
-use Data::Dumper;
+BEGIN {
+   use Test::More tests => 16;
+   use Data::Dumper;
 
-use_ok 'Rex';
-use_ok 'Rex::Commands::File';
-use_ok 'Rex::Commands::Fs';
-use_ok 'Rex::Commands::Gather';
-Rex::Commands::File->import;
-Rex::Commands::Fs->import;
-Rex::Commands::Gather->import;
+   use_ok 'Rex';
+   use_ok 'Rex::Commands::File';
+   use_ok 'Rex::Commands::Fs';
+   use_ok 'Rex::Commands::Gather';
+   Rex::Commands::File->import;
+   Rex::Commands::Fs->import;
+   Rex::Commands::Gather->import;
+};
 
 file("test.txt",
    content => "blah blah\nfoo bar");
@@ -55,4 +57,17 @@ append_if_no_such_line("test.txt", "change",
 ok($changed == 1, "nothing was changed in the file without regexp");
 
 
+file "file with space.txt",
+   content => "file with space\n";
+
+ok(is_file("file with space.txt"), "file with space exists");
+
+$c = "";
+$c = cat "file with space.txt";
+ok($c =~ m/file with space/m, "found content of file with space");
+
 Rex::Commands::Fs::unlink("test.txt");
+Rex::Commands::Fs::unlink("file with space.txt");
+
+ok(! is_file("test.txt"), "test.txt removed");
+ok(! is_file("file with space.txt"), "file with space removed");

@@ -82,6 +82,13 @@ sub connect {
    if($auth_type && $auth_type eq "pass") {
       Rex::Logger::debug("Using password authentication.");
       $self->{auth_ret} = $self->{ssh}->auth_password($user, $pass);
+      if(! $self->{auth_ret}) {
+         # try guessing
+         $self->{auth_ret} = $self->{ssh}->auth(
+                                'username' => $user,
+                                'password' => $pass);
+
+      }
    }
    elsif($auth_type && $auth_type eq "key") {
       Rex::Logger::debug("Using key authentication.");

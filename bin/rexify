@@ -27,10 +27,10 @@ my $opts = {};
 
 ######
 # default server
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.40/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.40/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.40/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.40/get/perldep/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.41/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.41/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.41/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.41/get/perldep/%s";
 
 my $AUTH_USER;
 my $AUTH_PASSWORD;
@@ -107,12 +107,13 @@ if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
    print STDERR "\n";
    print STDERR "Options:";
    print STDERR "\n";
-   print STDERR "\t--search=value\t\tWill search community recipes\n";
-   print STDERR "\t--use=recipe\t\tWill download community recipe\n";
-   print STDERR "\t--template=template\tUse a custom template to create the Rexfile skeleton\n";
-   print STDERR "\t--create-module\t\tCreate a module skeleton.\n";
-   print STDERR "\t--sudo\t\t\tTo use sudo for Perl Module installation.\n";
-   print STDERR "\t--no-install-perl-deps\tUse this if you don't want that rexify tries to install Perl Modules.\n";
+   print STDERR "\t--search=value\t\t\tWill search community recipes\n";
+   print STDERR "\t--use=recipe\t\t\tWill download community recipe\n";
+   print STDERR "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
+   print STDERR "\t--create-module\t\t\tCreate a module skeleton.\n";
+   print STDERR "\t--create-module=Mod::Name\tCreate a module skeleton inside a Rex project.\n";
+   print STDERR "\t--sudo\t\t\t\tTo use sudo for Perl Module installation.\n";
+   print STDERR "\t--no-install-perl-deps\t\tUse this if you don't want that rexify tries to install Perl Modules.\n";
 
    print STDERR "\n";
    print STDERR "Custom Templates:\n";
@@ -273,14 +274,18 @@ if(exists $opts->{use} && $ARGV[0] eq "--use") {
 
 if(exists $opts->{"create-module"}) {
    my $dir = $ARGV[0];
+   my $module_name = $dir;
+
+   if(-f "Rexfile" && $opts->{"create-module"}) {
+      $dir = "lib/" . $opts->{"create-module"};
+      $module_name = $opts->{"create-module"};
+   }
 
    if($dir =~ m/\-\-create\-module/) {
       print "USAGE: $0 Module::Name --create-module\n";
       exit 1;
    }
 
-
-   my $module_name = $dir;
    $dir =~ s/::/\//g;
 
    print "Creating module $module_name...\n";

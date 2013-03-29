@@ -95,8 +95,6 @@ package Rex::Commands;
 use strict;
 use warnings;
 
-use Data::Dumper;
-
 require Rex::Exporter;
 use Rex::TaskList;
 use Rex::Logger;
@@ -133,6 +131,8 @@ use base qw(Rex::Exporter);
             make
             source_global_profile
             last_command_output
+            case
+            inspect
           );
 
 our $REGISTER_SUB_HASH_PARAMTER = 0;
@@ -1153,6 +1153,145 @@ On a debian system this example will return the output of I<apt-get install foob
 
 sub last_command_output {
    return $Rex::Commands::Run::LAST_OUTPUT->[0];
+}
+
+=item case($compare, $option)
+
+This is a function to compare a string with some given options.
+
+ task "mytask", "myserver", sub {
+    my $ntp_service = case operating_sytem, {
+                         Debian  => "ntp",
+                         default => "ntpd",
+                      };
+      
+    my $ntp_service = case operating_sytem, {
+                         qr{debian}i => "ntp",
+                         default     => "ntpd",
+                      };
+     
+    my $ntp_service = case operating_sytem, {
+                         qr{debian}i => "ntp",
+                         default     => sub { return "foo"; },
+                      };
+ };
+
+=cut
+sub case {
+   my ($compare, $option) = @_;
+
+   my $to_return = undef;
+
+   if(exists $option->{$compare}) {
+      $to_return = $option->{$compare};
+   }
+   else {
+      for my $key (keys %{ $option }) {
+         if($compare =~ $key) {
+            $to_return = $option->{$key};
+            last;
+         }
+      }
+   }
+
+   if(exists $option->{default} && ! $to_return) {
+      $to_return = $option->{default};
+   }
+
+   if(ref $to_return eq "CODE") {
+      $to_return = &$to_return();
+   }
+
+   return $to_return;
+}
+
+=inspect($varRef)
+
+This function dumps the contents of a variable to STDOUT.
+
+task "mytask", "myserver", sub {
+   my $myvar = {
+      name => "foo",
+      sys  => "bar",
+   };
+    
+   inspect $myvar;
+};
+
+=cut
+
+my $depth = 0;
+sub _dump_hash {
+   my ($hash, $option) = @_;
+
+   unless($depth == 0 && exists $option->{no_root} && $option->{no_root}) {
+      print "{\n";
+   }
+   $depth++;
+
+   for my $key (keys %{ $hash }) {
+      _print_indent($option);
+      if(exists $option->{prepend_key}) { print $option->{prepend_key}; }
+      print "$key" . ( exists $option->{key_value_sep} ? $option->{key_value_sep} : " => " );
+      _dump_var($hash->{$key});
+   }
+
+   $depth--;
+   _print_indent($option);
+
+   unless($depth == 0 && exists $option->{no_root} && $option->{no_root}) {
+      print "}\n";
+   }
+}
+
+sub _dump_array {
+   my ($array, $option) = @_;
+
+   unless($depth == 0 && exists $option->{no_root} && $option->{no_root}) {
+      print "[\n";
+   }
+   $depth++;
+
+   for my $itm (@{ $array }) {
+      _print_indent($option);
+      _dump_var($itm);
+   }
+
+   $depth--;
+   _print_indent($option);
+
+   unless($depth == 0 && exists $option->{no_root} && $option->{no_root}) {
+      print "]\n";
+   }
+}
+
+sub _print_indent {
+   my ($option) = @_;
+   unless($depth == 1 && exists $option->{no_root} && $option->{no_root}) {
+      print "   " x $depth;
+   }
+}
+
+sub _dump_var {
+   my ($var, $option) = @_;
+
+   if(ref $var eq "HASH") {
+      _dump_hash($var, $option);
+   }
+   elsif(ref $var eq "ARRAY") {
+      _dump_array($var, $option);
+   }
+   else {
+      $var =~ s/\n/\\n/gms;
+      $var =~ s/\r/\\r/gms;
+      $var =~ s/'/\\'/gms;
+
+      print "'$var'\n";
+   }
+}
+
+sub inspect {
+   _dump_var(@_);
 }
 
 ######### private functions

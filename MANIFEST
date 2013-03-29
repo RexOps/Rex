@@ -44,6 +44,7 @@ lib/Rex/Commands/Run.pm
 lib/Rex/Commands/SCM.pm
 lib/Rex/Commands/Service.pm
 lib/Rex/Commands/SimpleCheck.pm
+lib/Rex/Commands/Sync.pm
 lib/Rex/Commands/Sysctl.pm
 lib/Rex/Commands/Tail.pm
 lib/Rex/Commands/Upload.pm
@@ -240,6 +241,7 @@ t/base_inventory.t
 t/base_inventory_smbios.t
 t/base_virt.t
 t/box.t
+t/case.t
 t/cmdb.t
 t/cmdb/default.yml
 t/cmdb/default/default.yml

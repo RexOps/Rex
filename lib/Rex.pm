@@ -454,8 +454,8 @@ sub import {
          }
 
 
-         if($add eq "only_local_template_vars") {
-            Rex::Logger::debug("activating featureset only_local_template_vars");
+         if($add eq "no_local_template_vars") {
+            Rex::Logger::debug("activating featureset no_local_template_vars");
             $Rex::Template::BE_LOCAL = 0;
          }
 

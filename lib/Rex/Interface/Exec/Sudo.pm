@@ -103,6 +103,7 @@ EOF
       my $new_cmd = "$locales $path $cmd";
 
       # escape some special shell things
+      $new_cmd =~ s/\\/\\\\/gms;
       $new_cmd =~ s/"/\\"/gms;
       $new_cmd =~ s/\$/\\\$/gms;
 

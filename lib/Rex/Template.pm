@@ -34,7 +34,7 @@ use Rex::Config;
 use Rex::Logger;
 
 our $DO_CHOMP = 0;
-our $BE_LOCAL = 0;
+our $BE_LOCAL = 1;
 
 sub function {
    my ($class, $name, $code) = @_;

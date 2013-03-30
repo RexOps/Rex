@@ -41,7 +41,7 @@ sub ln {
 
    Rex::Logger::debug("Symlinking files: $to -> $from");
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("ln -snf $from $to");
+   $exec->exec("ln -snf '$from' '$to'");
 
    if($? == 0) { return 1; }
 }
@@ -52,7 +52,7 @@ sub rmdir {
 
    Rex::Logger::debug("Removing directories: " . join(", ", @dirs));
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("/bin/rm -rf " . join(" ", @dirs));
+   $exec->exec("/bin/rm -rf '" . join("' '", @dirs) . "'");
 
    if($? == 0) { return 1; }
 }
@@ -68,7 +68,7 @@ sub chown {
    }
 
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("chown $recursive $user $file");
+   $exec->exec("chown $recursive $user '$file'");
 
    if($? == 0) { return 1; }
 }
@@ -83,7 +83,7 @@ sub chgrp {
    }
 
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("chgrp $recursive $group $file");
+   $exec->exec("chgrp $recursive $group '$file'");
 
    if($? == 0) { return 1; }
 }
@@ -98,7 +98,7 @@ sub chmod {
    }
 
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("chmod $recursive $mode $file");
+   $exec->exec("chmod $recursive $mode '$file'");
 
    if($? == 0) { return 1; }
 }
@@ -107,7 +107,7 @@ sub cp {
    my ($self, $source, $dest) = @_;
 
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("cp -R $source $dest");
+   $exec->exec("cp -R '$source' '$dest'");
 
    if($? == 0) { return 1; }
 }

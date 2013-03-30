@@ -62,7 +62,7 @@ sub upload {
 
    if(my $ssh = Rex::is_ssh()) {
       $ssh->scp_put($source, $rnd_file);
-      $self->_exec("mv $rnd_file $target");
+      $self->_exec("mv $rnd_file '$target'");
    }
    else {
       $self->cp($source, $target);
@@ -76,7 +76,7 @@ sub download {
    my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
 
    if(my $ssh = Rex::is_ssh()) {
-      $self->_exec("cp $source $rnd_file");
+      $self->_exec("cp '$source' $rnd_file");
       $ssh->scp_get($rnd_file, $target);
       $self->unlink($rnd_file);
    }
@@ -94,7 +94,7 @@ sub is_dir {
    |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
-   $self->_exec("perl $rnd_file $path");
+   $self->_exec("perl $rnd_file '$path'");
    my $ret = $?;
 
    $self->unlink($rnd_file);
@@ -110,7 +110,7 @@ sub is_file {
    |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
-   $self->_exec("perl $rnd_file $file");
+   $self->_exec("perl $rnd_file '$file'");
    my $ret = $?;
 
    $self->unlink($rnd_file);
@@ -120,13 +120,13 @@ sub is_file {
 
 sub unlink {
    my ($self, @files) = @_;
-   $self->_exec("rm " . join(" ", @files));
+   $self->_exec("rm '" . join("' '", @files) . "'");
    if($? == 0) { return 1; }
 }
 
 sub mkdir {
    my ($self, $dir) = @_;
-   $self->_exec("mkdir $dir >/dev/null 2>&1");
+   $self->_exec("mkdir '$dir' >/dev/null 2>&1");
    if($? == 0) { return 1; }
 }
 
@@ -153,7 +153,7 @@ sub stat {
    |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
-   my $out = $self->_exec("perl $rnd_file $file");
+   my $out = $self->_exec("perl $rnd_file '$file'");
    $out =~ s/^\$VAR1 =/return /;
    my $tmp = eval $out;
    $self->unlink($rnd_file);
@@ -166,7 +166,7 @@ sub is_readable {
    my $script = q| if(-r $ARGV[0]) { exit 0; } exit 1; |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
-   $self->_exec("perl $rnd_file $file");
+   $self->_exec("perl $rnd_file '$file'");
    my $ret = $?;
    $self->unlink($rnd_file);
 
@@ -179,7 +179,7 @@ sub is_writable {
    my $script = q| if(-w $ARGV[0]) { exit 0; } exit 1; |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
-   $self->_exec("perl $rnd_file $file");
+   $self->_exec("perl $rnd_file '$file'");
    my $ret = $?;
    $self->unlink($rnd_file);
 
@@ -191,7 +191,7 @@ sub readlink {
    my $script = q|print readlink($ARGV[0]) . "\n"; |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
-   my $out = $self->_exec("perl $rnd_file $file");
+   my $out = $self->_exec("perl $rnd_file '$file'");
    chomp $out;
    
    $self->unlink($rnd_file);
@@ -200,7 +200,7 @@ sub readlink {
 
 sub rename {
    my ($self, $old, $new) = @_;
-   $self->_exec("mv $old $new");
+   $self->_exec("mv '$old' '$new'");
 
    if($? == 0) { return 1; }
 }

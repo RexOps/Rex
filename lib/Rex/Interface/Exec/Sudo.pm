@@ -102,15 +102,19 @@ EOF
    else {
       my $new_cmd = "$locales $path $cmd";
 
+      # escape some special shell things
+      $new_cmd =~ s/"/\\"/gms;
+      $new_cmd =~ s/\$/\\\$/gms;
+
       if(Rex::Config->get_source_global_profile) {
          $new_cmd = ". /etc/profile; $new_cmd";
       }
 
       if($enc_pw) {
-         return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S sh -c '$new_cmd'");
+         return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S sh -c \"$new_cmd\"");
       }
       else {
-         return $exec->exec("sudo -p '' -S sh -c '$new_cmd'");
+         return $exec->exec("sudo -p '' -S sh -c \"$new_cmd\"");
       }
 
    }

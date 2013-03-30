@@ -52,6 +52,7 @@ sub open {
       }
       $self->_fs->cp($file, $self->{rndfile});
       $self->_fs->chmod(600, $self->{rndfile});
+      $self->_fs->chown(Rex::Commands::connection->get_auth_user, $self->{rndfile});
    }
 
    $self->{fh}->open($mode, $self->{rndfile});
@@ -82,7 +83,7 @@ sub close {
 
    if(exists $self->{mode} && ( $self->{mode} eq ">" || $self->{mode} eq ">>") ) {
       my $exec = Rex::Interface::Exec->create;
-      $exec->exec("cat " . $self->{rndfile} . " >" . $self->{file});
+      $exec->exec("cat " . $self->{rndfile} . " >'" . $self->{file} . "'");
    }
    
    $self->{fh}->close;

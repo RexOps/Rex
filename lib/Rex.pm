@@ -423,6 +423,9 @@ sub import {
 
       require Rex::Commands::Process;
       Rex::Commands::Process->import(register_in => $register_to);
+
+      require Rex::Commands::Sync;
+      Rex::Commands::Sync->import(register_in => $register_to);
    }
 
    if($what eq "-feature" || $what eq "feature") {

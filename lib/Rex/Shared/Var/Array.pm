@@ -122,6 +122,9 @@ sub FETCHSIZE {
 
    return __lock {
       my $ref = __retr;
+      if(ref($ref) ne "ARRAY") {
+         return 0;
+      }
       return scalar(@{ $ref->{$self->{varname}}->{data} });
    };
 

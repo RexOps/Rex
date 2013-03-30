@@ -27,6 +27,7 @@ sub net_ssh2_exec {
    # REQUIRE_TTY can be turned off by feature no_tty
    if(! Rex::Config->get_no_tty) {
       $chan->pty("vt100");
+      $chan->pty_size(4000, 80);
    }
    $chan->blocking(1);
 

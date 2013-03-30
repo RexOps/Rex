@@ -72,10 +72,10 @@ sub md5 {
       $fh->close;
 
       my $exec = Rex::Interface::Exec->create;
-      my $md5 = $exec->exec("perl $rnd_file $file");
+      my $md5 = $exec->exec("perl $rnd_file '$file'");
 
       unless($? == 0) {
-         $md5 = $exec->exec("md5sum $file");
+         ($md5) = split(/\s/, $exec->exec("md5sum '$file'"));
       }
 
       unless($? == 0) {

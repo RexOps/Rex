@@ -1,3 +1,24 @@
+2013-03-30 Jan Gehring <jan.gehring, gmail.com> (0.41.0)
+  * Function to get the last output of a command that uses run() #104
+  * Refactores Cron module, added environment variable support to cron
+  * New sync module
+  * added Hardware::VirtInfo module #119 - Franky Van Liedekerke
+  * new keyword "case"
+  * Refactored net_ssh2_exec() function - Peter H. Ezetta
+  * Refactored local command execution to use IPC::Open3
+  * Changed the Debian is_installed function to use the more accurate 
+    get_installed function. - Samuele Tognini
+  * '-t' option should work with '-e' option. rex -t 2 -H "hostA hostB" 
+     -e 'run "sleep 10"; say run "uptime"' should run in parallel. 
+     - Tokuhiro Matsuno
+  * Fixed loading of modules in $HOME/.rex/recipes
+  * Don't calculate md5 sums if there is no on_change hook for file() function - Franky Van Liedekerke
+  * Better understandable error messages for authentication - Franky Van Liedekerke
+  * Cloud/Amazon: support multiple security groups - RenatoCRON
+  * Fix Pod about pubkey authentication - Joris
+  * Rex/Gearman: Fixed get_exit_codes use flag
+  * Rex/Boxes: Creation order of VMs can now be defined in YAML file
+
 2013-03-10 Jan Gehring <jan.gehring, gmail.com> (0.40.4)
   * fixed get_box() command if task is run on a remote host
   * fixed sudo without password

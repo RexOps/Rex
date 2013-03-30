@@ -169,7 +169,15 @@ sub sync {
                                  $fh->send($pass . "\n");
                                  exp_continue;
                               }
-                           ]
+                           ],
+                           [
+                                 qr{rsync error: error in rsync protocol},
+                                 sub {
+                                    Rex::Logger::debug("Error in rsync");
+                                    die;
+                                 }
+                           ],
+
       );
    }
 
@@ -194,12 +202,22 @@ sub sync {
                               Rex::Logger::debug("Finished transfer");
                               exp_continue;
                            }
-                        ]);
+                        ],
+                        [
+                              qr{rsync error: error in rsync protocol},
+                              sub {
+                                 Rex::Logger::debug("Error in rsync");
+                                 die;
+                              }
+                        ],
+                        );
 
       };
 
       $exp->soft_close;
+      $? = $exp->exitstatus;
    };
+
 
    if($@) {
       Rex::Logger::info($@);

@@ -342,6 +342,7 @@ sub __run__ {
 
       Rex::TaskList->create()->create_task("eval-line", @params);
       Rex::Commands::do_task("eval-line");
+      CORE::exit(0);
    }
    elsif($opts{'M'}) {
       Rex::Logger::debug("Loading Rex-Module: " . $opts{'M'});

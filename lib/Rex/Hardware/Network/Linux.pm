@@ -12,16 +12,16 @@ use warnings;
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Helper::Array;
+use Data::Dumper;
 
 sub get_network_devices {
 
    my @device_list;
 
    my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } run("cat /proc/net/dev");
-
    for my $dev (@proc_net_dev) {
       my $ifconfig = run("ifconfig $dev");
-      if($ifconfig =~ m/Link encap:(?:Ethernet|Point-to-Point Protocol)/m) {
+      if($ifconfig =~ m/(Link encap:)?(?:Ethernet|Point-to-Point Protocol)/m) {
          push(@device_list, $dev);
       }
    }
@@ -42,10 +42,10 @@ sub get_network_configuration {
       my $ifconfig = run("LC_ALL=C ifconfig $dev");
 
       $device_info->{$dev} = {
-         ip          => [ ( $ifconfig =~ m/inet addr:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-         netmask     => [ ( $ifconfig =~ m/Mask:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-         broadcast   => [ ( $ifconfig =~ m/Bcast:(\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-         mac         => [ ( $ifconfig =~ m/HWaddr (..:..:..:..:..:..)/ ) ]->[0],
+         ip          => [ ( $ifconfig =~ m/inet( addr:| )?(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
+         netmask     => [ ( $ifconfig =~ m/(netmask |Mask:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
+         broadcast   => [ ( $ifconfig =~ m/(broadcast |Bcast:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
+         mac         => [ ( $ifconfig =~ m/(ether|HWaddr) (..:..:..:..:..:..)/ ) ]->[1],
       };
 
    }

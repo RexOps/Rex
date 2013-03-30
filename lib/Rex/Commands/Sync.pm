@@ -9,8 +9,8 @@ package Rex::Commands::Sync;
 use strict;
 use warnings;
 
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 use Data::Dumper;
@@ -98,7 +98,10 @@ sub sync_up {
 
       Rex::Logger::debug("(sync_up) Uploading $file->{path} to $dest/$file->{name}");
       if($file->{path} =~ m/\.tpl$/) {
-         file "$dest/" . $file->{name},
+         my $file_name = $file->{name};
+         $file_name =~ s/\.tpl$//;
+
+         file "$dest/" . $file_name,
             content => template($file->{path}),
             %file_perm;
       }

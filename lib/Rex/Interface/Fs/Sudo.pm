@@ -120,7 +120,9 @@ sub is_file {
 
 sub unlink {
    my ($self, @files) = @_;
-   $self->_exec("rm '" . join("' '", @files) . "'");
+   (@files) = $self->_normalize_path(@files);
+
+   $self->_exec("rm " . join(" ", @files));
    if($? == 0) { return 1; }
 }
 
@@ -200,7 +202,10 @@ sub readlink {
 
 sub rename {
    my ($self, $old, $new) = @_;
-   $self->_exec("mv '$old' '$new'");
+   ($old) = $self->_normalize_path($old);
+   ($new) = $self->_normalize_path($new);
+
+   $self->_exec("mv $old $new");
 
    if($? == 0) { return 1; }
 }

@@ -5,17 +5,17 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.40.99.99
+Version: 0.41.0
 Release: 1
 License: Apache 2.0
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.40.99.99.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.41.0.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: perl-Net-SSH2
 BuildRequires: perl >= 5.8.0
 BuildRequires: perl(ExtUtils::MakeMaker)
-Requires: libssh2 >= 1.2.8
+#Requires: libssh2 >= 1.2.8 - is included in perl-Net-SSH2 deps
 Requires: perl-Net-SSH2
 Requires: perl-Expect
 Requires: perl-DBI
@@ -59,7 +59,7 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 
 %changelog
 
-* Sat Mar 30 2013 Jan Gehring <jan.gehring at, gmail.com> 0.40.99.99-1
+* Mon Apr 01 2013 Jan Gehring <jan.gehring at, gmail.com> 0.41.0-1
 - updated release
 
 * Sun Mar 10 2013 Jan Gehring <jan.gehring at, gmail.com> 0.40.4-1

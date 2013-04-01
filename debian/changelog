@@ -1,7 +1,7 @@
-rex (0.40.99.99) unstable; urgency=low
+rex (0.41.0) unstable; urgency=low
   * package updated
 
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 30 Mar 2013 13:15:00 +0200
+ -- Jan Gehring <jan.gehring@gmail.com>  Mon, 01 Apr 2013 19:15:00 +0200
 
 rex (0.40.4) unstable; urgency=low
   * package updated

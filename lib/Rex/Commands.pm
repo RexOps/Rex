@@ -1205,7 +1205,7 @@ sub case {
    return $to_return;
 }
 
-=inspect($varRef)
+=item inspect($varRef)
 
 This function dumps the contents of a variable to STDOUT.
 

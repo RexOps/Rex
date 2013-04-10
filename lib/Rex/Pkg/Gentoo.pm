@@ -103,7 +103,7 @@ sub get_installed {
       '((?:-r\d+)?)$';                            # revision, eg r12
 
    my @ret;
-   for my $line (run("epm -qa")) {
+   for my $line (can_run("equery") ? run("equery -qC list '*'") : run("epm -qa")) {
       my $r = qr{$pkgregex};
       my ($name, $version, $suffix, $revision) = ($line =~ $r);
       push(@ret, {

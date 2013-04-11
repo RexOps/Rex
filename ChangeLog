@@ -1,3 +1,7 @@
+2013-03-30 Jan Gehring <jan.gehring, gmail.com> (0.41.1)
+  * fixed a parsing bug in df output
+  * fixed mount command with persistend option
+
 2013-03-30 Jan Gehring <jan.gehring, gmail.com> (0.41.0)
   * Function to get the last output of a command that uses run() #104
   * Refactores Cron module, added environment variable support to cron

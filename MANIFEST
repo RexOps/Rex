@@ -252,6 +252,9 @@ t/config-ssh.t
 t/config.t
 t/cron.ex
 t/cron.t
+t/df.out1
+t/df.out2
+t/df.t
 t/dmi.linux.out
 t/dmi.obsd.out
 t/dmi.t

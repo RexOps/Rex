@@ -87,6 +87,7 @@ sub sync {
    my ($source, $dest, $opt) = @_;
 
    my $current_connection = Rex::get_current_connection();
+   my $server = $current_connection->{server};
    my $cmd;
 
    if(! exists $opt->{download} && $source !~ m/^\//) {
@@ -115,16 +116,16 @@ sub sync {
 
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {
       Rex::Logger::debug("Downloading $source -> $dest");
-      $cmd = "rsync -a -e '\%s' --verbose --stats $params " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
+      $cmd = "rsync -a -e '\%s' --verbose --stats $params " . $server->get_user . "\@" . $server . ":"
                      . $source . " " . $dest;
    }
    else {
       Rex::Logger::debug("Uploading $source -> $dest");
-      $cmd = "rsync -a -e '\%s' --verbose --stats $params $source " . Rex::Config->get_user . "\@" . $current_connection->{"server"} . ":"
+      $cmd = "rsync -a -e '\%s' --verbose --stats $params $source " . $server->get_user . "\@" . $server . ":"
                      . $dest;
    }
 
-   my $pass = Rex::Config->get_password;
+   my $pass = $server->get_password;
    my @expect_options = ();
 
    if(Rex::Config->get_password_auth) {
@@ -151,7 +152,7 @@ sub sync {
       );
    }
    else {
-      $cmd = sprintf($cmd, 'ssh -i ' . Rex::Config->get_private_key . " -o StrictHostKeyChecking=no ");
+      $cmd = sprintf($cmd, 'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no ");
       push(@expect_options, [
                               qr{Are you sure you want to continue connecting},
                               sub {

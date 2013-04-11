@@ -551,23 +551,43 @@ sub df {
    $dev ||= "";
 
    my $exec = Rex::Interface::Exec->create;
-   my @lines = $exec->exec("df $dev");
+   my ($out, $err) = $exec->exec("df $dev");
+
+   my @lines = split(/\r?\n/, $out);
+
+   $ret = _parse_df(@lines);
+
+   if($dev) {
+      return $ret->{$dev};
+   }
+
+   return $ret;
+}
+
+sub _parse_df {
+   my @lines = @_;
+   chomp @lines;
+
+   my $ret = {};
+
    shift @lines;
+   my $current_fs = "";
 
    for my $line (@lines) {
       my ($fs, $size, $used, $free, $use_per, $mounted_on) = split(/\s+/, $line, 6);
+      $current_fs = $fs if $fs;
 
-      $ret->{$fs} = {
+      if(! $size) {
+         next;
+      }
+
+      $ret->{$current_fs} = {
          size => $size,
          used => $used,
          free => $free,
          used_perc => $use_per,
          mounted_on => $mounted_on
       };
-   }
-
-   if($dev) {
-      return $ret->{$dev};
    }
 
    return $ret;
@@ -650,7 +670,9 @@ sub mount {
    if(exists $option->{persistent}) {
       if(! exists $option->{fs}) {
          # no fs given, so get it from mount output
-         my ($line) = grep { /^$device/ } $exec->exec("mount");
+         my ($out, $err) = $exec->exec("mount");
+         my @output = split(/\r?\n/, $out);
+         my ($line) = grep { /^$device/ } @output;
          my ($_d, $_o, $_p, $_t, $fs_type) = split(/\s+/, $line);
          $option->{fs} = $fs_type;
 

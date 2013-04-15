@@ -171,6 +171,12 @@ Run only one command within sudo.
 sub sudo {
    my ($cmd) = @_;
 
+   my $options;
+   if(ref $cmd eq "HASH") {
+      $options = $cmd;
+      $cmd = $options->{command};
+   }
+
    if($cmd eq "on" || $cmd eq "-on" || $cmd eq "1") {
       Rex::Logger::debug("Turning sudo globaly on");
       Rex::global_sudo(1);
@@ -183,7 +189,9 @@ sub sudo {
    }
 
    my $old_sudo = Rex::get_current_connection()->{use_sudo} || 0;
+   my $old_options = Rex::get_current_connection()->{sudo_options} || {};
    Rex::get_current_connection()->{use_sudo} = 1;
+   Rex::get_current_connection()->{sudo_options} = $options;
 
    my $ret;
 
@@ -196,6 +204,7 @@ sub sudo {
    }
 
    Rex::get_current_connection()->{use_sudo} = $old_sudo;
+   Rex::get_current_connection()->{sudo_options} = $old_options;
 
    return $ret;
 }

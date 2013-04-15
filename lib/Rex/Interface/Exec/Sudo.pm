@@ -85,6 +85,12 @@ EOF
 
    my $locales = "LC_ALL=C";
 
+   my $sudo_options = Rex::get_current_connection()->{sudo_options};
+   my $sudo_options_str = "";
+   if(exists $sudo_options->{user}) {
+      $sudo_options_str .= " -u " . $sudo_options->{user};
+   }
+
    if(Rex::Config->get_sudo_without_locales()) {
       Rex::Logger::debug("Using sudo without locales. If the locale is NOT C or en_US it will break many things!");
       $locales = "";
@@ -93,10 +99,10 @@ EOF
    if(Rex::Config->get_sudo_without_sh()) {
       Rex::Logger::debug("Using sudo without sh will break things like file editing.");
       if($enc_pw) {
-         return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S $locales $cmd");
+         return $exec->exec("perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S $locales $cmd");
       }
       else {
-         return $exec->exec("sudo $locales $cmd");
+         return $exec->exec("sudo $sudo_options_str $locales $cmd");
       }
    }
    else {
@@ -112,10 +118,10 @@ EOF
       }
 
       if($enc_pw) {
-         return $exec->exec("perl $random_file '$enc_pw' | sudo -p '' -S sh -c \"$new_cmd\"");
+         return $exec->exec("perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S sh -c \"$new_cmd\"");
       }
       else {
-         return $exec->exec("sudo -p '' -S sh -c \"$new_cmd\"");
+         return $exec->exec("sudo $sudo_options_str -p '' -S sh -c \"$new_cmd\"");
       }
 
    }

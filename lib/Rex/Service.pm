@@ -22,33 +22,30 @@ sub register_service_provider {
    $SERVICE_PROVIDER{"\L$service_name"} = $service_class;
    return 1;
 }
+
 sub get {
 
-   my $host = Rex::Hardware::Host->get();
+   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
+   my $can_run_systemctl = can_run("systemctl");
+   my $class;
 
-   if(is_redhat()) {
-      $host->{"operatingsystem"} = "Redhat";
-   }
-
-   my $class = "Rex::Service::" . $host->{"operatingsystem"};
-
-   if(is_redhat() && can_run("systemctl")) {
+   $class = "Rex::Service::" . $operatingsystem;
+   if(is_redhat($operatingsystem) && $can_run_systemctl) {
       $class = "Rex::Service::Redhat::systemd";
-   }
-
-   if(is_suse() && can_run("systemctl")) {
+   } elsif (is_redhat($operatingsystem)) {
+      # this also counts for fedora, centos, ...
+      $class = "Rex::Service::Redhat";
+   } elsif(is_suse($operatingsystem) && $can_run_systemctl) {
       $class = "Rex::Service::SuSE::systemd";
-   }
-
-   if(is_alt() && can_run("systemctl")) {
+   } elsif (is_alt($operatingsystem) && $can_run_systemctl) {
       $class = "Rex::Service::ALT::systemd";
    }
 
    my $provider_for = Rex::Config->get("service_provider") || {};
    my $provider;
 
-   if(ref($provider_for) && exists $provider_for->{$host->{"operatingsystem"}}) {
-      $provider = $provider_for->{$host->{"operatingsystem"}};
+   if(ref($provider_for) && exists $provider_for->{$operatingsystem}) {
+      $provider = $provider_for->{$operatingsystem};
       $class .= "::\L$provider";
    }
    elsif(exists $SERVICE_PROVIDER{$provider_for}) {
@@ -59,10 +56,10 @@ sub get {
    eval "use $class";
 
    if($@) {
-   
-      Rex::Logger::info("OS (" . $host->{"operatingsystem"} . ") not supported");
+
+      Rex::Logger::info("OS ($operatingsystem) not supported");
       exit 1;
-   
+
    }
 
    return $class->new;

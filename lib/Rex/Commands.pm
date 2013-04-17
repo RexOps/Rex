@@ -1282,11 +1282,16 @@ sub _dump_var {
       _dump_array($var, $option);
    }
    else {
-      $var =~ s/\n/\\n/gms;
-      $var =~ s/\r/\\r/gms;
-      $var =~ s/'/\\'/gms;
+      if(defined $var) {
+         $var =~ s/\n/\\n/gms;
+         $var =~ s/\r/\\r/gms;
+         $var =~ s/'/\\'/gms;
 
-      print "'$var'\n";
+         print "'$var'\n";
+      }
+      else {
+         print "no value\n";
+      }
    }
 }
 

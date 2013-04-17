@@ -1,0 +1,7 @@
+vif1.0    Link encap:Ethernet  HWaddr fe:ff:ff:ff:ff:ff
+          inet6 addr: fe80::fcff:ffff:feff:ffff/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:426013098 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:407288230 errors:0 dropped:12 overruns:0 carrier:0
+          collisions:0 txqueuelen:32
+          RX bytes:519084830261 (483.4 GiB)  TX bytes:172943515025 (161.0 GiB)

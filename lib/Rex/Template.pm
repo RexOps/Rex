@@ -189,6 +189,12 @@ sub parse {
 
    };
 
+   if(! $r) {
+      Rex::Logger::info("It seems that there was an error processing the template", "warn");
+      Rex::Logger::info("because the result is empty.", "warn");
+      die("Error processing template");
+   }
+
    return $r;
 }
 

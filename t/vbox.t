@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 use Data::Dumper;
 
 use_ok 'Rex';
@@ -18,4 +18,5 @@ use_ok 'Rex::Virtualization::VBox::reboot';
 use_ok 'Rex::Virtualization::VBox::share_folder';
 use_ok 'Rex::Virtualization::VBox::shutdown';
 use_ok 'Rex::Virtualization::VBox::start';
+use_ok 'Rex::Virtualization::VBox::bridge';
 

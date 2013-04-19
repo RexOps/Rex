@@ -44,7 +44,7 @@ sub start {
          } or do {
             push(@PROCESS_LIST, 1);
             $self->{'running'} = 0;
-            exit();
+            die($@);
          };
 
          $self->{'running'} = 0;

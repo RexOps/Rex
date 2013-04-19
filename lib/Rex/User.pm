@@ -34,7 +34,7 @@ sub get {
    if($@) {
    
       Rex::Logger::info("OS not supported");
-      exit 1;
+      die("OS not supported");
    
    }
 

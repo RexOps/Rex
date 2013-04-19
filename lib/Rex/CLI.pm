@@ -470,7 +470,9 @@ sub __run__ {
    };
 
    if($@) {
+      # this is always the child
       Rex::Logger::info("Error running task/batch: $@", "warn");
+      CORE::exit(0);
    }
 
    my @exit_codes;
@@ -478,7 +480,8 @@ sub __run__ {
    if($Rex::WITH_EXIT_STATUS) {
       @exit_codes = Rex::TaskList->create()->get_exit_codes();
    }
-
+#print ">> $$\n";
+#print Dumper(\@exit_codes);
    # lock loeschen
    Rex::global_sudo(0);
    Rex::Logger::debug("Removing lockfile") if(! exists $opts{'F'});
@@ -501,6 +504,9 @@ sub __run__ {
             exit($exit_code);
          }
       }
+   }
+   else {
+      exit(0);
    }
 
    sub _print_color {

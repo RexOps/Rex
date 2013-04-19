@@ -257,7 +257,6 @@ On failure it will die.
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
-    exit;
  }
  
  # work with the filehandle
@@ -313,7 +312,6 @@ On failure it will die.
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
-    exit;
  }
  
  # work with the filehandle

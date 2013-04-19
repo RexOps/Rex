@@ -24,6 +24,7 @@ sub TIEARRAY {
    };
 
    bless $self, $_[0];
+
 }
 
 sub STORE {
@@ -122,6 +123,9 @@ sub FETCHSIZE {
 
    return __lock {
       my $ref = __retr;
+      if(! exists $ref->{$self->{varname}}) {
+         return 0;
+      }
       return scalar(@{ $ref->{$self->{varname}}->{data} });
    };
 

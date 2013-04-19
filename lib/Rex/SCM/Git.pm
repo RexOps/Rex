@@ -34,7 +34,7 @@ sub checkout {
       unless($? == 0) {
          Rex::Logger::info("Error cloning repository.", "warn");
          Rex::Logger::info($out);
-         exit 1;
+         die("Error cloning repository.");
       }
 
       Rex::Logger::debug($out);
@@ -70,7 +70,7 @@ sub checkout {
    }
    else {
       Rex::Logger::info("Error checking out repository.", "warn");
-      exit 1;
+      die("Error checking out repository.");
    }
 }
 

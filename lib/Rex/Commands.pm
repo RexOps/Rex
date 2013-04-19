@@ -1333,8 +1333,7 @@ sub exit {
 
    Rex::global_sudo(0);
    unlink("$::rexfile.lock") if($::rexfile);
-
-   CORE::exit(@_);
+   CORE::exit($_[0] || 0);
 }
 
 sub get_environment {

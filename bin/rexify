@@ -121,6 +121,7 @@ if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
    exit 1;
 }
 
+
 sub print_found {
    my ($name, $data) = @_;
 
@@ -258,7 +259,7 @@ if(exists $opts->{search}) {
    exit 0;
 }
 
-if(exists $opts->{use} && $ARGV[0] eq "--use") {
+if(exists $opts->{use} && $ARGV[0] =~ /^\-\-use/) {
    if($opts->{use}) {
       if(! ref $opts->{use}) {
          $opts->{use} = [ $opts->{use} ];

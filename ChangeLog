@@ -1,3 +1,10 @@
+2013-04-19 Jan Gehring <jan.gehring, gmail.com> (0.41.2)
+  * fixed exit status code for some situations where it fails
+  * fixed rexify --use=module command
+  * fixinig 'unititialized value' output of inspect() function. returning now 'no value'. - #152
+  * added check if template result is empty. if so - die() - #152
+  * fixing problem with invalid variable names in templates - #152
+
 2013-03-30 Jan Gehring <jan.gehring, gmail.com> (0.41.1)
   * fixed a parsing bug in df output
   * fixed mount command with persistend option

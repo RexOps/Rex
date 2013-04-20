@@ -3,7 +3,44 @@
 # 
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
+=head1 NAME
+
+Rex::Commands::Sync - Sync directories
+
+=head1 DESCRIPTION
+
+This module can sync directories between your Rex system and your servers without the need of rsync.
+
+=head1 SYNOPSIS
+
+ use Rex::Commands::Sync;
+    
+ task "prepare", "mysystem01", sub {
+    # upload directory recursively to remote system. 
+    sync_up "/local/directory", "/remote/directory";
+    
+    sync_up "/local/directory", "/remote/directory", {
+       # setting custom file permissions for every file
+       files => {
+          owner => "foo",
+          group => "bar",
+          mode  => 600,
+       },
+       # setting custom directory permissions for every directory
+       directories => {
+          owner => "foo",
+          group => "bar",
+          mode  => 700,
+       },
+    };
+     
+    # download a directory recursively from the remote system to the local machine
+    sync_down "/remote/directory", "/local/directory";
+ }; 
+
+=cut
+  
 package Rex::Commands::Sync;
 
 use strict;

@@ -145,8 +145,9 @@ sub parse {
 
          my @code_values;
          for my $var (keys %{$vars}) {
-            Rex::Logger::debug("Registering local: $var");
-            $var_data .= '$' . $var . ", \n";
+            my $new_var = _normalize_var_name($var);
+            Rex::Logger::debug("Registering local: $new_var");
+            $var_data .= '$' . $new_var . ", \n";
             push(@code_values, $vars->{$var});
          }
 
@@ -163,6 +164,11 @@ sub parse {
          Rex::Logger::debug($var_data);
 
          my $tpl_code = eval($var_data);
+
+         if($@) {
+            Rex::Logger::info($@);
+         }
+
          $r = $tpl_code->(@code_values);
 
       }
@@ -170,6 +176,10 @@ sub parse {
          Rex::Logger::debug("BE_LOCAL==0");
          Rex::Logger::debug($new_data);
          $r = eval($new_data);
+
+         if($@) {
+            Rex::Logger::info($@);
+         }
       }
 
       # undef the vars
@@ -177,11 +187,13 @@ sub parse {
          $$var = undef;
       }
 
-      if($@) {
-         Rex::Logger::info($@);
-      }
-
    };
+
+   if(! $r) {
+      Rex::Logger::info("It seems that there was an error processing the template", "warn");
+      Rex::Logger::info("because the result is empty.", "warn");
+      die("Error processing template");
+   }
 
    return $r;
 }
@@ -196,6 +208,12 @@ sub _quote {
    $str =~ s/\$/\\\$/g;
 
    return $str;
+}
+
+sub _normalize_var_name {
+   my($input) = @_;
+   $input =~ s/[^A-Za-z0-9_]/_/g;
+   return $input;
 }
 
 =item is_defined($variable, $default_value)

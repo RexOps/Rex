@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 24;
 use_ok 'Rex::Template';
 use_ok 'Rex::Config';
 
@@ -80,4 +80,19 @@ ok($t->parse($content) eq "Hello this is bar", "get keys from Rex::Config");
 
 ok($t->parse($content, {foo => "baz"}) eq "Hello this is baz", "overwrite keys from Rex::Config");
 
+$content = 'Hello this is <%= $::foo %> <%= $::veth1_0_ip %>';
+ok($t->parse($content, {foo => "baz", "veth1.0_ip" => "10.1.2.3"}) eq "Hello this is baz 10.1.2.3", "template with invalid key name");
+
+my $v = {
+   "foo" => {val => "val1", name => "foo"},
+   "foo_bar" => {val => "val2", name => "foo_bar"},
+   "k-ey" => {val => "val3", name => "k_ey"},
+   "veth0.1" => {val => "val4", name => "veth0_1"},
+   "2nd\\key" => {val => "val5", name => "2nd_key"},
+};
+
+for my $key (keys %{$v}) {
+   my $var_name = Rex::Template::_normalize_var_name($key);
+   ok($var_name eq $v->{$key}->{name}, "$var_name is equal to " . $v->{$key}->{name});
+}
 

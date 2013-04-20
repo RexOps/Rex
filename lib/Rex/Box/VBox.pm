@@ -70,6 +70,11 @@ And then you can use it the following way in your Rexfile.
     boxes "init";
  };
 
+=head1 HEADLESS MODE
+
+It is also possible to run VirtualBox in headless mode. This only works on Linux and MacOS. If you want to do this you can use the following option at the top of your I<Rexfile>.
+
+ set box_options => { headless => TRUE };
 
 =head1 METHODS
 

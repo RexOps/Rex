@@ -41,17 +41,22 @@ sub get_network_configuration {
 
       my $ifconfig = run("LC_ALL=C ifconfig $dev");
 
-      $device_info->{$dev} = {
-         ip          => [ ( $ifconfig =~ m/inet( addr:| )?(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
-         netmask     => [ ( $ifconfig =~ m/(netmask |Mask:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
-         broadcast   => [ ( $ifconfig =~ m/(broadcast |Bcast:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
-         mac         => [ ( $ifconfig =~ m/(ether|HWaddr) (..:..:..:..:..:..)/ ) ]->[1],
-      };
+      $device_info->{$dev} = _parse_ifconfig($ifconfig);
 
    }
 
    return $device_info;
 
+}
+
+sub _parse_ifconfig {
+   my ($ifconfig) = @_;
+   return {
+      ip          => [ ( $ifconfig =~ m/inet( addr:| )?(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
+      netmask     => [ ( $ifconfig =~ m/(netmask |Mask:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
+      broadcast   => [ ( $ifconfig =~ m/(broadcast |Bcast:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
+      mac         => [ ( $ifconfig =~ m/(ether|HWaddr) (..:..:..:..:..:..)/ ) ]->[1],
+   };
 }
 
 sub route {

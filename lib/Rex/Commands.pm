@@ -1282,11 +1282,16 @@ sub _dump_var {
       _dump_array($var, $option);
    }
    else {
-      $var =~ s/\n/\\n/gms;
-      $var =~ s/\r/\\r/gms;
-      $var =~ s/'/\\'/gms;
+      if(defined $var) {
+         $var =~ s/\n/\\n/gms;
+         $var =~ s/\r/\\r/gms;
+         $var =~ s/'/\\'/gms;
 
-      print "'$var'\n";
+         print "'$var'\n";
+      }
+      else {
+         print "no value\n";
+      }
    }
 }
 
@@ -1328,8 +1333,7 @@ sub exit {
 
    Rex::global_sudo(0);
    unlink("$::rexfile.lock") if($::rexfile);
-
-   CORE::exit(@_);
+   CORE::exit($_[0] || 0);
 }
 
 sub get_environment {

@@ -55,7 +55,7 @@ sub checkout {
    }
    else {
       Rex::Logger::info("Error checking out repository.", "warn");
-      exit 1;
+      die("Error checking out repository.");
    }
    Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
@@ -64,7 +64,7 @@ sub checkout {
    unless($? == 0) {
       Rex::Logger::info("Error checking out repository.", "warn");
       Rex::Logger::info($out);
-      exit 1;
+      die("Error checking out repository.");
    }
 
 }

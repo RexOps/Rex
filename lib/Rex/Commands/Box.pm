@@ -257,7 +257,7 @@ sub get_box {
             sleep 1;
          }
 
-         exit;
+         CORE::exit;
       }
 
       my $old_q = $::QUIET;

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use File::Temp;
-use Test::More tests => 18;
+use Test::More tests => 23;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
@@ -25,9 +25,9 @@ EOF
 my $ssh_cfg2 = <<EOF;
 
 Host = frontend2
-Hostname = this.is.a.domain.tld
-User = 123
-Port = 1005
+   Hostname = this.is.a.domain.tld
+   User = 123
+   Port = 1005
 
 Host = some other hosts
 Port = 3306
@@ -65,6 +65,16 @@ is($c->{'frontend2'}->{'port'},1005);
 is($c->{'some'}->{'port'},'3306');
 is($c->{'other'}->{'port'},'3306');
 is($c->{'hosts'}->{'port'},'3306');
+
+my @lines = eval { local(@ARGV) = ("t/ssh_config.1"); <>; };
+my %data = Rex::Config::_parse_ssh_config(@lines);
+
+ok(exists $data{"*"}, "Host * exists");
+ok(exists $data{"*"}->{stricthostkeychecking}, "Host * / StrictHostKeyChecking exists");
+ok($data{"*"}->{stricthostkeychecking} eq "no", "Host * / StrictHostKeyChecking and contains 'no'");
+ok(exists $data{"*"}->{userknownhostsfile}, "Host * / UserKnownHostsFile exists");
+ok($data{"*"}->{userknownhostsfile} eq "/dev/null", "Host * / UserKnownHostsFile and contains '/dev/null'");
+
 
 1;
 

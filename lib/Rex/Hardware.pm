@@ -84,6 +84,8 @@ sub get {
 
    my %hardware_information;
 
+   my $current_cache = Rex::get_current_connection()->{"cache"};
+
    if("all" eq "\L$modules[0]") {
 
       @modules = qw(Host Kernel Memory Network Swap VirtInfo);
@@ -95,8 +97,9 @@ sub get {
 
       Rex::Commands::profiler()->start("hardware: $mod_string");
 
-      if(exists $hw_info{$mod_string} && Rex::Args->is_opt("c")) {
-         $hardware_information{$mod_string} = $hw_info{$mod_string};
+      #if(exists $hw_info{$mod_string} && Rex::Args->is_opt("c")) {
+      if(defined $current_cache->get($mod_string) && Rex::Args->is_opt("c")) {
+         $hardware_information{$mod_string} = $current_cache->get($mod_string);
       }
 
       else {
@@ -119,6 +122,7 @@ sub get {
 
          if(Rex::Args->is_opt("c")) {
             $hw_info{$mod_string} = $hardware_information{$mod_string};
+            $current_cache->set($mod_string, $hardware_information{$mod_string});
          }
 
       }
@@ -132,13 +136,16 @@ sub get {
 
 sub reset {
    my ($class) = @_;
-   %hw_info = ();
+
+   my $current_cache = Rex::get_current_connection()->{cache};
+   $current_cache->reset;
 }
 
 sub cache {
    my ($class, $mod) = @_;
-   if(exists $hw_info{$mod}) {
-      return $hw_info{$mod};
+   my $current_cache = Rex::get_current_connection()->{cache};
+   if(defined $current_cache->get($mod)) {
+      return $current_cache->get($mod);
    }
 }
 

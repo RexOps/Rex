@@ -85,6 +85,11 @@ sub new {
 
    $self->{connection} = undef;
 
+   # set to true as default
+   if(! exists $self->{exit_on_connect_fail}) {
+      $self->{exit_on_connect_fail} = 1;
+   }
+
    return $self;
 }
 
@@ -541,7 +546,12 @@ sub connect {
    }
    else {
       Rex::Logger::info("Wrong username/password or wrong key on $server.", "warn");
-      CORE::exit(1);
+      if($self->exit_on_connect_fail) {
+         CORE::exit(1);
+      }
+      else {
+         die();
+      }
    }
 
    # need to get rid of this
@@ -688,6 +698,21 @@ sub get_tasks {
 sub get_desc {
    my ($class, @tmp) = @_;
    return Rex::TaskList->create()->get_desc(@tmp);
+}
+
+=begin exit_on_connect_fail()
+
+Returns true if rex should exit on connect failure.
+
+=cut
+sub exit_on_connect_fail {
+   my ($self) = @_;
+   return $self->{exit_on_connect_fail};
+}
+
+sub set_exit_on_connect_fail {
+   my ($self, $exit) = @_;
+   $self->{exit_on_connect_fail} = $exit;
 }
 
 =back

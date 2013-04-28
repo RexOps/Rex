@@ -263,8 +263,17 @@ sub get_box {
       my $old_q = $::QUIET;
       $::QUIET = 1;
 
-
-      $vm_infos{$box_name} = run_task "get_sys_info", on => $box->ip;
+      eval {
+         $vm_infos{$box_name} = run_task "get_sys_info", on => $box->ip;
+      } or do {
+         $::QUIET = $old_q;
+         print STDERR "\n";
+         Rex::Logger::info("There was an error connecting to your Box. Please verify the login credentials.", "warn");
+         Rex::Logger::debug("You have to define login credentials before calling get_box()");
+         # cleanup
+         kill 9, $pid;
+         CORE::exit(1);
+      };
       $::QUIET = $old_q;
 
       my $box_info = $box->info;
@@ -386,7 +395,7 @@ sub boxes {
 
 Rex::TaskList->create()->create_task("get_sys_info", sub {
    return { get_system_information() };
-}, { dont_register => 1 });
+}, { dont_register => 1, exit_on_connect_fail => 0 });
 
 sub import {
    my ($class, %option) = @_;

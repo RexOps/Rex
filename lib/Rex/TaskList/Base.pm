@@ -99,6 +99,7 @@ sub create_task {
       desc => $desc,
       no_ssh => ($options->{"no_ssh"}?1:0),
       hidden => ($options->{"dont_register"}?1:0),
+      exit_on_connect_fail => (exists $options->{exit_on_connect_fail}?$options->{exit_on_connect_fail}:1),
       before => [],
       after  => [],
       around => [],

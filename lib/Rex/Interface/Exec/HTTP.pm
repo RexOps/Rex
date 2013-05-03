@@ -36,7 +36,7 @@ sub exec {
 
    my $new_cmd = $cmd;
    if(Rex::Config->get_source_global_profile) {
-      $new_cmd = ". /etc/profile; $new_cmd";
+      $new_cmd = ". /etc/profile >/dev/null 2>&1; $new_cmd";
    }
 
    my $resp = connection->post("/execute", {exec => $new_cmd});

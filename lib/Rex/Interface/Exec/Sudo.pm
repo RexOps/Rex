@@ -100,7 +100,10 @@ EOF
       }
    }
    else {
-      my $new_cmd = "export $path ; $locales $cmd";
+      my $new_cmd = "$locales $cmd";
+      if($path) {
+         $new_cmd = "export $path ; $new_cmd";
+      }
 
       # escape some special shell things
       $new_cmd =~ s/\\/\\\\/gms;

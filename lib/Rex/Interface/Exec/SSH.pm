@@ -43,12 +43,16 @@ sub exec {
    }
    else {
 
-      my $new_cmd = "export $path ; LC_ALL=C $cmd";
-
-      if(Rex::Config->get_source_global_profile) {
-         $new_cmd = ". /etc/profile; $new_cmd";
+      my $new_cmd = "LC_ALL=C $cmd";
+      if($path) {
+         $new_cmd = "export $path ; $new_cmd";
       }
 
+      if(Rex::Config->get_source_global_profile) {
+         $new_cmd = ". /etc/profile >/dev/null 2>&1; $new_cmd";
+      }
+
+      Rex::Logger::debug("SSH/executing: >$new_cmd<");
       ($out, $err) = net_ssh2_exec($ssh, $new_cmd);
    }
 

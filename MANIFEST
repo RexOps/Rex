@@ -279,6 +279,7 @@ t/no_tty.t
 t/partition.t
 t/report.t
 t/shared.t
+t/ssh_config.1
 t/task.t
 t/template.t
 t/test.ini

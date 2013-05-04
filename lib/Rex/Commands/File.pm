@@ -483,7 +483,7 @@ sub append_if_no_such_line {
       $old_md5 = md5($file);
    }
 
-   my $f = upload_and_run $template, with => "$^X";
+   my $f = upload_and_run $template, with => "perl";
 
    my $ret = $?;
    if ($ret==1) {

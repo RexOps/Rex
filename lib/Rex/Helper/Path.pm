@@ -10,6 +10,12 @@ use strict;
 use warnings;
 
 use File::Basename qw(dirname);
+require Exporter;
+
+use base qw(Exporter);
+use vars qw(@EXPORT);
+
+@EXPORT = qw(get_file_path);
 
 #
 # CALL: get_file_path("foo.txt", caller());
@@ -17,6 +23,10 @@ use File::Basename qw(dirname);
 #
 sub get_file_path {
    my ($file_name, $caller_package, $caller_file) = @_;
+
+   if(! $caller_package) {
+      ($caller_package, $caller_file) = caller();
+   }
 
    # check if a file in $BASE overwrites the module file
    if(-f $file_name) {

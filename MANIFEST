@@ -47,6 +47,7 @@ lib/Rex/Commands/SimpleCheck.pm
 lib/Rex/Commands/Sync.pm
 lib/Rex/Commands/Sysctl.pm
 lib/Rex/Commands/Tail.pm
+lib/Rex/Commands/templates/append_if_no_such_line.tpl.pl
 lib/Rex/Commands/Upload.pm
 lib/Rex/Commands/User.pm
 lib/Rex/Commands/Virtualization.pm
@@ -81,6 +82,7 @@ lib/Rex/Helper/Array.pm
 lib/Rex/Helper/Encode.pm
 lib/Rex/Helper/Hash.pm
 lib/Rex/Helper/Path.pm
+lib/Rex/Helper/Run.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm

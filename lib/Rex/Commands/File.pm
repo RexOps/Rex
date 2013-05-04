@@ -408,16 +408,62 @@ sub delete_lines_matching {
 =item append_if_no_such_line($file, $new_line, @regexp)
 
 Append $new_line to $file if none in @regexp is found. If no regexp is
-supplied, the line is appended unless there already an identical line
+supplied, the line is appended unless there is already an identical line
 in $file.
 
  task "add-group", sub {
     append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2", on_change => sub { service sshd => "restart"; };
  };
 
+Since 0.42 you can use named parameters as well
+
+ task "add-group", sub {
+    append_if_no_such_line "/etc/groups",
+       line   => "mygroup:*:100:myuser1,myuser2",
+       regexp => qr{^mygroup},
+       on_change => sub {
+                       say "file was changed, do something.";
+                    };
+          
+    append_if_no_such_line "/etc/groups",
+       line   => "mygroup:*:100:myuser1,myuser2",
+       regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
+ };
 =cut
 sub append_if_no_such_line {
-   my ($file, $new_line, @m) = @_;
+   my $file = shift;
+   my ($new_line, @m);
+
+   # check if parameters are in key => value format
+   my ($option, $on_change);
+   eval {
+      no warnings;
+      $option = { @_ };
+      # if there is no line parameter, it is the old parameter format
+      # so go dieing
+      if(! exists $option->{line}) {
+         die;
+      }
+      $new_line = $option->{line};
+      if(exists $option->{regexp} && ref $option->{regexp} eq "Regexp") {
+         @m = ($option->{regexp});
+      }
+      elsif(ref $option->{regexp} eq "ARRAY") {
+         @m = @{ $option->{regexp} };
+      }
+      $on_change = $option->{on_change} || undef;
+      1;
+   } or do {
+      ($new_line, @m) = @_;
+      # check if something in @m (the regexpes) is named on_change
+      for (my $i = 0; $i<$#m; $i++ ) {
+         if ( $m[$i] eq "on_change" && ref($m[$i+1]) eq "CODE" ) {
+            $on_change = $m[$i+1];
+            splice(@m,$i,2);
+            last;
+         }
+      }
+   };
 
    my $fs = Rex::Interface::Fs->create;
 
@@ -429,15 +475,6 @@ sub append_if_no_such_line {
    if(! $fs->is_writable($file)) {
       Rex::Logger::info("File: $file not writable.");
       die("$file not writable");
-   }
-
-   my $on_change;
-   for (my $i = 0; $i<$#m; $i++ ) {
-      if ( $m[$i] eq "on_change" && ref($m[$i+1]) eq "CODE" ) {
-         $on_change = $m[$i+1];
-         splice(@m,$i,2);
-         last;
-      }
    }
 
    if ( !@m ) {

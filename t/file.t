@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 BEGIN {
-   use Test::More tests => 16;
+   use Test::More tests => 25;
    use Data::Dumper;
 
    use_ok 'Rex';
@@ -35,10 +35,16 @@ my %stats = Rex::Commands::Fs::stat("test.txt");
 ok($stats{mode} eq "0777" || is_windows(), "fs chmod ok");
 
 my $changed = 0;
+my $content = cat("test.txt");
+ok($content !~ m/change/gms, "found change");
+
 append_if_no_such_line("test.txt", "change", qr{change}, 
    on_change => sub {
       $changed = 1;
    });
+
+$content = cat("test.txt");
+ok($content =~ m/change/gms, "found change");
 
 ok($changed == 1, "something was changed in the file");
 
@@ -55,6 +61,58 @@ append_if_no_such_line("test.txt", "change",
    });
 
 ok($changed == 1, "nothing was changed in the file without regexp");
+
+$content = cat("test.txt");
+ok($content !~ m/foobar/gms, "not found foobar");
+
+
+append_if_no_such_line("test.txt",
+      line => "foobar",
+);
+$content = cat("test.txt");
+ok($content =~ m/foobar/gms, "found foobar");
+
+append_if_no_such_line("test.txt",
+      line => "bazzada",
+      regexp => qr{^foobar},
+);
+$content = cat("test.txt");
+
+ok($content =~ m/bazzada/gms, "found bazzada");
+
+append_if_no_such_line("test.txt",
+      line => "tacktack",
+      regexp => qr{blah blah}ms,
+);
+$content = cat("test.txt");
+
+ok($content !~ m/tacktack/gms, "not found tacktack");
+
+append_if_no_such_line("test.txt",
+      line => "nothing there",
+      regexp => [qr{blah blah}ms, qr{tzuhgjbn}ms],
+);
+$content = cat("test.txt");
+
+ok($content !~ m/nothing there/gms, "not found nothing there");
+
+append_if_no_such_line("test.txt",
+      line => "this is there",
+      regexp => [qr{qaywsx}ms, qr{tzuhgjbn}ms],
+);
+$content = cat("test.txt");
+
+ok($content =~ m/this is there/gms, "found this is there");
+
+
+
+append_if_no_such_line("test.txt",
+      line => "bazzada",
+      regexp => qr{^bazzada},
+);
+$content = cat("test.txt");
+ok($content =~ m/bazzada/gms, "found bazzada");
+
 
 
 file "file with space.txt",

@@ -1,4 +1,4 @@
-use Test::More tests => 34;
+use Test::More tests => 35;
 
 use_ok 'Rex::Config';
 use_ok 'Rex::Virtualization';
@@ -31,6 +31,7 @@ use_ok 'Rex::Virtualization::VBox::reboot';
 use_ok 'Rex::Virtualization::VBox::share_folder';
 use_ok 'Rex::Virtualization::VBox::shutdown';
 use_ok 'Rex::Virtualization::VBox::start';
+use_ok 'Rex::Virtualization::VBox::bridge';
 use_ok 'Rex::Virtualization::VBox';
 
 my $vm_obj = Rex::Virtualization->create("VBox");

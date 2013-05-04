@@ -169,6 +169,10 @@ sub import_vm {
                   "nic$nic_no" => $option->{$nic_no}->{type};
 
             if($option->{$nic_no}->{type} eq "bridged") {
+
+               $option->{$nic_no}->{bridge} = select_bridge()
+                  if(!$option->{$nic_no}->{bridge});
+
                Rex::Logger::debug("Setting network bridge (dev: $nic_no) to: " . ($option->{$nic_no}->{bridge} || "eth0"));
                vm option => $self->{name},
                   "bridgeadapter$nic_no" => ($option->{$nic_no}->{bridge} || "eth0");
@@ -236,6 +240,35 @@ sub provision_vm {
       Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
       Rex::TaskList->create()->get_task($task)->run($server);
    }
+}
+
+sub select_bridge {
+   my $bridges = vm "bridge";
+
+   my $ifname;
+   if (@$bridges == 1) {
+      Rex::Logger::debug("Only one bridged interface available. Using it by default.");
+      $ifname = $bridges->[0]->{name};
+   }
+   elsif (@$bridges > 1) {
+      for (my $i = 0; $i < @$bridges; $i++) {
+         my $bridge = $bridges->[$i];
+         next if ($bridge->{status} =~ /^down$/i);
+         local $Rex::Logger::format = "%s";
+         Rex::Logger::info($i + 1 . " $bridge->{name}");
+      }
+
+      my $choice;
+      do {
+         print "What interface should network bridge to? ";
+         chomp($choice = <STDIN>);
+         $choice = int($choice);
+      } while(!$choice);
+
+      $ifname = $bridges->[$choice - 1]->{name};
+   }
+
+   return $ifname;
 }
 
 =item forward_port(%option)

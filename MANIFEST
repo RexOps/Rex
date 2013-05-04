@@ -211,6 +211,7 @@ lib/Rex/Virtualization/LibVirt/shutdown.pm
 lib/Rex/Virtualization/LibVirt/start.pm
 lib/Rex/Virtualization/LibVirt/vncdisplay.pm
 lib/Rex/Virtualization/VBox.pm
+lib/Rex/Virtualization/VBox/bridge.pm
 lib/Rex/Virtualization/VBox/create.pm
 lib/Rex/Virtualization/VBox/delete.pm
 lib/Rex/Virtualization/VBox/destroy.pm

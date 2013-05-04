@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 
+use Cwd 'getcwd';
+my $cwd = getcwd;
+
 BEGIN {
    use Test::More tests => 25;
    use Data::Dumper;
@@ -14,104 +17,104 @@ BEGIN {
    Rex::Commands::Gather->import;
 };
 
-file("test.txt",
+file("$cwd/test.txt",
    content => "blah blah\nfoo bar");
 
-my $c = cat("test.txt");
+my $c = cat("$cwd/test.txt");
 
 ok($c, "cat");
 ok($c =~ m/blah/, "file with content (1)");
 ok($c =~ m/bar/, "file with content (2)");
 
-Rex::Commands::Fs::unlink("test.txt");
+Rex::Commands::Fs::unlink("$cwd/test.txt");
 
-ok(! is_file("test.txt"), "file removed");
+ok(! is_file("$cwd/test.txt"), "file removed");
 
-file("test.txt",
+file("$cwd/test.txt",
    content => "blah blah\nbaaazzzz",
    mode => 777);
 
-my %stats = Rex::Commands::Fs::stat("test.txt");
+my %stats = Rex::Commands::Fs::stat("$cwd/test.txt");
 ok($stats{mode} eq "0777" || is_windows(), "fs chmod ok");
 
 my $changed = 0;
-my $content = cat("test.txt");
+my $content = cat("$cwd/test.txt");
 ok($content !~ m/change/gms, "found change");
 
-append_if_no_such_line("test.txt", "change", qr{change}, 
+append_if_no_such_line("$cwd/test.txt", "change", qr{change}, 
    on_change => sub {
       $changed = 1;
    });
 
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 ok($content =~ m/change/gms, "found change");
 
 ok($changed == 1, "something was changed in the file");
 
-append_if_no_such_line("test.txt", "change", qr{change}, 
+append_if_no_such_line("$cwd/test.txt", "change", qr{change}, 
    on_change => sub {
       $changed = 0;
    });
 
 ok($changed == 1, "nothing was changed in the file");
 
-append_if_no_such_line("test.txt", "change",
+append_if_no_such_line("$cwd/test.txt", "change",
    on_change => sub {
       $changed = 0;
    });
 
 ok($changed == 1, "nothing was changed in the file without regexp");
 
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 ok($content !~ m/foobar/gms, "not found foobar");
 
 
-append_if_no_such_line("test.txt",
+append_if_no_such_line("$cwd/test.txt",
       line => "foobar",
 );
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 ok($content =~ m/foobar/gms, "found foobar");
 
-append_if_no_such_line("test.txt",
+append_if_no_such_line("$cwd/test.txt",
       line => "bazzada",
       regexp => qr{^foobar},
 );
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 
-ok($content =~ m/bazzada/gms, "found bazzada");
+ok($content !~ m/bazzada/gms, "found bazzada");
 
-append_if_no_such_line("test.txt",
+append_if_no_such_line("$cwd/test.txt",
       line => "tacktack",
       regexp => qr{blah blah}ms,
 );
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 
 ok($content !~ m/tacktack/gms, "not found tacktack");
 
-append_if_no_such_line("test.txt",
+append_if_no_such_line("$cwd/test.txt",
       line => "nothing there",
       regexp => [qr{blah blah}ms, qr{tzuhgjbn}ms],
 );
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 
 ok($content !~ m/nothing there/gms, "not found nothing there");
 
-append_if_no_such_line("test.txt",
+append_if_no_such_line("$cwd/test.txt",
       line => "this is there",
       regexp => [qr{qaywsx}ms, qr{tzuhgjbn}ms],
 );
-$content = cat("test.txt");
+$content = cat("$cwd/test.txt");
 
 ok($content =~ m/this is there/gms, "found this is there");
 
 
 
-append_if_no_such_line("test.txt",
+append_if_no_such_line("$cwd/test.txt",
       line => "bazzada",
       regexp => qr{^bazzada},
 );
-$content = cat("test.txt");
-ok($content =~ m/bazzada/gms, "found bazzada");
+$content = cat("$cwd/test.txt");
+ok($content =~ m/bazzada/gms, "found bazzada (2)");
 
 
 
@@ -124,8 +127,8 @@ $c = "";
 $c = cat "file with space.txt";
 ok($c =~ m/file with space/m, "found content of file with space");
 
-Rex::Commands::Fs::unlink("test.txt");
+Rex::Commands::Fs::unlink("$cwd/test.txt");
 Rex::Commands::Fs::unlink("file with space.txt");
 
-ok(! is_file("test.txt"), "test.txt removed");
+ok(! is_file("$cwd/test.txt"), "test.txt removed");
 ok(! is_file("file with space.txt"), "file with space removed");

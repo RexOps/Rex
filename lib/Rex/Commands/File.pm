@@ -72,6 +72,7 @@ use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
 use Rex::Helper::System;
 use Rex::Helper::Path;
+use Rex::Helper::Run;
 
 use Rex::Interface::Exec;
 use Rex::Interface::File;
@@ -436,6 +437,7 @@ sub append_if_no_such_line {
 
    # check if parameters are in key => value format
    my ($option, $on_change);
+
    eval {
       no warnings;
       $option = { @_ };
@@ -467,36 +469,62 @@ sub append_if_no_such_line {
 
    my $fs = Rex::Interface::Fs->create;
 
-   if(! $fs->is_file($file)) {
-      Rex::Logger::info("File: $file not found.");
-      die("$file not found");
-   }
-
-   if(! $fs->is_writable($file)) {
-      Rex::Logger::info("File: $file not writable.");
-      die("$file not writable");
-   }
-
    if ( !@m ) {
       push @m, qr{^\Q$new_line\E$}m;
    }
 
-   my $content = cat ($file);
-   for my $match (@m) {
-      if ( $content =~ /$match/m ) {
-         return 0;
+   my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
+      line => $new_line,
+      regex => \@m,
+      file => $file);
+
+   my $old_md5;
+   if ($on_change) {
+      $old_md5 = md5($file);
+   }
+
+   my $f = upload_and_run $template, with => "$^X";
+
+   my $ret = $?;
+   if ($ret==1) {
+      die("Can't open $file for reading");
+   }
+   elsif ($ret==2) {
+      die("Can't open temp file for writing");
+   }
+   elsif ($ret==3) {
+      die("Can't open $file for writing");
+   }
+
+   if ($on_change) {
+      my $new_md5 = md5($file);
+      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+         $old_md5 ||= "";
+         $new_md5 ||= "";
+
+         Rex::Logger::debug("File $file has been changed... Running on_change");
+         Rex::Logger::debug("old: $old_md5");
+         Rex::Logger::debug("new: $new_md5");
+         &$on_change($file);
       }
    }
 
-   $content .= "$new_line\n";
-   my $fh = file_write $file;
-   unless($fh) {
-      die("Can't open $file for writing");
-   }
-   $fh->write($content);
-   $fh->close;
+#   my $content = cat ($file);
+#   for my $match (@m) {
+#      if ( $content =~ /$match/m ) {
+#         return 0;
+#      }
+#   }
 
-   &$on_change() if defined $on_change;
+#   $content .= "$new_line\n";
+#   my $fh = file_write $file;
+#   unless($fh) {
+#      die("Can't open $file for writing");
+#   }
+#   $fh->write($content);
+#   $fh->close;
+
+#   &$on_change() if defined $on_change;
 }
 
 =item extract($file [, %options])

@@ -68,7 +68,7 @@ sub parse {
    }
 
    my $new_data;
-   my $r="";
+   my $___r="";
 
    my $config_values = Rex::Config->get_all;
    for my $key (keys %{ $config_values }) {
@@ -101,7 +101,7 @@ sub parse {
          }
 
          if($type && $type =~ m/^[+=]$/) {
-            $_ = "\$r .= $text;";
+            $_ = "\$___r .= $text;";
          }
          else {
             $_ = $text;
@@ -114,7 +114,7 @@ sub parse {
             chomp $_;
             $do_chomp = 0;
          }
-         $_ = '$r .= "' . _quote($_) . '";';
+         $_ = '$___r .= "' . _quote($_) . '";';
 
 
       }
@@ -138,7 +138,7 @@ sub parse {
          my $var_data = '
         
         return sub {
-           my $r = "";
+           my $___r = "";
            my (
          
          ';
@@ -157,7 +157,7 @@ sub parse {
          $var_data .= $new_data;
 
          $var_data .= "\n";
-         $var_data .= ' return $r;';
+         $var_data .= ' return $___r;';
          $var_data .= "\n};";
 
          Rex::Logger::debug("BE_LOCAL==1");
@@ -169,13 +169,13 @@ sub parse {
             Rex::Logger::info($@);
          }
 
-         $r = $tpl_code->(@code_values);
+         $___r = $tpl_code->(@code_values);
 
       }
       else {
          Rex::Logger::debug("BE_LOCAL==0");
          Rex::Logger::debug($new_data);
-         $r = eval($new_data);
+         $___r = eval($new_data);
 
          if($@) {
             Rex::Logger::info($@);
@@ -189,13 +189,13 @@ sub parse {
 
    };
 
-   if(! $r) {
+   if(! $___r) {
       Rex::Logger::info("It seems that there was an error processing the template", "warn");
       Rex::Logger::info("because the result is empty.", "warn");
       die("Error processing template");
    }
 
-   return $r;
+   return $___r;
 }
 
 sub _quote {

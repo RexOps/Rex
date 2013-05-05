@@ -5,17 +5,22 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-   use Test::More tests => 25;
+   use Test::More tests => 26;
    use Data::Dumper;
 
    use_ok 'Rex';
    use_ok 'Rex::Commands::File';
    use_ok 'Rex::Commands::Fs';
    use_ok 'Rex::Commands::Gather';
+   use_ok 'Rex::Config';
    Rex::Commands::File->import;
    Rex::Commands::Fs->import;
    Rex::Commands::Gather->import;
 };
+
+if($ENV{rex_LOCALTEST}) {
+   Rex::Config->set_executor_for(perl => "/Users/jan/perl5/perlbrew/perls/perl-5.14.2/bin/perl");
+}
 
 file("$cwd/test.txt",
    content => "blah blah\nfoo bar");

@@ -435,7 +435,7 @@ sub __run__ {
              _print_color("      " . join(" ", Rex::Batch->get_batch($batch)) . "\n");
          }
       }
-      _print_color("Environments\n", "yellow") if(Rex::Commands->get_environments);
+      _print_color("Environments\n", "yellow");
       print "  " . join("\n  ", Rex::Commands->get_environments()) . "\n";
 
       my %groups = Rex::Group->get_groups;

@@ -57,7 +57,7 @@ sub update {
 
    my $version = $option->{'version'} || '';
    if($version) {
-      $pkg = "=$pkg=$version";
+      $pkg = "=$pkg-$version";
    }
 
    Rex::Logger::debug("Installing $pkg / $version");

@@ -45,7 +45,16 @@ our ($user, $password, $port,
             $sudo_without_locales,
             $sudo_without_sh,
             $no_tty,
-            $source_global_profile);
+            $source_global_profile,
+            %executor_for);
+
+# some defaults
+%executor_for = (
+   perl   => "perl",
+   python => "python",
+   ruby   => "ruby",
+   bash   => "bash",
+);
 
 
 sub get_sudo_without_locales {
@@ -64,6 +73,21 @@ sub set_sudo_without_locales {
 sub set_sudo_without_sh {
    my $class = shift;
    $sudo_without_sh = shift;
+}
+
+sub set_executor_for {
+   my $class = shift;
+   my $for   = shift;
+   my $e     = shift;
+
+   $executor_for{$for} = $e;
+}
+
+sub get_executor_for {
+   my $class = shift;
+   my $e     = shift;
+
+   return $executor_for{$e};
 }
 
 sub set_path {

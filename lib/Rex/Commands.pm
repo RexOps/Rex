@@ -126,6 +126,7 @@ use base qw(Rex::Exporter);
             auth
             FALSE TRUE
             set_distributor
+            set_executor_for
             template_function
             report
             make
@@ -1203,6 +1204,17 @@ sub case {
    }
 
    return $to_return;
+}
+
+=item set_executor_for($type, $executor)
+
+Set the executor for a special type. This is primary used for the upload_and_run helper function.
+
+ set_executor_for perl => "/opt/local/bin/perl";
+
+=cut
+sub set_executor_for {
+   Rex::Config->set_executor_for(@_);
 }
 
 =item inspect($varRef)

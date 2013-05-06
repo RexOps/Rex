@@ -50,6 +50,10 @@ sub get {
          ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } Rex::get_cache()->run("LC_ALL=C hostname");
          ($domain) = run("LC_ALL=C domainname");
       }
+      elsif($os eq "OpenWrt") {
+         ($hostname) = run("uname -n");
+         ($domain) = run("cat /proc/sys/kernel/domainname");
+      }
       else {
          ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f 2>/dev/null");
          ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } Rex::get_cache()->run("LC_ALL=C hostname -f 2>/dev/null");
@@ -134,6 +138,10 @@ sub get_operating_system {
       else {
          return "Redhat";
       }
+   }
+
+   if(is_file("/etc/openwrt_release")) {
+      return "OpenWrt";
    }
 
    my $os_string = Rex::get_cache()->run("uname -s");
@@ -246,6 +254,15 @@ sub get_operating_system_version {
    elsif($op =~ /BSD/) {
       my ($version) = grep { $_=$1 if /(\d+\.\d+)/ } run "uname -r";
       return $version;
+   }
+   elsif($op eq "OpenWrt") {
+      my $fh = file_read("/etc/openwrt_version");
+      my $content = $fh->read_all;
+      $fh->close;
+
+      chomp $content;
+
+      return $content;
    }
 
    return [ Rex::get_cache()->run("uname -r") ]->[0];

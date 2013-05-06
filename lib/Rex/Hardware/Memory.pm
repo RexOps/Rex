@@ -130,6 +130,24 @@ sub get {
          buffers => $buf,
       };
    }
+   elsif($os eq "OpenWrt") {
+      my @data = run "cat /proc/meminfo";
+
+      my ($total)    = grep { $_=$1 if /^MemTotal:\s+(\d+)/ } @data;
+      my ($free)     = grep { $_=$1 if /^MemFree:\s+(\d+)/ } @data;
+      my ($shared)   = grep { $_=$1 if /^Shmem:\s+(\d+)/ } @data;
+      my ($buffers)  = grep { $_=$1 if /^Buffers:\s+(\d+)/ } @data;
+      my ($cached)   = grep { $_=$1 if /^Cached:\s+(\d+)/ } @data;
+
+      return {
+         total => $total,
+         used => $total - $free,
+         free => $free,
+         shared => $shared,
+         buffers => $buffers,
+         cached => $cached
+      };
+   }
    else {
       # default for linux
       if(! can_run("free")) {

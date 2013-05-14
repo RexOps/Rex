@@ -2,7 +2,7 @@
 #
 #  Copyright 2013 Ferenc Erki <erkiferenc@gmail.com>
 #
-#  OpenWrt package management module for R(?)ex
+#  OpenWrt package management module for (R)?ex
 #  based on Rex::Pkg::Debian
 
 package Rex::Pkg::OpenWrt;

@@ -28,7 +28,7 @@ sub upload_and_run {
 
    if(Rex::is_local()) {
       if($^O =~ m/^MSWin/) {
-         $rnd_file = $ENV{TMP} . "/" . Rex::Commands::get_random(8, 'a' .. 'z' . ".tmp");
+         $rnd_file =  $ENV{TMP} . "/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
       }
    }
 

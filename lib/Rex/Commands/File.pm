@@ -85,7 +85,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(file_write file_read file_append 
                cat sed
-               delete_lines_matching append_if_no_such_line
+               delete_lines_matching append_if_no_such_line delete_lines_according_to 
                file template
                extract);
 
@@ -422,6 +422,43 @@ sub delete_lines_matching {
       }
       $fh->close;
 
+   }
+}
+
+=item delete_lines_according_to($search, $file, @options)
+
+This is the successor of the delete_lines_matching() function. This function also allows the usage of an on_change hook.
+
+It will search for $search in $file and remove the found lines. If on_change hook is present it will execute this if the file was changed.
+
+ task "cleanup", "server1", sub {
+    delete_lines_according_to qr{^foo:}, "/etc/passwd",
+      on_change => sub {
+         say "removed user foo.";
+      };
+ };
+
+=cut
+sub delete_lines_according_to {
+   my ($search, $file, @options) = @_;
+
+   my $option = { @options };
+   my $on_change = $option->{on_change} || undef;
+
+   my ($old_md5, $new_md5);
+
+   if($on_change) {
+      $old_md5 = md5($file);
+   }
+
+   delete_lines_matching($file, $search);
+
+   if($on_change) {
+      $new_md5 = md5($file);
+
+      if($old_md5 ne $new_md5) {
+         &$on_change($file);
+      }
    }
 }
 

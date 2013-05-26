@@ -476,7 +476,7 @@ sub append_if_no_such_line {
    # i don't like this next line...
    # normalizing regexp serialization for older perl versions
    for (@m) {
-      s/^\(\?\^/\(\?/;
+      $_ = _normalize_regex($_);
    }
 
    my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
@@ -626,13 +626,48 @@ Search some string in a file and replace it.
 =cut
 sub sed {
    my ($search, $replace, $file, @options) = @_;
-   my $content = cat($file);
    my $option = { @options };
 
-   my $on_change = $option->{"on_change"} || undef;
-   $content =~ s/$search/$replace/gms;
+   my $perl = Rex::get_cache()->can_run("perl");
+   if($perl) {
+      # if perl is available use it
+      my $on_change = $option->{"on_change"} || undef;
+      my $exec = Rex::Interface::Exec->create;
 
-   file($file, content => $content, on_change => $on_change);
+      $search = _normalize_regex($search);
+
+      my $cmd = "perl -lne 's/$search/$replace/; print;' -i '$file'";
+
+      my ($old_md5, $new_md5);
+
+      if($on_change) {
+         $old_md5 = md5($file);
+      }
+
+      $exec->exec($cmd);
+
+      if($on_change) {
+         $new_md5 = md5($file);
+      }
+
+      if($on_change && ($old_md5 ne $new_md5)) {
+         &$on_change($file);
+      }
+   }
+   else {
+      my $content = cat($file);
+
+      my $on_change = $option->{"on_change"} || undef;
+      $content =~ s/$search/$replace/gms;
+
+      file($file, content => $content, on_change => $on_change);
+   }
+}
+
+sub _normalize_regex {
+   my ($reg) = @_;
+   $reg =~ s/^\(\?\^/\(\?/;
+   return $reg;
 }
 
 =back

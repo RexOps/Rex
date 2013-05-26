@@ -479,6 +479,12 @@ sub import {
             Rex::Config->set_no_tty(1);
          }
 
+         if($add eq "empty_groups") {
+            Rex::Logger::debug("Enabling usage of empty groups");
+            Rex::Config->set_allow_empty_groups(1);
+         }
+
+
       }
 
    }

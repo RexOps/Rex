@@ -80,7 +80,15 @@ sub create_task {
     
             for my $group (@{$groups}) {
                if(Rex::Group->is_group($group)) {
-                  push(@server, Rex::Group->get_group($group));
+                  my @group_server = Rex::Group->get_group($group);
+                  # check if the group is empty. this is mostly due to a failure.
+                  # so report it, and exit.
+                  if(scalar @group_server == 0 && Rex::Config->get_allow_empty_groups() == 0) {
+                     Rex::Logger::info("The group $group is empty. This is mostly due to a failure.", "warn");
+                     Rex::Logger::info("If this is an expected behaviour, please add the feature flag 'empty_groups'.", "warn");
+                     CORE::exit(1);
+                  }
+                  push(@server, @group_server);
                }
             }
          }

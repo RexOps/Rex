@@ -46,7 +46,8 @@ our ($user, $password, $port,
             $sudo_without_sh,
             $no_tty,
             $source_global_profile,
-            %executor_for);
+            %executor_for,
+            $allow_empty_groups);
 
 # some defaults
 %executor_for = (
@@ -568,6 +569,24 @@ sub read_ssh_config_file {
          close($fh);
       }
    }
+}
+
+sub set_allow_empty_groups {
+   my ($class, $set) = @_;
+   if($set) {
+      $allow_empty_groups = 1;
+   }
+   else {
+      $allow_empty_groups = 0;
+   }
+}
+
+sub get_allow_empty_groups {
+   if($allow_empty_groups) {
+      return 1;
+   }
+
+   return 0;
 }
 
 sub import {

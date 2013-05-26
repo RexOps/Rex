@@ -473,6 +473,12 @@ sub append_if_no_such_line {
       push @m, qr{^\Q$new_line\E$}m;
    }
 
+   # i don't like this next line...
+   # normalizing regexp serialization for older perl versions
+   for (@m) {
+      s/^\(\?\^/\(\?/;
+   }
+
    my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
       line => $new_line,
       regex => \@m,

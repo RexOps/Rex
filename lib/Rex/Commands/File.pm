@@ -368,42 +368,61 @@ Delete lines that match $regexp in $file.
 =cut
 sub delete_lines_matching {
    my ($file, @m) = @_;
-   my $fs = Rex::Interface::Fs->create;
 
-   if(! $fs->is_file($file)) {
-      Rex::Logger::info("File: $file not found.");
-      die("$file not found");
+   for (@m) {
+      if(ref($_) ne "Regexp") {
+         $_ = qr{\Q$_\E};
+      }
    }
 
-   if(! $fs->is_writable($file)) {
-      Rex::Logger::info("File: $file not writable.");
-      die("$file not writable");
-   }
+   my $perl = Rex::get_cache()->can_run("perl");
+   if($perl) {
+      # if perl is available, use it
+      my $exec = Rex::Interface::Exec->create;
 
-   my $nl = $/;
-   my @content = split(/$nl/, cat ($file));
 
-   my $fh = file_write $file;
-   unless($fh) {
-      die("Can't open $file for writing");
-   }
-
-   OUT:
-   for my $line (@content) {
-      IN:
       for my $match (@m) {
-         if(! ref($match) eq "Regexp") {
-            $match = qr{$match};
-         }
+         $match = _normalize_regex($match);
+         my $cmd = "perl -lne 'print unless (m/$match/)' -i '$file'";
+         $exec->exec($cmd);
+      }
+   }
+   else {
 
-         if($line =~ $match) {
-            next OUT;
-         }
+      my $fs = Rex::Interface::Fs->create;
+
+      if(! $fs->is_file($file)) {
+         Rex::Logger::info("File: $file not found.");
+         die("$file not found");
       }
 
-      $fh->write($line . $nl);
+      if(! $fs->is_writable($file)) {
+         Rex::Logger::info("File: $file not writable.");
+         die("$file not writable");
+      }
+
+      my $nl = $/;
+      my @content = split(/$nl/, cat ($file));
+
+      my $fh = file_write $file;
+      unless($fh) {
+         die("Can't open $file for writing");
+      }
+
+      OUT:
+      for my $line (@content) {
+         IN:
+         for my $match (@m) {
+            if($line =~ $match) {
+               next OUT;
+            }
+         }
+
+         $fh->write($line . $nl);
+      }
+      $fh->close;
+
    }
-   $fh->close;
 }
 
 =item append_if_no_such_line($file, $new_line, @regexp)

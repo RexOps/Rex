@@ -76,12 +76,19 @@ our $LAST_OUTPUT;   # this variable stores the last output of a run.
                     # so that it is possible to get for example the output of an apt-get update
                     # that is called through >> install "foo" <<
 sub run {
-   my ($cmd, $code) = @_;
+   my $cmd = shift;
+   my ($code, $option);
+   if(ref $_[0] eq "CODE") {
+      $code = shift;
+   }
+   elsif(scalar @_ > 0) {
+      $option = { @_ };
+   }
 
    my $path = join(":", Rex::Config->get_path());
 
    my $exec = Rex::Interface::Exec->create;
-   my ($out, $err) = $exec->exec($cmd, $path);
+   my ($out, $err) = $exec->exec($cmd, $path, $option);
    chomp $out if $out;
    chomp $err if $err;
 

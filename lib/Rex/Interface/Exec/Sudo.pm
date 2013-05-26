@@ -29,7 +29,11 @@ sub new {
 }
 
 sub exec {
-   my ($self, $cmd, $path) = @_;
+   my ($self, $cmd, $path, $option) = @_;
+
+   if(exists $option->{cwd}) {
+      $cmd = "cd " . $option->{cwd} . " && $cmd";
+   }
 
    if($path) { $path = "PATH=$path" }
    $path ||= "";

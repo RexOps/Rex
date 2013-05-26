@@ -26,11 +26,15 @@ sub new {
 }
 
 sub exec {
-   my ($self, $cmd, $path) = @_;
+   my ($self, $cmd, $path, $option) = @_;
 
    Rex::Logger::debug("Executing: $cmd");
 
    my ($out, $err);
+
+   if(exists $option->{cwd}) {
+      $cmd = "cd " . $option->{cwd} . " && $cmd";
+   }
 
    Rex::Commands::profiler()->start("exec: $cmd");
    if($^O !~ m/^MSWin/) {

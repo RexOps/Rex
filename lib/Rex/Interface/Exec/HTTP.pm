@@ -21,7 +21,7 @@ sub new {
 }
 
 sub exec {
-   my ($self, $cmd, $path) = @_;
+   my ($self, $cmd, $path, $option) = @_;
 
    Rex::Logger::debug("Executing: $cmd");
 
@@ -39,7 +39,7 @@ sub exec {
       $new_cmd = ". /etc/profile; $new_cmd";
    }
 
-   my $resp = connection->post("/execute", {exec => $new_cmd});
+   my $resp = connection->post("/execute", {exec => $new_cmd, options => $option});
    Rex::Commands::profiler()->end("exec: $cmd");
 
    if($resp->{ok}) {

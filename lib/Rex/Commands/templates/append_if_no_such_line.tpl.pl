@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # unlink myself
-#unlink $0;
+unlink $0;
 
 open (my $in, "<%= $file %>") || exit(1);
 my $found=0;

@@ -13,6 +13,7 @@ my %deps = (
                   'LWP::Simple' => 0,
                   'Storable' => 0,
                   'IPC::Open3' => 0,
+                  'String::Escape' => 0,
 );
 
 if($^O =~ m/^MSWin/) {

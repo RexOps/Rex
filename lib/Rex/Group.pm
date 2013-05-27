@@ -58,7 +58,16 @@ sub create_group {
    my $group_name = shift;
    my @server = @_;
 
-   $groups{$group_name} = Rex::Group->new(servers => [ map { $_ = Rex::Group::Entry::Server->new(name => $_); } @server ]);
+   $groups{$group_name} = Rex::Group->new(servers => [ map {
+                                                              if(ref($_) ne "Rex::Group::Entry::Server") {
+                                                                 $_ = Rex::Group::Entry::Server->new(name => $_)
+                                                              }
+                                                              else {
+                                                                 $_;
+                                                              }
+                                                           } @server 
+                                                     ]
+                                         );
 }
 
 # returns the servers in the group

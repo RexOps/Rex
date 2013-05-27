@@ -34,6 +34,8 @@ use Rex -base;
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
+
+use Rex::Helper::INI;
     
 @EXPORT = qw(groups_file);
 
@@ -63,21 +65,25 @@ sub groups_file {
    my %hash;
 
    open (my $INI, "$file") || die "Can't open $file: $!\n";
-   while (<$INI>) {
-      chomp;
-      s/\n|\r//g;
+   my @lines = <$INI>;
+   chomp @lines;
+   close($INI);
 
-      (/^#|^;|^\s*$/) && (next);
+   my $hash = Rex::Helper::INI::parse(@lines);
 
-      if (/^\[(.*)\]/) {
-         $section = $1;next;
+   for my $k (keys %{ $hash }) {
+      my @servers;
+      for my $servername (keys %{ $hash->{$k} }) {
+         my $add = {};
+         if(exists $hash->{$k}->{$servername} && ref $hash->{$k}->{$servername} eq "HASH") {
+            $add = $hash->{$k}->{$servername};
+         }
+
+         my $obj = Rex::Group::Entry::Server->new(name => $servername, %{ $add });
+         push @servers, $obj;
       }
-      push(@{$hash{$section}},$_);
-   }
-   close ($INI);
 
-   for my $k (keys %hash) {
-      group("$k" => @{$hash{$k}});
+      group("$k" => @servers);
    }
 }
 

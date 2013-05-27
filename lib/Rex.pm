@@ -484,6 +484,10 @@ sub import {
             Rex::Config->set_allow_empty_groups(1);
          }
 
+         if($add eq "use_server_auth") {
+            Rex::Logger::debug("Enabling use_server_auth");
+            Rex::Config->set_use_server_auth(1);
+         }
 
       }
 

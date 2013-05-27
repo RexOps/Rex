@@ -47,7 +47,8 @@ our ($user, $password, $port,
             $no_tty,
             $source_global_profile,
             %executor_for,
-            $allow_empty_groups);
+            $allow_empty_groups,
+            $use_server_auth);
 
 # some defaults
 %executor_for = (
@@ -583,6 +584,24 @@ sub set_allow_empty_groups {
 
 sub get_allow_empty_groups {
    if($allow_empty_groups) {
+      return 1;
+   }
+
+   return 0;
+}
+
+sub set_use_server_auth {
+   my ($class, $set) = @_;
+   if($set) {
+      $use_server_auth = 1;
+   }
+   else {
+      $use_server_auth = 0;
+   }
+}
+
+sub get_use_server_auth {
+   if($use_server_auth) {
       return 1;
    }
 

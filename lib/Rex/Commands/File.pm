@@ -141,7 +141,13 @@ sub template {
       die("$file not found");
    }
 
-   my %template_vars = _get_std_template_vars($param);
+   my %template_vars;
+   if(! exists $param->{__no_sys_info__}) {
+      %template_vars = _get_std_template_vars($param);
+   }
+   else {
+      delete $param->{__no_sys_info__};
+   }
 
    return Rex::Config->get_template_function()->($content, \%template_vars);
 }
@@ -538,7 +544,8 @@ sub append_if_no_such_line {
    my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
       line => $new_line,
       regex => \@m,
-      file => $file);
+      file => $file,
+      __no_sys_info__ => 1);
 
    my $old_md5;
    if ($on_change) {

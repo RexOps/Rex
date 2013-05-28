@@ -147,6 +147,7 @@ sub template {
    }
    else {
       delete $param->{__no_sys_info__};
+      %template_vars = %{ $param };
    }
 
    return Rex::Config->get_template_function()->($content, \%template_vars);
@@ -156,7 +157,16 @@ sub _get_std_template_vars {
    my ($param) = @_;
 
    my %merge1 = %{$param || {}};
-   my %merge2 = Rex::Helper::System::info();
+   my %merge2;
+
+   if(Rex::get_cache()->valid("system_information_info")) {
+      %merge2 = %{ Rex::get_cache()->get("system_information_info") };
+   }
+   else {
+      %merge2 = Rex::Helper::System::info();
+      Rex::get_cache()->set("system_information_info", \%merge2);
+   }
+
    my %template_vars = (%merge1, %merge2);
 
    return %template_vars;

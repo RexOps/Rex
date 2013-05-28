@@ -109,4 +109,19 @@ sub can_run {
    return $ret;
 }
 
+sub set {
+   my ($self, $key, $val, $timeout) = @_;
+   $self->{$key} = $val;
+}
+
+sub valid {
+   my ($self, $key) = @_;
+   return exists $self->{$key};
+}
+
+sub get {
+   my ($self, $key) = @_;
+   return $self->{$key};
+}
+
 1;

@@ -20,7 +20,7 @@ sub get_network_devices {
 
    my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } run("cat /proc/net/dev");
    for my $dev (@proc_net_dev) {
-      my $ifconfig = run("ifconfig $dev");
+      my $ifconfig = run("/sbin/ifconfig $dev");
       if($ifconfig =~ m/(Link encap:)?(?:Ethernet|Point-to-Point Protocol)/m) {
          push(@device_list, $dev);
       }
@@ -39,7 +39,7 @@ sub get_network_configuration {
 
    for my $dev (@{$devices}) {
 
-      my $ifconfig = run("LC_ALL=C ifconfig $dev");
+      my $ifconfig = run("LC_ALL=C /sbin/ifconfig $dev");
 
       $device_info->{$dev} = _parse_ifconfig($ifconfig);
 
@@ -93,13 +93,13 @@ sub default_gateway {
 
    if($new_default_gw) {
       if(default_gateway()) {
-         run "route del default";
+         run "/sbin/route del default";
          if($? != 0) {
             die("Error running route del default");
          }
       }
 
-      run "route add default gw $new_default_gw";
+      run "/sbin/route add default gw $new_default_gw";
       if($? != 0) {
          die("Error route add default");
       }

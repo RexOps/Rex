@@ -52,6 +52,8 @@ sub exec {
    my $enc_pw;
    my $random_file = "";
 
+   Rex::Logger::debug("Sudo: Executing: $cmd");
+
    if($sudo_password) {
       my $random_string = get_random(length($sudo_password), 'a' .. 'z');
       my $crypt = $sudo_password ^ $random_string;

@@ -27,7 +27,7 @@ sub get {
 
    if(Rex::is_ssh || $^O !~ m/^MSWin/i) {
 
-      my $dmi = Rex::get_cache()->can_run("dmidecode");
+      my $dmi = Rex::get_cache()->can_run("/usr/sbin/dmidecode");
 
       unless($dmi) {
          Rex::Logger::debug("Please install dmidecode on the target system.");

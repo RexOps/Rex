@@ -122,6 +122,7 @@ sub update_system {
 sub update_pkg_db {
    my ($self) = @_;
 
+   run "yum clean all";
    run "yum makecache";
    if($? != 0) {
       die("Error updating package repository");

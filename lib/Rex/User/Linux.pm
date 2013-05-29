@@ -35,7 +35,7 @@ sub create_user {
 
    if(! defined $self->get_uid($user)) {
       Rex::Logger::debug("User $user does not exists. Creating it now.");
-      $cmd = "useradd ";
+      $cmd = "/usr/sbin/useradd ";
 
       if(exists $data->{system}) {
          $cmd .= " -r";
@@ -44,7 +44,7 @@ sub create_user {
    else {
       Rex::Logger::debug("User $user already exists. Updating...");
 
-      $cmd = "usermod ";
+      $cmd = "/usr/sbin/usermod ";
    }
 
    if(exists $data->{non_uniq}) { 
@@ -116,7 +116,7 @@ sub create_user {
       $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
       $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
-      $fh->write("echo '$user:" . $data->{password} . "' | chpasswd\nexit \$?\n");
+      $fh->write("echo '$user:" . $data->{password} . "' | /usr/sbin/chpasswd\nexit \$?\n");
       $fh->close;
 
       Rex::Logger::debug("Changing password of $user.");
@@ -153,7 +153,7 @@ sub rm_user {
 
    Rex::Logger::debug("Removing user $user");
 
-   my $cmd = "userdel";
+   my $cmd = "/usr/sbin/userdel";
 
    if(exists $data->{delete_home}) {
       $cmd .= " --remove";
@@ -184,7 +184,7 @@ sub user_groups {
    my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx/groups $ARGV[0]/ ];|);
+   $fh->write(q|use Data::Dumper; print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx{/usr/bin/groups $ARGV[0]} ];|);
    $fh->close;
 
    my $data_str = run "perl $rnd_file $user";
@@ -218,7 +218,7 @@ sub user_list {
    my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx/getent passwd/ ];|);
+   $fh->write(q|use Data::Dumper; print Dumper [ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx{/usr/bin/getent passwd} ];|);
    $fh->close;
 
    my $data_str = run "perl $rnd_file";
@@ -282,11 +282,11 @@ sub create_group {
    if(! defined $self->get_gid($group)) {
       Rex::Logger::debug("Creating new group $group");
 
-      $cmd = "groupadd ";
+      $cmd = "/usr/sbin/groupadd ";
    }
    else {
       Rex::Logger::debug("Group $group already exists. Updating...");
-      $cmd = "groupmod ";
+      $cmd = "/usr/sbin/groupmod ";
    }
 
    if(exists $data->{gid}) {
@@ -345,7 +345,7 @@ sub get_group {
 sub rm_group {
    my ($self, $group) = @_;
 
-   run "groupdel $group";
+   run "/usr/sbin/groupdel $group";
    if($? != 0) {
       die("Error deleting group $group");
    }

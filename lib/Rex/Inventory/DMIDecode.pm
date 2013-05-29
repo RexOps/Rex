@@ -116,7 +116,7 @@ sub _read_dmidecode {
       @lines = @{ $self->{lines} };
    }
    else {
-      @lines = run "dmidecode 2>/dev/null";
+      @lines = run "/usr/sbin/dmidecode 2>/dev/null";
    }
    chomp @lines;
 

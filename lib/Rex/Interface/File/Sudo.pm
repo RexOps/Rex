@@ -50,6 +50,8 @@ sub open {
          }
          $link = $self->_fs->readlink($link);
       }
+      $self->{file_stat} = { $self->_fs->stat($self->{file}) };
+
       $self->_fs->cp($file, $self->{rndfile});
       $self->_fs->chmod(600, $self->{rndfile});
       $self->_fs->chown(Rex::Commands::connection->get_auth_user, $self->{rndfile});
@@ -83,7 +85,15 @@ sub close {
 
    if(exists $self->{mode} && ( $self->{mode} eq ">" || $self->{mode} eq ">>") ) {
       my $exec = Rex::Interface::Exec->create;
-      $exec->exec("cat " . $self->{rndfile} . " >'" . $self->{file} . "'");
+      $self->_fs->rename($self->{rndfile}, $self->{file});
+      if($self->{file_stat}) {
+         my %stat = %{ $self->{file_stat} };
+         $self->_fs->chmod($stat{mode}, $self->{file});
+         $self->_fs->chown($stat{uid}, $self->{file});
+         $self->_fs->chgrp($stat{gid}, $self->{file});
+      }
+
+      #$exec->exec("cat " . $self->{rndfile} . " >'" . $self->{file} . "'");
    }
    
    $self->{fh}->close;

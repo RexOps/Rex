@@ -148,7 +148,7 @@ sub write_cron {
 sub activate_user_cron {
    my ($self, $file, $user) = @_;
    run "crontab -u $user $file";
-#   unlink $file;
+   unlink $file;
 }
 
 sub read_user_cron {

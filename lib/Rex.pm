@@ -160,6 +160,7 @@ sub get_module_path {
 
 sub push_connection {
    push @CONNECTION_STACK, $_[0];
+   return $_[0];
 }
 
 sub pop_connection {
@@ -323,37 +324,47 @@ sub connect {
    my $timeout = $param->{timeout} || 5;
    my $user = $param->{"user"};
    my $pass = $param->{"password"};
+   my $cached_conn = $param->{"cached_connection"};
 
-   my $conn = Rex::Interface::Connection->create("SSH");
+   if(! $cached_conn) {
+      my $conn = Rex::Interface::Connection->create("SSH");
 
-   $conn->connect(
-      user     => $user,
-      password => $pass,
-      server   => $server,
-      port     => $port,
-      timeout  => $timeout,
-      %{ $param },
-   );
+      $conn->connect(
+         user     => $user,
+         password => $pass,
+         server   => $server,
+         port     => $port,
+         timeout  => $timeout,
+         %{ $param },
+      );
 
-   unless($conn->is_connected) {
-      die("Connetion error or refused.");
+      unless($conn->is_connected) {
+         die("Connetion error or refused.");
+      }
+
+      # push a remote connection
+      my $rex_conn = Rex::push_connection({
+         conn   => $conn,
+         ssh    => $conn->get_connection_object,
+         server => $server,
+         cache => Rex::Cache->new(),
+      });
+
+      # auth unsuccessfull
+      unless($conn->is_authenticated) {
+         Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
+         # after jobs
+
+         die("Wrong username or password. Or wrong key.");
+      }
+
+      return $rex_conn;
+   }
+   else {
+      Rex::push_connection($cached_conn);
+      return $cached_conn;
    }
 
-   # push a remote connection
-   Rex::push_connection({
-      conn   => $conn,
-      ssh    => $conn->get_connection_object,
-      server => $server,
-      cache => Rex::Cache->new(),
-   });
-
-   # auth unsuccessfull
-   unless($conn->is_authenticated) {
-      Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
-      # after jobs
-
-      die("Wrong username or password. Or wrong key.");
-   }
 }
 
 sub deprecated {

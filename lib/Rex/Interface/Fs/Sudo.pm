@@ -61,7 +61,12 @@ sub upload {
    my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
 
    if(my $ssh = Rex::is_ssh()) {
-      $ssh->scp_put($source, $rnd_file);
+      if(ref $ssh eq "Net::OpenSSH") {
+         $ssh->sftp->put($source, $rnd_file);
+      }
+      else {
+         $ssh->scp_put($source, $rnd_file);
+      }
       $self->_exec("mv $rnd_file '$target'");
    }
    else {
@@ -77,7 +82,12 @@ sub download {
 
    if(my $ssh = Rex::is_ssh()) {
       $self->_exec("cp '$source' $rnd_file");
-      $ssh->scp_get($rnd_file, $target);
+      if(ref $ssh eq "Net::OpenSSH") {
+         $ssh->sftp->get($rnd_file, $target);
+      }
+      else {
+         $ssh->scp_get($rnd_file, $target);
+      }
       $self->unlink($rnd_file);
    }
    else {
@@ -231,8 +241,13 @@ sub _get_file_writer {
    my ($self) = @_;
 
    my $fh;
-   if(Rex::is_ssh()) {
-      $fh = Rex::Interface::File->create("SSH");
+   if(my $o = Rex::is_ssh()) {
+      if(ref $o eq "Net::OpenSSH") {
+         $fh = Rex::Interface::File->create("OpenSSH");
+      }
+      else {
+         $fh = Rex::Interface::File->create("SSH");
+      }
    }
    else {
       $fh = Rex::Interface::File->create("Local");

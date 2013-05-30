@@ -76,6 +76,9 @@ sub connect {
       }
       $self->{ssh} = Net::OpenSSH->new($server, %a);
    }
+   elsif($auth_type && $auth_type eq "krb5") {
+      $self->{ssh} = Net::OpenSSH->new($server, user => $user);
+   }
    else {
       my %a = (
          user => $user,

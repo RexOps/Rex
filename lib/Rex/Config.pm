@@ -32,7 +32,7 @@ use Data::Dumper;
 
 our ($user, $password, $port,
             $timeout, $max_connect_fails,
-            $password_auth, $key_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
+            $password_auth, $key_auth, $krb5_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
             $ca_file, $ca_cert, $ca_key,
             $path,
             $set_param,
@@ -216,13 +216,22 @@ sub get_timeout {
 sub set_password_auth {
    my $class = shift;
    $key_auth = 0;
+   $krb5_auth = 0;
    $password_auth = shift || 1;
 }
 
 sub set_key_auth {
    my $class = shift;
    $password_auth = 0;
+   $krb5_auth = 0;
    $key_auth = shift || 1;
+}
+
+sub set_krb5_auth {
+   my $class = shift;
+   $password_auth = 0;
+   $key_auth = 0;
+   $krb5_auth = shift || 1;
 }
 
 sub get_password_auth {
@@ -231,6 +240,10 @@ sub get_password_auth {
 
 sub get_key_auth {
    return $key_auth;
+}
+
+sub get_krb5_auth {
+   return $krb5_auth;
 }
 
 sub set_public_key {

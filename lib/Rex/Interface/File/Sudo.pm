@@ -29,8 +29,13 @@ sub new {
 sub open {
    my ($self, $mode, $file) = @_;
 
-   if(Rex::is_ssh()) {
-      $self->{fh} = Rex::Interface::File->create("SSH");
+   if(my $ssh = Rex::is_ssh()) {
+      if(ref $ssh eq "Net::OpenSSH") {
+         $self->{fh} = Rex::Interface::File->create("OpenSSH");
+      }
+      else {
+         $self->{fh} = Rex::Interface::File->create("SSH");
+      }
    }
    else {
       $self->{fh} = Rex::Interface::File->create("Local");

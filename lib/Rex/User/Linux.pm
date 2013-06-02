@@ -184,7 +184,7 @@ sub user_groups {
    my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx{/usr/bin/groups $ARGV[0]} ];|);
+   $fh->write(q|use Data::Dumper; $exe = "/usr/bin/groups"; if(! -x $exe) { $exe = "/bin/groups"; } print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx{$exe $ARGV[0]} ];|);
    $fh->close;
 
    my $data_str = run "perl $rnd_file $user";

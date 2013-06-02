@@ -29,6 +29,8 @@ sub connect {
 
    my ($user, $pass, $private_key, $public_key, $server, $port, $timeout, $auth_type, $is_sudo);
 
+   Rex::Logger::debug("Using Net::OpenSSH for connection");
+
    $user    = $option{user};
    $pass    = $option{password};
    $server  = $option{server};
@@ -75,6 +77,9 @@ sub connect {
          $a{passphrase} = $pass;
       }
       $self->{ssh} = Net::OpenSSH->new($server, %a);
+   }
+   elsif($auth_type && $auth_type eq "krb5") {
+      $self->{ssh} = Net::OpenSSH->new($server, user => $user);
    }
    else {
       my %a = (

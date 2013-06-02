@@ -107,7 +107,7 @@ use vars qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_ta
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group 
-            user password port sudo_password public_key private_key pass_auth key_auth no_ssh
+            user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh
             get_random batch timeout max_connect_retries parallelism
             do_task run_task needs
             exit
@@ -669,7 +669,6 @@ If you want to use pubkey authentication, then you need to call I<key_auth>.
  private_key "/home/bob/.ssh/id_rsa"; # passphrase-less key
  public_key "/home/bob/.ssh/id_rsa.pub";
  
- 
  key_auth;
 
 =cut
@@ -677,6 +676,22 @@ If you want to use pubkey authentication, then you need to call I<key_auth>.
 sub key_auth {
    if(wantarray) { return "key"; }
    Rex::Config->set_key_auth(1);
+}
+
+=item krb5_auth
+
+If you want to use kerberos authentication, then you need to call I<krb5_auth>.
+This authentication mechanism is only available if you use Net::OpenSSH.
+
+ set connection => "OpenSSH";
+ user "root";
+ krb5_auth;
+
+=cut
+
+sub krb5_auth {
+   if(wantarray) { return "krb5"; }
+   Rex::Config->set_krb5_auth(1);
 }
 
 =item parallelism($count)

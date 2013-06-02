@@ -133,9 +133,9 @@ sub operating_system_version {
 
    my ($os) = @_;
 
-   my $host = Rex::Hardware::Host->get_operating_system_version();
+   my $operatingsystemrelease = Rex::Hardware::Host->get_operating_system_version();
 
-   my $operatingsystemrelease =~ s/[\.,]//g;
+   $operatingsystemrelease =~ s/[\.,]//g;
 
    return $operatingsystemrelease;
 

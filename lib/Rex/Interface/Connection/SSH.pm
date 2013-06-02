@@ -28,6 +28,8 @@ sub connect {
 
    my ($user, $pass, $private_key, $public_key, $server, $port, $timeout, $auth_type, $is_sudo);
 
+   Rex::Logger::debug("Using Net::SSH2 for connection");
+
    $user    = $option{user};
    $pass    = $option{password};
    $server  = $option{server};

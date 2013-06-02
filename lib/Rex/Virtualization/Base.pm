@@ -20,7 +20,7 @@ sub new {
 }
 
 sub execute {
-   my ($self, $action, $vmname, %opt) = @_;
+   my ($self, $action, $vmname, @opt) = @_;
 
    my $mod = ref($self) . "::$action";
    eval "use $mod;";
@@ -30,7 +30,7 @@ sub execute {
       die("No action $action available.");
    }
 
-   return $mod->execute($vmname, %opt);
+   return $mod->execute($vmname, @opt);
 
 }
 

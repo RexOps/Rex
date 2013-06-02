@@ -36,14 +36,22 @@ sub execute {
 
    shift @iflist;
    shift @iflist;
+   my $iface_num = 0;
    for my $line (@iflist) {
       my ($interface, $type, $source, $model, $mac) = split(/\s+/, $line);
+
+      if($interface eq "-") {
+         $interface = "vnet$iface_num";
+      }
+
       $ret{$interface} = {
          type => $type,
          source => $source,
          model => $model,
          mac => $mac
       };
+
+      $iface_num++;
    }
 
    return \%ret;

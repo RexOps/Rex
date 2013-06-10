@@ -428,6 +428,8 @@ __DATA__
       <% } %>
       <% if($netdev->{type} eq "bridge") { %>
       <source bridge="<%= $netdev->{bridge} %>"/>
+      <% } elsif($netdev->{type} eq "network") { %>
+      <source network="<%= $netdev->{network} %>"/>
       <% } %>
       <model type="<%= $netdev->{model} %>"/>
       <address <% for my $key (keys %{$netdev->{address}}) { %> <%= $key %>="<%= $netdev->{address}->{$key} %>" <% } %> />

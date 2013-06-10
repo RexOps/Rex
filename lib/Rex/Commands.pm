@@ -1330,6 +1330,7 @@ sub inspect {
 
 sub evaluate_hostname {
    my $str = shift;
+   return unless $str;
 
    my ($start, $from, $to, $dummy, $step, $end) = $str =~ m/^([0-9\.\w-]+)\[(\d+)..(\d+)(\/(\d+))?\]([0-9\w\.-]+)?$/;
 

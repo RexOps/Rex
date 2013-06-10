@@ -77,6 +77,9 @@ sub parse {
       }
    }
 
+   # add the current server object
+   $vars->{server} = Rex::Commands::connection()->server;
+
    my $do_chomp = 0;
    $new_data = join("\n", map {
       my ($code, $type, $text) = ($_ =~ m/(\<%)*([+=])*(.+)%\>/s);

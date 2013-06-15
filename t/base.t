@@ -1,4 +1,4 @@
-use Test::More tests => 139;
+use Test::More tests => 138;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Cache';
@@ -94,7 +94,6 @@ use_ok 'Rex::Pkg::Mageia';
 use_ok 'Rex::Pkg::NetBSD';
 use_ok 'Rex::Pkg::OpenBSD';
 use_ok 'Rex::Pkg::Redhat';
-use_ok 'Rex::Pkg::SunOS::Blastwave';
 use_ok 'Rex::Pkg::SunOS::OpenCSW';
 use_ok 'Rex::Pkg::SunOS::pkg';
 use_ok 'Rex::Pkg::SunOS';

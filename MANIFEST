@@ -81,6 +81,7 @@ lib/Rex/Hardware/VirtInfo.pm
 lib/Rex/Helper/Array.pm
 lib/Rex/Helper/Encode.pm
 lib/Rex/Helper/Hash.pm
+lib/Rex/Helper/INI.pm
 lib/Rex/Helper/Path.pm
 lib/Rex/Helper/Run.pm
 lib/Rex/Helper/SSH2.pm
@@ -92,11 +93,13 @@ lib/Rex/Interface/Connection/Fake.pm
 lib/Rex/Interface/Connection/HTTP.pm
 lib/Rex/Interface/Connection/HTTPS.pm
 lib/Rex/Interface/Connection/Local.pm
+lib/Rex/Interface/Connection/OpenSSH.pm
 lib/Rex/Interface/Connection/SSH.pm
 lib/Rex/Interface/Exec.pm
 lib/Rex/Interface/Exec/Base.pm
 lib/Rex/Interface/Exec/HTTP.pm
 lib/Rex/Interface/Exec/Local.pm
+lib/Rex/Interface/Exec/OpenSSH.pm
 lib/Rex/Interface/Exec/SSH.pm
 lib/Rex/Interface/Exec/Sudo.pm
 lib/Rex/Interface/Executor.pm
@@ -106,12 +109,14 @@ lib/Rex/Interface/File.pm
 lib/Rex/Interface/File/Base.pm
 lib/Rex/Interface/File/HTTP.pm
 lib/Rex/Interface/File/Local.pm
+lib/Rex/Interface/File/OpenSSH.pm
 lib/Rex/Interface/File/SSH.pm
 lib/Rex/Interface/File/Sudo.pm
 lib/Rex/Interface/Fs.pm
 lib/Rex/Interface/Fs/Base.pm
 lib/Rex/Interface/Fs/HTTP.pm
 lib/Rex/Interface/Fs/Local.pm
+lib/Rex/Interface/Fs/OpenSSH.pm
 lib/Rex/Interface/Fs/SSH.pm
 lib/Rex/Interface/Fs/Sudo.pm
 lib/Rex/Inventory.pm
@@ -152,7 +157,6 @@ lib/Rex/Pkg/NetBSD.pm
 lib/Rex/Pkg/OpenBSD.pm
 lib/Rex/Pkg/Redhat.pm
 lib/Rex/Pkg/SunOS.pm
-lib/Rex/Pkg/SunOS/Blastwave.pm
 lib/Rex/Pkg/SunOS/OpenCSW.pm
 lib/Rex/Pkg/SunOS/pkg.pm
 lib/Rex/Pkg/SuSE.pm
@@ -199,10 +203,12 @@ lib/Rex/Virtualization.pm
 lib/Rex/Virtualization/Base.pm
 lib/Rex/Virtualization/LibVirt.pm
 lib/Rex/Virtualization/LibVirt/blklist.pm
+lib/Rex/Virtualization/LibVirt/clone.pm
 lib/Rex/Virtualization/LibVirt/create.pm
 lib/Rex/Virtualization/LibVirt/delete.pm
 lib/Rex/Virtualization/LibVirt/destroy.pm
 lib/Rex/Virtualization/LibVirt/dumpxml.pm
+lib/Rex/Virtualization/LibVirt/guestinfo.pm
 lib/Rex/Virtualization/LibVirt/hypervisor.pm
 lib/Rex/Virtualization/LibVirt/iflist.pm
 lib/Rex/Virtualization/LibVirt/info.pm
@@ -230,7 +236,7 @@ lib/Rex/Virtualization/VBox/start.pm
 lib/Rex/Virtualization/VBox/status.pm
 LICENSE
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 README
 t/0.31.t
 t/01.t

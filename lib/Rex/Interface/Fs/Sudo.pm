@@ -99,15 +99,8 @@ sub download {
 sub is_dir {
    my ($self, $path) = @_;
 
-   my $script = q|
-      if(-d $ARGV[0]) { exit 0; } exit 1;
-   |;
-
-   my $rnd_file = $self->_write_to_rnd_file($script);
-   $self->_exec("perl $rnd_file '$path'");
+   $self->_exec("/bin/sh -c '[ -d \"$path\" ]'");
    my $ret = $?;
-
-   $self->unlink($rnd_file);
 
    if($ret == 0) { return 1; }
 }
@@ -115,15 +108,8 @@ sub is_dir {
 sub is_file {
    my ($self, $file) = @_;
 
-   my $script = q|
-      if(-f $ARGV[0]) { exit 0; } exit 1;
-   |;
-
-   my $rnd_file = $self->_write_to_rnd_file($script);
-   $self->_exec("perl $rnd_file '$file'");
+   $self->_exec("/bin/sh -c '[ -e \"$file\" ]'");
    my $ret = $?;
-
-   $self->unlink($rnd_file);
 
    if($ret == 0) { return 1; }
 }

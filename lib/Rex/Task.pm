@@ -644,7 +644,7 @@ sub run {
 
       if(Rex::Args->is_opt("c")) {
          # get and cache all os info
-         Rex::Hardware->get(qw/All/);
+         $server->gather_information;
       }
 
       # execute code

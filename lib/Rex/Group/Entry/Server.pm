@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Helper::System;
 use Rex::Config;
 use Data::Dumper;
 
@@ -254,5 +255,33 @@ sub option {
    }
 }
 
+sub gather_information {
+   my ($self) = @_;
+   my %info = Rex::Helper::System::info();
+   $self->{__hardware_info__} = \%info;
+}
+
+sub AUTOLOAD {
+   use vars qw($AUTOLOAD);
+   my $self = shift;
+
+   return $self if( $AUTOLOAD =~ m/DESTROY/ );
+
+   my ($wanted_data) = ($AUTOLOAD =~ m/::([a-z0-9A-Z]+)$/);
+
+   if(scalar(keys %{ $self->{__hardware_info__} }) == 0) {
+      $self->gather_information;
+   }
+
+   if(exists $self->{__hardware_info__}->{$wanted_data}) {
+      return $self->{__hardware_info__}->{$wanted_data};
+   }
+
+   if(exists $self->{$wanted_data}) {
+      return $self->{$wanted_data};
+   }
+
+   return undef;
+}
 
 1;

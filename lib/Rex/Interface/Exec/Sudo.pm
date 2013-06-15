@@ -118,7 +118,7 @@ EOF
       }
    }
    else {
-      my $new_cmd = "$locales $path $cmd";
+      my $new_cmd = "$locales $path ; export PATH LC_ALL ; $cmd";
 
       # escape some special shell things
       $new_cmd =~ s/\\/\\\\/gms;

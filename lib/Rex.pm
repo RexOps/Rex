@@ -568,6 +568,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Sven Dowideit
 
+=item Tianon Gravi
+
 =item Tokuhiro Matsuno
 
 =item Tomohiro Hosaka

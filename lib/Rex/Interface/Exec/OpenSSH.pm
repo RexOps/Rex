@@ -47,7 +47,7 @@ sub exec {
    }
    else {
 
-      my $new_cmd = "LC_ALL=C $path $cmd";
+      my $new_cmd = "LC_ALL=C $path ; export PATH LC_ALL ; $cmd";
 
       if(Rex::Config->get_source_global_profile) {
          $new_cmd = ". /etc/profile; $new_cmd";

@@ -147,7 +147,15 @@ sub sync {
                                  $fh->send($pass . "\n");
                                  exp_continue;
                               }
-                           ]
+                           ],
+                           [
+                                 qr{rsync error: error in rsync protocol},
+                                 sub {
+                                    Rex::Logger::debug("Error in rsync");
+                                    die;
+                                 }
+                           ],
+
       
       );
    }

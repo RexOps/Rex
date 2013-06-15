@@ -19,6 +19,8 @@ sub new {
    my $proto = ref($that) || $that;
    my $self = { @_ };
 
+   $self->{__data__} = {};
+
    bless($self, $proto);
 
    return $self;
@@ -29,8 +31,8 @@ sub call_sub {
 
    my $cache_key = "${package}_${func}_" . join("-", @params);
 
-   if(exists $self->{$cache_key} && $USE) {
-      return $self->{$cache_key};
+   if(defined $self->get($cache_key) && $USE) {
+      return $self->get($cache_key);
    }
 
    my $ret;
@@ -42,7 +44,7 @@ sub call_sub {
       no strict 'refs';
       $ret = &{"${package}::${func}"}(@params);
       use strict;
-      $self->{$cache_key} = $ret;
+      $self->set($cache_key, $ret);
    };
 
    if($@) {
@@ -57,8 +59,8 @@ sub call_method {
 
    my $cache_key = "${package}_${method}_" . join("-", @params);
 
-   if(exists $self->{$cache_key} && $USE) {
-      return $self->{$cache_key};
+   if(defined $self->get($cache_key) && $USE) {
+      return $self->get($cache_key);
    }
 
    my $ret;
@@ -68,7 +70,7 @@ sub call_method {
       require $package_file . ".pm";
 
       $ret = $package->$method(@params);
-      $self->{$cache_key} = $ret;
+      $self->set($cache_key, $ret);
    };
 
    if($@) {
@@ -84,12 +86,12 @@ sub run {
 
    my $cache_key = "run_cmd_" . join("-", @_);
 
-   if(exists $self->{$cache_key} && $USE) {
-      return $self->{$cache_key};
+   if(defined $self->get($cache_key) && $USE) {
+      return $self->get($cache_key);
    }
 
    my $ret = Rex::Commands::Run::run(@_);
-   $self->{$cache_key} = $ret;
+   $self->set($cache_key, $ret);
 
    return $ret;
 }
@@ -99,29 +101,34 @@ sub can_run {
 
    my $cache_key = "can_run_cmd_" . join("-", @_);
 
-   if(exists $self->{$cache_key} && $USE) {
-      return $self->{$cache_key};
+   if(defined $self->get($cache_key) && $USE) {
+      return $self->get($cache_key);
    }
 
    my $ret = Rex::Commands::Run::can_run(@_);
-   $self->{$cache_key} = $ret;
+   $self->set($cache_key, $ret);
 
    return $ret;
 }
 
 sub set {
    my ($self, $key, $val, $timeout) = @_;
-   $self->{$key} = $val;
+   $self->{__data__}->{$key} = $val;
 }
 
 sub valid {
    my ($self, $key) = @_;
-   return exists $self->{$key};
+   return exists $self->{__data__}->{$key};
 }
 
 sub get {
    my ($self, $key) = @_;
-   return $self->{$key};
+   return $self->{__data__}->{$key};
+}
+
+sub reset {
+   my ($self) = @_;
+   $self->{__data__} = {};
 }
 
 1;

@@ -555,34 +555,47 @@ sub read_ssh_config_file {
    $config_file ||= _home_dir() . '/.ssh/config';
    
    if(-f $config_file) {
-      my (@host, $in_host);
-      if(open(my $fh, '<', $config_file)) {
-         while(my $line = <$fh>) {
-            chomp $line;
-            next if ($line =~ m/^\s*#/);
-            next if ($line =~ m/^\s*$/);
-
-            if($line =~ m/^Host\s+=?\s*(.*)$/) {
-               my $host_tmp = $1; 
-               @host = split(/\s+/, $host_tmp);
-               $in_host = 1;
-               for my $h (@host) {
-                  $SSH_CONFIG_FOR{$h} = {}; 
-               }
-               next;
-            }   
-            elsif($in_host) {
-               my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+=?\s*(.*)$/);
-               $val =~ s/^\s+//;
-               $val =~ s/\s+$//;
-               for my $h (@host) {
-                  $SSH_CONFIG_FOR{$h}->{lc($key)} = $val;
-               }
-            }   
-         }
-         close($fh);
-      }
+      my @lines = eval { local(@ARGV) = ($config_file); <>;  };
+      %SSH_CONFIG_FOR = _parse_ssh_config(@lines);
    }
+}
+
+sub _parse_ssh_config {
+   my (@lines) = @_;
+
+   my %ret = ();
+
+   my (@host, $in_host);
+   for my $line (@lines) {
+      chomp $line;
+      next if ($line =~ m/^\s*#/);
+      next if ($line =~ m/^\s*$/);
+
+      if($line =~ m/^Host\s+=?\s*(.*)$/) {
+         my $host_tmp = $1; 
+         @host = split(/\s+/, $host_tmp);
+         $in_host = 1;
+         for my $h (@host) {
+            $ret{$h} = {}; 
+         }
+         next;
+      }   
+      elsif($in_host) {
+         #my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+=?\s*(.*)$/);
+         $line =~ s/^\s*//g;
+         my ($key, $val_tmp) = split(/[\s=]/, $line, 2);
+         $val_tmp =~ s/^[\s=]+//g;
+         my $val = $val_tmp;
+
+         $val =~ s/^\s+//;
+         $val =~ s/\s+$//;
+         for my $h (@host) {
+            $ret{$h}->{lc($key)} = $val;
+         }
+      }   
+   }
+
+   return %ret;
 }
 
 sub set_allow_empty_groups {

@@ -1,3 +1,9 @@
+2013-05-03 Jan Gehring <jan.gehring, gmail.com> (0.41.3)
+  * fixed using -c flag with Rex::Box - #160
+  * fixed parsing ssh/config file - #158
+  * get_box() : better error message - #157
+  * fixed PATH variable for run() with multiple commands - #156
+
 2013-04-19 Jan Gehring <jan.gehring, gmail.com> (0.41.2)
   * fixed exit status code for some situations where it fails
   * fixed rexify --use=module command

@@ -104,6 +104,10 @@ sub template {
    my ($file, @params) = @_;
    my $param = { @params };
 
+   if(! exists $param->{server}) {
+      $param->{server} = Rex::Commands::connection()->server;
+   }
+
    unless($file =~ m/^\// || $file =~ m/^\@/) {
       # path is relative and no template
       Rex::Logger::debug("Relativ path $file");

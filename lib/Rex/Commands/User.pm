@@ -14,6 +14,8 @@ With this module you can manage user and groups.
 
 =head1 SYNOPSIS
 
+ use Rex::Commands::User;
+    
  task "create-user", "remoteserver", sub {
     create_user "root",
        uid => 0,

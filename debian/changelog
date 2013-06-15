@@ -1,3 +1,8 @@
+rex (0.42.0) unstable; urgency=low
+  * package updated
+
+ -- Jan Gehring <jan.gehring@gmail.com>  Sat, 15 Jun 2013 19:15:00 +0200
+
 rex (0.41.3) unstable; urgency=low
   * package updated
 
@@ -18,77 +23,3 @@ rex (0.41.0) unstable; urgency=low
 
  -- Jan Gehring <jan.gehring@gmail.com>  Mon, 01 Apr 2013 19:15:00 +0200
 
-rex (0.40.4) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Sun, 10 Mar 2013 17:30:00 +0200
-
-rex (0.40.3) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 09 Mar 2013 15:30:00 +0200
-
-rex (0.40.2) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 02 Mar 2013 11:10:00 +0200
-
-rex (0.40.1) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Wed, 27 Feb 2013 21:50:00 +0200
-
-rex (0.40.0) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Tue, 19 Feb 2013 21:50:00 +0200
-
-rex (0.39.0) unstable; urgency=low
-  * package updated
- 
- -- Jan Gehring <jan.gehring@gmail.com>  Thu, 07 Feb 2013 18:45:00 +0200
-
-rex (0.38.0) unstable; urgency=low
-  * package updated
- 
- -- Jan Gehring <jan.gehring@gmail.com>  Sun, 27 Jan 2013 12:45:00 +0200
-
-rex (0.37.2) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Wed, 16 Jan 2013 21:35:00 +0200
-
-rex (0.37.3) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Tue, 15 Jan 2013 21:35:00 +0200
-
-rex (0.37.0) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 05 Jan 2013 22:10:00 +0200
-
-rex (0.36.0) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Tue, 01 Jan 2013 19:40:00 +0200
-
-rex (0.35.1) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Sat, 22 Dec 2012 22:40:00 +0200
-
-rex (0.34.2) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Fri, 14 Nov 2012 12:30:00 +0200
-
-rex (0.34.1) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Sun, 25 Nov 2012 20:30:00 +0200
-
-rex (0.34.0) unstable; urgency=low
-  * package updated
-
- -- Jan Gehring <jan.gehring@gmail.com>  Fri, 02 Nov 2012 12:00:00 +0200

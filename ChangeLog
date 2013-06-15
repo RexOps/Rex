@@ -1,3 +1,20 @@
+2013-06-15 Jan Gehring <jan.gehring, gmail.com> (0.42.0)
+  * added Net::OpenSSH support - chenryn, jfried
+  * custom user for sudo command
+  * new function: delete_lines_according_to
+  * new feature flag use_server_auth
+  * improved ini file parsing
+  * support for custom server parameters
+  * cwd option for run command
+  * speed improvements: #123, #133, #135, #136, #137, #143 - liedekef
+  * removed blastwave package capabilities from solaris, because blastwave doesn't exists anymore
+  * #129 - removed an unnecessary opendir call - liedekef
+  * #148 - use equery for Rex::Pkg::Gentoo in get_installed, later replaced by #165 - tianon
+  * #149 - updated most of Rsync with server-specific auth - tianon
+  * #159 - don't execute a task if the defined group doesn't contain servers. There is a feature flag to disable this behavior (empty_groups)
+  * #163 - Rex::Pkg::Gentoo: Fix separator character between package name and version
+  * #165 - Rex::Pkg::Gentoo: Replace get_installed checking method
+
 2013-05-03 Jan Gehring <jan.gehring, gmail.com> (0.41.3)
   * fixed using -c flag with Rex::Box - #160
   * fixed parsing ssh/config file - #158

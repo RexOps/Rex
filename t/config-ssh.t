@@ -10,6 +10,9 @@ use_ok 'Rex::Config';
 my $ssh_cfg1 = <<EOF;
 
 # Sample SSH config w/o equal signs
+Host *
+	StrictHostKeyChecking no
+	UserKnownHostsFile=/dev/null
 
 Host frontend1
 Hostname fe80::1

@@ -51,6 +51,7 @@ With this module you can manipulate files.
     mode   => 400,
     on_change => sub { say "File was changed."; };
  
+
 =head1 EXPORTED FUNCTIONS
 
 =over 4
@@ -506,7 +507,9 @@ Since 0.42 you can use named parameters as well
        line   => "mygroup:*:100:myuser1,myuser2",
        regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
  };
+
 =cut
+
 sub append_if_no_such_line {
    my $file = shift;
    my ($new_line, @m);

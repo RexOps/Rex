@@ -533,6 +533,7 @@ sub connect {
    my $public_key = "";
    my $private_key = "";
 
+   #print Dumper($self);
    my $auth = $self->merge_auth($server);
 
    Rex::Logger::debug(Dumper($auth));
@@ -707,7 +708,7 @@ sub get_desc {
    return Rex::TaskList->create()->get_desc(@tmp);
 }
 
-=begin exit_on_connect_fail()
+=item exit_on_connect_fail()
 
 Returns true if rex should exit on connect failure.
 

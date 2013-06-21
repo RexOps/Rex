@@ -64,9 +64,9 @@ sub connect {
    }
    Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
 
-   
    if($auth_type && $auth_type eq "pass") {
-      $self->{ssh} = Net::OpenSSH->new($server, user => $user, password => $pass);
+      Rex::Logger::info("OpenSSH: pass_auth: $server:$port - $user - $pass");
+      $self->{ssh} = Net::OpenSSH->new($server, user => $user, password => $pass, port => $port);
    }
    elsif($auth_type && $auth_type eq "key") {
       my %a = (

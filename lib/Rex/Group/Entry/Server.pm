@@ -36,6 +36,12 @@ sub new {
 
    bless($self, $proto);
 
+   # be save check if name is already a server ref
+
+   if(ref $self->{name} eq __PACKAGE__) {
+      return $self->{name};
+   }
+
    # rewrite auth info
    if($self->{user}) {
       $self->{auth}->{user} = $self->{user};

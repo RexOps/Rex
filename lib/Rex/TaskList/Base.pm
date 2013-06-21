@@ -94,7 +94,7 @@ sub create_task {
          }
          else {
             for my $entry (@_) {
-               push(@server, Rex::Group::Entry::Server->new(name => $entry));
+               push(@server, (ref($entry) eq "Rex::Group::Entry" ? $entry : Rex::Group::Entry::Server->new(name => $entry)));
             }
          }
       }
@@ -182,7 +182,6 @@ sub run {
    my $task = $self->get_task($task_name);
 
    $option{params} ||= { Rex::Args->get };
-
 
    my @all_server = @{ $task->server };
 

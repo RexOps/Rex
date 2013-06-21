@@ -315,7 +315,7 @@ sub get_connection_type {
    elsif($self->is_https) {
       return "HTTPS";
    }
-   elsif($self->is_openssh) {
+   elsif($self->is_remote && $self->is_openssh && $self->want_connect) {
       return "OpenSSH";
    }
    elsif($self->is_remote && $self->want_connect) {

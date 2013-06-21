@@ -54,8 +54,10 @@ sub parse {
          $val = $key;
          @splitted = ($key);
       }
+      # commented out due to #184
       else {
-         @splitted = split(/\./, $key);
+         #@splitted = split(/\./, $key);
+         @splitted = ($key);
       }
 
       my $ref = $ini->{$section};

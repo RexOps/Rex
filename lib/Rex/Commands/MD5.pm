@@ -65,7 +65,17 @@ sub md5 {
       print Digest::MD5::md5_hex(<>) . "\n";
       |;
 
-      my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+      my $rnd_file;
+      if(Rex::is_ssh()) {
+         $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+      }
+      elsif($^O =~ m/^MSWin/) {
+         $rnd_file = $ENV{TMP} . "/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp"
+      }
+      else {
+         $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+      }
+
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
       $fh->write($script);

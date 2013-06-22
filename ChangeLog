@@ -1,3 +1,10 @@
+2013-06-22 Jan Gehring <jan.gehring, gmail.com> (0.42.1)
+  * #178 - no_ssh option doesn't work with OpenSSH connection
+  * #181 - ssh ports doesn't work with Net::OpenSSH
+  * #182 - addition parameters doesn't work for ini files
+  * #183 - fqdn doesn't work in ini files
+  * #184 - hostname evaluation and additional parameters doesn't work together
+
 2013-06-15 Jan Gehring <jan.gehring, gmail.com> (0.42.0)
   * added Net::OpenSSH support - chenryn, jfried
   * custom user for sudo command

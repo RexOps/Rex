@@ -82,7 +82,14 @@ sub md5 {
       $fh->close;
 
       my $exec = Rex::Interface::Exec->create;
-      my $md5 = $exec->exec("perl $rnd_file '$file'");
+      my $md5;
+
+      if(Rex::is_local() && $^O =~ m/^MSWin/) {
+         $md5 = $exec->exec("perl $rnd_file \"$file\"");
+      }
+      else {
+         $md5 = $exec->exec("perl $rnd_file '$file'");
+      }
 
       unless($? == 0) {
          ($md5) = split(/\s/, $exec->exec("md5sum '$file'"));

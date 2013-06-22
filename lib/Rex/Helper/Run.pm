@@ -24,7 +24,10 @@ require Rex::Config;
 sub upload_and_run {
    my ($template, %option) = @_;
 
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+   my $rnd_file;
+   if(Rex::is_ssh()) {
+      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+   }
 
    if(Rex::is_local()) {
       if($^O =~ m/^MSWin/) {

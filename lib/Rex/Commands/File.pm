@@ -584,7 +584,7 @@ sub append_if_no_such_line {
 
    if ($on_change) {
       my $new_md5 = md5($file);
-      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+      if($old_md5 && $new_md5 && $old_md5 ne $new_md5) {
          $old_md5 ||= "";
          $new_md5 ||= "";
 

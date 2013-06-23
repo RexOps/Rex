@@ -29,10 +29,17 @@ sub upload_and_run {
       $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
    }
 
-   if(Rex::is_local()) {
+   elsif(Rex::is_local()) {
       if($^O =~ m/^MSWin/) {
          $rnd_file =  $ENV{TMP} . "/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
       }
+      else {
+         $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+      }
+   }
+
+   else {
+      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
    }
 
    my $fh = Rex::Interface::File->create;

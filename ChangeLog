@@ -1,3 +1,6 @@
+2013-06-23 Jan Gehring <jan.gehring, gmail.com> (0.42.2)
+  * fixed local run of run_with helper command
+
 2013-06-22 Jan Gehring <jan.gehring, gmail.com> (0.42.1)
   * #178 - no_ssh option doesn't work with OpenSSH connection
   * #181 - ssh ports doesn't work with Net::OpenSSH

@@ -14,6 +14,7 @@ require Exporter;
 
 use base qw(Exporter);
 use vars qw(@EXPORT);
+use Cwd 'realpath';
 
 @EXPORT = qw(get_file_path);
 
@@ -29,8 +30,19 @@ sub get_file_path {
    }
 
    # check if a file in $BASE overwrites the module file
+   # first get the absoltue path to the rexfile
+
+   my @path_parts = split(/\//, realpath($::rexfile));
+   pop @path_parts;
+
+   my $real_path = join('/', @path_parts);
+
    if(-f $file_name) {
       return $file_name;
+   }
+
+   if(-f $real_path . '/' . $file_name) {
+      return $real_path . '/' . $file_name;
    }
 
    my $module_path = Rex::get_module_path($caller_package);

@@ -249,7 +249,7 @@ sub __run__ {
 
       eval {
          my $ok = do($::rexfile);
-         Rex::Logger::info("eval your Rexfile.");
+         Rex::Logger::debug("eval your Rexfile.");
          if(! $ok) {
             Rex::Logger::info("There seems to be an error on some of your required files. $@", "error");
             my @dir = (dirname($::rexfile));

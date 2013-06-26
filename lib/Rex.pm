@@ -441,38 +441,60 @@ sub import {
 
    if($what eq "-feature" || $what eq "feature") {
 
+
       if(! ref($addition1)) {
          $addition1 = [$addition1];
       }
 
       for my $add (@{ $addition1 }) {
 
+         my $found_feature = 0;
+
+         if($add =~ m/^(\d+\.\d+)$/) {
+            my $vers = $1;
+            my ($major, $minor, $patch) = split(/\./, $VERSION);
+            my ($c_major, $c_minor) = split(/\./, $vers);
+
+            if( ($c_major > $major)
+                  ||
+                ($c_major >= $major && $c_minor > $minor)
+            ) {
+               Rex::Logger::info("This Rexfile tries to enable features that are not supported with your version. Please update.", "warn");
+               exit 1;
+            }
+         }
+
          # remove default task auth
          if($add =~ m/^\d+\.\d+$/ && $add  >= 0.31) {
             Rex::Logger::debug("activating featureset >= 0.31");
             Rex::TaskList->create()->set_default_auth(0);
+            $found_feature = 1;
          }
 
          if($add =~ m/^\d+\.\d+$/ && $add >= 0.35) {
             Rex::Logger::debug("activating featureset >= 0.35");
             $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
+            $found_feature = 1;
          }
 
          if($add =~ m/^\d+\.\d+$/ && $add >= 0.40) {
             Rex::Logger::debug("activating featureset >= 0.40");
             $Rex::Template::BE_LOCAL = 1;
             $Rex::WITH_EXIT_STATUS = 1;
+            $found_feature = 1;
          }
 
 
          if($add eq "no_local_template_vars") {
             Rex::Logger::debug("activating featureset no_local_template_vars");
             $Rex::Template::BE_LOCAL = 0;
+            $found_feature = 1;
          }
 
          if($add eq "exit_status") {
             Rex::Logger::debug("activating featureset exit_status");
             $Rex::WITH_EXIT_STATUS = 1;
+            $found_feature = 1;
          }
 
          if($add eq "sudo_without_sh") {
@@ -483,21 +505,30 @@ sub import {
          if($add eq "sudo_without_locales") {
             Rex::Logger::debug("Using sudo without locales. this _will_ break things!");
             Rex::Config->set_sudo_without_locales(1);
+            $found_feature = 1;
          }
 
          if($add eq "no_tty") {
             Rex::Logger::debug("Disabling pty usage for ssh");
             Rex::Config->set_no_tty(1);
+            $found_feature = 1;
          }
 
          if($add eq "empty_groups") {
             Rex::Logger::debug("Enabling usage of empty groups");
             Rex::Config->set_allow_empty_groups(1);
+            $found_feature = 1;
          }
 
          if($add eq "use_server_auth") {
             Rex::Logger::debug("Enabling use_server_auth");
             Rex::Config->set_use_server_auth(1);
+            $found_feature = 1;
+         }
+
+         if($found_feature == 0) {
+            Rex::Logger::info("You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.", "warn");
+            exit 1;
          }
 
       }

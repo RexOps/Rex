@@ -203,7 +203,7 @@ sub __run__ {
                CORE::exit 1;
             } else
             {
-               Rex::Logger::info("Found stale lock file. Removing it.");
+               Rex::Logger::debug("Found stale lock file. Removing it.");
                Rex::global_sudo(0);
                CORE::unlink("$::rexfile.lock");
             }

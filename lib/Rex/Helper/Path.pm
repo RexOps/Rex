@@ -64,13 +64,13 @@ sub get_tmp_file {
    my $rnd_file;
 
    if(Rex::is_ssh()) {
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
+      $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
    }
    elsif($^O =~ m/^MSWin/) {
-      $rnd_file = $ENV{TMP} . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
+      $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
    }
    else {
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
+      $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
    }
 
    return $rnd_file;

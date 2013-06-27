@@ -16,6 +16,7 @@ use Rex;
 use Rex::Commands;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
+use Rex::Helper::Path;
 use IO::File;
 
 sub open {
@@ -25,7 +26,7 @@ sub open {
 
    $self->{mode} = shift;
    $self->{file} = shift;
-   $self->{rndfile} = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
+   $self->{rndfile} = get_tmp_file;
 
    if(my $sftp = Rex::get_sftp()) {
       if($self->{mode} eq ">") {

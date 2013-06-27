@@ -57,6 +57,7 @@ use Rex::Commands::MD5;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
+use Rex::Helper::Path;
 
 @EXPORT = qw(sync_up sync_down);
 
@@ -294,7 +295,7 @@ for my $dir (@dirs) {
 print Dumper(\@tree);
       |;
 
-      my $rnd_file = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
+      my $rnd_file = get_tmp_file;
       file $rnd_file, content => $script;
       my $content = run "perl $rnd_file $dest";
       $content =~ s/^\$VAR1 =//;

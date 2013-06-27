@@ -16,7 +16,11 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 use Cwd 'realpath';
 
-@EXPORT = qw(get_file_path);
+require Rex::Commands;
+require Rex::Config;
+require Rex;
+
+@EXPORT = qw(get_file_path get_tmp_file);
 
 #
 # CALL: get_file_path("foo.txt", caller());
@@ -54,6 +58,22 @@ sub get_file_path {
    }
 
    return $file_name;
+}
+
+sub get_tmp_file {
+   my $rnd_file;
+
+   if(Rex::is_ssh()) {
+      $rnd_file = "/tmp/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
+   }
+   elsif($^O =~ m/^MSWin/) {
+      $rnd_file = $ENV{TMP} . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
+   }
+   else {
+      $rnd_file = "/tmp/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
+   }
+
+   return $rnd_file;
 }
 
 1;

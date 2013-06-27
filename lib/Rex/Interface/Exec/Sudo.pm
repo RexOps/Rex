@@ -17,6 +17,7 @@ use Rex::Interface::File::Local;
 use Rex::Interface::File::SSH;
 
 use Rex::Commands;
+use Rex::Helper::Path;
 
 sub new {
    my $that = shift;
@@ -64,7 +65,7 @@ sub exec {
       my $random_string = get_random(length($sudo_password), 'a' .. 'z');
       my $crypt = $sudo_password ^ $random_string;
 
-      $random_file = "/tmp/" . get_random(16, 'a' .. 'z') . ".sudo.tmp";
+      $random_file = get_tmp_file;
 
       $file->open('>', $random_file);
       $file->write(<<EOF);

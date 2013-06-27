@@ -15,6 +15,7 @@ use Rex::Commands::File;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
 use Data::Dumper;
+use Rex::Helper::Path;
 
 sub new {
    my $that = shift;
@@ -134,7 +135,7 @@ sub delete {
 sub write_cron {
    my ($self) = @_;
 
-   my $rnd_file = "/tmp/" . get_random(8, 'a' .. 'z') . ".tmp";
+   my $rnd_file = get_tmp_file;
 
    my @lines = map { $_ = $_->{line} } @{ $self->{cron} };
 

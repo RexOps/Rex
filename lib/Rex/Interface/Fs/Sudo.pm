@@ -11,6 +11,7 @@ use warnings;
 
 require Rex::Commands;
 use Rex::Interface::Fs::Base;
+use Rex::Helper::Path;
 use base qw(Rex::Interface::Fs::Base);
 
 sub new {
@@ -58,7 +59,7 @@ sub ls {
 sub upload {
    my ($self, $source, $target) = @_;
 
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+   my $rnd_file = get_tmp_file;
 
    if(my $ssh = Rex::is_ssh()) {
       if(ref $ssh eq "Net::OpenSSH") {
@@ -78,7 +79,7 @@ sub upload {
 sub download {
    my ($self, $source, $target) = @_;
 
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+   my $rnd_file = get_tmp_file;
 
    if(my $ssh = Rex::is_ssh()) {
       $self->_exec("cp '$source' $rnd_file");
@@ -245,7 +246,7 @@ sub _get_file_writer {
 sub _write_to_rnd_file {
    my ($self, $content) = @_;
    my $fh = $self->_get_file_writer();
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+   my $rnd_file = get_tmp_file;
 
    $fh->open(">", $rnd_file);
    $fh->write($content);

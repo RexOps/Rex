@@ -16,6 +16,7 @@ use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::User::Linux;
+use Rex::Helper::Path;
 
 use base qw(Rex::User::Linux);
 
@@ -84,7 +85,7 @@ sub create_user {
       $cmd .= " -G " . join(",", @groups);
    }
 
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
    $fh->write("$cmd -n $user\nexit \$?\n");
@@ -104,7 +105,7 @@ sub create_user {
    if(exists $data->{password}) {
       Rex::Logger::debug("Changing password of $user.");
 
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+      $rnd_file = get_tmp_file;
       $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
       $fh->write("echo '".$data->{password} . "' | pw usermod $user -h 0\nexit \$?\n");
@@ -151,7 +152,7 @@ sub get_user {
    my ($self, $user) = @_;
 
    Rex::Logger::debug("Getting information for $user");
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
    $fh->write(q|use Data::Dumper; print Dumper [ getpwnam($ARGV[0]) ];|);
@@ -222,7 +223,7 @@ sub get_group {
    my ($self, $group) = @_;
 
    Rex::Logger::debug("Getting information for $group");
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
    $fh->write(q|use Data::Dumper; print Dumper [ getgrnam($ARGV[0]) ];|);

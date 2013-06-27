@@ -14,6 +14,7 @@ use File::Basename;
 require Rex::Commands;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;
+use Rex::Helper::Path;
 use base qw(Rex::Interface::File::Base);
 
 sub new {
@@ -43,7 +44,7 @@ sub open {
 
    $self->{mode} = $mode;
    $self->{file} = $file;
-   $self->{rndfile} = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".sudo.tmp";
+   $self->{rndfile} = get_tmp_file;
    if($self->_fs->is_file($file)) {
       # resolving symlinks
       while(my $link = $self->_fs->readlink($file)) {

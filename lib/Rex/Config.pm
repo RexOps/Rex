@@ -48,7 +48,8 @@ our ($user, $password, $port,
             $source_global_profile,
             %executor_for,
             $allow_empty_groups,
-            $use_server_auth);
+            $use_server_auth,
+            $tmp_dir);
 
 # some defaults
 %executor_for = (
@@ -90,6 +91,14 @@ sub get_executor_for {
    my $e     = shift;
 
    return $executor_for{$e};
+}
+
+sub set_tmp_dir {
+   $tmp_dir = shift;
+}
+
+sub get_tmp_dir {
+   return $tmp_dir || "/tmp";
 }
 
 sub set_path {

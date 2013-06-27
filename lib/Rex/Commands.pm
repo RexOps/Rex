@@ -134,6 +134,7 @@ use base qw(Rex::Exporter);
             last_command_output
             case
             inspect
+            tmp_dir
           );
 
 our $REGISTER_SUB_HASH_PARAMTER = 0;
@@ -1232,6 +1233,16 @@ sub set_executor_for {
    Rex::Config->set_executor_for(@_);
 }
 
+=item tmp_dir($tmp_dir)
+
+Set the tmp directory on the remote host to store temporary files.
+
+=cut
+
+sub tmp_dir {
+   Rex::Config->set_tmp_dir(@_);
+}
+
 =item inspect($varRef)
 
 This function dumps the contents of a variable to STDOUT.
@@ -1246,6 +1257,8 @@ task "mytask", "myserver", sub {
 };
 
 =cut
+
+
 
 my $depth = 0;
 sub _dump_hash {

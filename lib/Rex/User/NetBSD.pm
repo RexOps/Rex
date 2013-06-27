@@ -16,7 +16,7 @@ use Rex::User::Linux;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
-
+use Rex::Helper::Path;
 
 use base qw(Rex::User::Linux);
 
@@ -93,7 +93,7 @@ sub create_user {
       }
    }
  
-   my $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+   my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
    $fh->write("$cmd $user\nexit \$?\n");
@@ -113,7 +113,7 @@ sub create_user {
    if(exists $data->{password}) {
       Rex::Logger::debug("Changing password of $user.");
 
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+      $rnd_file = get_tmp_file;
       $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
       $fh->write("usermod -p \$(pwhash '" . $data->{password} . "') $user\nexit \$?\n");
@@ -130,7 +130,7 @@ sub create_user {
    if(exists $data->{crypt_password}) {
       Rex::Logger::debug("Setting encrypted password of $user");
 
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".u.tmp";
+      $rnd_file = get_tmp_file;
       $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
       $fh->write("usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");

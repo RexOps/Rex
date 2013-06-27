@@ -17,6 +17,7 @@ use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::File::Parser::Data;
 use Rex::Template;
+use Rex::Helper::Path;
 
 use XML::Simple;
 use Rex::Virtualization::LibVirt::hypervisor;
@@ -97,7 +98,7 @@ sub execute {
 
    $parsed_template =~ s/[\n\r]//gms;
 
-   my $file_name = "/tmp/" . rand(100) . ".xml";
+   my $file_name = get_tmp_file;
 
    file "$file_name",
       content => $parsed_template;

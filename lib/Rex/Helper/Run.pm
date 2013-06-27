@@ -16,6 +16,7 @@ use vars qw(@EXPORT);
 use Rex::Commands::Run;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
+use Rex::Helper::Path;
 require Rex::Commands;
 require Rex::Config;
 
@@ -24,23 +25,7 @@ require Rex::Config;
 sub upload_and_run {
    my ($template, %option) = @_;
 
-   my $rnd_file;
-   if(Rex::is_ssh()) {
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
-   }
-
-   elsif(Rex::is_local()) {
-      if($^O =~ m/^MSWin/) {
-         $rnd_file =  $ENV{TMP} . "/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
-      }
-      else {
-         $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
-      }
-   }
-
-   else {
-      $rnd_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
-   }
+   my $rnd_file = get_tmp_file;
 
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);

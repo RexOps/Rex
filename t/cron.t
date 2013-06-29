@@ -5,7 +5,7 @@ BEGIN {
    }
    else {
       require Test::More;
-      Test::More->import(tests => 267);
+      Test::More->import(tests => 291);
    }
 };
 
@@ -108,6 +108,12 @@ $c->add(
    command => "bar",
 );
 
+$c->add(
+   minute      => "0",
+   hour        => "0",
+   day_of_week => "0",
+);
+
 @cron = $c->list;
 
 ok($cron[14]->{type} eq "job", "the 6th job");
@@ -136,6 +142,15 @@ ok($cron[16]->{cron}->{month} eq "*/2", "the 8th job / month");
 ok($cron[16]->{cron}->{day_of_week} eq "*", "the 8th job / day_of_month of week");
 ok($cron[16]->{cron}->{command} eq "bar", "the 8th job / cmd");
 ok($cron[16]->{line} eq "* 5,6,7 * */2 * bar", "the 8th job / cron line");
+
+ok($cron[17]->{type} eq "job", "the 9th job");
+ok($cron[17]->{cron}->{minute} eq "0", "the 9th job / min");
+ok($cron[17]->{cron}->{hour} eq "0", "the 9th job / hour");
+ok($cron[17]->{cron}->{day_of_month} eq "*", "the 9th job / day");
+ok($cron[17]->{cron}->{month} eq "*", "the 9th job / month");
+ok($cron[17]->{cron}->{day_of_week} eq "0", "the 9th job / day_of_month of week");
+ok($cron[17]->{cron}->{command} eq "false", "the 9th job / cmd");
+ok($cron[17]->{line} eq "0 0 * * 0 false", "the 9th job / cron line");
 
 unless($^O =~ m/^MSWin/) {
    #
@@ -243,6 +258,15 @@ unless($^O =~ m/^MSWin/) {
    ok($cron[16]->{cron}->{command} eq "bar", "the 8th job / cmd");
    ok($cron[16]->{line} eq "* 5,6,7 * */2 * bar", "the 8th job / cron line");
 
+   ok($cron[17]->{type} eq "job", "the 9th job");
+   ok($cron[17]->{cron}->{minute} eq "0", "the 9th job / min");
+   ok($cron[17]->{cron}->{hour} eq "0", "the 9th job / hour");
+   ok($cron[17]->{cron}->{day_of_month} eq "*", "the 9th job / day");
+   ok($cron[17]->{cron}->{month} eq "*", "the 9th job / month");
+   ok($cron[17]->{cron}->{day_of_week} eq "0", "the 9th job / day_of_month of week");
+   ok($cron[17]->{cron}->{command} eq "false", "the 9th job / cmd");
+   ok($cron[17]->{line} eq "0 0 * * 0 false", "the 9th job / cron line");
+
 
    #
    # Delete 2 entries
@@ -326,6 +350,15 @@ unless($^O =~ m/^MSWin/) {
    ok($cron[14]->{cron}->{day_of_week} eq "*", "the 8th job / day_of_month of week");
    ok($cron[14]->{cron}->{command} eq "bar", "the 8th job / cmd");
    ok($cron[14]->{line} eq "* 5,6,7 * */2 * bar", "the 8th job / cron line");
+
+   ok($cron[15]->{type} eq "job", "the 9th job");
+   ok($cron[15]->{cron}->{minute} eq "0", "the 9th job / min");
+   ok($cron[15]->{cron}->{hour} eq "0", "the 9th job / hour");
+   ok($cron[15]->{cron}->{day_of_month} eq "*", "the 9th job / day");
+   ok($cron[15]->{cron}->{month} eq "*", "the 9th job / month");
+   ok($cron[15]->{cron}->{day_of_week} eq "0", "the 9th job / day_of_month of week");
+   ok($cron[15]->{cron}->{command} eq "false", "the 9th job / cmd");
+   ok($cron[15]->{line} eq "0 0 * * 0 false", "the 9th job / cron line");
 
 
    $c->add_env(

@@ -90,13 +90,13 @@ sub close {
 
    if(exists $self->{mode} && ( $self->{mode} eq ">" || $self->{mode} eq ">>") ) {
       my $exec = Rex::Interface::Exec->create;
-      $self->_fs->rename($self->{rndfile}, $self->{file});
       if($self->{file_stat}) {
-         my %stat = %{ $self->{file_stat} };
-         $self->_fs->chmod($stat{mode}, $self->{file});
-         $self->_fs->chown($stat{uid}, $self->{file});
-         $self->_fs->chgrp($stat{gid}, $self->{file});
+         my %stat = $self->_fs->stat($self->{file});
+         $self->_fs->chmod($stat{mode}, $self->{rndfile});
+         $self->_fs->chown($stat{uid}, $self->{rndfile});
+         $self->_fs->chgrp($stat{gid}, $self->{rndfile});
       }
+      $self->_fs->rename($self->{rndfile}, $self->{file});
 
       #$exec->exec("cat " . $self->{rndfile} . " >'" . $self->{file} . "'");
    }

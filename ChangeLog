@@ -1,3 +1,7 @@
+2013-06-29 Jan Gehring <jan.gehring, gmail.com> (0.42.3)
+  * #189 fixed zero values in crontab - ferki
+  * fixed ownership problem with sudo mode and file manipulation
+
 2013-06-23 Jan Gehring <jan.gehring, gmail.com> (0.42.2)
   * fixed local run of run_with helper command
 

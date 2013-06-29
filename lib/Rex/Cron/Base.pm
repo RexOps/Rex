@@ -46,11 +46,11 @@ sub list_envs {
 sub add {
    my ($self, %config) = @_;
 
-   $config{"minute"}        ||= "*",
-   $config{"hour"}          ||= "*",
+   $config{"minute"}          = "*" unless defined $config{"minute"};
+   $config{"hour"}            = "*" unless defined $config{"hour"};
    $config{"day_of_month"}  ||= "*",
-   $config{"month"}         ||= "*",
-   $config{"day_of_week"}   ||= "*",
+   $config{"month"}         ||= "*";
+   $config{"day_of_week"}     = "*" unless defined $config{"day_of_week"};
    $config{"command"}       ||= "false",
 
 

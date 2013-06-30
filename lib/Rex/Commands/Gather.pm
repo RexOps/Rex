@@ -428,6 +428,19 @@ sub is_windows {
 
 }
 
+=item is_openwrt
+
+Returns true if the target system is an OpenWrt System.
+
+=cut
+sub is_openwrt {
+   my $os = get_operating_system();
+   if($os =~ m/OpenWrt/i) {
+      return 1;
+   }
+
+}
+
 =back
 
 =cut

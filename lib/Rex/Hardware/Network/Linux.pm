@@ -59,6 +59,26 @@ sub _parse_ifconfig {
    };
 }
 
+sub _parse_ip {
+   my ($ip_lines) = @_;
+
+   # extract all interesting values at once
+   my ($mac, $ip, $cidr_prefix, $broadcast) = ($ip_lines =~ m%
+         link/.*\ (..:..:..:..:..:..)\ .*
+         inet\ (\d+\.\d+\.\d+\.\d+)/(\d+)\ brd\ (\d+\.\d+\.\d+\.\d+)%sx);
+
+   # convert CIDR prefix to dotted decimal notation
+   my $binary_mask         = '1' x $cidr_prefix . '0' x (32 - $cidr_prefix);
+   my $dotted_decimal_mask = join '.', unpack 'C4', pack 'B32', $binary_mask;
+   
+   return {
+      ip          => $ip,
+      netmask     => $dotted_decimal_mask,
+      broadcast   => $broadcast,
+      mac         => $mac,
+   };
+}
+
 sub route {
 
    my @ret = ();

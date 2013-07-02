@@ -18,10 +18,13 @@ sub get_network_devices {
 
    my @device_list;
 
+   my $command = can_run('ip') ? 'ip link show' : 'ifconfig';
+
    my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } run("cat /proc/net/dev");
    for my $dev (@proc_net_dev) {
-      my $ifconfig = run("/sbin/ifconfig $dev");
-      if($ifconfig =~ m/(Link encap:)?(?:Ethernet|Point-to-Point Protocol)/m) {
+      my $output = run("$command $dev");
+      if (($output =~ m%link/(ether|ppp) %) or
+          ($output =~ m/(Link encap:)?(?:Ethernet|Point-to-Point Protocol)/m)) {
          push(@device_list, $dev);
       }
    }

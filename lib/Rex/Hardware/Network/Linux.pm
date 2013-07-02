@@ -40,11 +40,14 @@ sub get_network_configuration {
 
    my $device_info = {};
 
+   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig';
+
    for my $dev (@{$devices}) {
 
-      my $ifconfig = run("LC_ALL=C /sbin/ifconfig $dev");
+      my $output = run("LC_ALL=C $command $dev");
 
-      $device_info->{$dev} = _parse_ifconfig($ifconfig);
+      $device_info->{$dev} =
+         ($command eq 'ip addr show') ? _parse_ip($output) : _parse_ifconfig($output);
 
    }
 

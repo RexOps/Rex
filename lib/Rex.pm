@@ -311,7 +311,7 @@ Use this function to create a connection if you use Rex as a library.
     print "Do something...\n";
  }
      
- my $output = run("upime");
+ my $output = run("uptime");
 
 =cut
 

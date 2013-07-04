@@ -27,6 +27,7 @@ Requires: perl-XML-Simple
 Requires: perl-Digest-HMAC
 Requires: perl-YAML
 Requires: perl-String-Escape
+Requires: perl-Time-HiRes
 
 %description
 Rex is a tool to ease the execution of commands on multiple remote 

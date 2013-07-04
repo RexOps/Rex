@@ -558,6 +558,8 @@ sub append_if_no_such_line {
       $_ = _normalize_regex($_);
    }
 
+   $new_line =~ s/"/\\\"/gms;
+
    my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
       line => $new_line,
       regex => \@m,

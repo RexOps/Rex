@@ -14,6 +14,7 @@ my %deps = (
                   'Storable' => 0,
                   'IPC::Open3' => 0,
                   'String::Escape' => 0,
+                  'Time::HiRes' => 0,
 );
 
 if($^O =~ m/^MSWin/) {

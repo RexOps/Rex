@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-   use Test::More tests => 26;
+   use Test::More tests => 27;
    use Data::Dumper;
 
    use_ok 'Rex';
@@ -55,6 +55,11 @@ $content = cat("$cwd/test.txt");
 ok($content =~ m/change/gms, "found change");
 
 ok($changed == 1, "something was changed in the file");
+
+append_if_no_such_line("$cwd/test.txt", 'KEY="VAL"');
+$content = cat("$cwd/test.txt");
+ok($content =~ m/KEY="VAL"/gms, "found KEY=VAL");
+
 
 append_if_no_such_line("$cwd/test.txt", "change", qr{change}, 
    on_change => sub {

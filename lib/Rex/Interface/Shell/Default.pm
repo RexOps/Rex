@@ -4,10 +4,7 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
-package Rex::Interface::Shell::Zsh;
-
-use strict;
-use warnings;
+package Rex::Interface::Shell::Default;
 
 use Rex::Interface::Shell::Bash;
 

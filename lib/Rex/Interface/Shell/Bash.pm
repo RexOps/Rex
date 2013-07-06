@@ -1,4 +1,14 @@
-package Rex::Interface::Shell::Zsh;
+#
+# (c) Jan Gehring <jan.gehring@gmail.com>
+# 
+# vim: set ts=3 sw=3 tw=0:
+# vim: set expandtab:
+   
+
+package Rex::Interface::Shell::Bash;
+
+use strict;
+use warnings;
 
 sub new {
     my $class = shift;
@@ -26,14 +36,14 @@ sub set_locale {
 
 sub exec {
     my ($self, $cmd) = @_;
-    my $comlete_cmd = $cmd;
+    my $complete_cmd = $cmd;
 
     if ($self->{path}) {
-        $complete_cmd = "set PATH=$self->{path}; ";
+        $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
     }
 
     if ($self->{locale}) {
-        $complete_cmd = "set LC_ALL=$self->{locale} $complete_cmd; ";
+        $complete_cmd = "LC_ALL=$self->{locale} ; export LC_ALL; $complete_cmd ";
     }
 
     if ($self->{parse_profile}) {

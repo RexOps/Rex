@@ -10,6 +10,8 @@ use strict;
 use warnings;
 
 use Rex::Helper::SSH2;
+use File::Basename 'basename';
+require Rex::Interface::Shell;
 require Rex::Commands;
 
 sub new {
@@ -31,30 +33,44 @@ sub exec {
 
    Rex::Logger::debug("Executing: $cmd");
 
-   if($path) { $path = "PATH=$path" }
-   $path ||= "";
+   #if($path) { $path = "PATH=$path" }
+   #$path ||= "";
 
    Rex::Commands::profiler()->start("exec: $cmd");
 
    my $ssh = Rex::is_ssh();
 
-   my ($shell) = net_ssh2_exec($ssh, "echo \$SHELL");
-   $shell ||= "bash";
+   my $used_shell = basename(net_ssh2_exec($ssh, "echo \$SHELL"));
 
-   my ($out, $err);
-   if($shell !~ m/\/bash/ && $shell !~ m/\/sh/) {
-      ($out, $err) = net_ssh2_exec($ssh, $cmd);
+   my $shell = Rex::Interface::Shell->create($used_shell);
+
+   my ($out, $err) = net_ssh2_exec($ssh, $shell->exec($cmd)) unless ref($shell);
+
+   #my ($shell) = net_ssh2_exec($ssh, "echo \$SHELL");
+   #$shell ||= "bash";
+
+   #my ($out, $err);
+   #if($shell !~ m/\/bash/ && $shell !~ m/\/sh/) {
+   #   ($out, $err) = net_ssh2_exec($ssh, $cmd);
+   #}
+
+   $shell->set_locale("C");
+   $shell->path($path);
+
+   if(Rex::Config->get_source_global_profile) {
+       $shell->parse_profile(1);
    }
-   else {
-      my $new_cmd = "LC_ALL=C $path ; export PATH LC_ALL ; $cmd";
 
-      if(Rex::Config->get_source_global_profile) {
-         $new_cmd = ". /etc/profile >/dev/null 2>&1; $new_cmd";
-      }
+   #else {
+      #my $new_cmd = "LC_ALL=C $path ; export PATH LC_ALL ; $cmd";
 
-      Rex::Logger::debug("SSH/executing: >$new_cmd<");
-      ($out, $err) = net_ssh2_exec($ssh, $new_cmd);
-   }
+      #if(Rex::Config->get_source_global_profile) {
+      #   $new_cmd = ". /etc/profile >/dev/null 2>&1; $new_cmd";
+      #}
+
+      Rex::Logger::debug("SSH/executing: >$shell->exec($cmd)<");
+      ($out, $err) = net_ssh2_exec($ssh, $shell->exec($cmd));
+   #}
 
    Rex::Commands::profiler()->end("exec: $cmd");
 

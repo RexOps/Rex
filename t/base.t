@@ -1,4 +1,4 @@
-use Test::More tests => 140;
+use Test::More tests => 141;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Cache';
@@ -136,6 +136,7 @@ use_ok 'Rex::User::Linux';
 use_ok 'Rex::User::NetBSD';
 use_ok 'Rex::User::OpenBSD';
 use_ok 'Rex::User::SunOS';
+use_ok 'Rex::User::OpenWrt';
 use_ok 'Rex::User';
 use_ok 'Rex';
 

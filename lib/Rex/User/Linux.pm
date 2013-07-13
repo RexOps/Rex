@@ -314,33 +314,17 @@ sub get_group {
    my ($self, $group) = @_;
 
    Rex::Logger::debug("Getting information for $group");
-   my $rnd_file = get_tmp_file;
-   my $fh = Rex::Interface::File->create;
-   $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [ getgrnam($ARGV[0]) ];|);
-   $fh->close;
-
-   my $data_str = run "perl $rnd_file $group";
+   my @data = split(" ", "" . run(q|print join(" ", getgrnam($ARGV[0]));|), 4);
    if($? != 0) {
       die("Error getting group information");
    }
 
-   Rex::Interface::Fs->create()->unlink($rnd_file);
-
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
-
    return (
-      name => $data->[0],
-      password => $data->[1],
-      gid => $data->[2],
-      members => $data->[3],
+      name => $data[0],
+      password => $data[1],
+      gid => $data[2],
+      members => $data[3],
    );
-
 }
 
 sub rm_group {

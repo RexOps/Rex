@@ -314,7 +314,7 @@ sub get_group {
    my ($self, $group) = @_;
 
    Rex::Logger::debug("Getting information for $group");
-   my @data = split(" ", "" . run(q|print join(" ", getgrnam($ARGV[0]));|), 4);
+   my @data = split(" ", "" . run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));'"), 4);
    if($? != 0) {
       die("Error getting group information");
    }

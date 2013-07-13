@@ -107,6 +107,26 @@ List all processes on a system. Will return all fields of a I<ps aux>.
 
 sub ps {
    my @list;
+
+   if(is_openwrt) {
+      # openwrt doesn't have ps aux
+      @list = run("ps");
+
+      my @ret = ();
+      for my $line (@list) {
+         my ($pid, $user, $vsz, $stat, $command) = split(/\s+/, $line, 5);
+
+         push( @ret, {
+            user     => $user,
+            pid      => $pid,
+            vsz      => $vsz,
+            stat     => $stat,
+            command  => $command,
+         });
+      }
+
+      return @ret;
+   }
    
    if(operating_system_is("SunOS") && operating_system_version() <= 510) {
       @list = run("/usr/ucb/ps aux");

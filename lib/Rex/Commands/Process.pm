@@ -114,6 +114,7 @@ sub ps {
 
       my @ret = ();
       for my $line (@list) {
+         $line =~ s/^\s*|\s*$//g;
          my ($pid, $user, $vsz, $stat, $command) = split(/\s+/, $line, 5);
 
          push( @ret, {

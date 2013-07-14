@@ -43,6 +43,7 @@ use Rex::Commands::MD5;
 use Rex::Commands::Upload;
 use Rex::Commands::Run;
 use Rex::Config;
+use Rex::Commands;
 
 use Data::Dumper;
 use Digest::MD5;
@@ -180,6 +181,7 @@ sub install {
       }
       else {
          
+         my $source = Rex::Helper::Path::get_file_path($source, caller());
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
          my $local_md5 = "";
@@ -192,7 +194,9 @@ sub install {
                chomp $old_md5;
             };
 
-            $local_md5 = eval { local(@ARGV) = ($source); return Digest::MD5::md5_hex(<>); };
+            LOCAL {
+               $local_md5 = md5($source);
+            };
 
             unless($local_md5 eq $old_md5) {
                Rex::Logger::debug("MD5 is different $local_md5 -> $old_md5 (uploading)");

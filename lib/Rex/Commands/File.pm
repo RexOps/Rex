@@ -232,6 +232,14 @@ sub file {
       $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
       upload $option->{"source"}, "$file";
    }
+   else {
+      # no content and no source, so just verify that the file is present
+      if(! $fs->is_file($file)) {
+         my $fh = file_write($file);
+         $fh->write("");
+         $fh->close;
+      }
+   }
 
    if($need_md5) {
       eval {

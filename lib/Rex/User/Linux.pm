@@ -33,16 +33,27 @@ sub create_user {
 
    my $cmd;
 
+   my $uid = $self->get_uid($user);
 
-   if(! defined $self->get_uid($user)) {
+   my $run_cmd = 0;
+
+   if(! defined $uid) {
       Rex::Logger::debug("User $user does not exists. Creating it now.");
       $cmd = "/usr/sbin/useradd ";
 
       if(exists $data->{system}) {
          $cmd .= " -r";
       }
+
+      $run_cmd = 1;
    }
    else {
+      # only the user should be there, no modifications. 
+      # so just return
+      if(! defined $data) {
+         return $uid;
+      }
+
       Rex::Logger::debug("User $user already exists. Updating...");
 
       $cmd = "/usr/sbin/usermod ";
@@ -50,13 +61,16 @@ sub create_user {
 
    if(exists $data->{non_uniq}) { 
       $cmd .= " -o ";
+      $run_cmd = 1;
    }
 
    if(exists $data->{uid}) {
       $cmd .= " --uid " . $data->{uid};
+      $run_cmd = 1;
    }
 
    if(exists $data->{home}) {
+      $run_cmd = 1;
       $cmd .= " -d " . $data->{home};
 
       if(
@@ -74,18 +88,22 @@ sub create_user {
    }
 
    if(exists $data->{shell}) {
+      $run_cmd = 1;
       $cmd .= " --shell " . $data->{shell};
    }
 
    if(exists $data->{comment}) {
+      $run_cmd = 1;
       $cmd .= " --comment '" . $data->{comment} . "'";
    }
 
    if(exists $data->{expire}) {
+      $run_cmd = 1;
       $cmd .= " --expiredate '" . $data->{expire} . "'";
    }
 
    if(exists $data->{groups}) {
+      $run_cmd = 1;
       my @groups = @{$data->{groups}};
       my $pri_group = shift @groups;
 
@@ -96,26 +114,29 @@ sub create_user {
       }
    }
 
-   my $rnd_file = get_tmp_file;
-   my $fh = Rex::Interface::File->create;
-   $fh->open(">", $rnd_file);
-   $fh->write("$cmd $user\nexit \$?\n");
-   $fh->close;
+   # only run the cmd if needed
+   if($run_cmd) {
+      my $rnd_file = get_tmp_file;
+      my $fh = Rex::Interface::File->create;
+      $fh->open(">", $rnd_file);
+      $fh->write("$cmd $user\nexit \$?\n");
+      $fh->close;
 
-   run "/bin/sh $rnd_file";
-   if($? == 0) {
-      Rex::Logger::debug("User $user created/updated.");
-   }
-   else {
-      Rex::Logger::info("Error creating/updating user $user", "warn");
-      die("Error creating/updating user $user");
-   }
+      run "/bin/sh $rnd_file";
+      if($? == 0) {
+         Rex::Logger::debug("User $user created/updated.");
+      }
+      else {
+         Rex::Logger::info("Error creating/updating user $user", "warn");
+         die("Error creating/updating user $user");
+      }
 
-   Rex::Interface::Fs->create()->unlink($rnd_file);
+      Rex::Interface::Fs->create()->unlink($rnd_file);
+   }
 
    if(exists $data->{password}) {
-      $rnd_file = get_tmp_file;
-      $fh = Rex::Interface::File->create;
+      my $rnd_file = get_tmp_file;
+      my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
       $fh->write("echo '$user:" . $data->{password} . "' | /usr/sbin/chpasswd\nexit \$?\n");
       $fh->close;
@@ -130,8 +151,8 @@ sub create_user {
    }
 
    if(exists $data->{crypt_password}) {
-      $rnd_file = get_tmp_file;
-      $fh = Rex::Interface::File->create;
+      my $rnd_file = get_tmp_file;
+      my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
       $fh->write("usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
       $fh->close;
@@ -280,18 +301,24 @@ sub create_group {
 
    my $cmd;
 
-   if(! defined $self->get_gid($group)) {
+   my $gid = $self->get_gid($group);
+
+   if(! defined $gid) {
       Rex::Logger::debug("Creating new group $group");
 
       $cmd = "/usr/sbin/groupadd ";
    }
    else {
+      if(! defined $data) {
+         return $gid;
+      }
       Rex::Logger::debug("Group $group already exists. Updating...");
       $cmd = "/usr/sbin/groupmod ";
    }
 
    if(exists $data->{gid}) {
       $cmd .= " -g " . $data->{gid};
+      $gid = undef;
    }
 
    run $cmd . " " . $group;
@@ -299,8 +326,11 @@ sub create_group {
       die("Error creating/modifying group $group");
    }
 
-   return $self->get_gid($group);
+   if(defined $gid) {
+      return $gid;
+   }
 
+   return $self->get_gid($group);
 }
 
 sub get_gid {
@@ -314,7 +344,7 @@ sub get_group {
    my ($self, $group) = @_;
 
    Rex::Logger::debug("Getting information for $group");
-   my @data = split(" ", "" . run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));'"), 4);
+   my @data = split(" ", "" . run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'"), 4);
    if($? != 0) {
       die("Error getting group information");
    }

@@ -203,7 +203,17 @@ Create or update a group.
 =cut
 
 sub create_group {
-   Rex::User->get()->create_group(@_);
+   my $group = shift;
+   my @params;
+
+   if(! ref $_[0]) {
+      push @params, { @_ };
+   }
+   else {
+      push @params, @_;
+   }
+
+   Rex::User->get()->create_group($group, @params);
 }
 
 =item get_gid($group)

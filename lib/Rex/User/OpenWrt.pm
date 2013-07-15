@@ -42,7 +42,7 @@ sub rm_user {
       rmdir $user_info->{home};
    }
 
-   run "sed -i '/^$user:.*/d' /etc/passwd && sed -i '/^$user:.*/d' /etc/shadow";
+   run "sed -i '/^$user:.*/d' /etc/passwd /etc/shadow";
 }
 
 sub user_groups {
@@ -50,7 +50,7 @@ sub user_groups {
 
    Rex::Logger::debug("Getting group membership of $user");
 
-   my $data_str = run "/usr/bin/id $user | perl -lne '\$_ =~ s/^.*groups=//; \@groups = \$_ =~ m/\\(([^\\)]+)\\)/g; print join(\" \", \@groups)'";
+   my $data_str = run "/usr/bin/id -Gn $user";
    if($? != 0) {
       die("Error getting  user list");
    }

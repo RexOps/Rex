@@ -25,9 +25,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   # sometimes we need to sleep a little bit... because
-   # the ssh channel gets closed too fast... i don't know why, yet.
-   run "/etc/rc.d/init.d/$service start >/dev/null ; f=\$?; sleep .1 ; exit \$f";
+   run "/etc/rc.d/init.d/$service start >/dev/null";
 
    if($? == 0) {
       return 1;

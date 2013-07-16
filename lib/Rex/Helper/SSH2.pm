@@ -18,6 +18,7 @@ use vars qw(@EXPORT);
 @EXPORT = qw(net_ssh2_exec net_ssh2_exec_output net_ssh2_shell_exec);
 
 our $READ_STDERR = 1;
+our $EXEC_AND_SLEEP = 0;
 
 sub net_ssh2_exec {
    my ($ssh, $cmd, $callback) = @_;
@@ -33,7 +34,14 @@ sub net_ssh2_exec {
    }
    $chan->blocking(1);
 
-   $chan->exec($cmd);
+   if($EXEC_AND_SLEEP) {
+      # this is due to a strange behaviour with Net::SSH2 / libssh2
+      # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware
+      $chan->exec($cmd . "f=\$? ; sleep .00000001 ; exit \$f");
+   }
+   else {
+      $chan->exec($cmd);
+   }
 
    my $in;
    my $in_err = "";

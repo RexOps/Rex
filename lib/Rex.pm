@@ -526,6 +526,11 @@ sub import {
             $found_feature = 1;
          }
 
+         if($add eq "exec_and_sleep") {
+            Rex::Logger::debug("Enabling exec_and_sleep");
+            $Rex::Helper::SSH2::EXEC_AND_SLEEP = 1;
+         }
+
          if($found_feature == 0) {
             Rex::Logger::info("You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.", "warn");
             exit 1;

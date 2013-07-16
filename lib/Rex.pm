@@ -529,6 +529,7 @@ sub import {
          if($add eq "exec_and_sleep") {
             Rex::Logger::debug("Enabling exec_and_sleep");
             $Rex::Helper::SSH2::EXEC_AND_SLEEP = 1;
+            $found_feature = 1;
          }
 
          if($found_feature == 0) {

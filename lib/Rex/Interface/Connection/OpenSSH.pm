@@ -14,6 +14,8 @@ use Rex::Interface::Connection::Base;
 use Net::OpenSSH;
 use base qw(Rex::Interface::Connection::Base);
 
+our $DISABLE_STRICT_HOST_CHECKING = 0;
+
 sub new {
    my $that = shift;
    my $proto = ref($that) || $that;
@@ -66,7 +68,7 @@ sub connect {
 
    if($auth_type && $auth_type eq "pass") {
       Rex::Logger::info("OpenSSH: pass_auth: $server:$port - $user - $pass");
-      $self->{ssh} = Net::OpenSSH->new($server, user => $user, password => $pass, port => $port);
+      $self->{ssh} = Net::OpenSSH->new($server, user => $user, password => $pass, port => $port, master_opts => [-o => ($DISABLE_STRICT_HOST_CHECKING ? "StrictHostKeyChecking" : "")]);
    }
    elsif($auth_type && $auth_type eq "key") {
       my %a = (

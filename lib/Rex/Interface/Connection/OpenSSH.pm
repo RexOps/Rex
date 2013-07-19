@@ -101,6 +101,12 @@ sub connect {
       return;
    }
 
+   if($self->{ssh}->error) {
+      Rex::Logger::info("Can't connect to $server", "warn");
+      $self->{connected} = 0;
+      return;
+   }
+
    Rex::Logger::debug("Current Error-Code: " . $self->{ssh}->error());
    Rex::Logger::info("Connected and authenticated to $server.");
 

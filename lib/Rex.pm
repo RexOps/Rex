@@ -534,7 +534,7 @@ sub import {
 
          if($add eq "disable_strict_host_key_checking") {
             Rex::Logger::debug("Disabling strict host key checking for openssh");
-            $Rex::Interface::Connection::OpenSSH::DISABLE_STRICT_HOST_CHECKING = 1;
+            Rex::Config->set_openssh_opt(StrictHostKeyChecking => "no");
             $found_feature = 1;
          }
 

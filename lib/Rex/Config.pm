@@ -49,7 +49,8 @@ our ($user, $password, $port,
             %executor_for,
             $allow_empty_groups,
             $use_server_auth,
-            $tmp_dir);
+            $tmp_dir,
+            %openssh_opt);
 
 # some defaults
 %executor_for = (
@@ -66,6 +67,21 @@ sub get_sudo_without_locales {
 
 sub get_sudo_without_sh {
    return $sudo_without_sh;
+}
+
+sub set_openssh_opt {
+   my ($class, $key, $val) = @_;
+   if(! defined $val) {
+      $openssh_opt{$key} = undef;
+      delete $openssh_opt{$key};
+      return;
+   }
+
+   $openssh_opt{$key} = $val;
+}
+
+sub get_openssh_opt {
+   return %openssh_opt;
 }
 
 sub set_sudo_without_locales {

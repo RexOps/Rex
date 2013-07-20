@@ -13,6 +13,9 @@ use vars qw(%task_opts %rex_opts);
 use Rex::Logger;
 use Data::Dumper;
 
+our $KEY_VAL = 1;
+our $CLEANUP = 0;
+
 sub import {
    my ($class, %args) = @_;
 
@@ -90,12 +93,22 @@ sub import {
 
    @params = @ARGV[1..$#ARGV];
 
+   my $counter = 1;
    for my $p (@params) {
       my($key, $val) = split(/=/, $p, 2);
+
+      if(defined $val) {
+         if($CLEANUP) {
+            splice(@ARGV, $counter, 1);
+         }
+      }
+
       $key =~ s/^--//;
 
       if($val) { $task_opts{$key} = $val; next; }
-      $task_opts{$key} = 1;
+      $task_opts{$key} = $KEY_VAL;
+
+      $counter++;
    }
 
 }

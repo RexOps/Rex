@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+
+my $command = "run";
+
+my $r = Rex::CommandLine->new;
+
+my $exit_code = 0;
+
+unshift @ARGV, "ln";
+
+print "" . $r->call($command, join_argv => " ") . "\n";
+
+exit $?;

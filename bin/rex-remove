@@ -1,0 +1,19 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+
+my $command = "remove";
+
+my $r = Rex::CommandLine->new;
+
+my $exit_code = 0;
+
+eval {
+   $r->call($command);
+   1;
+} or do {
+   print STDERR $@ . "\n";
+   $exit_code = 1;
+};
+
+exit $exit_code;

@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+
+my $command = "run";
+
+my $r = Rex::CommandLine->new;
+my $argv = join(" ", @ARGV);
+
+if($argv =~ m/\-L/) {
+   $argv =~ s/\-L//;
+   @ARGV = ("-L", "ls $argv");
+}
+else {
+   @ARGV = ("ls $argv");
+}
+
+my $out = $r->call($command);
+
+print $out . "\n";
+
+exit $?;

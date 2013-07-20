@@ -26,7 +26,7 @@ sub new {
 sub call {
    my ($self, $command, %option) = @_;
 
-   $Rex::Args::CLEANUP=1;
+   $Rex::Args::REMOVE_TASK_OPTIONS=1;
 
    Rex::Args->import(
       L => {},
@@ -40,7 +40,7 @@ no strict 'refs';
       @ARGV = join($option{join_argv}, @ARGV);
    }
 
-   if(exists $opts{L}) {
+   if(exists $opts{L} || (exists $option{local_execution} && $option{local_execution} == 1)) {
       return LOCAL {
          return &$command(@ARGV, Rex::Args->get);
       };
@@ -53,8 +53,18 @@ no strict 'refs';
          private_key => $ENV{REX_REMOTE_PRIVATE_KEY},
          public_key  => $ENV{REX_REMOTE_PUBLIC_KEY},
       );
+      my %task_args = Rex::Args->get;
+      my %task_args_e;
+      my $mod_code = $option{mod_args} || sub {};
 
-      return &$command(@ARGV, Rex::Args->get);
+      for my $key (keys %task_args) {
+         my $val = $mod_code->($key, $task_args{$key});
+         if($val) {
+            $task_args_e{$key} = $val;
+         }
+      }
+
+      return &$command(@ARGV, %task_args_e);
    }
 }
 

@@ -14,7 +14,8 @@ use Rex::Logger;
 use Data::Dumper;
 
 our $KEY_VAL = 1;
-our $CLEANUP = 0;
+our $REMOVE_TASK_OPTIONS = 0;
+our $CLEANUP = 1;
 
 sub import {
    my ($class, %args) = @_;
@@ -22,7 +23,7 @@ sub import {
    #### clean up @ARGV
    my $runner = 0;
    for (@ARGV) {
-      if(/^\-[A-Za-z]+/ && length($_) > 2) {
+      if(/^\-[A-Za-z]+/ && length($_) > 2 && $CLEANUP) {
          my @args = map { "-$_" } split(//, substr($_, 1));
          splice(@ARGV, $runner, 1, @args);
       }
@@ -98,7 +99,7 @@ sub import {
       my($key, $val) = split(/=/, $p, 2);
 
       if(defined $val) {
-         if($CLEANUP) {
+         if($REMOVE_TASK_OPTIONS) {
             splice(@ARGV, $counter, 1);
          }
       }

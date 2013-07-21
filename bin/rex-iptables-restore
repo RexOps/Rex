@@ -1,0 +1,18 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+
+my $command = "run";
+
+my $r = Rex::CommandLine->new;
+
+my @in = <STDIN>;
+chomp @in;
+$r->command("file", 1, "/tmp/iptables.restore", content => join("\n", @in));
+
+$r->command("run", 1, "/sbin/iptables-restore < /tmp/iptables.restore");
+my $exit_code = $?;
+
+$r->command("run", 1, "/bin/rm /tmp/iptables.restore");
+
+exit $?;

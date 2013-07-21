@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+
+my $command = "umount";
+
+my $r = Rex::CommandLine->new;
+
+my $exit_code = 0;
+
+eval {
+   $exit_code = $r->call($command, mod_args => sub {
+      my ($key, $val) = @_;
+      if($val == 1) {
+         return undef;
+      }
+
+      return $val;
+   });
+   1;
+} or do {
+   print STDERR "$@\n";
+   $exit_code = 1;
+};
+
+
+exit $exit_code;

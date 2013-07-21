@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+use Cwd 'getcwd';
+
+my $command = "upload";
+
+my $r = Rex::CommandLine->new;
+
+my ($source, $dest) = @ARGV;
+my $exit_code = 0;
+
+$::rexfile = getcwd . "/Rexfile";
+
+eval {
+   if(! $dest) {
+      # source is stdin
+      # source is now dest
+      my @in = <STDIN>;
+      chomp @in;
+      $r->command("file", 1, $source, content => join("\n", @in));
+   }
+   else {
+      $r->command("upload", 1, $source, $dest);
+   }
+} or do {
+   $exit_code = 1;
+   print STDERR "$@\n";
+};
+
+
+exit $exit_code;

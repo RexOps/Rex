@@ -1,12 +1,20 @@
 #!/usr/bin/env perl
 
 use Rex::CommandLine;
+use File::Basename;
 
 my $command = "run";
 
 my $r = Rex::CommandLine->new;
 
-my $out = $r->call($command);
+my $call_cmd = basename($0);
+my ($cmd) = ($call_cmd =~ m/^rex\-(.*)$/);
+
+if($cmd ne "run") {
+   unshift @ARGV, $cmd;
+}
+
+my $out = $r->call($command, join_argv => " ");
 
 print $out . "\n";
 

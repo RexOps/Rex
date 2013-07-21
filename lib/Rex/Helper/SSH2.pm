@@ -43,11 +43,16 @@ sub net_ssh2_exec {
       $chan->exec($cmd);
    }
 
+
    my $in;
    my $in_err = "";
 
    while ( my $len = $chan->read(my $buf, 20) ) {
 		$in .= $buf;
+
+      if($callback) {
+         &$callback($buf);
+      } 
    }
 
    while ( my $len = $chan->read(my $buf_err, 20, 1) ) {

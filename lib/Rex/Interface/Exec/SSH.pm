@@ -48,7 +48,7 @@ sub exec {
 
    my $exec = $shell->exec($cmd);
    Rex::Logger::debug("SSH/executing: $exec");
-   my ($out, $err) = $self->_exec($exec);
+   my ($out, $err) = $self->_exec($exec, $option);
 
    Rex::Commands::profiler()->end("exec: $cmd");
 
@@ -65,10 +65,12 @@ sub exec {
 }
 
 sub _exec {
-   my ($self, $exec) = @_;
+   my ($self, $exec, $option) = @_;
+
+   my $callback = $option->{continuous_read} || undef;
    
    my $ssh = Rex::is_ssh();
-   my ($out, $err) = net_ssh2_exec($ssh, $exec);
+   my ($out, $err) = net_ssh2_exec($ssh, $exec, $callback);
 
    return ($out, $err);
 }

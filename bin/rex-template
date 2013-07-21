@@ -1,0 +1,38 @@
+#!/usr/bin/env perl
+
+use Rex::CommandLine;
+require Rex::Commands;
+use Cwd 'getcwd';
+
+my $command = "template";
+
+my $r = Rex::CommandLine->new;
+
+my $exit_code = 0;
+
+my $in = $ARGV[0];
+my $tmp_file;
+
+$::rexfile = getcwd . "/Rexfile";
+
+if(! -e $in) {
+   my $tmp_file = "/tmp/" . Rex::Commands::get_random(8, 'a' .. 'z') . ".tmp";
+   open(my $fh, ">", $tmp_file) or die($!);
+   print $fh <STDIN>;
+   close($fh);
+
+   unshift @ARGV, $tmp_file;
+}
+
+eval {
+   print $r->call($command);
+   1;
+} or do {
+   print STDERR "$@\n";
+   $exit_code = 1;
+};
+
+unlink $tmp_file if $tmp_file;
+
+
+exit $exit_code;

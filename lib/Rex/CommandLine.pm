@@ -23,29 +23,11 @@ sub new {
    return $self;
 }
 
-sub call {
-   my ($self, $command, %option) = @_;
-
-   $Rex::Args::REMOVE_TASK_OPTIONS=1;
-
-   Rex::Args->import(
-      L => {},
-   ); 
-
+sub command {
+   my ($self, $command, $do_connect, @args) = @_;
 no strict 'refs';
-   my %opts = Rex::Args->getopts;
-   #$::QUIET = 1;
 
-   if(exists $option{join_argv}) {
-      @ARGV = join($option{join_argv}, @ARGV);
-   }
-
-   if(exists $opts{L} || (exists $option{local_execution} && $option{local_execution} == 1)) {
-      return LOCAL {
-         return &$command(@ARGV, Rex::Args->get);
-      };
-   }
-   else {
+   if($do_connect) {
       Rex::connect(
          server      => $ENV{REX_REMOTE_HOST},
          user        => $ENV{REX_REMOTE_USER},
@@ -53,19 +35,50 @@ no strict 'refs';
          private_key => $ENV{REX_REMOTE_PRIVATE_KEY},
          public_key  => $ENV{REX_REMOTE_PUBLIC_KEY},
       );
-      my %task_args = Rex::Args->get;
-      my %task_args_e;
-      my $mod_code = $option{mod_args} || sub {};
 
-      for my $key (keys %task_args) {
-         my $val = $mod_code->($key, $task_args{$key});
-         if($val) {
-            $task_args_e{$key} = $val;
-         }
-      }
-
-      return &$command(@ARGV, %task_args_e);
+      return &$command(@args);
    }
+   else {
+      return LOCAL {
+         return &$command(@args);
+      };
+   }
+}
+
+sub call {
+   my ($self, $command, %option) = @_;
+
+   $Rex::Args::REMOVE_TASK_OPTIONS = 1;
+
+   Rex::Args->import(
+      L => {},
+   ); 
+
+   my %opts = Rex::Args->getopts;
+   #$::QUIET = 1;
+
+   if(exists $option{join_argv}) {
+      @ARGV = join($option{join_argv}, @ARGV);
+   }
+
+   my $do_connect = 1;
+
+   if(exists $opts{L} || (exists $option{local_execution} && $option{local_execution} == 1)) {
+      $do_connect = 0;
+   }
+
+   my %task_args = Rex::Args->get;
+   my %task_args_e;
+   my $mod_code = $option{mod_args} || sub {};
+
+   for my $key (keys %task_args) {
+      my $val = $mod_code->($key, $task_args{$key});
+      if($val) {
+         $task_args_e{$key} = $val;
+      }
+   }
+
+   return $self->command($command, $do_connect, @ARGV, %task_args_e);
 }
 
 1;

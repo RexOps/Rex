@@ -69,13 +69,18 @@ sub call {
 
    my %task_args = Rex::Args->get;
    my %task_args_e;
-   my $mod_code = $option{mod_args} || sub {};
+   my $mod_code = $option{mod_args} || undef;
 
-   for my $key (keys %task_args) {
-      my $val = $mod_code->($key, $task_args{$key});
-      if($val) {
-         $task_args_e{$key} = $val;
+   if($mod_code) {
+      for my $key (keys %task_args) {
+         my $val = $mod_code->($key, $task_args{$key});
+         if($val) {
+            $task_args_e{$key} = $val;
+         }
       }
+   }
+   else {
+      %task_args_e = %task_args;
    }
 
    return $self->command($command, $do_connect, @ARGV, %task_args_e);

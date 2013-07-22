@@ -65,6 +65,11 @@ sub sync_up {
    my ($source, $dest, $options) = @_;
 
    #
+   # 0. normalize local path
+   #
+   $source = get_file_path($source, caller);
+
+   #
    # first, get all files on source side
    #
    my @local_files = _get_local_files($source);

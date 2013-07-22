@@ -45,10 +45,18 @@ sub get_file_path {
       return $file_name;
    }
 
+   if(-d $file_name) {
+      return $file_name;
+   }
+
    if(-f $real_path . '/' . $file_name) {
       return $real_path . '/' . $file_name;
    }
 
+   if(-d $real_path . '/' . $file_name) {
+      return $real_path . '/' . $file_name;
+   }
+ 
    my $module_path = Rex::get_module_path($caller_package);
    if($module_path) {
       $file_name = "$module_path/$file_name";

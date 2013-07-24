@@ -35,7 +35,7 @@ sub get_user {
    my ($self, $user) = @_;
 
    Rex::Logger::debug("Getting information for $user");
-   my @o_data = run "print perl -e 'join(\";\", getpwnam(\"$user\"))'";
+   my @o_data = run "perl -e 'print join(\";\", getpwnam(\"$user\"))'";
    chomp @o_data;
    my @data = split(/;/, $o_data[0]);
 

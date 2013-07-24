@@ -31,6 +31,26 @@ sub new {
    return $self;
 }
 
+sub get_user {
+   my ($self, $user) = @_;
+
+   Rex::Logger::debug("Getting information for $user");
+   my @o_data = run "perl -e 'join(\";\", getpwnam($user))'";
+   chomp @o_data;
+   my @data = split(/;/, $o_data[0]);
+
+   return (
+      name => $data[0],
+      password => $data[1],
+      uid => $data[2],
+      gid => $data[3],
+      comment => $data[5],
+      home => $data[7],
+      shell => $data[8],
+      expire => exists $data[9]?$data[9]:0,
+   );
+}
+
 sub rm_user {
    my ($self, $user, $data) = @_;
 

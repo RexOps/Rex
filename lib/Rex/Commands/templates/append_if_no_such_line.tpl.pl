@@ -8,17 +8,17 @@ my $found=0;
 while(<$in>) {
       chomp;
       <% for my $r (@{ $regex }) { %>
-        if ("<%= $r %>") {
+        if ("<%= quotemeta($r) %>") {
             (/<%= $r %>/) && ($found=1);
          }
-         if ("<%= $line %>") {
-            ($_ eq "<%= $line %>") && ($found=1);
+         if ("<%= quotemeta($line) %>") {
+            ($_ eq "<%= quotemeta($line) %>") && ($found=1);
          }
       <% } %>
 }
 close $in;
 if (!$found) {
    open (my $out, ">><%= $file %>") || exit(3);
-   print $out "<%= $line %>\n";
+   print $out "<%= quotemeta($line) %>\n";
    close $out;
 }

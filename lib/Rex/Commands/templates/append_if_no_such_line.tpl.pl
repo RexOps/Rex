@@ -19,6 +19,6 @@ while(<$in>) {
 close $in;
 if (!$found) {
    open (my $out, ">><%= $file %>") || exit(3);
-   print $out "<%= quotemeta($line) %>\n";
+   print $out "<%= $line %>\n";
    close $out;
 }

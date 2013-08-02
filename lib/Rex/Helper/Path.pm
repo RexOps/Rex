@@ -36,6 +36,8 @@ sub get_file_path {
    # check if a file in $BASE overwrites the module file
    # first get the absoltue path to the rexfile
 
+   $::rexfile ||= $0;
+
    my @path_parts = split(/\//, realpath($::rexfile));
    pop @path_parts;
 

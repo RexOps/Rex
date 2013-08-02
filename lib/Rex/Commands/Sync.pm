@@ -264,7 +264,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-#unlink $0;
+unlink $0;
 
 my $dest = $ARGV[0];
 my @dirs = ($dest);   

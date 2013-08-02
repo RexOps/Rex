@@ -119,7 +119,7 @@ sub update_system {
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "zypper -n ref -fd";
+   run "zypper --no-gpg-checks -n ref -fd";
    if($? != 0) {
       die("Error updating package repository");
    }

@@ -352,6 +352,7 @@ sub _request {
    my ($self, $action, %args) = @_;
 
    my $ua = LWP::UserAgent->new;
+   $ua->env_proxy;
    my %param = $self->_sign($action, %args);
 
    Rex::Logger::debug("Sending request to: http://" . $self->{'__endpoint'});

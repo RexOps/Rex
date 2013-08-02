@@ -45,6 +45,7 @@ sub _do_request {
    Rex::Logger::debug("Requesting $url");
 
    my $ua  = LWP::UserAgent->new;
+   $ua->env_proxy;
    my ($res);
 
    if($type eq "GET") {

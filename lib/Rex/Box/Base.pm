@@ -261,6 +261,7 @@ sub _download {
       mkdir "tmp";
       if(Rex::is_local()) {
          my $ua = LWP::UserAgent->new();
+         $ua->env_proxy;
          my $final_data = "";
          my $current_size = 0;
          my $current_modulo = 0;

@@ -61,7 +61,7 @@ sub update {
    my $version = $option->{"version"} || "";
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("yum -y install $pkg" . ($version?"-$version":""));
+   my $f = run(_yum("-y install $pkg" . ($version?"-$version":"")));
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -79,7 +79,7 @@ sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("yum -y erase $pkg");
+   my $f = run(_yum("-y erase $pkg"));
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -116,14 +116,14 @@ sub get_installed {
 
 sub update_system {
    my ($self) = @_;
-   run "yum -y upgrade";
+   run(_yum("-y upgrade"));
 }
 
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "yum clean all";
-   run "yum makecache";
+   run(_yum("clean all"));
+   run(_yum("makecache"));
    if($? != 0) {
       die("Error updating package repository");
    }
@@ -152,5 +152,20 @@ sub rm_repository {
    unlink "/etc/yum.repos.d/$name.repo";
 }
 
+
+sub _yum {
+   my (@cmd) = @_;
+
+   my $str = "yum ";
+
+   if($Rex::Logger::debug) {
+      $str .= join(" ", @cmd);
+   }
+   else {
+      $str .= join(" -q ", @cmd);
+   }
+
+   return $str;
+}
 
 1;

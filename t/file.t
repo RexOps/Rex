@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-   use Test::More tests => 27;
+   use Test::More tests => 31;
    use Data::Dumper;
 
    use_ok 'Rex';
@@ -56,10 +56,35 @@ ok($content =~ m/change/gms, "found change");
 
 ok($changed == 1, "something was changed in the file");
 
+append_if_no_such_line("$cwd/test.txt",
+   line => "dream-breaker",
+   regexp => qr{^dream-breaker$});
+
+$content = cat("$cwd/test.txt");
+ok($content =~ m/dream\-breaker/gms, "found dream-breaker");
+
+append_if_no_such_line("$cwd/test.txt",
+   line => "#include /etc/sudoers.d/*.conf",
+   regexp => qr{^#include /etc/sudoers.d/*.conf$});
+
+$content = cat("$cwd/test.txt");
+ok($content =~ m/#include \/etc\/sudoers\.d\/\*\.conf/gms, "found sudoers entry");
+
+append_if_no_such_line("$cwd/test.txt",
+   line => 'silly with "quotes"');
+
+$content = cat("$cwd/test.txt");
+ok($content =~ m/silly with "quotes"/gms, "found entry with quotes");
+
+append_if_no_such_line("$cwd/test.txt",
+   line => "#include /etc/sudoers.d/*.conf");
+
+my @content = split(/\n/, cat("$cwd/test.txt"));
+ok($content[-1] ne "#include /etc/sudoers.d/*.conf", "last entry is not #include ...");
+
 append_if_no_such_line("$cwd/test.txt", 'KEY="VAL"');
 $content = cat("$cwd/test.txt");
 ok($content =~ m/KEY="VAL"/gms, "found KEY=VAL");
-
 
 append_if_no_such_line("$cwd/test.txt", "change", qr{change}, 
    on_change => sub {

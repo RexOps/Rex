@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 # unlink myself
-unlink $0;
+#unlink $0;
 
 open (my $in, "<%= $file %>") || exit(1);
 my $found=0;
@@ -9,7 +9,8 @@ while(<$in>) {
       chomp;
       <% for my $r (@{ $regex }) { %>
         if ("<%= quotemeta($r) %>") {
-            (/<%= $r %>/) && ($found=1);
+            my $reg = qr{<%= $r %>};
+            ($_ =~ $reg) && ($found=1);
          }
          if ("<%= quotemeta($line) %>") {
             ($_ eq "<%= quotemeta($line) %>") && ($found=1);

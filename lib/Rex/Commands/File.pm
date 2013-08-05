@@ -412,7 +412,7 @@ sub delete_lines_matching {
 
       for my $match (@m) {
          $match = _normalize_regex($match);
-         my $cmd = "perl -lne 'print unless (m/$match/)' -i '$file'";
+         my $cmd = "perl -lne '\$r=qr{$match}; print unless (\$_ =~ \$r)' -i '$file'";
          $exec->exec($cmd);
       }
    }
@@ -724,9 +724,10 @@ sub sed {
       my $on_change = $option->{"on_change"} || undef;
       my $exec = Rex::Interface::Exec->create;
 
-      $search = _normalize_regex($search);
+      $search  = _normalize_regex($search);
+      $replace = _normalize_regexp_rep_string($replace);
 
-      my $cmd = "perl -lne 's/$search/$replace/; print;' -i '$file'";
+      my $cmd = "perl -lne \"\\\$r=qr{$search}; s/\\\$r/$replace/; print;\" -i '$file'";
 
       my ($old_md5, $new_md5);
 
@@ -756,8 +757,23 @@ sub sed {
 
 sub _normalize_regex {
    my ($reg) = @_;
+
    $reg =~ s/^\(\?\^/\(\?/;
+   $reg =~ s/\{/\\{/g;
+   $reg =~ s/\}/\\}/g;
+
+   $reg =~ s/'/\\'/g;
+
    return $reg;
+}
+
+sub _normalize_regexp_rep_string {
+   my ($str) = @_;
+
+   $str =~ s/\//\\\//g;
+   $str =~ s/"/\\"/g;
+
+   return $str;
 }
 
 =back

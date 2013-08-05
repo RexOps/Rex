@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-   use Test::More tests => 31;
+   use Test::More tests => 36;
    use Data::Dumper;
 
    use_ok 'Rex';
@@ -167,3 +167,28 @@ Rex::Commands::Fs::unlink("file with space.txt");
 
 ok(! is_file("$cwd/test.txt"), "test.txt removed");
 ok(! is_file("file with space.txt"), "file with space removed");
+
+file "test-sed.txt",
+   content => "this is a sed test file\nthese are just some lines\n0505\n0606\n0707\n'foo'\n/etc/passwd\n\"baz\"\n{klonk}\n";
+
+sed qr{0606}, "6666", "test-sed.txt";
+$content = cat "test-sed.txt";
+ok($content =~ m/6666/, "sed replaced 0606");
+
+sed qr{'foo'}, "'bar'", "test-sed.txt";
+$content = cat "test-sed.txt";
+ok($content =~ m/'bar'/, "sed replaced 'foo'");
+
+sed qr{/etc/passwd}, "/etc/shadow", "test-sed.txt";
+$content = cat "test-sed.txt";
+ok($content =~ m/\/etc\/shadow/, "sed replaced /etc/passwd");
+
+sed qr{"baz"}, '"boooooz"', "test-sed.txt";
+$content = cat "test-sed.txt";
+ok($content =~ m/"boooooz"/, "sed replaced baz");
+
+sed qr/{klonk}/, '{plonk}', "test-sed.txt";
+$content = cat "test-sed.txt";
+ok($content =~ m/{plonk}/, "sed replaced {klonk}");
+
+

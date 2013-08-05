@@ -515,6 +515,9 @@ task "down", sub {
 
 task "install_webserver", sub {
 
+   # update package db
+   update_package_db;
+
    # install packages / customize the vm
    install "apache2";
 

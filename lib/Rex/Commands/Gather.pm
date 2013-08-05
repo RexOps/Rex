@@ -42,7 +42,8 @@ use base qw(Rex::Exporter);
 
 use vars qw(@EXPORT);
 
-@EXPORT = qw(operating_system_is network_interfaces memory get_operating_system operating_system operating_system_version
+@EXPORT = qw(operating_system_is network_interfaces memory
+               get_operating_system operating_system operating_system_version operating_system_release
                is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt
                get_system_information dump_system_information);
 
@@ -133,12 +134,23 @@ sub operating_system_version {
 
    my ($os) = @_;
 
-   my $operatingsystemrelease = Rex::Hardware::Host->get_operating_system_version();
+   my $operatingsystemrelease = operating_system_release();
 
    $operatingsystemrelease =~ s/[\.,]//g;
 
    return $operatingsystemrelease;
 
+}
+
+=item operating_system_release()
+
+Will return the os release number as is.
+ 
+=cut
+
+sub operating_system_release {
+   my ($os) = @_;
+   return Rex::Hardware::Host->get_operating_system_version();
 }
 
 =item network_interfaces

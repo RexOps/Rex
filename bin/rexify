@@ -277,13 +277,19 @@ if(exists $opts->{"create-module"}) {
    my $dir = $ARGV[0];
    my $module_name = $dir;
 
+   if($dir !~ m/^[a-zA-Z][a-zA-Z_:0-9]+$/) {
+      print "USAGE: $0 Module::Name --create-module\n";
+      print "       Allowed characters: a-z, A-Z, _, 0-9, '::'.\n";
+      exit 1;
+   }
+
    if(-f "Rexfile" && $opts->{"create-module"}) {
-      $dir = "lib/" . $opts->{"create-module"};
-      $module_name = $opts->{"create-module"};
+      $dir = "lib/$dir";
    }
 
    if($dir =~ m/\-\-create\-module/) {
       print "USAGE: $0 Module::Name --create-module\n";
+      print "       Allowed characters: a-z, A-Z, _, 0-9, '::'.\n";
       exit 1;
    }
 
@@ -314,6 +320,12 @@ my $dir = $ARGV[0];
 
 if(defined $ARGV[1] && $ARGV[1] !~ m/^\-\-/) {
    $dir = $ARGV[1];
+}
+
+if($dir !~ m/^[a-zA-Z][a-zA-Z_:0-9]+$/) {
+   print "USAGE: $0 Project::Name\n";
+   print "       Allowed characters: a-z, A-Z, 0-9, _, '::'.\n";
+   exit 1;
 }
 
 if(exists $opts->{template} && -f $opts->{template} && $opts->{template} !~ m/^\//) {

@@ -589,7 +589,7 @@ sub disconnect {
 
    my %args = Rex::Args->getopts;
 
-   if(defined $args{'d'} && $args{'d'} > 1) {
+   if(defined $args{'d'} && $args{'d'} > 2) {
       Rex::Commands::profiler()->report;
    }
 

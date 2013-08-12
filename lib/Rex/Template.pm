@@ -161,7 +161,11 @@ sub parse {
          $var_data .= "\n};";
 
          Rex::Logger::debug("BE_LOCAL==1");
-         Rex::Logger::debug($var_data);
+
+         my %args = Rex::Args->getopts;
+         if(defined $args{'d'} && $args{'d'} > 1) {
+            Rex::Logger::debug($var_data);
+         }
 
          my $tpl_code = eval($var_data);
 
@@ -174,7 +178,11 @@ sub parse {
       }
       else {
          Rex::Logger::debug("BE_LOCAL==0");
-         Rex::Logger::debug($new_data);
+         my %args = Rex::Args->getopts;
+         if(defined $args{'d'} && $args{'d'} > 1) {
+            Rex::Logger::debug($new_data);
+         }
+
          $___r = eval($new_data);
 
          if($@) {

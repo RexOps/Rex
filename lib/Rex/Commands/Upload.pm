@@ -85,6 +85,8 @@ sub upload {
       die("File $local not found.");
    }
 
+   Rex::Logger::debug("Uploading: $local to $remote");
+
    if(is_dir($remote)) {
       $remote = $remote . '/' . basename($old_local);
    }

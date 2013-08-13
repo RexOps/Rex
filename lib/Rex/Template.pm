@@ -32,6 +32,7 @@ use warnings;
 
 use Rex::Config;
 use Rex::Logger;
+require Rex::Args;
 
 our $DO_CHOMP = 0;
 our $BE_LOCAL = 1;

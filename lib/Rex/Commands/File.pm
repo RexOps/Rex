@@ -563,7 +563,8 @@ sub append_if_no_such_line {
    }
 
    if ( !@m ) {
-      push @m, qr{^\Q$new_line\E$}m;
+      push @m, qr{\Q$new_line\E};
+      $m[-1] =~ s/^\(\?\^/\(\?/;
    }
 
    $new_line =~ s/'/\\\'/gms;

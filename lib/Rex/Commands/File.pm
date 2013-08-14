@@ -411,7 +411,7 @@ sub delete_lines_matching {
 
 
       for my $match (@m) {
-         $match = _normalize_regex($match);
+         $match = _normalize_regexp($match);
          my $cmd = "perl -lne '\$r=qr{$match}; print unless (\$_ =~ \$r)' -i '$file'";
          $exec->exec($cmd);
       }
@@ -556,14 +556,14 @@ sub append_if_no_such_line {
 
    my $fs = Rex::Interface::Fs->create;
 
-   if ( !@m ) {
-      push @m, qr{^\Q$new_line\E$}m;
-   }
-
    # i don't like this next line...
    # normalizing regexp serialization for older perl versions
    for (@m) {
-      $_ = _normalize_regex($_);
+      $_ = _normalize_regexp($_);
+   }
+
+   if ( !@m ) {
+      push @m, qr{^\Q$new_line\E$}m;
    }
 
    $new_line =~ s/'/\\\'/gms;
@@ -724,7 +724,7 @@ sub sed {
       my $on_change = $option->{"on_change"} || undef;
       my $exec = Rex::Interface::Exec->create;
 
-      $search  = _normalize_regex($search);
+      $search  = _normalize_regexp($search);
       $replace = _normalize_regexp_rep_string($replace);
 
       my $cmd = "perl -lne \"\\\$r=qr/$search/; s/\\\$r/$replace/; print;\" -i '$file'";
@@ -756,7 +756,7 @@ sub sed {
    }
 }
 
-sub _normalize_regex {
+sub _normalize_regexp {
    my ($reg) = @_;
 
    Rex::Logger::debug("_normalize_regex: in: <<$reg>>");
@@ -777,8 +777,14 @@ sub _normalize_regex {
 sub _normalize_regexp_rep_string {
    my ($str) = @_;
 
+   Rex::Logger::debug("_normalize_regexp_rep_string: in: <<$str>>");
+
+   $str =~ s/\\/\\\\\\/g;
    $str =~ s/\//\\\//g;
    $str =~ s/"/\\"/g;
+   $str =~ s/\$/\\\\\\\$/g;
+
+   Rex::Logger::debug("_normalize_regexp_rep_string: out: <<$str>>");
 
    return $str;
 }

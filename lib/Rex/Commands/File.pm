@@ -566,7 +566,7 @@ sub append_if_no_such_line {
       $_ = _normalize_regex($_);
    }
 
-   $new_line =~ s/"/\\\"/gms;
+   $new_line =~ s/'/\\\'/gms;
 
    my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
       line => $new_line,
@@ -727,7 +727,7 @@ sub sed {
       $search  = _normalize_regex($search);
       $replace = _normalize_regexp_rep_string($replace);
 
-      my $cmd = "perl -lne \"\\\$r=qr{$search}; s/\\\$r/$replace/; print;\" -i '$file'";
+      my $cmd = "perl -lne \"\\\$r=qr/$search/; s/\\\$r/$replace/; print;\" -i '$file'";
 
       my ($old_md5, $new_md5);
 
@@ -746,23 +746,30 @@ sub sed {
       }
    }
    else {
-      my $content = cat($file);
+      Rex::Logger::debug("Falling back to local sed mode");
+      my @content = split(/\n/, cat($file));
 
       my $on_change = $option->{"on_change"} || undef;
-      $content =~ s/$search/$replace/gms;
+      @content = map { s/$search/$replace/ } @content; 
 
-      file($file, content => $content, on_change => $on_change);
+      file($file, content => join("\n", @content), on_change => $on_change);
    }
 }
 
 sub _normalize_regex {
    my ($reg) = @_;
 
+   Rex::Logger::debug("_normalize_regex: in: <<$reg>>");
+
    $reg =~ s/^\(\?\^/\(\?/;
-   $reg =~ s/\{/\\{/g;
-   $reg =~ s/\}/\\}/g;
+   $reg =~ s/\//\\\//g;
+#   $reg =~ s/\{/\\{/g;
+#   $reg =~ s/\}/\\}/g;
 
    $reg =~ s/'/\\'/g;
+   $reg =~ s/\\\$/\\\\\$/g;
+
+   Rex::Logger::debug("_normalize_regex: out: <<$reg>>");
 
    return $reg;
 }

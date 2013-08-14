@@ -9,7 +9,7 @@ while(<$in>) {
       chomp;
       <% for my $r (@{ $regex }) { %>
         if ("<%= quotemeta($r) %>") {
-            my $reg = qr{<%= $r %>};
+            my $reg = qr/<%= $r %>/;
             ($_ =~ $reg) && ($found=1);
          }
          if ("<%= quotemeta($line) %>") {
@@ -20,6 +20,6 @@ while(<$in>) {
 close $in;
 if (!$found) {
    open (my $out, ">><%= $file %>") || exit(3);
-   print $out "<%= $line %>\n";
+   print $out '<%= $line %>' . "\n";
    close $out;
 }

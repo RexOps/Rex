@@ -29,31 +29,14 @@ sub ls {
 
    my @ret;
 
-   my $script = q|
-      my @ret;
-      use Data::Dumper;
-      opendir(my $dh, "| . $path .  q|") or die("| . $path . q| is not a directory");
-      while(my $entry = readdir($dh)) {
-         next if ($entry =~ /^\.\.?$/);
-         push @ret, $entry;
-      }
-
-      print Dumper(\@ret);
-   |;
-
-   my $rnd_file = $self->_write_to_rnd_file($script);
-
-   my $out = $self->_exec("perl $rnd_file");
-   $out =~ s/^\$VAR1 =/return /;
-   my $tmp = eval $out;
-
-   $self->unlink($rnd_file);
-
+   my @out = split(/\n/, $self->_exec("ls -a1 $path"));
    # failed open directory, return undef
-   if($@) { return; }
+   if($? != 0) { return; }
+
+   @ret = grep { ! m/^\.\.?$/ } @out;
 
    # return directory content
-   return @{$tmp};
+   return @ret;
 }
 
 sub upload {

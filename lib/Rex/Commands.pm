@@ -109,7 +109,7 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(task desc group 
             user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh
             get_random batch timeout max_connect_retries parallelism
-            do_task run_task needs
+            do_task run_task run_batch needs
             exit
             evaluate_hostname
             logging
@@ -623,6 +623,29 @@ sub run_task {
       }
    }
 
+}
+
+=item run_batch($batch_name, %option)
+
+Run a batch on a given host.
+
+ my @return = run_batch "batchname", on => "192.168.3.56";
+
+It calls internally run_task, and passes it any option given.
+
+=cut
+
+sub run_batch {
+   my ($batch_name, %option) = @_;
+
+   my @tasks = Rex::Batch->get_batch($batch_name);
+   my @results;   
+   for my $task (@tasks) {
+      my $return = run_task $task, %option;
+      push @results, $return;
+   }
+   
+   return @results;
 }
 
 =item public_key($key)

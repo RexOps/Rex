@@ -225,7 +225,7 @@ sub file {
 
       my @splitted_file = split(/\//, $file);
       my $file_name = ".rex.tmp." . pop(@splitted_file);
-      my $tmp_file_name = join("/", @splitted_file) . "/" . $file_name;
+      my $tmp_file_name = ($#splitted_file != -1 ? (join("/", @splitted_file) . "/" . $file_name) : $file_name);
 
       my $fh = file_write($tmp_file_name);
       my @lines = split(qr{$/}, $option->{"content"});

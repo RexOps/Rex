@@ -130,10 +130,10 @@ sub rename {
    my $exec = Rex::Interface::Exec->create;
 
    if($^O =~ m/^MSWin/) {
-      $exec->exec("move $old $new");
+      $exec->exec("move \"$old\" \"$new\"");
    }
    else {
-      $exec->exec("/bin/mv $old $new");
+      $exec->exec("/bin/mv '$old' '$new'");
    }
 
    if($? == 0) { return 1; }

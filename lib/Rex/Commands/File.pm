@@ -220,13 +220,33 @@ sub file {
    }
 
    if(exists $option->{"content"}) {
+      # first upload file to tmp location, to get md5 sum.
+      # than we can decide if we need to replace the current (old) file.
 
-      my $fh = file_write($file);
+      my @splitted_file = split(/\//, $file);
+      my $file_name = ".rex.tmp." . pop(@splitted_file);
+      my $tmp_file_name = join("/", @splitted_file) . "/" . $file_name;
+
+      my $fh = file_write($tmp_file_name);
       my @lines = split(qr{$/}, $option->{"content"});
       for my $line (@lines) {
          $fh->write($line . $/);
       }
       $fh->close;
+
+      # now get md5 sums
+      $new_md5 = md5($tmp_file_name);
+
+      if($new_md5 && $old_md5 && $new_md5 eq $old_md5) {
+         Rex::Logger::debug("No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5.");
+         # md5 sums are the same, delete tmp.
+         $fs->unlink($tmp_file_name);
+         $need_md5 = 0; # we don't need to execute on_change hook
+      }
+      else {
+         Rex::Logger::debug("Need to use the new file. md5 sums are different.");
+         $fs->rename($tmp_file_name, $file);
+      }
    }
    elsif(exists $option->{"source"}) {
       $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());

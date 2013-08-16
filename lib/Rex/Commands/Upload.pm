@@ -35,6 +35,8 @@ use Rex::Config;
 use Rex::Commands::Fs;
 use Rex::Interface::Fs;
 use Rex::Helper::Path;
+use Rex::Commands::MD5;
+use Rex::Commands;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -85,11 +87,33 @@ sub upload {
       die("File $local not found.");
    }
 
-   Rex::Logger::debug("Uploading: $local to $remote");
-
    if(is_dir($remote)) {
       $remote = $remote . '/' . basename($old_local);
    }
+
+   # first get local md5
+   my $local_md5;
+   LOCAL {
+      $local_md5 = md5($local);
+   };
+
+   if(! $local_md5) {
+      die("Error getting local md5 sum of $local");
+   }
+
+   # than get remote md5 to test if we need to upload the file
+   my $remote_md5 = "";
+   eval {
+      $remote_md5 = md5($remote);
+   };
+
+   if($local_md5 && $remote_md5 && $local_md5 eq $remote_md5) {
+      Rex::Logger::debug("local md5 and remote md5 are the same: $local_md5 eq $remote_md5. Not uploading.");
+      return 1;
+   }
+
+   Rex::Logger::debug("Uploading: $local to $remote");
+
    $fs->upload($local, $remote);
 }
 

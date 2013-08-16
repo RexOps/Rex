@@ -187,7 +187,7 @@ sub rename {
 
    # don't use rename() doesn't work with different file systems / partitions
    my $exec = Rex::Interface::Exec->create;
-   $exec->exec("/bin/mv $old $new");
+   $exec->exec("/bin/mv '$old' '$new'");
 
    if( (! $self->is_file($old) && ! $self->is_dir($old) ) && ( $self->is_file($new) || $self->is_dir($new)) ) {
       $ret = 1;

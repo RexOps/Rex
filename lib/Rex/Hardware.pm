@@ -70,8 +70,6 @@ Available modules:
 
 =cut
 
-our %hw_info = ();
-
 my %HW_PROVIDER;
 sub register_hardware_provider {
    my ($class, $service_name, $service_class) = @_;
@@ -84,8 +82,6 @@ sub get {
 
    my %hardware_information;
 
-   my $current_cache = Rex::get_current_connection()->{"cache"};
-
    if("all" eq "\L$modules[0]") {
 
       @modules = qw(Host Kernel Memory Network Swap VirtInfo);
@@ -97,56 +93,27 @@ sub get {
 
       Rex::Commands::profiler()->start("hardware: $mod_string");
 
-      #if(exists $hw_info{$mod_string} && Rex::Args->is_opt("c")) {
-      if(defined $current_cache->get($mod_string) && Rex::Args->is_opt("c")) {
-         $hardware_information{$mod_string} = $current_cache->get($mod_string);
+      my $mod = "Rex::Hardware::$mod_string";
+      if(exists $HW_PROVIDER{$mod_string}) {
+         $mod = $HW_PROVIDER{$mod_string};
       }
 
-      else {
+      Rex::Logger::debug("Loading $mod");
+      eval "use $mod";
 
-         my $mod = "Rex::Hardware::$mod_string";
-         if(exists $HW_PROVIDER{$mod_string}) {
-            $mod = $HW_PROVIDER{$mod_string};
-         }
-
-         Rex::Logger::debug("Loading $mod");
-         eval "use $mod";
-
-         if($@) {
-            Rex::Logger::info("$mod not found.");
-            Rex::Logger::debug("$@");
-            next;
-         }
-
-         $hardware_information{$mod_string} = $mod->get();
-
-         if(Rex::Args->is_opt("c")) {
-            $hw_info{$mod_string} = $hardware_information{$mod_string};
-            $current_cache->set($mod_string, $hardware_information{$mod_string});
-         }
-
+      if($@) {
+         Rex::Logger::info("$mod not found.");
+         Rex::Logger::debug("$@");
+         next;
       }
+
+      $hardware_information{$mod_string} = $mod->get();
 
       Rex::Commands::profiler()->end("hardware: $mod_string");
 
    }
 
    return %hardware_information;
-}
-
-sub reset {
-   my ($class) = @_;
-
-   my $current_cache = Rex::get_current_connection()->{cache};
-   $current_cache->reset;
-}
-
-sub cache {
-   my ($class, $mod) = @_;
-   my $current_cache = Rex::get_current_connection()->{cache};
-   if(defined $current_cache->get($mod)) {
-      return $current_cache->get($mod);
-   }
 }
 
 =back

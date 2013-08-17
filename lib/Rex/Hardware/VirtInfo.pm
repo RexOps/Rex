@@ -15,8 +15,11 @@ require Rex::Hardware;
 
 sub get {
 
-   if(my $ret = Rex::Hardware->cache("VirtInfo")) {
-      return $ret;
+   my $cache = Rex::get_cache();
+   my $cache_key_name = $cache->gen_key_name("hardware.virt_info");
+
+   if($cache->valid($cache_key_name)) {
+      return $cache->get($cache_key_name);
    }
 
    if(Rex::is_ssh || $^O !~ m/^MSWin/i) {
@@ -121,10 +124,14 @@ sub get {
          $virtualization_role = "host";
       }
 
-      return {
+      my $data = {
          virtualization_type => $virtualization_type,
          virtualization_role => $virtualization_role,
       };
+
+      $cache->set($cache_key_name, $data);
+
+      return $data;
 
    }
 }

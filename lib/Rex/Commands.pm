@@ -1122,7 +1122,7 @@ This function returns the current cache object.
 
 =cut
 sub cache {
-   return Rex::get_current_connection()->{cache};
+   return Rex::get_cache();
 }
 
 =item profiler

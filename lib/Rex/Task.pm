@@ -662,10 +662,6 @@ sub run {
       # execute code
       my $ret = $self->executor->exec($options{params});
 
-
-      # reset all os info
-      Rex::Hardware->reset;
-
       $self->disconnect($server) unless($in_transaction);
       $self->run_hook(\$server, "after");
 

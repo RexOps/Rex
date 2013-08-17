@@ -18,8 +18,11 @@ require Rex::Hardware;
 
 sub get {
 
-   if(my $ret = Rex::Hardware->cache("Network")) {
-      return $ret;
+   my $cache = Rex::get_cache();
+   my $cache_key_name = $cache->gen_key_name("hardware.network");
+
+   if($cache->valid($cache_key_name)) {
+      return $cache->get($cache_key_name);
    }
 
    my $hw_class = _get_class();
@@ -28,12 +31,16 @@ sub get {
       return {};
    }
 
-   return {
+   my $data = {
  
       networkdevices => $hw_class->get_network_devices(),
       networkconfiguration => $hw_class->get_network_configuration(),
 
    };
+
+   $cache->set($cache_key_name, $data);
+
+   return $data;
 
 }
 

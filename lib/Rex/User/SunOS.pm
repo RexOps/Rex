@@ -115,10 +115,10 @@ sub create_user {
    if(exists $data->{password}) {
       my $expect_path;
 
-      if(Rex::get_cache()->can_run("/usr/local/bin/expect")) {
+      if(can_run("/usr/local/bin/expect")) {
          $expect_path = "/usr/local/bin/expect";
       }
-      elsif(Rex::get_cache()->can_run("/usr/bin/expect")) {
+      elsif(can_run("/usr/bin/expect")) {
          $expect_path = "/usr/bin/expect";
       }
 

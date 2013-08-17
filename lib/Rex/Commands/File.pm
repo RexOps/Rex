@@ -70,6 +70,7 @@ use Rex::Config;
 use Rex::FS::File;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
+use Rex::Commands::Run;
 use Rex::File::Parser::Data;
 use Rex::Helper::System;
 use Rex::Helper::Path;
@@ -424,7 +425,7 @@ sub delete_lines_matching {
       }
    }
 
-   my $perl = Rex::get_cache()->can_run("perl");
+   my $perl = can_run("perl");
    if($perl) {
       # if perl is available, use it
       my $exec = Rex::Interface::Exec->create;
@@ -739,7 +740,7 @@ sub sed {
    my ($search, $replace, $file, @options) = @_;
    my $option = { @options };
 
-   my $perl = Rex::get_cache()->can_run("perl");
+   my $perl = can_run("perl");
    if($perl) {
       # if perl is available use it
       my $on_change = $option->{"on_change"} || undef;

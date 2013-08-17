@@ -16,8 +16,11 @@ require Rex::Hardware;
 
 sub get {
 
-   if(my $ret = Rex::Hardware->cache("Swap")) {
-      return $ret;
+   my $cache = Rex::get_cache();
+   my $cache_key_name = $cache->gen_key_name("hardware.swap");
+
+   if($cache->valid($cache_key_name)) {
+      return $cache->get($cache_key_name);
    }
 
    my $os = Rex::Hardware::Host::get_operating_system();
@@ -37,9 +40,11 @@ sub get {
    };
 
 
+   my $data = {};
+
    if($os eq "Windows") {
       my $conn = Rex::get_current_connection()->{conn};
-      return {
+      $data = {
          used => $conn->post("/os/swap/used")->{used},
          total => $conn->post("/os/swap/max")->{max},
          free => $conn->post("/os/swap/free")->{free},
@@ -53,7 +58,7 @@ sub get {
       &$convert($used, uc($u_ent));
       &$convert($avail, uc($a_ent));
 
-      return {
+      $data = {
          total => $used + $avail,
          used => $used,
          free => $avail,
@@ -67,7 +72,7 @@ sub get {
       &$convert($used, $u_ent);
       &$convert($total, $t_ent);
 
-      return {
+      $data = {
          total => $total,
          used  => $used,
          free  => $total - $used,
@@ -82,7 +87,7 @@ sub get {
       &$convert($total, $t_ent);
       &$convert($free, $f_ent);
 
-      return {
+      $data = {
          total => $total,
          used => $total-$free,
          free => $free,
@@ -99,7 +104,7 @@ sub get {
       &$convert($used, $u_ent);
       &$convert($free, $f_ent);
 
-      return {
+      $data = {
          total => $total,
          used => $used,
          free => $free,
@@ -108,7 +113,7 @@ sub get {
    else {
       # linux as default
       if(! can_run("free")) {
-          return {
+          $data = {
             total => 0,
             used  => 0,
             free  => 0,
@@ -120,22 +125,31 @@ sub get {
 
       my $free_str = [ grep { /^Swap:/ } run("LC_ALL=C free -m") ]->[0];
       if(! $free_str) {
-         return {
+         $data = {
             total => 0,
             used  => 0,
             free  => 0,
          };
       }
-      $free_str =~ s/\r//g;
-      my ($total, $used, $free) = ($free_str =~ m/^Swap:\s+(\d+)\s+(\d+)\s+(\d+)$/);
 
-      return { 
-         total => $total,
-         used  => $used,
-         free  => $free,
-      };
+      else {
+
+         $free_str =~ s/\r//g;
+         my ($total, $used, $free) = ($free_str =~ m/^Swap:\s+(\d+)\s+(\d+)\s+(\d+)$/);
+
+         $data = { 
+            total => $total,
+            used  => $used,
+            free  => $free,
+         };
+
+      }
 
    }
+
+   $cache->set($cache_key_name, $data);
+
+   return $data;
 }
 
 

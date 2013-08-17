@@ -10,4 +10,12 @@ use Moo;
 
 extends 'Rex::Interface::Cache::Base';
 
+sub save {
+   my ($self) = @_;
+}
+
+sub load {
+   my ($self) = @_;
+}
+
 1;

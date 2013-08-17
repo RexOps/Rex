@@ -12,91 +12,19 @@ use warnings;
 use Moo;
 
 use Rex::Logger;
-require Rex::Commands::Run;
+use Rex;
 
-sub call_sub {
-   my ($self, $package, $func, @params) = @_;
+sub gen_key {
+   my ($self, $key_name) = @_;
+   return $key_name if $key_name;
 
-   my $cache_key = "${package}_${func}_" . join("-", @params);
+   my ($package, $filename, $line, $subroutine) = caller(1);
 
-   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
-      return $self->get($cache_key);
-   }
+   $package =~ s/::/_/g;
 
-   my $ret;
-   eval {
-      my $package_file = $package;
-      $package_file =~ s/::/\//g;
-      require $package_file . ".pm";
+   my $gen_key_name = "\L${package}_\L${subroutine}";
 
-      no strict 'refs';
-      $ret = &{"${package}::${func}"}(@params);
-      use strict;
-      $self->set($cache_key, $ret);
-   };
-
-   if($@) {
-      die($@);
-   }
-
-   return $ret;
-}
-
-sub call_method {
-   my ($self, $package, $method, @params) = @_;
-
-   my $cache_key = "${package}_${method}_" . join("-", @params);
-
-   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
-      return $self->get($cache_key);
-   }
-
-   my $ret;
-   eval {
-      my $package_file = $package;
-      $package_file =~ s/::/\//g;
-      require $package_file . ".pm";
-
-      $ret = $package->$method(@params);
-      $self->set($cache_key, $ret);
-   };
-
-   if($@) {
-      die($@);
-   }
-
-   return $ret;
-  
-}
-
-sub run {
-   my $self = shift;
-
-   my $cache_key = "run_cmd_" . join("-", @_);
-
-   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
-      return $self->get($cache_key);
-   }
-
-   my $ret = Rex::Commands::Run::run(@_);
-   $self->set($cache_key, $ret);
-
-   return $ret;
-}
-
-sub can_run {
-   my $self = shift;
-
-   my $cache_key = "can_run_cmd_" . join("-", @_);
-
-   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
-      return $self->get($cache_key);
-   }
-
-   my $ret = Rex::Commands::Run::can_run(@_);
-   $self->set($cache_key, $ret);
-
-   return $ret;
+   return $gen_key_name;
 }
 
 sub set {
@@ -117,6 +45,16 @@ sub get {
 sub reset {
    my ($self) = @_;
    $self->{__data__} = {};
+}
+
+# have to be overwritten by subclass
+sub save {
+   my ($self) = @_;
+}
+
+# have to be overwritten by subclass
+sub load {
+   my ($self) = @_;
 }
 
 1;

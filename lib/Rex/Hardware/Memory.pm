@@ -17,8 +17,11 @@ require Rex::Hardware;
 
 sub get {
 
-   if(my $ret = Rex::Hardware->cache("Memory")) {
-      return $ret;
+   my $cache = Rex::get_cache();
+   my $cache_key_name = $cache->gen_key_name("hardware.memory");
+
+   if($cache->valid($cache_key_name)) {
+      return $cache->get($cache_key_name);
    }
 
    my $os = Rex::Hardware::Host::get_operating_system();
@@ -37,9 +40,11 @@ sub get {
 
    };
 
+   my $data = {};
+
    if($os eq "Windows") {
       my $conn = Rex::get_current_connection()->{conn};
-      return {
+      $data = {
          used => $conn->post("/os/memory/used")->{used},
          total => $conn->post("/os/memory/max")->{max},
          free => $conn->post("/os/memory/free")->{free},
@@ -60,7 +65,7 @@ sub get {
       &$convert($total, "M");
       my $used = $total - $free;
 
-      return {
+      $data = {
          used => $used,
          total => $total,
          free => $free,
@@ -78,7 +83,7 @@ sub get {
       &$convert($virt_mem, $v_m_ent);
       &$convert($free, $f_ent);
 
-      return {
+      $data = {
          used => $phys_mem + $virt_mem,
          total => $total_mem,
          free => $free,
@@ -98,7 +103,7 @@ sub get {
       &$convert($file, $f_ent);
       &$convert($free, $fr_ent);
 
-      return {
+      $data = {
          total => $total_mem,
          used => $active + $exec + $file + $wired,
          free => $free,
@@ -122,7 +127,7 @@ sub get {
       &$convert($buf, $b_ent);
       &$convert($free, $f_ent);
 
-      return {
+      $data = {
          total => $total_mem,
          used => $active + $inactive + $wired,
          free  => $free,
@@ -139,7 +144,7 @@ sub get {
       my ($buffers)  = grep { $_=$1 if /^Buffers:\s+(\d+)/ } @data;
       my ($cached)   = grep { $_=$1 if /^Cached:\s+(\d+)/ } @data;
 
-      return {
+      $data = {
          total => $total,
          used => $total - $free,
          free => $free,
@@ -151,7 +156,7 @@ sub get {
    else {
       # default for linux
       if(! can_run("free")) {
-          return {
+          $data = {
             total => 0,
             used  => 0,
             free  => 0,
@@ -164,7 +169,7 @@ sub get {
       my $free_str = [ grep { /^Mem:/ } run("LC_ALL=C free -m") ]->[0];
 
       if(! $free_str) {
-         return {
+         $data = {
             total => 0,
             used  => 0,
             free  => 0,
@@ -174,17 +179,25 @@ sub get {
          };
       }
 
-      my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+      else {
 
-      return { 
-         total => $total,
-         used  => $used,
-         free  => $free,
-         shared => $shared,
-         buffers => $buffers,
-         cached => $cached
-      };
+         my ($total, $used, $free, $shared, $buffers, $cached) = ($free_str =~ m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/);
+
+         $data = { 
+            total => $total,
+            used  => $used,
+            free  => $free,
+            shared => $shared,
+            buffers => $buffers,
+            cached => $cached
+         };
+      }
+
    }
+
+   $cache->set($cache_key_name, $data);
+
+   return $data;
 }
 
 1;

@@ -15,6 +15,7 @@ my %deps = (
                   'IPC::Open3' => 0,
                   'String::Escape' => 0,
                   'Time::HiRes' => 0,
+                  'Moo' => 0,
 );
 
 if($^O =~ m/^MSWin/) {

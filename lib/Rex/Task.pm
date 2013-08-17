@@ -656,11 +656,19 @@ sub run {
 
       if(Rex::Args->is_opt("c")) {
          # get and cache all os info
-         $server->gather_information;
+         if(! Rex::get_cache()->load()) {
+            Rex::Logger::debug("No cache found, need to collect new data.");
+            $server->gather_information;
+         }
       }
 
       # execute code
       my $ret = $self->executor->exec($options{params});
+
+      if(Rex::Args->is_opt("c")) {
+         # get and cache all os info
+         Rex::get_cache()->save();
+      }
 
       $self->disconnect($server) unless($in_transaction);
       $self->run_hook(\$server, "after");

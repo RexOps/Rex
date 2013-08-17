@@ -1122,7 +1122,13 @@ This function returns the current cache object.
 
 =cut
 sub cache {
-   return Rex::get_cache();
+   my ($type) = @_;
+
+   if(! $type) {
+      return Rex::get_cache();
+   }
+
+   Rex::Config->set_cache_type($type);
 }
 
 =item profiler

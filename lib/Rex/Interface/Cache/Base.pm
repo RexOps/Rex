@@ -14,7 +14,7 @@ use Moo;
 use Rex::Logger;
 use Rex;
 
-sub gen_key {
+sub gen_key_name {
    my ($self, $key_name) = @_;
    return $key_name if $key_name;
 
@@ -29,7 +29,10 @@ sub gen_key {
 
 sub set {
    my ($self, $key, $val, $timeout) = @_;
-   $self->{__data__}->{$key} = $val;
+
+   if(Rex::Config->get_use_cache) {
+      $self->{__data__}->{$key} = $val;
+   }
 }
 
 sub valid {
@@ -50,11 +53,13 @@ sub reset {
 # have to be overwritten by subclass
 sub save {
    my ($self) = @_;
+   return 1;
 }
 
 # have to be overwritten by subclass
 sub load {
    my ($self) = @_;
+   return 0;
 }
 
 1;

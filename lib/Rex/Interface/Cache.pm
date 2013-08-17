@@ -14,7 +14,7 @@ sub create {
    my ($class, $type) = @_;
 
    unless($type) {
-      $type = "YAML";
+      $type = Rex::Config->get_cache_type;
    }
 
    my $class_name = "Rex::Interface::Cache::$type";

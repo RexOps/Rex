@@ -51,7 +51,7 @@ our ($user, $password, $port,
             $use_server_auth,
             $tmp_dir,
             %openssh_opt,
-            $use_cache);
+            $use_cache, $cache_type);
 
 # some defaults
 %executor_for = (
@@ -60,6 +60,19 @@ our ($user, $password, $port,
    ruby   => "ruby",
    bash   => "bash",
 );
+
+sub set_cache_type {
+   my $class = shift;
+   $cache_type = shift;
+}
+
+sub get_cache_type {
+   if(exists $ENV{REX_CACHE_TYPE}) {
+      return $ENV{REX_CACHE_TYPE};
+   }
+
+   return $cache_type || "Base";
+}
 
 sub set_use_cache {
    my $class = shift;

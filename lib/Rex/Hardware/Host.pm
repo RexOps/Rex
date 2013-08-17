@@ -21,10 +21,6 @@ require Rex::Hardware;
 
 sub get {
 
-   if(my $ret = Rex::Hardware->cache("Host")) {
-      return $ret;
-   }
-
    my $cache = Rex::get_cache();
    my $cache_key_name = $cache->gen_key_name("hardware.host");
 
@@ -80,7 +76,9 @@ sub get {
          hostname     => $hostname || "",
          domain       => $domain || "",
          operatingsystem => $os || "",
+         operating_system => $os || "",
          operatingsystemrelease => get_operating_system_version(),
+         operating_system_release => get_operating_system_version(),
          kernelname => [ run "uname -s" ]->[0],
 
       };
@@ -99,6 +97,14 @@ sub get {
 }
 
 sub get_operating_system {
+
+   my $cache = Rex::get_cache();
+   if($cache->valid("hardware.host")) {
+      my $host_cache = $cache->get("hardware.host");
+      if(exists $host_cache->{operatingsystem}) {
+         return $host_cache->{operatingsystem};
+      }
+   }
 
    # use lsb_release if available
    my $is_lsb = can_run("lsb_release");
@@ -166,6 +172,14 @@ sub get_operating_system {
 
 sub get_operating_system_version {
    
+   my $cache = Rex::get_cache();
+   if($cache->valid("hardware.host")) {
+      my $host_cache = $cache->get("hardware.host");
+      if(exists $host_cache->{operatingsystemrelease}) {
+         return $host_cache->{operatingsystemrelease};
+      }
+   }
+
    my $op = get_operating_system();
 
    my $is_lsb = can_run("lsb_release");

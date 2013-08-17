@@ -551,7 +551,7 @@ sub df {
    $dev ||= "";
 
    my $exec = Rex::Interface::Exec->create;
-   my ($out, $err) = $exec->exec("df $dev");
+   my ($out, $err) = $exec->exec("df $dev 2>/dev/null");
 
    my @lines = split(/\r?\n/, $out);
 

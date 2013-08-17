@@ -4,34 +4,22 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
    
-package Rex::Cache;
-   
+package Rex::Interface::Cache::Base;
+
 use strict;
 use warnings;
 
+use Moo;
+
 use Rex::Logger;
 require Rex::Commands::Run;
-
-our $USE = 0;
-
-sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
-
-   $self->{__data__} = {};
-
-   bless($self, $proto);
-
-   return $self;
-}
 
 sub call_sub {
    my ($self, $package, $func, @params) = @_;
 
    my $cache_key = "${package}_${func}_" . join("-", @params);
 
-   if(defined $self->get($cache_key) && $USE) {
+   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
       return $self->get($cache_key);
    }
 
@@ -59,7 +47,7 @@ sub call_method {
 
    my $cache_key = "${package}_${method}_" . join("-", @params);
 
-   if(defined $self->get($cache_key) && $USE) {
+   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
       return $self->get($cache_key);
    }
 
@@ -86,7 +74,7 @@ sub run {
 
    my $cache_key = "run_cmd_" . join("-", @_);
 
-   if(defined $self->get($cache_key) && $USE) {
+   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
       return $self->get($cache_key);
    }
 
@@ -101,7 +89,7 @@ sub can_run {
 
    my $cache_key = "can_run_cmd_" . join("-", @_);
 
-   if(defined $self->get($cache_key) && $USE) {
+   if(defined $self->get($cache_key) && Rex::Config->get_use_cache) {
       return $self->get($cache_key);
    }
 

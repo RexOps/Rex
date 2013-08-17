@@ -38,6 +38,7 @@ use Rex::Interface::Executor;
 use Rex::Group::Entry::Server;
 use Rex::Profiler;
 use Rex::Hardware;
+use Rex::Interface::Cache;
 
 require Rex::Commands;
 
@@ -567,7 +568,7 @@ sub connect {
          conn   => $self->connection, 
          ssh    => $self->connection->get_connection_object, 
          server => $server, 
-         cache => Rex::Cache->new(),
+         cache => Rex::Interface::Cache->create(),
          task  => $self,
          profiler => $profiler,
    });

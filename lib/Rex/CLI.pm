@@ -19,7 +19,6 @@ use Rex::Config;
 use Rex::Group;
 use Rex::Batch;
 use Rex::TaskList;
-use Rex::Cache;
 use Rex::Logger;
 use Rex::Output;
 
@@ -118,10 +117,10 @@ sub __run__ {
    }
 
    if($opts{"c"}) {
-      $Rex::Cache::USE = 1;
+      Rex::Config->set_use_cache(1);
    }
    elsif($opts{"C"}) {
-      $Rex::Cache::USE = 0;
+      Rex::Config->set_use_cache(0);
    }
 
    Rex::Logger::debug("Command Line Parameters");

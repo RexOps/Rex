@@ -135,6 +135,7 @@ use base qw(Rex::Exporter);
             case
             inspect
             tmp_dir
+            cache
           );
 
 our $REGISTER_SUB_HASH_PARAMTER = 0;
@@ -944,7 +945,7 @@ sub LOCAL (&) {
          conn   => $local_connect,
          ssh    => 0,
          server => $cur_conn->{server}, 
-         cache => Rex::Cache->new(),
+         cache => Rex::Interface::Cache->create(),
          task  => task(),
    });
 
@@ -1112,7 +1113,16 @@ This function returns the current connection object.
 
 =cut
 sub connection {
-   return Rex::get_current_connection()->{"conn"};
+   return Rex::get_current_connection()->{conn};
+}
+
+=item cache
+
+This function returns the current cache object.
+
+=cut
+sub cache {
+   return Rex::get_current_connection()->{cache};
 }
 
 =item profiler

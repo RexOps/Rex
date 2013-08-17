@@ -1,7 +1,8 @@
-use Test::More tests => 141;
+use Test::More tests => 142;
 
 use_ok 'Rex::Batch';
-use_ok 'Rex::Cache';
+use_ok 'Rex::Interface::Cache';
+use_ok 'Rex::Interface::Cache::Base';
 use_ok 'Rex::CLI';
 use_ok 'Rex::Commands::Box';
 use_ok 'Rex::Commands::Cloud';

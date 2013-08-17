@@ -13,7 +13,6 @@ use Rex::Interface::Connection::Base;
 use LWP::UserAgent;
 use JSON::XS;
 use Data::Dumper;
-use Rex::Cache;
 
 use base qw(Rex::Interface::Connection::Base);
 
@@ -25,7 +24,7 @@ sub new {
    bless($self, $proto);
 
    # activate caching
-   $Rex::Cache::USE = 1;
+   Rex::Config->set_use_cache(1);
 
    return $self;
 }

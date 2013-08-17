@@ -50,7 +50,8 @@ our ($user, $password, $port,
             $allow_empty_groups,
             $use_server_auth,
             $tmp_dir,
-            %openssh_opt);
+            %openssh_opt,
+            $use_cache);
 
 # some defaults
 %executor_for = (
@@ -60,6 +61,14 @@ our ($user, $password, $port,
    bash   => "bash",
 );
 
+sub set_use_cache {
+   my $class = shift;
+   $use_cache = shift;
+}
+
+sub get_use_cache {
+   return $use_cache;
+}
 
 sub get_sudo_without_locales {
    return $sudo_without_locales;

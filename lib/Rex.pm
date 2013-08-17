@@ -75,7 +75,7 @@ use warnings;
 
 use Net::SSH2;
 use Rex::Logger;
-use Rex::Cache;
+use Rex::Interface::Cache;
 use Data::Dumper;
 use Rex::Interface::Connection;
 use Cwd qw(getcwd);
@@ -206,7 +206,7 @@ sub get_current_connection {
       Rex::push_connection({
          conn   => $conn,
          ssh    => $conn->get_connection_object,
-         cache => Rex::Cache->new(),
+         cache => Rex::Interface::Cache->create(),
       });
    }
 
@@ -266,7 +266,7 @@ sub global_sudo {
    $GLOBAL_SUDO = $on;
 
    # turn cache on
-   $Rex::Cache::USE = 1;
+   Rex::Config->set_use_cache(1);
 }
 
 =item get_sftp
@@ -288,7 +288,7 @@ sub get_cache {
       return $CONNECTION_STACK[-1]->{"cache"};
    }
 
-   return Rex::Cache->new;
+   return Rex::Interface::Cache->create();
 }
 
 =item connect
@@ -347,7 +347,7 @@ sub connect {
          conn   => $conn,
          ssh    => $conn->get_connection_object,
          server => $server,
-         cache => Rex::Cache->new(),
+         cache => Rex::Interface::Cache->create(),
       });
 
       # auth unsuccessfull

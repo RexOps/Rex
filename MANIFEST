@@ -1,3 +1,4 @@
+bin/change.txt
 bin/rex
 bin/rexify
 ChangeLog
@@ -87,6 +88,9 @@ lib/Rex/Helper/Run.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm
+lib/Rex/Interface/Cache.pm
+lib/Rex/Interface/Cache/Base.pm
+lib/Rex/Interface/Cache/YAML.pm
 lib/Rex/Interface/Connection.pm
 lib/Rex/Interface/Connection/Base.pm
 lib/Rex/Interface/Connection/Fake.pm
@@ -119,6 +123,12 @@ lib/Rex/Interface/Fs/Local.pm
 lib/Rex/Interface/Fs/OpenSSH.pm
 lib/Rex/Interface/Fs/SSH.pm
 lib/Rex/Interface/Fs/Sudo.pm
+lib/Rex/Interface/Shell.pm
+lib/Rex/Interface/Shell/Ash.pm
+lib/Rex/Interface/Shell/Bash.pm
+lib/Rex/Interface/Shell/Default.pm
+lib/Rex/Interface/Shell/Sh.pm
+lib/Rex/Interface/Shell/Zsh.pm
 lib/Rex/Inventory.pm
 lib/Rex/Inventory/Bios.pm
 lib/Rex/Inventory/DMIDecode.pm
@@ -155,6 +165,7 @@ lib/Rex/Pkg/Gentoo.pm
 lib/Rex/Pkg/Mageia.pm
 lib/Rex/Pkg/NetBSD.pm
 lib/Rex/Pkg/OpenBSD.pm
+lib/Rex/Pkg/OpenWrt.pm
 lib/Rex/Pkg/Redhat.pm
 lib/Rex/Pkg/SunOS.pm
 lib/Rex/Pkg/SunOS/OpenCSW.pm
@@ -175,6 +186,7 @@ lib/Rex/Service/Gentoo.pm
 lib/Rex/Service/Mageia.pm
 lib/Rex/Service/NetBSD.pm
 lib/Rex/Service/OpenBSD.pm
+lib/Rex/Service/OpenWrt.pm
 lib/Rex/Service/Redhat.pm
 lib/Rex/Service/Redhat/systemd.pm
 lib/Rex/Service/SunOS.pm
@@ -197,6 +209,7 @@ lib/Rex/User/FreeBSD.pm
 lib/Rex/User/Linux.pm
 lib/Rex/User/NetBSD.pm
 lib/Rex/User/OpenBSD.pm
+lib/Rex/User/OpenWrt.pm
 lib/Rex/User/SunOS.pm
 lib/Rex/Value.pm
 lib/Rex/Virtualization.pm
@@ -271,6 +284,7 @@ t/file.t
 t/fs.t
 t/group.t
 t/helper_hash.t
+t/helper_path.t
 t/host.t
 t/ifconfig.out1
 t/ifconfig.out2
@@ -279,6 +293,7 @@ t/ifconfig.out4
 t/ifconfig.out5
 t/ini.t
 t/interface_fs_local.t
+t/ip.out1
 t/iptables.t
 t/last_command_output.t
 t/libvirt.t

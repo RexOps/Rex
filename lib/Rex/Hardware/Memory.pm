@@ -127,7 +127,7 @@ sub get {
 
       &$convert($active, $a_ent);
       &$convert($inactive, $i_ent);
-      &$convert($wired, $w_ent);    if($wired);
+      &$convert($wired, $w_ent)     if($wired);
       &$convert($cache, $c_ent)     if($cache);
       &$convert($buf, $b_ent)       if($buf);
       &$convert($free, $f_ent);

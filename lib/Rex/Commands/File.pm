@@ -749,7 +749,7 @@ sub sed {
       $search  = _normalize_regexp($search);
       $replace = _normalize_regexp_rep_string($replace);
 
-      my $cmd = "perl -lne \"\\\$r=qr/$search/; s/\\\$r/$replace/; print;\" -i '$file'";
+      my $cmd = "perl -lne \\\$r\"=qr/$search/; s/\"\\\$r\"/$replace/; print;\" -i '$file'";
 
       my ($old_md5, $new_md5);
 
@@ -803,8 +803,9 @@ sub _normalize_regexp_rep_string {
 
    $str =~ s/\\/\\\\\\/g;
    $str =~ s/\//\\\//g;
-   $str =~ s/"/\\"/g;
-   $str =~ s/\$/\\\\\\\$/g;
+   $str =~ s/"/"\\""/g;
+   #$str =~ s/\$/\\\\\\\$/g;
+   $str =~ s/\$/\\\"\\\$\"/g;
 
    Rex::Logger::debug("_normalize_regexp_rep_string: out: <<$str>>");
 

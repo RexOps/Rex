@@ -1,4 +1,4 @@
-use Test::More tests => 142;
+use Test::More tests => 148;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -139,6 +139,12 @@ use_ok 'Rex::User::OpenBSD';
 use_ok 'Rex::User::SunOS';
 use_ok 'Rex::User::OpenWrt';
 use_ok 'Rex::User';
+use_ok 'Rex::Interface::Shell';
+use_ok 'Rex::Interface::Shell::Csh';
+use_ok 'Rex::Interface::Shell::Default';
+use_ok 'Rex::Interface::Shell::Bash';
+use_ok 'Rex::Interface::Shell::Sh';
+use_ok 'Rex::Interface::Shell::Zsh';
 use_ok 'Rex';
 
 

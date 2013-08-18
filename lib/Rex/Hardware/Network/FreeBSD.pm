@@ -30,7 +30,7 @@ sub get_network_configuration {
 
    for my $dev (@{$devices}) {
 
-      my $ifconfig = run("LC_ALL=C ifconfig $dev");
+      my $ifconfig = run("ifconfig $dev");
 
       $device_info->{$dev} = {
          ip          => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],

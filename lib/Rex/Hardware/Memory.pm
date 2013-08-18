@@ -120,11 +120,16 @@ sub get {
       my ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $cache, $c_ent, $buf, $b_ent, $free, $f_ent) = 
             ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
 
+      if(! $active) {
+         ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $buf, $b_ent, $free, $f_ent) = 
+               ($mem_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
+      }
+
       &$convert($active, $a_ent);
       &$convert($inactive, $i_ent);
-      &$convert($wired, $w_ent);
-      &$convert($cache, $c_ent);
-      &$convert($buf, $b_ent);
+      &$convert($wired, $w_ent);    if($wired);
+      &$convert($cache, $c_ent)     if($cache);
+      &$convert($buf, $b_ent)       if($buf);
       &$convert($free, $f_ent);
 
       $data = {

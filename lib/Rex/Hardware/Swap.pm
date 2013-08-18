@@ -100,9 +100,18 @@ sub get {
       my ($total, $t_ent, $used, $u_ent, $free, $f_ent) = 
             ($swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
 
+      if(! $total) {
+         ($total, $t_ent, $free, $f_ent) = 
+            ($swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])/i);
+      }
+
       &$convert($total, $t_ent);
-      &$convert($used, $u_ent);
+      &$convert($used, $u_ent)     if($used);
       &$convert($free, $f_ent);
+
+      if(! $used) {
+         $used = $total - $free;
+      }
 
       $data = {
          total => $total,

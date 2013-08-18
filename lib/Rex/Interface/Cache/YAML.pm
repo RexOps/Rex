@@ -6,12 +6,22 @@
    
 package Rex::Interface::Cache::YAML;
 
-use Moo;
+use Rex::Interface::Cache::Base;
+use base qw(Rex::Interface::Cache::Base);
+
 require Rex::Commands;
 require Rex::Commands::Fs;
 require YAML;
 
-extends 'Rex::Interface::Cache::Base';
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = $proto->SUPER::new(@_);
+
+   bless($self, $proto);
+
+   return $self;
+}
 
 sub save {
    my ($self) = @_;

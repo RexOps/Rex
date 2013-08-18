@@ -9,10 +9,19 @@ package Rex::Interface::Cache::Base;
 use strict;
 use warnings;
 
-use Moo;
 
 use Rex::Logger;
 use Rex;
+
+sub new {
+   my $that = shift;
+   my $proto = ref($that) || $that;
+   my $self = { @_ };
+
+   bless($self, $proto);
+
+   return $self;
+}
 
 sub gen_key_name {
    my ($self, $key_name) = @_;

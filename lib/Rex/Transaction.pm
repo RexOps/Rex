@@ -68,7 +68,7 @@ Start a transaction for $codeRef. If $codeRef dies it will rollback the transact
    
  task "all", group => "frontend", sub {
      transaction {
-         do_task qw/deploy restart_server/;
+         do_task [qw/deploy restart_server/];
      };
  };
 

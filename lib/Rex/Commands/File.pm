@@ -577,33 +577,76 @@ sub append_if_no_such_line {
 
    my $fs = Rex::Interface::Fs->create;
 
-   # i don't like this next line...
-   # normalizing regexp serialization for older perl versions
-   for (@m) {
-      $_ = _normalize_regexp($_);
-   }
-
-   if ( !@m ) {
-      push @m, qr{\Q$new_line\E};
-      $m[-1] =~ s/^\(\?\^/\(\?/;
-   }
-
-   $new_line =~ s/'/\\\'/gms;
-
-   my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
-      line => $new_line,
-      regex => \@m,
-      file => $file,
-      __no_sys_info__ => 1);
-
-   my $old_md5;
+   my ($old_md5, $ret);
    if ($on_change) {
       $old_md5 = md5($file);
    }
 
-   my $f = upload_and_run $template, with => "perl";
+   if(0) {
+      # i don't like this next line...
+      # normalizing regexp serialization for older perl versions
+      for (@m) {
+         $_ = _normalize_regexp($_);
+      }
 
-   my $ret = $?;
+      if ( !@m ) {
+         push @m, qr{\Q$new_line\E};
+         $m[-1] =~ s/^\(\?\^/\(\?/;
+      }
+
+      $new_line =~ s/'/\\\'/gms;
+
+      my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
+         line => $new_line,
+         regex => \@m,
+         file => $file,
+         __no_sys_info__ => 1);
+
+      my $f = upload_and_run $template, with => "perl";
+      $ret = $?;
+
+   }
+   else {
+      # slow but secure way
+      my @content;
+      eval {
+         @content = split(/\n/, cat($file));
+         1;
+      } or do {
+         $ret = 1;
+      };
+
+      if ( !@m ) {
+         push @m, qr{\Q$new_line\E};
+      }
+
+      for my $line (@content) {
+         for my $match (@m) {
+            if(ref($match) ne "Regexp") {
+               $match = qr{$match};
+            }
+            if ( $line =~ $match ) {
+               return 0;
+            }
+         }
+      }
+
+      push @content, "$new_line\n";
+
+      eval {
+         my $fh = file_write $file;
+         unless($fh) {
+            die("can't open file for writing");
+         }
+         $fh->write(join("\n", @content));
+         $fh->close;
+         $ret = 0;
+         1;
+      } or do {
+         $ret = 3;
+      };
+   }
+
    if ($ret==1) {
       die("Can't open $file for reading");
    }
@@ -626,21 +669,6 @@ sub append_if_no_such_line {
          &$on_change($file);
       }
    }
-
-#   my $content = cat ($file);
-#   for my $match (@m) {
-#      if ( $content =~ /$match/m ) {
-#         return 0;
-#      }
-#   }
-
-#   $content .= "$new_line\n";
-#   my $fh = file_write $file;
-#   unless($fh) {
-#      die("Can't open $file for writing");
-#   }
-#   $fh->write($content);
-#   $fh->close;
 
 #   &$on_change() if defined $on_change;
 }
@@ -741,13 +769,19 @@ sub sed {
    my $option = { @options };
 
    my $perl = can_run("perl");
-   if($perl) {
+   if(0) {
       # if perl is available use it
       my $on_change = $option->{"on_change"} || undef;
       my $exec = Rex::Interface::Exec->create;
 
-      $search  = _normalize_regexp($search);
-      $replace = _normalize_regexp_rep_string($replace);
+      Rex::Logger::debug("[in ] search : $search");
+      Rex::Logger::debug("[in ] replace: $replace");
+
+      $search  = _shell_escape(_normalize_regexp($search));
+      $replace = _shell_escape(_normalize_regexp_rep_string($replace));
+
+      Rex::Logger::debug("[out] search : $search");
+      Rex::Logger::debug("[out] replace: $replace");
 
       my $cmd = "perl -lne \\\$r\"=qr/$search/; s/\"\\\$r\"/$replace/; print;\" -i '$file'";
 
@@ -772,42 +806,48 @@ sub sed {
       my @content = split(/\n/, cat($file));
 
       my $on_change = $option->{"on_change"} || undef;
-      @content = map { s/$search/$replace/ } @content; 
+      map { s/$search/$replace/ } @content; 
 
       file($file, content => join("\n", @content), on_change => $on_change);
    }
 }
 
 sub _normalize_regexp {
-   my ($reg) = @_;
+   my ($str) = @_;
 
-   Rex::Logger::debug("_normalize_regex: in: <<$reg>>");
+   $str =~ s/^\(\?\^/\(\?/;
+   $str =~ s/\//\\\//g;
 
-   $reg =~ s/^\(\?\^/\(\?/;
-   $reg =~ s/\//\\\//g;
-#   $reg =~ s/\{/\\{/g;
-#   $reg =~ s/\}/\\}/g;
-
-   $reg =~ s/'/\\'/g;
-   $reg =~ s/\\\$/\\\\\$/g;
-
-   Rex::Logger::debug("_normalize_regex: out: <<$reg>>");
-
-   return $reg;
+   return $str;
 }
 
 sub _normalize_regexp_rep_string {
    my ($str) = @_;
 
-   Rex::Logger::debug("_normalize_regexp_rep_string: in: <<$str>>");
-
    $str =~ s/\\/\\\\\\/g;
    $str =~ s/\//\\\//g;
+
+   return $str;
+}
+
+sub _template_escape {
+   my ($str) = @_;
+
+#   $reg =~ s/\{/\\{/g;
+#   $reg =~ s/\}/\\}/g;
+
+   $str =~ s/'/\\'/g;
+   $str =~ s/\\\$/\\\\\$/g;
+
+   return $str;
+}
+
+sub _shell_escape {
+   my ($str) = @_;
+
    $str =~ s/"/"\\""/g;
    #$str =~ s/\$/\\\\\\\$/g;
-   $str =~ s/\$/\\\"\\\$\"/g;
-
-   Rex::Logger::debug("_normalize_regexp_rep_string: out: <<$str>>");
+   $str =~ s/\$/"\\\\\\\$"/g;
 
    return $str;
 }

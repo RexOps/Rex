@@ -8,6 +8,7 @@ package Rex::Inventory::DMIDecode;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;
@@ -116,9 +117,14 @@ sub _read_dmidecode {
       @lines = @{ $self->{lines} };
    }
    else {
-      @lines = run "/usr/sbin/dmidecode 2>/dev/null";
+      my $dmidecode = can_run("dmidecode");
+      @lines = run "$dmidecode 2>/dev/null";
    }
    chomp @lines;
+
+   unless(@lines) {
+      Rex::Logger::debug("Please install dmidecode on the target system.");
+   }
 
    my %section = ();
    my $section = ""; 

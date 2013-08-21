@@ -133,7 +133,7 @@ sub can_run {
       return 0;
    }
 
-   return 1;
+   return $ret[0];
 }
 
 =item sudo

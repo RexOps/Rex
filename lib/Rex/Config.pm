@@ -51,7 +51,8 @@ our ($user, $password, $port,
             $use_server_auth,
             $tmp_dir,
             %openssh_opt,
-            $use_cache, $cache_type);
+            $use_cache, $cache_type,
+            $use_sleep_hack);
 
 # some defaults
 %executor_for = (
@@ -60,6 +61,15 @@ our ($user, $password, $port,
    ruby   => "ruby",
    bash   => "bash",
 );
+
+sub set_sleep_hack {
+   my $class = shift;
+   $use_sleep_hack = shift;
+}
+
+sub get_sleep_hack {
+   return $use_sleep_hack;
+}
 
 sub set_cache_type {
    my $class = shift;

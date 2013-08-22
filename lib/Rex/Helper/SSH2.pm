@@ -34,15 +34,7 @@ sub net_ssh2_exec {
    }
    $chan->blocking(1);
 
-   if($EXEC_AND_SLEEP) {
-      # this is due to a strange behaviour with Net::SSH2 / libssh2
-      # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware
-      $chan->exec($cmd . " ; f=\$? ; sleep .00000001 ; exit \$f");
-   }
-   else {
-      $chan->exec($cmd);
-   }
-
+   $chan->exec($cmd);
 
    my $in;
    my $in_err = "";

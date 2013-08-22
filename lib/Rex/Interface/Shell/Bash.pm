@@ -53,7 +53,7 @@ sub exec {
 # this is due to a strange behaviour with Net::SSH2 / libssh2
 # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware
     if(Rex::Config->get_sleep_hack) {
-      $complete_cmd .= " ; f=\$? ; sleep .00000001 ; exit \$f");
+      $complete_cmd .= " ; f=\$? ; sleep .00000001 ; exit \$f";
     }
 
     return $complete_cmd;

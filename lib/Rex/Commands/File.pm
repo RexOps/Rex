@@ -625,12 +625,12 @@ This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, 
       group => "root",
       to    => "/etc";
 
-    extract "/tmp/foo.tgz",
+    extract "/tmp/foo",
       type => "tgz",
       mode => "g+rwX";
  };
  
-Can use the type=> option if the file suffix has been changed. (types are tar, tgz, tbz, zip, gz, bz2)
+Can use the type => option if the file suffix doesn't reflect what the file really is. (types are tar, tgz, tbz, zip, gz, bz2)
 
 =cut
 sub extract {

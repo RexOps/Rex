@@ -710,6 +710,10 @@ sub sed {
    my ($search, $replace, $file, @options) = @_;
    my $option = { @options };
 
+   # $replace can be anything, but perl code. For example, it can contain
+   # some perl metacharacters (ie. Bob <bob@domain.invalid>)
+   $replace = quotemeta $replace;
+
    my $perl = Rex::get_cache()->can_run("perl");
    if($perl) {
       # if perl is available use it
@@ -718,7 +722,7 @@ sub sed {
 
       $search = _normalize_regex($search);
 
-      my $cmd = "perl -lne 's/$search/$replace/; print;' -i '$file'";
+      my $cmd = "perl -lpe 's/$search/$replace/' -i '$file'";
 
       my ($old_md5, $new_md5);
 

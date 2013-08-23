@@ -807,7 +807,7 @@ sub sed {
       Rex::Logger::debug("[out] search : $search");
       Rex::Logger::debug("[out] replace: $replace");
 
-      my $cmd = "perl -lne \\\$r\"=qr/$search/; s/\"\\\$r\"/$replace/; print;\" -i '$file'";
+      my $cmd = "perl -0777 -lne \\\$r\"=qr/$search/; s/\"\\\$r\"/$replace/; print;\" -i '$file'";
 
       my ($old_md5, $new_md5);
 

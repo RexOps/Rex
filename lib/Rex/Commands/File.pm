@@ -214,11 +214,9 @@ sub file {
    my $fs = Rex::Interface::Fs->create;
 
    my ($new_md5, $old_md5);
-   if($need_md5) {
-      eval {
-         $old_md5 = md5($file);
-      };
-   }
+   eval {
+      $old_md5 = md5($file);
+   };
 
    if(exists $option->{"content"}) {
       # first upload file to tmp location, to get md5 sum.
@@ -245,7 +243,7 @@ sub file {
          $need_md5 = 0; # we don't need to execute on_change hook
       }
       else {
-         Rex::Logger::debug("Need to use the new file. md5 sums are different.");
+         Rex::Logger::debug("Need to use the new file. md5 sums are different. <<$old_md5>> = <<$new_md5>>");
          $fs->rename($tmp_file_name, $file);
       }
    }

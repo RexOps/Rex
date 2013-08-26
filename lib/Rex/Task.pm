@@ -654,6 +654,13 @@ sub run {
       $self->run_hook(\$server, "before");
       $self->connect($server);
 
+      my $reporter;
+      my $start_time = time;
+      if(Rex::Config->get_report_type) {
+         $reporter = Rex::Report->create(Rex::Config->get_report_type);
+      }
+
+
       if(Rex::Args->is_opt("c")) {
          # get and cache all os info
          if(! Rex::get_cache()->load()) {
@@ -669,6 +676,15 @@ sub run {
          # get and cache all os info
          Rex::get_cache()->save();
       }
+
+      $reporter->report({
+            command    => "run_task",
+            module     => "Rex::TaskList::Base",
+            start_time => $start_time,
+            end_time   => time,
+         }) if ($reporter);
+
+      $reporter->write_report if ($reporter);
 
       $self->disconnect($server) unless($in_transaction);
       $self->run_hook(\$server, "after");

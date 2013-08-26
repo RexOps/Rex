@@ -213,6 +213,8 @@ sub file {
 
    my $fs = Rex::Interface::Fs->create;
 
+   my $__ret = {changed => 0};
+
    my ($new_md5, $old_md5);
    eval {
       $old_md5 = md5($file);
@@ -243,13 +245,33 @@ sub file {
          $need_md5 = 0; # we don't need to execute on_change hook
       }
       else {
+         $old_md5 ||= "";
          Rex::Logger::debug("Need to use the new file. md5 sums are different. <<$old_md5>> = <<$new_md5>>");
          $fs->rename($tmp_file_name, $file);
+         $__ret = {changed => 1};
       }
    }
    elsif(exists $option->{"source"}) {
       $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
-      upload $option->{"source"}, "$file";
+      $__ret = upload $option->{"source"}, "$file";
+   }
+   elsif(exists $option->{"ensure"}) {
+      if($option->{ensure} eq "present") {
+         if(! $fs->is_file($file)) {
+            my $fh = file_write($file);
+            $fh->write("");
+            $fh->close;
+            return {changed => 1};
+         }
+         return {changed => 0};
+      }
+      elsif($option->{ensure} eq "absent") {
+         if($fs->is_file()) {
+            $fs->unlink($file);
+            return {changed => 1};
+         }
+         return {changed => 0};
+      }
    }
    else {
       # no content and no source, so just verify that the file is present
@@ -288,8 +310,12 @@ sub file {
          Rex::Logger::debug("new: $new_md5");
 
          &$on_change($file);
+
+         return {changed => 1};
       }
    }
+
+   return $__ret;
 }
 
 =item file_write($file_name)

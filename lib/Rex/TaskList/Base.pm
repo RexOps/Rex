@@ -15,6 +15,8 @@ use Rex::Task;
 use Rex::Config;
 use Rex::Interface::Executor;
 use Rex::Fork::Manager;
+use Rex::Report;
+use Time::HiRes qw(time);
 
 sub new {
    my $that = shift;
@@ -201,7 +203,7 @@ sub run {
                      in_transaction => $self->{IN_TRANSACTION},
                      params => $option{params});
 
-         # destroy cached os info
+        # destroy cached os info
          Rex::Logger::debug("Destroying all cached os information");
 
          Rex::Logger::shutdown();

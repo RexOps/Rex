@@ -1153,12 +1153,15 @@ sub profiler {
 sub report {
    my ($str, $type) = @_;
 
+   $type ||= "Base";
+   Rex::Config->set_report_type($type);
+
    if($str eq "-on" || $str eq "on") {
-      $type ||= "Base";
-      $str = "Createing $type reporting class";
+      Rex::Report->create(Rex::Config->get_report_type)->register_reporting_hooks();
+      return;
    }
 
-   Rex::Report->create($type)->report($str);
+   Rex::Report->create(Rex::Config->get_report_type)->report($str);
 }
 
 =item source_global_profile(0|1)

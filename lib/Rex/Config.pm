@@ -69,6 +69,10 @@ sub set_report_type {
 }
 
 sub get_report_type {
+   if(exists $ENV{REX_REPORT_TYPE}) {
+      return $ENV{REX_REPORT_TYPE};
+   }
+
    return $report_type;
 }
 

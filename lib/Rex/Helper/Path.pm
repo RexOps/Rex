@@ -59,14 +59,31 @@ sub get_file_path {
       return $real_path . '/' . $file_name;
    }
  
-   my $module_path = Rex::get_module_path($caller_package);
-   if($module_path) {
-      $file_name = "$module_path/$file_name";
+
+   # walk down the wire to find the file...
+   my $i = 0;
+   while($caller_package && $i <= 50) {
+      ($caller_package, $caller_file) = caller($i);
+
+      if(! $caller_package) {
+         last;
+      }
+
+      my $module_path = Rex::get_module_path($caller_package);
+      if(-f "$module_path/$file_name") {
+         $file_name = "$module_path/$file_name";
+         print "found> $file_name\n";
+         return $file_name;
+      }
+
+      $i++;
    }
-   else {
+
+   if(! $file_name) {
       $file_name = dirname($caller_file) . "/" . $file_name;
    }
 
+   print "using> $file_name\n";
    return $file_name;
 }
 

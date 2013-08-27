@@ -88,7 +88,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.42.99";
+$VERSION = "0.42.99.2";
 my $cur_dir;
 
 BEGIN {
@@ -174,6 +174,22 @@ sub reconnect_lost_connections {
       for (@CONNECTION_STACK) {
          $_->{conn}->reconnect;
       }
+   }
+}
+
+# ... no words
+my @__modif_caller;
+sub unset_modified_caller {
+   @__modif_caller = ();
+}
+
+sub modified_caller {
+   my (@caller) = @_;
+   if(@caller) {
+      @__modif_caller = @caller;
+   }
+   else {
+      return @__modif_caller;
    }
 }
 

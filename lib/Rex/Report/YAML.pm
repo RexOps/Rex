@@ -13,6 +13,7 @@ use Rex;
 use Data::Dumper;
 use Rex::Report::Base;
 require Rex::Commands;
+use Devel::StackTrace;
 use YAML;
 use base qw(Rex::Report::Base);
 
@@ -85,7 +86,7 @@ sub register_reporting_hooks {
          *{"Rex::Commands::${mod}::$export"} = sub {
             my $ret;
             my $start_time = time;
-            #my $report = Rex::get_current_connection()->{reporter};
+
             eval {
                $ret = $orig_sub->(@_);
                if(ref $ret eq "HASH") {
@@ -121,6 +122,7 @@ sub register_reporting_hooks {
                      success    => 0,
                      changed    => 0,
                });
+               Rex::unset_modified_caller();
 
                die($@);
             };

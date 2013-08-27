@@ -61,6 +61,7 @@ sub get_file_path {
  
 
    # walk down the wire to find the file...
+   my ($old_caller_file) = $caller_file;
    my $i = 0;
    while($caller_package && $i <= 50) {
       ($caller_package, $caller_file) = caller($i);
@@ -78,9 +79,7 @@ sub get_file_path {
       $i++;
    }
 
-   if(! $file_name) {
-      $file_name = dirname($caller_file) . "/" . $file_name;
-   }
+   $file_name = dirname($old_caller_file) . "/" . $file_name;
 
    return $file_name;
 }

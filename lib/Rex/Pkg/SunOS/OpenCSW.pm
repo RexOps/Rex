@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::SunOS;
 
@@ -47,7 +48,7 @@ sub update {
    Rex::Logger::debug("Installing $pkg");
 
    my $cmd = $self->_pkgutil() . " --yes -i $pkg";
-   my $f = run($cmd);
+   my $f = i_run($cmd);
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -67,7 +68,7 @@ sub remove {
    Rex::Logger::debug("Removing $pkg");
 
    my $cmd = $self->_pkgutil() . " --yes -r $pkg";
-   my $f = run($cmd . " $pkg");
+   my $f = i_run($cmd . " $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -83,7 +84,7 @@ sub remove {
 
 sub update_pkg_db {
    my ($self) = @_;
-   run $self->_pkgutil() . " -U";
+   i_run $self->_pkgutil() . " -U";
 }
 
 sub _pkgutil {

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 sub execute {
    my ($class, $arg1) = @_;
@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "virsh undefine $dom";
+   i_run "virsh undefine $dom";
    if($? != 0) {
       die("Error destroying vm $dom");
    }

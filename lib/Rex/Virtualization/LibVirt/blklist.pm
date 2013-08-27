@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use Data::Dumper;
 
@@ -25,7 +26,7 @@ sub execute {
 
    Rex::Logger::debug("Getting block list of domain: $vmname");
 
-   my @blklist = run "virsh domblklist $vmname --details";
+   my @blklist = i_run "virsh domblklist $vmname --details";
 
    if($? != 0) {
       die("Error running virsh domblklist $vmname");
@@ -49,7 +50,7 @@ sub execute {
       if ($options{details}) {
          my $unit = $options{unit} || 1;
          for my $target (keys %ret) {
-            my @infos = run "virsh domblkinfo $vmname $target 2>/dev/null";
+            my @infos = i_run "virsh domblkinfo $vmname $target 2>/dev/null";
             if($? == 0) {
                for my $line (@infos) {
                   my ($k, $v) = split(/:\s+/, $line);

@@ -9,6 +9,7 @@ package Rex::Report::YAML;
 use strict;
 use warnings;
 
+use Rex;
 use Data::Dumper;
 use Rex::Report::Base;
 require Rex::Commands;
@@ -52,5 +53,84 @@ sub write_report {
 
    $self->{__reports__} = [];
 }
+
+sub register_reporting_hooks {
+   my ($self) = @_;
+
+   my @modules = qw(File Fs Pkg Run Service Sync Upload User Cron Download Process);
+
+   my @skip_functions = qw/
+      file_write
+      file_append
+      file_read
+      template
+      is_dir
+      is_file
+      can_run
+      free
+      df
+      du
+   /;
+
+   for my $mod (@modules) {
+      my @exports = eval "\@Rex::Commands::${mod}::EXPORT";
+      for my $export (@exports) {
+         if(grep { $_ eq $export } @skip_functions) {
+            next;
+         }
+         no strict 'refs';
+         no warnings;
+         eval "use Rex::Commands::$mod;";
+         my $orig_sub = \&{ "Rex::Commands::${mod}::$export" };
+         *{"Rex::Commands::${mod}::$export"} = sub {
+            my $ret;
+            my $start_time = time;
+            #my $report = Rex::get_current_connection()->{reporter};
+            eval {
+               $ret = $orig_sub->(@_);
+               if(ref $ret eq "HASH") {
+                  $self->report({
+                        command    => $export,
+                        module     => "Rex::Commands::$mod",
+                        start_time => $start_time,
+                        end_time   => time,
+                        data       => [ @_ ],
+                        success    => 1,
+                        %{ $ret },
+                  });
+               }
+               else {
+                  $self->report({
+                        command    => $export,
+                        module     => "Rex::Commands::$mod",
+                        start_time => $start_time,
+                        end_time   => time,
+                        data       => [ @_ ],
+                        success    => 1,
+                        changed    => 1,
+                  });
+               }
+               1;
+            } or do {
+               $self->report({
+                     command    => $export,
+                     module     => "Rex::Commands::$mod",
+                     start_time => $start_time,
+                     end_time   => time,
+                     data       => [ @_ ],
+                     success    => 0,
+                     changed    => 0,
+               });
+
+               die($@);
+            };
+
+            return $ret;
+         };
+      }
+   }
+}
+
+
 
 1;

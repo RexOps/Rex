@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Virtualization::VBox::info;
 
 #
@@ -38,12 +38,12 @@ sub execute {
          my $from_port = $option->{$rule}->[0];
          my $to_port = $option->{$rule}->[1];
 
-         run "VBoxManage modifyvm \"$dom\" --natpf1 \"$rule,tcp,,$from_port,,$to_port\"";
+         i_run "VBoxManage modifyvm \"$dom\" --natpf1 \"$rule,tcp,,$from_port,,$to_port\"";
       }
    }
    else {
       if($option ne "-all") {
-         run "VBoxManage modifyvm \"$dom\" --natpf1 delete \"$option\"";
+         i_run "VBoxManage modifyvm \"$dom\" --natpf1 delete \"$option\"";
       }
       else {
          # if no name is given, remove all redirects
@@ -53,7 +53,7 @@ sub execute {
 
          for my $k (@keys) {
             my @_t = split(/,/, $info->{$k});
-            run "VBoxManage modifyvm \"$dom\" --natpf1 delete \"$_t[0]\"";
+            i_run "VBoxManage modifyvm \"$dom\" --natpf1 delete \"$_t[0]\"";
          }
       }
       

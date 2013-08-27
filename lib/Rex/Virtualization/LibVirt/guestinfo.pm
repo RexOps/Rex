@@ -11,7 +11,7 @@ use warnings;
 
 use Data::Dumper;
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Virtualization::LibVirt::iflist;
 
 sub execute {
@@ -29,7 +29,7 @@ sub execute {
 
    my @ifaces;
    while($got_ip < scalar(keys %{ $ifs })) {
-      my %arp = map { my @x = ( $_ =~ m/\(([^\)]+)\) at ([^\s]+)\s/ ); ($x[1], $x[0]) } run "/usr/sbin/arp -an";
+      my %arp = map { my @x = ( $_ =~ m/\(([^\)]+)\) at ([^\s]+)\s/ ); ($x[1], $x[0]) } i_run "/usr/sbin/arp -an";
 
       for my $if (keys %{ $ifs }) {
          if(exists $arp{$ifs->{$if}->{mac}} && $arp{$ifs->{$if}->{mac}}) {

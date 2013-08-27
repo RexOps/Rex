@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Logger;
 use Rex::Commands::Fs;
 
@@ -26,7 +27,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "svcadm enable $service >/dev/null";
+   i_run "svcadm enable $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -38,7 +39,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "svcadm restart $service >/dev/null";
+   i_run "svcadm restart $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -50,7 +51,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "svcadm disable $service >/dev/null";
+   i_run "svcadm disable $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -62,7 +63,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "svcadm refresh $service >/dev/null";
+   i_run "svcadm refresh $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -74,7 +75,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   my ($state) = grep { $_=$1 if /state\s+([a-z]+)/ } run "svcs -l $service";
+   my ($state) = grep { $_=$1 if /state\s+([a-z]+)/ } i_run "svcs -l $service";
 
    if($state eq "online") {
       return 1;
@@ -97,7 +98,7 @@ sub ensure {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "svcadm $action $service >/dev/null";
+   i_run "svcadm $action $service >/dev/null";
    if($? == 0) { return 1; }
 }
 

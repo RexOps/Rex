@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::SunOS;
 
@@ -30,7 +31,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("pkg info $pkg");
+   i_run("pkg info $pkg");
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");
@@ -58,7 +59,7 @@ sub update {
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Installing $pkg");
-   my $f = run "pkg install -q --accept $pkg";
+   my $f = i_run "pkg install -q --accept $pkg";
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -76,7 +77,7 @@ sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("pkg uninstall -r -q $pkg");
+   my $f = i_run("pkg uninstall -r -q $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -93,7 +94,7 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   my @lines = run "pkg info -l";
+   my @lines = i_run "pkg info -l";
 
    my @pkg;
 
@@ -124,7 +125,7 @@ sub get_installed {
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "pkg refresh";
+   i_run "pkg refresh";
    if($? != 0) {
       die("Error updating package database");
    }

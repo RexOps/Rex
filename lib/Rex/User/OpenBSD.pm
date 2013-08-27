@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::User::NetBSD;
 use Rex::Interface::File;
@@ -100,7 +101,7 @@ sub create_user {
    $fh->write("$cmd $user\nexit \$?\n");
    $fh->close;
 
-   run "/bin/sh $rnd_file";
+   i_run "/bin/sh $rnd_file";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
    }
@@ -119,7 +120,7 @@ sub create_user {
       $fh->write("usermod -p \$(encrypt -b 6 '" . $data->{password} . "') $user\nexit \$?\n");
       $fh->close;
 
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
@@ -135,7 +136,7 @@ sub create_user {
       $fh->write("usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
       $fh->close;
 
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }

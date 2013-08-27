@@ -13,7 +13,7 @@ use Rex::Logger;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Commands::Fs;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::File::Parser::Data;
 use Rex::Template;
@@ -35,11 +35,11 @@ sub execute {
 
    _set_defaults($opts);
 
-   run "VBoxManage createvm --name \"" . $name . "\" --ostype \"" . $opts->{type} . "\" --register";
+   i_run "VBoxManage createvm --name \"" . $name . "\" --ostype \"" . $opts->{type} . "\" --register";
 
    ### add controller
-   run "VBoxManage storagectl \"$name\" --name \"SATA Controller\" --add sata --controller IntelAhci";
-   run "VBoxManage storagectl \"$name\" --name \"IDE Controller\" --add ide --controller PIIX4";
+   i_run "VBoxManage storagectl \"$name\" --name \"SATA Controller\" --add sata --controller IntelAhci";
+   i_run "VBoxManage storagectl \"$name\" --name \"IDE Controller\" --add ide --controller PIIX4";
 
    ### create hds
    my $hdd_ports = {
@@ -57,15 +57,15 @@ sub execute {
          if($hd->{device} eq "disk") {
 
             if(! -f $filename) {
-               run "VBoxManage createhd --filename \"$filename\" --size $size --format $format 2>&1";
+               i_run "VBoxManage createhd --filename \"$filename\" --size $size --format $format 2>&1";
             }
 
-            run "VBoxManage storageattach \"$name\" --storagectl \"SATA Controller\" --port " . $hdd_ports->{sata} . " --device 0 --type hdd --medium \"$filename\"";
+            i_run "VBoxManage storageattach \"$name\" --storagectl \"SATA Controller\" --port " . $hdd_ports->{sata} . " --device 0 --type hdd --medium \"$filename\"";
             $hdd_ports->{sata}++;
          }
 
          if($hd->{device} eq "cdrom") {
-            run "VBoxManage storageattach \"$name\" --storagectl \"IDE Controller\" --port " . $hdd_ports->{ide} . " --device 0 --type dvddrive --medium \"$filename\"";
+            i_run "VBoxManage storageattach \"$name\" --storagectl \"IDE Controller\" --port " . $hdd_ports->{ide} . " --device 0 --type dvddrive --medium \"$filename\"";
             $hdd_ports->{sata}++;
          }
 
@@ -73,13 +73,13 @@ sub execute {
    }
 
    # memory
-   run "VBoxManage modifyvm \"$name\" --memory " . $opts->{memory};
+   i_run "VBoxManage modifyvm \"$name\" --memory " . $opts->{memory};
 
    # cpus
-   run "VBoxManage modifyvm \"$name\" --cpus " . $opts->{cpus};
+   i_run "VBoxManage modifyvm \"$name\" --cpus " . $opts->{cpus};
 
    # boot
-   run "VBoxManage modifyvm \"$name\" --boot1 " . $opts->{boot};
+   i_run "VBoxManage modifyvm \"$name\" --boot1 " . $opts->{boot};
 
    return;
 }

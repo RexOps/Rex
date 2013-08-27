@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
@@ -63,7 +64,7 @@ sub update {
    my $version = ($option->{"version"}?"-".$option->{"version"}:"");
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run(". /etc/profile; /usr/sbin/pkg_add $pkg$version");
+   my $f = i_run(". /etc/profile; /usr/sbin/pkg_add $pkg$version");
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -84,7 +85,7 @@ sub remove {
    my $pkg_version = $pkg_found->{"version"};
 
    Rex::Logger::debug("Removing $pkg-$pkg_version");
-   my $f = run("/usr/sbin/pkg_delete $pkg-$pkg_version");
+   my $f = i_run("/usr/sbin/pkg_delete $pkg-$pkg_version");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg-$pkg_version.", "warn");
@@ -101,7 +102,7 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   my @lines = run "/usr/sbin/pkg_info";
+   my @lines = i_run "/usr/sbin/pkg_info";
 
    my @pkg;
 

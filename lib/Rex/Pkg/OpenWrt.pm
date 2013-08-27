@@ -11,6 +11,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
@@ -60,7 +61,7 @@ sub update {
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("opkg install $pkg");
+   my $f = i_run("opkg install $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -76,7 +77,7 @@ sub update {
 sub update_system {
    my ($self) = @_;
    my @pkgs;
-   my @lines = run("opkg list-upgradable");
+   my @lines = i_run("opkg list-upgradable");
 
    for my $line (@lines) {
       if($line =~ m/^(.*) - .* - .*$/) { push(@pkgs, $1); }
@@ -84,14 +85,14 @@ sub update_system {
 
    my $packages_to_upgrade = join(" ", @pkgs);
 
-   run("opkg upgrade " . $packages_to_upgrade);
+   i_run("opkg upgrade " . $packages_to_upgrade);
 }
 
 sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("opkg remove $pkg");
+   my $f = i_run("opkg remove $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -112,7 +113,7 @@ sub get_installed {
        $opkg_cmd .= ' | grep "^' . $pkg . ' "';
    }
 
-   my @lines = run $opkg_cmd;
+   my @lines = i_run $opkg_cmd;
 
    for my $line (@lines) {
       if($line =~ m/^(.*) - (.*)$/) {
@@ -129,7 +130,7 @@ sub get_installed {
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "opkg update";
+   i_run "opkg update";
    if($? != 0) {
       die("Error updating package database");
    }

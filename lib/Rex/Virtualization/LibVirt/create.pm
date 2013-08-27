@@ -14,6 +14,7 @@ use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::File::Parser::Data;
 use Rex::Template;
@@ -75,7 +76,7 @@ sub execute {
          my $size = $_->{'size'};
          if(!is_file($_->{"file"})) {
             Rex::Logger::debug("creating storage disk: \"$_->{file}\"");            
-            run "$QEMU_IMG create -f raw $_->{'file'} $size";
+            i_run "$QEMU_IMG create -f raw $_->{'file'} $size";
             if($? != 0) {
                die("Error creating storage disk: $_->{'file'}");
             }
@@ -86,7 +87,7 @@ sub execute {
       } elsif($_->{'template'} && $_->{'type'} eq "file") {
           Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
           Rex::Logger::info("Please wait ...");
-          run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
+          i_run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
           if($? != 0) {
              die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
              Template doesn't exist or the qemu-img binary is missing")
@@ -103,7 +104,7 @@ sub execute {
    file "$file_name",
       content => $parsed_template;
 
-   run "virsh define $file_name";
+   i_run "virsh define $file_name";
    unlink($file_name);
    if($? != 0) {
      die("Error defining vm $opts->{name}");

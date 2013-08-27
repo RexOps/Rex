@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use Data::Dumper;
 use Rex::Virtualization::LibVirt::dumpxml;
@@ -56,7 +57,7 @@ __END__
 return;
    Rex::Logger::debug("Getting interface list of domain: $vmname");
 
-   my @iflist = run "virsh domiflist $vmname";
+   my @iflist = i_run "virsh domiflist $vmname";
 
    if($? != 0) {
       die("Error running virsh domiflist $vmname");

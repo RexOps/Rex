@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Logger;
 use Rex::Commands::Fs;
 
@@ -27,7 +28,7 @@ sub start {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl start $service >/dev/null";
+   i_run "systemctl start $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -40,7 +41,7 @@ sub restart {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl restart $service >/dev/null";
+   i_run "systemctl restart $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -53,7 +54,7 @@ sub stop {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl stop $service >/dev/null";
+   i_run "systemctl stop $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -66,7 +67,7 @@ sub reload {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl reload $service >/dev/null";
+   i_run "systemctl reload $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -79,7 +80,7 @@ sub status {
    my($self, $service) = @_;
    $service = _prepare_service_name($service);
 
-   run "systemctl status $service >/dev/null";
+   i_run "systemctl status $service >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -94,11 +95,11 @@ sub ensure {
 
    if($what =~  /^stop/) {
       $self->stop($service);
-      run "systemctl disable $service";
+      i_run "systemctl disable $service";
    }
    elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
-      run "systemctl enable $service";
+      i_run "systemctl enable $service";
    }
 }
 
@@ -117,7 +118,7 @@ sub _prepare_service_name {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "systemctl $action $service >/dev/null";
+   i_run "systemctl $action $service >/dev/null";
    if($? == 0) { return 1; }
 }
 

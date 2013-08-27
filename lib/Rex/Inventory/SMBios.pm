@@ -13,6 +13,7 @@ use warnings;
 use Data::Dumper;
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use Rex::Inventory::SMBios::BaseBoard;
 use Rex::Inventory::SMBios::Bios;
@@ -112,7 +113,7 @@ sub get_memory_arrays {
 sub _read_smbios {
    my ($self) = @_;
 
-   my @data = run("smbios");
+   my @data = i_run("smbios");
 
    my ($current_section, %section, $key, $val, %cur_data);
    for my $line (@data) {

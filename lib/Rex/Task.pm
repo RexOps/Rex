@@ -39,6 +39,7 @@ use Rex::Group::Entry::Server;
 use Rex::Profiler;
 use Rex::Hardware;
 use Rex::Interface::Cache;
+use Rex::Report;
 
 require Rex::Commands;
 
@@ -571,7 +572,10 @@ sub connect {
          cache => Rex::Interface::Cache->create(),
          task  => $self,
          profiler => $profiler,
+         reporter => Rex::Report->create(Rex::Config->get_report_type),
    });
+
+   Rex::get_current_connection()->{reporter}->register_reporting_hooks;
 
    $self->run_hook(\$server, "around");
 
@@ -654,12 +658,8 @@ sub run {
       $self->run_hook(\$server, "before");
       $self->connect($server);
 
-      my $reporter;
+      my $reporter = Rex::get_current_connection()->{reporter};
       my $start_time = time;
-      if(Rex::Config->get_report_type) {
-         $reporter = Rex::Report->create(Rex::Config->get_report_type);
-      }
-
 
       if(Rex::Args->is_opt("c")) {
          # get and cache all os info

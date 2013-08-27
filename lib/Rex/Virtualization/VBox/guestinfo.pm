@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Virtualization::VBox::status;
 
 sub execute {
@@ -64,7 +64,7 @@ sub _get_property {
    my ($got_value) = (0);
 
    while($got_value != 1) {
-      my @a_tmp = run "VBoxManage guestproperty get \"$vmname\" \"$prop\"";
+      my @a_tmp = i_run "VBoxManage guestproperty get \"$vmname\" \"$prop\"";
 
       if($a_tmp[0] =~ m/No value set/) {
          sleep 1;

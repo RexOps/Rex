@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Hardware::Host;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Sysctl;
 
 require Rex::Hardware;
@@ -51,14 +52,14 @@ sub get {
       };
    }
    elsif($os eq "SunOS") {
-      my @data = run "echo ::memstat | mdb -k";
+      my @data = i_run "echo ::memstat | mdb -k";
 
       my ($free_cache) = grep { $_=$1 if /^Free \(cache[^\d]+\d+\s+(\d+)/ } @data;
       my ($free_list)  = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
       my ($page_cache) = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
 
       my $free = $free_cache + $free_list;
-      #my ($total, $total_e) = grep { $_=$1 if /^Memory Size: (\d+) ([a-z])/i } run "prtconf";
+      #my ($total, $total_e) = grep { $_=$1 if /^Memory Size: (\d+) ([a-z])/i } i_run "prtconf";
       my ($total) = grep { $_=$1 if /^Total\s+\d+\s+(\d+)/ } @data;
 
       &$convert($free, "M");
@@ -73,7 +74,7 @@ sub get {
 
    }
    elsif($os eq "OpenBSD") {
-      my $mem_str  = run "top -d1 | grep Memory:";
+      my $mem_str  = i_run "top -d1 | grep Memory:";
       my $total_mem = sysctl("hw.physmem");
 
       my ($phys_mem, $p_m_ent, $virt_mem, $v_m_ent, $free, $f_ent) =
@@ -91,7 +92,7 @@ sub get {
 
    }
    elsif($os eq "NetBSD") {
-      my $mem_str  = run "top -d1 | grep Memory:";
+      my $mem_str  = i_run "top -d1 | grep Memory:";
       my $total_mem = sysctl("hw.physmem");
 
       my ($active, $a_ent, $wired, $w_ent, $exec, $e_ent, $file, $f_ent, $free, $fr_ent) = 
@@ -114,7 +115,7 @@ sub get {
 
    }
    elsif($os =~ /FreeBSD/) {
-      my $mem_str  = run "top -d1 | grep Mem:";
+      my $mem_str  = i_run "top -d1 | grep Mem:";
       my $total_mem = sysctl("hw.physmem");
 
       my ($active, $a_ent, $inactive, $i_ent, $wired, $w_ent, $cache, $c_ent, $buf, $b_ent, $free, $f_ent) = 
@@ -141,7 +142,7 @@ sub get {
       };
    }
    elsif($os eq "OpenWrt") {
-      my @data = run "cat /proc/meminfo";
+      my @data = i_run "cat /proc/meminfo";
 
       my ($total)    = grep { $_=$1 if /^MemTotal:\s+(\d+)/ } @data;
       my ($free)     = grep { $_=$1 if /^MemFree:\s+(\d+)/ } @data;
@@ -171,7 +172,7 @@ sub get {
          };
       }
 
-      my $free_str = [ grep { /^Mem:/ } run("LC_ALL=C free -m") ]->[0];
+      my $free_str = [ grep { /^Mem:/ } i_run("LC_ALL=C free -m") ]->[0];
 
       if(! $free_str) {
          $data = {

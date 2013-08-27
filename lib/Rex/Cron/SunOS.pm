@@ -13,6 +13,7 @@ use Rex::Cron::Base;
 use base qw(Rex::Cron::Base);
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 
 sub new {
@@ -27,13 +28,13 @@ sub new {
 
 sub read_user_cron {
    my ($self, $user) = @_;
-   my @lines = run "crontab -l $user";
+   my @lines = i_run "crontab -l $user";
    $self->parse_cron(@lines);
 }
 
 sub activate_user_cron {
    my ($self, $file, $user) = @_;
-   run "crontab $file";
+   i_run "crontab $file";
    unlink $file;
 }
 

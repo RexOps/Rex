@@ -8,6 +8,7 @@ package Rex::Inventory::Hal;
 
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Rex::Logger;
 
@@ -123,7 +124,7 @@ sub _read_lshal {
       die;
    }
 
-   my @lines = run "lshal";
+   my @lines = i_run "lshal";
    my %devices;
    my %tmp_devices;
 

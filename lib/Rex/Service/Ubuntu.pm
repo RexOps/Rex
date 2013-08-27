@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Logger;
 
 sub new {
@@ -25,7 +26,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "service $service start";
+   i_run "service $service start";
 
    if($? == 0) {
       return 1;
@@ -37,7 +38,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "service $service restart";
+   i_run "service $service restart";
 
    if($? == 0) {
       return 1;
@@ -49,7 +50,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "service $service stop";
+   i_run "service $service stop";
 
    if($? == 0) {
       return 1;
@@ -61,7 +62,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "service $service reload";
+   i_run "service $service reload";
 
    if($? == 0) {
       return 1;
@@ -73,7 +74,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   my @ret = run "service $service status";
+   my @ret = i_run "service $service status";
 
    # bad... really bad ...
    if($? != 0) {
@@ -92,18 +93,18 @@ sub ensure {
 
    if($what =~  /^stop/) {
       $self->stop($service);
-      run "update-rc.d -f $service remove";
+      i_run "update-rc.d -f $service remove";
    }
    elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
-      run "update-rc.d $service defaults";
+      i_run "update-rc.d $service defaults";
    }
 }
 
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "service $service $action";
+   i_run "service $service $action";
    if($? == 0) { return 1; }
 }
 

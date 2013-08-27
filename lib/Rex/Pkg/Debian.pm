@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
 
@@ -63,7 +64,7 @@ sub update {
    my $version = $option->{'version'} || '';
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install $pkg" . ($version?"=$version":""));
+   my $f = i_run("DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install $pkg" . ($version?"=$version":""));
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -78,17 +79,17 @@ sub update {
 
 sub update_system {
    my ($self) = @_;
-   run("apt-get -y upgrade");
+   i_run("apt-get -y upgrade");
 }
 
 sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("apt-get -y remove $pkg");
+   my $f = i_run("apt-get -y remove $pkg");
 
    Rex::Logger::debug("Purging $pkg");
-   run("dpkg --purge $pkg");
+   i_run("dpkg --purge $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -110,7 +111,7 @@ sub get_installed {
        $dpkg_cmd .= " ". $pkg;
    }
    
-   my @lines = run $dpkg_cmd;
+   my @lines = i_run $dpkg_cmd;
 
    for my $line (@lines) {
       if($line =~ m/^install ok installed ([^\|]+)\|(.*)$/) {
@@ -127,7 +128,7 @@ sub get_installed {
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "apt-get -y update";
+   i_run "apt-get -y update";
    if($? != 0) {
       die("Error updating package database");
    }
@@ -152,11 +153,11 @@ sub add_repository {
    $fh->close;
 
    if(exists $data{"key_url"}) {
-      run "wget -O - " . $data{"key_url"} . " | apt-key add -";
+      i_run "wget -O - " . $data{"key_url"} . " | apt-key add -";
    }
 
    if(exists $data{"key_id"} && $data{"key_server"}) {
-      run "apt-key adv --keyserver " . $data{"key_server"} . " --recv-keys " . $data{"key_id"};
+      i_run "apt-key adv --keyserver " . $data{"key_server"} . " --recv-keys " . $data{"key_id"};
    }
 }
 

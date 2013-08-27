@@ -10,12 +10,12 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Helper::Array;
 
 sub get_network_devices {
 
-   my @device_list = grep { $_=$1 if /^([a-z0-9]+)\:/i } run "ifconfig -a";
+   my @device_list = grep { $_=$1 if /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
 
    @device_list = array_uniq(@device_list);
    return \@device_list;
@@ -30,7 +30,7 @@ sub get_network_configuration {
 
    for my $dev (@{$devices}) {
 
-      my $ifconfig = run("ifconfig $dev");
+      my $ifconfig = i_run("ifconfig $dev");
 
       $device_info->{$dev} = {
          ip          => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
@@ -47,7 +47,7 @@ sub get_network_configuration {
 
 sub route {
 
-   my @route = run "netstat -nr";  
+   my @route = i_run "netstat -nr";  
    my @ret;
    if($? != 0) {
       die("Error running netstat");
@@ -112,13 +112,13 @@ sub default_gateway {
 
    if($new_default_gw) {
       if(default_gateway()) {
-         run "route del default";
+         i_run "route del default";
          if($? != 0) {
             die("Error running route del default");
          }
       }
 
-      run "route add default $new_default_gw";
+      i_run "route add default $new_default_gw";
       if($? != 0) {
          die("Error route add default");
       }
@@ -135,7 +135,7 @@ sub default_gateway {
 sub netstat {
 
    my @ret;
-   my @netstat = run "netstat -na";
+   my @netstat = i_run "netstat -na";
 
    if($? != 0) {
       die("Error running netstat");

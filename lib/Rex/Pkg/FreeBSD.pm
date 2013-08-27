@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
@@ -30,7 +31,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("pkg_info $pkg-\\*");
+   i_run("pkg_info $pkg-\\*");
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");
@@ -62,7 +63,7 @@ sub update {
 
    Rex::Logger::debug("Version option not supported.");
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("pkg_add -r $pkg");
+   my $f = i_run("pkg_add -r $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -83,7 +84,7 @@ sub remove {
    my $pkg_version = $pkg_found->{"version"};
 
    Rex::Logger::debug("Removing $pkg-$pkg_version");
-   my $f = run("pkg_delete $pkg-$pkg_version");
+   my $f = i_run("pkg_delete $pkg-$pkg_version");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg-$pkg_version.", "warn");
@@ -100,7 +101,7 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   my @lines = run "pkg_info";
+   my @lines = i_run "pkg_info";
 
    my @pkg;
 

@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::User::Linux;
 use Rex::Interface::File;
@@ -99,7 +100,7 @@ sub create_user {
    $fh->write("$cmd $user\nexit \$?\n");
    $fh->close;
 
-   run "/bin/sh $rnd_file";
+   i_run "/bin/sh $rnd_file";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
    }
@@ -119,7 +120,7 @@ sub create_user {
       $fh->write("usermod -p \$(pwhash '" . $data->{password} . "') $user\nexit \$?\n");
       $fh->close;
 
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
@@ -136,7 +137,7 @@ sub create_user {
       $fh->write("usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
       $fh->close;
 
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
@@ -161,7 +162,7 @@ sub rm_user {
       $cmd .= " -r";
    }
 
-   run $cmd . " " . $user;
+   i_run $cmd . " " . $user;
 
    if(exists $data->{delete_home} && is_dir($user_info{home})) {
       Rex::Logger::debug("userdel doesn't deleted home. removing it now by hand...");

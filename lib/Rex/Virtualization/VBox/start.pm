@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Commands;
 use Rex::Helper::Path;
@@ -82,10 +82,10 @@ exit;
 
 EOF
 
-      run "perl $filename";
+      i_run "perl $filename";
    }
    else {
-      run "VBoxManage startvm \"$dom\"";
+      i_run "VBoxManage startvm \"$dom\"";
    }
 
    if($? != 0) {

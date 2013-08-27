@@ -12,6 +12,7 @@ use warnings;
 use Rex::Logger;
 require Rex::Commands;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
@@ -122,7 +123,7 @@ sub create_user {
       $fh->write("$cmd $user\nexit \$?\n");
       $fh->close;
 
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? == 0) {
          Rex::Logger::debug("User $user created/updated.");
       }
@@ -142,7 +143,7 @@ sub create_user {
       $fh->close;
 
       Rex::Logger::debug("Changing password of $user.");
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
@@ -158,7 +159,7 @@ sub create_user {
       $fh->close;
 
       Rex::Logger::debug("Setting encrypted password of $user");
-      run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file";
       if($? != 0) {
          die("Error setting password for $user");
       }
@@ -185,7 +186,7 @@ sub rm_user {
       $cmd .= " --force";
    }
 
-   run $cmd . " " . $user;
+   i_run $cmd . " " . $user;
    if($? != 0) {
       die("Error deleting user $user");
    }
@@ -209,7 +210,7 @@ sub user_groups {
    $fh->write(q|use Data::Dumper; $exe = "/usr/bin/groups"; if(! -x $exe) { $exe = "/bin/groups"; } print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx{$exe $ARGV[0]} ];|);
    $fh->close;
 
-   my $data_str = run "perl $rnd_file $user";
+   my $data_str = i_run "perl $rnd_file $user";
    if($? != 0) {
       die("Error getting  user list");
    }
@@ -243,7 +244,7 @@ sub user_list {
    $fh->write(q|use Data::Dumper; print Dumper [ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx{/usr/bin/getent passwd} ];|);
    $fh->close;
 
-   my $data_str = run "perl $rnd_file";
+   my $data_str = i_run "perl $rnd_file";
    if($? != 0) {
       die("Error getting  user list");
    }
@@ -270,7 +271,7 @@ sub get_user {
    $fh->write(q|use Data::Dumper; print Dumper [ getpwnam($ARGV[0]) ];|);
    $fh->close;
 
-   my $data_str = run "perl $rnd_file $user";
+   my $data_str = i_run "perl $rnd_file $user";
    if($? != 0) {
       die("Error getting  user information for $user");
    }
@@ -321,7 +322,7 @@ sub create_group {
       $gid = undef;
    }
 
-   run $cmd . " " . $group;
+   i_run $cmd . " " . $group;
    if($? != 0) {
       die("Error creating/modifying group $group");
    }
@@ -344,7 +345,7 @@ sub get_group {
    my ($self, $group) = @_;
 
    Rex::Logger::debug("Getting information for $group");
-   my @data = split(" ", "" . run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'"), 4);
+   my @data = split(" ", "" . i_run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'"), 4);
    if($? != 0) {
       die("Error getting group information");
    }
@@ -360,7 +361,7 @@ sub get_group {
 sub rm_group {
    my ($self, $group) = @_;
 
-   run "/usr/sbin/groupdel $group";
+   i_run "/usr/sbin/groupdel $group";
    if($? != 0) {
       die("Error deleting group $group");
    }

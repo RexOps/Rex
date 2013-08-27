@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Logger;
 
@@ -26,7 +27,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service onestart >/dev/null";
+   i_run "/etc/rc.d/$service onestart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -38,7 +39,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service onerestart >/dev/null";
+   i_run "/etc/rc.d/$service onerestart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -50,7 +51,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service onestop >/dev/null";
+   i_run "/etc/rc.d/$service onestop >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -62,7 +63,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service onereload >/dev/null";
+   i_run "/etc/rc.d/$service onereload >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -74,7 +75,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "/etc/rc.d/$service onestatus >/dev/null";
+   i_run "/etc/rc.d/$service onestatus >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -99,7 +100,7 @@ sub ensure {
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "/etc/rc.d/$service $action >/dev/null";
+   i_run "/etc/rc.d/$service $action >/dev/null";
    if($? == 0) { return 1; }
 }
 

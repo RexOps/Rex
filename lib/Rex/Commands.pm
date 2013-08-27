@@ -1157,11 +1157,11 @@ sub report {
    Rex::Config->set_report_type($type);
 
    if($str eq "-on" || $str eq "on") {
-      Rex::Report->create(Rex::Config->get_report_type)->register_reporting_hooks();
+      # just a dummy
       return;
    }
 
-   Rex::Report->create(Rex::Config->get_report_type)->report($str);
+   return Rex::get_current_connection()->{reporter};
 }
 
 =item source_global_profile(0|1)

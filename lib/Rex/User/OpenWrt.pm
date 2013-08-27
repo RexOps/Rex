@@ -12,6 +12,7 @@ use warnings;
 use Rex::Logger;
 require Rex::Commands;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
@@ -35,7 +36,7 @@ sub get_user {
    my ($self, $user) = @_;
 
    Rex::Logger::debug("Getting information for $user");
-   my @o_data = run "perl -e 'print join(\";\", getpwnam(\"$user\"))'";
+   my @o_data = i_run "perl -e 'print join(\";\", getpwnam(\"$user\"))'";
    chomp @o_data;
    my @data = split(/;/, $o_data[0]);
 
@@ -62,7 +63,7 @@ sub rm_user {
       rmdir $user_info->{home};
    }
 
-   run "sed -i '/^$user:.*/d' /etc/passwd /etc/shadow";
+   i_run "sed -i '/^$user:.*/d' /etc/passwd /etc/shadow";
 }
 
 sub user_groups {
@@ -70,7 +71,7 @@ sub user_groups {
 
    Rex::Logger::debug("Getting group membership of $user");
 
-   my $data_str = run "/usr/bin/id -Gn $user";
+   my $data_str = i_run "/usr/bin/id -Gn $user";
    if($? != 0) {
       die("Error getting  user list");
    }
@@ -87,7 +88,7 @@ sub user_groups {
 
 sub rm_group {
    my ($self, $group) = @_;
-   run "sed -i '/^$group:.*/d' /etc/group";
+   i_run "sed -i '/^$group:.*/d' /etc/group";
 }
 
 

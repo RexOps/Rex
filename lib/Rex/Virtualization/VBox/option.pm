@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 my $FUNC_MAP = {
    max_memory  => "memory",
@@ -39,7 +39,7 @@ sub execute {
          $func = $FUNC_MAP->{$opt};
       }
 
-      run "VBoxManage modifyvm \"$dom\" --$func \"$val\"";
+      i_run "VBoxManage modifyvm \"$dom\" --$func \"$val\"";
       if($? != 0) {
          Rex::Logger::info("Error setting $opt to $val on $dom ($@)", "warn");
       }

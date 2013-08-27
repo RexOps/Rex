@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
+use Rex::Helper::Run;
 use Rex::Commands::Run;
 use Rex::Helper::Array;
 use Data::Dumper;
@@ -20,9 +21,9 @@ sub get_network_devices {
 
    my $command = can_run('ip') ? 'ip link show' : 'ifconfig';
 
-   my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } run("cat /proc/net/dev");
+   my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } i_run("cat /proc/net/dev");
    for my $dev (@proc_net_dev) {
-      my $output = run("$command $dev");
+      my $output = i_run("$command $dev");
       if (($output =~ m%link/(ether|ppp) %) or
           ($output =~ m/(Link encap:)?(?:Ethernet|Point-to-Point Protocol)/m)) {
          push(@device_list, $dev);
@@ -44,7 +45,7 @@ sub get_network_configuration {
 
    for my $dev (@{$devices}) {
 
-      my $output = run("LC_ALL=C $command $dev");
+      my $output = i_run("LC_ALL=C $command $dev");
 
       $device_info->{$dev} =
          ($command eq 'ip addr show') ? _parse_ip($output) : _parse_ifconfig($output);
@@ -89,7 +90,7 @@ sub route {
 
    my @ret = ();
 
-   my @route = run "netstat -nr";  
+   my @route = i_run "netstat -nr";  
    if($? != 0) {
       die("Error running netstat");
    }
@@ -119,13 +120,13 @@ sub default_gateway {
 
    if($new_default_gw) {
       if(default_gateway()) {
-         run "/sbin/route del default";
+         i_run "/sbin/route del default";
          if($? != 0) {
             die("Error running route del default");
          }
       }
 
-      run "/sbin/route add default gw $new_default_gw";
+      i_run "/sbin/route add default gw $new_default_gw";
       if($? != 0) {
          die("Error route add default");
       }
@@ -142,7 +143,7 @@ sub default_gateway {
 sub netstat {
 
    my @ret;
-   my @netstat = run "netstat -nap";
+   my @netstat = i_run "netstat -nap";
    if($? != 0) {
       die("Error running netstat");
    }

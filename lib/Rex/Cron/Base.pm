@@ -14,6 +14,7 @@ use Rex::Commands;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Data::Dumper;
 use Rex::Helper::Path;
 
@@ -148,13 +149,13 @@ sub write_cron {
 
 sub activate_user_cron {
    my ($self, $file, $user) = @_;
-   run "crontab -u $user $file";
+   i_run "crontab -u $user $file";
    unlink $file;
 }
 
 sub read_user_cron {
    my ($self, $user) = @_;
-   my @lines = run "crontab -u $user -l";
+   my @lines = i_run "crontab -u $user -l";
    $self->parse_cron(@lines);
 }
 

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use Data::Dumper;
 
@@ -19,12 +19,12 @@ sub execute {
    my @domains;
 
    if($arg1 eq "all") {
-      @domains = run "VBoxManage list vms";
+      @domains = i_run "VBoxManage list vms";
       if($? != 0) {
          die("Error running VBoxManage list vms");
       }
    } elsif($arg1 eq "running") {
-      @domains = run "VBoxManage list runningvms";
+      @domains = i_run "VBoxManage list runningvms";
       if($? != 0) {
          die("Error running VBoxManage runningvms");
       }
@@ -36,7 +36,7 @@ sub execute {
    for my $line (@domains) {
       my ($name, $id) = $line =~ m:^"([^"]+)"\s*\{([^\}]+)\}$:;
 
-      my @status = grep { $_=$1 if /^VMState="([^"]+)"$/ } run "VBoxManage showvminfo \"{$id}\" --machinereadable";
+      my @status = grep { $_=$1 if /^VMState="([^"]+)"$/ } i_run "VBoxManage showvminfo \"{$id}\" --machinereadable";
       my $status;
 
       push( @ret, {

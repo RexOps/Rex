@@ -10,14 +10,14 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use Data::Dumper;
 
 sub execute {
    my $class = shift;
 
-   my $result = run "VBoxManage list bridgedifs";
+   my $result = i_run "VBoxManage list bridgedifs";
    if($? != 0) {
       die("Error running VBoxManage list bridgedifs");
    }

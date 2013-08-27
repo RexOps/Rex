@@ -7,6 +7,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Logger;
 
 sub new {
@@ -22,7 +23,7 @@ sub new {
 sub start {
    my($self, $service) = @_;
 
-   run "/sbin/service $service start >/dev/null";
+   i_run "/sbin/service $service start >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -34,7 +35,7 @@ sub start {
 sub restart {
    my($self, $service) = @_;
 
-   run "/sbin/service $service restart >/dev/null";
+   i_run "/sbin/service $service restart >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -46,7 +47,7 @@ sub restart {
 sub stop {
    my($self, $service) = @_;
 
-   run "/sbin/service $service stop >/dev/null";
+   i_run "/sbin/service $service stop >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -58,7 +59,7 @@ sub stop {
 sub reload {
    my($self, $service) = @_;
 
-   run "/sbin/service $service reload >/dev/null";
+   i_run "/sbin/service $service reload >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -70,7 +71,7 @@ sub reload {
 sub status {
    my($self, $service) = @_;
 
-   run "/sbin/service $service status >/dev/null";
+   i_run "/sbin/service $service status >/dev/null";
 
    if($? == 0) {
       return 1;
@@ -84,18 +85,18 @@ sub ensure {
 
    if($what =~  /^stop/) {
       $self->stop($service);
-      run "/sbin/chkconfig $service off";
+      i_run "/sbin/chkconfig $service off";
    }
    elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
-      run "/sbin/chkconfig $service on";
+      i_run "/sbin/chkconfig $service on";
    }
 }
 
 sub action {
    my ($self, $service, $action) = @_;
 
-   run "/sbin/service $service $action >/dev/null";
+   i_run "/sbin/service $service $action >/dev/null";
    if($? == 0) { return 1; }
 }
 

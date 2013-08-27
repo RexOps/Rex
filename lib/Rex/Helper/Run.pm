@@ -13,14 +13,13 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-use Rex::Commands::Run;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Helper::Path;
 require Rex::Commands;
 require Rex::Config;
 
-@EXPORT = qw(upload_and_run);
+@EXPORT = qw(upload_and_run i_run);
 
 sub upload_and_run {
    my ($template, %option) = @_;
@@ -46,7 +45,41 @@ sub upload_and_run {
       $command .= join(" ", @{ $option{args} });
    }
 
-   return run "$command 2>&1";
+   return i_run("$command 2>&1");
+}
+
+# internal run command, doesn't get reported
+sub i_run {
+   my $cmd = shift;
+   my ($code, $option);
+   if(ref $_[0] eq "CODE") {
+      $code = shift;
+   }
+   elsif(scalar @_ > 0) {
+      $option = { @_ };
+   }
+
+   my $path = join(":", Rex::Config->get_path());
+
+   my $exec = Rex::Interface::Exec->create;
+   my ($out, $err) = $exec->exec($cmd, $path, $option);
+   chomp $out if $out;
+   chomp $err if $err;
+
+   $Rex::Commands::Run::LAST_OUTPUT = [$out, $err];
+
+   $out ||= "";
+   $err ||= "";
+
+   if($code) {
+      return &$code($out, $err);
+   }
+
+   if(wantarray) {
+      return split(/\r?\n/, $out);
+   }
+
+   return $out;
 }
 
 1;

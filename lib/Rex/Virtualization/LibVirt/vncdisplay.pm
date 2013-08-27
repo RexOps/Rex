@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use XML::Simple;
 
@@ -27,7 +27,7 @@ sub execute {
 
    my $xml;
 
-   my @vncdisplay = run "virsh vncdisplay $vmname";
+   my @vncdisplay = i_run "virsh vncdisplay $vmname";
   
    if($? != 0) {
       die("Error running virsh vncdisplay $vmname");

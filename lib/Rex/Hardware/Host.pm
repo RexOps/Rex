@@ -11,6 +11,7 @@ use warnings;
 
 use Rex;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
@@ -36,31 +37,31 @@ sub get {
 
       my ($domain, $hostname);
       if($os eq "Windows") {
-         my @env = run("env");
+         my @env = i_run("env");
          ($hostname) = grep { $_=$1 if /^COMPUTERNAME=(.*)$/ } split(/\r?\n/, @env);
          ($domain)   = grep { $_=$1 if /^USERDOMAIN=(.*)$/ } split(/\r?\n/, @env);
       }
       elsif($os eq "NetBSD" || $os eq "OpenBSD") {
-         my @out = run("LC_ALL=C hostname");
+         my @out = i_run("LC_ALL=C hostname");
          ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } @out;
          ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } @out;
       }
       elsif($os eq "SunOS") {
-         ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } run("LC_ALL=C hostname");
-         ($domain) = run("LC_ALL=C domainname");
+         ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } i_run("LC_ALL=C hostname");
+         ($domain) = i_run("LC_ALL=C domainname");
       }
       elsif($os eq "OpenWrt") {
-         ($hostname) = run("uname -n");
-         ($domain) = run("cat /proc/sys/kernel/domainname");
+         ($hostname) = i_run("uname -n");
+         ($domain) = i_run("cat /proc/sys/kernel/domainname");
       }
       else {
-         my @out = run("LC_ALL=C hostname -f 2>/dev/null");
+         my @out = i_run("LC_ALL=C hostname -f 2>/dev/null");
          ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } @out;
          ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } @out;
 
          if(! $hostname || $hostname eq "") {
             Rex::Logger::debug("Error getting hostname and domainname. There is something wrong with your /etc/hosts file.");
-            $hostname = run("LC_ALL=C hostname");
+            $hostname = i_run("LC_ALL=C hostname");
          }
       }
 
@@ -73,7 +74,7 @@ sub get {
          operating_system => $os || "",
          operatingsystemrelease => get_operating_system_version(),
          operating_system_release => get_operating_system_version(),
-         kernelname => [ run "uname -s" ]->[0],
+         kernelname => [ i_run "uname -s" ]->[0],
 
       };
 
@@ -104,7 +105,7 @@ sub get_operating_system {
    my $is_lsb = can_run("lsb_release");
 
    if($is_lsb) {
-      if(my $ret = run "lsb_release -s -i") {
+      if(my $ret = i_run "lsb_release -s -i") {
          if($ret eq "SUSE LINUX") {
             $ret = "SuSE";
          }
@@ -158,7 +159,7 @@ sub get_operating_system {
       return "OpenWrt";
    }
 
-   my $os_string = run("uname -s");
+   my $os_string = i_run("uname -s");
    return $os_string;   # return the plain os
 
 
@@ -180,8 +181,8 @@ sub get_operating_system_version {
 
    # use lsb_release if available
    if($is_lsb) {
-      if(my $ret = run "lsb_release -r -s") {
-         my $os_check = run "lsb_release -d";
+      if(my $ret = i_run "lsb_release -r -s") {
+         my $os_check = i_run "lsb_release -d";
          unless($os_check =~ m/SUSE\sLinux\sEnterprise\sServer/) {
             return $ret;
          }
@@ -200,7 +201,7 @@ sub get_operating_system_version {
 
    }
    elsif($op eq "Ubuntu") {
-      my @l = run "lsb_release -r -s";
+      my @l = i_run "lsb_release -r -s";
       return $l[0];
    }
    elsif(lc($op) eq "redhat" 
@@ -274,7 +275,7 @@ sub get_operating_system_version {
 
    }
    elsif($op =~ /BSD/) {
-      my ($version) = grep { $_=$1 if /(\d+\.\d+)/ } run "uname -r";
+      my ($version) = grep { $_=$1 if /(\d+\.\d+)/ } i_run "uname -r";
       return $version;
    }
    elsif($op eq "OpenWrt") {
@@ -287,7 +288,7 @@ sub get_operating_system_version {
       return $content;
    }
 
-   return [ run("uname -r") ]->[0];
+   return [ i_run("uname -r") ]->[0];
 
 }
 

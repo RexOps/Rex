@@ -8,6 +8,7 @@ package Rex::Pkg::Base;
 
 use strict;
 use warnings;
+use Rex::Interface::Exec;
 
 sub new {
    my $that = shift;
@@ -55,5 +56,9 @@ sub rm_repository {
    Rex::Logger::info("Removing repositories not supported on this platform", "warn");
 }
 
-
+sub _exec {
+   my ($self, $cmd) = @_;
+   my $exec = Rex::Interface::Exec->create;
+   $exec->exec($cmd);
+}
 1;

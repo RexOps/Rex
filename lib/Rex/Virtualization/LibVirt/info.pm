@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use XML::Simple;
 
@@ -27,7 +27,7 @@ sub execute {
 
    my $xml;
 
-   my @dominfo = run "virsh dominfo $vmname";
+   my @dominfo = i_run "virsh dominfo $vmname";
   
    if($? != 0) {
       die("Error running virsh dominfo $vmname");

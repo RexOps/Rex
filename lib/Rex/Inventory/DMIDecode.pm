@@ -17,6 +17,7 @@ use Rex::Inventory::DMIDecode::Memory;
 use Rex::Inventory::DMIDecode::MemoryArray;
 use Rex::Inventory::DMIDecode::SystemInformation;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 sub new {
    my $that = shift;
@@ -124,7 +125,7 @@ sub _read_dmidecode {
          return;
       }
 
-      @lines = run $dmidecode;
+      @lines = i_run $dmidecode;
    }
    chomp @lines;
 

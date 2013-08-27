@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
@@ -30,7 +31,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("pkginfo $pkg");
+   i_run("pkginfo $pkg");
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");
@@ -74,7 +75,7 @@ sub update {
    $cmd .= " -d " . $option->{"source"};
    $cmd .= " -n " . $pkg;
 
-   my $f = run($cmd);
+   my $f = i_run($cmd);
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -97,7 +98,7 @@ sub remove {
    my $cmd = "pkgrm -n ";
    $cmd .= " -a " . $option->{"adminfile"} if($option->{"adminfile"});
 
-   my $f = run($cmd . " $pkg");
+   my $f = i_run($cmd . " $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -114,7 +115,7 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   my @lines = run "pkginfo -l";
+   my @lines = i_run "pkginfo -l";
 
    my (@pkg, %current);
 

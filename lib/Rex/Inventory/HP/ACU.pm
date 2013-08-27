@@ -10,11 +10,12 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
     
 sub get {
 
    if(can_run("hpacucli")) {
-      my @lines = run "/usr/sbin/hpacucli controller all show config detail";
+      my @lines = i_run "/usr/sbin/hpacucli controller all show config detail";
       my $ret = parse_config(@lines);
       return $ret;
    }

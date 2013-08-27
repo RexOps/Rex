@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
@@ -61,7 +62,7 @@ sub update {
    }
 
    Rex::Logger::debug("Installing $pkg / $version");
-   my $f = run("emerge $pkg");
+   my $f = i_run("emerge $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -78,7 +79,7 @@ sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("emerge -C $pkg");
+   my $f = i_run("emerge -C $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -104,7 +105,7 @@ sub get_installed {
 
    my @ret;
 
-   for my $line (run("ls -d /var/db/pkg/*/* | cut -d '/' -f6-")) {
+   for my $line (i_run("ls -d /var/db/pkg/*/* | cut -d '/' -f6-")) {
       my $r = qr{$pkgregex};
       my ($name, $version, $suffix, $revision) = ($line =~ $r);
       push(@ret, {
@@ -120,13 +121,13 @@ sub get_installed {
 
 sub update_system {
    my ($self) = @_;
-   run "emerge --update --deep --with-bdeps=y --newuse world";
+   i_run "emerge --update --deep --with-bdeps=y --newuse world";
 }
 
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "emerge --sync";
+   i_run "emerge --sync";
    if($? != 0) {
       die("Error updating package database");
    }
@@ -138,7 +139,7 @@ sub add_repository {
    my $name = $data{"name"};
 
    if(can_run("layman")) {
-      run "layman -a $name";
+      i_run "layman -a $name";
    }
    else {
       Rex::Logger::debug("You have to install layman, git and subversion.");
@@ -150,7 +151,7 @@ sub rm_repository {
    my ($self, $name) = @_;
 
    if(can_run("layman")) {
-      run "layman -d $name";
+      i_run "layman -d $name";
    }
    else {
       Rex::Logger::debug("You have to install layman, git and subversion.");

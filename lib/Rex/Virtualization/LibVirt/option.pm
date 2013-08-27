@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 my $FUNC_MAP = {
    max_memory  => "setmaxmem",
@@ -36,7 +36,7 @@ sub execute {
       }
 
       my $func = $FUNC_MAP->{$opt};
-      run "virsh $func $dom $val";
+      i_run "virsh $func $dom $val";
       if($? != 0) {
          Rex::Logger::info("Error setting $opt to $val on $dom ($@)", "warn");
       }

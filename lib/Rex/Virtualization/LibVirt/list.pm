@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use Data::Dumper;
 
@@ -19,12 +19,12 @@ sub execute {
    my @domains;
 
    if($arg1 eq "all") {
-      @domains = run "virsh list --all";
+      @domains = i_run "virsh list --all";
       if($? != 0) {
          die("Error running virsh list --all");
       }
    } elsif($arg1 eq "running") {
-      @domains = run "virsh list";
+      @domains = i_run "virsh list";
       if($? != 0) {
          die("Error running virsh list");
       }

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 sub execute {
    my ($class, $arg1, %opt) = @_;
@@ -32,7 +32,7 @@ sub execute {
       $add_cmd .= " --memory $opt{memory} ";
    }
 
-   run "VBoxManage import \"" . $opt{file} . "\" --vsys 0 --vmname \"" . $dom . "\" $add_cmd 2>&1";
+   i_run "VBoxManage import \"" . $opt{file} . "\" --vsys 0 --vmname \"" . $dom . "\" $add_cmd 2>&1";
 
    if($? != 0) {
       die("Error importing VM $opt{file}");

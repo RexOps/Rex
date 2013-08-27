@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 sub execute {
    my ($class, $arg1, %opt) = @_;
@@ -26,7 +26,7 @@ sub execute {
       die("VM $dom not found.");
    }
 
-   run "VBoxManage controlvm \"$dom\" acpipowerbutton";
+   i_run "VBoxManage controlvm \"$dom\" acpipowerbutton";
    if($? != 0) {
       die("Error shutdown vm $dom");
    }

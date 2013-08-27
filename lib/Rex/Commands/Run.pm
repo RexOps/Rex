@@ -36,6 +36,7 @@ use Data::Dumper;
 use Rex;
 use Rex::Logger;
 use Rex::Helper::SSH2;
+use Rex::Helper::Run;
 use Rex::Helper::SSH2::Expect;
 use Rex::Config;
 use Rex::Interface::Exec;
@@ -126,7 +127,7 @@ sub can_run {
       return 1;
    }
 
-   my @ret = run "which $cmd";
+   my @ret = i_run "which $cmd";
    if($? != 0) { return 0; }
 
    if( grep { /^no.*in/ } @ret ) {
@@ -207,7 +208,7 @@ sub sudo {
       $ret = &$cmd();
    }
    else {
-      $ret = run($cmd);
+      $ret = i_run($cmd);
    }
 
    Rex::get_current_connection()->{use_sudo} = $old_sudo;

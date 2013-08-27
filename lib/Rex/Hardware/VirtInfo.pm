@@ -5,6 +5,7 @@ use warnings;
 
 use Rex;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
@@ -26,13 +27,13 @@ sub get {
 
       my ($product_name,$bios_vendor,$sys_vendor,$self_status,$cpuinfo,$modules) = ('','','','','','');
 
-      $product_name = run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null";
-      $bios_vendor  = run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null";
-      $sys_vendor   = run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null";
+      $product_name = i_run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null";
+      $bios_vendor  = i_run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null";
+      $sys_vendor   = i_run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null";
 
-      $self_status  = run "cat /proc/self/status 2>/dev/null";
-      $cpuinfo      = run "cat /proc/cpuinfo 2>/dev/null";
-      $modules      = run "cat /proc/modules 2>/dev/null";
+      $self_status  = i_run "cat /proc/self/status 2>/dev/null";
+      $cpuinfo      = i_run "cat /proc/cpuinfo 2>/dev/null";
+      $modules      = i_run "cat /proc/modules 2>/dev/null";
 
       my ($virtualization_type, $virtualization_role) = ('','');
 
@@ -40,7 +41,7 @@ sub get {
          $virtualization_type = "xen";
          $virtualization_role = "guest";
 
-         my $string = run "cat /proc/xen/capabilities 2>/dev/null";
+         my $string = i_run "cat /proc/xen/capabilities 2>/dev/null";
          if ($string =~ /control_d/){
             $virtualization_role = "host";
          }

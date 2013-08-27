@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 require Rex::Hardware;
 
@@ -23,10 +24,10 @@ sub get {
    }
 
    my $data = {
-      architecture => run ("LC_ALL=C uname -m"),
-      kernel       => run ("LC_ALL=C uname -s"),
-      kernelrelease => run ("LC_ALL=C uname -r"),
-      kernelversion => run ("LC_ALL=C uname -v"),
+      architecture => i_run ("LC_ALL=C uname -m"),
+      kernel       => i_run ("LC_ALL=C uname -s"),
+      kernelrelease => i_run ("LC_ALL=C uname -r"),
+      kernelversion => i_run ("LC_ALL=C uname -v"),
    };
 
    $cache->set($cache_key_name, $data);

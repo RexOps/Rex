@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::User::OpenBSD;
@@ -101,7 +102,7 @@ sub create_user {
    $fh->write("$cmd $user\nexit \$?\n");
    $fh->close;
 
-   run "/bin/sh $rnd_file";
+   i_run "/bin/sh $rnd_file";
    if($? == 0) {
       Rex::Logger::debug("User $user created/updated.");
    }
@@ -151,7 +152,7 @@ expect eof
          $fh->close;
 
          chmod 700, $chpasswd_file;
-         run "/bin/sh $rnd_file";
+         i_run "/bin/sh $rnd_file";
          if($? != 0) { die("Error changing user's password."); }
 
          rm $chpasswd_file;

@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
 
@@ -29,7 +30,7 @@ sub is_installed {
 
    Rex::Logger::debug("Checking if $pkg is installed");
 
-   run("rpm -ql $pkg");
+   i_run("rpm -ql $pkg");
 
    unless($? == 0) {
       Rex::Logger::debug("$pkg is NOT installed.");
@@ -58,7 +59,7 @@ sub update {
 
    my $version = $option->{"version"} || "";
 
-   my $f = run("urpmi --auto --quiet $pkg");
+   my $f = i_run("urpmi --auto --quiet $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error installing $pkg.", "warn");
@@ -73,14 +74,14 @@ sub update {
 
 sub update_system {
    my ($self) = @_;
-   run "urpmi --auto --quiet --auto-update";
+   i_run "urpmi --auto --quiet --auto-update";
 }
 
 sub remove {
    my ($self, $pkg) = @_;
 
    Rex::Logger::debug("Removing $pkg");
-   my $f = run("urpme --auto $pkg");
+   my $f = i_run("urpme --auto $pkg");
 
    unless($? == 0) {
       Rex::Logger::info("Error removing $pkg.", "warn");
@@ -97,7 +98,7 @@ sub remove {
 sub get_installed {
    my ($self) = @_;
 
-   my @lines = run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
+   my @lines = i_run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
 
    my @pkg;
 
@@ -119,7 +120,7 @@ sub get_installed {
 sub update_pkg_db {
    my ($self) = @_;
 
-   run "urpmi.update -a";
+   i_run "urpmi.update -a";
    if($? != 0) {
       die("Error updating package repository");
    }
@@ -128,7 +129,7 @@ sub add_repository {
    my ($self, %data) = @_;
    my $name = $data{"name"};
 
-   run "urpmi.addmedia $name " . $data{"url"};
+   i_run "urpmi.addmedia $name " . $data{"url"};
    if($? != 0) {
       die("Error adding repository $name");
    }
@@ -136,7 +137,7 @@ sub add_repository {
 
 sub rm_repository {
    my ($self, $name) = @_;
-   run "urpmi.removemedia $name";
+   i_run "urpmi.removemedia $name";
    if($? != 0) {
       die("Error removing repository $name");
    }

@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Logger;
 
 use Rex::Service::Debian;
@@ -37,11 +38,11 @@ sub ensure {
 
    if($what =~  /^stop/) {
       $self->stop($service);
-      run "/etc/init.d/$service disable";
+      i_run "/etc/init.d/$service disable";
    }
    elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
-      run "/etc/init.d/$service enable";
+      i_run "/etc/init.d/$service enable";
    }
 }
 

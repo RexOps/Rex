@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 use XML::Simple;
 
@@ -27,7 +27,7 @@ sub execute {
 
    my $xml;
 
-   my @dominfo = run "VBoxManage showvminfo \"$vmname\" --machinereadable";
+   my @dominfo = i_run "VBoxManage showvminfo \"$vmname\" --machinereadable";
   
    if($? != 0) {
       die("Error running VBoxManage showvminfo $vmname");

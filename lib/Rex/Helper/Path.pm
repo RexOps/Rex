@@ -72,7 +72,6 @@ sub get_file_path {
       my $module_path = Rex::get_module_path($caller_package);
       if(-f "$module_path/$file_name") {
          $file_name = "$module_path/$file_name";
-         print "found> $file_name\n";
          return $file_name;
       }
 
@@ -83,7 +82,6 @@ sub get_file_path {
       $file_name = dirname($caller_file) . "/" . $file_name;
    }
 
-   print "using> $file_name\n";
    return $file_name;
 }
 

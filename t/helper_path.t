@@ -9,7 +9,7 @@ use_ok 'Rex::Helper::Path';
 $::rexfile = "Rexfile"; $::rexfile = "Rexfile";
 
 my $path = Rex::Helper::Path::get_file_path("files/foo.txt", "main", "Rexfile");
-ok($path eq "./files/foo.txt", "got file path if called from Rexfile");
+ok($path eq "files/foo.txt", "got file path if called from Rexfile");
 
 my $cwd = getcwd;
 $path = Rex::Helper::Path::get_file_path("$cwd/Makefile.PL", "main", "Rexfile");
@@ -17,6 +17,8 @@ ok($path eq "$cwd/Makefile.PL", "got file path if called from Rexfile - absolute
 
 $path = Rex::Helper::Path::get_file_path("files/foo.txt", "main", "this/is/Rexfile");
 ok($path eq "this/is/files/foo.txt", "got file path if called Rexfile from other directory");
+
+print STDERR "\n\npath: $path\n\n";
 
 $path = Rex::Helper::Path::get_file_path("files/foo.txt", "main", "/this/is/Rexfile");
 ok($path eq "/this/is/files/foo.txt", "got file path if called Rexfile from other directory (absolute)");

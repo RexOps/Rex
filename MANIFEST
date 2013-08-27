@@ -126,6 +126,7 @@ lib/Rex/Interface/Fs/Sudo.pm
 lib/Rex/Interface/Shell.pm
 lib/Rex/Interface/Shell/Ash.pm
 lib/Rex/Interface/Shell/Bash.pm
+lib/Rex/Interface/Shell/Csh.pm
 lib/Rex/Interface/Shell/Default.pm
 lib/Rex/Interface/Shell/Sh.pm
 lib/Rex/Interface/Shell/Zsh.pm
@@ -175,6 +176,7 @@ lib/Rex/Pkg/Ubuntu.pm
 lib/Rex/Profiler.pm
 lib/Rex/Report.pm
 lib/Rex/Report/Base.pm
+lib/Rex/Report/YAML.pm
 lib/Rex/SCM/Git.pm
 lib/Rex/SCM/Subversion.pm
 lib/Rex/Service.pm
@@ -277,6 +279,7 @@ t/cron.t
 t/df.out1
 t/df.out2
 t/df.t
+t/dmi.fbsd.out
 t/dmi.linux.out
 t/dmi.obsd.out
 t/dmi.t

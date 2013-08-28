@@ -103,6 +103,7 @@ sub register_reporting_hooks {
                         end_time   => time,
                         data       => [ @_ ],
                         success    => 1,
+                        message    => "",
                         %{ $ret },
                   });
                }
@@ -115,6 +116,7 @@ sub register_reporting_hooks {
                         data       => [ @_ ],
                         success    => 1,
                         changed    => 1,
+                        message    => "",
                   });
                }
                1;
@@ -127,6 +129,7 @@ sub register_reporting_hooks {
                      data       => [ @_ ],
                      success    => 0,
                      changed    => 0,
+                     message    => $@,
                });
                Rex::unset_modified_caller();
 

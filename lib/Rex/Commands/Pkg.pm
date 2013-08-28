@@ -516,11 +516,12 @@ sub repository {
 
    $data{"name"} = $name;
 
+   my $ret;
    if($action eq "add") {
-      $pkg->add_repository(%data);
+      $ret = $pkg->add_repository(%data);
    }
    elsif($action eq "remove" || $action eq "delete") {
-      $pkg->rm_repository($name);
+      $ret = $pkg->rm_repository($name);
    }
 
    if(exists $data{after}) {

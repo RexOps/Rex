@@ -129,6 +129,11 @@ sub update_pkg_db {
 sub add_repository {
    my ($self, %data) = @_;
    i_run "zypper addrepo -f -n " . $data{"name"} . " " . $data{"url"} . " " . $data{"name"};
+   if($? == 4) {
+      if(Rex::Config->get_do_reporting) {
+         return {changed => 0};
+      }
+   }
    if($? != 0) {
       die("Error adding repository " . $data{name});
    }
@@ -139,6 +144,10 @@ sub rm_repository {
    i_run "zypper removerepo $name";
    if($? != 0) {
       die("Error removing repository $name");
+   }
+
+   if(Rex::Config->get_do_reporting) {
+      return {changed => 1};
    }
 }
 

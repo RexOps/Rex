@@ -527,6 +527,8 @@ sub repository {
    if(exists $data{after}) {
       $data{after}->();
    }
+
+   return $ret;
 }
 
 =item package_provider_for $os => $type;

@@ -91,6 +91,8 @@ sub ensure {
       $self->start($service);
       i_run "/sbin/chkconfig $service on";
    }
+
+   if($? == 0) { return 1; } else { return 0; }
 }
 
 sub action {

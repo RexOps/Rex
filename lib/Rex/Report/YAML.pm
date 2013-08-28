@@ -71,6 +71,9 @@ sub register_reporting_hooks {
       free
       df
       du
+      stat
+      rm
+      cat
    /;
 
    for my $mod (@modules) {
@@ -90,6 +93,9 @@ sub register_reporting_hooks {
             eval {
                $ret = $orig_sub->(@_);
                if(ref $ret eq "HASH") {
+                  if(exists $ret->{skip} && $ret->{skip} == 1) {
+                     return 1;
+                  }
                   $self->report({
                         command    => $export,
                         module     => "Rex::Commands::$mod",
@@ -127,6 +133,10 @@ sub register_reporting_hooks {
                die($@);
             };
 
+            if(ref $ret eq "HASH" && exists $ret->{ret}) {
+               # return the original return value
+               return $ret->{ret};
+            }
             return $ret;
          };
       }

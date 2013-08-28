@@ -12,6 +12,7 @@ use warnings;
 use Rex::Logger;
 require Rex::Commands;
 use Rex::Commands::Run;
+use Rex::Commands::MD5;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Interface::File;
@@ -52,10 +53,21 @@ sub create_user {
       # only the user should be there, no modifications. 
       # so just return
       if(! defined $data) {
+         if(Rex::Config->get_do_reporting) {
+            return {
+               changed => 0,
+               uid     => $uid,
+            };
+         }
+
          return $uid;
       }
 
       Rex::Logger::debug("User $user already exists. Updating...");
+
+      if(exists $data->{uid} && $data->{uid} == $uid) {
+         delete $data->{uid};
+      }
 
       $cmd = "/usr/sbin/usermod ";
    }
@@ -115,11 +127,16 @@ sub create_user {
       }
    }
 
+   my $old_pw_md5 = md5("/etc/passwd");
+   my $old_sh_md5 = md5("/etc/shadow");
+
+
    # only run the cmd if needed
    if($run_cmd) {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
+      print "cmd> $cmd\n";
       $fh->write("$cmd $user\nexit \$?\n");
       $fh->close;
 
@@ -151,7 +168,7 @@ sub create_user {
       Rex::Interface::Fs->create()->unlink($rnd_file);
    }
 
-   if(exists $data->{crypt_password}) {
+   if(exists $data->{crypt_password} && $data->{crypt_password}) {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
@@ -165,6 +182,24 @@ sub create_user {
       }
 
       Rex::Interface::Fs->create()->unlink($rnd_file);
+   }
+
+   my $new_pw_md5 = md5("/etc/passwd");
+   my $new_sh_md5 = md5("/etc/shadow");
+
+   if(Rex::Config->get_do_reporting) {
+      if($new_pw_md5 eq $old_pw_md5 && $new_sh_md5 eq $old_sh_md5) {
+         return {
+            changed => 0,
+            ret     => $self->get_uid($user),
+         };
+      }
+      else {
+         return {
+            changed => 1,
+            ret     => $self->get_uid($user),
+         },
+      }
    }
 
    return $self->get_uid($user);
@@ -309,8 +344,24 @@ sub create_group {
 
       $cmd = "/usr/sbin/groupadd ";
    }
+   elsif(exists $data->{gid} && $data->{gid} == $gid) {
+      if(Rex::Config->get_do_reporting) {
+         return {
+            changed => 0,
+            ret     => $gid,
+         };
+      }
+      return $gid;
+   }
    else {
       if(! defined $data) {
+         if(Rex::Config->get_do_reporting) {
+            return {
+               changed => 0,
+               ret     => $gid,
+            };
+         }
+
          return $gid;
       }
       Rex::Logger::debug("Group $group already exists. Updating...");

@@ -88,7 +88,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.42.99.3";
+$VERSION = "0.42.99.4";
 my $cur_dir;
 
 BEGIN {
@@ -551,6 +551,12 @@ sub import {
          if($add eq "disable_strict_host_key_checking") {
             Rex::Logger::debug("Disabling strict host key checking for openssh");
             Rex::Config->set_openssh_opt(StrictHostKeyChecking => "no");
+            $found_feature = 1;
+         }
+
+         if($add eq "reporting" || exists $ENV{REX_REPORT_TYPE}) {
+            Rex::Logger::debug("Enabling reporting");
+            Rex::Config->set_do_reporting(1);
             $found_feature = 1;
          }
 

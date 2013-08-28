@@ -101,6 +101,8 @@ sub ensure {
       $self->start($service);
       i_run "systemctl enable $service";
    }
+
+   if($? == 0) { return 1; } else { return 0; }
 }
 
 # all systemd services must end with .service

@@ -109,14 +109,20 @@ sub upload {
 
    if($local_md5 && $remote_md5 && $local_md5 eq $remote_md5) {
       Rex::Logger::debug("local md5 and remote md5 are the same: $local_md5 eq $remote_md5. Not uploading.");
-      return {changed => 0};
+      if(Rex::Config->get_do_reporting) {
+         return {changed => 0};
+      }
    }
 
    Rex::Logger::debug("Uploading: $local to $remote");
 
-   $fs->upload($local, $remote);
+   my $ret = $fs->upload($local, $remote);
 
-   return {changed => 1};
+   if(Rex::Config->get_do_reporting) {
+      return {changed => 1};
+   }
+
+   return $ret;
 }
 
 =back

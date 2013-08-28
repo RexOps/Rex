@@ -202,6 +202,14 @@ sub mkdir {
 
    my $fs = Rex::Interface::Fs->create;
 
+   my $not_created = 0;
+   my %old_stat;
+   if(Rex::Config->get_do_reporting) {
+      if($fs->is_dir($dir)) {
+         $not_created = 1;
+      }
+   }
+
    my $mode  = $options->{"mode"}  || 755;
    my $owner = $options->{"owner"} || "";
    my $group = $options->{"group"} || "";
@@ -213,9 +221,35 @@ sub mkdir {
          die("Can't create directory $dir");
       }
 
-      &chown($owner, $dir) if $owner;
-      &chgrp($group, $dir) if $group;
-      &chmod($mode, $dir)  if $owner;
+      my ($ret_a, $ret_b, $ret_c);
+
+      $ret_a = &chown($owner, $dir) if $owner;
+      $ret_b = &chgrp($group, $dir) if $group;
+      $ret_c = &chmod($mode, $dir)  if $owner;
+
+      if(Rex::Config->get_do_reporting) {
+         my $changed = 0;
+         if(ref $ret_a) {
+            $changed = $ret_a->{changed};
+         }
+
+         if(ref $ret_b) {
+            $changed = $ret_b->{changed};
+         }
+
+         if(ref $ret_c) {
+            $changed = $ret_c->{changed};
+         }
+
+         if(! $not_created) {
+            $changed = 1;
+         }
+
+         return {
+            changed => $changed,
+            ret     => undef,
+         };
+      }
 
       return;
    }
@@ -229,6 +263,7 @@ sub mkdir {
    }
 
    my $str_part="";
+   my $changed = 0;
    for my $part (@splitted_dir) {
       $str_part .= "$part";
 
@@ -238,12 +273,39 @@ sub mkdir {
             die("Can't create directory $dir");
          }
 
-         &chown($owner, $str_part) if $owner;
-         &chgrp($group, $str_part) if $group;
-         &chmod($mode, $str_part)  if $owner;
+         my ($ret_a, $ret_b, $ret_c);
 
+         $ret_a = &chown($owner, $str_part) if $owner;
+         $ret_b = &chgrp($group, $str_part) if $group;
+         $ret_c = &chmod($mode, $str_part)  if $owner;
+
+         if(Rex::Config->get_do_reporting) {
+            my $changed = 0;
+            if(ref $ret_a) {
+               $changed = $ret_a->{changed};
+            }
+
+            if(ref $ret_b) {
+               $changed = $ret_b->{changed};
+            }
+
+            if(ref $ret_c) {
+               $changed = $ret_c->{changed};
+            }
+
+            if(! $not_created) {
+               $changed = 1;
+            }
+
+         }
       }
    }
+
+   return {
+      changed => $changed,
+      ret     => undef,
+   };
+
 }
 
 =item chown($owner, $file)
@@ -261,7 +323,30 @@ sub chown {
    my ($user, $file, @opts) = @_;
 
    my $fs = Rex::Interface::Fs->create;
-   $fs->chown($user, $file, @opts) or die("Can't chown $file");
+   my %stat;
+   if(Rex::Config->get_do_reporting) {
+      %stat = $fs->stat($file);
+   }
+
+   my $ret = $fs->chown($user, $file, @opts) or die("Can't chown $file");
+
+   if(Rex::Config->get_do_reporting) {
+      my %new_stat = $fs->stat($file);
+      if($stat{uid} == $new_stat{uid}) {
+         return {
+            changed => 0,
+            ret     => $ret,
+         };
+      }
+      else {
+         return {
+            changed => 1,
+            ret     => $ret,
+         };
+      }
+   }
+
+   return $ret;
 }
 
 =item chgrp($group, $file)
@@ -279,7 +364,31 @@ sub chgrp {
    my ($group, $file, @opts) = @_;
 
    my $fs = Rex::Interface::Fs->create;
-   $fs->chgrp($group, $file, @opts) or die("Can't chgrp $file");
+   my %stat;
+
+   if(Rex::Config->get_do_reporting) {
+      %stat = $fs->stat($file);
+   }
+
+   my $ret = $fs->chgrp($group, $file, @opts) or die("Can't chgrp $file");
+
+   if(Rex::Config->get_do_reporting) {
+      my %new_stat = $fs->stat($file);
+      if($stat{gid} == $new_stat{gid}) {
+         return {
+            changed => 0,
+            ret     => $ret,
+         };
+      }
+      else {
+         return {
+            changed => 1,
+            ret     => $ret,
+         };
+      }
+   }
+
+   return $ret;
 }
 
 =item chmod($mode, $file)
@@ -295,8 +404,32 @@ Change the permissions of a file or a directory.
 
 sub chmod {
    my ($mode, $file, @opts) = @_;
+
    my $fs = Rex::Interface::Fs->create;
-   $fs->chmod($mode, $file, @opts) or die("Can't chmod $file");
+   my %stat;
+   if(Rex::Config->get_do_reporting) {
+      %stat = $fs->stat($file);
+   }
+
+   my $ret = $fs->chmod($mode, $file, @opts) or die("Can't chmod $file");
+
+   if(Rex::Config->get_do_reporting) {
+      my %new_stat = $fs->stat($file);
+      if($stat{mode} eq $new_stat{mode}) {
+         return {
+            changed => 0,
+            ret     => $ret,
+         };
+      }
+      else {
+         return {
+            changed => 1,
+            ret     => $ret,
+         };
+      }
+   }
+
+   return $ret;
 }
 
 

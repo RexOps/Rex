@@ -44,6 +44,8 @@ sub ensure {
       $self->start($service);
       i_run "/etc/init.d/$service enable";
    }
+
+   if($? == 0) { return 1; } else { return 0; }
 }
 
 1;

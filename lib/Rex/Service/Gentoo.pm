@@ -94,6 +94,8 @@ sub ensure {
       $self->start($service);
       i_run "rc-update add $service";
    }
+
+   if($? == 0) { return 1; } else { return 0; }
 }
 
 sub action {

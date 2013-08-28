@@ -256,18 +256,27 @@ sub install {
          $package = [$package];
       }
 
+      my $changed = 0;
       for my $pkg_to_install (@{$package}) {
          unless($pkg->is_installed($pkg_to_install)) {
             Rex::Logger::info("Installing $pkg_to_install.");
             $pkg->install($pkg_to_install, $option);
+            $changed = 1;
          }
       }
      
-
+      if(Rex::Config->get_do_reporting) {
+         return {changed => $changed};
+      }
+ 
    }
    else {
       # unknown type, be a package
       install("package", $type, $package, @_); 
+
+      if(Rex::Config->get_do_reporting) {
+         return {skip => 1};
+      }
    }
 
 }

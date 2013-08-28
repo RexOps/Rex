@@ -93,6 +93,8 @@ sub ensure {
    elsif($what =~ /^start/ || $what =~ m/^run/) {
       $self->start($service);
    }
+
+   return 1;
 }
 
 sub action {

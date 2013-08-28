@@ -95,6 +95,8 @@ sub ensure {
       $self->start($service);
       append_if_no_such_line "/etc/rc.conf", "${service}=YES\n";
    }
+
+   return 1;
 }
 
 sub action {

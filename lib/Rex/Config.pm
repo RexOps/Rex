@@ -53,7 +53,8 @@ our ($user, $password, $port,
             %openssh_opt,
             $use_cache, $cache_type,
             $use_sleep_hack,
-            $report_type);
+            $report_type,
+            $do_reporting);
 
 # some defaults
 %executor_for = (
@@ -62,6 +63,15 @@ our ($user, $password, $port,
    ruby   => "ruby",
    bash   => "bash",
 );
+
+sub set_do_reporting {
+   my $class = shift;
+   $do_reporting = shift;
+}
+
+sub get_do_reporting {
+   return $do_reporting;
+}
 
 sub set_report_type {
    my $class = shift;

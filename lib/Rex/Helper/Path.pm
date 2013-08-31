@@ -43,22 +43,13 @@ sub get_file_path {
 
    my $real_path = join('/', @path_parts);
 
-   if(-f $file_name) {
+   if(-e $file_name) {
       return $file_name;
    }
 
-   if(-d $file_name) {
-      return $file_name;
-   }
-
-   if(-f $real_path . '/' . $file_name) {
+   if(-e $real_path . '/' . $file_name) {
       return $real_path . '/' . $file_name;
    }
-
-   if(-d $real_path . '/' . $file_name) {
-      return $real_path . '/' . $file_name;
-   }
- 
 
    # walk down the wire to find the file...
    my ($old_caller_file) = $caller_file;
@@ -71,7 +62,7 @@ sub get_file_path {
       }
 
       my $module_path = Rex::get_module_path($caller_package);
-      if(-f "$module_path/$file_name") {
+      if(-e "$module_path/$file_name") {
          $file_name = "$module_path/$file_name";
          return $file_name;
       }

@@ -5,11 +5,11 @@
 
 Summary: Rex is a tool to ease the execution of commands on multiple remote servers.
 Name: rex
-Version: 0.42.4
+Version: 0.42.99.8
 Release: 1
 License: Apache 2.0
 Group: Utilities/System
-Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.42.4.tar.gz
+Source: http://search.cpan.org/CPAN/authors/id/J/JF/JFRIED/Rex-0.42.99.8.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 AutoReqProv: no
 
@@ -60,6 +60,9 @@ find %{buildroot} -name .packlist -exec %{__rm} {} \;
 %{perl_vendorlib}/*
 
 %changelog
+
+* Sun Sep 01 2013 Jan Gehring <jan.gehring at, gmail.com> 0.42.99.8-1
+- updated release
 
 * Thu Jul 04 2013 Jan Gehring <jan.gehring at, gmail.com> 0.42.4-1
 - updated release

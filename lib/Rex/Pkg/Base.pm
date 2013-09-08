@@ -28,6 +28,17 @@ sub install {
    Rex::Logger::info("Installing package not supported on this platform", "warn");
 }
 
+sub bulk_install {
+   Rex::Logger::info("Installing bulk packages not supported on this platform. Falling back to one by one method", "warn");
+
+   my ($self, $packages_aref, $option) = @_;
+   for my $pkg_to_install (@{$packages_aref}) {
+      $self->install($pkg_to_install, $option);
+   }
+   
+   return 1;
+}
+
 sub update {
    Rex::Logger::info("Updating package not supported on this platform", "warn");
 }

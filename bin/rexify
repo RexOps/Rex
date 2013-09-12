@@ -401,6 +401,7 @@ sub get {
    my ($url) = @_;
 
    my $ua = LWP::UserAgent->new;
+   $ua->env_proxy;
 
    if($AUTH_USER && $AUTH_PASSWORD) {
       my ($netloc) = ($RECIPE_SERVER =~ m/^https?:\/\/([^\/]+)\//);

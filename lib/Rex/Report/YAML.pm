@@ -13,7 +13,6 @@ use Rex;
 use Data::Dumper;
 use Rex::Report::Base;
 require Rex::Commands;
-use Devel::StackTrace;
 use YAML;
 use base qw(Rex::Report::Base);
 

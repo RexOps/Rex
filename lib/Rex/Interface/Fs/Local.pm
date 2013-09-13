@@ -59,6 +59,9 @@ sub rmdir {
    Rex::Logger::debug("Removing directories: " . join(", ", @dirs));
    my $exec = Rex::Interface::Exec->create;
    if($^O =~ m/^MSWin/) {
+      for (@dirs) {
+         s/\//\\/g;
+      }
       $exec->exec("rd /Q /S " . join(" ", @dirs));
    }
    else {
@@ -130,6 +133,8 @@ sub rename {
    my $exec = Rex::Interface::Exec->create;
 
    if($^O =~ m/^MSWin/) {
+      $old =~ s/\//\\/g;
+      $new =~ s/\//\\/g;
       $exec->exec("move \"$old\" \"$new\"");
    }
    else {

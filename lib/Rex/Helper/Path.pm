@@ -38,7 +38,13 @@ sub get_file_path {
 
    $::rexfile ||= $0;
 
-   my @path_parts = split(/\//, realpath($::rexfile));
+   my @path_parts;
+   if($^O =~ m/^MSWin/ && ! Rex::is_ssh()) {
+      @path_parts = split(/\//, realpath($::rexfile));
+   }
+   else {
+      @path_parts = split(/\//, realpath($::rexfile));
+   }
    pop @path_parts;
 
    my $real_path = join('/', @path_parts);
@@ -82,7 +88,12 @@ sub get_tmp_file {
       $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
    }
    elsif($^O =~ m/^MSWin/) {
-      $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
+      my $tmp_dir = Rex::Config->get_tmp_dir;
+      if($tmp_dir eq "/tmp") {
+         $tmp_dir = $ENV{TMP};
+      }
+
+      $rnd_file = $tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
    }
    else {
       $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";

@@ -40,7 +40,7 @@ sub get_file_path {
 
    my @path_parts;
    if($^O =~ m/^MSWin/ && ! Rex::is_ssh()) {
-      @path_parts = split(/\//, realpath($::rexfile));
+      @path_parts = split(/\//, $::rexfile);
    }
    else {
       @path_parts = split(/\//, realpath($::rexfile));

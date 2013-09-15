@@ -88,7 +88,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.42.99.8";
+$VERSION = "0.42.99.10";
 my $cur_dir;
 
 BEGIN {

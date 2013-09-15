@@ -587,6 +587,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Anders Ossowicki
 
+=item Chris Steigmeier
+
 =item Chenryn
 
 =item Daniel Baeurer

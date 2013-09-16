@@ -47,16 +47,9 @@ sub lookup_command {
    my $command_to_exec;
    my @content;
 
-   my %params = Rex::Args->get;
-
-
    if (defined $command && $command) {
       $command_to_exec = $command;
       Rex::Logger::info("command: $command");
-   }
-
-   if (exists $params{command} && $params{command} =~ m/\w/xms) {
-      $command_to_exec = $params{command};
    }
 
    Rex::Logger::info("you must give a valid command.") unless (defined $command_to_exec && $command_to_exec);

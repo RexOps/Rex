@@ -64,6 +64,7 @@ lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Group/Entry/Server.pm
 lib/Rex/Group/Lookup/File.pm
+lib/Rex/Group/Lookup/Command.pm
 lib/Rex/Group/Lookup/INI.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm

@@ -33,7 +33,6 @@ use warnings;
 
 require Rex::Exporter;
 use Rex -base;
-use Rex::Args;
 
 use base qw(Exporter);
 use vars qw(@EXPORT);

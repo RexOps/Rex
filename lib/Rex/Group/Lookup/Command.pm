@@ -51,9 +51,10 @@ sub lookup_command {
       Rex::Logger::info("command: $command");
    }
 
-   Rex::Logger::info("you must give a valid command.") unless (defined $command_to_exec && $command_to_exec);
-
-   return @content unless(defined $command_to_exec && $command_to_exec);
+   unless (defined $command_to_exec && $command_to_exec) {
+      Rex::Logger::info("you must give a valid command.") 
+      return @content;
+   }
 
    eval {
       open(my $command_rt, "$command_to_exec |") or die($!);

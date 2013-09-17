@@ -1,3 +1,6 @@
+2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.1)
+  * #234 - Silent yum operations - Chris Steigmeier
+
 2013-09-16 Jan Gehring <jan.gehring, gmail.com> (0.43.0)
   * #223 - generating reports of changed things on the remote system (report infrastructure)
   * #220 - atomic uploads

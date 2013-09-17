@@ -160,10 +160,10 @@ sub _yum {
    my $str;
 
    if($Rex::Logger::debug) {
-      $str = join('', "yum", @cmd);
+      $str = join(' ', "yum ", @cmd);
    }
    else {
-      $str = join('', "yum -q ", @cmd);
+      $str = join(' ', "yum -q ", @cmd);
    }
 
    return $str;

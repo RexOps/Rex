@@ -95,8 +95,13 @@ sub run {
 
    $LAST_OUTPUT = [$out, $err];
 
-   $out ||= "";
-   $err ||= "";
+   if(! defined $out) {
+      $out = "";
+   }
+
+   if(! defined $err) {
+      $err = "";
+   }
 
    if($code) {
       return &$code($out, $err);

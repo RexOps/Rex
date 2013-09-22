@@ -569,6 +569,11 @@ sub import {
 
    }
 
+   if(exists $ENV{REX_REPORT_TYPE}) {
+      Rex::Logger::debug("Enabling reporting");
+      Rex::Config->set_do_reporting(1);
+   }
+
    # we are always strict
    strict->import;
 }

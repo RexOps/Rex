@@ -1,3 +1,8 @@
+2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.3)
+  * fixed return of string '0' on stdout
+  * fixed loading of report via env variable
+  * fixed manifest
+
 2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.2)
   * #234 - Silent yum operations - Chris Steigmeier
 

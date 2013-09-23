@@ -13,7 +13,6 @@ lib/Rex/Box.pm
 lib/Rex/Box/Amazon.pm
 lib/Rex/Box/Base.pm
 lib/Rex/Box/VBox.pm
-lib/Rex/Cache.pm
 lib/Rex/CLI.pm
 lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm

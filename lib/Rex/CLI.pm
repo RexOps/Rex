@@ -181,6 +181,9 @@ sub __run__ {
       if ($host_eval =~ m/\S/xms) {
          $::FORCE_SERVER = join(" ", split /\n|,|;/, $host_eval);
       }
+      else {
+         Rex::Logger::info("you must give a valid command.");
+      }
    }
 
    if($opts{'o'}) {

@@ -28,7 +28,9 @@ sub get {
 
    my ($self) = @_;
 
-   my $host = Rex::Hardware::Host->get();
+   my %_host = %{ Rex::Hardware::Host->get() };
+   my $host = { %_host };
+
    my $pkg_provider_for = Rex::Config->get("package_provider") || {};
 
    #if(lc($host->{"operatingsystem"}) eq "centos" || lc($host->{"operatingsystem"}) eq "redhat") {

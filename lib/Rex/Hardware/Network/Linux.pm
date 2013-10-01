@@ -74,6 +74,15 @@ sub _parse_ip {
          link/.*\ (..:..:..:..:..:..)\ .*
          inet\ (\d+\.\d+\.\d+\.\d+)/(\d+)\ brd\ (\d+\.\d+\.\d+\.\d+)%sx);
 
+   if(! $ip) {
+      return {
+         ip        => '',
+         netmask   => '',
+         broadcast => '',
+         mac       => $mac
+      };
+   }
+
    # convert CIDR prefix to dotted decimal notation
    my $binary_mask         = '1' x $cidr_prefix . '0' x (32 - $cidr_prefix);
    my $dotted_decimal_mask = join '.', unpack 'C4', pack 'B32', $binary_mask;

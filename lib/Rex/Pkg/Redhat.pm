@@ -157,13 +157,13 @@ sub rm_repository {
 sub _yum {
    my (@cmd) = @_;
 
-   my $str = "yum ";
+   my $str;
 
    if($Rex::Logger::debug) {
-      $str .= join(" ", @cmd);
+      $str = join(' ', "yum ", @cmd);
    }
    else {
-      $str .= join(" -q ", @cmd);
+      $str = join(' ', "yum -q ", @cmd);
    }
 
    return $str;

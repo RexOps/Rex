@@ -1,4 +1,3 @@
-bin/change.txt
 bin/rex
 bin/rexify
 ChangeLog
@@ -13,7 +12,6 @@ lib/Rex/Box.pm
 lib/Rex/Box/Amazon.pm
 lib/Rex/Box/Base.pm
 lib/Rex/Box/VBox.pm
-lib/Rex/Cache.pm
 lib/Rex/CLI.pm
 lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm
@@ -66,6 +64,7 @@ lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Group/Entry/Server.pm
 lib/Rex/Group/Lookup/File.pm
+lib/Rex/Group/Lookup/Command.pm
 lib/Rex/Group/Lookup/INI.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm

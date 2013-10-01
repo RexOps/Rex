@@ -1,7 +1,7 @@
 BEGIN {
    if($^O =~ m/^MSWin/) {
       require Test::More;
-      Test::More->import(tests => 80);
+      Test::More->import(tests => 88);
    }
    else {
       require Test::More;

@@ -136,7 +136,6 @@ sub create_user {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
-      print "cmd> $cmd\n";
       $fh->write("$cmd $user\nexit \$?\n");
       $fh->close;
 

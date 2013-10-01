@@ -26,7 +26,7 @@ ok($path eq "lib/File/Foo/files/foo.txt", "got file path for File::Foo module");
 
 $path = Rex::Helper::Path::get_tmp_file();
 if($^O =~ m/^MSWin/) {
-   ok($path =~ m/c:\//i, "found windows directory");
+   ok($path =~ m/c:[\/\\]/i, "found windows directory");
 }
 else {
    ok($path =~ m/^\/tmp/);

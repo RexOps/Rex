@@ -13,7 +13,6 @@ use Rex;
 use Data::Dumper;
 use Rex::Report::Base;
 require Rex::Commands;
-use Devel::StackTrace;
 use YAML;
 use base qw(Rex::Report::Base);
 
@@ -58,7 +57,7 @@ sub write_report {
 sub register_reporting_hooks {
    my ($self) = @_;
 
-   my @modules = qw(File Fs Pkg Run Service Sync Upload User Cron Download Process);
+   my @modules = qw(File Fs Pkg Run Service Upload User Cron Download Process);
 
    my @skip_functions = qw/
       file_write

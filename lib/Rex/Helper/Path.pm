@@ -38,27 +38,24 @@ sub get_file_path {
 
    $::rexfile ||= $0;
 
-   my @path_parts = split(/\//, realpath($::rexfile));
+   my @path_parts;
+   if($^O =~ m/^MSWin/ && ! Rex::is_ssh()) {
+      @path_parts = split(/\//, $::rexfile);
+   }
+   else {
+      @path_parts = split(/\//, realpath($::rexfile));
+   }
    pop @path_parts;
 
    my $real_path = join('/', @path_parts);
 
-   if(-f $file_name) {
+   if(-e $file_name) {
       return $file_name;
    }
 
-   if(-d $file_name) {
-      return $file_name;
-   }
-
-   if(-f $real_path . '/' . $file_name) {
+   if(-e $real_path . '/' . $file_name) {
       return $real_path . '/' . $file_name;
    }
-
-   if(-d $real_path . '/' . $file_name) {
-      return $real_path . '/' . $file_name;
-   }
- 
 
    # walk down the wire to find the file...
    my ($old_caller_file) = $caller_file;
@@ -71,7 +68,7 @@ sub get_file_path {
       }
 
       my $module_path = Rex::get_module_path($caller_package);
-      if(-f "$module_path/$file_name") {
+      if(-e "$module_path/$file_name") {
          $file_name = "$module_path/$file_name";
          return $file_name;
       }
@@ -91,7 +88,12 @@ sub get_tmp_file {
       $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";
    }
    elsif($^O =~ m/^MSWin/) {
-      $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
+      my $tmp_dir = Rex::Config->get_tmp_dir;
+      if($tmp_dir eq "/tmp") {
+         $tmp_dir = $ENV{TMP};
+      }
+
+      $rnd_file = $tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp"
    }
    else {
       $rnd_file = Rex::Config->get_tmp_dir . "/" . Rex::Commands::get_random(12, 'a' .. 'z') . ".tmp";

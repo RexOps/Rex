@@ -1,3 +1,33 @@
+2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.3)
+  * fixed return of string '0' on stdout
+  * fixed loading of report via env variable
+  * fixed manifest
+
+2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.2)
+  * #234 - Silent yum operations - Chris Steigmeier
+
+2013-09-16 Jan Gehring <jan.gehring, gmail.com> (0.43.0)
+  * #223 - generating reports of changed things on the remote system (report infrastructure)
+  * #220 - atomic uploads
+  * #219 - df function doesnt parse errors - jorisd
+  * #218 - problems with escaping of special characters, reverted back to old behaviour (pre 0.42)
+  * #215 - input validation for rexify to prevent creation of invalid module names
+  * #214 - yum operations should be silent
+  * #213, #231 - rexify to use proxy settings - Chris Steigmeier
+  * #231 - Another Red Hat Enterprise flavor - Chris Steigmeier
+  * #200 - Refactor OpenWrt user module - Ferenc Erki
+  * #195 - Fix a typo in example code - Boris Däppen
+  * #194 - Prefer ip command over ifconfig - Ferenc Erki
+  * #189 - Zero values in crontab fields - Ferenc Erki
+  * #186 - Turn "eval your Rexfile" into a debug message - Anders Ossowicki
+  * #210 - zypper --no-gpg-checks option
+  * #208 - Cache inventory of servers for faster execution
+  * #206 - sync_up function doesn't work in modules.
+  * #196 - Support port with ranged hostnamed
+  * #180 - support of other shells than bash for the PATH / environment variable - Cuong Manh Le
+  * #177 - if a feature can't be satisfied, die()
+  * #166 - tmp directory now configurable
+
 2013-07-04 Jan Gehring <jan.gehring, gmail.com> (0.42.4)
   * fixed an issue with append_if_no_such_line when searching for a string
     containing a quote.

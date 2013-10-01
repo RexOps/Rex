@@ -22,6 +22,11 @@ if($ENV{rex_LOCALTEST}) {
    Rex::Config->set_executor_for(perl => "/Users/jan/perl5/perlbrew/perls/perl-5.14.2/bin/perl");
 }
 
+my $tmp_dir = "/tmp";
+if($^O =~ m/^MSWin/) {
+   $tmp_dir = $ENV{TMP};
+}
+
 file("$cwd/test.txt",
    content => "blah blah\nfoo bar");
 
@@ -169,19 +174,19 @@ ok(! is_file("$cwd/test.txt"), "test.txt removed");
 ok(! is_file("file with space.txt"), "file with space removed");
 
 
-file "/tmp/test-sed.txt",
+file "$tmp_dir/test-sed.txt",
    content => "this is a sed test file\nthese are just some lines\n0505\n0606\n0707\n'foo'\n/etc/passwd\n\"baz\"\n{klonk}\nfoo bar\n\\.-~'[a-z]\$ foo {1} /with/some/slashes \%\&()?\n|.-\\~'[a-z]\$ bar {2} /with/more/slashes \%\&()?\n";
 
-sed qr/fo{2} bar/, "baz bar", "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr/fo{2} bar/, "baz bar", "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/baz bar/, "sed replaced foo bar");
 
-sed qr/^\\\.\-\~'\[a\-z\]\$ foo \{1\} \/with\/some\/slashes/, "got replaced", "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr/^\\\.\-\~'\[a\-z\]\$ foo \{1\} \/with\/some\/slashes/, "got replaced", "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/got replaced/, "sed replaced strange chars");
 
-sed qr/^\|\.\-\\\~'\[a\-z\]\$ BAR \{2\} \/with\/more\/slashes/i, "got another replace", "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr/^\|\.\-\\\~'\[a\-z\]\$ BAR \{2\} \/with\/more\/slashes/i, "got another replace", "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/got another replace/, "sed replaced strange chars");
 
 my @lines = split(/\n/, $content);
@@ -189,27 +194,27 @@ ok($lines[-1] =~ m/^got another replace/, "last line was successfully replaced")
 ok($lines[-2] =~ m/^got replaced/, "second last line was successfully replaced");
 ok($lines[-4] =~ m/^\{klonk\}/, "fourth last line untouched");
 
-sed qr{0606}, "6666", "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr{0606}, "6666", "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/6666/, "sed replaced 0606");
 
-sed qr{'foo'}, "'bar'", "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr{'foo'}, "'bar'", "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/'bar'/, "sed replaced 'foo'");
 
-sed qr{/etc/passwd}, "/etc/shadow", "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr{/etc/passwd}, "/etc/shadow", "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/\/etc\/shadow/, "sed replaced /etc/passwd");
 
-sed qr{"baz"}, '"boooooz"', "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr{"baz"}, '"boooooz"', "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/"boooooz"/, "sed replaced baz");
 
-sed qr/{klonk}/, '{plonk}', "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr/{klonk}/, '{plonk}', "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/{plonk}/, "sed replaced {klonk}");
 
-sed qr/{klonk}/, '{plonk}', "/tmp/test-sed.txt";
-$content = cat "/tmp/test-sed.txt";
+sed qr/{klonk}/, '{plonk}', "$tmp_dir/test-sed.txt";
+$content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/{plonk}/, "sed replaced {klonk}");
 

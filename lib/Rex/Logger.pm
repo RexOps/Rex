@@ -33,7 +33,7 @@ package Rex::Logger;
 use strict;
 use warnings;
 
-use Rex;
+#use Rex;
 
 our $no_color = 0;
 eval "use Term::ANSIColor";

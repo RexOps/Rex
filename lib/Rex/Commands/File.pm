@@ -104,7 +104,14 @@ Parse a template and return the content.
 =cut
 sub template {
    my ($file, @params) = @_;
-   my $param = { @params };
+   my $param;
+   
+   if(ref $params[0] eq "HASH") {
+      $param = $params[0];
+   }
+   else {
+      $param = { @params };
+   }
 
    if(! exists $param->{server}) {
       $param->{server} = Rex::Commands::connection()->server;

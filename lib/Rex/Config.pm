@@ -54,7 +54,8 @@ our ($user, $password, $port,
             $use_cache, $cache_type,
             $use_sleep_hack,
             $report_type,
-            $do_reporting);
+            $do_reporting,
+            $say_format);
 
 # some defaults
 %executor_for = (
@@ -63,6 +64,15 @@ our ($user, $password, $port,
    ruby   => "ruby",
    bash   => "bash",
 );
+
+sub set_say_format {
+   my $class = shift;
+   $say_format = shift;
+}
+
+sub get_say_format {
+   return $say_format;
+}
 
 sub set_do_reporting {
    my $class = shift;

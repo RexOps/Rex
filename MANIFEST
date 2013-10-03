@@ -295,6 +295,7 @@ t/ifconfig.out5
 t/ini.t
 t/interface_fs_local.t
 t/ip.out1
+t/ip.out2
 t/iptables.t
 t/last_command_output.t
 t/libvirt.t

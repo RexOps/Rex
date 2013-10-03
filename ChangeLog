@@ -1,4 +1,4 @@
-2013-10-03 Jan Gehring <jan.gehring, gmail.com> (0.43.5)
+2013-10-03 Jan Gehring <jan.gehring, gmail.com> (0.43.6)
   * fixed problem with unconfigured network devices
   * fixed return of complete cmdb
   * fixed bug with the reporting initialization

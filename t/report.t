@@ -41,7 +41,7 @@ ok($ref->[0]->{changed} == 1, "a new file was created.");
 sleep 2;
 
 Rex::TaskList->create()->get_task("test")->run("<local>");
-@files = list_files("tmp/report/_local_/");
+@files = sort { ($a =~ m/^(\d+)/) <=> ($b =~ m/^(\d+)/) } list_files("tmp/report/_local_/");
 $content = eval { local(@ARGV, $/) = ("tmp/report/_local_/$files[1]"); <>; };
 $ref = Load($content);
 

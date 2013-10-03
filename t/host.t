@@ -1,46 +1,33 @@
-package main;
+use strict;
+use warnings;
 
-use Test::More tests => 13;
+use Test::More;
+use Data::Dumper;
 
 use_ok 'Rex';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
 use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Commands::Upload';
+use_ok 'Rex::Commands::Host';
 
 Rex::Commands->import();
+Rex::Commands::Host->import();
 
-desc("Test");
-task("test", "server01", "server02", sub {
+my @content = eval { local(@ARGV) = ("t/hosts.ex"); <>; };
+my @ret = Rex::Commands::Host::_parse_hosts(@content);
 
-});
+ok($ret[0]->{host} eq "localhost", "got localhost");
+ok($ret[0]->{ip} eq "127.0.0.1", "got 127.0.0.1");
 
-desc("Test 2");
-task("test2", "fe[01..10]", sub {
+@content = eval { local(@ARGV) = ("t/hosts.ex2"); <>; };
+@ret = Rex::Commands::Host::_parse_hosts(@content);
 
+ok($ret[0]->{host} eq "localhost", "got localhost");
+ok($ret[0]->{ip} eq "127.0.0.1", "got 127.0.0.1");
+ok($ret[2]->{host} eq "rexify.org", "got rexify.org");
+ok($ret[2]->{ip} eq "1.2.3.4", "got 1.2.3.4");
 
-});
-
-desc("Test 3");
-task("test3", "fe06", "server02", sub {
-
-
-});
-
-
-
-my @tasks = Rex::TaskList->create()->get_tasks_for("server01");
-ok($tasks[0] eq "test");
-ok(scalar(@tasks) == 1);
-
-@tasks = Rex::TaskList->create()->get_tasks_for("fe06");
-ok($tasks[0] eq "test2");
-ok($tasks[1] eq "test3");
-ok(scalar(@tasks) == 2);
+@ret = get_host("rexify.org", @content);
+ok($ret[0]->{ip} eq "1.2.3.4", "got 1.2.3.4 from get_host");
+ok($ret[0]->{host} eq "rexify.org", "got rexify.org from get_host");
 
 
-1;
-
+done_testing();

@@ -41,8 +41,8 @@ ok($ref->[0]->{changed} == 1, "a new file was created.");
 sleep 2;
 
 Rex::TaskList->create()->get_task("test")->run("<local>");
-@files = list_files("tmp/report/_local_/");
-$content = eval { local(@ARGV, $/) = ("tmp/report/_local_/$files[1]"); <>; };
+@files = sort { $a =~ s/\.yml//; $b =~ s/\.yml//; $a <=> $b } list_files("tmp/report/_local_/");
+$content = eval { local(@ARGV, $/) = ("tmp/report/_local_/$files[1].yml"); <>; };
 $ref = Load($content);
 
 ok($ref->[0]->{changed} == 0, "the file was not changed");

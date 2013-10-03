@@ -288,6 +288,8 @@ t/group.t
 t/helper_hash.t
 t/helper_path.t
 t/host.t
+t/hosts.ex
+t/hosts.ex2
 t/ifconfig.out1
 t/ifconfig.out2
 t/ifconfig.out3
@@ -296,6 +298,7 @@ t/ifconfig.out5
 t/ini.t
 t/interface_fs_local.t
 t/ip.out1
+t/ip.out2
 t/iptables.t
 t/last_command_output.t
 t/libvirt.t
@@ -307,6 +310,7 @@ t/report.t
 t/shared.t
 t/ssh_config.1
 t/task.t
+t/task_hosts.t
 t/template.t
 t/test.ini
 t/url_encode.t

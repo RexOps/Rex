@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 12;
 use Data::Dumper;
 
 use_ok 'Rex::CMDB';
@@ -35,7 +35,10 @@ $dns = undef;
 $dns = get(cmdb("dns"));
 ok($dns->[0] eq "1.1.1.1" && $dns->[1] eq "2.2.2.2", "got dns from env/default.yml");
 
-
-
+my $all = get(cmdb(undef, "foo"));
+ok($all->{ntp}->[0] eq "ntp1", "got ntp1 from cmdb - all request");
+ok($all->{dns}->[1] eq "2.2.2.2", "got dns2 from cmdb - all request");
+ok($all->{vhost}->{name} eq "foohost", "got vhost name from cmdb - all request");
+ok($all->{name} eq "foo", "got name from cmdb - all request");
 
 

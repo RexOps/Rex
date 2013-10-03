@@ -29,4 +29,6 @@ sub create {
    return $report;
 }
 
+sub destroy { $report = undef; }
+
 1;

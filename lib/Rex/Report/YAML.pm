@@ -44,7 +44,10 @@ sub write_report {
       mkdir $REPORT_PATH or die($!);
    }
 
-   my $server_name = Rex::Commands::connection->server;
+   my $server_name = Rex::Commands::connection()->server;
+   if($server_name eq "<local>") {
+      $server_name = "_local_";
+   }
    if(! -d $REPORT_PATH . "/" . $server_name) {
       mkdir "$REPORT_PATH/$server_name";
    }
@@ -74,6 +77,7 @@ sub register_reporting_hooks {
       stat
       rm
       cat
+      list_files
    /;
 
    for my $mod (@modules) {

@@ -75,6 +75,11 @@ sub _parse_ip {
          inet\ (\d+\.\d+\.\d+\.\d+)/(\d+)\ brd\ (\d+\.\d+\.\d+\.\d+)%sx);
 
    if(! $ip) {
+
+      ($mac) = ($ip_lines =~ m%
+            link/.*\ (..:..:..:..:..:..)\ .*
+            %sx);
+
       return {
          ip        => '',
          netmask   => '',

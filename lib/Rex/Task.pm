@@ -654,7 +654,7 @@ sub run {
       # so run the task
 
       my $in_transaction = $options{in_transaction};
-      
+
       $self->run_hook(\$server, "before");
       $self->connect($server);
 

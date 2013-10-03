@@ -1,3 +1,4 @@
 ntp:
    - ntp1
    - ntp2
+name: defaultname

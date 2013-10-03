@@ -1,5 +1,5 @@
 use Data::Dumper;
-use Test::More tests => 26;
+use Test::More tests => 30;
 use_ok 'Rex::Hardware::Network::Linux';
 use_ok 'Rex::Helper::Hash';
 
@@ -41,9 +41,20 @@ is($info->{netmask}, "255.255.255.0", "ip / netmask");
 is($info->{broadcast}, "10.20.30.255", "ip / broadcast");
 is($info->{mac}, "aa:bb:cc:dd:ee:ff", "ip / mac");
 
+
 $f = {};
 hash_flatten({"wlp2s0" => $info}, $f, "_");
 is($f->{"wlp2s0_mac"}, "aa:bb:cc:dd:ee:ff", "ip / flatten / mac");
 is($f->{"wlp2s0_ip"}, "10.20.30.40", "ip / flatten / ip");
 is($f->{"wlp2s0_netmask"}, "255.255.255.0", "ip / flatten / netmask");
 is($f->{"wlp2s0_broadcast"}, "10.20.30.255", "ip / flatten / broadcast");
+
+$info = {};
+$in = eval { local(@ARGV, $/) = ("t/ip.out2"); <>; };
+$info = Rex::Hardware::Network::Linux::_parse_ip($in);
+
+is($info->{ip}, "", "ip / ip");
+is($info->{netmask}, "", "ip / netmask");
+is($info->{broadcast}, "", "ip / broadcast");
+is($info->{mac}, "00:1c:42:73:ad:3c", "ip / mac");
+

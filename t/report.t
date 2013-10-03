@@ -14,6 +14,13 @@ Rex::Commands->import;
 
 $::QUIET = 1; $::QUIET = 1;
 
+if($^O =~ m/^MSWin/) {
+   system("rd tmp/report");
+}
+else {
+   system("rm -rf tmp/report");
+}
+
 my $report = Rex::Report->create;
 ok(ref($report) eq "Rex::Report::Base", "created report class");
 
@@ -51,5 +58,10 @@ ok($ref->[0]->{changed} == 0, "the file was not changed");
 
 unlink "test_report.txt";
 
-rmdir("tmp");
+if($^O =~ m/^MSWin/) {
+   system("rd tmp/report");
+}
+else {
+   system("rm -rf tmp/report");
+}
 

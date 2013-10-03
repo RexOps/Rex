@@ -37,6 +37,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
+use Data::Dumper;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -64,9 +65,9 @@ sub create_host {
 
    Rex::Logger::debug("Creating host $host");
 
-   if(! get_host($host)) {
+   my @cur_host = get_host($host);
+   if(! @cur_host) {
       my $fh = file_append "/etc/hosts";
-      $fh->write("\n");
       $fh->write($data->{"ip"} . "\t" . $host);
       if(exists $data->{"aliases"}) {
          $fh->write(" " . join(" ", @{$data->{"aliases"}}));
@@ -129,17 +130,34 @@ Returns the information of $host in /etc/resolv.conf.
 =cut
 
 sub get_host {
-   my ($host) = @_;
+   my ($host, @lines) = @_;
 
    Rex::Logger::debug("Getting host ($host) information");
 
-   my $fh = file_read "/etc/hosts";
-   my @content = $fh->read_all;
-   $fh->close;
+   my @content;
+   if(@lines) {
+      @content = @lines;
+   }
+   else {
+      my $fh = file_read "/etc/hosts";
+      @content = $fh->read_all;
+      $fh->close;
+   }
 
+   return grep { $_->{host} eq $host } _parse_hosts(@content);
+}
+
+sub _parse_hosts {
+   my (@lines) = @_;
+   
    my @ret;
 
-   for my $line (grep { /\s$host\s?/ } grep { ! /^#/ } @content) {
+   for my $line (@lines) {
+      chomp $line;
+      next if($line =~ m/^#/);
+      next if(! $line);
+      next if($line =~ m/^\s*$/);
+
       my ($ip, $_host, @aliases) = split(/\s+/, $line);
 
       push @ret, { ip => $ip,

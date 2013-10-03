@@ -1147,7 +1147,11 @@ sub profiler {
    return $c_profiler;
 }
 
-=item report($string)
+=item report($switch, $type)
+
+This function will initialize the reporting.
+
+ report -on => "YAML";
 
 =cut
 sub report {
@@ -1157,7 +1161,11 @@ sub report {
    Rex::Config->set_report_type($type);
 
    if($str eq "-on" || $str eq "on") {
-      # just a dummy
+      Rex::Config->set_do_reporting(1);
+      return;
+   }
+   elsif($str eq "-off" || $str eq "off") {
+      Rex::Config->set_do_reporting(0);
       return;
    }
 

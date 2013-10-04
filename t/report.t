@@ -15,7 +15,7 @@ Rex::Commands->import;
 $::QUIET = 1; $::QUIET = 1;
 
 if($^O =~ m/^MSWin/) {
-   system("rd tmp/report");
+   system("rd /Q /S tmp\\report");
 }
 else {
    system("rm -rf tmp/report");
@@ -59,7 +59,7 @@ ok($ref->[0]->{changed} == 0, "the file was not changed");
 unlink "test_report.txt";
 
 if($^O =~ m/^MSWin/) {
-   system("rd tmp/report");
+   system("rd /Q /S tmp\\report");
 }
 else {
    system("rm -rf tmp/report");

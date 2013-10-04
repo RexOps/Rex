@@ -75,6 +75,7 @@ use Rex::File::Parser::Data;
 use Rex::Helper::System;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
+use Rex::Hook;
 
 use Rex::Interface::Exec;
 use Rex::Interface::File;
@@ -213,6 +214,19 @@ If I<source> is relative it will search from the location of your I<Rexfile> or 
 =cut
 sub file {
    my ($file, @options) = @_;
+
+   #### check and run before hook
+   eval {
+      my @new_args = Rex::Hook::run_hook(file => "before", @_);
+      if(@new_args) {
+         ($file, @options) = @new_args;
+      }
+      1;
+   } or do {
+      die("Before-Hook failed. Canceling file() action: $@");
+   };
+   ##############################
+
    my $option = { @options };
 
    my $need_md5 = ($option->{"on_change"} ? 1 : 0);
@@ -268,16 +282,25 @@ sub file {
             my $fh = file_write($file);
             $fh->write("");
             $fh->close;
-            return {changed => 1};
+            $__ret = {changed => 1};
          }
-         return {changed => 0};
+         else {
+            $__ret = {changed => 0};
+         }
       }
       elsif($option->{ensure} eq "absent") {
+         $need_md5 = 0;
+         delete $option->{mode};
+         delete $option->{group};
+         delete $option->{owner};
+
          if($fs->is_file()) {
             $fs->unlink($file);
-            return {changed => 1};
+            $__ret = {changed => 1};
          }
-         return {changed => 0};
+         else {
+            $__ret = {changed => 0};
+         }
       }
    }
    else {
@@ -321,6 +344,10 @@ sub file {
          return {changed => 1};
       }
    }
+
+   #### check and run before hook
+   Rex::Hook::run_hook(file => "after", @_, $__ret);
+   ##############################
 
    return $__ret;
 }

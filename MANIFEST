@@ -63,8 +63,8 @@ lib/Rex/Fork/Task.pm
 lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Group/Entry/Server.pm
-lib/Rex/Group/Lookup/File.pm
 lib/Rex/Group/Lookup/Command.pm
+lib/Rex/Group/Lookup/File.pm
 lib/Rex/Group/Lookup/INI.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm
@@ -306,6 +306,7 @@ t/needs.t
 t/network_linux.t
 t/no_tty.t
 t/partition.t
+t/path.t
 t/report.t
 t/shared.t
 t/ssh_config.1

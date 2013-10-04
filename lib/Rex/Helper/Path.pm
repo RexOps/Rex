@@ -20,7 +20,9 @@ require Rex::Commands;
 require Rex::Config;
 require Rex;
 
-@EXPORT = qw(get_file_path get_tmp_file);
+use Rex::Interface::Exec;
+
+@EXPORT = qw(get_file_path get_tmp_file resolv_path);
 
 #
 # CALL: get_file_path("foo.txt", caller());
@@ -100,6 +102,37 @@ sub get_tmp_file {
    }
 
    return $rnd_file;
+}
+
+sub resolv_path {
+   my ($path, $local) = @_;
+
+   if($path !~ m/^~/) {
+      # path starts not with ~ so we don't need to expand $HOME.
+      # just return it.
+      return $path;
+   }
+
+   my $home_path;
+   if($local) {
+      if($^O =~ m/^MSWin/) {
+         # windows path:
+         $home_path = $ENV{'USERPROFILE'};
+      }
+      else {
+         $home_path = $ENV{'HOME'};
+      }
+   }
+   else {
+      my $exec = Rex::Interface::Exec->create;
+      my $remote_home = $exec->exec("echo \$HOME");
+      $remote_home =~ s/[\r\n]//gms;
+      $home_path = $remote_home;
+   }
+
+   $path =~ s/^~/$home_path/;
+
+   return $path;
 }
 
 1;

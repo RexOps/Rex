@@ -176,7 +176,7 @@ sub upload {
    Rex::Hook::run_hook(upload => "after", @_, $__ret);
    ##############################
 
-   return $ret;
+   return $__ret;
 }
 
 =back

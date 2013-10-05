@@ -44,6 +44,7 @@ use Rex::Commands::Upload;
 use Rex::Commands::Run;
 use Rex::Config;
 use Rex::Commands;
+use Rex::Hook;
 
 use Data::Dumper;
 use Digest::MD5;
@@ -129,6 +130,20 @@ sub install {
       return "install";
    }
 
+   #### check and run before hook
+   my @orig_params = @_;
+   eval {
+      my @new_args = Rex::Hook::run_hook(install => "before", @_);
+      if(@new_args) {
+         @_ = @new_args;
+      }
+      1;
+   } or do {
+      die("Before-Hook failed. Canceling install() action: $@");
+   };
+   ##############################
+
+
    my $type = shift;
    my $package = shift;
    my $option;
@@ -149,6 +164,7 @@ sub install {
       my $source    = $option->{"source"};
       my $need_md5  = ($option->{"on_change"} ? 1 : 0);
       my $on_change = $option->{"on_change"} || sub {};
+      my $__ret;
 
       my ($new_md5, $old_md5) = ("", "");
       
@@ -241,6 +257,7 @@ sub install {
 
    elsif($type eq "package") {
       
+
       if(ref($_[0]) eq "HASH") {
          $option = shift;
       }
@@ -260,13 +277,22 @@ sub install {
       for my $pkg_to_install (@{$package}) {
          unless($pkg->is_installed($pkg_to_install)) {
             Rex::Logger::info("Installing $pkg_to_install.");
+
+            #### check and run before_change hook
+            Rex::Hook::run_hook(install => "before_change", @orig_params);
+            ##############################
+
             $pkg->install($pkg_to_install, $option);
             $changed = 1;
+
+            #### check and run after_change hook
+            Rex::Hook::run_hook(install => "after_change", @orig_params, {changed => $changed});
+            ##############################
          }
       }
      
       if(Rex::Config->get_do_reporting) {
-         return {changed => $changed};
+         $__ret = {changed => $changed};
       }
  
    }
@@ -275,9 +301,15 @@ sub install {
       install("package", $type, $package, @_); 
 
       if(Rex::Config->get_do_reporting) {
-         return {skip => 1};
+         $__ret = {skip => 1};
       }
    }
+
+   #### check and run after hook
+   Rex::Hook::run_hook(install => "after", @orig_params, $__ret);
+   ##############################
+
+   return $__ret;
 
 }
 

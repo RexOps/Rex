@@ -221,11 +221,11 @@ This gets executed before everything is done. The return value of this hook over
 
 =item before_change
 
-This gets executed right before the new file is written.
+This gets executed right before the new file is written. Only with I<content> parameter. For the I<source> parameter the hook of the upload function is used.
 
 =item after_change
 
-This gets executed right after the file was written.
+This gets executed right after the file was written. Only with I<content> parameter. For the I<source> parameter the hook of the upload function is used.
 
 =item after
 
@@ -310,15 +310,8 @@ sub file {
    elsif(exists $option->{"source"}) {
       $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
 
-      #### check and run before_change hook
-      Rex::Hook::run_hook(file => "before_change", @_);
-      ##############################
-
-      $__ret = upload $option->{"source"}, "$file";
-
-      #### check and run after_change hook
-      Rex::Hook::run_hook(file => "after_change", @_, $__ret);
-      ##############################
+      # HOOKS: for this case you have to use the upload hooks!
+      $__ret = upload $option->{"source"}, "$file", force => 1;
    }
 
    if(exists $option->{"ensure"}) {

@@ -37,6 +37,7 @@ use Rex::Interface::Fs;
 use Rex::Helper::Path;
 use Rex::Commands::MD5;
 use Rex::Commands;
+use Rex::Hook;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -51,11 +52,47 @@ Perform an upload. If $remote is a directory the file will be uploaded to that d
     upload "localfile", "/path";
  };
 
+
+This function supports the following hooks:
+
+=over 8 
+
+=item before
+
+This gets executed before everything is done. The return value of this hook overwrite the original parameters of the function-call.
+
+=item before_change
+
+This gets executed right before the new file is written.
+
+=item after_change
+
+This gets executed right after the file was written.
+
+=item after
+
+This gets executed right before the upload() function returns.
+
+=back
+
+
 =cut
 
 sub upload {
-   my $local = shift;
-   my $remote = shift;
+
+   #### check and run before hook
+   eval {
+      my @new_args = Rex::Hook::run_hook(upload => "before", @_);
+      if(@new_args) {
+         @_ = @new_args;
+      }
+      1;
+   } or do {
+      die("Before-Hook failed. Canceling upload() action: $@");
+   };
+   ##############################
+
+   my ($local, $remote) = @_;
 
 
    my $fs = Rex::Interface::Fs->create;
@@ -107,20 +144,37 @@ sub upload {
       $remote_md5 = md5($remote);
    };
 
+   my $__ret;
+
    if($local_md5 && $remote_md5 && $local_md5 eq $remote_md5) {
       Rex::Logger::debug("local md5 and remote md5 are the same: $local_md5 eq $remote_md5. Not uploading.");
       if(Rex::Config->get_do_reporting) {
-         return {changed => 0};
+         $__ret = {changed => 0, ret => 0};
       }
    }
+   else {
 
-   Rex::Logger::debug("Uploading: $local to $remote");
+      Rex::Logger::debug("Uploading: $local to $remote");
 
-   my $ret = $fs->upload($local, $remote);
+      #### check and run before_change hook
+      Rex::Hook::run_hook(upload => "before_change", @_);
+      ##############################
 
-   if(Rex::Config->get_do_reporting) {
-      return {changed => 1};
+      $__ret = $fs->upload($local, $remote);
+
+      #### check and run after_change hook
+      Rex::Hook::run_hook(upload => "after_change", @_, $__ret);
+      ##############################
+
+      if(Rex::Config->get_do_reporting) {
+         $__ret = {changed => 1, ret => $__ret };
+      }
+
    }
+
+   #### check and run before hook
+   Rex::Hook::run_hook(upload => "after", @_, $__ret);
+   ##############################
 
    return $ret;
 }

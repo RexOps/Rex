@@ -255,7 +255,7 @@ sub service {
       }
 
       #### check and run after_$action hook
-      Rex::Hook::run_hook(service => "after_$action", @_, {changed => $changed, ret => $ret});
+      Rex::Hook::run_hook(service => "after_$action", @_, {changed => $changed, ret => $return});
       ##############################
 
    }

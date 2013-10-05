@@ -169,6 +169,7 @@ sub install {
    my $type = shift;
    my $package = shift;
    my $option;
+   my $__ret;
 
    if($type eq "file") {
 

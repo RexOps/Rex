@@ -122,6 +122,28 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
 
 =back
 
+This function supports the following hooks:
+
+=over 8 
+
+=item before
+
+This gets executed before everything is done. The return value of this hook overwrite the original parameters of the function-call.
+
+=item before_change
+
+This gets executed right before the new package is installed. This hook is only available for package installations. If you need file hooks, you have to use the file() function.
+
+=item after_change
+
+This gets executed right after the new package was installed. This hook is only available for package installations. If you need file hooks, you have to use the file() function.
+
+=item after
+
+This gets executed right before the install() function returns.
+
+=back
+
 =cut
 
 sub install {

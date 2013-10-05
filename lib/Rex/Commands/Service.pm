@@ -51,6 +51,7 @@ use base qw(Rex::Exporter);
 use Rex::Service;
 use Rex::Logger;
 use Rex::Config;
+use Rex::Hook;
 
 @EXPORT = qw(service service_provider_for);
 
@@ -109,6 +110,26 @@ The service function accepts 2 parameters. The first is the service name and the
     service apache2 => "ensure", "stopped";
  };
 
+
+This function supports the following hooks:
+
+=over 8
+
+
+=item before_I<action>
+
+For example: before_start, before_stop, before_restart
+
+This gets executed right before the service action.
+
+=item after_I<action>
+
+For example: after_start, after_stop, after_restart
+
+This gets executed right after the service action.
+
+=back
+
 =back
 
 =cut
@@ -136,6 +157,12 @@ sub service {
    my $changed = 0;
    my $return = 1;
    for my $service (@$services) {
+
+      #### check and run before_$action hook
+      Rex::Hook::run_hook(service => "before_$action", @_);
+      ##############################
+
+
       if($action eq "start") {
 
          unless($srvc->status($service)) {
@@ -226,6 +253,11 @@ sub service {
          $srvc->action($service, $action);
          $changed = 100;
       }
+
+      #### check and run after_$action hook
+      Rex::Hook::run_hook(service => "after_$action", @_, {changed => $changed, ret => $ret});
+      ##############################
+
    }
 
    if(Rex::Config->get_do_reporting) {

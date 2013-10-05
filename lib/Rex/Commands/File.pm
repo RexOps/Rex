@@ -211,6 +211,28 @@ This function is the successor of I<install file>. Please use this function to u
 
 If I<source> is relative it will search from the location of your I<Rexfile> or the I<.pm> file if you use Perl packages.
 
+This function supports the following hooks:
+
+=over 8 
+
+=item before
+
+This gets executed before everything is done. The return value of this hook overwrite the original parameters of the function-call.
+
+=item before_change
+
+This gets executed right before the new file is written.
+
+=item after_change
+
+This gets executed right after the file was written.
+
+=item after
+
+This gets executed right before the file() function returns.
+
+=back
+
 =cut
 sub file {
    my ($file, @options) = @_;
@@ -268,21 +290,54 @@ sub file {
       else {
          $old_md5 ||= "";
          Rex::Logger::debug("Need to use the new file. md5 sums are different. <<$old_md5>> = <<$new_md5>>");
+
+         #### check and run before_change hook
+         Rex::Hook::run_hook(file => "before_change", @_);
+         ##############################
+
+
          $fs->rename($tmp_file_name, $file);
          $__ret = {changed => 1};
+
+         #### check and run after_change hook
+         Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+         ##############################
+
       }
+
+
    }
    elsif(exists $option->{"source"}) {
       $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
+
+      #### check and run before_change hook
+      Rex::Hook::run_hook(file => "before_change", @_);
+      ##############################
+
       $__ret = upload $option->{"source"}, "$file";
+
+      #### check and run after_change hook
+      Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+      ##############################
    }
-   elsif(exists $option->{"ensure"}) {
+
+   if(exists $option->{"ensure"}) {
       if($option->{ensure} eq "present") {
          if(! $fs->is_file($file)) {
+
+            #### check and run before_change hook
+            Rex::Hook::run_hook(file => "before_change", @_);
+            ##############################
+
             my $fh = file_write($file);
             $fh->write("");
             $fh->close;
             $__ret = {changed => 1};
+
+            #### check and run after_change hook
+            Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+            ##############################
+
          }
          else {
             $__ret = {changed => 0};
@@ -294,21 +349,41 @@ sub file {
          delete $option->{group};
          delete $option->{owner};
 
-         if($fs->is_file()) {
+         #### check and run before_change hook
+         Rex::Hook::run_hook(file => "before_change", @_);
+         ##############################
+
+         if($fs->is_file($file)) {
             $fs->unlink($file);
             $__ret = {changed => 1};
          }
          else {
             $__ret = {changed => 0};
          }
+
+         #### check and run after_change hook
+         Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+         ##############################
+
       }
    }
-   else {
+
+   if(! exists $option->{content} && ! exists $option->{source}) {
       # no content and no source, so just verify that the file is present
       if(! $fs->is_file($file)) {
+
+         #### check and run before_change hook
+         Rex::Hook::run_hook(file => "before_change", @_);
+         ##############################
+
          my $fh = file_write($file);
          $fh->write("");
          $fh->close;
+
+         #### check and run after_change hook
+         Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+         ##############################
+
       }
    }
 

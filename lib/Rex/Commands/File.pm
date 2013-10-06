@@ -708,70 +708,44 @@ sub append_if_no_such_line {
       $old_md5 = md5($file);
    }
 
-   if(0) {
-      # i don't like this next line...
-      # normalizing regexp serialization for older perl versions
-      for (@m) {
-         $_ = _normalize_regexp($_);
-      }
+   # slow but secure way
+   my @content;
+   eval {
+      @content = split(/\n/, cat($file));
+      1;
+   } or do {
+      $ret = 1;
+   };
 
-      if ( !@m ) {
-         push @m, qr{\Q$new_line\E};
-         $m[-1] =~ s/^\(\?\^/\(\?/;
-      }
-
-      $new_line =~ s/'/\\\'/gms;
-
-      my $template = template(get_file_path("templates/append_if_no_such_line.tpl.pl"),
-         line => $new_line,
-         regex => \@m,
-         file => $file,
-         __no_sys_info__ => 1);
-
-      my $f = upload_and_run $template, with => "perl";
-      $ret = $?;
-
+   if ( !@m ) {
+      push @m, qr{\Q$new_line\E};
    }
-   else {
-      # slow but secure way
-      my @content;
-      eval {
-         @content = split(/\n/, cat($file));
-         1;
-      } or do {
-         $ret = 1;
-      };
 
-      if ( !@m ) {
-         push @m, qr{\Q$new_line\E};
-      }
-
-      for my $line (@content) {
-         for my $match (@m) {
-            if(ref($match) ne "Regexp") {
-               $match = qr{$match};
-            }
-            if ( $line =~ $match ) {
-               return 0;
-            }
+   for my $line (@content) {
+      for my $match (@m) {
+         if(ref($match) ne "Regexp") {
+            $match = qr{$match};
+         }
+         if ( $line =~ $match ) {
+            return 0;
          }
       }
-
-      push @content, "$new_line\n";
-
-      eval {
-         my $fh = file_write $file;
-         unless($fh) {
-            die("can't open file for writing");
-         }
-         $fh->write(join("\n", @content));
-         $fh->close;
-         $ret = 0;
-         1;
-      } or do {
-         $ret = 3;
-      };
    }
+
+   push @content, "$new_line\n";
+
+   eval {
+      my $fh = file_write $file;
+      unless($fh) {
+         die("can't open file for writing");
+      }
+      $fh->write(join("\n", @content));
+      $fh->close;
+      $ret = 0;
+      1;
+   } or do {
+      $ret = 3;
+   };
 
    if ($ret==1) {
       die("Can't open $file for reading");
@@ -809,12 +783,12 @@ This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, 
       group => "root",
       to    => "/etc";
 
-    extract "/tmp/foo",
+    extract "/tmp/foo.tgz",
       type => "tgz",
       mode => "g+rwX";
  };
  
-Can use the type => option if the file suffix doesn't reflect what the file really is. (types are tar, tgz, tbz, zip, gz, bz2)
+Can use the type=> option if the file suffix has been changed. (types are tar, tgz, tbz, zip, gz, bz2)
 
 =cut
 sub extract {
@@ -895,87 +869,13 @@ sub sed {
    my $option = { @options };
 
    my $perl = can_run("perl");
-   if(0) {
-      # if perl is available use it
-      my $on_change = $option->{"on_change"} || undef;
-      my $exec = Rex::Interface::Exec->create;
+   Rex::Logger::debug("Falling back to local sed mode");
+   my @content = split(/\n/, cat($file));
 
-      Rex::Logger::debug("[in ] search : $search");
-      Rex::Logger::debug("[in ] replace: $replace");
+   my $on_change = $option->{"on_change"} || undef;
+   map { s/$search/$replace/ } @content; 
 
-      $search  = _shell_escape(_normalize_regexp($search));
-      $replace = _shell_escape(_normalize_regexp_rep_string($replace));
-
-      Rex::Logger::debug("[out] search : $search");
-      Rex::Logger::debug("[out] replace: $replace");
-
-      my $cmd = "perl -lne \\\$r\"=qr/$search/; s/\"\\\$r\"/$replace/; print;\" -i '$file'";
-
-      my ($old_md5, $new_md5);
-
-      if($on_change) {
-         $old_md5 = md5($file);
-      }
-
-      $exec->exec($cmd);
-
-      if($on_change) {
-         $new_md5 = md5($file);
-      }
-
-      if($on_change && ($old_md5 ne $new_md5)) {
-         &$on_change($file);
-      }
-   }
-   else {
-      Rex::Logger::debug("Falling back to local sed mode");
-      my @content = split(/\n/, cat($file));
-
-      my $on_change = $option->{"on_change"} || undef;
-      map { s/$search/$replace/ } @content; 
-
-      file($file, content => join("\n", @content), on_change => $on_change);
-   }
-}
-
-sub _normalize_regexp {
-   my ($str) = @_;
-
-   $str =~ s/^\(\?\^/\(\?/;
-   $str =~ s/\//\\\//g;
-
-   return $str;
-}
-
-sub _normalize_regexp_rep_string {
-   my ($str) = @_;
-
-   $str =~ s/\\/\\\\\\/g;
-   $str =~ s/\//\\\//g;
-
-   return $str;
-}
-
-sub _template_escape {
-   my ($str) = @_;
-
-#   $reg =~ s/\{/\\{/g;
-#   $reg =~ s/\}/\\}/g;
-
-   $str =~ s/'/\\'/g;
-   $str =~ s/\\\$/\\\\\$/g;
-
-   return $str;
-}
-
-sub _shell_escape {
-   my ($str) = @_;
-
-   $str =~ s/"/"\\""/g;
-   #$str =~ s/\$/\\\\\\\$/g;
-   $str =~ s/\$/"\\\\\\\$"/g;
-
-   return $str;
+   file($file, content => join("\n", @content), on_change => $on_change);
 }
 
 =back

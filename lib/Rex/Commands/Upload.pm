@@ -157,13 +157,13 @@ sub upload {
       Rex::Logger::debug("Uploading: $local to $remote");
 
       #### check and run before_change hook
-      Rex::Hook::run_hook(upload => "before_change", @_);
+      Rex::Hook::run_hook(upload => "before_change", $local, $remote);
       ##############################
 
       $__ret = $fs->upload($local, $remote);
 
       #### check and run after_change hook
-      Rex::Hook::run_hook(upload => "after_change", @_, $__ret);
+      Rex::Hook::run_hook(upload => "after_change", $local, $remote, $__ret);
       ##############################
 
       if(Rex::Config->get_do_reporting) {

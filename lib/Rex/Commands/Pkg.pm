@@ -295,9 +295,12 @@ sub install {
       if(!ref($package)) {
          $package = [$package];
       }
-
+      
       my $changed = 0;
-      for my $pkg_to_install (@{$package}) {
+      
+      # if we're being asked to install a single package
+      if(@{$package} == 1) {
+         my $pkg_to_install = shift @{$package};
          unless($pkg->is_installed($pkg_to_install)) {
             Rex::Logger::info("Installing $pkg_to_install.");
 
@@ -312,7 +315,21 @@ sub install {
             Rex::Hook::run_hook(install => "after_change", @orig_params, {changed => $changed});
             ##############################
          }
+      } else {
+         my @pkgCandidates;
+         for my $pkg_to_install (@{$package}) {
+            unless($pkg->is_installed($pkg_to_install)) {
+               push @pkgCandidates, $pkg_to_install;
+            }
+         }
+         
+         if(@pkgCandidates) {
+            Rex::Logger::info("Installing @pkgCandidates");
+            $pkg->bulk_install(\@pkgCandidates, $option); # here, i think $option is useless in its current form.
+            $changed = 1;
+         } 
       }
+         
      
       if(Rex::Config->get_do_reporting) {
          $__ret = {changed => $changed};

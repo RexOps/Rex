@@ -94,6 +94,8 @@ sub upload {
 
    my ($local, $remote) = @_;
 
+   $local  = resolv_path($local);
+   $remote = resolv_path($remote);
 
    my $fs = Rex::Interface::Fs->create;
 

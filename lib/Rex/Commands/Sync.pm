@@ -64,6 +64,9 @@ use Rex::Helper::Path;
 sub sync_up {
    my ($source, $dest, $options) = @_;
 
+   $source = resolv_path($source);
+   $dest   = resolv_path($dest);
+
    #
    # 0. normalize local path
    #
@@ -159,6 +162,9 @@ sub sync_up {
 
 sub sync_down {
    my ($source, $dest, $options) = @_;
+
+   $source = resolv_path($source);
+   $dest   = resolv_path($dest);
 
    #
    # first, get all files on dest side

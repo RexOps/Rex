@@ -106,6 +106,8 @@ Parse a template and return the content.
 sub template {
    my ($file, @params) = @_;
    my $param;
+
+   $file = resolv_path($file);
    
    if(ref $params[0] eq "HASH") {
       $param = $params[0];
@@ -237,11 +239,20 @@ This gets executed right before the file() function returns.
 sub file {
    my ($file, @options) = @_;
 
+   my $option = { @options };
+
+   $file = resolv_path($file);
+
+   if(exists $option->{source}) {
+      $option->{source} = resolv_path($option->{source});
+   }
+
    #### check and run before hook
    eval {
       my @new_args = Rex::Hook::run_hook(file => "before", @_);
       if(@new_args) {
          ($file, @options) = @new_args;
+         $option = { @options };
       }
       1;
    } or do {
@@ -249,7 +260,6 @@ sub file {
    };
    ##############################
 
-   my $option = { @options };
 
    my $need_md5 = ($option->{"on_change"} ? 1 : 0);
    my $on_change = $option->{"on_change"} || sub {};

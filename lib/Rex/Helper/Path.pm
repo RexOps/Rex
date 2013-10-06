@@ -31,6 +31,8 @@ use Rex::Interface::Exec;
 sub get_file_path {
    my ($file_name, $caller_package, $caller_file) = @_;
 
+   $file_name = resolv_path($file_name);
+
    if(! $caller_package) {
       ($caller_package, $caller_file) = caller();
    }

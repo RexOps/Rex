@@ -219,7 +219,7 @@ sub ps {
 Renice a process identified by $pid with the priority $level.
 
  task "renice", "server01", sub {
-    renice (153, -5);
+    nice (153, -5);
  };
 
 =cut

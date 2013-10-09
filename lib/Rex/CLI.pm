@@ -93,6 +93,7 @@ sub __run__ {
       P => { type => "string" },
       K => { type => "string" },
       G => { type => "string" },
+      z => { type => "string" },
       t => { type => "integer" },
       %more_args,
    );
@@ -171,6 +172,18 @@ sub __run__ {
          }
       }
 
+   }
+
+   if ($opts{'z'}) {
+      my $host_eval = eval {
+         `$opts{'z'}`;
+      };
+      if ($host_eval =~ m/\S/xms) {
+         $::FORCE_SERVER = join(" ", split /\n|,|;/, $host_eval);
+      }
+      else {
+         Rex::Logger::info("you must give a valid command.");
+      }
    }
 
    if($opts{'o'}) {
@@ -535,6 +548,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-e", "Run the given code fragment";
    printf "  %-15s %s\n", "-E", "Execute task on the given environment";
    printf "  %-15s %s\n", "-H", "Execute task on these hosts";
+   printf "  %-15s %s\n", "-z", "Execute task on hosts from this command's output";
    printf "  %-15s %s\n", "-G", "Execute task on these group";
    printf "  %-15s %s\n", "-u", "Username for the ssh connection";
    printf "  %-15s %s\n", "-p", "Password for the ssh connection";

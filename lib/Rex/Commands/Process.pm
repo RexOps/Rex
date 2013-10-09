@@ -40,7 +40,7 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(kill killall
-               ps
+               ps pstree
                nice);
 
 
@@ -161,6 +161,45 @@ sub ps {
    }
 
    return @ret;
+}
+
+
+=item pstree
+
+Will return all fields of a I<pstree <param>>.
+
+ task "pstree", "server01", sub {
+    for my $process (pstree("<param>")) {
+      say $process;
+    }
+ };
+
+=cut
+
+sub pstree {
+   my $param = shift;
+   my @list;
+
+   use Rex::Commands::User;
+
+   unless (!get_user($param) || ($param =~ m/^\d+$/xms && run("kill -0 " . $param. " && echo \$?") eq 0)) {
+      Rex::Logger::info("$param not exists or not permitted.", "warn");
+      return @list;
+   }
+
+
+   if(operating_system_is("SunOS") && operating_system_version() <= 510) {
+      @list = run("/usr/ucb/pstree $param");
+   }
+   else {
+      @list = run("pstree $param");
+   }
+
+   if($? != 0) {
+      die("Error running pstree");
+   }
+
+   return @list;
 }
 
 

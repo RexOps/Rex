@@ -130,9 +130,9 @@ Returns the information of $host in /etc/resolv.conf.
 =cut
 
 sub get_host {
-   my ($host, @lines) = @_;
+   my ($hostname, @lines) = @_;
 
-   Rex::Logger::debug("Getting host ($host) information");
+   Rex::Logger::debug("Getting host ($hostname) information");
 
    my @content;
    if(@lines) {
@@ -144,7 +144,19 @@ sub get_host {
       $fh->close;
    }
 
-   return grep { $_->{host} eq $host } _parse_hosts(@content);
+   my @hosts = _parse_hosts(@content);
+   my @ret;
+   for my $item (@hosts) {
+      if($item->{host} eq $hostname) {
+         push @ret, $item;
+         next; # we've got a match, move on.
+      }
+      else {
+         push @ret, $item if(grep { $_ eq $hostname } @{$item->{aliases}});
+      }
+   }
+
+   return @ret;
 }
 
 sub _parse_hosts {

@@ -17,6 +17,10 @@ my @ret = Rex::Commands::Host::_parse_hosts(@content);
 ok($ret[0]->{host} eq "localhost", "got localhost");
 ok($ret[0]->{ip} eq "127.0.0.1", "got 127.0.0.1");
 
+@ret = get_host("mango", @content);
+ok($ret[0]->{ip} eq "192.168.2.23", "got 192.168.2.23 by alias");
+ok($ret[0]->{host} eq "mango.rexify.org", "got mango.rexify.org by alias");
+
 @content = eval { local(@ARGV) = ("t/hosts.ex2"); <>; };
 @ret = Rex::Commands::Host::_parse_hosts(@content);
 

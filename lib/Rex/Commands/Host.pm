@@ -149,7 +149,6 @@ sub get_host {
    for my $item (@hosts) {
       if($item->{host} eq $hostname) {
          push @ret, $item;
-         next; # we've got a match, move on.
       }
       else {
          push @ret, $item if(grep { $_ eq $hostname } @{$item->{aliases}});

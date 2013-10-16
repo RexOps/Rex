@@ -45,10 +45,9 @@ sub get_user {
       password => $data[1],
       uid => $data[2],
       gid => $data[3],
-      comment => $data[5],
+      comment => $data[6],
       home => $data[7],
       shell => $data[8],
-      expire => exists $data[9]?$data[9]:0,
    );
 }
 

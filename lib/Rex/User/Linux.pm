@@ -155,7 +155,7 @@ sub create_user {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
-      $fh->write("echo '$user:" . $data->{password} . "' | /usr/sbin/chpasswd\nexit \$?\n");
+      $fh->write("/bin/echo -e '" . $data->{password} . "\\n" . $data->{password} . "' | /usr/bin/passwd $user\nexit \$?\n");
       $fh->close;
 
       Rex::Logger::debug("Changing password of $user.");

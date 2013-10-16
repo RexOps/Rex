@@ -51,20 +51,6 @@ sub get_user {
    );
 }
 
-sub rm_user {
-   my ($self, $user, $data) = @_;
-
-   Rex::Logger::debug("Removing user $user");
-
-   my $user_info = $self->get_user($user);
-
-   if(exists $data->{delete_home} && $user_info->{home} && is_dir($user_info->{home})) {
-      rmdir $user_info->{home};
-   }
-
-   i_run "sed -i '/^$user:.*/d' /etc/passwd /etc/shadow";
-}
-
 sub user_groups {
    my ($self, $user) = @_;
 
@@ -84,11 +70,5 @@ sub user_groups {
 
    return split(/ /, $data_str);
 }
-
-sub rm_group {
-   my ($self, $group) = @_;
-   i_run "sed -i '/^$group:.*/d' /etc/group";
-}
-
 
 1;

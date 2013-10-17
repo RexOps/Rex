@@ -71,4 +71,17 @@ sub user_groups {
    return split(/ /, $data_str);
 }
 
+sub user_list {
+   my $self = shift;
+
+   Rex::Logger::debug("Getting user list");
+
+   my $data_str = i_run "cut -d':' -f1 /etc/passwd";
+   if($? != 0) {
+      die("Error getting user list");
+   }
+
+   return split(/\n/, $data_str);
+}
+
 1;

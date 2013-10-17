@@ -246,7 +246,7 @@ sub user_groups {
 
    my $data_str = i_run "perl $rnd_file $user";
    if($? != 0) {
-      die("Error getting  user list");
+      die("Error getting group list");
    }
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
@@ -280,7 +280,7 @@ sub user_list {
 
    my $data_str = i_run "perl $rnd_file";
    if($? != 0) {
-      die("Error getting  user list");
+      die("Error getting user list");
    }
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
@@ -307,7 +307,7 @@ sub get_user {
 
    my $data_str = i_run "perl $rnd_file $user";
    if($? != 0) {
-      die("Error getting  user information for $user");
+      die("Error getting user information for $user");
    }
 
    Rex::Interface::Fs->create()->unlink($rnd_file);

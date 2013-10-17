@@ -58,7 +58,7 @@ sub user_groups {
 
    my $data_str = i_run "/usr/bin/id -Gn $user";
    if($? != 0) {
-      die("Error getting  user list");
+      die("Error getting group list");
    }
 
    my $wantarray = wantarray();

@@ -105,6 +105,8 @@ sub kmod {
 
          return $cmd;
       };
+   } elsif($os eq "OpenWrt") {
+      $load_command = "insmod";
    }
 
 

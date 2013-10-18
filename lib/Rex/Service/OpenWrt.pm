@@ -29,8 +29,13 @@ sub new {
 sub status {
    my($self, $service) = @_;
 
-   Rex::Logger::info("status on openwrt not available.", "warn");
-   return 1;
+   i_run "/sbin/start-stop-daemon -K -t -q -n $service";
+
+   if($? == 0) {
+      return 1;
+   }
+
+   return 0;
 }
 
 sub ensure {

@@ -453,6 +453,19 @@ sub is_openwrt {
 
 }
 
+=item is_gentoo
+
+Returns true if the target system is a Gentoo System.
+
+=cut
+sub is_gentoo {
+   my $os = get_operating_system();
+   if($os =~ m/Gentoo/i) {
+      return 1;
+   }
+
+}
+
 =back
 
 =cut

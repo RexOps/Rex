@@ -33,6 +33,9 @@ This module can sync directories between your Rex system and your servers withou
           group => "bar",
           mode  => 700,
        },
+       on_change => sub {
+         my (@files_changed) = @_;
+       },
     };
      
     # download a directory recursively from the remote system to the local machine
@@ -158,6 +161,11 @@ sub sync_up {
       }
    }
 
+   if(exists $options->{on_change} && ref $options->{on_change} eq "CODE" && scalar(@diff) > 0) {
+      Rex::Logger::debug("Calling on_change hook of sync_up");
+      $options->{on_change}->(@diff);
+   }
+
 }
 
 sub sync_down {
@@ -216,6 +224,10 @@ sub sync_down {
       };
    }
 
+   if(exists $options->{on_change} && ref $options->{on_change} eq "CODE" && scalar(@diff) > 0) {
+      Rex::Logger::debug("Calling on_change hook of sync_up");
+      $options->{on_change}->(@diff);
+   }
 
 }
 

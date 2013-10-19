@@ -135,6 +135,11 @@ sub get_connection_object {
 
 sub get_fs_connection_object {
    my ($self) = @_;
+   if(! defined $self->{sftp}) {
+      Rex::Logger::info("It seems that you haven't installed or configured sftp on your server.", "warn");
+      Rex::Logger::info("Rex needs sftp for file operations, so please install one.", "warn");
+      die("No SFTP server found on remote host.");
+   }
    return $self->{sftp};
 }
 

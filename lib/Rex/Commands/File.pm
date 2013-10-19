@@ -568,7 +568,6 @@ sub delete_lines_matching {
 
 
       for my $match (@m) {
-         $match = _normalize_regexp($match);
          my $cmd = "perl -lne '\$r=qr{$match}; print unless (\$_ =~ \$r)' -i '$file'";
          $exec->exec($cmd);
       }

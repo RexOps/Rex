@@ -538,6 +538,8 @@ sub connect {
    #print Dumper($self);
    my $auth = $self->merge_auth($server);
 
+   my $rex_int_conf = Rex::Commands::get("rex_internals");
+   Rex::Logger::debug(Dumper($rex_int_conf));
    Rex::Logger::debug(Dumper($auth));
 
    my $profiler = Rex::Profiler->new;

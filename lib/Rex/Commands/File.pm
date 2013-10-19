@@ -561,53 +561,39 @@ sub delete_lines_matching {
       }
    }
 
-   my $perl = can_run("perl");
-   if($perl) {
-      # if perl is available, use it
-      my $exec = Rex::Interface::Exec->create;
+   my $fs = Rex::Interface::Fs->create;
 
+   if(! $fs->is_file($file)) {
+      Rex::Logger::info("File: $file not found.");
+      die("$file not found");
+   }
 
+   if(! $fs->is_writable($file)) {
+      Rex::Logger::info("File: $file not writable.");
+      die("$file not writable");
+   }
+
+   my $nl = $/;
+   my @content = split(/$nl/, cat ($file));
+
+   my $fh = file_write $file;
+   unless($fh) {
+      die("Can't open $file for writing");
+   }
+
+   OUT:
+   for my $line (@content) {
+      IN:
       for my $match (@m) {
-         my $cmd = "perl -lne '\$r=qr{$match}; print unless (\$_ =~ \$r)' -i '$file'";
-         $exec->exec($cmd);
-      }
-   }
-   else {
-
-      my $fs = Rex::Interface::Fs->create;
-
-      if(! $fs->is_file($file)) {
-         Rex::Logger::info("File: $file not found.");
-         die("$file not found");
-      }
-
-      if(! $fs->is_writable($file)) {
-         Rex::Logger::info("File: $file not writable.");
-         die("$file not writable");
-      }
-
-      my $nl = $/;
-      my @content = split(/$nl/, cat ($file));
-
-      my $fh = file_write $file;
-      unless($fh) {
-         die("Can't open $file for writing");
-      }
-
-      OUT:
-      for my $line (@content) {
-         IN:
-         for my $match (@m) {
-            if($line =~ $match) {
-               next OUT;
-            }
+         if($line =~ $match) {
+            next OUT;
          }
-
-         $fh->write($line . $nl);
       }
-      $fh->close;
 
+      $fh->write($line . $nl);
    }
+   $fh->close;
+
 }
 
 =item delete_lines_according_to($search, $file, @options)

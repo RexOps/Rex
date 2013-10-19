@@ -65,7 +65,16 @@ use Rex::Helper::Path;
 @EXPORT = qw(sync_up sync_down);
 
 sub sync_up {
-   my ($source, $dest, $options) = @_;
+   my ($source, $dest, @option) = @_;
+
+   my $options = {};
+
+   if(ref($option[0])) {
+      $options = $option[0];
+   }
+   else {
+      $options = { @option };
+   }
 
    $source = resolv_path($source);
    $dest   = resolv_path($dest);
@@ -169,7 +178,16 @@ sub sync_up {
 }
 
 sub sync_down {
-   my ($source, $dest, $options) = @_;
+   my ($source, $dest, @option) = @_;
+
+   my $options = {};
+
+   if(ref($option[0])) {
+      $options = $option[0];
+   }
+   else {
+      $options = { @option };
+   }
 
    $source = resolv_path($source);
    $dest   = resolv_path($dest);

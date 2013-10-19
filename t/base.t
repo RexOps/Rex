@@ -1,4 +1,4 @@
-use Test::More tests => 149;
+use Test::More tests => 151;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -107,6 +107,8 @@ use_ok 'Rex::Report::Base';
 use_ok 'Rex::Report';
 use_ok 'Rex::SCM::Git';
 use_ok 'Rex::SCM::Subversion';
+use_ok 'Rex::Service::Redhat::systemd';
+use_ok 'Rex::Service::Gentoo::systemd';
 use_ok 'Rex::Service::ALT::systemd';
 use_ok 'Rex::Service::ALT';
 use_ok 'Rex::Service::Debian';

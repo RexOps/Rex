@@ -36,34 +36,19 @@ sub get_user {
    my ($self, $user) = @_;
 
    Rex::Logger::debug("Getting information for $user");
-   my @o_data = i_run "perl -e 'print join(\";\", getpwnam(\"$user\"))'";
-   chomp @o_data;
-   my @data = split(/;/, $o_data[0]);
+   my $o_data = i_run "perl -e 'print join(\";\", getpwnam(\"$user\"))'";
+   chomp $o_data;
+   my @data = split(/;/, $o_data);
 
    return (
       name => $data[0],
       password => $data[1],
       uid => $data[2],
       gid => $data[3],
-      comment => $data[5],
+      comment => $data[6],
       home => $data[7],
       shell => $data[8],
-      expire => exists $data[9]?$data[9]:0,
    );
-}
-
-sub rm_user {
-   my ($self, $user, $data) = @_;
-
-   Rex::Logger::debug("Removing user $user");
-
-   my $user_info = $self->get_user($user);
-
-   if(exists $data->{delete_home} && $user_info->{home} && is_dir($user_info->{home})) {
-      rmdir $user_info->{home};
-   }
-
-   i_run "sed -i '/^$user:.*/d' /etc/passwd /etc/shadow";
 }
 
 sub user_groups {
@@ -73,7 +58,7 @@ sub user_groups {
 
    my $data_str = i_run "/usr/bin/id -Gn $user";
    if($? != 0) {
-      die("Error getting  user list");
+      die("Error getting group list");
    }
 
    my $wantarray = wantarray();
@@ -86,10 +71,17 @@ sub user_groups {
    return split(/ /, $data_str);
 }
 
-sub rm_group {
-   my ($self, $group) = @_;
-   i_run "sed -i '/^$group:.*/d' /etc/group";
-}
+sub user_list {
+   my $self = shift;
 
+   Rex::Logger::debug("Getting user list");
+
+   my $data_str = i_run "cut -d':' -f1 /etc/passwd";
+   if($? != 0) {
+      die("Error getting user list");
+   }
+
+   return split(/\n/, $data_str);
+}
 
 1;

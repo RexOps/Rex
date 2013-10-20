@@ -40,7 +40,7 @@ sub net_ssh2_exec {
    my $in;
    my $in_err = "";
 
-   my $rex_int_conf = Rex::Commands::get("rex_internals");
+   my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
    my $buffer_size = 20;
    if(exists $rex_int_conf->{read_buffer_size}) {
       $buffer_size = $rex_int_conf->{read_buffer_size};

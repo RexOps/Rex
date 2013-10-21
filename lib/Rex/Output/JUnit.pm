@@ -46,6 +46,8 @@ sub error {
 sub DESTROY {
    my ($self) = @_;
 
+   if(! exists $self->{data}) { return; }
+
    my $t = Rex::Template->new;
    my $data = eval { local $/; <DATA>; };
    my $time = time() - $self->{time};

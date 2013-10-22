@@ -61,4 +61,12 @@ sub get_auth_user {
    return "";
 }
 
+sub get_auth {
+   my ($self) = @_;
+
+   if(exists $self->{__auth_info__}) {
+      return $self->{__auth_info__};
+   }
+}
+
 1;

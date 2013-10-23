@@ -516,6 +516,7 @@ sub import {
          if($add eq "sudo_without_sh") {
             Rex::Logger::debug("using sudo without sh. this might break some things.");
             Rex::Config->set_sudo_without_sh(1);
+            $found_feature = 1;
          }
 
          if($add eq "sudo_without_locales") {

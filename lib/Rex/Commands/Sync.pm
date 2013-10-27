@@ -245,7 +245,10 @@ sub sync_down {
 
    if(exists $options->{on_change} && ref $options->{on_change} eq "CODE" && scalar(@diff) > 0) {
       Rex::Logger::debug("Calling on_change hook of sync_up");
-      $options->{on_change}->(@diff);
+      if(substr($dest, -1) eq "/") {
+         $dest = substr($dest, 0, -1);
+      }
+      $options->{on_change}->(map { $dest . $_->{name} } @diff);
    }
 
 }

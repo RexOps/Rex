@@ -38,10 +38,10 @@ sub report {
 sub write_report {
    my ($self) = @_;
 
-   $REPORT_PATH = Rex::Commands::get('report_path');
+   $REPORT_PATH = Rex::Commands::get('report_path') || "reports";
 
    if(! -d $REPORT_PATH) {
-      mkdir $REPORT_PATH or die($!);
+      mkdir $REPORT_PATH or die($! . ": $REPORT_PATH");
    }
 
    my $server_name = Rex::Commands::connection()->server;

@@ -103,6 +103,12 @@ BEGIN {
 
    $cur_dir = getcwd;
 
+   unshift(@INC, sub {
+      my $mod_to_load = $_[1];
+      return search_module_path($mod_to_load);
+   });
+
+
    if(-d "$cur_dir/lib") {
       push(@INC, "$cur_dir/lib");
    }
@@ -114,15 +120,23 @@ BEGIN {
 
 };
 
-push(@INC, sub {
 
-   my $mod_to_load = $_[1];
+my $home = $ENV{'HOME'};
+if($^O =~ m/^MSWin/) {
+   $home = $ENV{'USERPROFILE'};
+}
+
+push(@INC, "$home/.rex/recipes");
+
+sub search_module_path {
+   my ($mod_to_load) = @_;
+
    $mod_to_load =~ s/\.pm//g;
 
-   my @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") } 
-                     grep { -d } @INC;
 
-   push(@search_in, "lib/$mod_to_load/__module__.pm", "lib/$mod_to_load/Module.pm");
+   my @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm", "$_/$mod_to_load.pm") } 
+                  grep { -d } @INC;
+
 
    for my $file (@search_in) {
       if(-f $file) {
@@ -141,15 +155,7 @@ push(@INC, sub {
          return $fh;
       }
    }
-
-});
-
-my $home = $ENV{'HOME'};
-if($^O =~ m/^MSWin/) {
-   $home = $ENV{'USERPROFILE'};
 }
-
-push(@INC, "$home/.rex/recipes");
 
 sub get_module_path {
    my ($module) = @_;

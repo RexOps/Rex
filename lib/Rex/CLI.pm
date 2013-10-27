@@ -36,14 +36,6 @@ if($^O =~ m/MSWin/) {
 # preload some modules
 use Rex -base;
 
-BEGIN {
-
-   if(-d "lib") {
-      use lib "lib";
-   }
-
-};
-
 $|++;
 
 my (%opts, @help, @exit);

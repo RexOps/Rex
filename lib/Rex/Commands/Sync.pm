@@ -61,6 +61,7 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
+use JSON::XS;
 
 @EXPORT = qw(sync_up sync_down);
 
@@ -333,14 +334,49 @@ for my $dir (@dirs) {
    closedir($dh);
 }
 
-print Dumper(\@tree);
+print to_json(\@tree);
+
+sub to_json {
+   my ($ref) = @_;
+
+   my $s = "";
+
+   if(ref $ref eq "ARRAY") {
+      $s .= "[";
+      for my $itm (@{ $ref }) {
+         if(substr($s, -1) ne "[") {
+            $s .= ",";
+         }
+         $s .= to_json($itm);
+      }
+      return $s . "]";
+   }
+   elsif(ref $ref eq "HASH") {
+      $s .= "{";
+      for my $key (keys %{ $ref }) {
+         if(substr($s, -1) ne "{") {
+            $s .= ",";
+         }
+         $s .= "\"$key\": " . to_json($ref->{$key});
+      }
+      return $s . "}";
+   }
+   else {
+      if($ref =~ /^\d+$/) {
+         return $ref;
+      }
+      else {
+         $ref =~ s/'/\\\'/g;
+         return "\"$ref\"";
+      }
+   }
+}
       |;
 
       my $rnd_file = get_tmp_file;
       file $rnd_file, content => $script;
       my $content = run "perl $rnd_file $dest";
-      $content =~ s/^\$VAR1 =//;
-      my $ref = eval $content;
+      my $ref = decode_json($content);
       @remote_files = @{ $ref };
    }
    else {

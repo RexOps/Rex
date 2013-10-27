@@ -105,7 +105,7 @@ BEGIN {
 
    unshift(@INC, sub {
       my $mod_to_load = $_[1];
-      return search_module_path($mod_to_load);
+      return search_module_path($mod_to_load, 1);
    });
 
 
@@ -118,6 +118,11 @@ BEGIN {
       push(@INC, "$home_dir/.rex/recipes");
    }
 
+   push(@INC, sub {
+      my $mod_to_load = $_[1];
+      return search_module_path($mod_to_load);
+   });
+
 };
 
 
@@ -129,13 +134,21 @@ if($^O =~ m/^MSWin/) {
 push(@INC, "$home/.rex/recipes");
 
 sub search_module_path {
-   my ($mod_to_load) = @_;
+   my ($mod_to_load, $pre) = @_;
 
    $mod_to_load =~ s/\.pm//g;
 
+   my @search_in;
 
-   my @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm", "$_/$mod_to_load.pm") } 
-                  grep { -d } @INC;
+   if($pre) {
+      @search_in = map { ("$_/$mod_to_load.pm") } 
+                     grep { -d } @INC;
+
+   }
+   else {
+      @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm", "$_/$mod_to_load.pm") } 
+                     grep { -d } @INC;
+   }
 
 
    for my $file (@search_in) {

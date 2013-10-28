@@ -75,7 +75,11 @@ sub get_group {
    my $class = shift;
    my $group_name = shift;
 
-   return $groups{$group_name}->get_servers;
+   if(exists $groups{$group_name}) {
+      return $groups{$group_name}->get_servers;
+   }
+
+   return ();
 }
 
 sub is_group {

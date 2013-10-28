@@ -672,7 +672,27 @@ sub run {
       }
 
       # execute code
-      my $ret = $self->executor->exec($options{params});
+      my $ret;
+
+      eval {
+         $ret = $self->executor->exec($options{params});
+      } or do {
+         if($@) {
+            my $error = $@;
+
+            $reporter->report({
+                  command    => "run_task",
+                  module     => "Rex::TaskList::Base",
+                  start_time => $start_time,
+                  end_time   => time,
+                  success    => 0,
+               }) if ($reporter);
+
+            $reporter->write_report if ($reporter);
+
+            die($error);
+         }
+      };
 
       if(Rex::Args->is_opt("c")) {
          # get and cache all os info
@@ -684,6 +704,7 @@ sub run {
             module     => "Rex::TaskList::Base",
             start_time => $start_time,
             end_time   => time,
+            success    => 1,
          }) if ($reporter);
 
       $reporter->write_report if ($reporter);

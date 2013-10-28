@@ -594,6 +594,8 @@ sub delete_lines_matching {
    }
    $fh->close;
 
+}
+
 =item delete_lines_according_to($search, $file, @options)
 
 This is the successor of the delete_lines_matching() function. This function also allows the usage of an on_change hook.

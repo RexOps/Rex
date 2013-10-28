@@ -50,6 +50,14 @@ sub DESTROY {
    my $data = eval { local $/; <DATA>; };
    my $time = time() - $self->{time};
 
+   if(! exists $self->{data}) {
+      return;
+   }
+
+   if(scalar(@{ $self->{data} }) == 0) {
+      return;
+   }
+
    my $s = $t->parse($data, {
       errors        => scalar(grep { $_->{"error"} && $_->{"error"} == 1 } @{$self->{"data"}}),
       tests         => scalar(@{$self->{"data"}}),

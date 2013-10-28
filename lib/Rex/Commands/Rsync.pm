@@ -38,7 +38,7 @@ use strict;
 use warnings;
 
 use Expect;
-$Expect::Log_Stdout = 0;
+$Expect::Log_Stdout = 1;
 
 require Rex::Exporter;
 
@@ -90,6 +90,9 @@ sub sync {
    my $server = $current_connection->{server};
    my $cmd;
 
+   my $auth = $current_connection->{conn}->get_auth;
+
+
    if(! exists $opt->{download} && $source !~ m/^\//) {
       # relative path, calculate from module root
 
@@ -116,19 +119,19 @@ sub sync {
 
    if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {
       Rex::Logger::debug("Downloading $source -> $dest");
-      $cmd = "rsync -a -e '\%s' --verbose --stats $params " . $server->get_user . "\@" . $server . ":"
+      $cmd = "rsync -a -e '\%s' --verbose --stats $params " . $auth->{user} . "\@" . $server . ":"
                      . $source . " " . $dest;
    }
    else {
       Rex::Logger::debug("Uploading $source -> $dest");
-      $cmd = "rsync -a -e '\%s' --verbose --stats $params $source " . $server->get_user . "\@" . $server . ":"
+      $cmd = "rsync -a -e '\%s' --verbose --stats $params $source " . $auth->{user} . "\@" . $server . ":"
                      . $dest;
    }
 
-   my $pass = $server->get_password;
+   my $pass = $auth->{password};
    my @expect_options = ();
 
-   if(Rex::Config->get_password_auth) {
+   if($auth->{auth_type} eq "pass") {
       $cmd = sprintf($cmd, 'ssh -o StrictHostKeyChecking=no ');
       push(@expect_options, [
                               qr{Are you sure you want to continue connecting},
@@ -140,7 +143,7 @@ sub sync {
                               }
                             ],
                             [
-                              qr{password: $},
+                              qr{password: ?$}i,
                               sub {
                                  Rex::Logger::debug("Want Password");
                                  my $fh = shift;

@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-   use Test::More tests => 43;
+   use Test::More tests => 44;
    use Data::Dumper;
 
    use_ok 'Rex';
@@ -218,3 +218,9 @@ sed qr/{klonk}/, '{plonk}', "$tmp_dir/test-sed.txt";
 $content = cat "$tmp_dir/test-sed.txt";
 ok($content =~ m/{plonk}/, "sed replaced {klonk}");
 
+file "$tmp_dir/multiline.txt", content => "this is\na test.\n";
+sed qr/is\sa test/msi, "no one\nknows!", "$tmp_dir/multiline.txt", multiline => 1;
+$content = cat "$tmp_dir/multiline.txt";
+is($content,  "this no one\nknows!.\n", "multiline replacement");
+
+unlink "$tmp_dir/multiline.txt";

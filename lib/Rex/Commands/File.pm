@@ -593,7 +593,6 @@ sub delete_lines_matching {
       $fh->write($line . $nl);
    }
    $fh->close;
-}
 
 =item delete_lines_according_to($search, $file, @options)
 
@@ -854,20 +853,39 @@ sub extract {
 Search some string in a file and replace it.
 
  task sar => sub {
+    # this will work line by line
     sed qr{search}, "replace", "/var/log/auth.log";
+        
+    # to use it in a multiline way
+    sed qr{search}, "replace", "/var/log/auth.log",
+      multiline => TRUE;
  };
 
 =cut
 sub sed {
-   my ($search, $replace, $file, @options) = @_;
-   my $option = { @options };
+   my ($search, $replace, $file, @option) = @_;
+   my $options = {};
+   
+   if(ref($option[0])) {
+      $options = $option[0];
+   }
+   else {
+      $options = { @option };
+   }
 
-   my $perl = can_run("perl");
-   Rex::Logger::debug("Falling back to local sed mode");
-   my @content = split(/\n/, cat($file));
+   my $on_change = $options->{"on_change"} || undef;
 
-   my $on_change = $option->{"on_change"} || undef;
-   map { s/$search/$replace/ } @content; 
+   my @content;
+
+   if(exists $options->{multiline}) {
+      $content[0] = cat($file);
+      $content[0] =~ s/$search/$replace/gms; 
+   }
+   else {
+      @content = split(/\n/, cat($file));
+      map { s/$search/$replace/ } @content; 
+   }
+
 
    file($file, content => join("\n", @content), on_change => $on_change);
 }

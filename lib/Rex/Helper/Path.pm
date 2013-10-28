@@ -33,6 +33,7 @@ sub get_file_path {
 
    $file_name = resolv_path($file_name);
 
+
    if(! $caller_package) {
       ($caller_package, $caller_file) = caller();
    }
@@ -66,7 +67,6 @@ sub get_file_path {
    my $i = 0;
    while($caller_package && $i <= 50) {
       ($caller_package, $caller_file) = caller($i);
-
       if(! $caller_package) {
          last;
       }

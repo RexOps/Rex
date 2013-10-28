@@ -216,7 +216,7 @@ sub iptables {
          $cmd .= "-$key $val ";
       }
       else {
-         $cmd .= "--$key $val ";
+         $cmd .= "--$key '$val' ";
       }
    }
 

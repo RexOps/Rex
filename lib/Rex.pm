@@ -103,6 +103,12 @@ BEGIN {
 
    $cur_dir = getcwd;
 
+   unshift(@INC, sub {
+      my $mod_to_load = $_[1];
+      return search_module_path($mod_to_load, 1);
+   });
+
+
    if(-d "$cur_dir/lib") {
       push(@INC, "$cur_dir/lib");
    }
@@ -112,17 +118,38 @@ BEGIN {
       push(@INC, "$home_dir/.rex/recipes");
    }
 
+   push(@INC, sub {
+      my $mod_to_load = $_[1];
+      return search_module_path($mod_to_load);
+   });
+
 };
 
-push(@INC, sub {
 
-   my $mod_to_load = $_[1];
+my $home = $ENV{'HOME'};
+if($^O =~ m/^MSWin/) {
+   $home = $ENV{'USERPROFILE'};
+}
+
+push(@INC, "$home/.rex/recipes");
+
+sub search_module_path {
+   my ($mod_to_load, $pre) = @_;
+
    $mod_to_load =~ s/\.pm//g;
 
-   my @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") } 
+   my @search_in;
+
+   if($pre) {
+      @search_in = map { ("$_/$mod_to_load.pm") } 
                      grep { -d } @INC;
 
-   push(@search_in, "lib/$mod_to_load/__module__.pm", "lib/$mod_to_load/Module.pm");
+   }
+   else {
+      @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm", "$_/$mod_to_load.pm") } 
+                     grep { -d } @INC;
+   }
+
 
    for my $file (@search_in) {
       if(-f $file) {
@@ -141,15 +168,7 @@ push(@INC, sub {
          return $fh;
       }
    }
-
-});
-
-my $home = $ENV{'HOME'};
-if($^O =~ m/^MSWin/) {
-   $home = $ENV{'USERPROFILE'};
 }
-
-push(@INC, "$home/.rex/recipes");
 
 sub get_module_path {
    my ($module) = @_;
@@ -516,6 +535,7 @@ sub import {
          if($add eq "sudo_without_sh") {
             Rex::Logger::debug("using sudo without sh. this might break some things.");
             Rex::Config->set_sudo_without_sh(1);
+            $found_feature = 1;
          }
 
          if($add eq "sudo_without_locales") {

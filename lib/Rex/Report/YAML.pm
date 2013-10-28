@@ -38,10 +38,10 @@ sub report {
 sub write_report {
    my ($self) = @_;
 
-   $REPORT_PATH = Rex::Commands::get('report_path');
+   $REPORT_PATH = Rex::Commands::get('report_path') || "reports";
 
    if(! -d $REPORT_PATH) {
-      mkdir $REPORT_PATH or die($!);
+      mkdir $REPORT_PATH or die($! . ": $REPORT_PATH");
    }
 
    my $server_name = Rex::Commands::connection()->server;
@@ -61,23 +61,15 @@ sub write_report {
 sub register_reporting_hooks {
    my ($self) = @_;
 
-   my @modules = qw(File Fs Pkg Run Service Upload User Cron Download Process);
+   my @modules = qw(File Fs Pkg Run Service Upload User Cron Download);
 
    my @skip_functions = qw/
-      file_write
-      file_append
-      file_read
-      template
-      is_dir
-      is_file
+      file_write file_append file_read extract cat template
       can_run
-      free
-      df
-      du
-      stat
-      rm
-      cat
-      list_files
+      is_dir is_file stat rm list_files ls readlink chdir cd is_readable is_writable is_writeable free df du glob
+      installed_packages is_installed update_package_db package_provider_for
+      service_provider_for
+      get_uid get_user user_list user_groups get_group get_gid
    /;
 
    for my $mod (@modules) {

@@ -44,7 +44,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory
                get_operating_system operating_system operating_system_version operating_system_release
-               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt
+               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo
                get_system_information dump_system_information);
 
 =item get_operating_system
@@ -448,6 +448,19 @@ Returns true if the target system is an OpenWrt System.
 sub is_openwrt {
    my $os = get_operating_system();
    if($os =~ m/OpenWrt/i) {
+      return 1;
+   }
+
+}
+
+=item is_gentoo
+
+Returns true if the target system is a Gentoo System.
+
+=cut
+sub is_gentoo {
+   my $os = get_operating_system();
+   if($os =~ m/Gentoo/i) {
       return 1;
    }
 

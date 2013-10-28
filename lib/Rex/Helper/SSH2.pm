@@ -11,6 +11,7 @@ use warnings;
 
 require Exporter;
 use Data::Dumper;
+require Rex::Commands;
 
 use base qw(Exporter);
 
@@ -39,7 +40,13 @@ sub net_ssh2_exec {
    my $in;
    my $in_err = "";
 
-   while ( my $len = $chan->read(my $buf, 20) ) {
+   my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
+   my $buffer_size = 20;
+   if(exists $rex_int_conf->{read_buffer_size}) {
+      $buffer_size = $rex_int_conf->{read_buffer_size};
+   }
+
+   while ( my $len = $chan->read(my $buf, $buffer_size) ) {
 		$in .= $buf;
 
       if($callback) {
@@ -47,7 +54,7 @@ sub net_ssh2_exec {
       } 
    }
 
-   while ( my $len = $chan->read(my $buf_err, 20, 1) ) {
+   while ( my $len = $chan->read(my $buf_err, $buffer_size, 1) ) {
 	    $in_err .= $buf_err;
    }
 

@@ -33,6 +33,9 @@ This module can sync directories between your Rex system and your servers withou
           group => "bar",
           mode  => 700,
        },
+       on_change => sub {
+         my (@files_changed) = @_;
+       },
     };
      
     # download a directory recursively from the remote system to the local machine
@@ -58,11 +61,21 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
+use JSON::XS;
 
 @EXPORT = qw(sync_up sync_down);
 
 sub sync_up {
-   my ($source, $dest, $options) = @_;
+   my ($source, $dest, @option) = @_;
+
+   my $options = {};
+
+   if(ref($option[0])) {
+      $options = $option[0];
+   }
+   else {
+      $options = { @option };
+   }
 
    $source = resolv_path($source);
    $dest   = resolv_path($dest);
@@ -158,10 +171,24 @@ sub sync_up {
       }
    }
 
+   if(exists $options->{on_change} && ref $options->{on_change} eq "CODE" && scalar(@diff) > 0) {
+      Rex::Logger::debug("Calling on_change hook of sync_up");
+      $options->{on_change}->(map { $dest . $_->{name} } @diff);
+   }
+
 }
 
 sub sync_down {
-   my ($source, $dest, $options) = @_;
+   my ($source, $dest, @option) = @_;
+
+   my $options = {};
+
+   if(ref($option[0])) {
+      $options = $option[0];
+   }
+   else {
+      $options = { @option };
+   }
 
    $source = resolv_path($source);
    $dest   = resolv_path($dest);
@@ -216,6 +243,13 @@ sub sync_down {
       };
    }
 
+   if(exists $options->{on_change} && ref $options->{on_change} eq "CODE" && scalar(@diff) > 0) {
+      Rex::Logger::debug("Calling on_change hook of sync_up");
+      if(substr($dest, -1) eq "/") {
+         $dest = substr($dest, 0, -1);
+      }
+      $options->{on_change}->(map { $dest . $_->{name} } @diff);
+   }
 
 }
 
@@ -303,14 +337,49 @@ for my $dir (@dirs) {
    closedir($dh);
 }
 
-print Dumper(\@tree);
+print to_json(\@tree);
+
+sub to_json {
+   my ($ref) = @_;
+
+   my $s = "";
+
+   if(ref $ref eq "ARRAY") {
+      $s .= "[";
+      for my $itm (@{ $ref }) {
+         if(substr($s, -1) ne "[") {
+            $s .= ",";
+         }
+         $s .= to_json($itm);
+      }
+      return $s . "]";
+   }
+   elsif(ref $ref eq "HASH") {
+      $s .= "{";
+      for my $key (keys %{ $ref }) {
+         if(substr($s, -1) ne "{") {
+            $s .= ",";
+         }
+         $s .= "\"$key\": " . to_json($ref->{$key});
+      }
+      return $s . "}";
+   }
+   else {
+      if($ref =~ /^\d+$/) {
+         return $ref;
+      }
+      else {
+         $ref =~ s/'/\\\'/g;
+         return "\"$ref\"";
+      }
+   }
+}
       |;
 
       my $rnd_file = get_tmp_file;
       file $rnd_file, content => $script;
       my $content = run "perl $rnd_file $dest";
-      $content =~ s/^\$VAR1 =//;
-      my $ref = eval $content;
+      my $ref = decode_json($content);
       @remote_files = @{ $ref };
    }
    else {

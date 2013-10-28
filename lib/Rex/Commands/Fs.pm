@@ -57,6 +57,7 @@ require Rex::Exporter;
 use Data::Dumper;
 use Fcntl;
 use Rex::Helper::SSH2;
+use Rex::Helper::Path;
 use Rex::Commands;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
@@ -87,6 +88,7 @@ This function list all entries (files, directories, ...) in a given directory an
 
 sub list_files {
    my $path = shift;
+   $path = resolv_path($path);
 
    my $fs = Rex::Interface::Fs->create;
    my @ret = $fs->ls($path);
@@ -116,6 +118,8 @@ This function will create a symlink from $from to $to.
 
 sub symlink {
    my ($from, $to) = @_;
+   $from = resolv_path($from);
+   $to = resolv_path($to);
 
    my $fs = Rex::Interface::Fs->create;
    $fs->ln($from, $to) or die("Can't link $from -> $to");
@@ -143,6 +147,7 @@ This function will remove the given file.
 
 sub unlink {
    my @files = @_;
+   @files = map { resolv_path($_) } @files;
 
    my $fs = Rex::Interface::Fs->create;
    $fs->unlink(@files);
@@ -170,6 +175,7 @@ This function will remove the given directory.
 
 sub rmdir {
    my @dirs = @_;
+   @dirs = map { resolv_path($_) } @dirs;
 
    my $fs = Rex::Interface::Fs->create;
 
@@ -198,6 +204,8 @@ This function will create a new directory.
 sub mkdir {
    Rex::Logger::debug("Creating directory $_[0]");
    my $dir = shift;
+   $dir = resolv_path($dir);
+
    my $options = { @_ };
 
    my $fs = Rex::Interface::Fs->create;
@@ -321,6 +329,7 @@ Change the owner of a file or a directory.
 
 sub chown {
    my ($user, $file, @opts) = @_;
+   $file = resolv_path($file);
 
    my $fs = Rex::Interface::Fs->create;
    my %stat;
@@ -362,6 +371,7 @@ Change the group of a file or a directory.
 
 sub chgrp {
    my ($group, $file, @opts) = @_;
+   $file = resolv_path($file);
 
    my $fs = Rex::Interface::Fs->create;
    my %stat;
@@ -404,6 +414,7 @@ Change the permissions of a file or a directory.
 
 sub chmod {
    my ($mode, $file, @opts) = @_;
+   $file = resolv_path($file);
 
    my $fs = Rex::Interface::Fs->create;
    my %stat;
@@ -462,6 +473,7 @@ This function will return a hash with the following information about a file or 
 
 sub stat {
    my ($file) = @_;
+   $file = resolv_path($file);
    my %ret;
 
    Rex::Logger::debug("Getting fs stat from $file");
@@ -489,6 +501,7 @@ This function tests if $file is a file. Returns 1 if true. 0 if false.
 
 sub is_file {
    my ($file) = @_;
+   $file = resolv_path($file);
    
    my $fs = Rex::Interface::Fs->create;
    return $fs->is_file($file);
@@ -511,6 +524,7 @@ This function tests if $dir is a directory. Returns 1 if true. 0 if false.
 
 sub is_dir {
    my ($path) = @_;
+   $path = resolv_path($path);
 
    my $fs = Rex::Interface::Fs->create;
    return $fs->is_dir($path);
@@ -535,6 +549,7 @@ This function tests if $file is readable. It returns 1 if true. 0 if false.
 
 sub is_readable {
    my ($file) = @_;
+   $file = resolv_path($file);
    Rex::Logger::debug("Checking if $file is readable");
 
    my $fs = Rex::Interface::Fs->create;
@@ -559,6 +574,7 @@ This function tests if $file is writable. It returns 1 if true. 0 if false.
 
 sub is_writable {
    my ($file) = @_;
+   $file = resolv_path($file);
    Rex::Logger::debug("Checking if $file is writable");
 
    my $fs = Rex::Interface::Fs->create;
@@ -593,6 +609,7 @@ This function returns the link endpoint if $link is a symlink. If $link is not a
 
 sub readlink {
    my ($file) = @_;
+   $file = resolv_path($file);
    Rex::Logger::debug("Reading link of $file");
 
    my $fs = Rex::Interface::Fs->create;
@@ -618,6 +635,8 @@ This function will rename $old to $new. Will return 1 on success and 0 on failur
 
 sub rename {
    my ($old, $new) = @_;
+   $old = resolv_path($old);
+   $new = resolv_path($new);
 
    Rex::Logger::debug("Renaming $old to $new");
 
@@ -738,6 +757,7 @@ Returns the disk usage of $path.
 
 sub du {
    my ($path) = @_;
+   $path = resolv_path($path);
 
    my $exec = Rex::Interface::Exec->create;
    my @lines = $exec->exec("du -s $path");
@@ -758,6 +778,8 @@ cp will copy $source to $destination (it is recursive)
 
 sub cp {
    my ($source, $dest) = @_;
+   $source = resolv_path($source);
+   $dest = resolv_path($dest);
 
    my $fs = Rex::Interface::Fs->create;
    if( ! $fs->cp($source, $dest)) {
@@ -886,6 +908,7 @@ sub umount {
 =cut
 sub glob {
    my ($glob) = @_;
+   $glob = resolv_path($glob);
 
    my $fs = Rex::Interface::Fs->create;
    return $fs->glob($glob);

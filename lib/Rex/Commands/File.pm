@@ -454,6 +454,7 @@ On failure it will die.
 
 sub file_write {
    my ($file) = @_;
+   $file = resolv_path($file);
 
    Rex::Logger::debug("Opening file: $file for writing.");
 
@@ -472,6 +473,7 @@ sub file_write {
 
 sub file_append {
    my ($file) = @_;
+   $file = resolv_path($file);
 
    Rex::Logger::debug("Opening file: $file for appending.");
 
@@ -509,6 +511,7 @@ On failure it will die.
 
 sub file_read {
    my ($file) = @_;
+   $file = resolv_path($file);
 
    Rex::Logger::debug("Opening file: $file for reading.");
 
@@ -532,6 +535,7 @@ This function returns the complete content of $file_name as a string.
 
 sub cat {
    my ($file) = @_;
+   $file = resolv_path($file);
 
    my $fh = file_read($file);
    unless($fh) {
@@ -554,6 +558,7 @@ Delete lines that match $regexp in $file.
 =cut
 sub delete_lines_matching {
    my ($file, @m) = @_;
+   $file = resolv_path($file);
 
    for (@m) {
       if(ref($_) ne "Regexp") {
@@ -612,6 +617,7 @@ It will search for $search in $file and remove the found lines. If on_change hoo
 =cut
 sub delete_lines_according_to {
    my ($search, $file, @options) = @_;
+   $file = resolv_path($file);
 
    my $option = { @options };
    my $on_change = $option->{on_change} || undef;
@@ -662,6 +668,7 @@ Since 0.42 you can use named parameters as well
 
 sub append_if_no_such_line {
    my $file = shift;
+   $file = resolv_path($file);
    my ($new_line, @m);
 
    # check if parameters are in key => value format
@@ -788,6 +795,7 @@ Can use the type=> option if the file suffix has been changed. (types are tar, t
 =cut
 sub extract {
    my ($file, %option) = @_;
+   $file = resolv_path($file);
 
    my $pre_cmd = "";
    my $to = ".";
@@ -800,6 +808,7 @@ sub extract {
    if($option{to}) {
       $to = $option{to};
    }
+   $to = resolv_path($to);
 
    if($option{type}) {
       $type = $option{type};
@@ -866,6 +875,7 @@ Search some string in a file and replace it.
 =cut
 sub sed {
    my ($search, $replace, $file, @option) = @_;
+   $file = resolv_path($file);
    my $options = {};
    
    if(ref($option[0])) {

@@ -4,6 +4,8 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
+=encoding UTF-8
+
 =head1 NAME
 
 Rex - Remote Execution

@@ -815,6 +815,13 @@ Depend on the I<uname> task in the package MyPkg. The I<uname> task will be call
     needs MyPkg "uname";
  };
 
+=item To call tasks defined in the Rexfile from within a module
+
+ task "mytask", "server1", sub {
+    needs main "uname";
+ };
+
+
 =back
 
 =cut
@@ -826,6 +833,10 @@ sub needs {
    if(ref($self) eq "ARRAY") {
       @args = @{ $self };
       ($self) = caller;
+   }
+
+   if($self eq "main") {
+      $self = "Rex::CLI";
    }
 
    no strict 'refs';
@@ -862,6 +873,11 @@ sub needs {
    }
 
 }
+
+# register needs in main namespace
+no strict 'refs';
+*{"main::needs"} = \&needs;
+use strict;
 
 =item include Module::Name
 

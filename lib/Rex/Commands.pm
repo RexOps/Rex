@@ -875,9 +875,14 @@ sub needs {
 }
 
 # register needs in main namespace
-no strict 'refs';
-*{"main::needs"} = \&needs;
-use strict;
+{
+   my ($caller_pkg) = caller(1);
+   if($caller_pkg eq "Rex::CLI") {
+      no strict 'refs';
+      *{"main::needs"} = \&needs;
+      use strict;
+   }
+};
 
 =item include Module::Name
 

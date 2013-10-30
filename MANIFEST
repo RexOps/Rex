@@ -87,6 +87,7 @@ lib/Rex/Helper/Run.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm
+lib/Rex/Hook.pm
 lib/Rex/Interface/Cache.pm
 lib/Rex/Interface/Cache/Base.pm
 lib/Rex/Interface/Cache/YAML.pm
@@ -184,6 +185,7 @@ lib/Rex/Service/ALT/systemd.pm
 lib/Rex/Service/Debian.pm
 lib/Rex/Service/FreeBSD.pm
 lib/Rex/Service/Gentoo.pm
+lib/Rex/Service/Gentoo/systemd.pm
 lib/Rex/Service/Mageia.pm
 lib/Rex/Service/NetBSD.pm
 lib/Rex/Service/OpenBSD.pm

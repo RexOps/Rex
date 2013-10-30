@@ -31,6 +31,10 @@ sub exec {
       $cmd = "cd " . $option->{cwd} . " && $cmd";
    }
 
+   if(exists $option->{path}) {
+      $path = $option->{path};
+   }
+
    Rex::Logger::debug("Executing: $cmd");
 
    Rex::Commands::profiler()->start("exec: $cmd");

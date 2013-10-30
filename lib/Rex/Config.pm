@@ -34,7 +34,7 @@ our ($user, $password, $port,
             $timeout, $max_connect_fails,
             $password_auth, $key_auth, $krb5_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
             $ca_file, $ca_cert, $ca_key,
-            $path,
+            $path, $no_path_cleanup,
             $set_param,
             $environment,
             $connection_type,
@@ -65,6 +65,15 @@ our ($user, $password, $port,
    bash   => "bash",
 );
 
+
+sub set_no_path_cleanup {
+   my $class = shift;
+   $no_path_cleanup = shift;
+}
+
+sub get_no_path_cleanup {
+   return $no_path_cleanup;
+}
 
 sub set_source_profile {
    my $class = shift;

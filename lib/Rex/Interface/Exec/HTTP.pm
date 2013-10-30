@@ -25,6 +25,10 @@ sub exec {
 
    Rex::Logger::debug("Executing: $cmd");
 
+   if(exists $option->{path}) {
+      $path = $option->{path};
+   }
+
    if($path) { $path = "PATH=$path" }
    $path ||= "";
 

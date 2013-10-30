@@ -36,6 +36,10 @@ sub exec {
       $cmd = "cd " . $option->{cwd} . " && $cmd";
    }
 
+   if(exists $option->{path}) {
+      $path = $option->{path};
+   }
+
    if($path) { $path = "PATH=$path" }
    $path ||= "";
 

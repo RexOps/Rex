@@ -36,6 +36,10 @@ sub exec {
       $cmd = "cd " . $option->{cwd} . " && $cmd";
    }
 
+   if(exists $option->{path}) {
+      $path = $option->{path};
+   }
+
    Rex::Commands::profiler()->start("exec: $cmd");
    if($^O !~ m/^MSWin/) {
       if($path) { $path = "PATH=$path" }

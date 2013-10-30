@@ -45,7 +45,7 @@ our ($user, $password, $port,
             $sudo_without_locales,
             $sudo_without_sh,
             $no_tty,
-            $source_global_profile,
+            $source_global_profile, $source_profile,
             %executor_for,
             $allow_empty_groups,
             $use_server_auth,
@@ -64,6 +64,16 @@ our ($user, $password, $port,
    ruby   => "ruby",
    bash   => "bash",
 );
+
+
+sub set_source_profile {
+   my $class = shift;
+   $source_profile = shift;
+}
+
+sub get_source_profile {
+   return $source_profile;
+}
 
 sub set_say_format {
    my $class = shift;

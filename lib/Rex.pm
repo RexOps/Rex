@@ -580,6 +580,18 @@ sub import {
             $found_feature = 1;
          }
 
+         if($add eq "source_profile") {
+            Rex::Logger::debug("Enabling source_profile");
+            Rex::Config->set_source_profile(1);
+            $found_feature = 1;
+         }
+
+         if($add eq "source_global_profile") {
+            Rex::Logger::debug("Enabling source_global_profile");
+            Rex::Config->set_source_global_profile(1);
+            $found_feature = 1;
+         }
+
          if($found_feature == 0) {
             Rex::Logger::info("You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.", "warn");
             exit 1;

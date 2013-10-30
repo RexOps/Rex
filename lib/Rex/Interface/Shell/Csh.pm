@@ -23,9 +23,14 @@ sub path {
     $self->{path} = $path;
 }
 
-sub parse_profile {
+sub source_global_profile {
     my ($self, $parse) = @_;
-    $self->{parse_profile} = $parse;
+    $self->{source_global_profile} = $parse;
+}
+
+sub source_profile {
+    my ($self, $parse) = @_;
+    $self->{source_profile} = $parse;
 }
 
 sub set_locale {
@@ -45,9 +50,14 @@ sub exec {
         $complete_cmd = "set LC_ALL=$self->{locale} ; $complete_cmd ";
     }
 
-    if ($self->{parse_profile}) {
+    if ($self->{source_profile}) {
+        $complete_cmd = "source \$HOME/.profile &> /dev/null ; $complete_cmd";
+    }
+
+    if ($self->{source_global_profile}) {
         $complete_cmd = "source /etc/profile &> /dev/null ; $complete_cmd";
     }
+
 
 # this is due to a strange behaviour with Net::SSH2 / libssh2
 # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware

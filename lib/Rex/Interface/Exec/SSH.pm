@@ -43,7 +43,11 @@ sub exec {
    $shell->path($path);
 
    if(Rex::Config->get_source_global_profile) {
-       $shell->parse_profile(1);
+       $shell->source_global_profile(1);
+   }
+
+   if(Rex::Config->get_source_profile) {
+       $shell->source_profile(1);
    }
 
    my $exec = $shell->exec($cmd);

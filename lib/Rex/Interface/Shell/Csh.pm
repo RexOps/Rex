@@ -43,19 +43,20 @@ sub exec {
     my $complete_cmd = $cmd;
 
     if ($self->{path}) {
-        $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
+       $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
     }
 
     if ($self->{locale}) {
-        $complete_cmd = "set LC_ALL=$self->{locale} ; $complete_cmd ";
+       $complete_cmd = "set LC_ALL=$self->{locale} ; $complete_cmd ";
     }
 
     if ($self->{source_profile}) {
-        $complete_cmd = "source \$HOME/.profile > /dev/null 2>&1 ; $complete_cmd";
+       # csh is using .login
+       $complete_cmd = "source \$HOME/.login >& /dev/null ; $complete_cmd";
     }
 
     if ($self->{source_global_profile}) {
-        $complete_cmd = "source /etc/profile > /dev/null 2>&1 ; $complete_cmd";
+        $complete_cmd = "source /etc/profile >& /dev/null ; $complete_cmd";
     }
 
 

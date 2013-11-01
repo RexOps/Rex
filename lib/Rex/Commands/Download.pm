@@ -92,7 +92,7 @@ sub download {
    my $local = shift;
 
    $remote = resolv_path($remote);
-   $local  = resolv_path($local);
+   $local  = resolv_path($local, 1);
 
    if($remote =~ m/^(https?|ftp):\/\//) {
       _http_download($remote, $local);

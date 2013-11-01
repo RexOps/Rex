@@ -271,49 +271,49 @@ sub list_volumes {
 }
 
 sub list_instances {
-  my ($self) = @_;
+   my ($self) = @_;
 
-  my @ret;
+   my @ret;
 
-  my $xml = $self->_request("DescribeInstances");
-  my $ref = $self->_xml($xml);
+   my $xml = $self->_request("DescribeInstances");
+   my $ref = $self->_xml($xml);
 
-  return unless($ref);
-  return unless(exists $ref->{"reservationSet"});
-  return unless(exists $ref->{"reservationSet"}->{"item"});
+   return unless($ref);
+   return unless(exists $ref->{"reservationSet"});
+   return unless(exists $ref->{"reservationSet"}->{"item"});
 
-  if(ref $ref->{"reservationSet"}->{"item"} eq "HASH") {
-    # if only one instance is returned, turn it to an array
-    $ref->{"reservationSet"}->{"item"} = [ $ref->{"reservationSet"}->{"item"} ];
-  }
+   if(ref $ref->{"reservationSet"}->{"item"} eq "HASH") {
+      # if only one instance is returned, turn it to an array
+      $ref->{"reservationSet"}->{"item"} = [ $ref->{"reservationSet"}->{"item"} ];
+   }
 
-  for my $instance_set (@{$ref->{"reservationSet"}->{"item"}}) {
-     if (ref $instance_set->{"instancesSet"}->{"item"} eq 'HASH') {
-	  push(@ret, {
-	     ip => $instance_set->{"instancesSet"}->{"item"}->{"ipAddress"},
-	     id => $instance_set->{"instancesSet"}->{"item"}->{"instanceId"},
-	     architecture => $instance_set->{"instancesSet"}->{"item"}->{"architecture"},
-	     type => $instance_set->{"instancesSet"}->{"item"}->{"instanceType"},
-	     dns_name => $instance_set->{"instancesSet"}->{"item"}->{"dnsName"},
-	     state => $instance_set->{"instancesSet"}->{"item"}->{"instanceState"}->{"name"},
-	     launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
-	     name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
-	     private_ip => $instance_set->{"instancesSet"}->{"item"}->{"privateIpAddress"},
-	     (security_group =>
+   for my $instance_set (@{$ref->{"reservationSet"}->{"item"}}) {
+       if (ref $instance_set->{"instancesSet"}->{"item"} eq 'HASH') {
+	   push(@ret, {
+	       ip => $instance_set->{"instancesSet"}->{"item"}->{"ipAddress"},
+	       id => $instance_set->{"instancesSet"}->{"item"}->{"instanceId"},
+	       architecture => $instance_set->{"instancesSet"}->{"item"}->{"architecture"},
+	       type => $instance_set->{"instancesSet"}->{"item"}->{"instanceType"},
+	       dns_name => $instance_set->{"instancesSet"}->{"item"}->{"dnsName"},
+	       state => $instance_set->{"instancesSet"}->{"item"}->{"instanceState"}->{"name"},
+	       launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
+	       name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
+	       private_ip => $instance_set->{"instancesSet"}->{"item"}->{"privateIpAddress"},
+	       (security_group =>
 		ref $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"} eq 'ARRAY'
-           ? join ',', map {$_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}}
-           :$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"}
-	     ),
-	     (security_groups =>
+                ? join ',', map {$_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}}
+                :$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"}
+	       ),
+	       (security_groups =>
 		ref $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"} eq 'ARRAY'
-           ? [ map { $_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}} ]
-           : [ $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"} ]
-	     ),
+                ? [ map { $_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}} ]
+                : [ $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"} ]
+	       ),
 		})
-     }
-  }
+       }
+   }
 
-  return @ret;
+   return @ret;
 }
 
 sub list_running_instances {

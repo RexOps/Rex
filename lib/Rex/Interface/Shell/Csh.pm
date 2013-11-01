@@ -39,8 +39,16 @@ sub set_locale {
 }
 
 sub exec {
-    my ($self, $cmd) = @_;
+    my ($self, $cmd, $option) = @_;
     my $complete_cmd = $cmd;
+
+    if(exists $option->{path}) {
+      $self->path($option->{path});
+    }
+
+    if(exists $option->{cwd}) {
+      $complete_cmd = "cd $option->{cwd} && $complete_cmd";
+    }
 
     if ($self->{path}) {
        $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
@@ -52,7 +60,7 @@ sub exec {
 
     if ($self->{source_profile}) {
        # csh is using .login
-       $complete_cmd = "source \$HOME/.login >& /dev/null ; $complete_cmd";
+       $complete_cmd = "source ~/.login >& /dev/null ; $complete_cmd";
     }
 
     if ($self->{source_global_profile}) {
@@ -64,6 +72,11 @@ sub exec {
 # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware
     if(Rex::Config->get_sleep_hack) {
       $complete_cmd .= " ; set f=\$? ; sleep .00000001 ; exit \$f";
+    }
+
+    if(exists $option->{format_cmd}) {
+      $option->{format_cmd} =~ s/{{CMD}}/$complete_cmd/;
+      $complete_cmd = $option->{format_cmd};
     }
 
     return $complete_cmd;

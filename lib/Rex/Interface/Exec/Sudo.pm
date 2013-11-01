@@ -112,36 +112,33 @@ EOF
       Rex::Logger::debug("Using sudo without locales. If the locale is NOT C or en_US it will break many things!");
       $locales = "";
    }
+
    
    if(Rex::Config->get_sudo_without_sh()) {
       Rex::Logger::debug("Using sudo without sh will break things like file editing.");
       if($enc_pw) {
-         return $exec->exec("perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S $locales $cmd");
+         $option->{format_cmd} = "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S $locales {{CMD}}";
       }
       else {
-         return $exec->exec("sudo $sudo_options_str $locales $cmd");
+         $option->{format_cmd} = "sudo $sudo_options_str $locales {{CMD}}";
       }
    }
    else {
-      my $new_cmd = "$locales $path ; export PATH LC_ALL ; $cmd";
-
       # escape some special shell things
-      $new_cmd =~ s/\\/\\\\/gms;
-      $new_cmd =~ s/"/\\"/gms;
-      $new_cmd =~ s/\$/\\\$/gms;
-
-      if(Rex::Config->get_source_global_profile) {
-         $new_cmd = ". /etc/profile; $new_cmd";
-      }
+      $cmd =~ s/\\/\\\\/gms;
+      $cmd =~ s/"/\\"/gms;
+      $cmd =~ s/\$/\\\$/gms;
 
       if($enc_pw) {
-         return $exec->exec("perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S sh -c \"$new_cmd\"");
+         $option->{format_cmd} = "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S sh -c \"{{CMD}}\"";
       }
       else {
-         return $exec->exec("sudo $sudo_options_str -p '' -S sh -c \"$new_cmd\"");
+         $option->{format_cmd} = "sudo $sudo_options_str -p '' -S sh -c \"{{CMD}}\"";
       }
 
    }
+
+   return $exec->exec($cmd, $path, $option);
 }
 
 1;

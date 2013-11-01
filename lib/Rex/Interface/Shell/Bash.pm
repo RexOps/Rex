@@ -40,8 +40,16 @@ sub set_locale {
 }
 
 sub exec {
-    my ($self, $cmd) = @_;
+    my ($self, $cmd, $option) = @_;
     my $complete_cmd = $cmd;
+
+    if(exists $option->{path}) {
+      $self->path($option->{path});
+    }
+
+    if(exists $option->{cwd}) {
+      $complete_cmd = "cd $option->{cwd} && $complete_cmd";
+    }
 
     if ($self->{path}) {
         $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
@@ -52,7 +60,7 @@ sub exec {
     }
 
     if ($self->{source_profile}) {
-        $complete_cmd = ". \$HOME/.profile &> /dev/null ; $complete_cmd";
+        $complete_cmd = ". ~/.profile &> /dev/null ; $complete_cmd";
     }
 
 
@@ -61,11 +69,15 @@ sub exec {
     }
 
 
-
 # this is due to a strange behaviour with Net::SSH2 / libssh2
 # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware
     if(Rex::Config->get_sleep_hack) {
       $complete_cmd .= " ; f=\$? ; sleep .00000001 ; exit \$f";
+    }
+
+    if(exists $option->{format_cmd}) {
+      $option->{format_cmd} =~ s/{{CMD}}/$complete_cmd/;
+      $complete_cmd = $option->{format_cmd};
     }
 
     return $complete_cmd;

@@ -40,9 +40,6 @@ sub exec {
       $path = $option->{path};
    }
 
-   if($path) { $path = "PATH=$path" }
-   $path ||= "";
-
    my ($exec, $file);
    if(my $ssh = Rex::is_ssh()) {
       if(ref $ssh eq "Net::OpenSSH") {

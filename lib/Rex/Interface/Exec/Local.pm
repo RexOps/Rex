@@ -28,7 +28,6 @@ sub new {
 sub exec {
    my ($self, $cmd, $path, $option) = @_;
 
-   Rex::Logger::debug("Executing: $cmd");
 
    my ($out, $err);
 
@@ -39,6 +38,13 @@ sub exec {
    if(exists $option->{path}) {
       $path = $option->{path};
    }
+
+   if(exists $option->{format_cmd}) {
+      $option->{format_cmd} =~ s/{{CMD}}/$cmd/;
+      $cmd = $option->{format_cmd};
+   }
+
+   Rex::Logger::debug("Executing: $cmd");
 
    Rex::Commands::profiler()->start("exec: $cmd");
    if($^O !~ m/^MSWin/) {

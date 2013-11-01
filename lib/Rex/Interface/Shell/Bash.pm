@@ -55,7 +55,7 @@ sub exec {
         $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
     }
 
-    if ($self->{locale}) {
+    if ($self->{locale} && ! exists $option->{no_locales}) {
         $complete_cmd = "LC_ALL=$self->{locale} ; export LC_ALL; $complete_cmd ";
     }
 

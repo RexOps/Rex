@@ -598,6 +598,12 @@ sub import {
             $found_feature = 1;
          }
 
+         if($add eq "exec_autodie") {
+            Rex::Logger::debug("Enabling exec_autodie");
+            Rex::Config->set_exec_autodie(1);
+            $found_feature = 1;
+         }
+
          if($found_feature == 0) {
             Rex::Logger::info("You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.", "warn");
             exit 1;

@@ -55,7 +55,8 @@ our ($user, $password, $port,
             $use_sleep_hack,
             $report_type,
             $do_reporting,
-            $say_format);
+            $say_format,
+            $exec_autodie);
 
 # some defaults
 %executor_for = (
@@ -65,7 +66,14 @@ our ($user, $password, $port,
    bash   => "bash",
 );
 
+sub set_exec_autodie {
+   my $class = shift;
+   $exec_autodie = shift;
+}
 
+sub get_exec_autodie {
+   return $exec_autodie;
+}
 sub set_no_path_cleanup {
    my $class = shift;
    $no_path_cleanup = shift;

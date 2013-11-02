@@ -107,6 +107,12 @@ sub run {
       $err = "";
    }
 
+   if(Rex::Config->get_exec_autodie() == 1) {
+      if($? != 0) {
+         die("Error executing: $cmd.\nOutput:\n$out");
+      }
+   }
+
    if($code) {
       return &$code($out, $err);
    }

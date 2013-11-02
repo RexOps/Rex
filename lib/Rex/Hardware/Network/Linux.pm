@@ -17,87 +17,132 @@ use Data::Dumper;
 
 sub get_network_devices {
 
-   my @device_list;
+   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
+   my @output = i_run("LC_ALL=C $command");
 
-   my $command = can_run('ip') ? 'ip link show' : 'ifconfig';
+   my $devices = ($command eq 'ip addr show') ? _parse_ip(@output) : _parse_ifconfig(@output);
+   my @device_list = keys %{ $devices };
 
-   my @proc_net_dev = grep  { ! /^$/ } map { $1 if /(\S+[^:]+)\:/ } i_run("cat /proc/net/dev");
-   for my $dev (@proc_net_dev) {
-      my $output = i_run("$command $dev");
-      if (($output =~ m%link/(ether|ppp) %) or
-          ($output =~ m/(Link encap:)?(?:Ethernet|Point-to-Point Protocol)/m)) {
-         push(@device_list, $dev);
-      }
-   }
-
-   @device_list = array_uniq(@device_list);
    return \@device_list;
-
 }
 
 sub get_network_configuration {
    
-   my $devices = get_network_devices();
-
    my $device_info = {};
 
-   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig';
+   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
+   my @output = i_run("LC_ALL=C $command");
 
-   for my $dev (@{$devices}) {
-
-      my $output = i_run("LC_ALL=C $command $dev");
-
-      $device_info->{$dev} =
-         ($command eq 'ip addr show') ? _parse_ip($output) : _parse_ifconfig($output);
-
-   }
-
-   return $device_info;
-
+   return ($command eq 'ip addr show') ? _parse_ip(@output) : _parse_ifconfig(@output);
 }
 
 sub _parse_ifconfig {
-   my ($ifconfig) = @_;
-   return {
-      ip          => [ ( $ifconfig =~ m/inet( addr:| )?(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
-      netmask     => [ ( $ifconfig =~ m/(netmask |Mask:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
-      broadcast   => [ ( $ifconfig =~ m/(broadcast |Bcast:)(\d+\.\d+\.\d+\.\d+)/ ) ]->[1],
-      mac         => [ ( $ifconfig =~ m/(ether|HWaddr) (..:..:..:..:..:..)/ ) ]->[1],
-   };
+   my (@ifconfig) = @_;
+
+   my $dev = {};
+
+   my $cur_dev;
+   for my $line (@ifconfig) {
+      if($line =~ m/^([a-zA-Z0-9:\._]+)/) {
+         my $new_dev = $1;
+
+         if($cur_dev && $cur_dev ne $new_dev) {
+            $cur_dev = $new_dev;
+         }
+
+         if(! $cur_dev) {
+            $cur_dev = $new_dev;
+         }
+        
+         $dev->{$cur_dev}->{mac} = "";
+         $dev->{$cur_dev}->{ip} = "";
+         $dev->{$cur_dev}->{netmask} = "";
+         $dev->{$cur_dev}->{broadcast} = "";
+
+      }
+
+      if($line =~ m/(ether|HWaddr) (..:..:..:..:..:..)/) {
+         $dev->{$cur_dev}->{mac} = $2;
+      }
+
+      if($line =~ m/inet( addr:| )?(\d+\.\d+\.\d+\.\d+)/) {
+         $dev->{$cur_dev}->{ip} = $2;
+      }
+
+      if($line =~ m/(netmask |Mask:)(\d+\.\d+\.\d+\.\d+)/) {
+         $dev->{$cur_dev}->{netmask} = $2;
+      }
+
+      if($line =~ m/(broadcast |Bcast:)(\d+\.\d+\.\d+\.\d+)/) {
+         $dev->{$cur_dev}->{broadcast} = $2;
+      }
+
+   }
+
+   return $dev;
+
 }
 
 sub _parse_ip {
-   my ($ip_lines) = @_;
+   my (@ip_lines) = @_;
 
-   # extract all interesting values at once
-   my ($mac, $ip, $cidr_prefix, $broadcast) = ($ip_lines =~ m%
-         link/.*\ (..:..:..:..:..:..)\ .*
-         inet\ (\d+\.\d+\.\d+\.\d+)/(\d+)\ brd\ (\d+\.\d+\.\d+\.\d+)%sx);
+   my $dev = {};
 
-   if(! $ip) {
+   my $cur_dev;
+   for my $line (@ip_lines) {
+      if($line =~ m/^\d+:\s*([^\s]+):/) {
+         my $new_dev = $1;
 
-      ($mac) = ($ip_lines =~ m%
-            link/.*\ (..:..:..:..:..:..)\ .*
-            %sx);
+         if($cur_dev && $cur_dev ne $new_dev) {
+            $cur_dev = $new_dev;
+         }
 
-      return {
-         ip        => '',
-         netmask   => '',
-         broadcast => '',
-         mac       => $mac
-      };
+         if(! $cur_dev) {
+            $cur_dev = $new_dev;
+         }
+
+         $dev->{$cur_dev}->{ip} = "";
+         $dev->{$cur_dev}->{mac} = "";
+         $dev->{$cur_dev}->{netmask} = "";
+         $dev->{$cur_dev}->{broadcast} = "";
+
+         next;
+      }
+
+      if($line =~ m/^\s*link\/ether (..:..:..:..:..:..)/) {
+         $dev->{$cur_dev}->{mac} = $1;
+      }
+
+      # loopback
+      if($line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/) {
+         $dev->{$cur_dev}->{ip} = $1;
+         $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
+      }
+
+      if($line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) brd (\d+\.\d+\.\d+\.\d+) scope ([^\s]+) (.*)$/) {
+         my $ip = $1;
+         my $cidr_prefix = $2;
+         my $broadcast = $3;
+         my $scope = $4;
+         my $dev_name = $5;
+
+         if($scope eq "global" && $dev_name ne $cur_dev) {
+            # this is an alias
+            $dev->{$dev_name}->{ip} = $ip;
+            $dev->{$dev_name}->{broadcast} = $broadcast;
+            $dev->{$dev_name}->{netmask} = _convert_cidr_prefix($cidr_prefix);
+            $dev->{$dev_name}->{mac} = $dev->{$cur_dev}->{mac};
+         }
+         else {
+            $dev->{$cur_dev}->{ip} = $ip;
+            $dev->{$cur_dev}->{broadcast} = $broadcast;
+            $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($cidr_prefix);
+         }
+      }
    }
 
-   # convert CIDR prefix to dotted decimal notation
-   my $binary_mask         = '1' x $cidr_prefix . '0' x (32 - $cidr_prefix);
-   my $dotted_decimal_mask = join '.', unpack 'C4', pack 'B32', $binary_mask;
-   
-   return {
-      ip          => $ip,
-      netmask     => $dotted_decimal_mask,
-      broadcast   => $broadcast,
-      mac         => $mac,
-   };
+   return $dev;
+
 }
 
 sub route {
@@ -251,6 +296,15 @@ sub netstat {
 
    return @ret;
 
+}
+
+sub _convert_cidr_prefix {
+   my ($cidr_prefix) = @_;
+   # convert CIDR prefix to dotted decimal notation
+   my $binary_mask         = '1' x $cidr_prefix . '0' x (32 - $cidr_prefix);
+   my $dotted_decimal_mask = join '.', unpack 'C4', pack 'B32', $binary_mask;
+
+   return $dotted_decimal_mask;
 }
 
 

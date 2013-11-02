@@ -25,7 +25,9 @@ sub hash_flatten {
             hash_flatten($in->{$key}, $out, $sep, @super_keys);
          }
          else {
-            $out->{join($sep, @super_keys)} = $in->{$key};
+            my $new_key_name = join($sep, @super_keys);
+            $new_key_name =~ s/[^A-Za-z0-9_]/_/g;
+            $out->{$new_key_name} = $in->{$key};
          }
          pop @super_keys;
       }
@@ -39,7 +41,9 @@ sub hash_flatten {
             pop @super_keys;
          }
          else {
-            $out->{join($sep, @super_keys) . "_$counter"} = $val;
+            my $new_key_name = join($sep, @super_keys) . "_$counter";
+            $new_key_name =~ s/[^A-Za-z0-9_]/_/g;
+            $out->{$new_key_name} = $val;
          }
          $counter++;
       }

@@ -75,6 +75,10 @@ sub exec {
       $complete_cmd .= " ; f=\$? ; sleep .00000001 ; exit \$f";
     }
 
+    if(exists $option->{preprocess_command} && ref $option->{preprocess_command} eq "CODE") {
+      $complete_cmd = $option->{preprocess_command}->($complete_cmd);
+    }
+
     if(exists $option->{format_cmd}) {
       $option->{format_cmd} =~ s/{{CMD}}/$complete_cmd/;
       $complete_cmd = $option->{format_cmd};

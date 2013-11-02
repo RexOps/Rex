@@ -120,9 +120,14 @@ EOF
    }
    else {
       # escape some special shell things
-      $cmd =~ s/\\/\\\\/gms;
-      $cmd =~ s/"/\\"/gms;
-      $cmd =~ s/\$/\\\$/gms;
+      $option->{preprocess_command} = sub {
+         my ($_cmd) = @_;
+         $_cmd =~ s/\\/\\\\/gms;
+         $_cmd =~ s/"/\\"/gms;
+         $_cmd =~ s/\$/\\\$/gms;
+
+         return $_cmd;
+      };
 
       if($enc_pw) {
          $option->{format_cmd} = "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S sh -c \"{{CMD}}\"";

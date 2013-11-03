@@ -60,12 +60,12 @@ sub exec {
     }
 
     if ($self->{source_profile}) {
-        $complete_cmd = ". ~/.profile &> /dev/null ; $complete_cmd";
+        $complete_cmd = ". ~/.profile >/dev/null 2>&1 ; $complete_cmd";
     }
 
 
     if ($self->{source_global_profile}) {
-        $complete_cmd = ". /etc/profile &> /dev/null ; $complete_cmd";
+        $complete_cmd = ". /etc/profile >/dev/null 2>&1 ; $complete_cmd";
     }
 
 

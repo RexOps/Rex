@@ -82,6 +82,7 @@ use Data::Dumper;
 use Rex::Interface::Connection;
 use Cwd qw(getcwd);
 use Rex::Config;
+use Rex::Helper::Array;
 
 our (@EXPORT,
       $VERSION,
@@ -93,7 +94,10 @@ our (@EXPORT,
 $VERSION = "0.43.99.1";
 my $cur_dir;
 
+
 BEGIN {
+
+   my $orig_inc = [];
 
    sub _home_dir {
       if($^O =~ m/^MSWin/) {
@@ -105,9 +109,11 @@ BEGIN {
 
    $cur_dir = getcwd;
 
+   $orig_inc = [ @INC ];
+
    unshift(@INC, sub {
       my $mod_to_load = $_[1];
-      return search_module_path($mod_to_load, 1);
+      return search_module_path($mod_to_load, 1, $orig_inc);
    });
 
 
@@ -122,7 +128,7 @@ BEGIN {
 
    push(@INC, sub {
       my $mod_to_load = $_[1];
-      return search_module_path($mod_to_load);
+      return search_module_path($mod_to_load, 0, $orig_inc);
    });
 
 };
@@ -136,20 +142,19 @@ if($^O =~ m/^MSWin/) {
 push(@INC, "$home/.rex/recipes");
 
 sub search_module_path {
-   my ($mod_to_load, $pre) = @_;
+   my ($mod_to_load, $pre, $orig_inc) = @_;
 
    $mod_to_load =~ s/\.pm//g;
 
    my @search_in;
-
    if($pre) {
       @search_in = map { ("$_/$mod_to_load.pm") } 
-                     grep { -d } @INC;
+                     grep { -d } grep { ! in_array($_, @{ $orig_inc }) } @INC;
 
    }
    else {
       @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm", "$_/$mod_to_load.pm") } 
-                     grep { -d } @INC;
+                     grep { -d } grep { ! in_array($_, @{ $orig_inc }) } @INC;
    }
 
 
@@ -161,6 +166,7 @@ sub search_module_path {
          }
 
          # module found, register path
+         print "found module: $file\n";
          $MODULE_PATHS->{$mod_to_load} = {path => $path};
          my $mod_package_name = $mod_to_load;
          $mod_package_name =~ s/\//::/g;

@@ -91,7 +91,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.43.99.2";
+$VERSION = "0.43.99.3";
 my $cur_dir;
 
 
@@ -166,7 +166,6 @@ sub search_module_path {
          }
 
          # module found, register path
-         print "found module: $file\n";
          $MODULE_PATHS->{$mod_to_load} = {path => $path};
          my $mod_package_name = $mod_to_load;
          $mod_package_name =~ s/\//::/g;

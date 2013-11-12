@@ -64,6 +64,12 @@ sub add {
                                                $config{"command"},
    );
 
+   my $dupe = grep { /$new_cron/ } @{ $self->{cron} };
+   if($dupe) {
+      Rex::Logger::debug("Job \"$new_cron\" already installed, skipping.");
+      return;
+   }
+
    push(@{ $self->{cron} }, {
       type => "job",
       line => $new_cron,

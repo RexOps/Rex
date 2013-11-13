@@ -124,9 +124,10 @@ sub cron {
    }
 
    elsif($action eq "add") {
-      $c->add(%{ $config });
-      my $rnd_file = $c->write_cron;
-      $c->activate_user_cron($rnd_file, $user);
+      if($c->add(%{ $config })) {
+         my $rnd_file = $c->write_cron;
+         $c->activate_user_cron($rnd_file, $user);
+      }
    }
 
    elsif($action eq "delete") {

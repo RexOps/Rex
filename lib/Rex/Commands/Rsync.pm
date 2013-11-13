@@ -38,7 +38,7 @@ use strict;
 use warnings;
 
 use Expect;
-$Expect::Log_Stdout = 1;
+$Expect::Log_Stdout = 0;
 
 require Rex::Exporter;
 

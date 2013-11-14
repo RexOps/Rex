@@ -97,8 +97,6 @@ my $cur_dir;
 
 BEGIN {
 
-   my $orig_inc = [];
-
    sub _home_dir {
       if($^O =~ m/^MSWin/) {
          return $ENV{'USERPROFILE'};
@@ -109,11 +107,9 @@ BEGIN {
 
    $cur_dir = getcwd;
 
-   $orig_inc = [ @INC ];
-
    unshift(@INC, sub {
       my $mod_to_load = $_[1];
-      return search_module_path($mod_to_load, 1, $orig_inc);
+      return search_module_path($mod_to_load, 1);
    });
 
 
@@ -128,7 +124,7 @@ BEGIN {
 
    push(@INC, sub {
       my $mod_to_load = $_[1];
-      return search_module_path($mod_to_load, 0, $orig_inc);
+      return search_module_path($mod_to_load, 0);
    });
 
 };
@@ -142,19 +138,19 @@ if($^O =~ m/^MSWin/) {
 push(@INC, "$home/.rex/recipes");
 
 sub search_module_path {
-   my ($mod_to_load, $pre, $orig_inc) = @_;
+   my ($mod_to_load, $pre) = @_;
 
    $mod_to_load =~ s/\.pm//g;
 
    my @search_in;
    if($pre) {
       @search_in = map { ("$_/$mod_to_load.pm") } 
-                     grep { -d } grep { ! in_array($_, @{ $orig_inc }) } @INC;
+                     grep { -d } @INC;
 
    }
    else {
-      @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm", "$_/$mod_to_load.pm") } 
-                     grep { -d } grep { ! in_array($_, @{ $orig_inc }) } @INC;
+      @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") } 
+                     grep { -d } @INC;
    }
 
 
@@ -170,6 +166,10 @@ sub search_module_path {
          my $mod_package_name = $mod_to_load;
          $mod_package_name =~ s/\//::/g;
          $MODULE_PATHS->{$mod_package_name} = {path => $path};
+
+         if($pre) {
+            return;
+         }
 
          open(my $fh, $file);
          return $fh;

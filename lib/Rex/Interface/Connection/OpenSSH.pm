@@ -65,18 +65,18 @@ sub connect {
    Rex::Logger::info("Connecting to $server:$port (" . $user . ")");
 
    my %ssh_opts = Rex::Config->get_openssh_opt();
-   my $ssh_opts_line = "";
+   my @ssh_opts_line;
 
    for my $key (keys %ssh_opts) {
-      $ssh_opts_line .= $key . "=" . $ssh_opts{$key} . " ";
+      push @ssh_opts_line, "-o" => $key . "=" . $ssh_opts{$key};
    }
 
    my @connection_props = ($server, user => $user, port => $port);
    push @connection_props, master_opts => [
-                              -o => $ssh_opts_line,
+                              @ssh_opts_line,
                            ];
    push @connection_props, default_ssh_opts => [
-                              -o => $ssh_opts_line,
+                              @ssh_opts_line,
                            ];
 
    if($auth_type && $auth_type eq "pass") {

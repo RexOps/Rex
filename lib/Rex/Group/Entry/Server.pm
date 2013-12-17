@@ -273,7 +273,7 @@ sub AUTOLOAD {
 
    return $self if( $AUTOLOAD =~ m/DESTROY/ );
 
-   my ($wanted_data) = ($AUTOLOAD =~ m/::([a-z0-9A-Z]+)$/);
+   my ($wanted_data) = ($AUTOLOAD =~ m/::([a-z0-9A-Z_]+)$/);
 
    if(scalar(keys %{ $self->{__hardware_info__} }) == 0) {
       $self->gather_information;

@@ -10,7 +10,7 @@ Rex::FS::File - File Class
 
 =head1 DESCRIPTION
 
-This is the File Class used by I<write_file> and I<read_file>.
+This is the File Class used by I<file_write> and I<file_read>.
 
 =head1 SYNOPSIS
 

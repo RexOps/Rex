@@ -689,7 +689,7 @@ sub _parse_ssh_config {
       next if ($line =~ m/^\s*#/);
       next if ($line =~ m/^\s*$/);
 
-      if($line =~ m/^Host\s*?=?\s*(.*)$/) {
+      if($line =~ m/^Host(?:\s*=\s*|\s+)(.*)$/i) {
          my $host_tmp = $1; 
          @host = split(/\s+/, $host_tmp);
          $in_host = 1;

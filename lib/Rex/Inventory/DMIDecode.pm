@@ -121,11 +121,16 @@ sub _read_dmidecode {
       my $dmidecode = can_run("dmidecode");
 
       unless($dmidecode) {
-         Rex::Logger::debug("Please install dmidecode on the target system.");
-         return;
+         #Rex::Logger::debug("Please install dmidecode on the target system.");
+         #return;
+         $dmidecode = "dmidecode";
       }
 
       @lines = i_run $dmidecode;
+      if($? != 0) {
+         Rex::Logger::debug("Please install dmidecode on the target system.");
+         return;
+      }
    }
    chomp @lines;
 

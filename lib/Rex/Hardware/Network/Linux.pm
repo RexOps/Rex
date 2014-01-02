@@ -45,6 +45,7 @@ sub _parse_ifconfig {
    for my $line (@ifconfig) {
       if($line =~ m/^([a-zA-Z0-9:\._]+)/) {
          my $new_dev = $1;
+         $new_dev = substr($new_dev, 0, -1) if($new_dev =~ m/:$/);
 
          if($cur_dev && $cur_dev ne $new_dev) {
             $cur_dev = $new_dev;

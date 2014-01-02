@@ -1,5 +1,5 @@
 use Data::Dumper;
-use Test::More tests => 30;
+use Test::More tests => 38;
 use_ok 'Rex::Hardware::Network::Linux';
 use_ok 'Rex::Helper::Hash';
 
@@ -56,4 +56,18 @@ is($info->{eth1}->{ip}, "", "ip / ip");
 is($info->{eth1}->{netmask}, "", "ip / netmask");
 is($info->{eth1}->{broadcast}, "", "ip / broadcast");
 is($info->{eth1}->{mac}, "00:1c:42:73:ad:3c", "ip / mac");
+
+@in = eval { local(@ARGV) = ("t/ifconfig.out6"); <>; };
+$info = Rex::Hardware::Network::Linux::_parse_ifconfig(@in);
+
+ok($info->{eth0}->{broadcast} eq "192.168.112.255", "(fc19) eth0 / broadcast");
+ok($info->{eth0}->{ip} eq "192.168.112.182", "(fc19) eth0 / ip");
+ok($info->{eth0}->{netmask} eq "255.255.255.0", "(fc19) eth0 / netmask");
+ok($info->{eth0}->{mac} eq "52:54:00:37:a8:e1", "(fc19) eth0 / mac");
+
+ok($info->{"eth0:1"}->{broadcast} eq "1.2.255.255", "(fc19) eth0:1 / broadcast");
+ok($info->{"eth0:1"}->{ip} eq "1.2.3.4", "(fc19) eth0:1 / ip");
+ok($info->{"eth0:1"}->{netmask} eq "255.255.0.0", "(fc19) eth0:1 / netmask");
+ok($info->{"eth0:1"}->{mac} eq "52:54:00:37:a8:e1", "(fc19) eth0:1 / mac");
+
 

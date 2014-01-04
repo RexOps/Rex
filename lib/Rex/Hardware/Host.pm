@@ -130,6 +130,10 @@ sub get_operating_system {
       return "Mageia";
    }
 
+   if(is_file("/etc/fedora-release")) {
+      return "Fedora";
+   }
+
    if(is_file("/etc/gentoo-release")) {
       return "Gentoo";
    }
@@ -206,7 +210,8 @@ sub get_operating_system_version {
    }
    elsif(lc($op) eq "redhat" 
             or lc($op) eq "centos"
-            or lc($op) eq "scientific") {
+            or lc($op) eq "scientific"
+            or lc($op) eq "fedora") {
 
       my $fh = file_read("/etc/redhat-release");
       my $content = $fh->read_all;

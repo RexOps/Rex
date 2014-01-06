@@ -8,6 +8,8 @@ use_ok 'Rex::TaskList';
 use_ok 'Rex::Commands';
 use_ok 'Rex::Transaction';
 
+$::QUIET = 1;
+
 Rex::Commands->import;
 
 

@@ -1,4 +1,4 @@
-use Test::More tests => 151;
+use Test::More tests => 152;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -115,6 +115,7 @@ use_ok 'Rex::Service::Debian';
 use_ok 'Rex::Service::FreeBSD';
 use_ok 'Rex::Service::Gentoo';
 use_ok 'Rex::Service::Mageia';
+use_ok 'Rex::Service::Mageia::systemd';
 use_ok 'Rex::Service::NetBSD';
 use_ok 'Rex::Service::OpenBSD';
 use_ok 'Rex::Service::Redhat::systemd';

@@ -129,6 +129,7 @@ lib/Rex/Interface/Shell/Bash.pm
 lib/Rex/Interface/Shell/Csh.pm
 lib/Rex/Interface/Shell/Default.pm
 lib/Rex/Interface/Shell/Sh.pm
+lib/Rex/Interface/Shell/Tcsh.pm
 lib/Rex/Interface/Shell/Zsh.pm
 lib/Rex/Inventory.pm
 lib/Rex/Inventory/Bios.pm
@@ -187,6 +188,7 @@ lib/Rex/Service/FreeBSD.pm
 lib/Rex/Service/Gentoo.pm
 lib/Rex/Service/Gentoo/systemd.pm
 lib/Rex/Service/Mageia.pm
+lib/Rex/Service/Mageia/systemd.pm
 lib/Rex/Service/NetBSD.pm
 lib/Rex/Service/OpenBSD.pm
 lib/Rex/Service/OpenWrt.pm
@@ -217,6 +219,16 @@ lib/Rex/User/SunOS.pm
 lib/Rex/Value.pm
 lib/Rex/Virtualization.pm
 lib/Rex/Virtualization/Base.pm
+lib/Rex/Virtualization/Docker.pm
+lib/Rex/Virtualization/Docker/create.pm
+lib/Rex/Virtualization/Docker/daemon.pm
+lib/Rex/Virtualization/Docker/delete.pm
+lib/Rex/Virtualization/Docker/destroy.pm
+lib/Rex/Virtualization/Docker/info.pm
+lib/Rex/Virtualization/Docker/list.pm
+lib/Rex/Virtualization/Docker/reboot.pm
+lib/Rex/Virtualization/Docker/shutdown.pm
+lib/Rex/Virtualization/Docker/start.pm
 lib/Rex/Virtualization/LibVirt.pm
 lib/Rex/Virtualization/LibVirt/blklist.pm
 lib/Rex/Virtualization/LibVirt/clone.pm
@@ -297,6 +309,7 @@ t/ifconfig.out2
 t/ifconfig.out3
 t/ifconfig.out4
 t/ifconfig.out5
+t/ifconfig.out6
 t/ini.t
 t/interface_fs_local.t
 t/ip.out1

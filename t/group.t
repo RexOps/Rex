@@ -31,7 +31,7 @@ task("tasktest3", "group", "forcetest1", sub {});
 
 my @servers = Rex::Group->get_group("forcetest1");
 ok($servers[0] eq "bla1", "forceserver - 1");
-ok($servers[2] ne "bla1", "group - servername uniq");
+ok(!defined $servers[2], "group - servername uniq");
 
 my $task = Rex::TaskList->create()->get_task("tasktest3");
 my @all_server = @{ $task->server };

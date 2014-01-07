@@ -12,7 +12,10 @@ use_ok 'Rex::Commands::File';
 use_ok 'Rex::Commands::Fs';
 Rex::Commands->import;
 
-$::QUIET = 1; $::QUIET = 1;
+{
+	no warnings 'once';
+	$::QUIET = 1;
+}
 
 if($^O =~ m/^MSWin/) {
    system("rd /Q /S tmp\\report");

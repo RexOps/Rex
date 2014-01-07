@@ -1,4 +1,4 @@
-use Test::More tests => 152;
+use Test::More tests => 153;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -145,6 +145,7 @@ use_ok 'Rex::User::OpenWrt';
 use_ok 'Rex::User';
 use_ok 'Rex::Interface::Shell';
 use_ok 'Rex::Interface::Shell::Csh';
+use_ok 'Rex::Interface::Shell::Tcsh';
 use_ok 'Rex::Interface::Shell::Default';
 use_ok 'Rex::Interface::Shell::Bash';
 use_ok 'Rex::Interface::Shell::Sh';

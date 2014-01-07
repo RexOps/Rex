@@ -15,6 +15,7 @@ use attributes;
 use Rex::Group::Entry::Server;
 
 use vars qw(%groups);
+use List::MoreUtils qw(uniq);
 use Data::Dumper;
 
 sub new {
@@ -65,7 +66,7 @@ sub create_group {
                                                               else {
                                                                  $_;
                                                               }
-                                                           } @server 
+                                                           } uniq(@server) 
                                                      ]
                                          );
 }

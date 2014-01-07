@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 99;
+use Test::More tests => 101;
 use Data::Dumper;
 
 
@@ -11,6 +11,7 @@ use_ok 'Rex::Config';
 use_ok 'Rex::Group';
 use_ok 'Rex::Task';
 use_ok 'Rex::TaskList';
+use_ok 'List::MoreUtils';
 
 Rex->import(-feature => 0.31);
 Rex::Commands->import();
@@ -24,13 +25,13 @@ no warnings;
 $::FORCE_SERVER = "server1 foo[01..10]";
 use warnings;
 
-group("forcetest1", "bla1", "blah2");
+group("forcetest1", "bla1", "blah2", "bla1");
 
 task("tasktest3", "group", "forcetest1", sub {});
 
 my @servers = Rex::Group->get_group("forcetest1");
 ok($servers[0] eq "bla1", "forceserver - 1");
-
+ok($servers[2] ne "bla1", "group - servername uniq");
 
 my $task = Rex::TaskList->create()->get_task("tasktest3");
 my @all_server = @{ $task->server };

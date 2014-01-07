@@ -290,6 +290,13 @@ sub __run__ {
       if($@) { print $@ . "\n"; exit 1; }
 
    }
+   else {
+      Rex::Logger::info("No Rexfile found.", "warn");
+      Rex::Logger::info("Please create a file named 'Rexfile' inside this directory,", "warn");
+      Rex::Logger::info("or specify the file you want to use with:", "warn");
+      Rex::Logger::info("    rex -f file_to_use task_to_run", "warn");
+   }
+
    if($opts{'e'}) {
       Rex::Logger::debug("Executing command line code");
       Rex::Logger::debug("\t" . $opts{'e'});

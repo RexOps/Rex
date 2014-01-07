@@ -41,27 +41,24 @@ sub get {
          ($hostname) = grep { $_=$1 if /^COMPUTERNAME=(.*)$/ } split(/\r?\n/, @env);
          ($domain)   = grep { $_=$1 if /^USERDOMAIN=(.*)$/ } split(/\r?\n/, @env);
       }
-      elsif($os eq "NetBSD" || $os eq "OpenBSD") {
-         my @out = i_run("LC_ALL=C hostname");
-         ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } @out;
-         ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } @out;
+      elsif($os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD') {
+	 ($hostname, $domain) =  split(/\./, i_run("hostname") , 2);
       }
       elsif($os eq "SunOS") {
-         ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } i_run("LC_ALL=C hostname");
-         ($domain) = i_run("LC_ALL=C domainname");
+         ($hostname) = grep { $_=$1 if /^([^\.]+)$/ } i_run("hostname");
+         ($domain) = i_run("domainname");
       }
       elsif($os eq "OpenWrt") {
          ($hostname) = i_run("uname -n");
          ($domain) = i_run("cat /proc/sys/kernel/domainname");
       }
       else {
-         my @out = i_run("LC_ALL=C hostname -f 2>/dev/null");
-         ($hostname) = grep { $_=$1 if /^([^\.]+)\.(.*)$/ } @out;
-         ($domain) = grep { $_=$2 if /^([^\.]+)\.(.*)$/ } @out;
+         my @out = i_run("hostname -f 2>/dev/null");
+	 ($hostname, $domain) =  split(/\./, i_run("hostname -f 2>/dev/null") , 2);
 
          if(! $hostname || $hostname eq "") {
             Rex::Logger::debug("Error getting hostname and domainname. There is something wrong with your /etc/hosts file.");
-            $hostname = i_run("LC_ALL=C hostname");
+            $hostname = i_run("hostname");
          }
       }
 

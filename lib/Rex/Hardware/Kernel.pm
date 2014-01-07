@@ -24,10 +24,10 @@ sub get {
    }
 
    my $data = {
-      architecture => i_run ("LC_ALL=C uname -m"),
-      kernel       => i_run ("LC_ALL=C uname -s"),
-      kernelrelease => i_run ("LC_ALL=C uname -r"),
-      kernelversion => i_run ("LC_ALL=C uname -v"),
+      architecture   => i_run ("uname -m"),
+      kernel         => i_run ("uname -s"),
+      kernelrelease  => i_run ("uname -r"),
+      kernelversion  => i_run ("uname -v"),
    };
 
    $cache->set($cache_key_name, $data);

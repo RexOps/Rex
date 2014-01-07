@@ -18,7 +18,7 @@ use Data::Dumper;
 sub get_network_devices {
 
    my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
-   my @output = i_run("LC_ALL=C $command");
+   my @output = i_run("$command");
 
    my $devices = ($command eq 'ip addr show') ? _parse_ip(@output) : _parse_ifconfig(@output);
    my @device_list = keys %{ $devices };
@@ -31,7 +31,7 @@ sub get_network_configuration {
    my $device_info = {};
 
    my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
-   my @output = i_run("LC_ALL=C $command");
+   my @output = i_run("$command");
 
    return ($command eq 'ip addr show') ? _parse_ip(@output) : _parse_ifconfig(@output);
 }

@@ -172,7 +172,7 @@ sub get {
          };
       }
 
-      my $free_str = [ grep { /^Mem:/ } i_run("LC_ALL=C free -m") ]->[0];
+      my $free_str = [ grep { /^Mem:/ } i_run("free -m") ]->[0];
 
       if(! $free_str) {
          $data = {

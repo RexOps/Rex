@@ -302,7 +302,6 @@ sub _get_remote_files {
       my $script = q|
 use strict;
 use warnings;
-use Data::Dumper;
 
 unlink $0;
 

@@ -91,7 +91,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.43.99.4";
+$VERSION = "0.43.99.10";
 my $cur_dir;
 
 
@@ -643,11 +643,13 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Anders Ossowicki
 
+=item Andrej Zverev
+
 =item Boris Däppen
 
 =item Chris Steigmeier
 
-=item Chenryn
+=item Сергей Романов
 
 =item Cuong Manh Le
 
@@ -657,9 +659,11 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Dominik Schulz
 
-=item Fran Rodriguez
+=item fanyeren (范野人)
 
 =item Ferenc Erki
+
+=item Fran Rodriguez
 
 =item Franky Van Liedekerke
 
@@ -673,19 +677,27 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Jonathan Delgado
 
+=item Jon Gentle
+
 =item Joris
 
 =item Jose Luis Martinez
 
-=item Laird Liu
+=item Kasim Tuman
 
-=item Naveed Massjouni
+=item Laird Liu
 
 =item Mario Domgoergen
 
+=item Naveed Massjouni
+
 =item Nikolay Fetisov
 
+=item Nils Domrose
+
 =item Peter H. Ezetta
+
+=item Rao Chenlin (Chenryn)
 
 =item RenatoCRON
 

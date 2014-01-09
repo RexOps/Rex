@@ -9,6 +9,11 @@ package Rex::Helper::Encode;
 use strict;
 use warnings;
 
+require Exporter;
+use base qw(Exporter);
+use vars qw(@EXPORT);
+@EXPORT = qw(func_to_json);
+
 my %escapes;
 for (0..255) {
    $escapes{chr($_)} = sprintf("%%%02X", $_);
@@ -24,6 +29,49 @@ sub url_decode{
    my ($txt)=@_;
    $txt=~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
    return $txt;
+}
+
+sub func_to_json {
+
+   return q|
+   sub to_json {
+      my ($ref) = @_;
+
+      my $s = "";
+
+      if(ref $ref eq "ARRAY") {
+         $s .= "[";
+         for my $itm (@{ $ref }) {
+            if(substr($s, -1) ne "[") {
+               $s .= ",";
+            }
+            $s .= to_json($itm);
+         }
+         return $s . "]";
+      }
+      elsif(ref $ref eq "HASH") {
+         $s .= "{";
+         for my $key (keys %{ $ref }) {
+            if(substr($s, -1) ne "{") {
+               $s .= ",";
+            }
+            $s .= "\"$key\": " . to_json($ref->{$key});
+         }
+         return $s . "}";
+      }
+      else {
+         if($ref =~ /^\d+$/) {
+            return $ref;
+         }
+         else {
+            $ref =~ s/'/\\\'/g;
+            return "\"$ref\"";
+         }
+      }
+   }
+
+   |;
+
 }
 
 1;

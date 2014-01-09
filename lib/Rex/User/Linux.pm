@@ -14,11 +14,13 @@ require Rex::Commands;
 use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Helper::Run;
+use Rex::Helper::Encode;
 use Rex::Commands::Fs;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::Helper::Path;
+use JSON::XS;
 
 sub new {
    my $that = shift;
@@ -240,8 +242,18 @@ sub user_groups {
    Rex::Logger::debug("Getting group membership of $user");
    my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
+   my $script = q|
+
+   $exe = "/usr/bin/groups";
+   if(! -x $exe) {
+      $exe = "/bin/groups";
+   } print to_json([  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx{$exe $ARGV[0]} ]);
+
+   |;
+
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; $exe = "/usr/bin/groups"; if(! -x $exe) { $exe = "/bin/groups"; } print Dumper [  map {chomp; $_ =~ s/^[^:]*:\s*(.*)\s*$/$1/; split / /, $_}  qx{$exe $ARGV[0]} ];|);
+   $fh->write($script);
+   $fh->write(func_to_json());
    $fh->close;
 
    my $data_str = i_run "perl $rnd_file $user";
@@ -251,12 +263,7 @@ sub user_groups {
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
 
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
+   my $data = decode_json($data_str);
 
    my $wantarray = wantarray();
 
@@ -273,9 +280,13 @@ sub user_list {
 
    Rex::Logger::debug("Getting user list");
    my $rnd_file = get_tmp_file;
+   my $script = q|
+      print to_json([ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx{/usr/bin/getent passwd} ]);
+   |;
    my $fh = Rex::Interface::File->create;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx{/usr/bin/getent passwd} ];|);
+   $fh->write($script);
+   $fh->write(func_to_json());
    $fh->close;
 
    my $data_str = i_run "perl $rnd_file";
@@ -285,12 +296,7 @@ sub user_list {
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
 
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
+   my $data = decode_json($data_str);
 
    return @$data;
 }
@@ -301,8 +307,12 @@ sub get_user {
    Rex::Logger::debug("Getting information for $user");
    my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
+   my $script = q|
+      print to_json([ getpwnam($ARGV[0]) ]);
+   |;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [ getpwnam($ARGV[0]) ];|);
+   $fh->write($script);
+   $fh->write(func_to_json());
    $fh->close;
 
    my $data_str = i_run "perl $rnd_file $user";
@@ -312,12 +322,7 @@ sub get_user {
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
 
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
+   my $data = decode_json($data_str);
 
    return (
       name => $data->[0],

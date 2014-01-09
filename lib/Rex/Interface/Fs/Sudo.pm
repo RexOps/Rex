@@ -12,6 +12,8 @@ use warnings;
 require Rex::Commands;
 use Rex::Interface::Fs::Base;
 use Rex::Helper::Path;
+use Rex::Helper::Encode;
+use JSON::XS;
 use base qw(Rex::Interface::Fs::Base);
 
 sub new {
@@ -116,7 +118,8 @@ sub stat {
    my ($self, $file) = @_;
 
    my $script = q|
-   use Data::Dumper;
+   unlink $0;
+
    if(my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
                $atime, $mtime, $ctime, $blksize, $blocks) = stat($ARGV[0])) {
 
@@ -129,28 +132,27 @@ sub stat {
          $ret{'atime'} = $atime;
          $ret{'mtime'} = $mtime;
 
-         print Dumper(\%ret);
+         print to_json(\%ret);
    }
 
    |;
 
+   $script .= func_to_json();
+
    my $rnd_file = $self->_write_to_rnd_file($script);
    my $out = $self->_exec("perl $rnd_file '$file'");
-   $out =~ s/^\$VAR1 =/return /;
-   my $tmp = eval $out;
-   $self->unlink($rnd_file);
+   my $tmp = decode_json($out);
 
    return %{$tmp};
 }
 
 sub is_readable {
    my ($self, $file) = @_;
-   my $script = q| if(-r $ARGV[0]) { exit 0; } exit 1; |;
+   my $script = q|unlink $0; if(-r $ARGV[0]) { exit 0; } exit 1; |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
    $self->_exec("perl $rnd_file '$file'");
    my $ret = $?;
-   $self->unlink($rnd_file);
 
    if($ret == 0) { return 1; }
 }
@@ -158,25 +160,23 @@ sub is_readable {
 sub is_writable {
    my ($self, $file) = @_;
 
-   my $script = q| if(-w $ARGV[0]) { exit 0; } exit 1; |;
+   my $script = q|unlink $0; if(-w $ARGV[0]) { exit 0; } exit 1; |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
    $self->_exec("perl $rnd_file '$file'");
    my $ret = $?;
-   $self->unlink($rnd_file);
 
    if($ret == 0) { return 1; }
 }
 
 sub readlink {
    my ($self, $file) = @_;
-   my $script = q|print readlink($ARGV[0]) . "\n"; |;
+   my $script = q|unlink $0; print readlink($ARGV[0]) . "\n"; |;
 
    my $rnd_file = $self->_write_to_rnd_file($script);
    my $out = $self->_exec("perl $rnd_file '$file'");
    chomp $out;
    
-   $self->unlink($rnd_file);
    return $out;
 }
 
@@ -194,15 +194,15 @@ sub glob {
    my ($self, $glob) = @_;
 
    my $script = q|
-   use Data::Dumper;
-   print Dumper [ glob("| . $glob . q|") ];
+   unlink $0;
+   print to_json([ glob("| . $glob . q|") ]);
    |;
+
+   $script .= func_to_json();
 
    my $rnd_file = $self->_write_to_rnd_file($script);
    my $content = $self->_exec("perl $rnd_file");
-   $content =~ s/^\$VAR1 =/return /;
-   my $tmp = eval $content;
-   $self->unlink($rnd_file);
+   my $tmp = decode_json($content);
 
    return @{$tmp};
 }

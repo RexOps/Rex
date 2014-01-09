@@ -12,12 +12,14 @@ use warnings;
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
+use Rex::Helper::Encode;
 use Rex::Commands::Fs;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::User::Linux;
 use Rex::Helper::Path;
+use JSON::XS;
 
 use base qw(Rex::User::Linux);
 
@@ -155,8 +157,13 @@ sub get_user {
    Rex::Logger::debug("Getting information for $user");
    my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
+   my $script = q|
+      unlink $0;
+      print to_json([ getpwnam($ARGV[0]) ]);
+   |;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [ getpwnam($ARGV[0]) ];|);
+   $fh->write($script);
+   $fh->write(func_to_json());
    $fh->close;
 
    my $data_str = i_run "perl $rnd_file $user";
@@ -166,12 +173,7 @@ sub get_user {
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
 
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
+   my $data = decode_json($data_str);
 
    return ( 
       name => $data->[0],
@@ -226,8 +228,13 @@ sub get_group {
    Rex::Logger::debug("Getting information for $group");
    my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
+   my $script = q|
+      unlink $0;
+      print to_json([ getgrnam($ARGV[0]) ]);
+   |;
    $fh->open(">", $rnd_file);
-   $fh->write(q|use Data::Dumper; print Dumper [ getgrnam($ARGV[0]) ];|);
+   $fh->write($script);
+   $fh->write(func_to_json());
    $fh->close;
 
    my $data_str = i_run "perl $rnd_file $group";
@@ -237,12 +244,7 @@ sub get_group {
 
    Rex::Interface::Fs->create()->unlink($rnd_file);
 
-   my $data;
-   {
-      no strict;
-      $data = eval $data_str;
-      use strict;
-   }
+   my $data = decode_json($data_str);
 
    return (
       name => $data->[0],

@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use Fcntl;
+use Rex::Helper::Encode;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::Base;
 use base qw(Rex::Interface::Fs::Base);
@@ -199,13 +200,13 @@ sub glob {
 
    my $ssh = Rex::is_ssh();
    my $exec = Rex::Interface::Exec->create;
-   my $content = $exec->exec("perl -MData::Dumper -le'print Dumper [ glob(\"$glob\") ]'");
-   $content =~ s/^\$VAR1 =/return /;
-   my $tmp = eval $content;
+   my $content = $exec->exec("perl -le'print join(\"*,*,*\", glob(\"$glob\"))'");
+   chomp $content;
+   my @files = split(/\*,\*,\*/, $content);
 
    Rex::Commands::profiler()->end("glob: $glob");
 
-   return @{$tmp};
+   return @files;
 }
 
 sub upload {

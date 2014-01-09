@@ -11,9 +11,9 @@ use warnings;
 
 use Fcntl;
 use Rex::Interface::Exec;
-use Rex::Interface::Fs::Base;
+use Rex::Interface::Fs::SSH;
 use Net::SFTP::Foreign::Constants qw(:flags);
-use base qw(Rex::Interface::Fs::Base);
+use base qw(Rex::Interface::Fs::SSH);
 
 require Rex::Commands;
 
@@ -96,23 +96,6 @@ sub unlink {
    }
 }
 
-sub mkdir {
-   my ($self, $dir) = @_;
-
-   my $ret;
-
-   Rex::Commands::profiler()->start("mkdir: $dir");
-   my $sftp = Rex::get_sftp();
-
-   $sftp->mkdir($dir);
-   if($self->is_dir($dir)) {
-      $ret = 1;
-   }
-   Rex::Commands::profiler()->end("mkdir: $dir");
-
-   return $ret;
-}
-
 sub stat {
    my ($self, $file) = @_;
 
@@ -137,82 +120,6 @@ sub stat {
    return %ret;
 }
 
-sub is_readable {
-   my ($self, $file) = @_;
-
-   Rex::Commands::profiler()->start("is_readable: $file");
-
-   my $exec = Rex::Interface::Exec->create;
-   $exec->exec("perl -le 'if(-r \"$file\") { exit 0; } exit 1'");
-
-   Rex::Commands::profiler()->end("is_readable: $file");
-
-   if($? == 0) { return 1; }
-}
-
-sub is_writable {
-   my ($self, $file) = @_;
-
-   Rex::Commands::profiler()->start("is_writable: $file");
-
-   my $exec = Rex::Interface::Exec->create;
-   $exec->exec("perl -le 'if(-w \"$file\") { exit 0; } exit 1'");
-
-   Rex::Commands::profiler()->end("is_writable: $file");
-
-   if($? == 0) { return 1; }
-}
-
-sub readlink {
-   my ($self, $file) = @_;
-
-   my $ret;
-
-   Rex::Commands::profiler()->start("readlink: $file");
-
-   my $sftp = Rex::get_sftp();
-   $ret = $sftp->readlink($file);
-
-   Rex::Commands::profiler()->end("readlink: $file");
-
-   return $ret;
-}
-
-sub rename {
-   my ($self, $old, $new) = @_;
-
-   my $ret;
-
-   Rex::Commands::profiler()->start("rename: $old -> $new");
-
-   # don't use rename() doesn't work with different file systems / partitions
-   my $exec = Rex::Interface::Exec->create;
-   $exec->exec("/bin/mv '$old' '$new'");
-
-   if( (! $self->is_file($old) && ! $self->is_dir($old) ) && ( $self->is_file($new) || $self->is_dir($new)) ) {
-      $ret = 1;
-   }
-
-   Rex::Commands::profiler()->end("rename: $old -> $new");
-
-   return $ret;
-}
-
-sub glob {
-   my ($self, $glob) = @_;
-
-   Rex::Commands::profiler()->start("glob: $glob");
-
-   my $ssh = Rex::is_ssh();
-   my $exec = Rex::Interface::Exec->create;
-   my $content = $exec->exec("perl -MData::Dumper -le'print Dumper [ glob(\"$glob\") ]'");
-   $content =~ s/^\$VAR1 =/return /;
-   my $tmp = eval $content;
-
-   Rex::Commands::profiler()->end("glob: $glob");
-
-   return @{$tmp};
-}
 
 sub upload {
    my ($self, $source, $target) = @_;

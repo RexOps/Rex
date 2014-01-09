@@ -60,7 +60,10 @@ sub func_to_json {
          return $s . "}";
       }
       else {
-         if($ref =~ /^\d+$/) {
+         if($ref =~ /^0\d+/) {
+            return "\"$ref\"";
+         }
+         elsif($ref =~ /^\d+$/) {
             return $ref;
          }
          else {

@@ -258,6 +258,9 @@ sub task {
 
    my $options = {};
 
+   use Data::Dumper;
+   print Dumper(\@_);
+
    if(ref($_[-1]) eq "HASH") {
       $options = pop;
    }
@@ -324,7 +327,7 @@ sub task {
       use strict;
    }
 
-   $options->{'dont_register'} = $dont_register_tasks;
+   $options->{'dont_register'} ||= $dont_register_tasks;
    Rex::TaskList->create()->create_task($task_name, @_, $options);
 }
 

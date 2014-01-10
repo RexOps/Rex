@@ -57,7 +57,7 @@ sub get_auth {
 sub create_group {
    my $class = shift;
    my $group_name = shift;
-   my @server = @_;
+   my @server = uniq grep { defined } @_;
 
    $groups{$group_name} = Rex::Group->new(servers => [ map {
                                                               if(ref($_) ne "Rex::Group::Entry::Server") {
@@ -66,7 +66,7 @@ sub create_group {
                                                               else {
                                                                  $_;
                                                               }
-                                                           } uniq(@server) 
+                                                           } @server
                                                      ]
                                          );
 }

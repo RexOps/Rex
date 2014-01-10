@@ -265,7 +265,6 @@ lib/Rex/Virtualization/VBox/status.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
-README
 t/0.31.t
 t/01.t
 t/args.t

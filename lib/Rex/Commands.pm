@@ -258,9 +258,6 @@ sub task {
 
    my $options = {};
 
-   use Data::Dumper;
-   print Dumper(\@_);
-
    if(ref($_[-1]) eq "HASH") {
       $options = pop;
    }

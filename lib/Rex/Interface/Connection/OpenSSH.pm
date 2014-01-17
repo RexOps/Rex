@@ -98,7 +98,7 @@ sub connect {
    $self->{ssh} = Net::OpenSSH->new(@connection_props);
 
    if($self->{ssh} && $self->{ssh}->error) {
-      Rex::Logger::info("Can't connect to $server (" . $self->{ssh}->{error} . ")", "warn");
+      Rex::Logger::info("Can't connect to $server (" . $self->{ssh}->error() . ")", "warn");
       $self->{connected} = 0;
 
       return;

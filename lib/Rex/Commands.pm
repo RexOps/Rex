@@ -467,6 +467,16 @@ sub auth {
       Rex::Logger::debug("=================================================");
    }
 
+   if(exists $data{pass_auth}) {
+      $data{auth_type} = "pass";
+   }
+   if(exists $data{key_auth}) {
+      $data{auth_type} = "key";
+   }
+   if(exists $data{krb5_auth}) {
+      $data{auth_type} = "krb5";
+   }
+
    Rex::Logger::debug("Setting auth info for " . ref($group) . " $entity");
    $group->set_auth(%data);
 }

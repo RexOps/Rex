@@ -1,3 +1,41 @@
+2014-01-25 Jan Gehring <jan.gehring, gmail.com> (0.44.0)
+  * docker support (experimental) - #278 - chenryn
+  * format the output of say() - #155
+  * userdefined columns for ps() command - #175 - dirkcjelli
+  * using tilde (~) sign for directories - #198 - gnouc, krimdomu
+  * SCM::Git, now uses cwd option of run() command, so it works also remote. - #211 - atrodo
+  * Box default pkg update - #217 - endyman
+  * run_batch() command to run batches on demand - #222 - jorisd
+  * Allow "sed" function to work on multiple lines. - #227 - davidolrik, krimdomu
+  * Added bulk_install() method for packages installing - #229 - jorisd
+  * Enable bulk_install for Gentoo and OpenWrt - #231 - ferki
+  * Added some hooks at central points in rex, so that it is possible to control the behaviour of rex in some points.
+  * added on_change hook for sync_up/sync_down - #232
+  * Rex::Group::Lookup::Command - read hostnames from a command. - #233 - fanyeren
+  * Improve user and group management on OpenWrt - #242 - ferki
+  * Add kernel module (un)loading support for OpenWrt - #243 - ferki
+  * Add service status support for OpenWrt - #246 - ferki
+  * make ssh read buffer configurable (for Net::SSH2 connections) - #247 this will speedup the connection, but may break on older systems!
+  * Add systemd service provider support for Gentoo - #250 - ferki
+  * Add systemd service provider support for Mageia - #282
+  * feature flag to deactivate path cleanup - #261
+  * feature flag to parse $HOME/.profile - #262
+  * Cloud::Amazon Check to make sure it is HASH before key look up - #263 - oneness
+  * autodie feature if run() fail - #265
+  * added support for tcsh shell - #284
+  * Fix guestinfo for Gentoo - #236 - ferki
+  * get_host can't find aliases - #239, #240 - jorisd, ferki
+  * rsync get wrong user if using "auth for $task" - #252
+  * Flag existing feature sudo_without_sh as found - #253 - gittex
+  * Cleaned-Up Data module dependence - #254
+  * iptables arguments needs quote if they are whitespaced - #257 - jorisd
+  * add Pod encoding marker - #259 - sergeyromanov
+  * "needs" doesn't know how to call tasks from the main Rexfile - #260
+  * gathering alias network interfaces like eth0:0 - #264
+  * Cron: Jobs can be duplicated - #269 - jorisd
+  * FreeBSD: store netmask in dotted decimal format - #287 - andrejzverev
+  * Uninitialized value in OpenSSH.pm - #290 - samuelet
+
 2013-10-03 Jan Gehring <jan.gehring, gmail.com> (0.43.7)
   * fixed problem with unconfigured network devices
   * fixed return of complete cmdb

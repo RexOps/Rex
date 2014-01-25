@@ -30,35 +30,16 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =back
 
-=head1 Dependencies
-
-=over 4
-
-=item *
-
-L<Net::SSH2>
-
-=item *
-
-L<Expect>
-
-Only if you want to use the Rsync module.
-
-=item *
-
-L<DBI>
-
-Only if you want to use the DB module.
-
-=back
-
 =head1 SYNOPSIS
 
+ user "root";
+ password "ch4ngem3";
+   
  desc "Show Unix version";
  task "uname", sub {
      say run "uname -a";
  };
-
+  
  bash# rex -H "server[01..10]" uname
 
 See L<Rex::Commands> for a list of all commands you can use.
@@ -91,7 +72,7 @@ our (@EXPORT,
       $MODULE_PATHS,
       $WITH_EXIT_STATUS);
 
-$VERSION = "0.43.99.14";
+$VERSION = "0.43.99.15";
 my $cur_dir;
 
 

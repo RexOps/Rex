@@ -254,7 +254,7 @@ sub is_redhat {
 sub is_suse {
    my $os = @_ ? shift : get_operating_system();
 
-   my @suse_clones = ("OpenSuSE", "SuSE");
+   my @suse_clones = ("OpenSuSE", "SuSE", "openSUSE project");
 
    if(grep { /$os/i } @suse_clones) {
       return 1;

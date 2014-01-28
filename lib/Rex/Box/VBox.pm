@@ -324,10 +324,12 @@ sub info {
    # get forwarded ports
    my @forwarded_ports = grep { m/^Forwarding/ } keys %{ $vm_info };
 
+   my %forward_port;
    for my $fwp (@forwarded_ports) {
       my ($name, $proto, $host_ip, $host_port, $vm_ip, $vm_port) = split(/,/, $vm_info->{$fwp});
-      $self->forward_port($name => [$host_port, $vm_port]);
+      $forward_port{$name} = [$host_port, $vm_port];
    }
+   $self->forward_port(%forward_port);
 
    return $self->{info};
 }

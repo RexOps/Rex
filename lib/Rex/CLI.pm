@@ -72,6 +72,7 @@ sub __run__ {
       d => {},
       s => {},
       m => {},
+      i => {},
       S => { type => "string" },
       E => { type => "string" },
       o => { type => "string" },
@@ -91,6 +92,8 @@ sub __run__ {
    );
 
    %opts = Rex::Args->getopts;
+
+   print Dumper(\%opts);
 
    if($opts{'Q'}) {
       my ($stdout, $stderr);
@@ -129,6 +132,9 @@ sub __run__ {
 
    if($opts{'q'}) {
       $::QUIET = 1;
+      if($opts{'i'}) {
+         $::QUIET = 2;
+      }
    }
 
    $::rexfile = "Rexfile";

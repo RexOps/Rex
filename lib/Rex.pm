@@ -680,6 +680,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Peter H. Ezetta
 
+=item Piotr Karbowski
+
 =item Rao Chenlin (Chenryn)
 
 =item RenatoCRON

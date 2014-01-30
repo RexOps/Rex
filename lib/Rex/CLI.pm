@@ -72,7 +72,7 @@ sub __run__ {
       d => {},
       s => {},
       m => {},
-      i => {},
+      w => {},
       S => { type => "string" },
       E => { type => "string" },
       o => { type => "string" },
@@ -132,7 +132,7 @@ sub __run__ {
 
    if($opts{'q'}) {
       $::QUIET = 1;
-      if($opts{'i'}) {
+      if($opts{'w'}) {
          $::QUIET = 2;
       }
    }
@@ -575,6 +575,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-c", "Turn cache ON";
    printf "  %-15s %s\n", "-C", "Turn cache OFF";
    printf "  %-15s %s\n", "-q", "Quiet mode. No Logging output";
+   printf "  %-15s %s\n", "-qw", "Quiet mode. Only output warnings and errors";
    printf "  %-15s %s\n", "-Q", "Really quiet. Output nothing.";
    printf "  %-15s %s\n", "-t", "Number of threads to use.";
    print "\n";

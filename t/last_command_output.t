@@ -14,7 +14,7 @@ else {
 }
 
 my $s = last_command_output();
-ok($s =~ m/README/gms);
+ok($s =~ m/Makefile\.PL/gms);
 
 if($^O =~ /MSWin/) {
    run("dir t");
@@ -24,5 +24,5 @@ else {
 }
 
 $s = last_command_output();
-ok($s !~ m/README/gms);
+ok($s !~ m/Makefile\.PL/gms);
 ok($s =~ m/base\.t/gms);

@@ -139,10 +139,10 @@ sub info {
    }
 
    if($no_color) {
-      print STDERR "$msg\n" unless($::QUIET);
+      print STDERR "$msg\n" if( ((defined $::QUIET && $::QUIET == 2) && (defined $type && $type ne 'info')) || ! defined $::QUIET);
    }
    else {
-      print STDERR colored([$color], "$msg\n") unless($::QUIET);
+      print STDERR colored([$color], "$msg\n") if( ((defined $::QUIET && $::QUIET == 2) && (defined $type && $type ne 'info')) || ! defined $::QUIET);
    }
 
    # workaround for windows Sys::Syslog behaviour on forks

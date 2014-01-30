@@ -72,6 +72,7 @@ sub __run__ {
       d => {},
       s => {},
       m => {},
+      i => {},
       S => { type => "string" },
       E => { type => "string" },
       o => { type => "string" },
@@ -91,6 +92,8 @@ sub __run__ {
    );
 
    %opts = Rex::Args->getopts;
+
+   print Dumper(\%opts);
 
    if($opts{'Q'}) {
       my ($stdout, $stderr);
@@ -129,6 +132,9 @@ sub __run__ {
 
    if($opts{'q'}) {
       $::QUIET = 1;
+      if($opts{'i'}) {
+         $::QUIET = 2;
+      }
    }
 
    $::rexfile = "Rexfile";
@@ -557,6 +563,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
    printf "  %-15s %s\n", "-h", "Display this help";
+   printf "  %-15s %s\n", "-m", "Monochrome output. No colors";
    printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";

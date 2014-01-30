@@ -557,7 +557,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
    printf "  %-15s %s\n", "-f", "Use this file instead of Rexfile";
    printf "  %-15s %s\n", "-h", "Display this help";
-   printf "  %-15s %s\n", "-m", "Monocrome output. No colors";
+   printf "  %-15s %s\n", "-m", "Monochrome output. No colors";
    printf "  %-15s %s\n", "-M", "Load Module instead of Rexfile";
    printf "  %-15s %s\n", "-v", "Display (R)?ex Version";
    printf "  %-15s %s\n", "-F", "Force. Don't regard lock file";

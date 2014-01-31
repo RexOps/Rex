@@ -93,8 +93,6 @@ sub __run__ {
 
    %opts = Rex::Args->getopts;
 
-   print Dumper(\%opts);
-
    if($opts{'Q'}) {
       my ($stdout, $stderr);
       open(my $newout, '>', \$stdout);

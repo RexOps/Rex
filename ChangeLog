@@ -1,3 +1,10 @@
+2014-02-02 Jan Gehring <jan.gehring, gmail.com> (0.44.1)
+  * fixed detection of openSUSE with lsb-release installed - #297
+  * use Makefile.PL for tests. fixed #300
+  * Support for DBI \%attr hashref - #296 - stefb69
+  * Make quiet mode not mute warnings and errors. - #294 - slashbeast
+  * new cli parameter -qw for quiet with warnings - #294
+
 2014-01-25 Jan Gehring <jan.gehring, gmail.com> (0.44.0)
   * docker support (experimental) - #278 - chenryn
   * format the output of say() - #155

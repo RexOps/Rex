@@ -138,7 +138,7 @@ sub create_user {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
-      $fh->write("$cmd $user\nexit \$?\n");
+      $fh->write("rm \$0\n$cmd $user\nexit \$?\n");
       $fh->close;
 
       i_run "/bin/sh $rnd_file";
@@ -150,14 +150,13 @@ sub create_user {
          die("Error creating/updating user $user");
       }
 
-      Rex::Interface::Fs->create()->unlink($rnd_file);
    }
 
    if(exists $data->{password}) {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
-      $fh->write("/bin/echo -e '" . $data->{password} . "\\n" . $data->{password} . "' | /usr/bin/passwd $user\nexit \$?\n");
+      $fh->write("rm \$0\n/bin/echo -e '" . $data->{password} . "\\n" . $data->{password} . "' | /usr/bin/passwd $user\nexit \$?\n");
       $fh->close;
 
       Rex::Logger::debug("Changing password of $user.");
@@ -166,14 +165,13 @@ sub create_user {
          die("Error setting password for $user");
       }
 
-      Rex::Interface::Fs->create()->unlink($rnd_file);
    }
 
    if(exists $data->{crypt_password} && $data->{crypt_password}) {
       my $rnd_file = get_tmp_file;
       my $fh = Rex::Interface::File->create;
       $fh->open(">", $rnd_file);
-      $fh->write("usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
+      $fh->write("rm \$0\nusermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
       $fh->close;
 
       Rex::Logger::debug("Setting encrypted password of $user");
@@ -181,8 +179,6 @@ sub create_user {
       if($? != 0) {
          die("Error setting password for $user");
       }
-
-      Rex::Interface::Fs->create()->unlink($rnd_file);
    }
 
    my $new_pw_md5 = md5("/etc/passwd");
@@ -243,7 +239,7 @@ sub user_groups {
    my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
    my $script = q|
-
+   unlink $0;
    $exe = "/usr/bin/groups";
    if(! -x $exe) {
       $exe = "/bin/groups";
@@ -260,8 +256,6 @@ sub user_groups {
    if($? != 0) {
       die("Error getting group list");
    }
-
-   Rex::Interface::Fs->create()->unlink($rnd_file);
 
    my $data = decode_json($data_str);
 
@@ -281,6 +275,7 @@ sub user_list {
    Rex::Logger::debug("Getting user list");
    my $rnd_file = get_tmp_file;
    my $script = q|
+      unlink $0;
       print to_json([ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx{/usr/bin/getent passwd} ]);
    |;
    my $fh = Rex::Interface::File->create;
@@ -294,8 +289,6 @@ sub user_list {
       die("Error getting user list");
    }
 
-   Rex::Interface::Fs->create()->unlink($rnd_file);
-
    my $data = decode_json($data_str);
 
    return @$data;
@@ -308,6 +301,7 @@ sub get_user {
    my $rnd_file = get_tmp_file;
    my $fh = Rex::Interface::File->create;
    my $script = q|
+      unlink $0;
       print to_json([ getpwnam($ARGV[0]) ]);
    |;
    $fh->open(">", $rnd_file);
@@ -319,8 +313,6 @@ sub get_user {
    if($? != 0) {
       die("Error getting user information for $user");
    }
-
-   Rex::Interface::Fs->create()->unlink($rnd_file);
 
    my $data = decode_json($data_str);
 

@@ -147,7 +147,16 @@ sub template {
    }
    elsif($file =~ m/^\@/) {
       my @caller = caller(0);
-      my $file_content = eval { local(@ARGV, $/) = ($caller[1]); <>; };
+      my $file_path = Rex::get_module_path($caller[0]);
+      if(! -f $file_path) {
+         if(-f "$file_path/__module__.pm") {
+            $file_path = "$file_path/__module__.pm";
+         }
+         elsif(-f "$file_path/Module.pm") {
+            $file_path = "$file_path/Module.pm";
+         }
+      }
+      my $file_content = eval { local(@ARGV, $/) = ($file_path); <>; };
       my ($data) = ($file_content =~ m/.*__DATA__(.*)/ms);
       my $fp = Rex::File::Parser::Data->new(data => [ split(/\n/, $data) ]);
       my $snippet_to_read = substr($file, 1);

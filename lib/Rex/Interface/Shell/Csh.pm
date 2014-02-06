@@ -46,25 +46,53 @@ sub exec {
       $self->path($option->{path});
     }
 
-    if(exists $option->{cwd}) {
-      $complete_cmd = "cd $option->{cwd} && $complete_cmd";
-    }
+    if(exists $option->{no_sh}) {
 
-    if ($self->{path}) {
-       $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
-    }
+       if(exists $option->{cwd}) {
+          $option->{format_cmd} = "cd $option->{cwd} && $option->{format_cmd} ";
+       }
 
-    if ($self->{locale}) {
-       $complete_cmd = "set LC_ALL=$self->{locale} ; $complete_cmd ";
-    }
+       if ($self->{path}) {
+          $option->{format_cmd} = "set PATH=$self->{path}; $option->{format_cmd} ";
+       }
 
-    if ($self->{source_profile}) {
-       # csh is using .login
-       $complete_cmd = "source ~/.login >& /dev/null ; $complete_cmd";
-    }
+       if ($self->{locale}) {
+          $option->{format_cmd} = "set LC_ALL=$self->{locale} ; $option->{format_cmd} ";
+       }
 
-    if ($self->{source_global_profile}) {
-        $complete_cmd = "source /etc/profile >& /dev/null ; $complete_cmd";
+       if ($self->{source_profile}) {
+          # csh is using .login
+          $option->{format_cmd} = "source ~/.login >& /dev/null ; $option->{format_cmd} ";
+       }
+
+       if ($self->{source_global_profile}) {
+           $option->{format_cmd} = "source /etc/profile >& /dev/null ; $option->{format_cmd} ";
+       }
+
+    }
+    else {
+
+       if(exists $option->{cwd}) {
+         $complete_cmd = "cd $option->{cwd} && $complete_cmd";
+       }
+
+       if ($self->{path}) {
+          $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
+       }
+
+       if ($self->{locale}) {
+          $complete_cmd = "set LC_ALL=$self->{locale} ; $complete_cmd ";
+       }
+
+       if ($self->{source_profile}) {
+          # csh is using .login
+          $complete_cmd = "source ~/.login >& /dev/null ; $complete_cmd";
+       }
+
+       if ($self->{source_global_profile}) {
+           $complete_cmd = "source /etc/profile >& /dev/null ; $complete_cmd";
+       }
+
     }
 
 

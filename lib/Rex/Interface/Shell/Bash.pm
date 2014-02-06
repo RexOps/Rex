@@ -47,25 +47,53 @@ sub exec {
       $self->path($option->{path});
     }
 
-    if(exists $option->{cwd}) {
-      $complete_cmd = "cd $option->{cwd} && $complete_cmd";
+    if(exists $option->{no_sh}) {
+
+       if(exists $option->{cwd}) {
+           $option->{format_cmd} = "cd $option->{cwd} && $option->{format_cmd}";
+       }
+
+       if ($self->{path}) {
+           $option->{format_cmd} = "PATH=$self->{path}; export PATH; $option->{format_cmd} ";
+       }
+
+       if ($self->{locale} && ! exists $option->{no_locales}) {
+           $option->{format_cmd} = "LC_ALL=$self->{locale} ; export LC_ALL; $option->{format_cmd} ";
+       }
+
+       if ($self->{source_profile}) {
+           $option->{format_cmd} = ". ~/.profile >/dev/null 2>&1 ; $option->{format_cmd} ";
+       }
+
+
+       if ($self->{source_global_profile}) {
+           $option->{format_cmd} = ". /etc/profile >/dev/null 2>&1 ; $option->{format_cmd} ";
+       }
+
     }
+    else {
 
-    if ($self->{path}) {
-        $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
-    }
+       if(exists $option->{cwd}) {
+         $complete_cmd = "cd $option->{cwd} && $complete_cmd";
+       }
 
-    if ($self->{locale} && ! exists $option->{no_locales}) {
-        $complete_cmd = "LC_ALL=$self->{locale} ; export LC_ALL; $complete_cmd ";
-    }
+       if ($self->{path}) {
+           $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
+       }
 
-    if ($self->{source_profile}) {
-        $complete_cmd = ". ~/.profile >/dev/null 2>&1 ; $complete_cmd";
-    }
+       if ($self->{locale} && ! exists $option->{no_locales}) {
+           $complete_cmd = "LC_ALL=$self->{locale} ; export LC_ALL; $complete_cmd ";
+       }
+
+       if ($self->{source_profile}) {
+           $complete_cmd = ". ~/.profile >/dev/null 2>&1 ; $complete_cmd";
+       }
 
 
-    if ($self->{source_global_profile}) {
-        $complete_cmd = ". /etc/profile >/dev/null 2>&1 ; $complete_cmd";
+       if ($self->{source_global_profile}) {
+           $complete_cmd = ". /etc/profile >/dev/null 2>&1 ; $complete_cmd";
+       }
+
     }
 
 

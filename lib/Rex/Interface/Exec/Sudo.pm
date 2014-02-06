@@ -111,6 +111,7 @@ EOF
    
    if(Rex::Config->get_sudo_without_sh()) {
       Rex::Logger::debug("Using sudo without sh will break things like file editing.");
+      $option->{no_sh} = 1;
       if($enc_pw) {
          $option->{format_cmd} = "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S {{CMD}}";
       }

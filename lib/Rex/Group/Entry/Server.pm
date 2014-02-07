@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Helper::System;
+use Rex::Helper::Run;
 use Rex::Config;
 use Data::Dumper;
 
@@ -302,6 +303,17 @@ sub evaluate_hostname {
    }
 
    return @multiple_me;
+}
+
+sub test_perl {
+   my ($self) = @_;
+
+   i_run "which perl";
+   if($? != 0) {
+      return 0;
+   }
+
+   return 1;
 }
 
 1;

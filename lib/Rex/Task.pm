@@ -40,6 +40,7 @@ use Rex::Profiler;
 use Rex::Hardware;
 use Rex::Interface::Cache;
 use Rex::Report;
+use Rex::Helper::Run;
 
 require Rex::Commands;
 
@@ -669,6 +670,11 @@ sub run {
             Rex::Logger::debug("No cache found, need to collect new data.");
             $server->gather_information;
          }
+      }
+
+      if(! $server->test_perl) {
+         Rex::Logger::info("There is no perl interpreter found on this system. Some commands may not work. Sudo won't work.", "warn");
+         sleep 3;
       }
 
       # execute code

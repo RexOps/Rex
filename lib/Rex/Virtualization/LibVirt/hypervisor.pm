@@ -18,6 +18,8 @@ use Data::Dumper;
 
 sub execute {
    my ($class, $arg1, %opt) = @_;
+   my $virt_settings = Rex::Config->get("virtualization");
+   chomp( my $uri = ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
 
    unless($arg1) {
       die("You have to define the vm name!");
@@ -25,7 +27,7 @@ sub execute {
 
    my ($xml, @dominfo, $dom);
    if ($arg1 eq 'capabilities') {
-      @dominfo = i_run "virsh capabilities";
+      @dominfo = i_run "virsh -c $uri capabilities";
       if($? != 0) {
          die("Error running virsh dominfo $dom");
       }

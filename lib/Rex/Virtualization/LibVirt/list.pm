@@ -16,15 +16,18 @@ use Data::Dumper;
 
 sub execute {
    my ($class, $arg1, %opt) = @_;
+   my $virt_settings = Rex::Config->get("virtualization");
+   chomp( my $uri = ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
+
    my @domains;
 
    if($arg1 eq "all") {
-      @domains = i_run "virsh list --all";
+      @domains = i_run "virsh -c $uri list --all";
       if($? != 0) {
          die("Error running virsh list --all");
       }
    } elsif($arg1 eq "running") {
-      @domains = i_run "virsh list";
+      @domains = i_run "virsh -c $uri list";
       if($? != 0) {
          die("Error running virsh list");
       }

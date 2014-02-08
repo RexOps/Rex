@@ -19,6 +19,8 @@ my $FUNC_MAP = {
 
 sub execute {
    my ($class, $arg1, %opt) = @_;
+   my $virt_settings = Rex::Config->get("virtualization");
+   chomp( my $uri = ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
 
    unless($arg1) {
       die("You have to define the vm name!");
@@ -36,7 +38,7 @@ sub execute {
       }
 
       my $func = $FUNC_MAP->{$opt};
-      i_run "virsh $func $dom $val";
+      i_run "virsh -c $uri $func $dom $val";
       if($? != 0) {
          Rex::Logger::info("Error setting $opt to $val on $dom ($@)", "warn");
       }

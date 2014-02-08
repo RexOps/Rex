@@ -11,8 +11,8 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Helper::System;
-use Rex::Helper::Run;
 use Rex::Config;
+use Rex::Interface::Exec;
 use Data::Dumper;
 
 use overload
@@ -308,7 +308,9 @@ sub evaluate_hostname {
 sub test_perl {
    my ($self) = @_;
 
-   i_run "which perl";
+   my $exec = Rex::Interface::Exec->create;
+   $exec->exec("which perl");
+
    if($? != 0) {
       return 0;
    }

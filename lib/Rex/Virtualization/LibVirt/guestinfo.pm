@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -16,9 +16,9 @@ use Rex::Virtualization::LibVirt::iflist;
 use Rex::Commands::Gather;
 
 sub execute {
-  my ($class, $vmname) = @_;
+  my ( $class, $vmname ) = @_;
 
-  unless($vmname) {
+  unless ($vmname) {
     die("You have to define the vm name!");
   }
 
@@ -31,27 +31,28 @@ sub execute {
   my @ifaces;
 
   my $command = operating_system_is("Gentoo") ? '/sbin/arp' : '/usr/sbin/arp';
-  
-  while($got_ip < scalar(keys %{ $ifs })) {
-    my %arp = map { my @x = ( $_ =~ m/\(([^\)]+)\) at ([^\s]+)\s/ ); ($x[1], $x[0]) } i_run "$command -an";
 
-    for my $if (keys %{ $ifs }) {
-      if(exists $arp{$ifs->{$if}->{mac}} && $arp{$ifs->{$if}->{mac}}) {
+  while ( $got_ip < scalar( keys %{$ifs} ) ) {
+    my %arp =
+      map { my @x = ( $_ =~ m/\(([^\)]+)\) at ([^\s]+)\s/ ); ( $x[1], $x[0] ) }
+      i_run "$command -an";
+
+    for my $if ( keys %{$ifs} ) {
+      if ( exists $arp{ $ifs->{$if}->{mac} } && $arp{ $ifs->{$if}->{mac} } ) {
         $got_ip++;
-        push @ifaces, {
+        push @ifaces,
+          {
           device => $if,
-          ip  => $arp{$ifs->{$if}->{mac}},
+          ip     => $arp{ $ifs->{$if}->{mac} },
           %{ $ifs->{$if} }
-        };
+          };
       }
     }
 
     sleep 1;
   }
 
-  return {
-    network => \@ifaces,
-  };
+  return { network => \@ifaces, };
 }
 
 1;

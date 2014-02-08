@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -26,10 +26,10 @@ use Rex::Virtualization::LibVirt::hypervisor;
 use Data::Dumper;
 
 my $QEMU_IMG;
-if(can_run("qemu-img")) {
+if ( can_run("qemu-img") ) {
   $QEMU_IMG = "qemu-img";
 }
-elsif(can_run("qemu-img-xen")) {
+elsif ( can_run("qemu-img-xen") ) {
   $QEMU_IMG = "qemu-img-xen";
 }
 
@@ -37,65 +37,76 @@ elsif(can_run("qemu-img-xen")) {
 my @data = <DATA>;
 
 sub execute {
-  my ($class, $name, %opt) = @_;
+  my ( $class, $name, %opt ) = @_;
   my $virt_settings = Rex::Config->get("virtualization");
-  chomp( my $uri = ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
+  chomp( my $uri =
+      ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
 
   my $opts = \%opt;
   $opts->{"name"} = $name;
 
-  unless($opts) {
+  unless ($opts) {
     die("You have to define the create options!");
   }
 
   ## detect the hypervisor caps
-  my $hypervisor = Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
+  my $hypervisor =
+    Rex::Virtualization::LibVirt::hypervisor->execute('capabilities');
   my $virt_type = "unknown";
 
-  _set_defaults($opts, $hypervisor);
+  _set_defaults( $opts, $hypervisor );
 
-  if(exists $hypervisor->{"kvm"}) {
+  if ( exists $hypervisor->{"kvm"} ) {
     $virt_type = "kvm";
   }
-  elsif(exists $hypervisor->{"xen"}) {
+  elsif ( exists $hypervisor->{"xen"} ) {
     $virt_type = "xen-" . $opts->{"type"};
   }
   else {
     die("Hypervisor not supported.");
   }
 
-  my $fp = Rex::File::Parser::Data->new(data => \@data);
+  my $fp = Rex::File::Parser::Data->new( data => \@data );
   my $create_xml = $fp->read("create-${virt_type}.xml");
 
   my $template = Rex::Template->new;
-  my $parsed_template = $template->parse($create_xml, $opts);
-  
+  my $parsed_template = $template->parse( $create_xml, $opts );
+
   Rex::Logger::debug($parsed_template);
 
   ## create storage devices
-  for (@{$opts->{'storage'}}) {
-    if(! exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file") {
+  for ( @{ $opts->{'storage'} } ) {
+
+    if ( !exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file" ) {
       my $size = $_->{'size'};
-      if(!is_file($_->{"file"})) {
-        Rex::Logger::debug("creating storage disk: \"$_->{file}\"");        
+      if ( !is_file( $_->{"file"} ) ) {
+        Rex::Logger::debug("creating storage disk: \"$_->{file}\"");
         i_run "$QEMU_IMG create -f raw $_->{'file'} $size";
-        if($? != 0) {
+        if ( $? != 0 ) {
           die("Error creating storage disk: $_->{'file'}");
         }
       }
       else {
         Rex::Logger::info("$_->{file} already exists. Using this.");
       }
-    } elsif($_->{'template'} && $_->{'type'} eq "file") {
-       Rex::Logger::info("building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"");
-       Rex::Logger::info("Please wait ...");
-       i_run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
-       if($? != 0) {
-         die("Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
-         Template doesn't exist or the qemu-img binary is missing")
-       }
     }
-  } 
+    elsif ( $_->{'template'} && $_->{'type'} eq "file" ) {
+      Rex::Logger::info(
+        "building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\""
+      );
+      Rex::Logger::info("Please wait ...");
+      i_run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
+      if ( $? != 0 ) {
+        die(
+          "Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
+             Template doesn't exist or the qemu-img binary is missing"
+        );
+      }
+    }
+    else {
+      Rex::Logger::info("$_->{file} already exists. Using this.");
+    }
+  }
 
   Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
 
@@ -103,12 +114,11 @@ sub execute {
 
   my $file_name = get_tmp_file;
 
-  file "$file_name",
-    content => $parsed_template;
+  file "$file_name", content => $parsed_template;
 
   i_run "virsh -c $uri define $file_name";
   unlink($file_name);
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error defining vm $opts->{name}");
   }
 
@@ -116,19 +126,22 @@ sub execute {
 }
 
 sub _set_defaults {
-  my ($opts, $hyper) = @_;
+  my ( $opts, $hyper ) = @_;
 
-  if( ! exists $opts->{"name"} ) {
+  if ( !exists $opts->{"name"} ) {
     die("You have to give a name.");
   }
 
-  if( ! exists $opts->{"storage"} ) {
+  if ( !exists $opts->{"storage"} ) {
     die("You have to add at least one storage disk.");
   }
 
-  if( ! exists $opts->{"type"} ) {
+  if ( !exists $opts->{"type"} ) {
 
-    if( exists $opts->{"os"} && exists $opts->{"os"}->{"kernel"} && ! exists $hyper->{"kvm"} ) {
+    if ( exists $opts->{"os"}
+      && exists $opts->{"os"}->{"kernel"}
+      && !exists $hyper->{"kvm"} )
+    {
       $opts->{"type"} = "pvm";
     }
     else {
@@ -137,20 +150,20 @@ sub _set_defaults {
 
   }
 
-  if( ! exists $opts->{"memory"} ) {
+  if ( !exists $opts->{"memory"} ) {
     $opts->{"memory"} = 512 * 1024;
   }
 
-  if( ! exists $opts->{"cpus"} ) {
+  if ( !exists $opts->{"cpus"} ) {
     $opts->{"cpus"} = 1;
   }
 
-  if( ! exists $opts->{"clock"} ) {
+  if ( !exists $opts->{"clock"} ) {
     $opts->{"clock"} = "utc";
   }
 
-  if( ! exists $opts->{"arch"} ) {
-    if( exists $hyper->{"x86_64"} ) {
+  if ( !exists $opts->{"arch"} ) {
+    if ( exists $hyper->{"x86_64"} ) {
       $opts->{"arch"} = "x86_64";
     }
     else {
@@ -158,14 +171,15 @@ sub _set_defaults {
     }
   }
 
-  if( ! exists $opts->{"boot"} ) {
+  if ( !exists $opts->{"boot"} ) {
     $opts->{"boot"} = "hd";
   }
 
-  if( ! exists $opts->{"emulator"} ) {
+  if ( !exists $opts->{"emulator"} ) {
     $opts->{"emulator"} = $hyper->{"emulator"};
 
-    if(operating_system_is("Debian") && exists $hyper->{"xen"}) {
+    if ( operating_system_is("Debian") && exists $hyper->{"xen"} ) {
+
       # fix for debian, because virsh capabilities don't give the correct
       # emulator.
       $opts->{"emulator"} = "/usr/lib/xen-4.0/bin/qemu-dm";
@@ -173,80 +187,86 @@ sub _set_defaults {
 
   }
 
-  if(exists $hyper->{"loader"} && ! exists $opts->{"loader"}) {
+  if ( exists $hyper->{"loader"} && !exists $opts->{"loader"} ) {
     $opts->{"loader"} = $hyper->{"loader"};
   }
 
-  if( ! exists $opts->{"on_poweroff"} ) {
+  if ( !exists $opts->{"on_poweroff"} ) {
     $opts->{"on_poweroff"} = "destroy";
   }
 
-  if( ! exists $opts->{"on_reboot"} ) {
+  if ( !exists $opts->{"on_reboot"} ) {
     $opts->{"on_reboot"} = "restart";
   }
 
-  if( ! exists $opts->{"on_crash"} ) {
+  if ( !exists $opts->{"on_crash"} ) {
     $opts->{"on_crash"} = "restart";
   }
 
-  if( exists $hyper->{"xen"} && $opts->{"type"} eq "pvm" ) {
+  if ( exists $hyper->{"xen"} && $opts->{"type"} eq "pvm" ) {
 
-    if( ! exists $opts->{"os"}->{"type"} ) {
+    if ( !exists $opts->{"os"}->{"type"} ) {
       $opts->{"os"}->{"type"} = "linux";
     }
 
-    if( ! exists $opts->{"os"}->{"kernel"} ) {
+    if ( !exists $opts->{"os"}->{"kernel"} ) {
       my %hw = Rex::Hardware->get(qw/ Kernel /);
 
-      if(is_redhat()) {
-        $opts->{"os"}->{"kernel"} = "/boot/vmlinuz-" . $hw{"Kernel"}->{"kernelrelease"};
+      if ( is_redhat() ) {
+        $opts->{"os"}->{"kernel"} =
+          "/boot/vmlinuz-" . $hw{"Kernel"}->{"kernelrelease"};
       }
       else {
-        $opts->{"os"}->{"kernel"} = "/boot/vmlinuz-" . $hw{"Kernel"}->{"kernelrelease"};
+        $opts->{"os"}->{"kernel"} =
+          "/boot/vmlinuz-" . $hw{"Kernel"}->{"kernelrelease"};
       }
     }
 
-    if( ! exists $opts->{"os"}->{"initrd"} ) {
+    if ( !exists $opts->{"os"}->{"initrd"} ) {
       my %hw = Rex::Hardware->get(qw/ Kernel /);
 
-      if(is_redhat()) {
-        $opts->{"os"}->{"initrd"} = "/boot/initrd-" . $hw{"Kernel"}->{"kernelrelease"} . ".img";
+      if ( is_redhat() ) {
+        $opts->{"os"}->{"initrd"} =
+          "/boot/initrd-" . $hw{"Kernel"}->{"kernelrelease"} . ".img";
       }
       else {
-        $opts->{"os"}->{"initrd"} = "/boot/initrd.img-" . $hw{"Kernel"}->{"kernelrelease"};
+        $opts->{"os"}->{"initrd"} =
+          "/boot/initrd.img-" . $hw{"Kernel"}->{"kernelrelease"};
       }
     }
 
-    if( ! exists $opts->{"os"}->{"cmdline"} ) {
-      my @root_store = grep { $_->{"is_root"} && $_->{"is_root"} == 1 } @{ $opts->{"storage"} };
-      $opts->{"os"}->{"cmdline"} = "root=/dev/" . $root_store[0]->{"dev"} . " ro";
+    if ( !exists $opts->{"os"}->{"cmdline"} ) {
+      my @root_store = grep { $_->{"is_root"} && $_->{"is_root"} == 1 }
+        @{ $opts->{"storage"} };
+      $opts->{"os"}->{"cmdline"} =
+        "root=/dev/" . $root_store[0]->{"dev"} . " ro";
     }
 
   }
 
-  _set_storage_defaults($opts, $hyper);
+  _set_storage_defaults( $opts, $hyper );
 
-  _set_network_defaults($opts, $hyper);
+  _set_network_defaults( $opts, $hyper );
 
 }
 
 sub _set_storage_defaults {
-  my ($opts, $hyper) = @_;
+  my ( $opts, $hyper ) = @_;
 
   my $store_letter = "a";
   for my $store ( @{ $opts->{"storage"} } ) {
 
-    if( ! exists $store->{"type"} ) {
+    if ( !exists $store->{"type"} ) {
       $store->{"type"} = "file";
     }
 
-    if( ! exists $store->{"driver_type"} ) {
+    if ( !exists $store->{"driver_type"} ) {
       $store->{"driver_type"} = "raw";
     }
 
-    if( ! exists $store->{"size"} && $store->{"type"} eq "file" ) {
+    if ( !exists $store->{"size"} && $store->{"type"} eq "file" ) {
 
-      if($store->{"file"} =~ m/swap/) {
+      if ( $store->{"file"} =~ m/swap/ ) {
         $store->{"size"} = "1G";
       }
       else {
@@ -255,21 +275,24 @@ sub _set_storage_defaults {
 
     }
 
-    if( exists $store->{"file"} && $store->{"file"} =~ m/\.iso$/ && ! exists $store->{"device"} ) {
+    if ( exists $store->{"file"}
+      && $store->{"file"} =~ m/\.iso$/
+      && !exists $store->{"device"} )
+    {
       $store->{"device"} = "cdrom";
     }
 
-    if( ! exists $store->{"device"} ) {
+    if ( !exists $store->{"device"} ) {
       $store->{"device"} = "disk";
     }
 
-    if( ! exists $store->{"dev"} && $store->{"device"} eq "cdrom") {
-      $store->{"dev"} = "hdc"; 
+    if ( !exists $store->{"dev"} && $store->{"device"} eq "cdrom" ) {
+      $store->{"dev"} = "hdc";
     }
 
-    if( ! exists $store->{"dev"} ) {
+    if ( !exists $store->{"dev"} ) {
 
-      if( exists $hyper->{"kvm"} ) {
+      if ( exists $hyper->{"kvm"} ) {
         $store->{"dev"} = "vd${store_letter}";
       }
       else {
@@ -278,9 +301,9 @@ sub _set_storage_defaults {
 
     }
 
-    if( ! exists $store->{"bus"} ) {
+    if ( !exists $store->{"bus"} ) {
 
-      if( exists $hyper->{"kvm"} && $store->{"device"} eq "disk" ) {
+      if ( exists $hyper->{"kvm"} && $store->{"device"} eq "disk" ) {
         $store->{"bus"} = "virtio";
       }
       else {
@@ -288,36 +311,36 @@ sub _set_storage_defaults {
       }
 
     }
-    
-    if( exists $hyper->{"kvm"} ) {
-      
-      if( $store->{"bus"} eq "virtio" && ! exists $store->{"address"} ) {
+
+    if ( exists $hyper->{"kvm"} ) {
+
+      if ( $store->{"bus"} eq "virtio" && !exists $store->{"address"} ) {
         $store->{"address"} = {
-          type    => "pci",
-          domain  => "0x0000",
-          bus    => "0x00",
-          slot    => "0x05",
+          type     => "pci",
+          domain   => "0x0000",
+          bus      => "0x00",
+          slot     => "0x05",
           function => "0x0",
         };
       }
-      elsif( $store->{"bus"} eq "ide" && ! exists $store->{"address"} ) {
+      elsif ( $store->{"bus"} eq "ide" && !exists $store->{"address"} ) {
         $store->{"address"} = {
-          type     => "drive",
+          type       => "drive",
           controller => 0,
-          bus      => 1,
-          unit     => 0,
+          bus        => 1,
+          unit       => 0,
         };
       }
 
     }
 
-    if( $store->{"device"} eq "cdrom" ) {
+    if ( $store->{"device"} eq "cdrom" ) {
       $store->{"readonly"} = 1;
     }
 
-    if( is_redhat() ) {
+    if ( is_redhat() ) {
 
-      if( ! exists $store->{"aio"} ) {
+      if ( !exists $store->{"aio"} ) {
         $store->{"aio"} = 1;
       }
 
@@ -330,12 +353,12 @@ sub _set_storage_defaults {
 }
 
 sub _set_network_defaults {
-  my ($opts, $hyper) = @_;
+  my ( $opts, $hyper ) = @_;
 
-  if( ! exists $opts->{"network"} ) {
+  if ( !exists $opts->{"network"} ) {
     $opts->{"network"} = [
       {
-        type  => "bridge",
+        type   => "bridge",
         bridge => "virbr0",
       },
     ];
@@ -343,33 +366,33 @@ sub _set_network_defaults {
 
   for my $netdev ( @{ $opts->{"network"} } ) {
 
-    if( ! exists $netdev->{"type"} ) {
+    if ( !exists $netdev->{"type"} ) {
 
       $netdev->{"type"} = "bridge";
 
     }
 
-    if( ! exists $netdev->{"bridge"} ) {
+    if ( !exists $netdev->{"bridge"} ) {
 
       $netdev->{"bridge"} = "virbr0";
 
     }
 
-    if( exists $hyper->{"kvm"} ) {
+    if ( exists $hyper->{"kvm"} ) {
 
-      if( ! exists $netdev->{"model"} ) {
+      if ( !exists $netdev->{"model"} ) {
 
         $netdev->{"model"} = "virtio";
 
       }
 
-      if( ! exists $netdev->{"address"} ) {
+      if ( !exists $netdev->{"address"} ) {
 
         $netdev->{"address"} = {
-          type    => "pci",
-          domain  => "0x0000",
-          bus    => "0x00",
-          slot    => "0x03",
+          type     => "pci",
+          domain   => "0x0000",
+          bus      => "0x00",
+          slot     => "0x03",
           function => "0x0",
         };
 
@@ -379,7 +402,6 @@ sub _set_network_defaults {
 
   }
 }
-
 
 1;
 
@@ -576,5 +598,3 @@ __DATA__
 </domain>
 
 @end
-
-

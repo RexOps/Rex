@@ -74,10 +74,10 @@ sub connect {
    my @connection_props = ($server, user => $user, port => $port);
    push @connection_props, master_opts => [
                               -o => $ssh_opts_line,
-                           ];
+                           ] if $ssh_opts_line;
    push @connection_props, default_ssh_opts => [
                               -o => $ssh_opts_line,
-                           ];
+                           ] if $ssh_opts_line;
 
    if($auth_type && $auth_type eq "pass") {
       Rex::Logger::debug("OpenSSH: pass_auth: $server:$port - $user - ******");

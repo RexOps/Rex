@@ -377,6 +377,9 @@ sub get_public_key {
    if($public_key) {
       return $public_key;
    }
+   elsif($ENV{SSH_AUTH_SOCK}) {
+      return undef;
+   }
 
    return _home_dir() . '/.ssh/id_rsa.pub';
 }
@@ -393,6 +396,9 @@ sub has_private_key {
 sub get_private_key {
    if($private_key) {
       return $private_key;
+   }
+   elsif($ENV{SSH_AUTH_SOCK}) {
+      return undef;
    }
 
    return _home_dir() . '/.ssh/id_rsa';

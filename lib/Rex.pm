@@ -690,6 +690,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Sascha Guenther
 
+=item Simon Bertrang
+
 =item Stephane Benoit
 
 =item Sven Dowideit

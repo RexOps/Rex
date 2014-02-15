@@ -907,8 +907,10 @@ sub sed {
       map { s/$search/$replace/ } @content; 
    }
 
+   my $fs = Rex::Interface::Fs->create;
+   my %stat = $fs->stat($file);
 
-   file($file, content => join("\n", @content), on_change => $on_change);
+   file($file, content => join("\n", @content), on_change => $on_change, owner => $stat{uid}, group => $stat{gid}, mode => $stat{mode});
 }
 
 =back

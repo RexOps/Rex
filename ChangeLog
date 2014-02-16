@@ -2,6 +2,8 @@
   * do not call sprintf on undefined values to prevent warnings - #312 - sbertrang
   * add ksh to shells - #310 - sbertrang
   * only pass actual option strings to prevent ssh crashes - #309 - sbertrang
+  * rexify does not create projects due to missing file error - #318
+  * sed command changes mode of target file - #314
 
 2014-02-08 Jan Gehring <jan.gehring, gmail.com> (0.44.2)
   * fixed sudo_without_sh - #305

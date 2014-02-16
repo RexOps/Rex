@@ -64,8 +64,8 @@ use Rex::Config;
 use Rex::Cloud;
 use Rex::Group::Entry::Server;
     
-@EXPORT = qw(cloud_instance cloud_volume 
-               cloud_instance_list cloud_volume_list
+@EXPORT = qw(cloud_instance cloud_volume cloud_network
+               cloud_instance_list cloud_volume_list cloud_network_list
                cloud_service cloud_auth cloud_region 
                get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones
                get_cloud_plans
@@ -192,6 +192,29 @@ sub cloud_volume_list {
    $cloud->set_endpoint($cloud_region);
 
    return $cloud->list_volumes();
+
+}
+
+=item cloud_network_list
+
+Get all networks of a cloud service.
+
+ task "network-list", sub {
+    for my $network (cloud_network_list()) {
+       say "network  : " . $network->{network};
+       say "name     : " . $network->{name};
+       say "id       : " . $network->{id};
+    }
+ };
+
+=cut
+sub cloud_network_list {
+
+   my $cloud = get_cloud_service($cloud_service);
+   $cloud->set_auth(@cloud_auth);
+   $cloud->set_endpoint($cloud_region);
+
+   return $cloud->list_networks();
 
 }
 
@@ -403,6 +426,48 @@ Delete a volume. This will destroy all data.
       return $cloud->list_volumes();
    }
 
+}
+
+=item cloud_network
+
+=cut
+
+sub cloud_network {
+
+   my ($action, $data) = @_;
+   my $cloud = get_cloud_service($cloud_service);
+
+   $cloud->set_auth(@cloud_auth);
+   $cloud->set_endpoint($cloud_region);
+
+
+=item create
+
+Create a new network.
+
+ task "create-net", sub {
+    my $net_id = cloud_network create => { cidr => '192.168.0.0/24', name => "mynetwork", };
+ };
+
+=cut
+
+   if($action eq "create") {
+      $cloud->create_network(%{ $data });
+   }
+
+=item delete
+
+Delete a network.
+
+ task "delete-net", sub {
+    cloud_network delete => '18a4ccf8-f14a-a10d-1af4-4ac7fee08a81';
+ };
+
+=cut
+
+   elsif($action eq "delete") {
+      $cloud->delete_network($data);
+   }
 }
 
 =item get_cloud_availability_zones

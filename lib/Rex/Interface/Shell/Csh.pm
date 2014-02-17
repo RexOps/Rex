@@ -38,12 +38,31 @@ sub set_locale {
     $self->{locale} = $locale;
 }
 
+sub set_env {
+    my ($self, $env) = @_;
+    my $cmd = undef;
+
+    die ("Error: env must be a hash")
+    	if(ref $env ne "HASH");
+
+    while (my ($k, $v) = each ( $env )) {
+	$cmd .= "setenv $k \"$v\"; ";
+	$self->{env_raw} .= "$k $v";
+    }
+    $self->{env} = $cmd;
+}
+
+
 sub exec {
     my ($self, $cmd, $option) = @_;
     my $complete_cmd = $cmd;
 
     if(exists $option->{path}) {
       $self->path($option->{path});
+    }
+    
+    if(exists $option->{env}) {
+      $self->set_env($option->{env});
     }
 
     if(exists $option->{no_sh}) {
@@ -78,6 +97,10 @@ sub exec {
 
        if ($self->{path}) {
           $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
+       }
+       
+       if($self->{env}) {
+	   $complete_cmd = "$self->{env} $complete_cmd ";
        }
 
        if ($self->{locale}) {

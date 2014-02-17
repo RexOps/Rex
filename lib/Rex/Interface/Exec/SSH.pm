@@ -33,7 +33,14 @@ sub exec {
 
    my $used_shell = $self->_get_shell();
 
-   my $shell = Rex::Interface::Shell->create($used_shell);
+   my $shell;   
+
+   if ($option->{_force_sh}) {
+	$shell = Rex::Interface::Shell->create("Sh");
+    }
+    else {
+	$shell = Rex::Interface::Shell->create($used_shell);
+    }
 
    $shell->set_locale("C");
    $shell->path($path);

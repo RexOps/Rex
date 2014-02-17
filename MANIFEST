@@ -128,6 +128,7 @@ lib/Rex/Interface/Shell/Ash.pm
 lib/Rex/Interface/Shell/Bash.pm
 lib/Rex/Interface/Shell/Csh.pm
 lib/Rex/Interface/Shell/Default.pm
+lib/Rex/Interface/Shell/Ksh.pm
 lib/Rex/Interface/Shell/Sh.pm
 lib/Rex/Interface/Shell/Tcsh.pm
 lib/Rex/Interface/Shell/Zsh.pm

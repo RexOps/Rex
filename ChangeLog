@@ -1,3 +1,6 @@
+2014-02-17 Jan Gehring <jan.gehring, gmail.com> (0.44.4)
+  * fixed manifest file
+
 2014-02-14 Jan Gehring <jan.gehring, gmail.com> (0.44.3)
   * do not call sprintf on undefined values to prevent warnings - #312 - sbertrang
   * add ksh to shells - #310 - sbertrang

@@ -19,6 +19,8 @@ sub execute {
    shift;
    my $vmname = shift;
    my %options = @_;
+   my $virt_settings = Rex::Config->get("virtualization");
+   chomp( my $uri = ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
 
    unless($vmname) {
       die("You have to define the vm name!");
@@ -26,7 +28,7 @@ sub execute {
 
    Rex::Logger::debug("Getting block list of domain: $vmname");
 
-   my @blklist = i_run "virsh domblklist $vmname --details";
+   my @blklist = i_run "virsh -c $uri domblklist $vmname --details";
 
    if($? != 0) {
       die("Error running virsh domblklist $vmname");
@@ -50,7 +52,7 @@ sub execute {
       if ($options{details}) {
          my $unit = $options{unit} || 1;
          for my $target (keys %ret) {
-            my @infos = i_run "virsh domblkinfo $vmname $target 2>/dev/null";
+            my @infos = i_run "virsh -c $uri domblkinfo $vmname $target 2>/dev/null";
             if($? == 0) {
                for my $line (@infos) {
                   my ($k, $v) = split(/:\s+/, $line);

@@ -38,6 +38,8 @@ my @data = <DATA>;
 
 sub execute {
    my ($class, $name, %opt) = @_;
+   my $virt_settings = Rex::Config->get("virtualization");
+   chomp( my $uri = ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
 
    my $opts = \%opt;
    $opts->{"name"} = $name;
@@ -104,7 +106,7 @@ sub execute {
    file "$file_name",
       content => $parsed_template;
 
-   i_run "virsh define $file_name";
+   i_run "virsh -c $uri define $file_name";
    unlink($file_name);
    if($? != 0) {
      die("Error defining vm $opts->{name}");

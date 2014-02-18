@@ -378,7 +378,7 @@ sub get_public_key {
       return $public_key;
    }
 
-   return _home_dir() . '/.ssh/id_rsa.pub';
+   return undef;
 }
 
 sub set_private_key {
@@ -395,7 +395,7 @@ sub get_private_key {
       return $private_key;
    }
 
-   return _home_dir() . '/.ssh/id_rsa';
+   return undef;
 }
 
 sub set_parallelism {

@@ -29,6 +29,21 @@ sub new {
    return $self;
 }
 
+sub get_env {
+    my ($self, $option) = @_;
+    my $cmd="";
+   
+    while (my ($k, $v) = each ( $self->{env} )) {
+	    $cmd .= "$k=$v ";
+    }
+    return $cmd;
+}
+
+sub set_env {
+    my ($self, $env) = @_;
+    $self->{env} = $env;
+}
+
 sub exec {
    my ($self, $cmd, $path, $option) = @_;
 
@@ -112,6 +127,16 @@ EOF
    if(Rex::Config->get_sudo_without_sh()) {
       Rex::Logger::debug("Using sudo without sh will break things like file editing.");
       $option->{no_sh} = 1;
+      
+      # get_sudo_without_sh which mean we need to pass env setting directly to sudo, all other cases handled by shell layer
+      if (exists $option->{env}) {
+	  $self->set_env($option->{env});
+      }
+
+      if ($self->{env}) {
+       	 $sudo_options_str .= $self->get_env($option);
+      }
+
       if($enc_pw) {
          $option->{format_cmd} = "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S {{CMD}}";
       }
@@ -129,6 +154,9 @@ EOF
 
          return $_cmd;
       };
+
+      # Calling sudo with sh(1) in this case we don't need to respect current user shell, pass _force_sh flag to ssh layer
+      $option->{_force_sh} = 1;
 
       if($enc_pw) {
          $option->{format_cmd} = "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S sh -c \"{{CMD}}\"";

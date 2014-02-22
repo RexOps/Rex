@@ -714,7 +714,13 @@ sub df {
          return $ret->{$dev};
       }
       my %mounted_on = map +( $_->{mounted_on}, $_ ), values %$ret;
-      return $mounted_on{$dev};
+      if ( exists $mounted_on{$dev} ) {
+         return $mounted_on{$dev};
+      }
+      my @mounted_on = keys %mounted_on;
+      return @mounted_on == 1
+           ? $mounted_on{ $mounted_on[0] }
+           : undef;
    }
 
    return $ret;

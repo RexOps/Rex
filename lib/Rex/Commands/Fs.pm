@@ -814,17 +814,10 @@ sub df {
   $ret = _parse_df(@lines);
 
    if($dev) {
-      if ( exists $ret->{$dev} ) {
-         return $ret->{$dev};
+      if ( keys %$ret == 1 ) {
+         ( $dev ) = keys %$ret;
       }
-      my %mounted_on = map +( $_->{mounted_on}, $_ ), values %$ret;
-      if ( exists $mounted_on{$dev} ) {
-         return $mounted_on{$dev};
-      }
-      my @mounted_on = keys %mounted_on;
-      return @mounted_on == 1
-           ? $mounted_on{ $mounted_on[0] }
-           : undef;
+      return $ret->{$dev};
    }
 
   return $ret;

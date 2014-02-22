@@ -142,18 +142,18 @@ sub ps {
    
    elsif(operating_system_is("SunOS") && operating_system_version() <= 510) {
       if(@custom) {
-         @list = run("/usr/ucb/ps ax -o" . join(",", @custom));
+         @list = run("/usr/ucb/ps awwx -o" . join(",", @custom));
       }
       else {
-         @list = run("/usr/ucb/ps aux");
+         @list = run("/usr/ucb/ps auwwx");
       }
    }
    else {
       if(@custom) {
-         @list = run("ps ax -o" . join(",", @custom));
+         @list = run("ps awwx -o" . join(",", @custom));
       }
       else {
-         @list = run("ps aux");
+         @list = run("ps auwwx");
       }
    }
 

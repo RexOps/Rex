@@ -710,7 +710,11 @@ sub df {
    $ret = _parse_df(@lines);
 
    if($dev) {
-      return $ret->{$dev};
+      if ( exists $ret->{$dev} ) {
+         return $ret->{$dev};
+      }
+      my %mounted_on = map +( $_->{mounted_on}, $_ ), values %$ret;
+      return $mounted_on{$dev};
    }
 
    return $ret;

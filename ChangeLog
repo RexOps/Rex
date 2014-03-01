@@ -1,3 +1,11 @@
+2014-03-02 Jan Gehring <jan.gehring, gmail.com> (0.44.6)
+  * fixed wrong expansion of home paths #324
+  * fixed return code on failed connects is wrong #317
+  * get as much output from ps(1) as possible #323 - sbertrang
+
+2014-02-25 Jan Gehring <jan.gehring, gmail.com> (0.44.5)
+  * fixed shell gathering
+
 2014-02-17 Jan Gehring <jan.gehring, gmail.com> (0.44.4)
   * fixed manifest file
 

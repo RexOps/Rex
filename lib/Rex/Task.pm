@@ -558,13 +558,7 @@ sub connect {
       $self->{"__was_authenticated"} = 1;
    }
    else {
-      Rex::Logger::info("Wrong username/password or wrong key on $server.", "warn");
-      if($self->exit_on_connect_fail) {
-         CORE::exit(1);
-      }
-      else {
-         die();
-      }
+      die("Wrong username/password or wrong key on $server.");
    }
 
    # need to get rid of this

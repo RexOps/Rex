@@ -44,7 +44,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory
                get_operating_system operating_system operating_system_version operating_system_release
-               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo
+               is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora
                get_system_information dump_system_information);
 
 =item get_operating_system
@@ -238,6 +238,25 @@ sub is_redhat {
    my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific", "RedHatEnterpriseServer" ,"RedHatEnterpriseES", "RedHatEnterpriseWorkstation");
 
    if(grep { /$os/i } @redhat_clones) {
+      return 1;
+   }
+}
+
+=item is_fedora
+
+ task "foo", "server1", sub {
+    if(is_fedora) {
+       # do something on a fedora system
+    }
+ };
+
+=cut
+sub is_fedora {
+   my $os = @_ ? shift : get_operating_system();
+
+   my @fedora_clones = ("Fedora");
+
+   if(grep { /$os/i } @fedora_clones) {
       return 1;
    }
 }

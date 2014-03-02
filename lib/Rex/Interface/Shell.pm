@@ -14,6 +14,8 @@ use Rex::Logger;
 sub create {
     my ($class, $shell) = @_;
 
+    $shell =~ s/[\r\n]//gms; # sometimes there are some wired things...
+
     my $klass = "Rex::Interface::Shell::\u$shell";
     eval "use $klass";
     if ($@) {

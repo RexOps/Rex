@@ -116,23 +116,42 @@ sub resolv_path {
    }
 
    my $home_path;
+   require Rex::User;
+   my $user_o = Rex::User->get;
+
    if($local) {
       if($^O =~ m/^MSWin/) {
          # windows path:
          $home_path = $ENV{'USERPROFILE'};
       }
       else {
-         $home_path = $ENV{'HOME'};
+         if($path =~ m/^~([a-zA-Z0-9_][^\/]+)\//) {
+            my $user_name = $1;
+            my %user_info = $user_o->get_user($user_name);
+            $home_path = $user_info{home};
+            $path =~ s/^~$user_name/$home_path/;
+         }
+         else {
+            $home_path = $ENV{'HOME'};
+            $path =~ s/^~/$home_path/;
+         }
       }
    }
    else {
-      my $exec = Rex::Interface::Exec->create;
-      my $remote_home = $exec->exec("echo \$HOME");
-      $remote_home =~ s/[\r\n]//gms;
-      $home_path = $remote_home;
+      if($path =~ m/^~([a-zA-Z0-9_][^\/]+)\//) {
+         my $user_name = $1;
+         my %user_info = $user_o->get_user($user_name);
+         $home_path = $user_info{home};
+         $path =~ s/^~$user_name/$home_path/;
+      }
+      else {
+         my $exec = Rex::Interface::Exec->create;
+         my $remote_home = $exec->exec("echo \$HOME");
+         $remote_home =~ s/[\r\n]//gms;
+         $home_path = $remote_home;
+         $path =~ s/^~/$home_path/;
+      }
    }
-
-   $path =~ s/^~/$home_path/;
 
    return $path;
 }

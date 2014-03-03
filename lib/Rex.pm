@@ -632,7 +632,7 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Chris Steigmeier
 
-=item Сергей Романов
+=item complefor
 
 =item Cuong Manh Le
 
@@ -642,7 +642,7 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Dominik Schulz
 
-=item fanyeren (范野人)
+=item fanyeren
 
 =item Ferenc Erki
 

@@ -130,6 +130,22 @@ sub run {
       }
    }
 
+   if(exists $option->{only_if}) {
+      run($option->{only_if});
+      if($? != 0) {
+         Rex::Logger::debug("Don't executing $cmd because $option->{only_if} return $?.");
+         return;
+      }
+   }
+
+   if(exists $option->{unless}) {
+      run($option->{unless});
+      if($? == 0) {
+         Rex::Logger::debug("Don't executing $cmd because $option->{unless} return $?.");
+         return;
+      }
+   }
+
    my $path;
 
    if(! Rex::Config->get_no_path_cleanup()) {

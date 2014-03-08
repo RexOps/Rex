@@ -226,6 +226,15 @@ This function is the successor of I<install file>. Please use this function to u
     file "/etc/httpd/conf/httpd.conf",
        source => "/files/etc/httpd/conf/httpd.conf",
        on_change => sub { service httpd => "restart"; };
+
+    file "/etc/named.d",
+       ensure => "directory",   # this will create a directory
+       owner  => "root",
+       group  => "root";
+
+    file "/etc/motd",
+       ensure => "absent";    # this will remove the file or directory
+
  };
 
 If I<source> is relative it will search from the location of your I<Rexfile> or the I<.pm> file if you use Perl packages.
@@ -260,7 +269,12 @@ sub file {
 
    $file = resolv_path($file);
 
-   if(exists $option->{source}) {
+   my ($is_directory);
+   if(exists $option->{ensure} && $option->{ensure} eq "directory") {
+      $is_directory = 1;
+   }
+
+   if(exists $option->{source} && ! $is_directory) {
       $option->{source} = resolv_path($option->{source});
    }
 
@@ -278,7 +292,7 @@ sub file {
    ##############################
 
 
-   my $need_md5 = ($option->{"on_change"} ? 1 : 0);
+   my $need_md5 = ($option->{"on_change"} && ! $is_directory ? 1 : 0);
    my $on_change = $option->{"on_change"} || sub {};
 
    my $fs = Rex::Interface::Fs->create;
@@ -295,7 +309,7 @@ sub file {
       $__ret = {changed => 0};
    }
 
-   elsif(exists $option->{"content"}) {
+   elsif(exists $option->{"content"} && ! $is_directory) {
       # first upload file to tmp location, to get md5 sum.
       # than we can decide if we need to replace the current (old) file.
 
@@ -339,7 +353,7 @@ sub file {
 
 
    }
-   elsif(exists $option->{"source"}) {
+   elsif(exists $option->{"source"} && ! $is_directory) {
       $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
 
       # HOOKS: for this case you have to use the upload hooks!
@@ -382,6 +396,10 @@ sub file {
             $fs->unlink($file);
             $__ret = {changed => 1};
          }
+         elsif($fs->is_dir($file)) {
+            $fs->rmdir($file);
+            $__ret = {changed => 1};
+         }
          else {
             $__ret = {changed => 0};
          }
@@ -391,11 +409,15 @@ sub file {
          ##############################
 
       }
+      elsif($option->{ensure} eq "directory") {
+         Rex::Logger::debug("file() should be a directory");
+         $fs->mkdir($file);
+      }
    }
 
    if(! exists $option->{content} && ! exists $option->{source}) {
       # no content and no source, so just verify that the file is present
-      if(! $fs->is_file($file)) {
+      if(! $fs->is_file($file) && ! $is_directory) {
 
          #### check and run before_change hook
          Rex::Hook::run_hook(file => "before_change", @_);

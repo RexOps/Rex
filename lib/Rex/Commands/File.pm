@@ -421,7 +421,17 @@ sub file {
       }
       elsif($option->{ensure} eq "directory") {
          Rex::Logger::debug("file() should be a directory");
-         $fs->mkdir($file);
+         my %dir_option;
+         if(exists $option->{owner}) {
+            $dir_option{owner} = $option->{owner};
+         }
+         if(exists $option->{group}) {
+            $dir_option{group} = $option->{group};
+         }
+         if(exists $option->{mode}) {
+            $dir_option{mode} = $option->{mode};
+         }
+         Rex::Commands::Fs::mkdir($file, %dir_option);
       }
    }
 

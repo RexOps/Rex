@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-   use Test::More tests => 44;
+   use Test::More tests => 45;
    use Data::Dumper;
 
    use_ok 'Rex';
@@ -51,7 +51,7 @@ my $changed = 0;
 my $content = cat("$cwd/test.txt");
 ok($content !~ m/change/gms, "found change");
 
-append_if_no_such_line("$cwd/test.txt", "change", qr{change}, 
+append_if_no_such_line("$cwd/test.txt", "change", qr{change},
    on_change => sub {
       $changed = 1;
    });
@@ -91,7 +91,7 @@ append_if_no_such_line("$cwd/test.txt", 'KEY="VAL"');
 $content = cat("$cwd/test.txt");
 ok($content =~ m/KEY="VAL"/gms, "found KEY=VAL");
 
-append_if_no_such_line("$cwd/test.txt", "change", qr{change}, 
+append_if_no_such_line("$cwd/test.txt", "change", qr{change},
    on_change => sub {
       $changed = 0;
    });
@@ -224,3 +224,9 @@ $content = cat "$tmp_dir/multiline.txt";
 is($content,  "this no one\nknows!.\n", "multiline replacement");
 
 unlink "$tmp_dir/multiline.txt";
+
+file "$tmp_dir/test.d",
+   ensure => "directory";
+
+ok(-d "$tmp_dir/test.d", "created directory with file()");
+rmdir "$tmp_dir/test.d";

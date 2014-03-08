@@ -40,6 +40,7 @@ use Rex::Helper::Run;
 use Rex::Helper::SSH2::Expect;
 use Rex::Config;
 use Rex::Interface::Exec;
+use Rex::Interface::Fs;
 
 BEGIN {
    if($^O !~ m/^MSWin/) {
@@ -119,6 +120,14 @@ sub run {
 
    if(exists $option->{command}) {
       $cmd = $option->{command};
+   }
+
+   if(exists $option->{creates}) {
+      my $fs = Rex::Interface::Fs->create();
+      if($fs->is_file($option->{creates})) {
+         Rex::Logger::debug("File $option->{creates} already exists. Not executing $cmd.");
+         return;
+      }
    }
 
    my $path;

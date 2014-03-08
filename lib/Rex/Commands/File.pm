@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -25,32 +25,32 @@ With this module you can manipulate files.
  task "read-passwd2", "server01", sub {
     say cat "/etc/passwd";
  };
- 
- 
+
+
  task "write-passwd", "server01", sub {
     my $fh = file_write "/etc/passwd";
     $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
     $fh->close;
  };
-    
+
  delete_lines_matching "/var/log/auth.log", matching => "root";
  delete_lines_matching "/var/log/auth.log", matching => qr{Failed};
- delete_lines_matching "/var/log/auth.log", 
+ delete_lines_matching "/var/log/auth.log",
                         matching => "root", qr{Failed}, "nobody";
-    
+
  file "/path/on/the/remote/machine",
     source => "/path/on/local/machine";
-    
+
  file "/path/on/the/remote/machine",
     content => "foo bar";
-    
+
  file "/path/on/the/remote/machine",
     source => "/path/on/local/machine",
     owner  => "root",
     group  => "root",
     mode   => 400,
     on_change => sub { say "File was changed."; };
- 
+
 
 =head1 EXPORTED FUNCTIONS
 
@@ -86,9 +86,9 @@ use File::Basename qw(dirname);
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
-@EXPORT = qw(file_write file_read file_append 
+@EXPORT = qw(file_write file_read file_append
                cat sed
-               delete_lines_matching append_if_no_such_line delete_lines_according_to 
+               delete_lines_matching append_if_no_such_line delete_lines_according_to
                file template
                extract);
 
@@ -98,7 +98,7 @@ use vars qw(%file_handles);
 
 Parse a template and return the content.
 
- my $content = template("/files/templates/vhosts.tpl", 
+ my $content = template("/files/templates/vhosts.tpl",
                      name => "test.lan",
                      webmaster => 'webmaster@test.lan');
 
@@ -108,7 +108,7 @@ sub template {
    my $param;
 
    $file = resolv_path($file);
-   
+
    if(ref $params[0] eq "HASH") {
       $param = $params[0];
    }
@@ -130,9 +130,9 @@ sub template {
    }
 
    # if there is a file called filename.environment then use this file
-   # ex: 
+   # ex:
    # $content = template("files/hosts.tpl");
-   # 
+   #
    # rex -E live ...
    # will first look if files/hosts.tpl.live is available, if not it will
    # use files/hosts.tpl
@@ -208,17 +208,21 @@ This function is the successor of I<install file>. Please use this function to u
  task "prepare", "server1", "server2", sub {
     file "/file/on/remote/machine",
        source => "/file/on/local/machine";
-       
+
     file "/etc/hosts",
        content => template("templates/etc/hosts.tpl"),
        owner   => "user",
        group   => "group",
        mode    => 700,
        on_change => sub { say "Something was changed." };
-        
+
     file "/etc/motd",
        content => `fortune`;
-      
+
+    file "/etc/named.conf",
+       content      => template("templates/etc/named.conf.tpl"),
+       no_overwrite => TRUE;  # this file will not be overwritten if already exists.
+
     file "/etc/httpd/conf/httpd.conf",
        source => "/files/etc/httpd/conf/httpd.conf",
        on_change => sub { service httpd => "restart"; };
@@ -228,7 +232,7 @@ If I<source> is relative it will search from the location of your I<Rexfile> or 
 
 This function supports the following hooks:
 
-=over 8 
+=over 8
 
 =item before
 
@@ -286,7 +290,12 @@ sub file {
       $old_md5 = md5($file);
    };
 
-   if(exists $option->{"content"}) {
+   if(exists $option->{no_overwrite} && $option->{no_overwrite} && $old_md5) {
+      Rex::Logger::debug("File already exists and no_overwrite option given. Doing nothing.");
+      $__ret = {changed => 0};
+   }
+
+   elsif(exists $option->{"content"}) {
       # first upload file to tmp location, to get md5 sum.
       # than we can decide if we need to replace the current (old) file.
 
@@ -453,12 +462,12 @@ On failure it will die.
  eval {
     $fh = file_write("/etc/groups");
  };
- 
+
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
  }
- 
+
  # work with the filehandle
  $fh->write("...");
  $fh->close;
@@ -510,12 +519,12 @@ On failure it will die.
  eval {
     $fh = read("/etc/groups");
  };
- 
+
  # catch an error
  if($@) {
     print "An error occured. $@.\n";
  }
- 
+
  # work with the filehandle
  my $content = $fh->read_all;
  $fh->close;
@@ -671,7 +680,7 @@ Since 0.42 you can use named parameters as well
        on_change => sub {
                        say "file was changed, do something.";
                     };
-          
+
     append_if_no_such_line "/etc/groups",
        line   => "mygroup:*:100:myuser1,myuser2",
        regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
@@ -802,7 +811,7 @@ This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, 
       type => "tgz",
       mode => "g+rwX";
  };
- 
+
 Can use the type=> option if the file suffix has been changed. (types are tar, tgz, tbz, zip, gz, bz2)
 
 =cut
@@ -879,7 +888,7 @@ Search some string in a file and replace it.
  task sar => sub {
     # this will work line by line
     sed qr{search}, "replace", "/var/log/auth.log";
-        
+
     # to use it in a multiline way
     sed qr{search}, "replace", "/var/log/auth.log",
       multiline => TRUE;
@@ -890,7 +899,7 @@ sub sed {
    my ($search, $replace, $file, @option) = @_;
    $file = resolv_path($file);
    my $options = {};
-   
+
    if(ref($option[0])) {
       $options = $option[0];
    }
@@ -904,11 +913,11 @@ sub sed {
 
    if(exists $options->{multiline}) {
       $content[0] = cat($file);
-      $content[0] =~ s/$search/$replace/gms; 
+      $content[0] =~ s/$search/$replace/gms;
    }
    else {
       @content = split(/\n/, cat($file));
-      map { s/$search/$replace/ } @content; 
+      map { s/$search/$replace/ } @content;
    }
 
    my $fs = Rex::Interface::Fs->create;

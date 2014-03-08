@@ -85,6 +85,15 @@ and notify it when you want to run it.
     notify "run", "extract-something";   # now the command gets executed
  };
 
+If you only want to run a command if an other command succeed or fail, you can use
+I<only_if> or I<unless> option.
+
+ run "some-command",
+    only_if => "ps -ef | grep -q httpd";    # only run if httpd is running
+
+ run "some-other-command",
+    unless => "ps -ef | grep -q httpd";     # only run if httpd is not running
+
 =cut
 
 our $LAST_OUTPUT;   # this variable stores the last output of a run.

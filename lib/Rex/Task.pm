@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 =head1 NAME
@@ -14,7 +14,7 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 =head1 SYNOPSIS
 
  use Rex::Task
-     
+
   my $task = Rex::Task->new(name => "testtask");
   $task->set_server("remoteserver");
   $task->set_code(sub { say "Hello"; });
@@ -41,6 +41,7 @@ use Rex::Hardware;
 use Rex::Interface::Cache;
 use Rex::Report;
 use Rex::Helper::Run;
+use Rex::Notify;
 
 require Rex::Commands;
 
@@ -300,7 +301,7 @@ sub want_connect {
 
 This method tries to guess the right connection type for the task and returns it.
 
-Current return values are SSH, Fake and Local. 
+Current return values are SSH, Fake and Local.
 
 SSH - will create a ssh connection to the remote server
 
@@ -563,13 +564,14 @@ sub connect {
 
    # need to get rid of this
    Rex::push_connection({
-         conn   => $self->connection, 
-         ssh    => $self->connection->get_connection_object, 
-         server => $server, 
+         conn   => $self->connection,
+         ssh    => $self->connection->get_connection_object,
+         server => $server,
          cache => Rex::Interface::Cache->create(),
          task  => $self,
          profiler => $profiler,
          reporter => Rex::Report->create(Rex::Config->get_report_type),
+         notify   => Rex::Notify->new(),
    });
 
    Rex::get_current_connection()->{reporter}->register_reporting_hooks;

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -34,12 +34,12 @@ You can find examples and howtos on L<http://rexify.org/>
 
  user "root";
  password "ch4ngem3";
-   
+
  desc "Show Unix version";
  task "uname", sub {
      say run "uname -a";
  };
-  
+
  bash# rex -H "server[01..10]" uname
 
 See L<Rex::Commands> for a list of all commands you can use.
@@ -125,12 +125,12 @@ sub search_module_path {
 
    my @search_in;
    if($pre) {
-      @search_in = map { ("$_/$mod_to_load.pm") } 
+      @search_in = map { ("$_/$mod_to_load.pm") }
                      grep { -d } @INC;
 
    }
    else {
-      @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") } 
+      @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") }
                      grep { -d } @INC;
    }
 
@@ -271,7 +271,7 @@ sub is_local {
 
 =item is_sudo
 
-Returns 1 if the current operation is executed within sudo. 
+Returns 1 if the current operation is executed within sudo.
 
 =cut
 sub is_sudo {
@@ -321,7 +321,7 @@ Use this function to create a connection if you use Rex as a library.
  use Rex;
  use Rex::Commands::Run;
  use Rex::Commands::Fs;
-   
+
  Rex::connect(
     server      => "remotehost",
     user        => "root",
@@ -329,11 +329,11 @@ Use this function to create a connection if you use Rex as a library.
     private_key => "/path/to/private/key/file",
     public_key  => "/path/to/public/key/file",
  );
-    
+
  if(is_file("/foo/bar")) {
     print "Do something...\n";
  }
-     
+
  my $output = run("uptime");
 
 =cut
@@ -460,6 +460,9 @@ sub import {
 
       require Rex::Commands::Sync;
       Rex::Commands::Sync->import(register_in => $register_to);
+
+      require Rex::Commands::Notify;
+      Rex::Commands::Notify->import(register_in => $register_to);
    }
 
    if($what eq "-feature" || $what eq "feature") {

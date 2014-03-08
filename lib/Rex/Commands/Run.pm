@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -71,11 +71,25 @@ This function will execute the given command and returns the output.
     };
  };
 
+If you only want to run a command in special cases, you can queue the command
+and notify it when you want to run it.
+
+ task "prepare", sub {
+    run "extract-something",
+       command       => "tar -C /foo -xzf /tmp/foo.tgz",
+       only_notified => TRUE;
+
+    # some code ...
+
+    notify "run", "extract-something";   # now the command gets executed
+ };
+
 =cut
 
 our $LAST_OUTPUT;   # this variable stores the last output of a run.
                     # so that it is possible to get for example the output of an apt-get update
                     # that is called through >> install "foo" <<
+
 sub run {
    my $cmd = shift;
    my ($code, $option);
@@ -84,6 +98,25 @@ sub run {
    }
    elsif(scalar @_ > 0) {
       $option = { @_ };
+   }
+
+   if(exists $option->{command}) {
+      my $notify = Rex::get_current_connection()->{notify};
+      $notify->add(
+         type    => "run",
+         name    => $cmd,
+         options => $option,
+         cb      => sub {
+            my ($option) = shift;
+            Rex::Logger::debug("Running notified command: $cmd ($option->{command})");
+            run($option->{command});
+         }
+      );
+   }
+
+   if(exists $option->{only_notified} && $option->{only_notified}) {
+      Rex::Logger::debug("This command runs only if notified. Passing by. ($cmd, $option->{command})");
+      return;
    }
 
    my $path;
@@ -161,7 +194,7 @@ You can use this function to run one command with sudo privileges or to turn on 
  user "unprivuser";
  sudo_password "f00b4r";
  sudo -on;   # turn sudo globaly on
-     
+
  task prepare => sub {
     install "apache2";
     file "/etc/ntp.conf",
@@ -175,7 +208,7 @@ Or, if you don't turning sudo globaly on.
  task prepare => sub {
     file "/tmp/foo.txt",
        content => "this file was written without sudo privileges\n";
-        
+
     # everything in this section will be executed with sudo privileges
     sudo sub {
        install "apache2";

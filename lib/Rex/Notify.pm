@@ -23,6 +23,11 @@ sub new {
 
 sub add {
    my ($self, %option) = @_;
+
+   if(exists $self->{__types__}->{$option{type}}->{$option{name}}) {
+      die("A resource of the type $option{type} and name $option{name} already exists.");
+   }
+
    $self->{__types__}->{$option{type}}->{$option{name}} = {
       options => $option{options},
       cb      => $option{cb},

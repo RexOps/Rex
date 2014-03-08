@@ -110,6 +110,9 @@ sub open_port {
             return;
          }
       }
+
+      delete $option_h{only_if};
+      $option = { %option_h };
    }
    _open_or_close_port("i", "I", "INPUT", "ACCEPT", $port, $option);
 
@@ -142,6 +145,9 @@ sub close_port {
             return;
          }
       }
+
+      delete $option_h{only_if};
+      $option = { %option_h };
    }
 
    _open_or_close_port("i", "A", "INPUT", "DROP", $port, $option);

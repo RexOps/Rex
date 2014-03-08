@@ -100,7 +100,8 @@ sub run {
       $option = { @_ };
    }
 
-   if(exists $option->{command}) {
+   if(exists $option->{only_notified} && $option->{only_notified}) {
+      Rex::Logger::debug("This command runs only if notified. Passing by. ($cmd, $option->{command})");
       my $notify = Rex::get_current_connection()->{notify};
       $notify->add(
          type    => "run",
@@ -112,11 +113,12 @@ sub run {
             run($option->{command});
          }
       );
+
+      return;
    }
 
-   if(exists $option->{only_notified} && $option->{only_notified}) {
-      Rex::Logger::debug("This command runs only if notified. Passing by. ($cmd, $option->{command})");
-      return;
+   if(exists $option->{command}) {
+      $cmd = $option->{command};
    }
 
    my $path;

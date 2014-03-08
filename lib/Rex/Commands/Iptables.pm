@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 =head1 NAME
 
 Rex::Commands::Iptables - Iptable Management Commands
@@ -15,36 +15,36 @@ With this Module you can manage basic Iptables rules.
 =head1 SYNOPSIS
 
  use Rex::Commands::Iptables;
-     
+
  task "firewall", sub {
     iptables_clear;
-     
+
     open_port 22;
     open_port [22, 80] => {
        dev => "eth0",
     };
-        
+
     close_port 22 => {
        dev => "eth0",
     };
     close_port "all";
-        
+
     redirect_port 80 => 10080;
     redirect_port 80 => {
        dev => "eth0",
        to  => 10080,
     };
-      
+
     default_state_rule;
     default_state_rule dev => "eth0";
-        
+
     is_nat_gateway;
-       
+
     iptables t => "nat",
              A => "POSTROUTING",
              o => "eth0",
              j => "MASQUERADE";
-    
+
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -71,7 +71,7 @@ use Rex::Commands::Gather;
 
 use Rex::Logger;
 
-@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear 
+@EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear
                open_port close_port redirect_port
                default_state_rule);
 
@@ -84,13 +84,33 @@ Open a port for inbound connections.
  task "firewall", sub {
     open_port 22;
     open_port [22, 80];
-    open_port [22, 80] => { dev => "eth1", };
+    open_port [22, 80],
+       dev => "eth1";
  };
+
+ task "firewall", sub {
+   open_port 22,
+      dev     => "eth1",
+      only_if => "test -f /etc/firewall.managed";
+} ;
+
 
 =cut
 sub open_port {
 
    my ($port, $option) = @_;
+
+   my %option_h;
+   if(ref $option ne "HASH") {
+      ($port, %option_h) = @_;
+
+      if(exists $option_h{only_if}) {
+         run($option_h{only_if});
+         if($? != 0) {
+            return;
+         }
+      }
+   }
    _open_or_close_port("i", "I", "INPUT", "ACCEPT", $port, $option);
 
 }
@@ -102,13 +122,28 @@ Close a port for inbound connections.
  task "firewall", sub {
     close_port 22;
     close_port [22, 80];
-    close_port [22, 80] => { dev => "eth0", };
+    close_port [22, 80],
+       dev     => "eth0",
+       only_if => "test -f /etc/firewall.managed";
  };
 
 =cut
 sub close_port {
 
    my ($port, $option) = @_;
+
+   my %option_h;
+   if(ref $option ne "HASH") {
+      ($port, %option_h) = @_;
+
+      if(exists $option_h{only_if}) {
+         run($option_h{only_if});
+         if($? != 0) {
+            return;
+         }
+      }
+   }
+
    _open_or_close_port("i", "A", "INPUT", "DROP", $port, $option);
 
 }
@@ -143,7 +178,7 @@ sub redirect_port {
             to  => $option,
          });
       }
-      
+
       return;
    }
 
@@ -180,7 +215,7 @@ Write standard iptable comands.
  task "firewall", sub {
     iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
     iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
-        
+
     iptables "flush";
     iptables -F;
     iptables flush => "filter";
@@ -306,7 +341,7 @@ sub iptables_list {
    my @lines = run "/sbin/iptables-save";
    _iptables_list(@lines);
 }
-   
+
 sub _iptables_list {
    my (%tables, $ret);
    my (@lines) = @_;
@@ -326,7 +361,7 @@ sub _iptables_list {
       }
 
       #my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/(\-\-?[^\s]+\s[^\s]+)/i, $line);
-      my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/^\-\-?|\s+\-\-?/i, $line); 
+      my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/^\-\-?|\s+\-\-?/i, $line);
 
       my @option = ();
       for my $part (@parts) {
@@ -411,12 +446,42 @@ sub _open_or_close_port {
          return;
       }
 
-      push(@opts, "j", $jump);
       push(@opts, "dport", $port);
+      push(@opts, "j", $jump);
+   }
+
+   if(_rule_exists(@opts)) {
+      Rex::Logger::debug("IPTables rule already exists. skipping...");
+      return;
    }
 
    iptables @opts;
 
+}
+
+sub _rule_exists {
+   my (@check_rule) = @_;
+
+   shift @check_rule;
+   shift @check_rule;
+   shift @check_rule;
+
+   my $str_check_rule = join(" ", "A", @check_rule);
+
+   my $current_tables = iptables_list();
+   if(exists $current_tables->{filter}) {
+      for my $rule (@{ $current_tables->{filter} }) {
+         my $str_rule = join(" ", @{ $rule });
+         $str_rule =~ s/\s$//;
+
+         Rex::Logger::debug("comparing: '$str_rule' == '$str_check_rule'");
+         if($str_rule eq $str_check_rule) {
+            return 1;
+         }
+      }
+   }
+
+   return 0;
 }
 
 =back

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
                      source => "/export/files/etc/passwd"
                  };
- 
+
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS
@@ -54,7 +54,47 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for);
+@EXPORT = qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for pkg);
+
+=item pkg($package, %options)
+
+Since: 0.45
+
+Use this function to install or update a package.
+
+ pkg "httpd",
+    ensure => "latest";     # ensure that the newest version is installed (auto-update)
+ pkg "httpd",
+    ensure => "absent";     # remove the package
+ pkg "httpd",
+    ensure => "present";    # ensure that some version is installed (no auto-update)
+ pkg "httpd",
+    ensure => "2.4.6";      # ensure that version 2.4.6 is installed
+
+=cut
+
+sub pkg {
+   my ($package, %option) = @_;
+
+   $option{ensure} ||= "present";
+
+   if($option{ensure} eq "latest") {
+      return update(package => $package, \%option);
+   }
+   elsif($option{ensure} eq "present") {
+      return install(package => $package, \%option);
+   }
+   elsif($option{ensure} eq "absent") {
+      return remove(package => $package);
+   }
+   elsif($option{ensure} =~ m/^\d/) {
+      # looks like a version
+      return install(package => $package, {version => $option{ensure}});
+   }
+   else {
+      die("Unknown ensure parameter: $option{ensure}.");
+   }
+}
 
 =item install($type, $data, $options)
 
@@ -66,9 +106,9 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
 
  task "prepare", "server01", sub {
     install package => "perl";
-    
+
     # or if you have to install more packages.
-    install package => [ 
+    install package => [
                            "perl",
                            "ntp",
                            "dbus",
@@ -79,7 +119,7 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
  };
 
 =item installing a file
- 
+
 This is deprecated since 0.9. Please use L<File> I<file> instead.
 
  task "prepare", "server01", sub {
@@ -124,7 +164,7 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
 
 This function supports the following hooks:
 
-=over 8 
+=over 8
 
 =item before
 
@@ -183,14 +223,14 @@ sub install {
       Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
       Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
       Rex::Logger::debug("See http://rexify.org/api/Rex/Commands/File.pm for more information.");
-   
+
       my $source    = $option->{"source"};
       my $need_md5  = ($option->{"on_change"} ? 1 : 0);
       my $on_change = $option->{"on_change"} || sub {};
       my $__ret;
 
       my ($new_md5, $old_md5) = ("", "");
-      
+
       if($source =~ m/\.tpl$/) {
          # das ist ein template
 
@@ -219,7 +259,7 @@ sub install {
 
       }
       else {
-         
+
          my $source = Rex::Helper::Path::get_file_path($source, caller());
          my $content = eval { local(@ARGV, $/) = ($source); <>; };
 
@@ -275,11 +315,11 @@ sub install {
             &$on_change;
          }
       }
-   
+
    }
 
    elsif($type eq "package") {
-      
+
 
       if(ref($_[0]) eq "HASH") {
          $option = shift;
@@ -289,15 +329,15 @@ sub install {
       }
 
       my $pkg;
-      
+
       $pkg = Rex::Pkg->get;
 
       if(!ref($package)) {
          $package = [$package];
       }
-      
+
       my $changed = 0;
-      
+
       # if we're being asked to install a single package
       if(@{$package} == 1) {
          my $pkg_to_install = shift @{$package};
@@ -322,23 +362,23 @@ sub install {
                push @pkgCandidates, $pkg_to_install;
             }
          }
-         
+
          if(@pkgCandidates) {
             Rex::Logger::info("Installing @pkgCandidates");
             $pkg->bulk_install(\@pkgCandidates, $option); # here, i think $option is useless in its current form.
             $changed = 1;
-         } 
+         }
       }
-         
-     
+
+
       if(Rex::Config->get_do_reporting) {
          $__ret = {changed => $changed};
       }
- 
+
    }
    else {
       # unknown type, be a package
-      install("package", $type, $package, @_); 
+      install("package", $type, $package, @_);
 
       if(Rex::Config->get_do_reporting) {
          $__ret = {skip => 1};
@@ -354,12 +394,12 @@ sub install {
 }
 
 sub update {
-   
+
    my ($type, $package, $option) = @_;
 
    if($type eq "package") {
       my $pkg;
-      
+
       $pkg = Rex::Pkg->get;
 
       if(!ref($package)) {
@@ -370,7 +410,7 @@ sub update {
          Rex::Logger::info("Updating $pkg_to_install.");
          $pkg->update($pkg_to_install, $option);
       }
- 
+
    }
    else {
       update("package", @_);
@@ -378,7 +418,7 @@ sub update {
 
 }
 
-=item remove($type, $package, $options) 
+=item remove($type, $package, $options)
 
 This function will remove the given package from a system.
 
@@ -413,7 +453,7 @@ sub remove {
    }
 
    else {
-      
+
       #Rex::Logger::info("$type not supported.");
       #die("remove $type not supported");
       # no type given, assume package
@@ -425,7 +465,7 @@ sub remove {
 
 =item update_system
 
-This function do a complete system update. 
+This function do a complete system update.
 
 For example I<apt-get upgrade> or I<yum update>.
 
@@ -449,12 +489,12 @@ sub update_system {
 This function returns all installed packages and their version.
 
  task "get-installed", "server1", sub {
-    
+
      for my $pkg (installed_packages()) {
         say "name     : " . $pkg->{"name"};
         say "  version: " . $pkg->{"version"};
      }
-     
+
  };
 
 =cut
@@ -466,7 +506,7 @@ sub installed_packages {
 
 =item is_installed
 
-This function tests if $package is installed. Returns 1 if true. 0 if false. 
+This function tests if $package is installed. Returns 1 if true. 0 if false.
 
  task "isinstalled", "server01", sub {
     if( is_installed("rex") ) {
@@ -530,7 +570,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
     repository add => "repository-name",
          url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
-     
+
  };
 
 To remove a repository just delete it with its name.
@@ -608,10 +648,10 @@ sub repository {
 To set an other package provider as the default, use this function.
 
  user "root";
-     
+
  group "db" => "db[01..10]";
  package_provider_for SunOS => "blastwave";
-    
+
  task "prepare", group => "db", sub {
      install package => "vim";
  };

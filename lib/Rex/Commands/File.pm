@@ -265,6 +265,16 @@ This gets executed right before the file() function returns.
 sub file {
    my ($file, @options) = @_;
 
+   if(ref $file eq "ARRAY") {
+      my @ret;
+      # $file is an array, so iterate over these files
+      for my $f (@{$file}) {
+         push(@ret, file($f, @options));
+      }
+
+      return \@ret;
+   }
+
    my $option = { @options };
 
    $file = resolv_path($file);

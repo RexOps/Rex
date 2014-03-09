@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 package Rex::Helper::Encode;
 
 use strict;
@@ -16,64 +16,64 @@ use vars qw(@EXPORT);
 
 my %escapes;
 for (0..255) {
-   $escapes{chr($_)} = sprintf("%%%02X", $_);
+  $escapes{chr($_)} = sprintf("%%%02X", $_);
 }
 
 sub url_encode{
-   my ($txt)=@_;
-   $txt =~ s/([^A-Za-z0-9_])/$escapes{$1}/g;
-   return $txt;
+  my ($txt)=@_;
+  $txt =~ s/([^A-Za-z0-9_])/$escapes{$1}/g;
+  return $txt;
 }
 
 sub url_decode{
-   my ($txt)=@_;
-   $txt=~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
-   return $txt;
+  my ($txt)=@_;
+  $txt=~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
+  return $txt;
 }
 
 sub func_to_json {
 
-   return q|
-   sub to_json {
-      my ($ref) = @_;
+  return q|
+  sub to_json {
+    my ($ref) = @_;
 
-      my $s = "";
+    my $s = "";
 
-      if(ref $ref eq "ARRAY") {
-         $s .= "[";
-         for my $itm (@{ $ref }) {
-            if(substr($s, -1) ne "[") {
-               $s .= ",";
-            }
-            $s .= to_json($itm);
-         }
-         return $s . "]";
+    if(ref $ref eq "ARRAY") {
+      $s .= "[";
+      for my $itm (@{ $ref }) {
+        if(substr($s, -1) ne "[") {
+          $s .= ",";
+        }
+        $s .= to_json($itm);
       }
-      elsif(ref $ref eq "HASH") {
-         $s .= "{";
-         for my $key (keys %{ $ref }) {
-            if(substr($s, -1) ne "{") {
-               $s .= ",";
-            }
-            $s .= "\"$key\": " . to_json($ref->{$key});
-         }
-         return $s . "}";
+      return $s . "]";
+    }
+    elsif(ref $ref eq "HASH") {
+      $s .= "{";
+      for my $key (keys %{ $ref }) {
+        if(substr($s, -1) ne "{") {
+          $s .= ",";
+        }
+        $s .= "\"$key\": " . to_json($ref->{$key});
+      }
+      return $s . "}";
+    }
+    else {
+      if($ref =~ /^0\d+/) {
+        return "\"$ref\"";
+      }
+      elsif($ref =~ /^\d+$/) {
+        return $ref;
       }
       else {
-         if($ref =~ /^0\d+/) {
-            return "\"$ref\"";
-         }
-         elsif($ref =~ /^\d+$/) {
-            return $ref;
-         }
-         else {
-            $ref =~ s/'/\\\'/g;
-            return "\"$ref\"";
-         }
+        $ref =~ s/'/\\\'/g;
+        return "\"$ref\"";
       }
-   }
+    }
+  }
 
-   |;
+  |;
 
 }
 

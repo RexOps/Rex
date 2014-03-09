@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 package Rex::Pkg::Redhat;
@@ -18,165 +18,165 @@ use base qw(Rex::Pkg::Base);
 
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub is_installed {
-   my ($self, $pkg) = @_;
+  my ($self, $pkg) = @_;
 
-   Rex::Logger::debug("Checking if $pkg is installed");
+  Rex::Logger::debug("Checking if $pkg is installed");
 
-   i_run("rpm -ql $pkg");
+  i_run("rpm -ql $pkg");
 
-   unless($? == 0) {
-      Rex::Logger::debug("$pkg is NOT installed.");
-      return 0;
-   }
-   
-   Rex::Logger::debug("$pkg is installed.");
-   return 1;
+  unless($? == 0) {
+    Rex::Logger::debug("$pkg is NOT installed.");
+    return 0;
+  }
+  
+  Rex::Logger::debug("$pkg is installed.");
+  return 1;
 }
 
 sub install {
-   my ($self, $pkg, $option) = @_;
+  my ($self, $pkg, $option) = @_;
 
-   if($self->is_installed($pkg) && ! $option->{"version"}) {
-      Rex::Logger::info("$pkg is already installed");
-      return 1;
-   }
+  if($self->is_installed($pkg) && ! $option->{"version"}) {
+    Rex::Logger::info("$pkg is already installed");
+    return 1;
+  }
 
-   $self->update($pkg, $option);
+  $self->update($pkg, $option);
 
-   return 1;
+  return 1;
 }
 
 sub bulk_install {
-   my ($self, $packages_aref, $option) = @_;
+  my ($self, $packages_aref, $option) = @_;
+  
+  delete $option->{version}; # makes no sense to specify the same version for several packages
    
-   delete $option->{version}; # makes no sense to specify the same version for several packages
-    
-   $self->update("@{$packages_aref}", $option);
-   
-   return 1;
+  $self->update("@{$packages_aref}", $option);
+  
+  return 1;
 }
 
 sub update {
-   my ($self, $pkg, $option) = @_;
+  my ($self, $pkg, $option) = @_;
 
-   my $version = $option->{"version"} || "";
+  my $version = $option->{"version"} || "";
 
-   Rex::Logger::debug("Installing $pkg / $version");
-   my $f = i_run(_yum("-y install $pkg" . ($version?"-$version":"")));
+  Rex::Logger::debug("Installing $pkg / $version");
+  my $f = i_run(_yum("-y install $pkg" . ($version?"-$version":"")));
 
-   unless($? == 0) {
-      Rex::Logger::info("Error installing $pkg.", "warn");
-      Rex::Logger::debug($f);
-      die("Error installing $pkg");
-   }
+  unless($? == 0) {
+    Rex::Logger::info("Error installing $pkg.", "warn");
+    Rex::Logger::debug($f);
+    die("Error installing $pkg");
+  }
 
-   Rex::Logger::debug("$pkg successfully installed.");
+  Rex::Logger::debug("$pkg successfully installed.");
 
 
-   return 1;
+  return 1;
 }
 
 sub remove {
-   my ($self, $pkg) = @_;
+  my ($self, $pkg) = @_;
 
-   Rex::Logger::debug("Removing $pkg");
-   my $f = i_run(_yum("-y erase $pkg"));
+  Rex::Logger::debug("Removing $pkg");
+  my $f = i_run(_yum("-y erase $pkg"));
 
-   unless($? == 0) {
-      Rex::Logger::info("Error removing $pkg.", "warn");
-      Rex::Logger::debug($f);
-      die("Error removing $pkg");
-   }
+  unless($? == 0) {
+    Rex::Logger::info("Error removing $pkg.", "warn");
+    Rex::Logger::debug($f);
+    die("Error removing $pkg");
+  }
 
-   Rex::Logger::debug("$pkg successfully removed.");
+  Rex::Logger::debug("$pkg successfully removed.");
 
-   return 1;
+  return 1;
 }
 
 sub get_installed {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   my @lines = i_run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
+  my @lines = i_run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
 
-   my @pkg;
+  my @pkg;
 
-   for my $line (@lines) {
-      if($line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/) {
-         push(@pkg, {
-            name    => $1,
-            epoch   => $2,
-            version => $3,
-            release => $4,
-            arch    => $5,
-         });
-      }
-   }
+  for my $line (@lines) {
+    if($line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/) {
+      push(@pkg, {
+        name   => $1,
+        epoch  => $2,
+        version => $3,
+        release => $4,
+        arch   => $5,
+      });
+    }
+  }
 
-   return @pkg;
+  return @pkg;
 }
 
 sub update_system {
-   my ($self) = @_;
-   i_run(_yum("-y upgrade"));
+  my ($self) = @_;
+  i_run(_yum("-y upgrade"));
 }
 
 sub update_pkg_db {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   i_run(_yum("clean all"));
-   i_run(_yum("makecache"));
-   if($? != 0) {
-      die("Error updating package repository");
-   }
+  i_run(_yum("clean all"));
+  i_run(_yum("makecache"));
+  if($? != 0) {
+    die("Error updating package repository");
+  }
 }
 
 sub add_repository {
-   my ($self, %data) = @_;
+  my ($self, %data) = @_;
 
-   my $name = $data{"name"};
-   my $desc = $data{"description"} || $data{"name"};
+  my $name = $data{"name"};
+  my $desc = $data{"description"} || $data{"name"};
 
-   my $fh = file_write "/etc/yum.repos.d/$name.repo";
+  my $fh = file_write "/etc/yum.repos.d/$name.repo";
 
-   $fh->write("# This file is managed by Rex\n");
-   $fh->write("[$name]\n");
-   $fh->write("name=$desc\n");
-   $fh->write("baseurl=" . $data{"url"} . "\n");
-   $fh->write("enabled=1\n");
-   $fh->write("gpgcheck=" . $data{"gpgcheck"} ."\n") if defined $data{"gpgcheck"};
+  $fh->write("# This file is managed by Rex\n");
+  $fh->write("[$name]\n");
+  $fh->write("name=$desc\n");
+  $fh->write("baseurl=" . $data{"url"} . "\n");
+  $fh->write("enabled=1\n");
+  $fh->write("gpgcheck=" . $data{"gpgcheck"} ."\n") if defined $data{"gpgcheck"};
 
-   $fh->close;
+  $fh->close;
 }
 
 sub rm_repository {
-   my ($self, $name) = @_;
-   unlink "/etc/yum.repos.d/$name.repo";
+  my ($self, $name) = @_;
+  unlink "/etc/yum.repos.d/$name.repo";
 }
 
 
 sub _yum {
-   my (@cmd) = @_;
+  my (@cmd) = @_;
 
-   my $str;
+  my $str;
 
-   if($Rex::Logger::debug) {
-      $str = join(' ', "yum ", @cmd);
-   }
-   else {
-      $str = join(' ', "yum -q ", @cmd);
-   }
+  if($Rex::Logger::debug) {
+    $str = join(' ', "yum ", @cmd);
+  }
+  else {
+    $str = join(' ', "yum -q ", @cmd);
+  }
 
-   return $str;
+  return $str;
 }
 
 1;

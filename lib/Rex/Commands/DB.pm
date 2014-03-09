@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -15,36 +15,36 @@ This module gives you simple access to a database. Currently I<select>, I<delete
 =head1 SYNOPSIS
 
  use Rex::Commands::DB {
-                           dsn      => "DBI:mysql:database=test;host=dbhost",
-                           user     => "username",
-                           password => "password",
-                       };
+                  dsn    => "DBI:mysql:database=test;host=dbhost",
+                  user    => "username",
+                  password => "password",
+                };
  
  task "list", sub {
-    my @data = db select => {
-                  fields => "*",
-                  from   => "table",
-                  where  => "enabled=1",
-               };
+   my @data = db select => {
+            fields => "*",
+            from  => "table",
+            where  => "enabled=1",
+          };
+        
+  db insert => "table", {
+           field1 => "value1",
+            field2 => "value2",
+            field3 => 5,
+          };
            
-   db insert => "table", {
-                field1 => "value1",
-                 field2 => "value2",
-                 field3 => 5,
-               };
-                
-   db update => "table", {
-                    set => {
-                       field1 => "newvalue",
-                       field2 => "newvalue2",
-                    },
-                    where => "id=5",
-                };
-                
-   db delete => "table", {
-                 where => "id < 5",
-              };
+  db update => "table", {
+              set => {
+                field1 => "newvalue",
+                field2 => "newvalue2",
+              },
+              where => "id=5",
+           };
            
+  db delete => "table", {
+            where => "id < 5",
+          };
+        
  };
 
 
@@ -72,117 +72,117 @@ use vars qw(@EXPORT $dbh);
 Do a database action.
 
  my @data = db select => {
-               fields => "*",
-               from   => "table",
-               where  => "host='myhost'",
-            };
-            
+          fields => "*",
+          from  => "table",
+          where  => "host='myhost'",
+        };
+        
  db insert => "table", {
-               field1 => "value1",
-               field2 => "value2",
-               field3 => 5,
-            };
-             
+          field1 => "value1",
+          field2 => "value2",
+          field3 => 5,
+        };
+         
  db update => "table", {
-                  set => {
-                     field1 => "newvalue",
-                     field2 => "newvalue2",
-                  },
-                  where => "id=5",
-             };
-             
+            set => {
+              field1 => "newvalue",
+              field2 => "newvalue2",
+            },
+            where => "id=5",
+         };
+         
  db delete => "table", {
-               where => "id < 5",
-            };
+          where => "id < 5",
+        };
 
 =cut
 
 sub db {
 
-   my ($type, $table, $data) = @_;
-   if(ref($table)) {
-      my %d = %{$table};
-      delete $d{"from"};
-      $data = \%d;
+  my ($type, $table, $data) = @_;
+  if(ref($table)) {
+    my %d = %{$table};
+    delete $d{"from"};
+    $data = \%d;
 
-      $table = $table->{"from"};
-   }
+    $table = $table->{"from"};
+  }
 
-   unless($table) {
-      Rex::Logger::info("No table defined...')");
-      return;
-   }
+  unless($table) {
+    Rex::Logger::info("No table defined...')");
+    return;
+  }
 
-   if($type eq "select") {
-      my $sql = sprintf("SELECT %s FROM %s WHERE %s", $data->{"fields"} || "*", $table, $data->{"where"} || "1=1");
-      if(defined $data->{"order"}) {
-         $sql .= " ORDER BY " . $data->{"order"};
-      }
-      Rex::Logger::debug("sql: $sql");
+  if($type eq "select") {
+    my $sql = sprintf("SELECT %s FROM %s WHERE %s", $data->{"fields"} || "*", $table, $data->{"where"} || "1=1");
+    if(defined $data->{"order"}) {
+      $sql .= " ORDER BY " . $data->{"order"};
+    }
+    Rex::Logger::debug("sql: $sql");
 
-      my $sth = $dbh->prepare($sql);
-      $sth->execute or die($sth->errstr);
+    my $sth = $dbh->prepare($sql);
+    $sth->execute or die($sth->errstr);
 
-      my @return;
+    my @return;
 
-      while(my $row = $sth->fetchrow_hashref) {
-         push @return, $row;
-      }
-      $sth->finish;
+    while(my $row = $sth->fetchrow_hashref) {
+      push @return, $row;
+    }
+    $sth->finish;
 
-      return @return;
-   }
-   elsif($type eq "insert") {
-      my $sql = "INSERT INTO %s (%s) VALUES(%s)";
+    return @return;
+  }
+  elsif($type eq "insert") {
+    my $sql = "INSERT INTO %s (%s) VALUES(%s)";
 
-      my @values;
-      for my $key (keys %{$data}) {
-         push(@values, "?");
-      }
+    my @values;
+    for my $key (keys %{$data}) {
+      push(@values, "?");
+    }
 
-      $sql = sprintf($sql, $table, join(",", keys %{$data}), join(",", @values));
-      Rex::Logger::debug("sql: $sql");
+    $sql = sprintf($sql, $table, join(",", keys %{$data}), join(",", @values));
+    Rex::Logger::debug("sql: $sql");
 
-      my $sth = $dbh->prepare($sql);
-      my $i=1;
-      for my $key (keys %{$data}) {
-         $data->{$key} ||= '';
-         Rex::Logger::debug("sql: binding: " . $data->{$key});
-         $sth->bind_param($i, $data->{$key}) or die($sth->errstr);
-         $i++;
-      }
+    my $sth = $dbh->prepare($sql);
+    my $i=1;
+    for my $key (keys %{$data}) {
+      $data->{$key} ||= '';
+      Rex::Logger::debug("sql: binding: " . $data->{$key});
+      $sth->bind_param($i, $data->{$key}) or die($sth->errstr);
+      $i++;
+    }
 
-      $sth->execute or die($sth->errstr);
-   }
-   elsif($type eq "update") {
-      my $sql = "UPDATE %s SET %s WHERE %s";
+    $sth->execute or die($sth->errstr);
+  }
+  elsif($type eq "update") {
+    my $sql = "UPDATE %s SET %s WHERE %s";
 
-      my @values;
-      for my $key (keys %{$data->{"set"}}) {
-         push(@values, "$key = ?");
-      }
+    my @values;
+    for my $key (keys %{$data->{"set"}}) {
+      push(@values, "$key = ?");
+    }
 
-      $sql = sprintf($sql, $table, join(",", @values), $data->{"where"});
-      Rex::Logger::debug("sql: $sql");
+    $sql = sprintf($sql, $table, join(",", @values), $data->{"where"});
+    Rex::Logger::debug("sql: $sql");
 
-      my $sth = $dbh->prepare($sql);
-      my $i=1;
-      for my $key (keys %{$data->{"set"}}) {
-         Rex::Logger::debug("sql: binding: " . $data->{"set"}->{$key});
-         $sth->bind_param($i, $data->{"set"}->{$key}) or die($sth->errstr);
-         $i++;
-      }
+    my $sth = $dbh->prepare($sql);
+    my $i=1;
+    for my $key (keys %{$data->{"set"}}) {
+      Rex::Logger::debug("sql: binding: " . $data->{"set"}->{$key});
+      $sth->bind_param($i, $data->{"set"}->{$key}) or die($sth->errstr);
+      $i++;
+    }
 
-      $sth->execute or die($sth->errstr);
-   }
-   elsif($type eq "delete") {
-      my $sql = sprintf("DELETE FROM %s WHERE %s", $table, $data->{"where"});
-      my $sth = $dbh->prepare($sql);
-      $sth->execute or die($sth->errstr);
-   }
-   else {
-      Rex::Logger::info("DB: action $type not supported.");
-   }
+    $sth->execute or die($sth->errstr);
+  }
+  elsif($type eq "delete") {
+    my $sql = sprintf("DELETE FROM %s WHERE %s", $table, $data->{"where"});
+    my $sth = $dbh->prepare($sql);
+    $sth->execute or die($sth->errstr);
+  }
+  else {
+    Rex::Logger::info("DB: action $type not supported.");
+  }
 
 }
 
@@ -192,20 +192,20 @@ sub db {
 
 sub import {
 
-   my ($class, $opt) = @_;
+  my ($class, $opt) = @_;
 
-   if($opt) {
-      $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "", $opt->{"attr"} );  
-      $dbh->{mysql_auto_reconnect} = 1;
-   }
+  if($opt) {
+    $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "", $opt->{"attr"} );  
+    $dbh->{mysql_auto_reconnect} = 1;
+  }
 
-   my ($ns_register_to, $file, $line) = caller;   
+  my ($ns_register_to, $file, $line) = caller;  
 
-   no strict 'refs';
-   for my $func_name (@EXPORT) {
-      *{"${ns_register_to}::$func_name"} = \&$func_name;
-   }
-   use strict;
+  no strict 'refs';
+  for my $func_name (@EXPORT) {
+    *{"${ns_register_to}::$func_name"} = \&$func_name;
+  }
+  use strict;
 
 }
 

@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -15,18 +15,18 @@ With this module you can manage user and groups.
 =head1 SYNOPSIS
 
  use Rex::Commands::User;
-    
+   
  task "create-user", "remoteserver", sub {
-    create_user "root",
-       uid => 0,
-       home => '/root',
-       comment => 'Root Account',
-       expire => '2011-05-30',
-       groups  => ['root', '...'],
-       password => 'blahblah',
-       system => 1,
-       no_create_home => TRUE,
-       ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+   create_user "root",
+     uid => 0,
+     home => '/root',
+     comment => 'Root Account',
+     expire => '2011-05-30',
+     groups  => ['root', '...'],
+     password => 'blahblah',
+     system => 1,
+     no_create_home => TRUE,
+     ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -52,8 +52,8 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_user delete_user get_uid get_user user_list
-               user_groups create_group delete_group get_group get_gid
-               );
+          user_groups create_group delete_group get_group get_gid
+          );
 
 =item create_user($user => {})
 
@@ -62,77 +62,77 @@ Create or update a user.
 =cut
 
 sub create_user {
-   my ($user, @_data) = @_;
+  my ($user, @_data) = @_;
 
-   #### check and run before hook
-   eval {
-      my @new_args = Rex::Hook::run_hook(create_user => "before", @_);
-      if(@new_args) {
-         ($user, @_data) = @new_args;
-      }
-      1;
-   } or do {
-      die("Before-Hook failed. Canceling create_user() action: $@");
-   };
-   ##############################
+  #### check and run before hook
+  eval {
+    my @new_args = Rex::Hook::run_hook(create_user => "before", @_);
+    if(@new_args) {
+      ($user, @_data) = @new_args;
+    }
+    1;
+  } or do {
+    die("Before-Hook failed. Canceling create_user() action: $@");
+  };
+  ##############################
 
-   my $data = {};
+  my $data = {};
 
-   if(! ref($_data[0])) {
-      $data = { @_data };
-   }
-   else {
-      $data = $_data[0];
-   }
+  if(! ref($_data[0])) {
+    $data = { @_data };
+  }
+  else {
+    $data = $_data[0];
+  }
 
-   my $uid = Rex::User->get()->create_user($user, $data);
+  my $uid = Rex::User->get()->create_user($user, $data);
 
-   if(defined $data->{"ssh_key"} && ! defined $data->{"home"}) {
-      Rex::Logger::debug("If ssh_key option is used you have to specify home, too.");
-      die("If ssh_key option is used you have to specify home, too.");
-   }
+  if(defined $data->{"ssh_key"} && ! defined $data->{"home"}) {
+    Rex::Logger::debug("If ssh_key option is used you have to specify home, too.");
+    die("If ssh_key option is used you have to specify home, too.");
+  }
 
-   if(defined $data->{"ssh_key"}) {
+  if(defined $data->{"ssh_key"}) {
 
-      if(
-            ! ( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
+    if(
+        ! ( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
 
-            && 
+        && 
 
-            ! ( exists $data->{"no_create_home"} && $data->{"no_create_home"} )
+        ! ( exists $data->{"no_create_home"} && $data->{"no_create_home"} )
 
-            &&
-      
-            ! is_dir($data->{"home"} . "/.ssh")
-        ) {
+        &&
+    
+        ! is_dir($data->{"home"} . "/.ssh")
+      ) {
 
-         eval {
-            mkdir $data->{"home"} . "/.ssh",
-               owner => $user,
-               mode  => 700,
-               not_recursive => 1;
-         } or do {
-            # error creating .ssh directory
-            Rex::Logger::debug("Not creating .ssh directory because parent doesn't exists.");
-         };
-      }
+      eval {
+        mkdir $data->{"home"} . "/.ssh",
+          owner => $user,
+          mode  => 700,
+          not_recursive => 1;
+      } or do {
+        # error creating .ssh directory
+        Rex::Logger::debug("Not creating .ssh directory because parent doesn't exists.");
+      };
+    }
 
-      if(is_dir($data->{"home"} . "/.ssh")) {
+    if(is_dir($data->{"home"} . "/.ssh")) {
 
-         file $data->{"home"} . "/.ssh/authorized_keys",
-            content => $data->{"ssh_key"},
-            owner   => $user,
-            mode    => 600;
+      file $data->{"home"} . "/.ssh/authorized_keys",
+        content => $data->{"ssh_key"},
+        owner  => $user,
+        mode   => 600;
 
-      }
+    }
 
-   }
+  }
 
-   #### check and run before hook
-   Rex::Hook::run_hook(create_user => "after", @_, $uid);
-   ##############################
+  #### check and run before hook
+  Rex::Hook::run_hook(create_user => "after", @_, $uid);
+  ##############################
 
-   return $uid;
+  return $uid;
 }
 
 =item get_uid($user)
@@ -142,7 +142,7 @@ Returns the uid of $user.
 =cut
 
 sub get_uid {
-   Rex::User->get()->get_uid(@_);
+  Rex::User->get()->get_uid(@_);
 }
 
 =item get_user($user)
@@ -152,7 +152,7 @@ Returns all information about $user.
 =cut
 
 sub get_user {
-   Rex::User->get()->get_user(@_);
+  Rex::User->get()->get_user(@_);
 }
 
 =item user_group($user)
@@ -162,7 +162,7 @@ Returns group membership about $user.
 =cut
 
 sub user_groups {
-   Rex::User->get()->user_groups(@_);
+  Rex::User->get()->user_groups(@_);
 }
 
 =item user_list()
@@ -170,15 +170,15 @@ sub user_groups {
 Returns user list via getent passwd.
 
  task "list_user", "server01", sub {
-    for my $user (user_list) {
-       print "name: $user / uid: " . get_uid($user) . "\n";
-    }
+   for my $user (user_list) {
+     print "name: $user / uid: " . get_uid($user) . "\n";
+   }
  };
 
 =cut
 
 sub user_list {
-   Rex::User->get()->user_list(@_);
+  Rex::User->get()->user_list(@_);
 }
 
 
@@ -187,25 +187,25 @@ sub user_list {
 Delete a user from the system.
 
  delete_user "trak", {
-    delete_home => 1,
-    force       => 1,
+   delete_home => 1,
+   force     => 1,
  };
 
 =cut
 
 sub delete_user {
-   my ($user, @_data) = @_;
+  my ($user, @_data) = @_;
 
-   my $data = {};
+  my $data = {};
 
-   if(! ref($_data[0])) {
-      $data = { @_data };
-   }
-   else {
-      $data = $_data[0];
-   }
+  if(! ref($_data[0])) {
+    $data = { @_data };
+  }
+  else {
+    $data = $_data[0];
+  }
 
-   Rex::User->get()->rm_user($user, $data);
+  Rex::User->get()->rm_user($user, $data);
 }
 
 =item create_group($group, {})
@@ -213,24 +213,24 @@ sub delete_user {
 Create or update a group.
 
  create_group $group, {
-    gid => 1500,
-    system => 1,
+   gid => 1500,
+   system => 1,
  };
 
 =cut
 
 sub create_group {
-   my $group = shift;
-   my @params;
+  my $group = shift;
+  my @params;
 
-   if(! ref $_[0]) {
-      push @params, { @_ };
-   }
-   else {
-      push @params, @_;
-   }
+  if(! ref $_[0]) {
+    push @params, { @_ };
+  }
+  else {
+    push @params, @_;
+  }
 
-   Rex::User->get()->create_group($group, @params);
+  Rex::User->get()->create_group($group, @params);
 }
 
 =item get_gid($group)
@@ -240,7 +240,7 @@ Return the group id of $group.
 =cut
 
 sub get_gid {
-   Rex::User->get()->get_gid(@_);
+  Rex::User->get()->get_gid(@_);
 }
 
 =item get_group($group)
@@ -252,7 +252,7 @@ Return information of $group.
 =cut
 
 sub get_group {
-   Rex::User->get()->get_group(@_);
+  Rex::User->get()->get_group(@_);
 }
 
 =item delete_group($group)
@@ -262,7 +262,7 @@ Delete a group.
 =cut
 
 sub delete_group {
-   Rex::User->get()->rm_group(@_);
+  Rex::User->get()->rm_group(@_);
 }
 
 =back

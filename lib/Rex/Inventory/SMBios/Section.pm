@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 package Rex::Inventory::SMBios::Section;
@@ -18,132 +18,132 @@ use vars qw($SECTION @EXPORT);
 $SECTION = {};
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub section {
-   my ($class, $section) = @_;
-   $SECTION->{$class} = $section;
+  my ($class, $section) = @_;
+  $SECTION->{$class} = $section;
 }
 
 sub has {
-   my ($class, $item, $is_array) = @_;
-   
-   unless(ref($item) eq "ARRAY") {
-      my $_tmp = $item;
-      $item = [$_tmp];
-   }
+  my ($class, $item, $is_array) = @_;
+  
+  unless(ref($item) eq "ARRAY") {
+    my $_tmp = $item;
+    $item = [$_tmp];
+  }
 
-   no strict 'refs';
+  no strict 'refs';
 
-   for my $_itm (@{$item}) {
-      my ($itm, $from);
+  for my $_itm (@{$item}) {
+    my ($itm, $from);
 
-      if(ref($_itm) eq "HASH") {
-         $itm = $_itm->{key};
-         $from = $_itm->{from};
-      }
-      else {
-         $itm = $_itm;
-         $from = $_itm;
-      }
-      $itm =~ s/[^a-zA-Z0-9_]+/_/g;
-      *{"${class}::get_\L$itm"} = sub {
-         my $self = shift;
-         return $self->get($from, $is_array);
-      };
+    if(ref($_itm) eq "HASH") {
+      $itm = $_itm->{key};
+      $from = $_itm->{from};
+    }
+    else {
+      $itm = $_itm;
+      $from = $_itm;
+    }
+    $itm =~ s/[^a-zA-Z0-9_]+/_/g;
+    *{"${class}::get_\L$itm"} = sub {
+      my $self = shift;
+      return $self->get($from, $is_array);
+    };
 
-      push(@{"${class}::items"}, "\L$itm");
-   }
+    push(@{"${class}::items"}, "\L$itm");
+  }
 
-   use strict;
+  use strict;
 }
 
 sub dmi {
 
-   my ($self) = @_;
-   return $self->{"dmi"};
+  my ($self) = @_;
+  return $self->{"dmi"};
 
 
 }
 
 sub get {
 
-   my ($self, $key, $is_array) = @_;
-   return $self->_search_for($key, $is_array);
+  my ($self, $key, $is_array) = @_;
+  return $self->_search_for($key, $is_array);
 
 }
 
 sub get_all {
 
-   my ($self) = @_;
+  my ($self) = @_;
 
-   use Data::Dumper;
-   my $r = ref($self);
+  use Data::Dumper;
+  my $r = ref($self);
 
-   no strict 'refs';
-   my @items = @{"${r}::items"};
-   use strict;
+  no strict 'refs';
+  my @items = @{"${r}::items"};
+  use strict;
 
-   my $ret = {};
-   for my $itm (@items) {
-      my $f = "get_$itm";
-      $ret->{$itm} = $self->$f();
-   }
+  my $ret = {};
+  for my $itm (@items) {
+    my $f = "get_$itm";
+    $ret->{$itm} = $self->$f();
+  }
 
-   return $ret;
+  return $ret;
 
 }
 
 sub dump {
 
-   my ($self) = @_;
+  my ($self) = @_;
 
-   require Data::Dumper;
-   print Data::Dumper::Dumper($self->dmi->get_tree($SECTION->{ref($self)}));
+  require Data::Dumper;
+  print Data::Dumper::Dumper($self->dmi->get_tree($SECTION->{ref($self)}));
 
 }
 
 sub _search_for {
-   my ($self, $key, $is_array) = @_;
+  my ($self, $key, $is_array) = @_;
 
-   unless($self->dmi->get_tree($SECTION->{ref($self)})) {
-      #die $SECTION->{ref($self)} . " not supported";
-      return;
-   }
+  unless($self->dmi->get_tree($SECTION->{ref($self)})) {
+    #die $SECTION->{ref($self)} . " not supported";
+    return;
+  }
 
-   my $idx = 0;
-   for my $entry (@{ $self->dmi->get_tree($SECTION->{ref($self)}) }) {
-      my ($_key) = keys %{$entry};
-      if($is_array) {
-         if ($idx != $self->get_index()) {
-            ++$idx;
-            next;
-         }
+  my $idx = 0;
+  for my $entry (@{ $self->dmi->get_tree($SECTION->{ref($self)}) }) {
+    my ($_key) = keys %{$entry};
+    if($is_array) {
+      if ($idx != $self->get_index()) {
+        ++$idx;
+        next;
       }
+    }
 
-      if(exists $entry->{$key}) {
-         return $entry->{$key};
-      }
-      else {
-         return "";
-      }
-      ++$idx;
-   }
+    if(exists $entry->{$key}) {
+      return $entry->{$key};
+    }
+    else {
+      return "";
+    }
+    ++$idx;
+  }
 
-   return "";
+  return "";
 }
 
 sub get_index {
 
-   my ($self) = @_;
-   return $self->{"index"} || 0;
+  my ($self) = @_;
+  return $self->{"index"} || 0;
 
 }
 

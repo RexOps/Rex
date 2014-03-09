@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -42,18 +42,18 @@ This is the constructor. You need to set the filehandle which the object should 
 =cut
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub DESTROY {
-   my ($self) = @_;
-   $self->close if ($self->{'fh'});
+  my ($self) = @_;
+  $self->close if ($self->{'fh'});
 }
 
 =item write($buf)
@@ -65,19 +65,19 @@ Write $buf into the filehandle.
 =cut
 
 sub write {
-   
-   my ($self, @buf) = @_;
-   my $fh = $self->{fh};
+  
+  my ($self, @buf) = @_;
+  my $fh = $self->{fh};
 
-   if(scalar(@buf) > 1) {
-      for my $line (@buf) {
-         $fh->write($line);
-         $fh->write($/);
-      }
-   }
-   else {
-      $fh->write($buf[0]);
-   }
+  if(scalar(@buf) > 1) {
+    for my $line (@buf) {
+      $fh->write($line);
+      $fh->write($/);
+    }
+  }
+  else {
+    $fh->write($buf[0]);
+  }
 }
 
 =item seek($offset)
@@ -90,10 +90,10 @@ Set the file pointer to the 5th byte.
 
 =cut
 sub seek {
-   my ($self, $offset) = @_;
+  my ($self, $offset) = @_;
 
-   my $fh = $self->{'fh'};
-   $fh->seek($offset);
+  my $fh = $self->{'fh'};
+  $fh->seek($offset);
 }
 
 =item read($len)
@@ -105,11 +105,11 @@ Read $len bytes out of the filehandle.
 =cut
 
 sub read {
-   my ($self, $len) = @_;
-   $len = DEFAULT_READ_LEN if(!$len);
+  my ($self, $len) = @_;
+  $len = DEFAULT_READ_LEN if(!$len);
 
-   my $fh = $self->{'fh'};
-   return $fh->read($len);
+  my $fh = $self->{'fh'};
+  return $fh->read($len);
 }
 
 =item read_all
@@ -121,16 +121,16 @@ Read everything out of the filehandle.
 =cut
 
 sub read_all {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   my $all = '';
-   while(my $in = $self->read()) {
-      $all .= $in;
-   }
-   if(wantarray) {
-      return split(/\n/, $all);
-   }
-   return $all;
+  my $all = '';
+  while(my $in = $self->read()) {
+    $all .= $in;
+  }
+  if(wantarray) {
+    return split(/\n/, $all);
+  }
+  return $all;
 }
 
 =item close
@@ -142,9 +142,9 @@ Close the file.
 =cut
 
 sub close {
-   my ($self) = @_;
-   my $fh = $self->{'fh'};
-   $fh->close;
+  my ($self) = @_;
+  my $fh = $self->{'fh'};
+  $fh->close;
 }
 
 =back

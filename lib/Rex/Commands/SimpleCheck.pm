@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 =head1 NAME
 
 Rex::Commands::SimpleCheck - Simple tcp/alive checks
@@ -15,7 +15,7 @@ With this module you can do simple tcp/alive checks.
 =head1 SYNOPSIS
 
  if(is_port_open($remote_host, $port)) {
-    print "Port $port is open\n";
+   print "Port $port is open\n";
  }
 
 =head1 EXPORTED FUNCTIONS
@@ -26,16 +26,16 @@ With this module you can do simple tcp/alive checks.
 
 
 package Rex::Commands::SimpleCheck;
-   
+  
 use strict;
 use warnings;
 
 use IO::Socket;
-   
+  
 require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
-    
+   
 @EXPORT = qw(is_port_open);
 
 =item is_port_open($ip, $port)
@@ -45,22 +45,22 @@ Check if something is listening on port $port of $ip.
 =cut
 sub is_port_open {
 
-   my ($ip, $port, $type) = @_;
+  my ($ip, $port, $type) = @_;
 
-   $type ||= "tcp";
+  $type ||= "tcp";
 
-   my $socket = IO::Socket::INET->new(PeerAddr => $ip,
-                                PeerPort => $port,
-                                Proto    => $type,
-                                Timeout  => 2,
-                                Type     => SOCK_STREAM);
+  my $socket = IO::Socket::INET->new(PeerAddr => $ip,
+                      PeerPort => $port,
+                      Proto   => $type,
+                      Timeout  => 2,
+                      Type    => SOCK_STREAM);
 
-   if($socket) {
-      close $socket;
-      return 1;
-   }
+  if($socket) {
+    close $socket;
+    return 1;
+  }
 
-   return 0;
+  return 0;
 
 }
 

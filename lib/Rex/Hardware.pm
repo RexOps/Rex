@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -41,13 +41,13 @@ require Rex::Args;
 Returns a hash with the wanted information.
 
  task "get-info", "server1", sub {
-    %hw_info = Rex::Hardware->get(qw/ Host Network /);
+   %hw_info = Rex::Hardware->get(qw/ Host Network /);
  };
 
 Or if you want to get all information
 
  task "get-all-info", "server1", sub {
-    %hw_info = Rex::Hardware->get(qw/ All /);
+   %hw_info = Rex::Hardware->get(qw/ All /);
  };
 
 Available modules:
@@ -72,48 +72,48 @@ Available modules:
 
 my %HW_PROVIDER;
 sub register_hardware_provider {
-   my ($class, $service_name, $service_class) = @_;
-   $HW_PROVIDER{"\L$service_name"} = $service_class;
-   return 1;
+  my ($class, $service_name, $service_class) = @_;
+  $HW_PROVIDER{"\L$service_name"} = $service_class;
+  return 1;
 }
 
 sub get {
-   my($class, @modules) = @_;
+  my($class, @modules) = @_;
 
-   my %hardware_information;
+  my %hardware_information;
 
-   if("all" eq "\L$modules[0]") {
+  if("all" eq "\L$modules[0]") {
 
-      @modules = qw(Host Kernel Memory Network Swap VirtInfo);
-      push(@modules, keys(%HW_PROVIDER));
-   
-   }
+    @modules = qw(Host Kernel Memory Network Swap VirtInfo);
+    push(@modules, keys(%HW_PROVIDER));
+  
+  }
 
-   for my $mod_string (@modules) {
+  for my $mod_string (@modules) {
 
-      Rex::Commands::profiler()->start("hardware: $mod_string");
+    Rex::Commands::profiler()->start("hardware: $mod_string");
 
-      my $mod = "Rex::Hardware::$mod_string";
-      if(exists $HW_PROVIDER{$mod_string}) {
-         $mod = $HW_PROVIDER{$mod_string};
-      }
+    my $mod = "Rex::Hardware::$mod_string";
+    if(exists $HW_PROVIDER{$mod_string}) {
+      $mod = $HW_PROVIDER{$mod_string};
+    }
 
-      Rex::Logger::debug("Loading $mod");
-      eval "use $mod";
+    Rex::Logger::debug("Loading $mod");
+    eval "use $mod";
 
-      if($@) {
-         Rex::Logger::info("$mod not found.");
-         Rex::Logger::debug("$@");
-         next;
-      }
+    if($@) {
+      Rex::Logger::info("$mod not found.");
+      Rex::Logger::debug("$@");
+      next;
+    }
 
-      $hardware_information{$mod_string} = $mod->get();
+    $hardware_information{$mod_string} = $mod->get();
 
-      Rex::Commands::profiler()->end("hardware: $mod_string");
+    Rex::Commands::profiler()->end("hardware: $mod_string");
 
-   }
+  }
 
-   return %hardware_information;
+  return %hardware_information;
 }
 
 =back

@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 package Rex::Service::Gentoo;
@@ -14,95 +14,95 @@ use Rex::Helper::Run;
 use Rex::Logger;
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub start {
-   my($self, $service) = @_;
+  my($self, $service) = @_;
 
-   i_run "/etc/init.d/$service start >/dev/null";
+  i_run "/etc/init.d/$service start >/dev/null";
 
-   if($? == 0) {
-      return 1;
-   }
+  if($? == 0) {
+    return 1;
+  }
 
-   return 0;
+  return 0;
 }
 
 sub restart {
-   my($self, $service) = @_;
+  my($self, $service) = @_;
 
-   i_run "/etc/init.d/$service restart >/dev/null";
+  i_run "/etc/init.d/$service restart >/dev/null";
 
-   if($? == 0) {
-      return 1;
-   }
+  if($? == 0) {
+    return 1;
+  }
 
-   return 0;
+  return 0;
 }
 
 sub stop {
-   my($self, $service) = @_;
+  my($self, $service) = @_;
 
-   i_run "/etc/init.d/$service stop >/dev/null";
+  i_run "/etc/init.d/$service stop >/dev/null";
 
-   if($? == 0) {
-      return 1;
-   }
+  if($? == 0) {
+    return 1;
+  }
 
-   return 0;
+  return 0;
 }
 
 sub reload {
-   my($self, $service) = @_;
+  my($self, $service) = @_;
 
-   i_run "/etc/init.d/$service reload >/dev/null";
+  i_run "/etc/init.d/$service reload >/dev/null";
 
-   if($? == 0) {
-      return 1;
-   }
+  if($? == 0) {
+    return 1;
+  }
 
-   return 0;
+  return 0;
 }
 
 sub status {
-   my($self, $service) = @_;
+  my($self, $service) = @_;
 
-   i_run "/etc/init.d/$service status >/dev/null";
+  i_run "/etc/init.d/$service status >/dev/null";
 
-   if($? == 0) {
-      return 1;
-   }
+  if($? == 0) {
+    return 1;
+  }
 
-   return 0;
+  return 0;
 }
 
 sub ensure {
-   my ($self, $service, $what) = @_;
+  my ($self, $service, $what) = @_;
 
-   if($what =~  /^stop/) {
-      $self->stop($service);
-      i_run "rc-update del $service";
-   }
-   elsif($what =~ /^start/ || $what =~ m/^run/) {
-      $self->start($service);
-      i_run "rc-update add $service";
-   }
+  if($what =~  /^stop/) {
+    $self->stop($service);
+    i_run "rc-update del $service";
+  }
+  elsif($what =~ /^start/ || $what =~ m/^run/) {
+    $self->start($service);
+    i_run "rc-update add $service";
+  }
 
-   if($? == 0) { return 1; } else { return 0; }
+  if($? == 0) { return 1; } else { return 0; }
 }
 
 sub action {
-   my ($self, $service, $action) = @_;
+  my ($self, $service, $action) = @_;
 
-   i_run "/etc/init.d/$service $action >/dev/null";
-   if($? == 0) { return 1; }
+  i_run "/etc/init.d/$service $action >/dev/null";
+  if($? == 0) { return 1; }
 }
 
 1;

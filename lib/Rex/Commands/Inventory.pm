@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -16,8 +16,8 @@ With this module you can get an inventory of your system.
 
  use Data::Dumper;
  task "inventory", "remoteserver", sub {
-    my $inventory = inventor();
-    print Dumper($inventory);
+   my $inventory = inventor();
+   print Dumper($inventory);
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -45,21 +45,21 @@ use base qw(Rex::Exporter);
 This function returns an hashRef of all gathered hardware. Use the Data::Dumper module to see its structure.
 
  task "get-inventory", sub {
-    my $inventory = inventory();
-    print Dumper($inventory);
+   my $inventory = inventory();
+   print Dumper($inventory);
  };
 
 =cut
 
 sub inventory {
-   my $inv = Rex::Inventory->new;
+  my $inv = Rex::Inventory->new;
 
-   return $inv->get;
+  return $inv->get;
 }
 
 
 sub inventor {
-   return inventory();
+  return inventory();
 }
 
 =back

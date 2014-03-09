@@ -1,34 +1,34 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 package Rex::Cloud::Base;
-   
+  
 use strict;
 use warnings;
 
 use Rex::Logger;
-   
+  
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub set_auth { Rex::Logger::debug("Not implemented"); }
 
 sub set_endpoint {
-   my ($self, $endpoint) = @_;
-   # only set endpoint if defined
-   if(defined $endpoint) {
-      $self->{__endpoint} = $endpoint;
-   }
+  my ($self, $endpoint) = @_;
+  # only set endpoint if defined
+  if(defined $endpoint) {
+    $self->{__endpoint} = $endpoint;
+  }
 }
 
 sub list_plans { Rex::Logger::debug("Not implemented"); }
@@ -48,7 +48,7 @@ sub delete_volume { Rex::Logger::debug("Not implemented"); }
 sub list_volumes { Rex::Logger::debug("Not implemented"); }
 
 sub add_tag { Rex::Logger::debug("Not implemented"); }
-   
+  
 sub get_regions { Rex::Logger::debug("Not implemented"); }
 sub get_availability_zones { Rex::Logger::debug("Not implemented"); }
 

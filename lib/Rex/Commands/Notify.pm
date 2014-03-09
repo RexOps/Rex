@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -43,12 +43,12 @@ This function will notify the given $resource_name of the given $resource_type t
 =cut
 
 sub notify {
-   my ($resource_type, $resource_name) = @_;
-   my $notify = Rex::get_current_connection()->{notify};
-   $notify->run(
-      type => $resource_type,
-      name => $resource_name,
-   );
+  my ($resource_type, $resource_name) = @_;
+  my $notify = Rex::get_current_connection()->{notify};
+  $notify->run(
+    type => $resource_type,
+    name => $resource_name,
+  );
 }
 
 =back

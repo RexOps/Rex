@@ -1,7 +1,7 @@
 #
 # (c) xiahou feng <fanyeren@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -16,9 +16,9 @@ With this module you can define hostgroups out of a command.
 
  use Rex::Group::Lookup::Command;
 
- group "dbserver"   => lookup_command("cat ip.list | grep -v -E '^#'");
+ group "dbserver"  => lookup_command("cat ip.list | grep -v -E '^#'");
 
- rex xxxx                                          # dbserver
+ rex xxxx                            # dbserver
 
 =head1 EXPORTED FUNCTIONS
 
@@ -41,30 +41,30 @@ use vars qw(@EXPORT);
 
 
 sub lookup_command {
-   my $command = shift;
+  my $command = shift;
 
-   my $command_to_exec;
-   my @content;
+  my $command_to_exec;
+  my @content;
 
-   if (defined $command && $command) {
-      $command_to_exec = $command;
-      Rex::Logger::info("command: $command");
-   }
+  if (defined $command && $command) {
+    $command_to_exec = $command;
+    Rex::Logger::info("command: $command");
+  }
 
-   unless (defined $command_to_exec && $command_to_exec) {
-      Rex::Logger::info("you must give a valid command.");
-      return @content;
-   }
+  unless (defined $command_to_exec && $command_to_exec) {
+    Rex::Logger::info("you must give a valid command.");
+    return @content;
+  }
 
-   eval {
-      open(my $command_rt, "$command_to_exec |") or die($!);
-      @content = grep { !/^\s*$|^#/ } <$command_rt>;
-      close($command_rt);
+  eval {
+    open(my $command_rt, "$command_to_exec |") or die($!);
+    @content = grep { !/^\s*$|^#/ } <$command_rt>;
+    close($command_rt);
 
-      chomp @content;
-   };
-   Rex::Logger::info("you must give a valid command.") unless $#content;
-   return @content;
+    chomp @content;
+  };
+  Rex::Logger::info("you must give a valid command.") unless $#content;
+  return @content;
 }
 
 

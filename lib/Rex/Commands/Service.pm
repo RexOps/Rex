@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -15,19 +15,19 @@ With this module you can manage Linux services.
 =head1 SYNOPSIS
 
  use Rex::Commands::Service
-    
+
  service apache2 => "start";
-    
+
  service apache2 => "stop";
-    
+
  service apache2 => "restart";
-    
+
  service apache2 => "status";
-   
+
  service apache2 => "reload";
-   
+
  service apache2 => "ensure", "started";
-  
+
  service apache2 => "ensure", "stopped";
 
 =head1 EXPORTED FUNCTIONS
@@ -35,8 +35,6 @@ With this module you can manage Linux services.
 =over 4
 
 =cut
-
-
 
 package Rex::Commands::Service;
 
@@ -135,133 +133,147 @@ This gets executed right after the service action.
 =cut
 
 sub service {
-  my ($services, $action, $options) = @_;
+  my ( $services, $action, $options ) = @_;
 
-  if(wantarray) {
-  
+  if (wantarray) {
+
     # func-ref zurueckgeben
     return sub {
-      service($services, $action);
+      service( $services, $action );
     };
 
   }
 
   my $is_multiple = 1;
-  unless(ref($services)) {
-    $services = [$services];
+  unless ( ref($services) ) {
+    $services    = [$services];
     $is_multiple = 0;
   }
 
   my $srvc = Rex::Service->get;
 
   my $changed = 0;
-  my $return = 1;
+  my $return  = 1;
   for my $service (@$services) {
 
+    my $notify = Rex::get_current_connection()->{notify};
+    $notify->add(
+      type    => "service",
+      name    => $service,
+      options => {},
+      cb      => sub {
+        my ($option) = shift;
+        Rex::Logger::debug("Restarting notified service: $service");
+        service( $service => "restart" );
+      }
+    );
+
     #### check and run before_$action hook
-    Rex::Hook::run_hook(service => "before_$action", @_);
+    Rex::Hook::run_hook( service => "before_$action", @_ );
     ##############################
 
+    if ( $action eq "start" ) {
 
-    if($action eq "start") {
-
-      unless($srvc->status($service)) {
+      unless ( $srvc->status($service) ) {
         $changed = 1;
-        if($srvc->start($service)) {
+        if ( $srvc->start($service) ) {
           Rex::Logger::info("Service $service started.");
-          $return = 1 if ! $is_multiple;
+          $return = 1 if !$is_multiple;
         }
         else {
-          Rex::Logger::info("Error starting $service.", "warn");
-          $return = 0 if ! $is_multiple;
+          Rex::Logger::info( "Error starting $service.", "warn" );
+          $return = 0 if !$is_multiple;
         }
       }
 
     }
 
-    elsif($action eq "restart") {
+    elsif ( $action eq "restart" ) {
       $changed = 1;
 
-      if($srvc->restart($service)) {
+      if ( $srvc->restart($service) ) {
         Rex::Logger::info("Service $service restarted.");
-        $return = 1 if ! $is_multiple;
+        $return = 1 if !$is_multiple;
       }
       else {
-        Rex::Logger::info("Error restarting $service.", "warn");
-        $return = 0 if ! $is_multiple;
+        Rex::Logger::info( "Error restarting $service.", "warn" );
+        $return = 0 if !$is_multiple;
       }
 
     }
 
-    elsif($action eq "stop") {
+    elsif ( $action eq "stop" ) {
 
-      if($srvc->status($service)) { # it runs
+      if ( $srvc->status($service) ) {    # it runs
         $changed = 1;
-        if($srvc->stop($service)) {
+        if ( $srvc->stop($service) ) {
           Rex::Logger::info("Service $service stopped.");
-          $return = 1 if ! $is_multiple;
+          $return = 1 if !$is_multiple;
         }
         else {
-          Rex::Logger::info("Error stopping $service.", "warn");
-          $return = 0 if ! $is_multiple;
+          Rex::Logger::info( "Error stopping $service.", "warn" );
+          $return = 0 if !$is_multiple;
         }
       }
 
     }
 
-    elsif($action eq "reload") {
+    elsif ( $action eq "reload" ) {
       $changed = 1;
-      if($srvc->reload($service)) {
+      if ( $srvc->reload($service) ) {
         Rex::Logger::info("Service $service is reloaded.");
-        $return = 1 if ! $is_multiple;
+        $return = 1 if !$is_multiple;
       }
       else {
-        Rex::Logger::info("Error $service does not support reload", "warn");
-        $return = 0 if ! $is_multiple;
+        Rex::Logger::info( "Error $service does not support reload", "warn" );
+        $return = 0 if !$is_multiple;
       }
 
     }
 
-    elsif($action eq "status") {
+    elsif ( $action eq "status" ) {
 
       $changed = 100;
-      if($srvc->status($service)) {
+      if ( $srvc->status($service) ) {
         Rex::Logger::info("Service $service is running.");
-        $return = 1 if ! $is_multiple;
+        $return = 1 if !$is_multiple;
       }
       else {
         Rex::Logger::info("$service is stopped");
-        $return = 0 if ! $is_multiple;
+        $return = 0 if !$is_multiple;
       }
 
     }
 
-    elsif($action eq "ensure") {
+    elsif ( $action eq "ensure" ) {
 
-      if($srvc->ensure($service, $options)) {
+      if ( $srvc->ensure( $service, $options ) ) {
         $changed = 0;
-        $return = 1 if ! $is_multiple;
+        $return = 1 if !$is_multiple;
       }
       else {
-        $return = 0 if ! $is_multiple;
+        $return = 0 if !$is_multiple;
         Rex::Logger::info("Error ensuring $service to $options");
       }
     }
 
     else {
       Rex::Logger::info("Execution action $action on $service.");
-      $srvc->action($service, $action);
+      $srvc->action( $service, $action );
       $changed = 100;
     }
 
     #### check and run after_$action hook
-    Rex::Hook::run_hook(service => "after_$action", @_, {changed => $changed, ret => $return});
+    Rex::Hook::run_hook(
+      service => "after_$action",
+      @_, { changed => $changed, ret => $return }
+    );
     ##############################
 
   }
 
-  if(Rex::Config->get_do_reporting) {
-    if($changed == 100) {
+  if ( Rex::Config->get_do_reporting ) {
+    if ( $changed == 100 ) {
       return {
         skip => 1,
         ret  => $return,
@@ -269,7 +281,7 @@ sub service {
     }
     return {
       changed => $changed,
-      ret    => $return,
+      ret     => $return,
     };
   }
 
@@ -281,10 +293,10 @@ sub service {
 To set an other service provider as the default, use this function.
 
  user "root";
-    
+
  group "db" => "db[01..10]";
  service_provider_for SunOS => "svcadm";
-   
+
  task "start", group => "db", sub {
     service ssh => "restart";
  };
@@ -292,13 +304,12 @@ To set an other service provider as the default, use this function.
 This example will restart the I<ssh> service via svcadm (but only on SunOS, on other operating systems it will use the default).
 
 =cut
+
 sub service_provider_for {
-  my ($os, $provider) = @_;
+  my ( $os, $provider ) = @_;
   Rex::Logger::debug("setting service provider for $os to $provider");
-  Rex::Config->set("service_provider", {$os => $provider});
+  Rex::Config->set( "service_provider", { $os => $provider } );
 }
-
-
 
 =back
 

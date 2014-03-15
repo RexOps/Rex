@@ -678,6 +678,8 @@ sub run {
 
     eval {
       $ret = $self->executor->exec($options{params});
+      my $notify = Rex::get_current_connection()->{notify};
+      $notify->run_postponed();
     } or do {
       if($@) {
         my $error = $@;

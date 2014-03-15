@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -471,7 +471,7 @@ sub get_ssh_config_private_key {
     my $file = $SSH_CONFIG_FOR{$param->{server}}->{identityfile};
     my $home_dir = _home_dir();
     $file =~ s/^~/$home_dir/;
-    
+
     return $file;
   }
 
@@ -671,7 +671,7 @@ sub read_config_file {
 sub read_ssh_config_file {
   my ($config_file) = @_;
   $config_file ||= _home_dir() . '/.ssh/config';
-  
+
   if(-f $config_file) {
     my @lines = eval { local(@ARGV) = ($config_file); <>;  };
     %SSH_CONFIG_FOR = _parse_ssh_config(@lines);
@@ -690,14 +690,14 @@ sub _parse_ssh_config {
     next if ($line =~ m/^\s*$/);
 
     if($line =~ m/^Host(?:\s*=\s*|\s+)(.*)$/i) {
-      my $host_tmp = $1; 
+      my $host_tmp = $1;
       @host = split(/\s+/, $host_tmp);
       $in_host = 1;
       for my $h (@host) {
-        $ret{$h} = {}; 
+        $ret{$h} = {};
       }
       next;
-    }  
+    }
     elsif($in_host) {
       #my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+=?\s*(.*)$/);
       $line =~ s/^\s*//g;
@@ -710,7 +710,7 @@ sub _parse_ssh_config {
       for my $h (@host) {
         $ret{$h}->{lc($key)} = $val;
       }
-    }  
+    }
   }
 
   return %ret;
@@ -754,7 +754,7 @@ sub get_use_server_auth {
 
 sub import {
   read_ssh_config_file();
-  read_config_file();  
+  read_config_file();
 }
 
 no strict 'refs';
@@ -796,7 +796,7 @@ for my $hndl (@set_handler) {
     if($hndl eq "cert") { $hndl = "ca_cert"; }
     if($hndl eq "key") { $hndl = "ca_key"; }
 
-    $$hndl = $val; 
+    $$hndl = $val;
   });
 }
 

@@ -463,6 +463,9 @@ sub import {
 
     require Rex::Commands::Notify;
     Rex::Commands::Notify->import(register_in => $register_to);
+
+    require Rex::Commands::User;
+    Rex::Commands::User->import(register_in => $register_to);
   }
 
   if($what eq "-feature" || $what eq "feature") {

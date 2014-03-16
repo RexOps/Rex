@@ -158,10 +158,11 @@ sub service {
 
     my $notify = Rex::get_current_connection()->{notify};
     $notify->add(
-      type    => "service",
-      name    => $service,
-      options => {},
-      cb      => sub {
+      type     => "service",
+      name     => $service,
+      postpone => 1,
+      options  => {},
+      cb       => sub {
         my ($option) = shift;
         Rex::Logger::debug("Restarting notified service: $service");
         service( $service => "restart" );

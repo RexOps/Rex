@@ -27,16 +27,21 @@ sub new {
 sub add {
   my ( $self, %option ) = @_;
 
-  return if ($self->{__in_notify__});
+  return if ( $self->{__in_notify__} );
 
   if ( exists $self->{__types__}->{ $option{type} }->{ $option{name} } ) {
-    die(  "A resource of the type $option{type} and name $option{name}"
-        . "already exists." );
+    Rex::Logger::debug(
+      "A resource of the type $option{type} and name $option{name}"
+        . "already exists.",
+      "warn"
+    );
+    return;
   }
 
   $self->{__types__}->{ $option{type} }->{ $option{name} } = {
-    options => $option{options},
-    cb      => $option{cb},
+    postpone => $option{postpone} || 0,
+    options  => $option{options},
+    cb       => $option{cb},
   };
 }
 
@@ -47,7 +52,9 @@ sub run {
 
   if ( exists $self->{__types__}->{ $option{type} }
     && exists $self->{__types__}->{ $option{type} }->{ $option{name} }
-    && exists $self->{__types__}->{ $option{type} }->{ $option{name} }->{cb} )
+    && exists $self->{__types__}->{ $option{type} }->{ $option{name} }->{cb}
+    && $self->{__types__}->{ $option{type} }->{ $option{name} }->{postpone} ==
+    0 )
   {
     Rex::Logger::debug("Running notify $option{type} -> $option{name}");
 

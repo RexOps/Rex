@@ -6,6 +6,7 @@ use warnings;
 use Cwd qw(getcwd);
 use Rex::Commands::Fs;
 use Rex::Commands::Run;
+use File::Basename;
 
 use vars qw($CHECKOUT_COMMAND $CLONE_COMMAND);
 
@@ -30,7 +31,7 @@ sub checkout {
     Rex::Logger::debug("clone_cmd: $clone_cmd");
 
     Rex::Logger::info("cloning " . $repo_info->{"url"} . " to " . ($checkout_to?$checkout_to:"."));
-    my $out = run "$clone_cmd";
+    my $out = run "$clone_cmd", cwd => dirname($checkout_to);
     unless($? == 0) {
       Rex::Logger::info("Error cloning repository.", "warn");
       Rex::Logger::info($out);

@@ -28,6 +28,14 @@ sub set_auth {
     $self->{auth} = \%auth;
 }
 
+sub _request {
+    my ( $self, $method, $url, @params ) = @_;
+
+    my $response = $self->{_agent}->request( $method->( $url, @params ) );
+
+    return decode_json( $response->content ) if $response->content;
+}
+
 sub _authenticate {
     my $self = shift;
 
@@ -41,13 +49,11 @@ sub _authenticate {
         }
     };
 
-    my $request = POST $self->{__endpoint} . '/tokens',
-        Content_Type => 'application/json',
-        Content      => encode_json($auth_data);
-
-    my $response = $self->{_agent}->request($request);
-
-    my $content = decode_json( $response->content );
+    my $content = $self->_request(
+        POST         => $self->{__endpoint} . '/tokens',
+        content_type => 'application/json',
+        content      => encode_json($auth_data),
+    );
 
     $self->{auth}{tokenId} = $content->{access}{token}{id};
 
@@ -78,20 +84,18 @@ sub run_instance {
         }
     };
 
-    my $request = POST $nova_url . '/servers',
-        Content_Type => 'application/json',
-        Content      => encode_json($request_data);
-
-    my $response = $self->{_agent}->request($request);
+    $self->_request(
+        POST         => $nova_url . '/servers',
+        content_type => 'application/json',
+        content      => encode_json($request_data),
+    );
 }
 
 sub terminate_instance {
     my ( $self, %data ) = @_;
     my $nova_url = $self->get_nova_url;
 
-    my $request = DELETE $nova_url . '/servers/' . $data{instance_id};
-
-    my $respone = $self->{_agent}->request($request);
+    $self->_request( DELETE => $nova_url . '/servers/' . $data{instance_id} );
 }
 
 1;

@@ -131,4 +131,15 @@ sub list_running_instances {
     return grep { $_->{state} eq 'ACTIVE' } $self->list_instances;
 }
 
+sub stop_instance {
+    my ( $self, %data ) = @_;
+    my $nova_url = $self->get_nova_url;
+
+    $self->_request(
+        POST => $nova_url . '/servers/' . $data{instance_id} . '/action',
+        content_type => 'application/json',
+        content      => encode_json( { suspend => 'null' } ),
+    );
+}
+
 1;

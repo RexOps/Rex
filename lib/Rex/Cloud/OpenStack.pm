@@ -125,4 +125,10 @@ sub list_instances {
     return @instances;
 }
 
+sub list_running_instances {
+    my $self = shift;
+
+    return grep { $_->{state} eq 'ACTIVE' } $self->list_instances;
+}
+
 1;

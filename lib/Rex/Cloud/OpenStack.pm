@@ -98,4 +98,31 @@ sub terminate_instance {
     $self->_request( DELETE => $nova_url . '/servers/' . $data{instance_id} );
 }
 
+sub list_instances {
+    my $self     = shift;
+    my $nova_url = $self->get_nova_url;
+    my @instances;
+
+    my $content = $self->_request( GET => $nova_url . '/servers/detail' );
+
+    for my $instance ( @{ $content->{servers} } ) {
+        push @instances,
+            {
+            ip              => $instance->{addresses}{public}[0]{addr},
+            id              => $instance->{id},
+            architecture    => undef,
+            type            => $instance->{flavor}{id},
+            dns_name        => undef,
+            state           => $instance->{status},
+            launch_time     => $instance->{'OS-SRV-USG:launched_at'},
+            name            => $instance->{name},
+            private_ip      => $instance->{addresses}{private}[0]{addr},
+            security_groups => join ',',
+            map { $_->{name} } @{ $instance->{security_groups} },
+            };
+    }
+
+    return @instances;
+}
+
 1;

@@ -6,7 +6,7 @@ package Rex::Cloud::OpenStack;
 
 use base 'Rex::Cloud::Base';
 
-use HTTP::Request;
+use HTTP::Request::Common qw(:DEFAULT DELETE);
 use JSON::XS;
 use LWP::UserAgent;
 
@@ -41,11 +41,11 @@ sub _authenticate {
         }
     };
 
-    my $response = $self->{_agent}->post(
-        $self->{__endpoint} . '/tokens',
-        content_type => 'application/json',
-        content      => encode_json($auth_data),
-    );
+    my $request = POST $self->{__endpoint} . '/tokens',
+        Content_Type => 'application/json',
+        Content      => encode_json($auth_data);
+
+    my $response = $self->{_agent}->request($request);
 
     my $content = decode_json( $response->content );
 
@@ -78,19 +78,18 @@ sub run_instance {
         }
     };
 
-    my $response = $self->{_agent}->post(
-        $nova_url . '/servers',
-        content_type => 'application/json',
-        content      => encode_json($request_data),
-    );
+    my $request = POST $nova_url . '/servers',
+        Content_Type => 'application/json',
+        Content      => encode_json($request_data);
+
+    my $response = $self->{_agent}->request($request);
 }
 
 sub terminate_instance {
     my ( $self, %data ) = @_;
     my $nova_url = $self->get_nova_url;
 
-    my $request = HTTP::Request->new(
-        DELETE => $nova_url . '/servers/' . $data{instance_id} );
+    my $request = DELETE $nova_url . '/servers/' . $data{instance_id};
 
     my $respone = $self->{_agent}->request($request);
 }

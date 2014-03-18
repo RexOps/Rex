@@ -6,6 +6,9 @@
 
 package Rex::Cloud::OpenStack;
 
+use strict;
+use warnings;
+
 use base 'Rex::Cloud::Base';
 
 use HTTP::Request::Common qw(:DEFAULT DELETE);
@@ -33,8 +36,12 @@ sub set_auth {
 
 sub _request {
   my ( $self, $method, $url, %params ) = @_;
+  my $response;
 
-  my $response = $self->{_agent}->request( $method->( $url, %params ) );
+  {
+    no strict 'refs';
+    $response = $self->{_agent}->request( $method->( $url, %params ) );
+  }
 
   return decode_json( $response->content ) if $response->content;
 }

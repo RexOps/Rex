@@ -20,6 +20,7 @@ sub new {
   bless( $self, $proto );
 
   $self->{_agent} = LWP::UserAgent->new;
+  $self->{_agent}->env_proxy;
 
   return $self;
 }

@@ -1,5 +1,5 @@
 use Data::Dumper;
-use Test::More tests => 38;
+use Test::More tests => 46;
 use_ok 'Rex::Hardware::Network::Linux';
 use_ok 'Rex::Helper::Hash';
 
@@ -70,4 +70,16 @@ ok($info->{"eth0:1"}->{ip} eq "1.2.3.4", "(fc19) eth0:1 / ip");
 ok($info->{"eth0:1"}->{netmask} eq "255.255.0.0", "(fc19) eth0:1 / netmask");
 ok($info->{"eth0:1"}->{mac} eq "52:54:00:37:a8:e1", "(fc19) eth0:1 / mac");
 
+@in = eval { local(@ARGV) = ("t/ifconfig.out7"); <>; };
+$info = Rex::Hardware::Network::Linux::_parse_ifconfig(@in);
+ok($info->{ppp0}->{ip} eq "123.117.251.17", "ppp0 / ip");
+ok($info->{ppp0}->{netmask} eq "255.255.255.255", "ppp0 / netmask");
+ok($info->{ppp0}->{broadcast} eq "", "ppp0 / broadcast");
+ok($info->{ppp0}->{mac} eq "", "ppp0 / mac");
 
+@in = eval { local(@ARGV) = ("t/ip.out3"); <>; };
+$info = Rex::Hardware::Network::Linux::_parse_ip(@in);
+ok($info->{ppp0}->{ip} eq "123.117.251.17", "ppp0 / ip");
+ok($info->{ppp0}->{netmask} eq "255.255.255.255", "ppp0 / netmask");
+ok($info->{ppp0}->{broadcast} eq "", "ppp0 / broadcast");
+ok($info->{ppp0}->{mac} eq "", "ppp0 / mac");

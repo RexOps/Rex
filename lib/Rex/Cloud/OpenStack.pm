@@ -32,9 +32,9 @@ sub set_auth {
 }
 
 sub _request {
-  my ( $self, $method, $url, @params ) = @_;
+  my ( $self, $method, $url, %params ) = @_;
 
-  my $response = $self->{_agent}->request( $method->( $url, @params ) );
+  my $response = $self->{_agent}->request( $method->( $url, %params ) );
 
   return decode_json( $response->content ) if $response->content;
 }

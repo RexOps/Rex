@@ -9,6 +9,8 @@ package Rex::Cloud::OpenStack;
 use strict;
 use warnings;
 
+use Rex::Logger;
+
 use base 'Rex::Cloud::Base';
 
 use HTTP::Request::Common qw(:DEFAULT DELETE);
@@ -38,9 +40,17 @@ sub _request {
   my ( $self, $method, $url, %params ) = @_;
   my $response;
 
+  Rex::Logger::debug("Sending request to $url");
+  Rex::Logger::debug("  $_ => $params{$_}") for keys %params;
+
   {
     no strict 'refs';
     $response = $self->{_agent}->request( $method->( $url, %params ) );
+  }
+
+  if ( $response->is_error ) {
+    Rex::Logger::info( 'Response indicates an error', 'warn' );
+    Rex::Logger::debug( $response->content );
   }
 
   return decode_json( $response->content ) if $response->content;
@@ -84,7 +94,11 @@ sub get_nova_url {
 
 sub run_instance {
   my ( $self, %data ) = @_;
-  my $nova_url     = $self->get_nova_url;
+  my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug('Trying to start a new instance with data:');
+  Rex::Logger::debug("  $_ => $data{$_}") for keys %data;
+
   my $request_data = {
     server => {
       flavorRef => $data{plan_id},
@@ -103,6 +117,8 @@ sub run_instance {
 sub terminate_instance {
   my ( $self, %data ) = @_;
   my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug("Terminating instance $data{instance_id}");
 
   $self->_request( DELETE => $nova_url . '/servers/' . $data{instance_id} );
 }
@@ -144,6 +160,8 @@ sub stop_instance {
   my ( $self, %data ) = @_;
   my $nova_url = $self->get_nova_url;
 
+  Rex::Logger::debug("Suspending instance $data{instance_id}");
+
   $self->_request(
     POST         => $nova_url . '/servers/' . $data{instance_id} . '/action',
     content_type => 'application/json',
@@ -154,6 +172,8 @@ sub stop_instance {
 sub start_instance {
   my ( $self, %data ) = @_;
   my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug("Resuming instance $data{instance_id}");
 
   $self->_request(
     POST         => $nova_url . '/servers/' . $data{instance_id} . '/action',

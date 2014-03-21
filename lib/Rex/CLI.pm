@@ -86,6 +86,7 @@ sub __run__ {
       P => { type => "string" },
       K => { type => "string" },
       G => { type => "string" },
+      g => { type => "string" },
       z => { type => "string" },
       t => { type => "integer" },
       %more_args,
@@ -245,6 +246,10 @@ sub __run__ {
 
       if($opts{'G'}) {
          $::FORCE_SERVER = "\0" . $opts{'G'};
+      }
+      
+      if($opts{'g'}) {
+         $::FORCE_SERVER = "\0" . $opts{'g'};
       }
 
       if(-f "vars.db") {
@@ -552,7 +557,7 @@ sub __help__ {
    printf "  %-15s %s\n", "-E", "Execute task on the given environment";
    printf "  %-15s %s\n", "-H", "Execute task on these hosts";
    printf "  %-15s %s\n", "-z", "Execute task on hosts from this command's output";
-   printf "  %-15s %s\n", "-G", "Execute task on these group";
+   printf "  %-15s %s\n", "-G|-g", "Execute task on these group";
    printf "  %-15s %s\n", "-u", "Username for the ssh connection";
    printf "  %-15s %s\n", "-p", "Password for the ssh connection";
    printf "  %-15s %s\n", "-P", "Private Keyfile for the ssh connection";

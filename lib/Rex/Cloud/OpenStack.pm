@@ -210,4 +210,24 @@ sub list_images {
   $self->_request( GET => $nova_url . '/images' );
 }
 
+sub create_volume {
+  my ( $self, %data ) = @_;
+  my $cinder_url = $self->get_cinder_url;
+
+  Rex::Logger::debug('Creating a new volume');
+
+  my $request_data = {
+    volume => {
+      size => $data{size} || 1,
+      availability_zone => $data{zone},
+    }
+  };
+
+  $self->_request(
+    POST         => $cinder_url . '/volumes',
+    content_type => 'application/json',
+    content      => encode_json($request_data),
+  );
+}
+
 1;

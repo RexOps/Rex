@@ -117,11 +117,28 @@ sub run_instance {
     }
   };
 
-  $self->_request(
+  my $content = $self->_request(
     POST         => $nova_url . '/servers',
     content_type => 'application/json',
     content      => encode_json($request_data),
   );
+
+  my $id = $content->{server}{id};
+  my $info;
+
+  until ( ($info) = grep { $_->{id} eq $id } $self->list_running_instances ) {
+    Rex::Logger::debug('Waiting for instance to be created...');
+    sleep 1;
+  }
+
+  if ( exists $data{volume} ) {
+    $self->attach_volume(
+      instance_id => $id,
+      volume_id   => $data{volume},
+    );
+  }
+
+  return $info;
 }
 
 sub terminate_instance {

@@ -194,6 +194,13 @@ sub stop_instance {
     content_type => 'application/json',
     content      => encode_json( { suspend => 'null' } ),
   );
+
+  while ( grep { $_->{id} eq $data{instance_id} }
+    $self->list_running_instances )
+  {
+    Rex::Logger::debug('Waiting for instance to be stopped...');
+    sleep 5;
+  }
 }
 
 sub start_instance {

@@ -214,6 +214,13 @@ sub start_instance {
     content_type => 'application/json',
     content      => encode_json( { resume => 'null' } ),
   );
+
+  until ( grep { $_->{id} eq $data{instance_id} }
+      $self->list_running_instances )
+  {
+    Rex::Logger::debug('Waiting for instance to be started...');
+    sleep 5;
+  }
 }
 
 sub list_flavors {

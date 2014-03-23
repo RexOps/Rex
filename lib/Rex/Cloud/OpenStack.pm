@@ -182,4 +182,13 @@ sub start_instance {
   );
 }
 
+sub list_flavors {
+  my $self     = shift;
+  my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug('Listing flavors');
+
+  $self->_request( GET => $nova_url . '/flavors' );
+}
+
 1;

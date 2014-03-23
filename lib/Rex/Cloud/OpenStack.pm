@@ -261,4 +261,27 @@ sub list_volumes {
   return @volumes;
 }
 
+sub attach_volume {
+  my ( $self, %data ) = @_;
+  my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug('Trying to attach a new volume');
+
+  my $request_data = {
+    volumeAttachment => {
+      volumeId => $data{volume_id},
+      name     => $data{name},
+    }
+  };
+
+  $self->_request(
+    POST => $nova_url
+      . '/servers/'
+      . $data{instance_id}
+      . '/os-volume_attachments',
+    content_type => 'application/json',
+    content      => encode_json($request_data),
+  );
+}
+
 1;

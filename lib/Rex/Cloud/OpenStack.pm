@@ -92,6 +92,16 @@ sub get_nova_url {
   return $nova_services[0]{endpoints}[0]{publicURL};
 }
 
+sub get_cinder_url {
+  my $self = shift;
+
+  $self->_authenticate unless $self->{auth}{tokenId};
+
+  my @cinder_services =
+    grep { $_->{type} eq 'volume' } @{ $self->{_catalog} };
+  return $cinder_services[0]{endpoints}[0]{publicURL};
+}
+
 sub run_instance {
   my ( $self, %data ) = @_;
   my $nova_url = $self->get_nova_url;

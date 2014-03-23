@@ -284,4 +284,17 @@ sub attach_volume {
   );
 }
 
+sub detach_volume {
+  my ( $self, %data ) = @_;
+  my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug('Trying to detach a volume');
+
+  $self->_request( DELETE => $nova_url
+      . '/servers/'
+      . $data{instance_id}
+      . '/os-volume_attachments/'
+      . $data{volume_id} );
+}
+
 1;

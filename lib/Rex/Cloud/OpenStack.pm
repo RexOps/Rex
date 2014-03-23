@@ -230,4 +230,13 @@ sub create_volume {
   );
 }
 
+sub delete_volume {
+  my ( $self, %data ) = @_;
+  my $cinder_url = $self->get_cinder_url;
+
+  Rex::Logger::debug('Trying to delete a volume');
+
+  $self->_request( DELETE => $cinder_url . '/volumes/' . $data{volume_id} );
+}
+
 1;

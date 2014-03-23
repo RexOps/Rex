@@ -239,4 +239,26 @@ sub delete_volume {
   $self->_request( DELETE => $cinder_url . '/volumes/' . $data{volume_id} );
 }
 
+sub list_volumes {
+  my $self       = shift;
+  my $cinder_url = $self->get_cinder_url;
+  my @volumes;
+
+  my $content = $self->_request( GET => $cinder_url . '/volumes' );
+
+  for my $volume ( @{ $content->{volumes} } ) {
+    push @volumes,
+      {
+      id          => $volume->{id},
+      status      => $volume->{status},
+      zone        => $volume->{availability_zone},
+      size        => $volume->{size},
+      attached_to => join ',',
+      map { $_->{server_id} } @{ $volume->{attachments} },
+      };
+  }
+
+  return @volumes;
+}
+
 1;

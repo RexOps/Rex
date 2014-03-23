@@ -191,4 +191,13 @@ sub list_flavors {
   $self->_request( GET => $nova_url . '/flavors' );
 }
 
+sub list_images {
+  my $self     = shift;
+  my $nova_url = $self->get_nova_url;
+
+  Rex::Logger::debug('Listing images');
+
+  $self->_request( GET => $nova_url . '/images' );
+}
+
 1;

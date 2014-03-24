@@ -139,13 +139,14 @@ sub _parse_ip {
         $dev->{$cur_dev}->{broadcast} = $broadcast;
         $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($cidr_prefix);
       }
+    }
 
-      # ppp
-      if($line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+) peer (\d+\.\d+\.\d+\.\d+)\/(\d+)/) {
-         $dev->{$cur_dev}->{ip} = $1;
-         $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($3);
-      }
-   }
+    # ppp
+    if($line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+) peer (\d+\.\d+\.\d+\.\d+)\/(\d+)/) {
+      $dev->{$cur_dev}->{ip} = $1;
+      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($3);
+    }
+  }
 
   return $dev;
 

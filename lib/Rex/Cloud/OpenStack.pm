@@ -254,11 +254,20 @@ sub create_volume {
     }
   };
 
-  $self->_request(
+  my $content = $self->_request(
     POST         => $cinder_url . '/volumes',
     content_type => 'application/json',
     content      => encode_json($request_data),
   );
+
+  my $id = $content->{volume}{id};
+
+  until ( grep { $_->{id} eq $id and $_->{status} eq 'available' }
+      $self->list_volumes )
+  {
+    Rex::Logger::debug('Waiting for volume to become available...');
+    sleep 1;
+  }
 }
 
 sub delete_volume {

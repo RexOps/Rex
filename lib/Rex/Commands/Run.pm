@@ -24,7 +24,6 @@ With this module you can run a command.
 
 =cut
 
-
 package Rex::Commands::Run;
 
 use strict;
@@ -43,14 +42,13 @@ use Rex::Interface::Exec;
 use Rex::Interface::Fs;
 
 BEGIN {
-  if($^O !~ m/^MSWin/) {
+  if ( $^O !~ m/^MSWin/ ) {
     eval "use Expect";
   }
   else {
     # this fails sometimes on windows...
     eval {
-      Rex::Logger::debug("Running under windows, Expect not supported.");
-    };
+      Rex::Logger::debug("Running under windows, Expect not supported."); };
   }
 }
 
@@ -94,100 +92,115 @@ I<only_if> or I<unless> option.
  run "some-other-command",
    unless => "ps -ef | grep -q httpd";    # only run if httpd is not running
 
+If you want to set custom environment variables you can do this like this:
+
+ run "my_command",
+   env => {
+     env_var_1 => "the value for 1",
+     env_var_2 => "the value for 2",
+   };
+
 =cut
 
-our $LAST_OUTPUT;  # this variable stores the last output of a run.
-              # so that it is possible to get for example the output of an apt-get update
-              # that is called through >> install "foo" <<
+our $LAST_OUTPUT;    # this variable stores the last output of a run.
+    # so that it is possible to get for example the output of an apt-get update
+    # that is called through >> install "foo" <<
 
 sub run {
   my $cmd = shift;
-  my ($code, $option);
-  if(ref $_[0] eq "CODE") {
+  my ( $code, $option );
+  if ( ref $_[0] eq "CODE" ) {
     $code = shift;
   }
-  elsif(scalar @_ > 0) {
-    $option = { @_ };
+  elsif ( scalar @_ > 0 ) {
+    $option = {@_};
   }
 
-  if(exists $option->{only_notified} && $option->{only_notified}) {
-    Rex::Logger::debug("This command runs only if notified. Passing by. ($cmd, $option->{command})");
+  if ( exists $option->{only_notified} && $option->{only_notified} ) {
+    Rex::Logger::debug(
+      "This command runs only if notified. Passing by. ($cmd, $option->{command})"
+    );
     my $notify = Rex::get_current_connection()->{notify};
     $notify->add(
-      type   => "run",
-      name   => $cmd,
+      type    => "run",
+      name    => $cmd,
       options => $option,
-      cb    => sub {
+      cb      => sub {
         my ($option) = shift;
-        Rex::Logger::debug("Running notified command: $cmd ($option->{command})");
-        run($option->{command});
+        Rex::Logger::debug(
+          "Running notified command: $cmd ($option->{command})");
+        run( $option->{command} );
       }
     );
 
     return;
   }
 
-  if(exists $option->{command}) {
+  if ( exists $option->{command} ) {
     $cmd = $option->{command};
   }
 
-  if(exists $option->{creates}) {
+  if ( exists $option->{creates} ) {
     my $fs = Rex::Interface::Fs->create();
-    if($fs->is_file($option->{creates})) {
-      Rex::Logger::debug("File $option->{creates} already exists. Not executing $cmd.");
+    if ( $fs->is_file( $option->{creates} ) ) {
+      Rex::Logger::debug(
+        "File $option->{creates} already exists. Not executing $cmd.");
       return;
     }
   }
 
-  if(exists $option->{only_if}) {
-    run($option->{only_if});
-    if($? != 0) {
-      Rex::Logger::debug("Don't executing $cmd because $option->{only_if} return $?.");
+  if ( exists $option->{only_if} ) {
+    run( $option->{only_if} );
+    if ( $? != 0 ) {
+      Rex::Logger::debug(
+        "Don't executing $cmd because $option->{only_if} return $?.");
       return;
     }
   }
 
-  if(exists $option->{unless}) {
-    run($option->{unless});
-    if($? == 0) {
-      Rex::Logger::debug("Don't executing $cmd because $option->{unless} return $?.");
+  if ( exists $option->{unless} ) {
+    run( $option->{unless} );
+    if ( $? == 0 ) {
+      Rex::Logger::debug(
+        "Don't executing $cmd because $option->{unless} return $?.");
       return;
     }
   }
 
   my $path;
 
-  if(! Rex::Config->get_no_path_cleanup()) {
-    $path = join(":", Rex::Config->get_path());
+  if ( !Rex::Config->get_no_path_cleanup() ) {
+    $path = join( ":", Rex::Config->get_path() );
   }
 
   my $exec = Rex::Interface::Exec->create;
-  my ($out, $err) = $exec->exec($cmd, $path, $option);
+  my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
   chomp $out if $out;
   chomp $err if $err;
 
-  $LAST_OUTPUT = [$out, $err];
+  $LAST_OUTPUT = [ $out, $err ];
 
-  if(! defined $out) {
+  if ( !defined $out ) {
     $out = "";
   }
 
-  if(! defined $err) {
+  if ( !defined $err ) {
     $err = "";
   }
 
-  if(Rex::Config->get_exec_autodie() && Rex::Config->get_exec_autodie() == 1) {
-    if($? != 0) {
+  if ( Rex::Config->get_exec_autodie() && Rex::Config->get_exec_autodie() == 1 )
+  {
+    if ( $? != 0 ) {
       die("Error executing: $cmd.\nOutput:\n$out");
     }
   }
 
-  if($code) {
-    return &$code($out, $err);
+  if ($code) {
+    return &$code( $out, $err );
   }
 
-  if(wantarray) {
-    return split(/\r?\n/, $out);
+  if (wantarray) {
+    return split( /\r?\n/, $out );
   }
 
   return $out;
@@ -204,17 +217,18 @@ This function checks if a command is in the path or is available.
  };
 
 =cut
+
 sub can_run {
   my $cmd = shift;
 
-  if(! Rex::is_ssh() && $^O =~ m/^MSWin/) {
+  if ( !Rex::is_ssh() && $^O =~ m/^MSWin/ ) {
     return 1;
   }
 
   my @ret = i_run "which $cmd";
-  if($? != 0) { return 0; }
+  if ( $? != 0 ) { return 0; }
 
-  if( grep { /^no.*in/ } @ret ) {
+  if ( grep { /^no.*in/ } @ret ) {
     return 0;
   }
 
@@ -260,42 +274,43 @@ Run only one command within sudo.
  };
 
 =cut
+
 sub sudo {
   my ($cmd) = @_;
 
   my $options;
-  if(ref $cmd eq "HASH") {
+  if ( ref $cmd eq "HASH" ) {
     $options = $cmd;
-    $cmd = $options->{command};
+    $cmd     = $options->{command};
   }
 
-  if($cmd eq "on" || $cmd eq "-on" || $cmd eq "1") {
+  if ( $cmd eq "on" || $cmd eq "-on" || $cmd eq "1" ) {
     Rex::Logger::debug("Turning sudo globaly on");
     Rex::global_sudo(1);
     return;
   }
-  elsif($cmd eq "0") {
+  elsif ( $cmd eq "0" ) {
     Rex::Logger::debug("Turning sudo globaly off");
     Rex::global_sudo(0);
     return;
   }
 
-  my $old_sudo = Rex::get_current_connection()->{use_sudo} || 0;
+  my $old_sudo    = Rex::get_current_connection()->{use_sudo}     || 0;
   my $old_options = Rex::get_current_connection()->{sudo_options} || {};
-  Rex::get_current_connection()->{use_sudo} = 1;
+  Rex::get_current_connection()->{use_sudo}     = 1;
   Rex::get_current_connection()->{sudo_options} = $options;
 
   my $ret;
 
   # if sudo is used with a code block
-  if(ref($cmd) eq "CODE") {
+  if ( ref($cmd) eq "CODE" ) {
     $ret = &$cmd();
   }
   else {
     $ret = i_run($cmd);
   }
 
-  Rex::get_current_connection()->{use_sudo} = $old_sudo;
+  Rex::get_current_connection()->{use_sudo}     = $old_sudo;
   Rex::get_current_connection()->{sudo_options} = $old_options;
 
   return $ret;

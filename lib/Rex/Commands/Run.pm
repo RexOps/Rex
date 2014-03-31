@@ -208,31 +208,37 @@ sub run {
 
 =item can_run($command)
 
-This function checks if a command is in the path or is available.
+This function checks if a command is in the path or is available. You can
+specify multiple commands, the first command found will be returned.
 
  task "uptime", sub {
-   if(can_run "uptime") {
-     say run "uptime";
+   if( my $cmd = can_run("uptime", "downtime") ) {
+     say run $cmd;
    }
  };
 
 =cut
 
 sub can_run {
-  my $cmd = shift;
+  my @cmds = @_;
 
   if ( !Rex::is_ssh() && $^O =~ m/^MSWin/ ) {
     return 1;
   }
 
-  my @ret = i_run "which $cmd";
-  if ( $? != 0 ) { return 0; }
+  for my $cmd (@cmds) {
+    my @ret = i_run "which $cmd";
+    next if ( $? != 0 );
 
-  if ( grep { /^no.*in/ } @ret ) {
-    return 0;
+    if ( grep { /^no.*in/ } @ret ) {
+      next;
+    }
+    else {
+      return $ret[0];
+    }
   }
 
-  return $ret[0];
+  return 0;
 }
 
 =item sudo

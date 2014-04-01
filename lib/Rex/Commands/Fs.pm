@@ -710,6 +710,9 @@ sub df {
    $ret = _parse_df(@lines);
 
    if($dev) {
+      if ( keys %$ret == 1 ) {
+         ( $dev ) = keys %$ret;
+      }
       return $ret->{$dev};
    }
 

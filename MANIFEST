@@ -151,6 +151,8 @@ lib/Rex/Inventory/Hal/Object/Net.pm
 lib/Rex/Inventory/Hal/Object/Storage.pm
 lib/Rex/Inventory/Hal/Object/Volume.pm
 lib/Rex/Inventory/HP/ACU.pm
+lib/Rex/Inventory/Proc.pm
+lib/Rex/Inventory/Proc/Cpuinfo.pm
 lib/Rex/Inventory/SMBios.pm
 lib/Rex/Inventory/SMBios/BaseBoard.pm
 lib/Rex/Inventory/SMBios/Bios.pm

@@ -32,7 +32,7 @@ sub set_env {
   die("Error: env must be a hash")
     if ( ref $env ne "HASH" );
 
-  while ( my ( $k, $v ) = each($env) ) {
+  while ( my ( $k, $v ) = each(%$env) ) {
     $cmd .= "export $k='$v'; ";
   }
   $self->{env} = $cmd;

@@ -10,7 +10,7 @@ Rex::Commands::Cloud - Cloud Management Commands
 
 =head1 DESCRIPTION
 
-With this Module you can manage different Cloud services. Currently it supports Amazon EC2 and Jiffybox.
+With this Module you can manage different Cloud services. Currently it supports Amazon EC2, Jiffybox and OpenStack.
 
 =head1 SYNOPSIS
 
@@ -102,6 +102,8 @@ Define which cloud service to use.
 
 =item Jiffybox
 
+=item OpenStack
+
 =back
 
 =back
@@ -129,6 +131,14 @@ For example for Amazon it is:
 For JiffyBox:
 
  cloud_auth($auth_key);
+
+For OpenStack:
+
+ cloud_auth(
+  tenantName => 'tenant',
+  username   => 'user',
+  password   => 'password',
+ );
 
 =cut
 sub cloud_auth {

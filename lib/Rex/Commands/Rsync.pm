@@ -157,8 +157,15 @@ sub sync {
                         die;
                       }
                   ],
+                  [
+                        qr{rsync error: remote command not found},
+                        sub {
+                           Rex::Logger::info("Remote rsync command not found");
+                           Rex::Logger::info("Please install rsync, or use Rex::Commands::Sync sync_up/sync_down");
+                           die;
+                        }
+                  ],
 
-    
     );
   }
   else {
@@ -196,6 +203,14 @@ sub sync {
                         Rex::Logger::debug("Error in rsync");
                         die;
                       }
+                  ],
+                  [
+                        qr{rsync error: remote command not found},
+                        sub {
+                           Rex::Logger::info("Remote rsync command not found");
+                           Rex::Logger::info("Please install rsync, or use Rex::Commands::Sync sync_up/sync_down");
+                           die;
+                        }
                   ],
 
     );

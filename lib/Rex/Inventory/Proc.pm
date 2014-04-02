@@ -4,7 +4,6 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-
 package Rex::Inventory::Proc;
 
 use strict;
@@ -13,11 +12,11 @@ use warnings;
 use Rex::Inventory::Proc::Cpuinfo;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   $self->_read_proc();
 
@@ -29,9 +28,7 @@ sub _read_proc {
 
   my $p_cpu = Rex::Inventory::Proc::Cpuinfo->new;
 
-  $self->{__proc__} = {
-    cpus => $p_cpu->get,
-  }
+  $self->{__proc__} = { cpus => $p_cpu->get, };
 }
 
 sub get_cpus {

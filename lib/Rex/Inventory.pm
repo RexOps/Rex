@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -11,13 +11,15 @@ use warnings;
 
 use Rex::Inventory::DMIDecode;
 use Rex::Inventory::Hal;
+use Rex::Inventory::Proc;
 use Rex::Commands::Network;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Commands::LVM;
-use Rex::Commands::Run;
+use Rex::Commands::Fs;
 
 use Rex::Inventory::HP::ACU;
+use Data::Dumper;
 
 sub new {
   my $that = shift;
@@ -32,7 +34,7 @@ sub new {
 sub get {
 
   my ($self) = @_;
-  
+
   my $dmi = Rex::Inventory::DMIDecode->new;
   my ($base_board, $bios, @cpus, @dimms, @mem_arrays, $sys_info);
 
@@ -52,6 +54,17 @@ sub get {
     @net_devs = $hal->get_network_devices;
     @storage  = $hal->get_storage_devices;
     @volumes  = $hal->get_storage_volumes;
+  };
+
+  eval {
+    if(scalar @cpus == 0) {
+      # get cpu info from /proc
+      if(is_dir("/proc")) {
+        Rex::Logger::info("Got no cpu information from dmidecode. Falling back to /proc/cpuinfo");
+        my $proc_i = Rex::Inventory::Proc->new;
+        @cpus = @{ $proc_i->get_cpus };
+      }
+    }
   };
 
   my @routes    = route;
@@ -126,7 +139,7 @@ sub get {
     base_board  => ($base_board?$base_board->get_all():{}),
     bios      => $bios->get_all(),
     system_info => $sys_info->get_all(),
-    cpus      => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @cpus; return $ret; }->(),
+    cpus      => sub { my $ret = []; push(@{$ret}, (ref $_ ne "HASH" ? $_->get_all() : $_)) for @cpus; return $ret; }->(),
     dimms     => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @dimms; return $ret; }->(),
     mem_arrays  => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @mem_arrays; return $ret; }->(),
     net      => sub { my $ret = []; push(@{$ret}, $_->get_all()) for @net_devs; return $ret; }->(),

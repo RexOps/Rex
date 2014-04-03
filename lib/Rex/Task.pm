@@ -550,18 +550,6 @@ sub connect {
   my %connect_hash = %{ $auth };
   $connect_hash{server} = $server;
 
-  $profiler->start("connect");
-    $self->connection->connect(%connect_hash);
-  $profiler->end("connect");
-
-  if($self->connection->is_authenticated) {
-    Rex::Logger::info("Successfully authenticated on $server.") if($self->connection->get_connection_type ne "Local");
-    $self->{"__was_authenticated"} = 1;
-  }
-  else {
-    die("Wrong username/password or wrong key on $server.");
-  }
-
   # need to get rid of this
   Rex::push_connection({
       conn  => $self->connection,
@@ -573,6 +561,20 @@ sub connect {
       reporter => Rex::Report->create(Rex::Config->get_report_type),
       notify  => Rex::Notify->new(),
   });
+
+  $profiler->start("connect");
+    $self->connection->connect(%connect_hash);
+  $profiler->end("connect");
+
+  if($self->connection->is_authenticated) {
+    Rex::Logger::info("Successfully authenticated on $server.") if($self->connection->get_connection_type ne "Local");
+    $self->{"__was_authenticated"} = 1;
+  }
+  else {
+    Rex::pop_connection();
+    die("Wrong username/password or wrong key on $server.");
+  }
+
 
   Rex::get_current_connection()->{reporter}->register_reporting_hooks;
 

@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Interface::Fs::SSH;
-  
+
 use strict;
 use warnings;
 
@@ -231,10 +231,23 @@ sub download {
 
   Rex::Commands::profiler()->start("download: $source -> $target");
 
-  my $ssh = Rex::is_ssh();
-  if(!$ssh->scp_get($source, $target)) {
-    Rex::Commands::profiler()->end("download: $source -> $target");
-    die($ssh->error);
+  if($^O =~ m/^MSWin/) {
+    # fix for: #271
+    my $ssh = Rex::is_ssh();
+    my $sftp = $ssh->sftp();
+    my $fh = $sftp->open($source) or die($ssh->error);
+    open(my $out, ">", $target) or die($!);
+    binmode $out;
+    print $out $_ while (<$fh>);
+    close $out;
+    close $fh;
+  }
+  else {
+    my $ssh = Rex::is_ssh();
+    if(!$ssh->scp_get($source, $target)) {
+      Rex::Commands::profiler()->end("download: $source -> $target");
+      die($ssh->error);
+    }
   }
 
   Rex::Commands::profiler()->end("download: $source -> $target");

@@ -235,12 +235,18 @@ sub download {
     # fix for: #271
     my $ssh = Rex::is_ssh();
     my $sftp = $ssh->sftp();
-    my $fh = $sftp->open($source) or die($ssh->error);
-    open(my $out, ">", $target) or die($!);
-    binmode $out;
-    print $out $_ while (<$fh>);
-    close $out;
-    close $fh;
+    eval {
+      my $fh = $sftp->open($source) or die($!);
+      open(my $out, ">", $target) or die($!);
+      binmode $out;
+      print $out $_ while (<$fh>);
+      close $out;
+      close $fh;
+      1;
+    } or do {
+      Rex::Commands::profiler()->end("download: $source -> $target");
+      die($ssh->error);
+    };
   }
   else {
     my $ssh = Rex::is_ssh();

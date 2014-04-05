@@ -275,6 +275,8 @@ sub create_volume {
     Rex::Logger::debug('Waiting for volume to become available...');
     sleep 1;
   }
+
+  return $id;
 }
 
 sub delete_volume {

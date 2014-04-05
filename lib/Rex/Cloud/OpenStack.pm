@@ -16,6 +16,8 @@ use base 'Rex::Cloud::Base';
 use HTTP::Request::Common qw(:DEFAULT DELETE);
 use JSON::XS;
 use LWP::UserAgent;
+use Data::Dumper;
+use Carp;
 
 sub new {
   my $that  = shift;
@@ -48,6 +50,8 @@ sub _request {
     $response = $self->{_agent}->request( $method->( $url, %params ) );
   }
 
+  Rex::Logger::debug( Dumper($response) );
+
   if ( $response->is_error ) {
     Rex::Logger::info( 'Response indicates an error', 'warn' );
     Rex::Logger::debug( $response->content );
@@ -61,7 +65,7 @@ sub _authenticate {
 
   my $auth_data = {
     auth => {
-      tenantName => $self->{auth}{tenantName} || '',
+      tenantName => $self->{auth}{tenant_name} || '',
       passwordCredentials => {
         username => $self->{auth}{username},
         password => $self->{auth}{password},
@@ -89,6 +93,7 @@ sub get_nova_url {
 
   my @nova_services =
     grep { $_->{type} eq 'compute' } @{ $self->{_catalog} };
+
   return $nova_services[0]{endpoints}[0]{publicURL};
 }
 
@@ -238,7 +243,9 @@ sub list_images {
 
   Rex::Logger::debug('Listing images');
 
-  $self->_request( GET => $nova_url . '/images' );
+  my $images = $self->_request( GET => $nova_url . '/images' );
+  confess "Error getting cloud images." if ( !exists $images->{images} );
+  return @{ $images->{images} };
 }
 
 sub create_volume {

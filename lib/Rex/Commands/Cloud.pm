@@ -306,15 +306,15 @@ Create a new instance.
 
   elsif($action eq "create") {
     my %data_hash = (
-      image_id => $data->{"image_id"},
-      name    => $data->{"name"} || undef,
-      key    => $data->{"key"} || undef,
-      zone    => $data->{"zone"} || undef,
-      volume  => $data->{"volume"} || undef,
-      password => $data->{"password"} || undef,
-      plan_id  => $data->{"plan_id"} || undef,
-      type    => $data->{"type"} || undef,
-      security_group => $data->{"security_group"} || undef,
+      # image_id => $data->{"image_id"},
+      # name    => $data->{"name"} || undef,
+      # key    => $data->{"key"} || undef,
+      # zone    => $data->{"zone"} || undef,
+      # volume  => $data->{"volume"} || undef,
+      # password => $data->{"password"} || undef,
+      # plan_id  => $data->{"plan_id"} || undef,
+      # type    => $data->{"type"} || undef,
+      # security_group => $data->{"security_group"} || undef,
       %{ $data },
     );
 

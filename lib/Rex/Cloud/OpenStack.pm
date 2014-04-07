@@ -153,6 +153,13 @@ sub terminate_instance {
   Rex::Logger::debug("Terminating instance $data{instance_id}");
 
   $self->_request( DELETE => $nova_url . '/servers/' . $data{instance_id} );
+
+  until ( !grep { $_->{id} eq $data{instance_id} }
+      $self->list_running_instances )
+  {
+    Rex::Logger::debug('Waiting for instance to be deleted...');
+    sleep 1;
+  }
 }
 
 sub list_instances {
@@ -165,12 +172,13 @@ sub list_instances {
   for my $instance ( @{ $content->{servers} } ) {
     push @instances,
       {
-      ip              => $instance->{addresses}{public}[0]{addr},
-      id              => $instance->{id},
-      architecture    => undef,
-      type            => $instance->{flavor}{id},
-      dns_name        => undef,
-      state           => $instance->{status},
+      ip           => $instance->{addresses}{public}[0]{addr},
+      id           => $instance->{id},
+      architecture => undef,
+      type         => $instance->{flavor}{id},
+      dns_name     => undef,
+      state   => ( $instance->{status} eq 'ACTIVE' ? 'running' : 'stopped' ),
+      __state => $instance->{status},
       launch_time     => $instance->{'OS-SRV-USG:launched_at'},
       name            => $instance->{name},
       private_ip      => $instance->{addresses}{private}[0]{addr},
@@ -185,7 +193,7 @@ sub list_instances {
 sub list_running_instances {
   my $self = shift;
 
-  return grep { $_->{state} eq 'ACTIVE' } $self->list_instances;
+  return grep { $_->{state} eq 'running' } $self->list_instances;
 }
 
 sub stop_instance {
@@ -236,6 +244,8 @@ sub list_flavors {
 
   $self->_request( GET => $nova_url . '/flavors' );
 }
+
+sub list_plans { return shift->list_flavors; }
 
 sub list_images {
   my $self     = shift;

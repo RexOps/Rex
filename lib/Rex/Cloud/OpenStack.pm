@@ -286,6 +286,12 @@ sub delete_volume {
   Rex::Logger::debug('Trying to delete a volume');
 
   $self->_request( DELETE => $cinder_url . '/volumes/' . $data{volume_id} );
+
+  until ( !grep { $_->{id} eq $data{volume_id} } $self->list_volumes ) {
+    Rex::Logger::debug('Waiting for volume to be delete...');
+    sleep 1;
+  }
+
 }
 
 sub list_volumes {

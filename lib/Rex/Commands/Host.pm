@@ -122,7 +122,7 @@ sub delete_host {
 
 =item get_host($host)
 
-Returns the information of $host in /etc/resolv.conf.
+Returns the information of $host in /etc/hosts.
 
  my @host_info = get_host "localhost";
  say "Host-IP: " . $host_info[0]->{"ip"};

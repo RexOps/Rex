@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -39,7 +39,7 @@ sub is_installed {
     Rex::Logger::debug("$pkg is NOT installed.");
     return 0;
   }
-  
+
   Rex::Logger::debug("$pkg is installed.");
   return 1;
 
@@ -60,11 +60,11 @@ sub install {
 
 sub bulk_install {
   my ($self, $packages_aref, $option) = @_;
-  
+
   delete $option->{version}; # makes no sense to specify the same version for several packages
-   
+
   $self->update("@{$packages_aref}", $option);
-  
+
   return 1;
 }
 
@@ -89,7 +89,7 @@ sub update {
 
 sub update_system {
   my ($self) = @_;
-  i_run("apt-get -y upgrade");
+  i_run("DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade");
 }
 
 sub remove {
@@ -120,7 +120,7 @@ sub get_installed {
   if ($pkg) {
      $dpkg_cmd .= " ". $pkg;
   }
-  
+
   my @lines = i_run $dpkg_cmd;
 
   for my $line (@lines) {

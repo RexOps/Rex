@@ -102,7 +102,7 @@ sub exec {
     if ( ref $self->{__env__} eq "HASH" ) {
       for my $key ( keys %{ $self->{__env__} } ) {
         my $val = $self->{__env__}->{$key};
-        $val =~ s/"/\\"/gms;
+        $val =~ s/"/"'"'"/gms;
         $complete_cmd = " setenv $key \"$val\" ; $complete_cmd ";
       }
     }

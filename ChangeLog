@@ -1,3 +1,27 @@
+2014-04-11 Jan Gehring <jan.gehring, gmail.com> (0.45.0)
+  * no_overwrite option for file() function
+  * ensure 'directory' option for file() function
+  * added notifications
+  * pkg resource (replacement for install function)
+  * allow array for file() function
+  * check if iptables rule already exists
+  * creates option for run() resource
+  * only_if and unless option for run() resrouce
+  * added notification for service() resource
+  * added account() resource (as replacement for create_user)
+  * fixed SCM::Git to work with sudo
+  * update _parse_ip subroutine. be possible to parse ppp0. #328 - Tomohiro Hosaka
+  * support -g to supply group name - #330 - fanyeren
+  * added openstack cloud support - Ferenc Erki
+  * run() resource support customized environments - #316 andrejzverev
+  * can_run() now returns the first command found as string - #193
+  * read cpu information out of /proc/cpuinfo if dmidecode is not available - #306
+  * Handles the case where rsync is missing, and that makes Rex wait forever - #331 - Joris DE POOTER
+  * fixed $Rex::Logger::format does not apply. - #335
+  * fixed download() command on windows - #271
+  * added cloud_image_list function()
+  * fixed debian system_update - #339 - Niklas Larsson
+
 2014-03-02 Jan Gehring <jan.gehring, gmail.com> (0.44.6)
   * fixed wrong expansion of home paths #324
   * fixed return code on failed connects is wrong #317
@@ -160,10 +184,10 @@
   * new keyword "case"
   * Refactored net_ssh2_exec() function - Peter H. Ezetta
   * Refactored local command execution to use IPC::Open3
-  * Changed the Debian is_installed function to use the more accurate 
+  * Changed the Debian is_installed function to use the more accurate
     get_installed function. - Samuele Tognini
-  * '-t' option should work with '-e' option. rex -t 2 -H "hostA hostB" 
-     -e 'run "sleep 10"; say run "uptime"' should run in parallel. 
+  * '-t' option should work with '-e' option. rex -t 2 -H "hostA hostB"
+     -e 'run "sleep 10"; say run "uptime"' should run in parallel.
      - Tokuhiro Matsuno
   * Fixed loading of modules in $HOME/.rex/recipes
   * Don't calculate md5 sums if there is no on_change hook for file() function - Franky Van Liedekerke
@@ -522,7 +546,7 @@
 
 2011-07-26 Jan Gehring <jan.gehring, gmail.com> (0.11.1)
   * fixed output of netstat (reported by Thomas Biege)
-  * fixed inclusion of some modules in Run.pm that causes errors under 
+  * fixed inclusion of some modules in Run.pm that causes errors under
     some circumstances (reported by Thomas Biege)
 
 2011-07-22 Jan Gehring <jan.gehring, gmail.com> (0.11.0)
@@ -588,4 +612,3 @@
   * fixed #68827, rewrote is_readable/is_writable
   * handle auth failure correctly
   * mkdir now created directories recursive
-

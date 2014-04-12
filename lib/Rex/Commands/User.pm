@@ -71,6 +71,7 @@ Manage user account.
     system   => 1,
     no_create_home => TRUE,
     ssh_key        => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+
 =cut
 
 sub account {

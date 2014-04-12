@@ -20,6 +20,8 @@ EOF
 )
 
 for x in lib/Rex/Commands/Cloud.pm \
+   lib/Rex/Commands/Box.pm \
+   lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/Cron.pm \
    lib/Rex/Commands/DB.pm \
    lib/Rex/Commands/Download.pm \
@@ -33,6 +35,7 @@ for x in lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/LVM.pm \
    lib/Rex/Commands/MD5.pm \
    lib/Rex/Commands/Network.pm \
+   lib/Rex/Commands/Notify.pm \
    lib/Rex/Commands/Partition.pm \
    lib/Rex/Commands/Pkg.pm \
    lib/Rex/Commands/Process.pm \
@@ -47,12 +50,12 @@ for x in lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/Upload.pm \
    lib/Rex/Commands/User.pm \
    lib/Rex/Commands/Virtualization.pm \
-   lib/Rex/Commands/Box.pm \
    lib/Rex/Box/Base.pm \
    lib/Rex/Box/Amazon.pm \
    lib/Rex/Box/VBox.pm \
    lib/Rex/Virtualization/VBox.pm \
    lib/Rex/Virtualization/LibVirt.pm \
+   lib/Rex/Virtualization/Docker.pm \
    lib/Rex/FS/File.pm \
    lib/Rex/Commands.pm \
    lib/Rex/Hardware.pm \

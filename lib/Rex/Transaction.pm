@@ -18,7 +18,7 @@ With this module you can define transactions and rollback szenarios on failure.
   on_rollback {
     rmdir "/tmp/mydata";
   };
-
+ 
   transaction {
     mkdir "/tmp/mydata";
     upload "files/myapp.tar.gz", "/tmp/mydata";

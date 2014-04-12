@@ -15,19 +15,19 @@ With this Module you can manage different Cloud services. Currently it supports 
 =head1 SYNOPSIS
 
  use Rex::Commands::Cloud;
-
+ 
  cloud_service "Amazon";
  cloud_auth "your-access-key", "your-private-access-key";
  cloud_region "ec2.eu-west-1.amazonaws.com";
-
+ 
  task "list", sub {
    print Dumper cloud_instance_list;
    print Dumper cloud_volume_list;
  };
-
+ 
  task "create", sub {
    my $vol_id = cloud_volume create => { size => 1, zone => "eu-west-1a", };
-
+ 
    cloud_instance create => {
        image_id => "ami-xxxxxxx",
        name    => "test01",
@@ -36,11 +36,11 @@ With this Module you can manage different Cloud services. Currently it supports 
        zone    => "eu-west-1a",
      };
  };
-
+ 
  task "destroy", sub {
    cloud_volume detach => "vol-xxxxxxx";
    cloud_volume delete => "vol-xxxxxxx";
-
+ 
    cloud_instance terminate => "i-xxxxxxx";
  };
 

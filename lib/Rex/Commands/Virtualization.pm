@@ -42,7 +42,7 @@ With this module you can manage your virtualization.
  set virtualization => "VBox";
    
  use Data::Dumper;  
-
+ 
  print Dumper vm list => "all";
  print Dumper vm list => "running";
    

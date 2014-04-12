@@ -22,7 +22,7 @@ With this module you can manage Docker.
   
  print Dumper vm list => "all";
  print Dumper vm list => "running";
-
+ 
  print Dumper vm info => "vm01";
    
  vm destroy => "vm01";

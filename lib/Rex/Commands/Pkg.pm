@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
               source => "/export/files/etc/passwd"
             };
-
+ 
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS
@@ -106,7 +106,7 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
 
  task "prepare", "server01", sub {
    install package => "perl";
-
+ 
    # or if you have to install more packages.
    install package => [
                   "perl",
@@ -489,12 +489,12 @@ sub update_system {
 This function returns all installed packages and their version.
 
  task "get-installed", "server1", sub {
-
+ 
     for my $pkg (installed_packages()) {
       say "name    : " . $pkg->{"name"};
       say "  version: " . $pkg->{"version"};
     }
-
+ 
  };
 
 =cut
@@ -570,7 +570,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
    repository add => "repository-name",
       url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
-
+ 
  };
 
 To remove a repository just delete it with its name.
@@ -648,10 +648,10 @@ sub repository {
 To set an other package provider as the default, use this function.
 
  user "root";
-
+ 
  group "db" => "db[01..10]";
  package_provider_for SunOS => "blastwave";
-
+ 
  task "prepare", group => "db", sub {
     install package => "vim";
  };

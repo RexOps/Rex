@@ -50,7 +50,7 @@ This function load or unload a kernel module.
  task "load", sub {
    kmod load => "ipmi_si";
  };
-
+ 
  task "unload", sub {
    kmod unload => "ipmi_si";
  };

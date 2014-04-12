@@ -803,8 +803,6 @@ Mount devices.
           fs => "ext3",
           options => [qw/noatime async/],
           persistent => TRUE;
- 
-
  };
 
 =cut

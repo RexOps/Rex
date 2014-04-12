@@ -80,7 +80,7 @@ Perform a download. If no local file is specified it will download the file to t
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
-
+ 
  task "download", sub {
    download "http://www.rexify.org/index.html", "localfile.html";
  };

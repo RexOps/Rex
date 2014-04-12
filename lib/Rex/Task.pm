@@ -14,7 +14,7 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 =head1 SYNOPSIS
 
  use Rex::Task
-
+ 
   my $task = Rex::Task->new(name => "testtask");
   $task->set_server("remoteserver");
   $task->set_code(sub { say "Hello"; });

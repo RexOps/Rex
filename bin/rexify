@@ -27,10 +27,10 @@ my $opts = {};
 
 ######
 # default server
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.44/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.44/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.44/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.44/get/perldep/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/0.45/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/0.45/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/0.45/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.45/get/perldep/%s";
 
 my $AUTH_USER;
 my $AUTH_PASSWORD;

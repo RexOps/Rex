@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 =head1 NAME
 
 Rex::Box::Amazon - Rex/Boxes Amazon Module
@@ -18,54 +18,54 @@ To use this module inside your Rexfile you can use the following commands.
 
  use Rex::Commands::Boxes;
  set box => "Amazon", {
-    access_key => "your-access-key",
-    private_access_key => "your-private-access-key",
-    region => "ec2.eu-west-1.amazonaws.com",
-    zone => "eu-west-1a",
-    authkey => "default",
+   access_key => "your-access-key",
+   private_access_key => "your-private-access-key",
+   region => "ec2.eu-west-1.amazonaws.com",
+   zone => "eu-west-1a",
+   authkey => "default",
  };
-   
+  
  task "prepare_box", sub {
-    box {
-       my ($box) = @_;
-          
-       $box->name("mybox");
-       $box->ami("ami-c1aaabb5");
-       $box->type("m1.large"); 
-           
-       $box->security_group("default");
-           
-       $box->auth(
-          user => "root",
-          password => "box",
-       );
-           
-       $box->setup("setup_task");
-    };
+   box {
+     my ($box) = @_;
+       
+     $box->name("mybox");
+     $box->ami("ami-c1aaabb5");
+     $box->type("m1.large"); 
+        
+     $box->security_group("default");
+        
+     $box->auth(
+       user => "root",
+       password => "box",
+     );
+        
+     $box->setup("setup_task");
+   };
  };
 
 If you want to use a YAML file you can use the following template.
 
  type: Amazon
  amazon:
-    access_key: your-access-key
-    private_access_key: your-private-access-key
-    region: ec2.eu-west-1.amazonaws.com
-    zone: eu-west-1a
-    auth_key: default
+   access_key: your-access-key
+   private_access_key: your-private-access-key
+   region: ec2.eu-west-1.amazonaws.com
+   zone: eu-west-1a
+   auth_key: default
  vms:
-    vmone:
-       ami: ami-c1aaabb5
-       type: m1.large
-       security_group: default
-       setup: setup_task
+   vmone:
+     ami: ami-c1aaabb5
+     type: m1.large
+     security_group: default
+     setup: setup_task
 
 And then you can use it the following way in your Rexfile.
 
  use Rex::Commands::Box init_file => "file.yml";
-    
+   
  task "prepare_vms", sub {
-    boxes "init";
+   boxes "init";
  };
 
 
@@ -108,57 +108,57 @@ Constructor if used in OO mode.
 =cut
 
 sub new {
-   my $class = shift;
-   my $proto = ref($class) || $class;
-   my $self = $proto->SUPER::new(@_);
+  my $class = shift;
+  my $proto = ref($class) || $class;
+  my $self = $proto->SUPER::new(@_);
 
-   bless($self, ref($class) || $class);
+  bless($self, ref($class) || $class);
 
-   cloud_service "Amazon";
-   cloud_auth $self->{options}->{access_key}, $self->{options}->{private_access_key};
-   cloud_region $self->{options}->{region};
+  cloud_service "Amazon";
+  cloud_auth $self->{options}->{access_key}, $self->{options}->{private_access_key};
+  cloud_region $self->{options}->{region};
 
-   return $self;
+  return $self;
 }
 
 sub import_vm {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   # check if machine already exists
+  # check if machine already exists
 
-   # Rex::Logger::debug("VM already exists. Don't import anything.");
-   #my @vms = cloud_instance_list;
-   my @vms = $self->list_boxes;
+  # Rex::Logger::debug("VM already exists. Don't import anything.");
+  #my @vms = cloud_instance_list;
+  my @vms = $self->list_boxes;
 
-   my $vminfo;
-   my $vm_exists = 0;
-   for my $vm (@vms) {
-      if($vm->{name} && $vm->{name} eq $self->{name}) {
-         Rex::Logger::debug("VM already exists. Don't import anything.");
-         $vm_exists = 1;
-         $vminfo = $vm;
-      }
-   }
+  my $vminfo;
+  my $vm_exists = 0;
+  for my $vm (@vms) {
+    if($vm->{name} && $vm->{name} eq $self->{name}) {
+      Rex::Logger::debug("VM already exists. Don't import anything.");
+      $vm_exists = 1;
+      $vminfo = $vm;
+    }
+  }
 
-   if(! $vm_exists) {
-      # if not, create it
-      Rex::Logger::info("Creating Amazon instance $self->{name}.");
-      $vminfo = cloud_instance create => {
-         image_id => $self->{ami},
-         name     => $self->{name},
-         key      => $self->{options}->{auth_key},
-         zone     => $self->{options}->{zone},
-         type     => $self->{type} || "m1.large",
-         security_group => $self->{security_group} || "default",
-      };
-   }
+  if(! $vm_exists) {
+    # if not, create it
+    Rex::Logger::info("Creating Amazon instance $self->{name}.");
+    $vminfo = cloud_instance create => {
+      image_id => $self->{ami},
+      name    => $self->{name},
+      key    => $self->{options}->{auth_key},
+      zone    => $self->{options}->{zone},
+      type    => $self->{type} || "m1.large",
+      security_group => $self->{security_group} || "default",
+    };
+  }
 
-   # start if stopped
-   if($vminfo->{state} eq "stopped") {
-      cloud_instance start => $vminfo->{id};
-   }
+  # start if stopped
+  if($vminfo->{state} eq "stopped") {
+    cloud_instance start => $vminfo->{id};
+  }
 
-   $self->{info} = $vminfo;
+  $self->{info} = $vminfo;
 }
 
 =item ami($ami_id)
@@ -167,8 +167,8 @@ Set the AMI ID for the box.
 
 =cut
 sub ami {
-   my ($self, $ami) = @_;
-   $self->{ami} = $ami;
+  my ($self, $ami) = @_;
+  $self->{ami} = $ami;
 }
 
 =item type($type)
@@ -177,8 +177,8 @@ Set the type of the Instance. For example "m1.large".
 
 =cut
 sub type {
-   my ($self, $type) = @_;
-   $self->{type} = $type;
+  my ($self, $type) = @_;
+  $self->{type} = $type;
 }
 
 =item security_group($sec_group)
@@ -187,28 +187,28 @@ Set the Amazon security group for this Instance.
 
 =cut
 sub security_group {
-   my ($self, $sec_group) = @_;
-   $self->{security_group} = $sec_group;
+  my ($self, $sec_group) = @_;
+  $self->{security_group} = $sec_group;
 }
 
 sub provision_vm {
-   my ($self, @tasks) = @_;
+  my ($self, @tasks) = @_;
 
-   if(! @tasks) {
-      @tasks = @{ $self->{__tasks} };
-   }
+  if(! @tasks) {
+    @tasks = @{ $self->{__tasks} };
+  }
 
-   my $server = $self->ip;
+  my $server = $self->ip;
 
-   my ($ip, $port) = split(/:/, $server);
-   $port ||= 22;
+  my ($ip, $port) = split(/:/, $server);
+  $port ||= 22;
 
-   $self->wait_for_ssh($ip, $port);
+  $self->wait_for_ssh($ip, $port);
 
-   for my $task (@tasks) {
-      Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
-      Rex::TaskList->create()->get_task($task)->run($server);
-   }
+  for my $task (@tasks) {
+    Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
+    Rex::TaskList->create()->get_task($task)->run($server);
+  }
 }
 
 =item forward_port(%option)
@@ -226,49 +226,49 @@ Not available for Amazon Boxes.
 sub share_folder { Rex::Logger::debug("Not available for Amazon Boxes."); }
 
 sub list_boxes {
-   my ($self) = @_;
-   
-   my @vms = cloud_instance_list;
+  my ($self) = @_;
+  
+  my @vms = cloud_instance_list;
 
-   my @ret = grep { $_->{name} 
-                 && $_->{state} ne "terminated" 
-                 && $_->{state} ne "shutting-down"
-               } @vms; # only vms with names...
+  my @ret = grep { $_->{name} 
+            && $_->{state} ne "terminated" 
+            && $_->{state} ne "shutting-down"
+          } @vms; # only vms with names...
 
-   return @ret;
+  return @ret;
 }
 
 sub status {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   $self->info;
+  $self->info;
 
-   if($self->{info}->{state} eq "running") {
-      return "running";
-   }
-   else {
-      return "stopped";
-   }
+  if($self->{info}->{state} eq "running") {
+    return "running";
+  }
+  else {
+    return "stopped";
+  }
 }
 
 sub start {
-   my ($self) = @_;
-   
-   $self->info;
+  my ($self) = @_;
+  
+  $self->info;
 
-   Rex::Logger::info("Starting instance: " . $self->{name});
+  Rex::Logger::info("Starting instance: " . $self->{name});
 
-   cloud_instance start => $self->{info}->{id};
+  cloud_instance start => $self->{info}->{id};
 }
 
 sub stop {
-   my ($self) = @_;
-   
-   Rex::Logger::info("Stopping instance: " . $self->{name});
+  my ($self) = @_;
+  
+  Rex::Logger::info("Stopping instance: " . $self->{name});
 
-   $self->info;
+  $self->info;
 
-   cloud_instance stop => $self->{info}->{id};
+  cloud_instance stop => $self->{info}->{id};
 }
 
 =item info
@@ -277,18 +277,18 @@ Returns a hashRef of vm information.
 
 =cut
 sub info {
-   my ($self) = @_;
-   ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
-   return $self->{info};
+  my ($self) = @_;
+  ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
+  return $self->{info};
 }
 
 sub ip {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   # get instance info
-   ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
+  # get instance info
+  ($self->{info}) = grep { $_->{name} eq $self->{name} } $self->list_boxes;
 
-   return $self->{info}->{ip};
+  return $self->{info}->{ip};
 }
 
 =back

@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 package Rex::Interface::File::HTTP;
-   
+  
 use strict;
 use warnings;
 
@@ -17,79 +17,79 @@ use Rex::Interface::File::Base;
 use base qw(Rex::Interface::File::Base);
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = $proto->SUPER::new(@_);
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = $proto->SUPER::new(@_);
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub open {
-   my ($self, $mode, $file) = @_;
+  my ($self, $mode, $file) = @_;
 
-   $self->{__file} = $file;
-   $self->{__current_pos} = 0;
+  $self->{__file} = $file;
+  $self->{__current_pos} = 0;
 
-   if($mode eq ">>") {
-      my $fs = Rex::Interface::Fs->create;
-      eval {
-         my %stat = $fs->stat($file);
-         $self->{__current_pos} = $stat{size};
-      };
-   }
+  if($mode eq ">>") {
+    my $fs = Rex::Interface::Fs->create;
+    eval {
+      my %stat = $fs->stat($file);
+      $self->{__current_pos} = $stat{size};
+    };
+  }
 
-   Rex::Logger::debug("Opening $file with mode: $mode");
-   my $resp = connection->post("/file/open", {path => $file, mode => $mode});
-   return $resp->{ok};
+  Rex::Logger::debug("Opening $file with mode: $mode");
+  my $resp = connection->post("/file/open", {path => $file, mode => $mode});
+  return $resp->{ok};
 }
 
 sub read {
-   my ($self, $len) = @_;
+  my ($self, $len) = @_;
 
-   my $resp = connection->post("/file/read", {
-      path => $self->{__file},
-      start => $self->{__current_pos},
-      len => $len,
-   });
+  my $resp = connection->post("/file/read", {
+    path => $self->{__file},
+    start => $self->{__current_pos},
+    len => $len,
+  });
 
-   if($resp->{ok}) {
-      my $buf = decode_base64($resp->{buf});
-      $self->{__current_pos} += length($buf);
-      return $buf;
-   }
+  if($resp->{ok}) {
+    my $buf = decode_base64($resp->{buf});
+    $self->{__current_pos} += length($buf);
+    return $buf;
+  }
 
-   return;
+  return;
 }
 
 sub write {
-   my ($self, $buf) = @_;
+  my ($self, $buf) = @_;
 
-   my $resp = connection->post("/file/write_fh", {
-      path => $self->{__file},
-      start => $self->{__current_pos},
-      buf => encode_base64($buf),
-   });
+  my $resp = connection->post("/file/write_fh", {
+    path => $self->{__file},
+    start => $self->{__current_pos},
+    buf => encode_base64($buf),
+  });
 
-   if($resp->{ok}) {
-      $self->{__current_pos} += length($buf);
-      return length($buf);
-   }
+  if($resp->{ok}) {
+    $self->{__current_pos} += length($buf);
+    return length($buf);
+  }
 
-   return;
+  return;
 }
 
 sub seek {
-   my ($self, $pos) = @_;
-   $self->{__current_pos} = $pos;
+  my ($self, $pos) = @_;
+  $self->{__current_pos} = $pos;
 }
 
 sub close {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   delete $self->{__current_pos};
-   delete $self->{__file};
+  delete $self->{__current_pos};
+  delete $self->{__file};
 }
 
 1;

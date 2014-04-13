@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 package Rex::Cron::Base;
 
 use strict;
@@ -19,218 +19,218 @@ use Data::Dumper;
 use Rex::Helper::Path;
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = { @_ };
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub list {
-   my ($self) = @_;
-   return @{ $self->{cron} };
+  my ($self) = @_;
+  return @{ $self->{cron} };
 }
 
 sub list_jobs {
-   my ($self) = @_;
-   my @jobs = @{ $self->{cron} };
-   my @ret = map { $_ = { line => $_->{line}, %{ $_->{cron} } } } grep { $_->{type} eq "job" } @jobs;
+  my ($self) = @_;
+  my @jobs = @{ $self->{cron} };
+  my @ret = map { $_ = { line => $_->{line}, %{ $_->{cron} } } } grep { $_->{type} eq "job" } @jobs;
 }
 
 sub list_envs {
-   my ($self) = @_;
-   my @jobs = @{ $self->{cron} };
-   my @ret = grep { $_->{type} eq "env" } @jobs;
+  my ($self) = @_;
+  my @jobs = @{ $self->{cron} };
+  my @ret = grep { $_->{type} eq "env" } @jobs;
 }
 
 sub add {
-   my ($self, %config) = @_;
+  my ($self, %config) = @_;
 
-   $config{"minute"}          = "*" unless defined $config{"minute"};
-   $config{"hour"}            = "*" unless defined $config{"hour"};
-   $config{"day_of_month"}  ||= "*",
-   $config{"month"}         ||= "*";
-   $config{"day_of_week"}     = "*" unless defined $config{"day_of_week"};
-   $config{"command"}       ||= "false",
+  $config{"minute"}       = "*" unless defined $config{"minute"};
+  $config{"hour"}        = "*" unless defined $config{"hour"};
+  $config{"day_of_month"}  ||= "*",
+  $config{"month"}      ||= "*";
+  $config{"day_of_week"}    = "*" unless defined $config{"day_of_week"};
+  $config{"command"}     ||= "false",
 
 
-   my $new_cron = sprintf("%s %s %s %s %s %s", $config{"minute"},
-                                               $config{"hour"},
-                                               $config{"day_of_month"},
-                                               $config{"month"},
-                                               $config{"day_of_week"},
-                                               $config{"command"},
-   );
+  my $new_cron = sprintf("%s %s %s %s %s %s", $config{"minute"},
+                                $config{"hour"},
+                                $config{"day_of_month"},
+                                $config{"month"},
+                                $config{"day_of_week"},
+                                $config{"command"},
+  );
 
-   my $dupe = grep { $_->{line} eq $new_cron } @{ $self->{cron} };
-   if($dupe) {
-      Rex::Logger::debug("Job \"$new_cron\" already installed, skipping.");
-      return;
-   }
+  my $dupe = grep { $_->{line} eq $new_cron } @{ $self->{cron} };
+  if($dupe) {
+    Rex::Logger::debug("Job \"$new_cron\" already installed, skipping.");
+    return;
+  }
 
-   push(@{ $self->{cron} }, {
-      type => "job",
-      line => $new_cron,
-      cron => \%config,
-   });
+  push(@{ $self->{cron} }, {
+    type => "job",
+    line => $new_cron,
+    cron => \%config,
+  });
 }
 
 sub add_env {
-   my ($self, $name, $value) = @_;
-   unshift(@{ $self->{cron} }, {
-      type  => "env",
-      line  => "$name=\"$value\"",
-      name  => $name,
-      value => $value,
-   });
+  my ($self, $name, $value) = @_;
+  unshift(@{ $self->{cron} }, {
+    type  => "env",
+    line  => "$name=\"$value\"",
+    name  => $name,
+    value => $value,
+  });
 }
 
 sub delete_job {
-   my ($self, $num) = @_;
-   my @jobs = $self->list_jobs;
+  my ($self, $num) = @_;
+  my @jobs = $self->list_jobs;
 
-   my $i = 0;
-   my $to_delete;
-   for my $j (@{ $self->{cron} }) {
-      if($j->{line} eq $jobs[$num]->{line}) {
-         $to_delete = $i;
-         last;
-      }
+  my $i = 0;
+  my $to_delete;
+  for my $j (@{ $self->{cron} }) {
+    if($j->{line} eq $jobs[$num]->{line}) {
+      $to_delete = $i;
+      last;
+    }
 
-      $i++;
-   }
+    $i++;
+  }
 
-   unless(defined $to_delete) {
-      die("Cron Entry $num not found.");
-   }
+  unless(defined $to_delete) {
+    die("Cron Entry $num not found.");
+  }
 
-   $self->delete($to_delete);
+  $self->delete($to_delete);
 }
 
 sub delete_env {
-   my ($self, $num) = @_;
+  my ($self, $num) = @_;
 
-   my @jobs = $self->list_envs;
+  my @jobs = $self->list_envs;
 
-   my $i = 0;
-   my $to_delete;
-   for my $j (@{ $self->{cron} }) {
-      if($j->{line} eq $jobs[$num]->{line}) {
-         $to_delete = $i;
-         last;
-      }
+  my $i = 0;
+  my $to_delete;
+  for my $j (@{ $self->{cron} }) {
+    if($j->{line} eq $jobs[$num]->{line}) {
+      $to_delete = $i;
+      last;
+    }
 
-      $i++;
-   }
+    $i++;
+  }
 
-   unless(defined $to_delete) {
-      die("Cron Entry $num not found.");
-   }
+  unless(defined $to_delete) {
+    die("Cron Entry $num not found.");
+  }
 
-   $self->delete($to_delete);
+  $self->delete($to_delete);
 }
 
 sub delete {
-   my ($self, $num) = @_;
-   splice(@{ $self->{cron} }, $num, 1);
+  my ($self, $num) = @_;
+  splice(@{ $self->{cron} }, $num, 1);
 }
 
 # returns a filename where the new cron is written to
 # after that the cronfile must be activated
 sub write_cron {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   my $rnd_file = get_tmp_file;
+  my $rnd_file = get_tmp_file;
 
-   my @lines = map { $_ = $_->{line} } @{ $self->{cron} };
+  my @lines = map { $_ = $_->{line} } @{ $self->{cron} };
 
-   my $fh = file_write $rnd_file;
-   $fh->write(join("\n", @lines) . "\n");
-   $fh->close;
+  my $fh = file_write $rnd_file;
+  $fh->write(join("\n", @lines) . "\n");
+  $fh->close;
 
-   return $rnd_file;
+  return $rnd_file;
 }
 
 sub activate_user_cron {
-   my ($self, $file, $user) = @_;
-   i_run "crontab -u $user $file";
-   unlink $file;
+  my ($self, $file, $user) = @_;
+  i_run "crontab -u $user $file";
+  unlink $file;
 }
 
 sub read_user_cron {
-   my ($self, $user) = @_;
-   my @lines = i_run "crontab -u $user -l";
-   $self->parse_cron(@lines);
+  my ($self, $user) = @_;
+  my @lines = i_run "crontab -u $user -l";
+  $self->parse_cron(@lines);
 }
 
 sub parse_cron {
-   my ($self, @lines) = @_;
+  my ($self, @lines) = @_;
 
-   chomp @lines;
+  chomp @lines;
 
-   my @cron;
+  my @cron;
 
-   for my $line (@lines) {
+  for my $line (@lines) {
 
-      # comment
-      if($line =~ m/^#/) {
-         push(@cron, {
-            type => "comment",
-            line => $line,
-         });
-      }
+    # comment
+    if($line =~ m/^#/) {
+      push(@cron, {
+        type => "comment",
+        line => $line,
+      });
+    }
 
-      # empty line
-      elsif($line =~ m/^\s*$/) {
-         push(@cron, {
-            type => "empty",
-            line => $line,
-         });
-      }
+    # empty line
+    elsif($line =~ m/^\s*$/) {
+      push(@cron, {
+        type => "empty",
+        line => $line,
+      });
+    }
 
-      # job
-      elsif($line =~ m/^(@|\*|[0-9])/) {
-         my ($min, $hour, $day, $month, $dow, $cmd) = split(/\s+/, $line, 6);
-         push(@cron, {
-            type => "job",
-            line => $line,
-            cron => {
-               minute       => $min,
-               hour         => $hour,
-               day_of_month => $day,
-               month        => $month,
-               day_of_week  => $dow,
-               command      => $cmd,
-            },
-         });
-      }
+    # job
+    elsif($line =~ m/^(@|\*|[0-9])/) {
+      my ($min, $hour, $day, $month, $dow, $cmd) = split(/\s+/, $line, 6);
+      push(@cron, {
+        type => "job",
+        line => $line,
+        cron => {
+          minute     => $min,
+          hour      => $hour,
+          day_of_month => $day,
+          month      => $month,
+          day_of_week  => $dow,
+          command    => $cmd,
+        },
+      });
+    }
 
-      elsif($line =~ m/=/) {
-         my ($name, $value) = split(/=/, $line, 2);
-         $name  =~ s/^\s+//;
-         $name  =~ s/\s+$//;
-         $value =~ s/^\s+//;
-         $value =~ s/\s+$//;
+    elsif($line =~ m/=/) {
+      my ($name, $value) = split(/=/, $line, 2);
+      $name  =~ s/^\s+//;
+      $name  =~ s/\s+$//;
+      $value =~ s/^\s+//;
+      $value =~ s/\s+$//;
 
-         push(@cron, {
-            type  => "env",
-            line  => $line,
-            name  => $name,
-            value => $value,
-         });
-      }
+      push(@cron, {
+        type  => "env",
+        line  => $line,
+        name  => $name,
+        value => $value,
+      });
+    }
 
-      else {
-         Rex::Logger::debug("Error parsing cron line: $line");
-         next;
-      }
+    else {
+      Rex::Logger::debug("Error parsing cron line: $line");
+      next;
+    }
 
-   }
+  }
 
-   $self->{cron} = \@cron;
-   return @cron;
+  $self->{cron} = \@cron;
+  return @cron;
 }
 
 1;

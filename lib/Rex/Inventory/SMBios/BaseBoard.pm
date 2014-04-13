@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 package Rex::Inventory::SMBios::BaseBoard;
@@ -15,18 +15,18 @@ use base qw(Rex::Inventory::SMBios::Section);
 __PACKAGE__->section("base board");
 
 __PACKAGE__->has([ 'Manufacturer', 
-                   'Serial Number',
-                   'Version',
-                   { from => 'Product', key => 'Product Name'}], 1);
+             'Serial Number',
+             'Version',
+             { from => 'Product', key => 'Product Name'}], 1);
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = $that->SUPER::new(@_);
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = $that->SUPER::new(@_);
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 1;

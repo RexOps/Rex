@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -48,63 +48,63 @@ use vars qw(@EXPORT);
 This function will return the md5 sum (hexadecimal) for the given file.
 
  task "md5", "server01", sub {
-    my $md5 = md5("/etc/passwd");
+   my $md5 = md5("/etc/passwd");
  };
 
 =cut
 
 sub md5 {
-   my ($file) = @_;
+  my ($file) = @_;
 
-   my $fs = Rex::Interface::Fs->create;
-   if($fs->is_file($file)) {
+  my $fs = Rex::Interface::Fs->create;
+  if($fs->is_file($file)) {
 
-      Rex::Logger::debug("Calculating Checksum (md5) of $file");
+    Rex::Logger::debug("Calculating Checksum (md5) of $file");
 
-      my $script = q|
-      use Digest::MD5;
-      print Digest::MD5::md5_hex(<>) . "\n";
-      |;
+    my $script = q|
+    use Digest::MD5;
+    print Digest::MD5::md5_hex(<>) . "\n";
+    |;
 
-      my $rnd_file = get_tmp_file;
+    my $rnd_file = get_tmp_file;
 
-      my $fh = Rex::Interface::File->create;
-      $fh->open(">", $rnd_file);
-      $fh->write($script);
-      $fh->close;
+    my $fh = Rex::Interface::File->create;
+    $fh->open(">", $rnd_file);
+    $fh->write($script);
+    $fh->close;
 
-      my $exec = Rex::Interface::Exec->create;
-      my $md5;
+    my $exec = Rex::Interface::Exec->create;
+    my $md5;
 
-      if(Rex::is_local() && $^O =~ m/^MSWin/) {
-         $md5 = $exec->exec("perl $rnd_file \"$file\"");
-      }
-      else {
-         $md5 = $exec->exec("perl $rnd_file '$file'");
-      }
+    if(Rex::is_local() && $^O =~ m/^MSWin/) {
+      $md5 = $exec->exec("perl $rnd_file \"$file\"");
+    }
+    else {
+      $md5 = $exec->exec("perl $rnd_file '$file'");
+    }
 
-      unless($? == 0) {
-         ($md5) = split(/\s/, $exec->exec("md5sum '$file'"));
-      }
+    unless($? == 0) {
+      ($md5) = split(/\s/, $exec->exec("md5sum '$file'"));
+    }
 
-      unless($? == 0) {
-         Rex::Logger::info("Unable to get md5 sum of $file");
-         die("Unable to get md5 sum of $file");
-      }
+    unless($? == 0) {
+      Rex::Logger::info("Unable to get md5 sum of $file");
+      die("Unable to get md5 sum of $file");
+    }
 
-      Rex::Interface::Fs->create->unlink($rnd_file);
+    Rex::Interface::Fs->create->unlink($rnd_file);
 
-      Rex::Logger::debug("MD5SUM ($file): $md5");
-      $md5 =~ s/[\r\n]//gms;
-      return $md5;
-   
-   }
-   else {
-      
-      Rex::Logger::debug("File $file not found.");
-      die("File $file not found");
+    Rex::Logger::debug("MD5SUM ($file): $md5");
+    $md5 =~ s/[\r\n]//gms;
+    return $md5;
+  
+  }
+  else {
+    
+    Rex::Logger::debug("File $file not found.");
+    die("File $file not found");
 
-   }
+  }
 }
 
 =back

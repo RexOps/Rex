@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+  
 package Rex::Interface::File::OpenSSH;
-   
+  
 use strict;
 use warnings;
 
@@ -16,61 +16,61 @@ use Net::SFTP::Foreign::Constants qw(:flags :fxp);
 use base qw(Rex::Interface::File::Base);
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = $proto->SUPER::new(@_);
+  my $that = shift;
+  my $proto = ref($that) || $that;
+  my $self = $proto->SUPER::new(@_);
 
-   bless($self, $proto);
+  bless($self, $proto);
 
-   return $self;
+  return $self;
 }
 
 sub open {
-   my ($self, $mode, $file) = @_;
+  my ($self, $mode, $file) = @_;
 
-   Rex::Logger::debug("Opening $file with mode: $mode");
+  Rex::Logger::debug("Opening $file with mode: $mode");
 
-   my $sftp = Rex::get_sftp();
-   if($mode eq ">") {
-      $self->{fh} = $sftp->open($file, SSH2_FXF_WRITE | SSH2_FXF_CREAT | SSH2_FXF_TRUNC );
-   }
-   elsif($mode eq ">>") {
-      $self->{fh} = $sftp->open($file,  SSH2_FXF_WRITE | SSH2_FXF_APPEND );
-      my $fs = Rex::Interface::Fs->create;
-      my %stat = $fs->stat($file);
-      $self->{fh}->seek($stat{size}, 0);
-   }
-   elsif($mode eq "<") {
-      $self->{fh} = $sftp->open($file, SSH2_FXF_READ);
-   }
+  my $sftp = Rex::get_sftp();
+  if($mode eq ">") {
+    $self->{fh} = $sftp->open($file, SSH2_FXF_WRITE | SSH2_FXF_CREAT | SSH2_FXF_TRUNC );
+  }
+  elsif($mode eq ">>") {
+    $self->{fh} = $sftp->open($file,  SSH2_FXF_WRITE | SSH2_FXF_APPEND );
+    my $fs = Rex::Interface::Fs->create;
+    my %stat = $fs->stat($file);
+    $self->{fh}->seek($stat{size}, 0);
+  }
+  elsif($mode eq "<") {
+    $self->{fh} = $sftp->open($file, SSH2_FXF_READ);
+  }
 
-   return $self->{fh};
+  return $self->{fh};
 }
 
 sub read {
-   my ($self, $len) = @_;
+  my ($self, $len) = @_;
 
-   my $sftp = Rex::get_sftp();
-   my $buf = $sftp->read($self->{fh}, $len);
-   return $buf;
+  my $sftp = Rex::get_sftp();
+  my $buf = $sftp->read($self->{fh}, $len);
+  return $buf;
 }
 
 sub write {
-   my ($self, $buf) = @_;
-   my $sftp = Rex::get_sftp();
-   $sftp->write($self->{fh}, $buf);
+  my ($self, $buf) = @_;
+  my $sftp = Rex::get_sftp();
+  $sftp->write($self->{fh}, $buf);
 }
 
 sub seek {
-   my ($self, $pos) = @_;
-   my $sftp = Rex::get_sftp();
-   $sftp->seek($self->{fh}, $pos, 0);
+  my ($self, $pos) = @_;
+  my $sftp = Rex::get_sftp();
+  $sftp->seek($self->{fh}, $pos, 0);
 }
 
 sub close {
-   my ($self) = @_;
-   my $sftp = Rex::get_sftp();
-   $sftp->close($self->{fh});
+  my ($self) = @_;
+  my $sftp = Rex::get_sftp();
+  $sftp->close($self->{fh});
 }
 
 1;

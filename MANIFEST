@@ -17,6 +17,7 @@ lib/Rex/Cloud.pm
 lib/Rex/Cloud/Amazon.pm
 lib/Rex/Cloud/Base.pm
 lib/Rex/Cloud/Jiffybox.pm
+lib/Rex/Cloud/OpenStack.pm
 lib/Rex/CMDB.pm
 lib/Rex/CMDB/YAML.pm
 lib/Rex/Commands.pm
@@ -35,6 +36,7 @@ lib/Rex/Commands/Kernel.pm
 lib/Rex/Commands/LVM.pm
 lib/Rex/Commands/MD5.pm
 lib/Rex/Commands/Network.pm
+lib/Rex/Commands/Notify.pm
 lib/Rex/Commands/Partition.pm
 lib/Rex/Commands/Pkg.pm
 lib/Rex/Commands/Process.pm
@@ -125,6 +127,7 @@ lib/Rex/Interface/Fs/SSH.pm
 lib/Rex/Interface/Fs/Sudo.pm
 lib/Rex/Interface/Shell.pm
 lib/Rex/Interface/Shell/Ash.pm
+lib/Rex/Interface/Shell/Base.pm
 lib/Rex/Interface/Shell/Bash.pm
 lib/Rex/Interface/Shell/Csh.pm
 lib/Rex/Interface/Shell/Default.pm
@@ -148,6 +151,8 @@ lib/Rex/Inventory/Hal/Object/Net.pm
 lib/Rex/Inventory/Hal/Object/Storage.pm
 lib/Rex/Inventory/Hal/Object/Volume.pm
 lib/Rex/Inventory/HP/ACU.pm
+lib/Rex/Inventory/Proc.pm
+lib/Rex/Inventory/Proc/Cpuinfo.pm
 lib/Rex/Inventory/SMBios.pm
 lib/Rex/Inventory/SMBios/BaseBoard.pm
 lib/Rex/Inventory/SMBios/Bios.pm
@@ -157,6 +162,7 @@ lib/Rex/Inventory/SMBios/MemoryArray.pm
 lib/Rex/Inventory/SMBios/Section.pm
 lib/Rex/Inventory/SMBios/SystemInformation.pm
 lib/Rex/Logger.pm
+lib/Rex/Notify.pm
 lib/Rex/Output.pm
 lib/Rex/Output/JUnit.pm
 lib/Rex/Pkg.pm
@@ -297,6 +303,7 @@ t/dmi.fbsd.out
 t/dmi.linux.out
 t/dmi.obsd.out
 t/dmi.t
+t/env.t
 t/file.t
 t/fs.t
 t/group.t
@@ -311,10 +318,12 @@ t/ifconfig.out3
 t/ifconfig.out4
 t/ifconfig.out5
 t/ifconfig.out6
+t/ifconfig.out7
 t/ini.t
 t/interface_fs_local.t
 t/ip.out1
 t/ip.out2
+t/ip.out3
 t/iptables.t
 t/last_command_output.t
 t/libvirt.t

@@ -1,4 +1,4 @@
-use Test::More tests => 17;
+use Test::More tests => 19;
 
 use_ok 'Rex::Commands::Inventory';
 
@@ -18,4 +18,5 @@ use_ok 'Rex::Inventory::Hal::Object';
 use_ok 'Rex::Inventory::Hal';
 use_ok 'Rex::Inventory::HP::ACU';
 use_ok 'Rex::Inventory';
-
+use_ok 'Rex::Inventory::Proc';
+use_ok 'Rex::Inventory::Proc::Cpuinfo';

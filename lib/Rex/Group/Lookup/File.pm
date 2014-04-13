@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -23,16 +23,16 @@ With this module you can define hostgroups out of a file.
 =over 4
 
 =cut
-   
+  
 package Rex::Group::Lookup::File;
-   
+  
 use strict;
 use warnings;
 
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
-    
+   
 @EXPORT = qw(lookup_file);
 
 
@@ -45,15 +45,15 @@ With this function you can read hostnames from a file. Every hostname in one lin
 
 =cut
 sub lookup_file {
-   my ($file) = @_;
+  my ($file) = @_;
 
-   open(my $fh, "<", $file) or die($!);
-   my @content = grep { !/^\s*$|^#/ } <$fh>;
-   close($fh);
+  open(my $fh, "<", $file) or die($!);
+  my @content = grep { !/^\s*$|^#/ } <$fh>;
+  close($fh);
 
-   chomp @content;
+  chomp @content;
 
-   return @content;
+  return @content;
 }
 
 =back

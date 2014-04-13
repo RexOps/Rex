@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
-# vim: set ts=3 sw=3 tw=0:
+#
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
+
 package Rex::Interface::Exec::SSH;
-   
+
 use strict;
 use warnings;
 
@@ -15,74 +15,106 @@ use Rex::Interface::Shell;
 require Rex::Commands;
 
 sub new {
-   my $that = shift;
-   my $proto = ref($that) || $that;
-   my $self = { @_ };
+  my $that  = shift;
+  my $proto = ref($that) || $that;
+  my $self  = {@_};
 
-   bless($self, $proto);
+  bless( $self, $proto );
 
-   return $self;
+  return $self;
+}
+
+sub direct_exec {
+  my ($self, $exec, $option) = @_;
+
+  Rex::Commands::profiler()->start("direct_exec: $exec");
+
+  Rex::Logger::debug("SSH/executing: $exec");
+  my ( $out, $err ) = $self->_exec( $exec, $option );
+
+  Rex::Commands::profiler()->end("direct_exec: $exec");
+
+  Rex::Logger::debug($out) if ($out);
+  if ($err) {
+    Rex::Logger::debug("========= ERR ============");
+    Rex::Logger::debug($err);
+    Rex::Logger::debug("========= ERR ============");
+  }
+
+  if (wantarray) { return ( $out, $err ); }
+
+  return $out;
 }
 
 sub exec {
-   my ($self, $cmd, $path, $option) = @_;
+  my ( $self, $cmd, $path, $option ) = @_;
 
-   Rex::Logger::debug("Executing: $cmd");
+  Rex::Logger::debug("Executing: $cmd");
 
-   Rex::Commands::profiler()->start("exec: $cmd");
+  Rex::Commands::profiler()->start("exec: $cmd");
 
-   my $used_shell = $self->_get_shell();
+  my $used_shell = $self->_get_shell();
 
-   my $shell = Rex::Interface::Shell->create($used_shell);
+  my $shell;
 
-   $shell->set_locale("C");
-   $shell->path($path);
+  if ( $option->{_force_sh} ) {
+    $shell = Rex::Interface::Shell->create("Sh");
+  }
+  else {
+    $shell = Rex::Interface::Shell->create($used_shell);
+  }
 
-   if(Rex::Config->get_source_global_profile) {
-       $shell->source_global_profile(1);
-   }
+  $shell->set_locale("C");
+  $shell->path($path);
 
-   if(Rex::Config->get_source_profile) {
-       $shell->source_profile(1);
-   }
+  if ( Rex::Config->get_source_global_profile ) {
+    $shell->source_global_profile(1);
+  }
 
-   my $exec = $shell->exec($cmd, $option);
-   Rex::Logger::debug("SSH/executing: $exec");
-   my ($out, $err) = $self->_exec($exec, $option);
+  if ( Rex::Config->get_source_profile ) {
+    $shell->source_profile(1);
+  }
 
-   Rex::Commands::profiler()->end("exec: $cmd");
+  if(exists $option->{env}) {
+    $shell->set_environment($option->{env});
+  }
 
-   Rex::Logger::debug($out) if ($out);
-   if($err) {
-      Rex::Logger::debug("========= ERR ============");
-      Rex::Logger::debug($err);
-      Rex::Logger::debug("========= ERR ============");
-   }
+  my $exec = $shell->exec( $cmd, $option );
+  Rex::Logger::debug("SSH/executing: $exec");
+  my ( $out, $err ) = $self->_exec( $exec, $option );
 
-   if(wantarray) { return ($out, $err); }
+  Rex::Commands::profiler()->end("exec: $cmd");
 
-   return $out;
+  Rex::Logger::debug($out) if ($out);
+  if ($err) {
+    Rex::Logger::debug("========= ERR ============");
+    Rex::Logger::debug($err);
+    Rex::Logger::debug("========= ERR ============");
+  }
+
+  if (wantarray) { return ( $out, $err ); }
+
+  return $out;
 }
 
 sub _exec {
-   my ($self, $exec, $option) = @_;
+  my ( $self, $exec, $option ) = @_;
 
-   my $callback = $option->{continuous_read} || undef;
-   
-   my $ssh = Rex::is_ssh();
-   my ($out, $err) = net_ssh2_exec($ssh, $exec, $callback);
+  my $callback = $option->{continuous_read} || undef;
 
-   return ($out, $err);
+  my $ssh = Rex::is_ssh();
+  my ( $out, $err ) = net_ssh2_exec( $ssh, $exec, $callback );
+
+  return ( $out, $err );
 }
 
 sub _get_shell {
-   my ($self) = @_;
+  my ($self) = @_;
 
-   my ($shell_path) = $self->_exec("echo \$SHELL");
-   chomp $shell_path;
-   my $used_shell = basename($shell_path);
-
-   return $used_shell;
+  my ($shell_path) = $self->_exec("echo \$SHELL");
+  chomp $shell_path;
+  my $used_shell = basename($shell_path);
+  return $used_shell;
 }
 
 1;

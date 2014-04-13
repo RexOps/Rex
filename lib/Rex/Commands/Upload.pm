@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -15,7 +15,7 @@ With this module you can upload a local file via sftp to a remote host.
 =head1 SYNOPSIS
 
  task "upload", "remoteserver", sub {
-    upload "localfile", "/remote/file";
+   upload "localfile", "/remote/file";
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -49,7 +49,7 @@ use base qw(Rex::Exporter);
 Perform an upload. If $remote is a directory the file will be uploaded to that directory.
 
  task "upload", "remoteserver", sub {
-    upload "localfile", "/path";
+   upload "localfile", "/path";
  };
 
 
@@ -80,105 +80,105 @@ This gets executed right before the upload() function returns.
 
 sub upload {
 
-   #### check and run before hook
-   eval {
-      my @new_args = Rex::Hook::run_hook(upload => "before", @_);
-      if(@new_args) {
-         @_ = @new_args;
-      }
-      1;
-   } or do {
-      die("Before-Hook failed. Canceling upload() action: $@");
-   };
-   ##############################
+  #### check and run before hook
+  eval {
+    my @new_args = Rex::Hook::run_hook(upload => "before", @_);
+    if(@new_args) {
+      @_ = @new_args;
+    }
+    1;
+  } or do {
+    die("Before-Hook failed. Canceling upload() action: $@");
+  };
+  ##############################
 
-   my ($local, $remote) = @_;
+  my ($local, $remote) = @_;
 
-   $local  = resolv_path($local, 1);
-   $remote = resolv_path($remote);
+  $local  = resolv_path($local, 1);
+  $remote = resolv_path($remote);
 
-   my $fs = Rex::Interface::Fs->create;
+  my $fs = Rex::Interface::Fs->create;
 
-   # if remote not set, use name of local.
-   # must be done before the next line.
-   unless($remote) {
-      $remote = basename($local);
-   }
+  # if remote not set, use name of local.
+  # must be done before the next line.
+  unless($remote) {
+    $remote = basename($local);
+  }
 
-   $local = Rex::Helper::Path::get_file_path($local, caller());
+  $local = Rex::Helper::Path::get_file_path($local, caller());
 
-   # if there is a file called filename.environment then use this file
-   # ex: 
-   # upload "files/hosts", "/etc/hosts";
-   # 
-   # rex -E live ...
-   # will first look if files/hosts.live is available, if not it will
-   # use files/hosts
+  # if there is a file called filename.environment then use this file
+  # ex: 
+  # upload "files/hosts", "/etc/hosts";
+  # 
+  # rex -E live ...
+  # will first look if files/hosts.live is available, if not it will
+  # use files/hosts
 
-   my $old_local = $local; # for the upload location use the given name
+  my $old_local = $local; # for the upload location use the given name
 
-   if(-f "$local." . Rex::Config->get_environment) {
-      $local = "$local." . Rex::Config->get_environment;
-   }
+  if(-f "$local." . Rex::Config->get_environment) {
+    $local = "$local." . Rex::Config->get_environment;
+  }
 
-   if(! -f $local) {
-      Rex::Logger::info("File Not Found: $local");
-      die("File $local not found.");
-   }
+  if(! -f $local) {
+    Rex::Logger::info("File Not Found: $local");
+    die("File $local not found.");
+  }
 
-   if(is_dir($remote)) {
-      $remote = $remote . '/' . basename($old_local);
-   }
+  if(is_dir($remote)) {
+    $remote = $remote . '/' . basename($old_local);
+  }
 
-   # first get local md5
-   my $local_md5;
-   LOCAL {
-      $local_md5 = md5($local);
-   };
+  # first get local md5
+  my $local_md5;
+  LOCAL {
+    $local_md5 = md5($local);
+  };
 
-   if(! $local_md5) {
-      die("Error getting local md5 sum of $local");
-   }
+  if(! $local_md5) {
+    die("Error getting local md5 sum of $local");
+  }
 
-   # than get remote md5 to test if we need to upload the file
-   my $remote_md5 = "";
-   eval {
-      $remote_md5 = md5($remote);
-   };
+  # than get remote md5 to test if we need to upload the file
+  my $remote_md5 = "";
+  eval {
+    $remote_md5 = md5($remote);
+  };
 
-   my $__ret;
+  my $__ret;
 
-   if($local_md5 && $remote_md5 && $local_md5 eq $remote_md5) {
-      Rex::Logger::debug("local md5 and remote md5 are the same: $local_md5 eq $remote_md5. Not uploading.");
-      if(Rex::Config->get_do_reporting) {
-         $__ret = {changed => 0, ret => 0};
-      }
-   }
-   else {
+  if($local_md5 && $remote_md5 && $local_md5 eq $remote_md5) {
+    Rex::Logger::debug("local md5 and remote md5 are the same: $local_md5 eq $remote_md5. Not uploading.");
+    if(Rex::Config->get_do_reporting) {
+      $__ret = {changed => 0, ret => 0};
+    }
+  }
+  else {
 
-      Rex::Logger::debug("Uploading: $local to $remote");
+    Rex::Logger::debug("Uploading: $local to $remote");
 
-      #### check and run before_change hook
-      Rex::Hook::run_hook(upload => "before_change", $local, $remote);
-      ##############################
+    #### check and run before_change hook
+    Rex::Hook::run_hook(upload => "before_change", $local, $remote);
+    ##############################
 
-      $__ret = $fs->upload($local, $remote);
+    $__ret = $fs->upload($local, $remote);
 
-      #### check and run after_change hook
-      Rex::Hook::run_hook(upload => "after_change", $local, $remote, $__ret);
-      ##############################
+    #### check and run after_change hook
+    Rex::Hook::run_hook(upload => "after_change", $local, $remote, $__ret);
+    ##############################
 
-      if(Rex::Config->get_do_reporting) {
-         $__ret = {changed => 1, ret => $__ret };
-      }
+    if(Rex::Config->get_do_reporting) {
+      $__ret = {changed => 1, ret => $__ret };
+    }
 
-   }
+  }
 
-   #### check and run before hook
-   Rex::Hook::run_hook(upload => "after", @_, $__ret);
-   ##############################
+  #### check and run before hook
+  Rex::Hook::run_hook(upload => "after", @_, $__ret);
+  ##############################
 
-   return $__ret;
+  return $__ret;
 }
 
 =back

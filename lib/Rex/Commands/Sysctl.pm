@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -48,45 +48,45 @@ This function will read the sysctl key $key.
 If $val is given, then this function will set the sysctl key $key.
 
  task "tune", "server01", sub {
-    if( sysctl("net.ipv4.ip_forward") == 0 ) {
-       sysctl "net.ipv4.ip_forward" => 1;
-    }
+   if( sysctl("net.ipv4.ip_forward") == 0 ) {
+     sysctl "net.ipv4.ip_forward" => 1;
+   }
  };
 
 =cut
 
 sub sysctl {
 
-   my ($key, $val) = @_;
+  my ($key, $val) = @_;
 
-   if($val) {
+  if($val) {
 
-      Rex::Logger::debug("Setting sysctl key $key to $val");
-      my $ret = run "/sbin/sysctl -n $key";
+    Rex::Logger::debug("Setting sysctl key $key to $val");
+    my $ret = run "/sbin/sysctl -n $key";
 
-      if($ret ne $val) {
-         run "/sbin/sysctl -w $key=$val";
-         if($? != 0) {
-            die("Sysctl failed $key -> $val");
-         }
+    if($ret ne $val) {
+      run "/sbin/sysctl -w $key=$val";
+      if($? != 0) {
+        die("Sysctl failed $key -> $val");
       }
-      else {
-         Rex::Logger::debug("$key has already value $val");
-      }
+    }
+    else {
+      Rex::Logger::debug("$key has already value $val");
+    }
 
-   }
-   else {
-   
-      my $ret = run "/sbin/sysctl -n $key";
-      if($? == 0) {
-         return $ret;
-      }
-      else {
-         Rex::Logger::info("Error getting sysctl key: $key", "warn");
-         die("Error getting sysctl key: $key");
-      }
+  }
+  else {
+  
+    my $ret = run "/sbin/sysctl -n $key";
+    if($? == 0) {
+      return $ret;
+    }
+    else {
+      Rex::Logger::info("Error getting sysctl key: $key", "warn");
+      die("Error getting sysctl key: $key");
+    }
 
-   }
+  }
 
 }
 

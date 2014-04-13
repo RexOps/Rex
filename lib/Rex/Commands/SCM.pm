@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -15,29 +15,29 @@ With this module you can checkout subversion and git repositories.
 =head1 SYNOPSIS
 
  use Rex::Commands::SCM;
-     
+    
  set repository => "myrepo",
-      url => "git@foo.bar:myrepo.git";
-        
+    url => "git@foo.bar:myrepo.git";
+      
  set repository => "myrepo2",
-      url => "https://foo.bar/myrepo",
-      type => "subversion",
-      username => "myuser",
-      password => "mypass";
-           
- task "checkout", sub {
-    checkout "myrepo";
+    url => "https://foo.bar/myrepo",
+    type => "subversion",
+    username => "myuser",
+    password => "mypass";
         
-    checkout "myrepo",
-       path => "webapp";
-           
-    checkout "myrepo",
-       path => "webapp",
-       branch => 1.6;      # branch only for git
-           
-    checkout "myrepo2";
+ task "checkout", sub {
+   checkout "myrepo";
+      
+   checkout "myrepo",
+     path => "webapp";
+        
+   checkout "myrepo",
+     path => "webapp",
+     branch => 1.6;    # branch only for git
+        
+   checkout "myrepo2";
  };
-     
+    
 
 =head1 EXPORTED FUNCTIONS
 
@@ -60,8 +60,8 @@ use vars qw(@EXPORT %REPOS);
 @EXPORT = qw(checkout);
 
 Rex::Config->register_set_handler("repository" => sub {
-   my ($name, %option) = @_;
-   $REPOS{$name} = \%option;
+  my ($name, %option) = @_;
+  $REPOS{$name} = \%option;
 });
 
 
@@ -71,29 +71,29 @@ With this function you can checkout a repository defined with I<set repository>.
 
 =cut
 sub checkout {
-   my ($name, %data) = @_;
+  my ($name, %data) = @_;
 
-   my $type = $REPOS{"$name"}->{"type"} ? $REPOS{$name}->{"type"} : "git";
-   my $class = "Rex::SCM::\u$type";
+  my $type = $REPOS{"$name"}->{"type"} ? $REPOS{$name}->{"type"} : "git";
+  my $class = "Rex::SCM::\u$type";
 
-   my $co_to = exists $data{"path"} ? $data{"path"} : "";
+  my $co_to = exists $data{"path"} ? $data{"path"} : "";
 
-   if($data{"path"}) {
-      $data{"path"} = undef;
-      delete $data{"path"};
-   }
+  if($data{"path"}) {
+    $data{"path"} = undef;
+    delete $data{"path"};
+  }
 
-   eval "use $class;";
-   if($@) {
-      Rex::Logger::info("Error loading SCM: $@\n", "warn");
-      die("Error loading SCM: $@");
-   }
+  eval "use $class;";
+  if($@) {
+    Rex::Logger::info("Error loading SCM: $@\n", "warn");
+    die("Error loading SCM: $@");
+  }
 
-   my $scm = $class->new;
+  my $scm = $class->new;
 
-   my $repo = Rex::Config->get("repository");
-   Rex::Logger::debug("Checking out $repo -> $co_to");
-   $scm->checkout($REPOS{$name}, $co_to, \%data);
+  my $repo = Rex::Config->get("repository");
+  Rex::Logger::debug("Checking out $repo -> $co_to");
+  $scm->checkout($REPOS{$name}, $co_to, \%data);
 }
 
 =back

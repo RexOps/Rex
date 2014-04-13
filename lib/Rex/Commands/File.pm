@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
-# vim: set ts=3 sw=3 tw=0:
+#
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 =head1 NAME
@@ -15,42 +15,42 @@ With this module you can manipulate files.
 =head1 SYNOPSIS
 
  task "read-passwd", "server01", sub {
-    my $fh = file_read "/etc/passwd";
-    for my $line = ($fh->read_all) {
-       print $line;
-    }
-    $fh->close;
+   my $fh = file_read "/etc/passwd";
+   for my $line = ($fh->read_all) {
+     print $line;
+   }
+   $fh->close;
+ };
+ 
+ task "read-passwd2", "server01", sub {
+   say cat "/etc/passwd";
  };
 
- task "read-passwd2", "server01", sub {
-    say cat "/etc/passwd";
- };
- 
- 
+
  task "write-passwd", "server01", sub {
-    my $fh = file_write "/etc/passwd";
-    $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
-    $fh->close;
+   my $fh = file_write "/etc/passwd";
+   $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
+   $fh->close;
  };
-    
+ 
  delete_lines_matching "/var/log/auth.log", matching => "root";
  delete_lines_matching "/var/log/auth.log", matching => qr{Failed};
- delete_lines_matching "/var/log/auth.log", 
-                        matching => "root", qr{Failed}, "nobody";
-    
- file "/path/on/the/remote/machine",
-    source => "/path/on/local/machine";
-    
- file "/path/on/the/remote/machine",
-    content => "foo bar";
-    
- file "/path/on/the/remote/machine",
-    source => "/path/on/local/machine",
-    owner  => "root",
-    group  => "root",
-    mode   => 400,
-    on_change => sub { say "File was changed."; };
+ delete_lines_matching "/var/log/auth.log",
+                matching => "root", qr{Failed}, "nobody";
  
+ file "/path/on/the/remote/machine",
+   source => "/path/on/local/machine";
+ 
+ file "/path/on/the/remote/machine",
+   content => "foo bar";
+ 
+ file "/path/on/the/remote/machine",
+   source => "/path/on/local/machine",
+   owner  => "root",
+   group  => "root",
+   mode  => 400,
+   on_change => sub { say "File was changed."; };
+
 
 =head1 EXPORTED FUNCTIONS
 
@@ -86,11 +86,11 @@ use File::Basename qw(dirname);
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
-@EXPORT = qw(file_write file_read file_append 
-               cat sed
-               delete_lines_matching append_if_no_such_line delete_lines_according_to 
-               file template
-               extract);
+@EXPORT = qw(file_write file_read file_append
+          cat sed
+          delete_lines_matching append_if_no_such_line delete_lines_according_to
+          file template
+          extract);
 
 use vars qw(%file_handles);
 
@@ -98,107 +98,107 @@ use vars qw(%file_handles);
 
 Parse a template and return the content.
 
- my $content = template("/files/templates/vhosts.tpl", 
-                     name => "test.lan",
-                     webmaster => 'webmaster@test.lan');
+ my $content = template("/files/templates/vhosts.tpl",
+              name => "test.lan",
+              webmaster => 'webmaster@test.lan');
 
 =cut
 sub template {
-   my ($file, @params) = @_;
-   my $param;
+  my ($file, @params) = @_;
+  my $param;
 
-   $file = resolv_path($file);
-   
-   if(ref $params[0] eq "HASH") {
-      $param = $params[0];
-   }
-   else {
-      $param = { @params };
-   }
+  $file = resolv_path($file);
 
-   if(! exists $param->{server}) {
-      $param->{server} = Rex::Commands::connection()->server;
-   }
+  if(ref $params[0] eq "HASH") {
+    $param = $params[0];
+  }
+  else {
+    $param = { @params };
+  }
 
-   unless($file =~ m/^\// || $file =~ m/^\@/) {
-      # path is relative and no template
-      Rex::Logger::debug("Relativ path $file");
+  if(! exists $param->{server}) {
+    $param->{server} = Rex::Commands::connection()->server;
+  }
 
-      $file = Rex::Helper::Path::get_file_path($file, caller());
+  unless($file =~ m/^\// || $file =~ m/^\@/) {
+    # path is relative and no template
+    Rex::Logger::debug("Relativ path $file");
 
-      Rex::Logger::debug("New filename: $file");
-   }
+    $file = Rex::Helper::Path::get_file_path($file, caller());
 
-   # if there is a file called filename.environment then use this file
-   # ex: 
-   # $content = template("files/hosts.tpl");
-   # 
-   # rex -E live ...
-   # will first look if files/hosts.tpl.live is available, if not it will
-   # use files/hosts.tpl
-   if(-f "$file." . Rex::Config->get_environment) {
-      $file = "$file." . Rex::Config->get_environment;
-   }
+    Rex::Logger::debug("New filename: $file");
+  }
 
-   my $content;
+  # if there is a file called filename.environment then use this file
+  # ex:
+  # $content = template("files/hosts.tpl");
+  #
+  # rex -E live ...
+  # will first look if files/hosts.tpl.live is available, if not it will
+  # use files/hosts.tpl
+  if(-f "$file." . Rex::Config->get_environment) {
+    $file = "$file." . Rex::Config->get_environment;
+  }
 
-   if(-f $file) {
-      $content = eval { local(@ARGV, $/) = ($file); <>; };
-   }
-   elsif($file =~ m/^\@/) {
-      my @caller = caller(0);
-      my $file_path = Rex::get_module_path($caller[0]);
+  my $content;
 
-      if(! -f $file_path) {
-         if(-f "$file_path/__module__.pm") {
-            $file_path = "$file_path/__module__.pm";
-         }
-         elsif(-f "$file_path/Module.pm") {
-            $file_path = "$file_path/Module.pm";
-         }
-         elsif(-f $caller[1]) {
-            $file_path = $caller[1];
-         }
+  if(-f $file) {
+    $content = eval { local(@ARGV, $/) = ($file); <>; };
+  }
+  elsif($file =~ m/^\@/) {
+    my @caller = caller(0);
+    my $file_path = Rex::get_module_path($caller[0]);
+
+    if(! -f $file_path) {
+      if(-f "$file_path/__module__.pm") {
+        $file_path = "$file_path/__module__.pm";
       }
-      my $file_content = eval { local(@ARGV, $/) = ($file_path); <>; };
-      my ($data) = ($file_content =~ m/.*__DATA__(.*)/ms);
-      my $fp = Rex::File::Parser::Data->new(data => [ split(/\n/, $data) ]);
-      my $snippet_to_read = substr($file, 1);
-      $content = $fp->read($snippet_to_read);
-   }
-   else {
-      die("$file not found");
-   }
+      elsif(-f "$file_path/Module.pm") {
+        $file_path = "$file_path/Module.pm";
+      }
+      elsif(-f $caller[1]) {
+        $file_path = $caller[1];
+      }
+    }
+    my $file_content = eval { local(@ARGV, $/) = ($file_path); <>; };
+    my ($data) = ($file_content =~ m/.*__DATA__(.*)/ms);
+    my $fp = Rex::File::Parser::Data->new(data => [ split(/\n/, $data) ]);
+    my $snippet_to_read = substr($file, 1);
+    $content = $fp->read($snippet_to_read);
+  }
+  else {
+    die("$file not found");
+  }
 
-   my %template_vars;
-   if(! exists $param->{__no_sys_info__}) {
-      %template_vars = _get_std_template_vars($param);
-   }
-   else {
-      delete $param->{__no_sys_info__};
-      %template_vars = %{ $param };
-   }
+  my %template_vars;
+  if(! exists $param->{__no_sys_info__}) {
+    %template_vars = _get_std_template_vars($param);
+  }
+  else {
+    delete $param->{__no_sys_info__};
+    %template_vars = %{ $param };
+  }
 
-   return Rex::Config->get_template_function()->($content, \%template_vars);
+  return Rex::Config->get_template_function()->($content, \%template_vars);
 }
 
 sub _get_std_template_vars {
-   my ($param) = @_;
+  my ($param) = @_;
 
-   my %merge1 = %{$param || {}};
-   my %merge2;
+  my %merge1 = %{$param || {}};
+  my %merge2;
 
-   if(Rex::get_cache()->valid("system_information_info")) {
-      %merge2 = %{ Rex::get_cache()->get("system_information_info") };
-   }
-   else {
-      %merge2 = Rex::Helper::System::info();
-      Rex::get_cache()->set("system_information_info", \%merge2);
-   }
+  if(Rex::get_cache()->valid("system_information_info")) {
+    %merge2 = %{ Rex::get_cache()->get("system_information_info") };
+  }
+  else {
+    %merge2 = Rex::Helper::System::info();
+    Rex::get_cache()->set("system_information_info", \%merge2);
+  }
 
-   my %template_vars = (%merge1, %merge2);
+  my %template_vars = (%merge1, %merge2);
 
-   return %template_vars;
+  return %template_vars;
 }
 
 =item file($file_name, %options)
@@ -206,29 +206,42 @@ sub _get_std_template_vars {
 This function is the successor of I<install file>. Please use this function to upload files to you server.
 
  task "prepare", "server1", "server2", sub {
-    file "/file/on/remote/machine",
-       source => "/file/on/local/machine";
-       
-    file "/etc/hosts",
-       content => template("templates/etc/hosts.tpl"),
-       owner   => "user",
-       group   => "group",
-       mode    => 700,
-       on_change => sub { say "Something was changed." };
-        
-    file "/etc/motd",
-       content => `fortune`;
-      
-    file "/etc/httpd/conf/httpd.conf",
-       source => "/files/etc/httpd/conf/httpd.conf",
-       on_change => sub { service httpd => "restart"; };
+   file "/file/on/remote/machine",
+     source => "/file/on/local/machine";
+ 
+   file "/etc/hosts",
+     content => template("templates/etc/hosts.tpl"),
+     owner  => "user",
+     group  => "group",
+     mode   => 700,
+     on_change => sub { say "Something was changed." };
+ 
+   file "/etc/motd",
+     content => `fortune`;
+ 
+   file "/etc/named.conf",
+     content    => template("templates/etc/named.conf.tpl"),
+     no_overwrite => TRUE;  # this file will not be overwritten if already exists.
+ 
+   file "/etc/httpd/conf/httpd.conf",
+     source => "/files/etc/httpd/conf/httpd.conf",
+     on_change => sub { service httpd => "restart"; };
+ 
+   file "/etc/named.d",
+     ensure => "directory",  # this will create a directory
+     owner  => "root",
+     group  => "root";
+ 
+   file "/etc/motd",
+     ensure => "absent";   # this will remove the file or directory
+ 
  };
 
 If I<source> is relative it will search from the location of your I<Rexfile> or the I<.pm> file if you use Perl packages.
 
 This function supports the following hooks:
 
-=over 8 
+=over 8
 
 =item before
 
@@ -250,197 +263,235 @@ This gets executed right before the file() function returns.
 
 =cut
 sub file {
-   my ($file, @options) = @_;
+  my ($file, @options) = @_;
 
-   my $option = { @options };
+  if(ref $file eq "ARRAY") {
+    my @ret;
+    # $file is an array, so iterate over these files
+    for my $f (@{$file}) {
+      push(@ret, file($f, @options));
+    }
 
-   $file = resolv_path($file);
+    return \@ret;
+  }
 
-   if(exists $option->{source}) {
-      $option->{source} = resolv_path($option->{source});
-   }
+  my $option = { @options };
 
-   #### check and run before hook
-   eval {
-      my @new_args = Rex::Hook::run_hook(file => "before", @_);
-      if(@new_args) {
-         ($file, @options) = @new_args;
-         $option = { @options };
-      }
-      1;
-   } or do {
-      die("Before-Hook failed. Canceling file() action: $@");
-   };
-   ##############################
+  $file = resolv_path($file);
 
+  my ($is_directory);
+  if(exists $option->{ensure} && $option->{ensure} eq "directory") {
+    $is_directory = 1;
+  }
 
-   my $need_md5 = ($option->{"on_change"} ? 1 : 0);
-   my $on_change = $option->{"on_change"} || sub {};
+  if(exists $option->{source} && ! $is_directory) {
+    $option->{source} = resolv_path($option->{source});
+  }
 
-   my $fs = Rex::Interface::Fs->create;
-
-   my $__ret = {changed => 0};
-
-   my ($new_md5, $old_md5);
-   eval {
-      $old_md5 = md5($file);
-   };
-
-   if(exists $option->{"content"}) {
-      # first upload file to tmp location, to get md5 sum.
-      # than we can decide if we need to replace the current (old) file.
-
-      my @splitted_file = split(/\//, $file);
-      my $file_name = ".rex.tmp." . pop(@splitted_file);
-      my $tmp_file_name = ($#splitted_file != -1 ? (join("/", @splitted_file) . "/" . $file_name) : $file_name);
-
-      my $fh = file_write($tmp_file_name);
-      my @lines = split(qr{$/}, $option->{"content"});
-      for my $line (@lines) {
-         $fh->write($line . $/);
-      }
-      $fh->close;
-
-      # now get md5 sums
-      $new_md5 = md5($tmp_file_name);
-
-      if($new_md5 && $old_md5 && $new_md5 eq $old_md5) {
-         Rex::Logger::debug("No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5.");
-         # md5 sums are the same, delete tmp.
-         $fs->unlink($tmp_file_name);
-         $need_md5 = 0; # we don't need to execute on_change hook
-      }
-      else {
-         $old_md5 ||= "";
-         Rex::Logger::debug("Need to use the new file. md5 sums are different. <<$old_md5>> = <<$new_md5>>");
-
-         #### check and run before_change hook
-         Rex::Hook::run_hook(file => "before_change", @_);
-         ##############################
+  #### check and run before hook
+  eval {
+    my @new_args = Rex::Hook::run_hook(file => "before", @_);
+    if(@new_args) {
+      ($file, @options) = @new_args;
+      $option = { @options };
+    }
+    1;
+  } or do {
+    die("Before-Hook failed. Canceling file() action: $@");
+  };
+  ##############################
 
 
-         $fs->rename($tmp_file_name, $file);
-         $__ret = {changed => 1};
+  my $need_md5 = ($option->{"on_change"} && ! $is_directory ? 1 : 0);
+  my $on_change = $option->{"on_change"} || sub {};
 
-         #### check and run after_change hook
-         Rex::Hook::run_hook(file => "after_change", @_, $__ret);
-         ##############################
+  my $fs = Rex::Interface::Fs->create;
 
-      }
+  my $__ret = {changed => 0};
+
+  my ($new_md5, $old_md5);
+  eval {
+    $old_md5 = md5($file);
+  };
+
+  if(exists $option->{no_overwrite} && $option->{no_overwrite} && $old_md5) {
+    Rex::Logger::debug("File already exists and no_overwrite option given. Doing nothing.");
+    $__ret = {changed => 0};
+  }
+
+  elsif(exists $option->{"content"} && ! $is_directory) {
+    # first upload file to tmp location, to get md5 sum.
+    # than we can decide if we need to replace the current (old) file.
+
+    my @splitted_file = split(/\//, $file);
+    my $file_name = ".rex.tmp." . pop(@splitted_file);
+    my $tmp_file_name = ($#splitted_file != -1 ? (join("/", @splitted_file) . "/" . $file_name) : $file_name);
+
+    my $fh = file_write($tmp_file_name);
+    my @lines = split(qr{$/}, $option->{"content"});
+    for my $line (@lines) {
+      $fh->write($line . $/);
+    }
+    $fh->close;
+
+    # now get md5 sums
+    $new_md5 = md5($tmp_file_name);
+
+    if($new_md5 && $old_md5 && $new_md5 eq $old_md5) {
+      Rex::Logger::debug("No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5.");
+      # md5 sums are the same, delete tmp.
+      $fs->unlink($tmp_file_name);
+      $need_md5 = 0; # we don't need to execute on_change hook
+    }
+    else {
+      $old_md5 ||= "";
+      Rex::Logger::debug("Need to use the new file. md5 sums are different. <<$old_md5>> = <<$new_md5>>");
+
+      #### check and run before_change hook
+      Rex::Hook::run_hook(file => "before_change", @_);
+      ##############################
 
 
-   }
-   elsif(exists $option->{"source"}) {
-      $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
+      $fs->rename($tmp_file_name, $file);
+      $__ret = {changed => 1};
 
-      # HOOKS: for this case you have to use the upload hooks!
-      $__ret = upload $option->{"source"}, "$file", force => 1;
-   }
+      #### check and run after_change hook
+      Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+      ##############################
 
-   if(exists $option->{"ensure"}) {
-      if($option->{ensure} eq "present") {
-         if(! $fs->is_file($file)) {
+    }
 
-            #### check and run before_change hook
-            Rex::Hook::run_hook(file => "before_change", @_);
-            ##############################
 
-            my $fh = file_write($file);
-            $fh->write("");
-            $fh->close;
-            $__ret = {changed => 1};
+  }
+  elsif(exists $option->{"source"} && ! $is_directory) {
+    $option->{source} = Rex::Helper::Path::get_file_path($option->{source}, caller());
 
-            #### check and run after_change hook
-            Rex::Hook::run_hook(file => "after_change", @_, $__ret);
-            ##############################
+    # HOOKS: for this case you have to use the upload hooks!
+    $__ret = upload $option->{"source"}, "$file", force => 1;
+  }
 
-         }
-         else {
-            $__ret = {changed => 0};
-         }
-      }
-      elsif($option->{ensure} eq "absent") {
-         $need_md5 = 0;
-         delete $option->{mode};
-         delete $option->{group};
-         delete $option->{owner};
-
-         #### check and run before_change hook
-         Rex::Hook::run_hook(file => "before_change", @_);
-         ##############################
-
-         if($fs->is_file($file)) {
-            $fs->unlink($file);
-            $__ret = {changed => 1};
-         }
-         else {
-            $__ret = {changed => 0};
-         }
-
-         #### check and run after_change hook
-         Rex::Hook::run_hook(file => "after_change", @_, $__ret);
-         ##############################
-
-      }
-   }
-
-   if(! exists $option->{content} && ! exists $option->{source}) {
-      # no content and no source, so just verify that the file is present
+  if(exists $option->{"ensure"}) {
+    if($option->{ensure} eq "present") {
       if(! $fs->is_file($file)) {
 
-         #### check and run before_change hook
-         Rex::Hook::run_hook(file => "before_change", @_);
-         ##############################
+        #### check and run before_change hook
+        Rex::Hook::run_hook(file => "before_change", @_);
+        ##############################
 
-         my $fh = file_write($file);
-         $fh->write("");
-         $fh->close;
+        my $fh = file_write($file);
+        $fh->write("");
+        $fh->close;
+        $__ret = {changed => 1};
 
-         #### check and run after_change hook
-         Rex::Hook::run_hook(file => "after_change", @_, $__ret);
-         ##############################
+        #### check and run after_change hook
+        Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+        ##############################
 
       }
-   }
-
-   if($need_md5) {
-      eval {
-         $new_md5 = md5($file);
-      };
-   }
-
-   if(exists $option->{"mode"}) {
-      $fs->chmod($option->{"mode"}, $file);
-   }
-
-   if(exists $option->{"group"}) {
-      $fs->chgrp($option->{"group"}, $file);
-   }
-
-   if(exists $option->{"owner"}) {
-      $fs->chown($option->{"owner"}, $file);
-   }
-
-   if($need_md5) {
-      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
-         $old_md5 ||= "";
-         $new_md5 ||= "";
-
-         Rex::Logger::debug("File $file has been changed... Running on_change");
-         Rex::Logger::debug("old: $old_md5");
-         Rex::Logger::debug("new: $new_md5");
-
-         &$on_change($file);
-
-         return {changed => 1};
+      else {
+        $__ret = {changed => 0};
       }
-   }
+    }
+    elsif($option->{ensure} eq "absent") {
+      $need_md5 = 0;
+      delete $option->{mode};
+      delete $option->{group};
+      delete $option->{owner};
 
-   #### check and run before hook
-   Rex::Hook::run_hook(file => "after", @_, $__ret);
-   ##############################
+      #### check and run before_change hook
+      Rex::Hook::run_hook(file => "before_change", @_);
+      ##############################
 
-   return $__ret;
+      if($fs->is_file($file)) {
+        $fs->unlink($file);
+        $__ret = {changed => 1};
+      }
+      elsif($fs->is_dir($file)) {
+        $fs->rmdir($file);
+        $__ret = {changed => 1};
+      }
+      else {
+        $__ret = {changed => 0};
+      }
+
+      #### check and run after_change hook
+      Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+      ##############################
+
+    }
+    elsif($option->{ensure} eq "directory") {
+      Rex::Logger::debug("file() should be a directory");
+      my %dir_option;
+      if(exists $option->{owner}) {
+        $dir_option{owner} = $option->{owner};
+      }
+      if(exists $option->{group}) {
+        $dir_option{group} = $option->{group};
+      }
+      if(exists $option->{mode}) {
+        $dir_option{mode} = $option->{mode};
+      }
+      Rex::Commands::Fs::mkdir($file, %dir_option);
+    }
+  }
+
+  if(! exists $option->{content} && ! exists $option->{source}) {
+    # no content and no source, so just verify that the file is present
+    if(! $fs->is_file($file) && ! $is_directory) {
+
+      #### check and run before_change hook
+      Rex::Hook::run_hook(file => "before_change", @_);
+      ##############################
+
+      my $fh = file_write($file);
+      $fh->write("");
+      $fh->close;
+
+      #### check and run after_change hook
+      Rex::Hook::run_hook(file => "after_change", @_, $__ret);
+      ##############################
+
+    }
+  }
+
+  if($need_md5) {
+    eval {
+      $new_md5 = md5($file);
+    };
+  }
+
+  if(exists $option->{"mode"}) {
+    $fs->chmod($option->{"mode"}, $file);
+  }
+
+  if(exists $option->{"group"}) {
+    $fs->chgrp($option->{"group"}, $file);
+  }
+
+  if(exists $option->{"owner"}) {
+    $fs->chown($option->{"owner"}, $file);
+  }
+
+  if($need_md5) {
+    unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+      $old_md5 ||= "";
+      $new_md5 ||= "";
+
+      Rex::Logger::debug("File $file has been changed... Running on_change");
+      Rex::Logger::debug("old: $old_md5");
+      Rex::Logger::debug("new: $new_md5");
+
+      &$on_change($file);
+
+      return {changed => 1};
+    }
+  }
+
+  #### check and run before hook
+  Rex::Hook::run_hook(file => "after", @_, $__ret);
+  ##############################
+
+  return $__ret;
 }
 
 =item file_write($file_name)
@@ -451,12 +502,12 @@ On failure it will die.
 
  my $fh;
  eval {
-    $fh = file_write("/etc/groups");
+   $fh = file_write("/etc/groups");
  };
  
  # catch an error
  if($@) {
-    print "An error occured. $@.\n";
+   print "An error occured. $@.\n";
  }
  
  # work with the filehandle
@@ -466,18 +517,18 @@ On failure it will die.
 =cut
 
 sub file_write {
-   my ($file) = @_;
-   $file = resolv_path($file);
+  my ($file) = @_;
+  $file = resolv_path($file);
 
-   Rex::Logger::debug("Opening file: $file for writing.");
+  Rex::Logger::debug("Opening file: $file for writing.");
 
-   my $fh = Rex::Interface::File->create;
-   if( ! $fh->open(">", $file)) {
-      Rex::Logger::debug("Can't open $file for writing.");
-      die("Can't open $file for writing.");
-   }
+  my $fh = Rex::Interface::File->create;
+  if( ! $fh->open(">", $file)) {
+    Rex::Logger::debug("Can't open $file for writing.");
+    die("Can't open $file for writing.");
+  }
 
-   return Rex::FS::File->new(fh => $fh);
+  return Rex::FS::File->new(fh => $fh);
 }
 
 =item file_append($file_name)
@@ -485,19 +536,19 @@ sub file_write {
 =cut
 
 sub file_append {
-   my ($file) = @_;
-   $file = resolv_path($file);
+  my ($file) = @_;
+  $file = resolv_path($file);
 
-   Rex::Logger::debug("Opening file: $file for appending.");
+  Rex::Logger::debug("Opening file: $file for appending.");
 
-   my $fh = Rex::Interface::File->create;
+  my $fh = Rex::Interface::File->create;
 
-   if( ! $fh->open(">>", $file)) {
-      Rex::Logger::debug("Can't open $file for appending.");
-      die("Can't open $file for appending.");
-   }
+  if( ! $fh->open(">>", $file)) {
+    Rex::Logger::debug("Can't open $file for appending.");
+    die("Can't open $file for appending.");
+  }
 
-   return Rex::FS::File->new(fh => $fh);
+  return Rex::FS::File->new(fh => $fh);
 }
 
 =item file_read($file_name)
@@ -508,12 +559,12 @@ On failure it will die.
 
  my $fh;
  eval {
-    $fh = read("/etc/groups");
+   $fh = read("/etc/groups");
  };
  
  # catch an error
  if($@) {
-    print "An error occured. $@.\n";
+   print "An error occured. $@.\n";
  }
  
  # work with the filehandle
@@ -523,19 +574,19 @@ On failure it will die.
 =cut
 
 sub file_read {
-   my ($file) = @_;
-   $file = resolv_path($file);
+  my ($file) = @_;
+  $file = resolv_path($file);
 
-   Rex::Logger::debug("Opening file: $file for reading.");
+  Rex::Logger::debug("Opening file: $file for reading.");
 
-   my $fh = Rex::Interface::File->create;
+  my $fh = Rex::Interface::File->create;
 
-   if( ! $fh->open("<", $file)) {
-      Rex::Logger::debug("Can't open $file for reading.");
-      die("Can't open $file for reading.");
-   }
+  if( ! $fh->open("<", $file)) {
+    Rex::Logger::debug("Can't open $file for reading.");
+    die("Can't open $file for reading.");
+  }
 
-   return Rex::FS::File->new(fh => $fh);
+  return Rex::FS::File->new(fh => $fh);
 }
 
 =item cat($file_name)
@@ -547,17 +598,17 @@ This function returns the complete content of $file_name as a string.
 =cut
 
 sub cat {
-   my ($file) = @_;
-   $file = resolv_path($file);
+  my ($file) = @_;
+  $file = resolv_path($file);
 
-   my $fh = file_read($file);
-   unless($fh) {
-      die("Can't open $file for reading");
-   }
-   my $content = $fh->read_all;
-   $fh->close;
+  my $fh = file_read($file);
+  unless($fh) {
+    die("Can't open $file for reading");
+  }
+  my $content = $fh->read_all;
+  $fh->close;
 
-   return $content;
+  return $content;
 }
 
 =item delete_lines_matching($file, $regexp)
@@ -565,52 +616,52 @@ sub cat {
 Delete lines that match $regexp in $file.
 
  task "clean-logs", sub {
-     delete_lines_matching "/var/log/auth.log" => "root";
+    delete_lines_matching "/var/log/auth.log" => "root";
  };
 
 =cut
 sub delete_lines_matching {
-   my ($file, @m) = @_;
-   $file = resolv_path($file);
+  my ($file, @m) = @_;
+  $file = resolv_path($file);
 
-   for (@m) {
-      if(ref($_) ne "Regexp") {
-         $_ = qr{\Q$_\E};
+  for (@m) {
+    if(ref($_) ne "Regexp") {
+      $_ = qr{\Q$_\E};
+    }
+  }
+
+  my $fs = Rex::Interface::Fs->create;
+
+  if(! $fs->is_file($file)) {
+    Rex::Logger::info("File: $file not found.");
+    die("$file not found");
+  }
+
+  if(! $fs->is_writable($file)) {
+    Rex::Logger::info("File: $file not writable.");
+    die("$file not writable");
+  }
+
+  my $nl = $/;
+  my @content = split(/$nl/, cat ($file));
+
+  my $fh = file_write $file;
+  unless($fh) {
+    die("Can't open $file for writing");
+  }
+
+  OUT:
+  for my $line (@content) {
+    IN:
+    for my $match (@m) {
+      if($line =~ $match) {
+        next OUT;
       }
-   }
+    }
 
-   my $fs = Rex::Interface::Fs->create;
-
-   if(! $fs->is_file($file)) {
-      Rex::Logger::info("File: $file not found.");
-      die("$file not found");
-   }
-
-   if(! $fs->is_writable($file)) {
-      Rex::Logger::info("File: $file not writable.");
-      die("$file not writable");
-   }
-
-   my $nl = $/;
-   my @content = split(/$nl/, cat ($file));
-
-   my $fh = file_write $file;
-   unless($fh) {
-      die("Can't open $file for writing");
-   }
-
-   OUT:
-   for my $line (@content) {
-      IN:
-      for my $match (@m) {
-         if($line =~ $match) {
-            next OUT;
-         }
-      }
-
-      $fh->write($line . $nl);
-   }
-   $fh->close;
+    $fh->write($line . $nl);
+  }
+  $fh->close;
 
 }
 
@@ -621,35 +672,35 @@ This is the successor of the delete_lines_matching() function. This function als
 It will search for $search in $file and remove the found lines. If on_change hook is present it will execute this if the file was changed.
 
  task "cleanup", "server1", sub {
-    delete_lines_according_to qr{^foo:}, "/etc/passwd",
-      on_change => sub {
-         say "removed user foo.";
-      };
+   delete_lines_according_to qr{^foo:}, "/etc/passwd",
+    on_change => sub {
+      say "removed user foo.";
+    };
  };
 
 =cut
 sub delete_lines_according_to {
-   my ($search, $file, @options) = @_;
-   $file = resolv_path($file);
+  my ($search, $file, @options) = @_;
+  $file = resolv_path($file);
 
-   my $option = { @options };
-   my $on_change = $option->{on_change} || undef;
+  my $option = { @options };
+  my $on_change = $option->{on_change} || undef;
 
-   my ($old_md5, $new_md5);
+  my ($old_md5, $new_md5);
 
-   if($on_change) {
-      $old_md5 = md5($file);
-   }
+  if($on_change) {
+    $old_md5 = md5($file);
+  }
 
-   delete_lines_matching($file, $search);
+  delete_lines_matching($file, $search);
 
-   if($on_change) {
-      $new_md5 = md5($file);
+  if($on_change) {
+    $new_md5 = md5($file);
 
-      if($old_md5 ne $new_md5) {
-         &$on_change($file);
-      }
-   }
+    if($old_md5 ne $new_md5) {
+      &$on_change($file);
+    }
+  }
 }
 
 =item append_if_no_such_line($file, $new_line, @regexp)
@@ -659,133 +710,133 @@ supplied, the line is appended unless there is already an identical line
 in $file.
 
  task "add-group", sub {
-    append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2", on_change => sub { service sshd => "restart"; };
+   append_if_no_such_line "/etc/groups", "mygroup:*:100:myuser1,myuser2", on_change => sub { service sshd => "restart"; };
  };
 
 Since 0.42 you can use named parameters as well
 
  task "add-group", sub {
-    append_if_no_such_line "/etc/groups",
-       line   => "mygroup:*:100:myuser1,myuser2",
-       regexp => qr{^mygroup},
-       on_change => sub {
-                       say "file was changed, do something.";
-                    };
-          
-    append_if_no_such_line "/etc/groups",
-       line   => "mygroup:*:100:myuser1,myuser2",
-       regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
+   append_if_no_such_line "/etc/groups",
+     line  => "mygroup:*:100:myuser1,myuser2",
+     regexp => qr{^mygroup},
+     on_change => sub {
+                say "file was changed, do something.";
+              };
+ 
+   append_if_no_such_line "/etc/groups",
+     line  => "mygroup:*:100:myuser1,myuser2",
+     regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
  };
 
 =cut
 
 sub append_if_no_such_line {
-   my $file = shift;
-   $file = resolv_path($file);
-   my ($new_line, @m);
+  my $file = shift;
+  $file = resolv_path($file);
+  my ($new_line, @m);
 
-   # check if parameters are in key => value format
-   my ($option, $on_change);
+  # check if parameters are in key => value format
+  my ($option, $on_change);
 
-   eval {
-      no warnings;
-      $option = { @_ };
-      # if there is no line parameter, it is the old parameter format
-      # so go dieing
-      if(! exists $option->{line}) {
-         die;
+  eval {
+    no warnings;
+    $option = { @_ };
+    # if there is no line parameter, it is the old parameter format
+    # so go dieing
+    if(! exists $option->{line}) {
+      die;
+    }
+    $new_line = $option->{line};
+    if(exists $option->{regexp} && ref $option->{regexp} eq "Regexp") {
+      @m = ($option->{regexp});
+    }
+    elsif(ref $option->{regexp} eq "ARRAY") {
+      @m = @{ $option->{regexp} };
+    }
+    $on_change = $option->{on_change} || undef;
+    1;
+  } or do {
+    ($new_line, @m) = @_;
+    # check if something in @m (the regexpes) is named on_change
+    for (my $i = 0; $i<$#m; $i++ ) {
+      if ( $m[$i] eq "on_change" && ref($m[$i+1]) eq "CODE" ) {
+        $on_change = $m[$i+1];
+        splice(@m,$i,2);
+        last;
       }
-      $new_line = $option->{line};
-      if(exists $option->{regexp} && ref $option->{regexp} eq "Regexp") {
-         @m = ($option->{regexp});
+    }
+  };
+
+  my $fs = Rex::Interface::Fs->create;
+
+  my ($old_md5, $ret);
+  if ($on_change) {
+    $old_md5 = md5($file);
+  }
+
+  # slow but secure way
+  my @content;
+  eval {
+    @content = split(/\n/, cat($file));
+    1;
+  } or do {
+    $ret = 1;
+  };
+
+  if ( !@m ) {
+    push @m, qr{\Q$new_line\E};
+  }
+
+  for my $line (@content) {
+    for my $match (@m) {
+      if(ref($match) ne "Regexp") {
+        $match = qr{$match};
       }
-      elsif(ref $option->{regexp} eq "ARRAY") {
-         @m = @{ $option->{regexp} };
+      if ( $line =~ $match ) {
+        return 0;
       }
-      $on_change = $option->{on_change} || undef;
-      1;
-   } or do {
-      ($new_line, @m) = @_;
-      # check if something in @m (the regexpes) is named on_change
-      for (my $i = 0; $i<$#m; $i++ ) {
-         if ( $m[$i] eq "on_change" && ref($m[$i+1]) eq "CODE" ) {
-            $on_change = $m[$i+1];
-            splice(@m,$i,2);
-            last;
-         }
-      }
-   };
+    }
+  }
 
-   my $fs = Rex::Interface::Fs->create;
+  push @content, "$new_line\n";
 
-   my ($old_md5, $ret);
-   if ($on_change) {
-      $old_md5 = md5($file);
-   }
+  eval {
+    my $fh = file_write $file;
+    unless($fh) {
+      die("can't open file for writing");
+    }
+    $fh->write(join("\n", @content));
+    $fh->close;
+    $ret = 0;
+    1;
+  } or do {
+    $ret = 3;
+  };
 
-   # slow but secure way
-   my @content;
-   eval {
-      @content = split(/\n/, cat($file));
-      1;
-   } or do {
-      $ret = 1;
-   };
+  if ($ret==1) {
+    die("Can't open $file for reading");
+  }
+  elsif ($ret==2) {
+    die("Can't open temp file for writing");
+  }
+  elsif ($ret==3) {
+    die("Can't open $file for writing");
+  }
 
-   if ( !@m ) {
-      push @m, qr{\Q$new_line\E};
-   }
+  if ($on_change) {
+    my $new_md5 = md5($file);
+    if($old_md5 && $new_md5 && $old_md5 ne $new_md5) {
+      $old_md5 ||= "";
+      $new_md5 ||= "";
 
-   for my $line (@content) {
-      for my $match (@m) {
-         if(ref($match) ne "Regexp") {
-            $match = qr{$match};
-         }
-         if ( $line =~ $match ) {
-            return 0;
-         }
-      }
-   }
+      Rex::Logger::debug("File $file has been changed... Running on_change");
+      Rex::Logger::debug("old: $old_md5");
+      Rex::Logger::debug("new: $new_md5");
+      &$on_change($file);
+    }
+  }
 
-   push @content, "$new_line\n";
-
-   eval {
-      my $fh = file_write $file;
-      unless($fh) {
-         die("can't open file for writing");
-      }
-      $fh->write(join("\n", @content));
-      $fh->close;
-      $ret = 0;
-      1;
-   } or do {
-      $ret = 3;
-   };
-
-   if ($ret==1) {
-      die("Can't open $file for reading");
-   }
-   elsif ($ret==2) {
-      die("Can't open temp file for writing");
-   }
-   elsif ($ret==3) {
-      die("Can't open $file for writing");
-   }
-
-   if ($on_change) {
-      my $new_md5 = md5($file);
-      if($old_md5 && $new_md5 && $old_md5 ne $new_md5) {
-         $old_md5 ||= "";
-         $new_md5 ||= "";
-
-         Rex::Logger::debug("File $file has been changed... Running on_change");
-         Rex::Logger::debug("old: $old_md5");
-         Rex::Logger::debug("new: $new_md5");
-         &$on_change($file);
-      }
-   }
-
-#   &$on_change() if defined $on_change;
+#  &$on_change() if defined $on_change;
 }
 
 =item extract($file [, %options])
@@ -793,82 +844,82 @@ sub append_if_no_such_line {
 This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
  task prepare => sub {
-    extract "/tmp/myfile.tar.gz",
-      owner => "root",
-      group => "root",
-      to    => "/etc";
-
-    extract "/tmp/foo.tgz",
-      type => "tgz",
-      mode => "g+rwX";
- };
+   extract "/tmp/myfile.tar.gz",
+    owner => "root",
+    group => "root",
+    to   => "/etc";
  
+   extract "/tmp/foo.tgz",
+    type => "tgz",
+    mode => "g+rwX";
+ };
+
 Can use the type=> option if the file suffix has been changed. (types are tar, tgz, tbz, zip, gz, bz2)
 
 =cut
 sub extract {
-   my ($file, %option) = @_;
-   $file = resolv_path($file);
+  my ($file, %option) = @_;
+  $file = resolv_path($file);
 
-   my $pre_cmd = "";
-   my $to = ".";
-   my $type = "";
+  my $pre_cmd = "";
+  my $to = ".";
+  my $type = "";
 
-   if($option{chdir}) {
-      $to = $option{chdir};
-   }
+  if($option{chdir}) {
+    $to = $option{chdir};
+  }
 
-   if($option{to}) {
-      $to = $option{to};
-   }
-   $to = resolv_path($to);
+  if($option{to}) {
+    $to = $option{to};
+  }
+  $to = resolv_path($to);
 
-   if($option{type}) {
-      $type = $option{type};
-   }
+  if($option{type}) {
+    $type = $option{type};
+  }
 
-   $pre_cmd = "cd $to; ";
+  $pre_cmd = "cd $to; ";
 
-   my $exec = Rex::Interface::Exec->create;
-   my $cmd = "";
+  my $exec = Rex::Interface::Exec->create;
+  my $cmd = "";
 
-   if($type eq 'tgz' || $file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
-      $cmd = "${pre_cmd}gunzip -c $file | tar -xf -";
-   }
-   elsif($type eq 'tbz' || $file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
-      $cmd = "${pre_cmd}bunzip2 -c $file | tar -xf -";
-   }
-   elsif($type eq 'tar' || $file =~ m/\.(tar|box)/) {
-      $cmd = "${pre_cmd}tar -xf $file";
-   }
-   elsif($type eq 'zip' || $file =~ m/\.(zip|war|jar)$/) {
-      $cmd = "${pre_cmd}unzip -o $file";
-   }
-   elsif($type eq 'gz' || $file =~ m/\.gz$/) {
-      $cmd = "${pre_cmd}gunzip -f $file";
-   }
-   elsif($type eq 'bz2' || $file =~ m/\.bz2$/) {
-      $cmd = "${pre_cmd}bunzip2 -f $file";
-   }
-   else {
-      Rex::Logger::info("File not supported.");
-      die("File ($file) not supported.");
-   }
+  if($type eq 'tgz' || $file =~ m/\.tar\.gz$/ || $file =~ m/\.tgz$/ || $file =~ m/\.tar\.Z$/) {
+    $cmd = "${pre_cmd}gunzip -c $file | tar -xf -";
+  }
+  elsif($type eq 'tbz' || $file =~ m/\.tar\.bz2/ || $file =~ m/\.tbz2/) {
+    $cmd = "${pre_cmd}bunzip2 -c $file | tar -xf -";
+  }
+  elsif($type eq 'tar' || $file =~ m/\.(tar|box)/) {
+    $cmd = "${pre_cmd}tar -xf $file";
+  }
+  elsif($type eq 'zip' || $file =~ m/\.(zip|war|jar)$/) {
+    $cmd = "${pre_cmd}unzip -o $file";
+  }
+  elsif($type eq 'gz' || $file =~ m/\.gz$/) {
+    $cmd = "${pre_cmd}gunzip -f $file";
+  }
+  elsif($type eq 'bz2' || $file =~ m/\.bz2$/) {
+    $cmd = "${pre_cmd}bunzip2 -f $file";
+  }
+  else {
+    Rex::Logger::info("File not supported.");
+    die("File ($file) not supported.");
+  }
 
-   $exec->exec($cmd);
+  $exec->exec($cmd);
 
-   my $fs = Rex::Interface::Fs->create;
-   if($option{owner}) {
-      $fs->chown($option{owner}, $to, recursive => 1);
-   }
+  my $fs = Rex::Interface::Fs->create;
+  if($option{owner}) {
+    $fs->chown($option{owner}, $to, recursive => 1);
+  }
 
-   if($option{group}) {
-      $fs->chgrp($option{group}, $to, recursive => 1);
-   }
+  if($option{group}) {
+    $fs->chgrp($option{group}, $to, recursive => 1);
+  }
 
-   if($option{mode}) {
-      $fs->chmod($option{mode}, $to, recursive => 1);
-   }
+  if($option{mode}) {
+    $fs->chmod($option{mode}, $to, recursive => 1);
+  }
 
 }
 
@@ -877,44 +928,44 @@ sub extract {
 Search some string in a file and replace it.
 
  task sar => sub {
-    # this will work line by line
-    sed qr{search}, "replace", "/var/log/auth.log";
-        
-    # to use it in a multiline way
-    sed qr{search}, "replace", "/var/log/auth.log",
-      multiline => TRUE;
+   # this will work line by line
+   sed qr{search}, "replace", "/var/log/auth.log";
+ 
+   # to use it in a multiline way
+   sed qr{search}, "replace", "/var/log/auth.log",
+    multiline => TRUE;
  };
 
 =cut
 sub sed {
-   my ($search, $replace, $file, @option) = @_;
-   $file = resolv_path($file);
-   my $options = {};
-   
-   if(ref($option[0])) {
-      $options = $option[0];
-   }
-   else {
-      $options = { @option };
-   }
+  my ($search, $replace, $file, @option) = @_;
+  $file = resolv_path($file);
+  my $options = {};
 
-   my $on_change = $options->{"on_change"} || undef;
+  if(ref($option[0])) {
+    $options = $option[0];
+  }
+  else {
+    $options = { @option };
+  }
 
-   my @content;
+  my $on_change = $options->{"on_change"} || undef;
 
-   if(exists $options->{multiline}) {
-      $content[0] = cat($file);
-      $content[0] =~ s/$search/$replace/gms; 
-   }
-   else {
-      @content = split(/\n/, cat($file));
-      map { s/$search/$replace/ } @content; 
-   }
+  my @content;
 
-   my $fs = Rex::Interface::Fs->create;
-   my %stat = $fs->stat($file);
+  if(exists $options->{multiline}) {
+    $content[0] = cat($file);
+    $content[0] =~ s/$search/$replace/gms;
+  }
+  else {
+    @content = split(/\n/, cat($file));
+    map { s/$search/$replace/ } @content;
+  }
 
-   file($file, content => join("\n", @content), on_change => $on_change, owner => $stat{uid}, group => $stat{gid}, mode => $stat{mode});
+  my $fs = Rex::Interface::Fs->create;
+  my %stat = $fs->stat($file);
+
+  file($file, content => join("\n", @content), on_change => $on_change, owner => $stat{uid}, group => $stat{gid}, mode => $stat{mode});
 }
 
 =back

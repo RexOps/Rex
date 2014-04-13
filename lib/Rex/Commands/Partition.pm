@@ -1,10 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
-   
+  
+  
 =head1 NAME
 
 Rex::Commands::Partition - Partition module
@@ -16,7 +16,7 @@ With this Module you can partition your harddrive.
 =head1 SYNOPSIS
 
  use Rex::Commands::Partition;
-     
+    
 
 
 =head1 EXPORTED FUNCTIONS
@@ -26,7 +26,7 @@ With this Module you can partition your harddrive.
 =cut
 
 package Rex::Commands::Partition;
-   
+  
 use strict;
 use warnings;
 
@@ -48,41 +48,41 @@ use Rex::Commands::Fs;
 Clear partitions on $drive.
 
  clearpart "sda";
-   
+  
  clearpart "sda",
-   initialize => "gpt";
+  initialize => "gpt";
 
 =cut
 sub clearpart {
-   my ($disk, %option) = @_;
+  my ($disk, %option) = @_;
 
-   if($option{initialize}) {
-      # will destroy partition table
-      run "parted -s /dev/$disk mklabel " . $option{initialize};
-      if($? != 0) {
-         die("Error setting disklabel from $disk to $option{initialize}");
-      }
+  if($option{initialize}) {
+    # will destroy partition table
+    run "parted -s /dev/$disk mklabel " . $option{initialize};
+    if($? != 0) {
+      die("Error setting disklabel from $disk to $option{initialize}");
+    }
 
-      if($option{initialize} eq "gpt") {
-         Rex::Logger::info("Creating bios boot partition");
-         partition("none",
-            fstype => "non-fs",
-            ondisk => $disk,
-            size   => "1");
+    if($option{initialize} eq "gpt") {
+      Rex::Logger::info("Creating bios boot partition");
+      partition("none",
+        fstype => "non-fs",
+        ondisk => $disk,
+        size  => "1");
 
-         run "parted /dev/$disk set 1 bios_grub on";
+      run "parted /dev/$disk set 1 bios_grub on";
 
-      }
-   }
-   else {
-      my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
+    }
+  }
+  else {
+    my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
 
-      for my $part_line (@partitions) {
-         my ($num, $part) = ($part_line =~ m/\d+\s+(\d+)\s+\d+\s(.*)$/);
-         Rex::Logger::info("Removing $part");
-         run "parted -s /dev/$disk rm $num";
-      }
-   }
+    for my $part_line (@partitions) {
+      my ($num, $part) = ($part_line =~ m/\d+\s+(\d+)\s+\d+\s(.*)$/);
+      Rex::Logger::info("Removing $part");
+      run "parted -s /dev/$disk rm $num";
+    }
+  }
 }
 
 =item partition($mountpoint, %option)
@@ -90,156 +90,156 @@ sub clearpart {
 Create a partition with mountpoint $mountpoint.
 
  partition "/",
-    fstype  => "ext3",
-    size    => 15000,
-    ondisk  => "sda",
-    type    => "primary";
-    
+   fstype  => "ext3",
+   size   => 15000,
+   ondisk  => "sda",
+   type   => "primary";
+   
  partition "none",
-    type   => "extended",
-    ondisk => "sda",
-    grow   => 1,
-    mount  => TRUE,
-    
+   type  => "extended",
+   ondisk => "sda",
+   grow  => 1,
+   mount  => TRUE,
+   
  partition "swap",
-    fstype => "swap",
-    type   => "logical",
-    ondisk => "sda",
-    size   => 8000;
-    
+   fstype => "swap",
+   type  => "logical",
+   ondisk => "sda",
+   size  => 8000;
+   
  partition "none",
-    lvm    => 1,
-    type   => "primary",
-    size   => 15000,
-    ondisk => "vda";
-    
+   lvm   => 1,
+   type  => "primary",
+   size  => 15000,
+   ondisk => "vda";
+   
  partition "/",
-    fstype => "ext3",
-    size   => 10000,
-    onvg   => "vg0";
+   fstype => "ext3",
+   size  => 10000,
+   onvg  => "vg0";
 
 
 =cut
 sub partition {
-   my ($mountpoint, %option) = @_;
+  my ($mountpoint, %option) = @_;
 
-   $option{type} ||= "primary"; # primary is default
+  $option{type} ||= "primary"; # primary is default
 
-   # info:
-   # disk size, partition start, partition end is in MB
+  # info:
+  # disk size, partition start, partition end is in MB
 
-   unless($option{ondisk}) {
-      die("You have to specify ,,ondisk''.");
-   }
+  unless($option{ondisk}) {
+    die("You have to specify ,,ondisk''.");
+  }
 
-   my $disk = $option{ondisk};
+  my $disk = $option{ondisk};
 
-   my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk print";
+  my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk print";
 
-   my $last_partition_end = 1;
-   my $unit;
-   if(@output_lines) {
-      ($last_partition_end, $unit) = ($output_lines[-1] =~ m/\s+[\d\.]+[a-z]+\s+[\d\.]+[a-z]+\s+([\d\.]+)(kB|MB|GB)/i);
-      if($unit eq "GB") { $last_partition_end = sprintf("%i", (($last_partition_end * 1000)+1)); } # * 1000 because of parted, +1 to round up
-      if($unit eq "kB") { $last_partition_end = sprintf("%i", (($last_partition_end / 1000)+1)); } # / 1000 because of parted, +1 to round up
-   }
+  my $last_partition_end = 1;
+  my $unit;
+  if(@output_lines) {
+    ($last_partition_end, $unit) = ($output_lines[-1] =~ m/\s+[\d\.]+[a-z]+\s+[\d\.]+[a-z]+\s+([\d\.]+)(kB|MB|GB)/i);
+    if($unit eq "GB") { $last_partition_end = sprintf("%i", (($last_partition_end * 1000)+1)); } # * 1000 because of parted, +1 to round up
+    if($unit eq "kB") { $last_partition_end = sprintf("%i", (($last_partition_end / 1000)+1)); } # / 1000 because of parted, +1 to round up
+  }
 
-   Rex::Logger::info("Last parition ending at $last_partition_end");
-   my $next_partition_start = $last_partition_end;
-   my $next_partition_end   = $option{size} + $last_partition_end;
+  Rex::Logger::info("Last parition ending at $last_partition_end");
+  my $next_partition_start = $last_partition_end;
+  my $next_partition_end  = $option{size} + $last_partition_end;
 
-   if($option{grow}) {
-      $next_partition_end = "-- -1";
-   }
+  if($option{grow}) {
+    $next_partition_end = "-- -1";
+  }
 
-   run "parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";
+  run "parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";
 
-   if($? != 0) {
-      die("Error creating partition.");
-   }
+  if($? != 0) {
+    die("Error creating partition.");
+  }
 
-   run "partprobe";
+  run "partprobe";
 
-   # get the partition id
-   my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
-   my ($part_num) = ($partitions[-1] =~ m/$disk(\d+)/);
+  # get the partition id
+  my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";
+  my ($part_num) = ($partitions[-1] =~ m/$disk(\d+)/);
 
-   if(! $part_num) {
-      die("Error getting partition number.");
-   }
+  if(! $part_num) {
+    die("Error getting partition number.");
+  }
 
-   if($option{boot}) {
-      run "parted /dev/$disk set $part_num boot on";
-   }
+  if($option{boot}) {
+    run "parted /dev/$disk set $part_num boot on";
+  }
 
-   if($option{vg}) {
-      run "parted /dev/$disk set $part_num lvm on";
-      pvcreate "/dev/$disk$part_num";
-      my @vgs = vgs();
-      if( grep { $_->{volume_group} eq $option{vg} } @vgs ) {
-         # vg exists, so extend it
-         vgextend $option{vg}, "/dev/$disk$part_num";
-      }
-      else {
-         # vg doesnt exist, create a new one
-         vgcreate $option{vg} => "/dev/$disk$part_num";
-      }
-   }
+  if($option{vg}) {
+    run "parted /dev/$disk set $part_num lvm on";
+    pvcreate "/dev/$disk$part_num";
+    my @vgs = vgs();
+    if( grep { $_->{volume_group} eq $option{vg} } @vgs ) {
+      # vg exists, so extend it
+      vgextend $option{vg}, "/dev/$disk$part_num";
+    }
+    else {
+      # vg doesnt exist, create a new one
+      vgcreate $option{vg} => "/dev/$disk$part_num";
+    }
+  }
 
-   my $found_part=0;
-   while($found_part == 0) {
-      Rex::Logger::debug("Waiting on /dev/$disk$part_num to appear...");
+  my $found_part=0;
+  while($found_part == 0) {
+    Rex::Logger::debug("Waiting on /dev/$disk$part_num to appear...");
 
-      run "ls -l /dev/$disk$part_num";
-      if($? == 0) { $found_part = 1; last; }
+    run "ls -l /dev/$disk$part_num";
+    if($? == 0) { $found_part = 1; last; }
 
-      sleep 1;
-   }
+    sleep 1;
+  }
 
-   if(! exists $option{fstype} || $option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "") {
-      # nix
-   }
-   elsif(can_run("mkfs.$option{fstype}")) {
-      Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 
+  if(! exists $option{fstype} || $option{fstype} eq "non-fs" || $option{fstype} eq "none" || $option{fstype} eq "") {
+    # nix
+  }
+  elsif(can_run("mkfs.$option{fstype}")) {
+    Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 
 
-      my $add_opts = "";
+    my $add_opts = "";
 
-      if(exists $option{label} || exists $option{lable}) {
-         my $label = $option{label} || $option{lable};
-         $add_opts .= " -L $label ";
-      }
+    if(exists $option{label} || exists $option{lable}) {
+      my $label = $option{label} || $option{lable};
+      $add_opts .= " -L $label ";
+    }
 
-      run "mkfs.$option{fstype} $add_opts /dev/$disk$part_num";
-   }
-   elsif($option{fstype} eq "swap") {
-      Rex::Logger::info("Creating swap space on /dev/$disk$part_num");
+    run "mkfs.$option{fstype} $add_opts /dev/$disk$part_num";
+  }
+  elsif($option{fstype} eq "swap") {
+    Rex::Logger::info("Creating swap space on /dev/$disk$part_num");
 
-      my $add_opts = "";
+    my $add_opts = "";
 
-      if(exists $option{label} || exists $option{lable}) {
-         my $label = $option{label} || $option{lable};
-         $add_opts .= " -L $label ";
-      }
+    if(exists $option{label} || exists $option{lable}) {
+      my $label = $option{label} || $option{lable};
+      $add_opts .= " -L $label ";
+    }
 
-      run "mkswap $add_opts /dev/$disk$part_num";
-   }
-   else {
-      die("Can't format partition with $option{fstype}");
-   }
+    run "mkswap $add_opts /dev/$disk$part_num";
+  }
+  else {
+    die("Can't format partition with $option{fstype}");
+  }
 
-   if(exists $option{mount} && $option{mount}) {
-      mount "/dev/$disk$part_num", $mountpoint,
-                  fs => $option{fstype};
-   }
+  if(exists $option{mount} && $option{mount}) {
+    mount "/dev/$disk$part_num", $mountpoint,
+            fs => $option{fstype};
+  }
 
-   if(exists $option{mount_persistent} && $option{mount_persistent}) {
-      mount "/dev/$disk$part_num", $mountpoint,
-                  fs => $option{fstype},
-                  label => $option{label} || "",
-                  persistent => 1;
-   }
+  if(exists $option{mount_persistent} && $option{mount_persistent}) {
+    mount "/dev/$disk$part_num", $mountpoint,
+            fs => $option{fstype},
+            label => $option{label} || "",
+            persistent => 1;
+  }
 
-   return "$disk$part_num";
+  return "$disk$part_num";
 }
 
 =back

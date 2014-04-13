@@ -1,7 +1,7 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 # 
-# vim: set ts=3 sw=3 tw=0:
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 package Rex::Virtualization::VBox::info;
@@ -17,33 +17,33 @@ use XML::Simple;
 use Data::Dumper;
 
 sub execute {
-   my ($class, $vmname) = @_;
+  my ($class, $vmname) = @_;
 
-   unless($vmname) {
-      die("You have to define the vm name!");
-   }
+  unless($vmname) {
+    die("You have to define the vm name!");
+  }
 
-   Rex::Logger::debug("Getting info of domain: $vmname");
+  Rex::Logger::debug("Getting info of domain: $vmname");
 
-   my $xml;
+  my $xml;
 
-   my @dominfo = i_run "VBoxManage showvminfo \"$vmname\" --machinereadable";
+  my @dominfo = i_run "VBoxManage showvminfo \"$vmname\" --machinereadable";
   
-   if($? != 0) {
-      die("Error running VBoxManage showvminfo $vmname");
-   }
+  if($? != 0) {
+    die("Error running VBoxManage showvminfo $vmname");
+  }
 
-   my %ret = ();
-   my ($k, $v);
+  my %ret = ();
+  my ($k, $v);
 
-   for my $line (@dominfo) {
-      ($k, $v) = split(/=/, $line);
-      $k =~ s/^"|"$//g;
-      $v =~ s/^"|"$//g;
-      $ret{$k} = $v;
-   } 
+  for my $line (@dominfo) {
+    ($k, $v) = split(/=/, $line);
+    $k =~ s/^"|"$//g;
+    $v =~ s/^"|"$//g;
+    $ret{$k} = $v;
+  } 
 
-   return \%ret;
+  return \%ret;
 }
 
 1;

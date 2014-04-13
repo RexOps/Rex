@@ -1,118 +1,142 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
-# vim: set ts=3 sw=3 tw=0:
+#
+# vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-   
 
 package Rex::Interface::Shell::Bash;
 
 use strict;
 use warnings;
 
+use Rex::Interface::Shell::Base;
+use base qw(Rex::Interface::Shell::Base);
+use Data::Dumper;
+
 sub new {
-    my $class = shift;
-    my $self = {};
-    $self->{path} = undef;
-    bless($self, $class);
-    
-    return $self;
+  my $class = shift;
+  my $proto = ref($class) || $class;
+  my $self  = $proto->SUPER::new(@_);
+
+  bless( $self, $class );
+
+  return $self;
 }
 
 sub path {
-    my ($self, $path ) = @_;
-    $self->{path} = $path;
+  my ( $self, $path ) = @_;
+  $self->{path} = $path;
 }
 
 sub source_global_profile {
-    my ($self, $parse) = @_;
-    $self->{source_global_profile} = $parse;
+  my ( $self, $parse ) = @_;
+  $self->{source_global_profile} = $parse;
 }
 
 sub source_profile {
-    my ($self, $parse) = @_;
-    $self->{source_profile} = $parse;
+  my ( $self, $parse ) = @_;
+  $self->{source_profile} = $parse;
 }
 
-sub set_locale {
-    my ($self, $locale) = @_;
-    $self->{locale} = $locale;
-}
+# sub set_env {
+#   my ( $self, $env ) = @_;
+#   my $cmd = undef;
+#
+#   die("Error: env must be a hash")
+#     if ( ref $env ne "HASH" );
+#
+#   while ( my ( $k, $v ) = each($env) ) {
+#     $cmd .= "export $k=$v; ";
+#   }
+#   $self->{env} = $cmd;
+# }
 
 sub exec {
-    my ($self, $cmd, $option) = @_;
-    my $complete_cmd = $cmd;
+  my ( $self, $cmd, $option ) = @_;
 
-    if(exists $option->{path}) {
-      $self->path($option->{path});
-    }
+  if ( exists $option->{path} ) {
+    $self->path( $option->{path} );
+  }
 
-    if(exists $option->{no_sh}) {
+  Rex::Logger::debug("Shell/Bash: Got options:");
+  Rex::Logger::debug( Dumper($option) );
 
-       if(exists $option->{cwd}) {
-           $option->{format_cmd} = "cd $option->{cwd} && $option->{format_cmd}";
-       }
+  my $complete_cmd = $cmd;
 
-       if ($self->{path}) {
-           $option->{format_cmd} = "PATH=$self->{path}; export PATH; $option->{format_cmd} ";
-       }
+  # if we need to execute without an sh command,
+  # use the format_cmd key
+  # if ( exists $option->{no_sh} ) {
+  #   $complete_cmd = $option->{format_cmd};
+  # }
 
-       if ($self->{locale} && ! exists $option->{no_locales}) {
-           $option->{format_cmd} = "LC_ALL=$self->{locale} ; export LC_ALL; $option->{format_cmd} ";
-       }
+  if ( exists $option->{cwd} ) {
+    $complete_cmd = "cd $option->{cwd} && $complete_cmd";
+  }
 
-       if ($self->{source_profile}) {
-           $option->{format_cmd} = ". ~/.profile >/dev/null 2>&1 ; $option->{format_cmd} ";
-       }
+  if ( $self->{path} ) {
+    $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
+  }
 
+  if ( $self->{locale} && !exists $option->{no_locales} ) {
+    $complete_cmd = "LC_ALL=$self->{locale} ; export LC_ALL; $complete_cmd ";
+  }
 
-       if ($self->{source_global_profile}) {
-           $option->{format_cmd} = ". /etc/profile >/dev/null 2>&1 ; $option->{format_cmd} ";
-       }
+  if ( $self->{source_profile} ) {
+    $complete_cmd = ". ~/.profile >/dev/null 2>&1 ; $complete_cmd";
+  }
 
+  if ( $self->{source_global_profile} ) {
+    $complete_cmd = ". /etc/profile >/dev/null 2>&1 ; $complete_cmd";
+  }
+
+  if ( exists $self->{__env__} ) {
+    if ( ref $self->{__env__} eq "HASH" ) {
+      for my $key ( keys %{ $self->{__env__} } ) {
+        my $val = $self->{__env__}->{$key};
+        $val =~ s/"/\\"/gms;
+        if ( exists $self->{__sudo_env__} && $self->{__sudo_env__} ) {
+          $complete_cmd = " $key=\"$val\" $complete_cmd ";
+        }
+        else {
+          $complete_cmd = " export $key=\"$val\" ; $complete_cmd ";
+        }
+      }
     }
     else {
-
-       if(exists $option->{cwd}) {
-         $complete_cmd = "cd $option->{cwd} && $complete_cmd";
-       }
-
-       if ($self->{path}) {
-           $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
-       }
-
-       if ($self->{locale} && ! exists $option->{no_locales}) {
-           $complete_cmd = "LC_ALL=$self->{locale} ; export LC_ALL; $complete_cmd ";
-       }
-
-       if ($self->{source_profile}) {
-           $complete_cmd = ". ~/.profile >/dev/null 2>&1 ; $complete_cmd";
-       }
-
-
-       if ($self->{source_global_profile}) {
-           $complete_cmd = ". /etc/profile >/dev/null 2>&1 ; $complete_cmd";
-       }
-
+      $complete_cmd = $self->{__env__} . " $complete_cmd ";
     }
-
+  }
 
 # this is due to a strange behaviour with Net::SSH2 / libssh2
 # it may occur when you run rex inside a kvm virtualized host connecting to another virtualized vm on the same hardware
-    if(Rex::Config->get_sleep_hack) {
-      $complete_cmd .= " ; f=\$? ; sleep .00000001 ; exit \$f";
-    }
+  if ( Rex::Config->get_sleep_hack ) {
+    $complete_cmd .= " ; f=\$? ; sleep .00000001 ; exit \$f";
+  }
 
-    if(exists $option->{preprocess_command} && ref $option->{preprocess_command} eq "CODE") {
-      $complete_cmd = $option->{preprocess_command}->($complete_cmd);
-    }
+  if ( exists $option->{preprocess_command}
+    && ref $option->{preprocess_command} eq "CODE" )
+  {
+    $complete_cmd = $option->{preprocess_command}->($complete_cmd);
+  }
 
-    if(exists $option->{format_cmd}) {
-      $option->{format_cmd} =~ s/{{CMD}}/$complete_cmd/;
-      $complete_cmd = $option->{format_cmd};
-    }
+  # rewrite the command again
+  if ( exists $option->{format_cmd} ) {
+    $complete_cmd =~ s/{{CMD}}/$cmd/;
+  }
 
-    return $complete_cmd;
+  if ( $self->{__inner_shell__} ) {
+    $complete_cmd =~ s/\\/\\\\/gms;
+    $complete_cmd =~ s/"/\\"/gms;
+    $complete_cmd =~ s/\$/\\\$/gms;
+
+    $complete_cmd = "sh -c \"$complete_cmd\"";
+  }
+
+  if ( exists $option->{prepend_command} && $option->{prepend_command} ) {
+    $complete_cmd = $option->{prepend_command} . " $complete_cmd";
+  }
+
+  return $complete_cmd;
 }
 
 1;

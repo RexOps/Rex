@@ -136,9 +136,9 @@ For JiffyBox:
 For OpenStack:
 
  cloud_auth(
-  tenantName => 'tenant',
-  username   => 'user',
-  password   => 'password',
+  tenant_name => 'tenant',
+  username    => 'user',
+  password    => 'password',
  );
 
 =cut

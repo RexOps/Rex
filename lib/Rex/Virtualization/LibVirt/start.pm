@@ -15,6 +15,9 @@ use Rex::Helper::Run;
 sub execute {
   my ( $class, $arg1, %opt ) = @_;
   my $virt_settings = Rex::Config->get("virtualization");
+
+  Rex::Logger::debug("Starting vm: $arg1");
+
   chomp( my $uri =
       ref($virt_settings) ? $virt_settings->{connect} : i_run "virsh uri" );
 

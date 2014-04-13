@@ -1,3 +1,6 @@
+2014-04-12 Jan Gehring <jan.gehring, gmail.com> (0.45.2)
+  * fixed special mkdir() case on local windows runs.
+
 2014-04-11 Jan Gehring <jan.gehring, gmail.com> (0.45.1)
   * no_overwrite option for file() function
   * ensure 'directory' option for file() function

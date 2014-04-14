@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Cloud::Jiffybox;
-  
+
 use strict;
 use warnings;
 
@@ -18,7 +18,7 @@ use Data::Dumper;
 use Rex::Cloud::Base;
 
 use base qw(Rex::Cloud::Base);
-  
+
 sub new {
   my $that = shift;
   my $proto = ref($that) || $that;
@@ -78,7 +78,7 @@ sub _do_request {
   unless($data->{"result"}) {
     die("Error talking to jiffybox: " . $data->{"messages"}->[0]->{"message"});
   }
-  
+
   return $data;
 }
 
@@ -118,7 +118,7 @@ sub list_operating_systems {
   Rex::Logger::debug("Listing operating systems");
 
   my $data = $self->_do_request("GET", "distributions");
- 
+
   return $self->_result_to_array($data, "os_id");
 }
 
@@ -147,12 +147,12 @@ sub run_instance {
   my $data = $self->_do_request("POST", "jiffyBoxes", @jiffy_data);
   my $instance_id = $data->{"result"}->{"id"};
 
+
   my $sleep_countdown = 10;
   sleep $sleep_countdown; # wait 10 seconds
 
   ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
-
-  while($data->{"state"} ne "STOPPED") {
+  while($data->{"state"} ne "STOPPED" && $data->{"state"} ne "RUNNING") {
     Rex::Logger::debug("Waiting for instance to be created...");
     ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
@@ -166,6 +166,20 @@ sub run_instance {
   }
 
   $self->start_instance(instance_id => $instance_id);
+
+  ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
+  while($data->{"state"} ne "RUNNING") {
+    Rex::Logger::debug("Waiting for instance to be started...");
+    ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
+
+    sleep $sleep_countdown;
+
+    --$sleep_countdown;
+
+    if($sleep_countdown <= 3) {
+      $sleep_countdown = 7;
+    }
+  }
 
   return $data;
 
@@ -215,7 +229,7 @@ sub stop_instance {
       $sleep_countdown = 7;
     }
   }
-  
+
   return 1;
 }
 
@@ -245,7 +259,7 @@ sub list_instances {
       type => $data->{"result"}->{$instance_id}->{"plan"}->{"name"},
       dns_name => "j$instance_id.servers.jiffybox.net",
       state => $state,
-      __state => $data->{"result"}->{$instance_id}->{"status"}, 
+      __state => $data->{"result"}->{$instance_id}->{"status"},
       launch_time => undef,
       name => $data->{"result"}->{$instance_id}->{"name"},
     });

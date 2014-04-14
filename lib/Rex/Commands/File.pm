@@ -107,8 +107,6 @@ sub template {
   my ($file, @params) = @_;
   my $param;
 
-  $file = resolv_path($file);
-
   if(ref $params[0] eq "HASH") {
     $param = $params[0];
   }
@@ -120,54 +118,60 @@ sub template {
     $param->{server} = Rex::Commands::connection()->server;
   }
 
-  unless($file =~ m/^\// || $file =~ m/^\@/) {
-    # path is relative and no template
-    Rex::Logger::debug("Relativ path $file");
-
-    $file = Rex::Helper::Path::get_file_path($file, caller());
-
-    Rex::Logger::debug("New filename: $file");
-  }
-
-  # if there is a file called filename.environment then use this file
-  # ex:
-  # $content = template("files/hosts.tpl");
-  #
-  # rex -E live ...
-  # will first look if files/hosts.tpl.live is available, if not it will
-  # use files/hosts.tpl
-  if(-f "$file." . Rex::Config->get_environment) {
-    $file = "$file." . Rex::Config->get_environment;
-  }
-
   my $content;
-
-  if(-f $file) {
-    $content = eval { local(@ARGV, $/) = ($file); <>; };
-  }
-  elsif($file =~ m/^\@/) {
-    my @caller = caller(0);
-    my $file_path = Rex::get_module_path($caller[0]);
-
-    if(! -f $file_path) {
-      if(-f "$file_path/__module__.pm") {
-        $file_path = "$file_path/__module__.pm";
-      }
-      elsif(-f "$file_path/Module.pm") {
-        $file_path = "$file_path/Module.pm";
-      }
-      elsif(-f $caller[1]) {
-        $file_path = $caller[1];
-      }
-    }
-    my $file_content = eval { local(@ARGV, $/) = ($file_path); <>; };
-    my ($data) = ($file_content =~ m/.*__DATA__(.*)/ms);
-    my $fp = Rex::File::Parser::Data->new(data => [ split(/\n/, $data) ]);
-    my $snippet_to_read = substr($file, 1);
-    $content = $fp->read($snippet_to_read);
+  if ( ref $file && ref $file eq 'SCALAR' ) {
+    $content = ${$file};
   }
   else {
-    die("$file not found");
+    $file = resolv_path($file);
+
+    unless($file =~ m/^\// || $file =~ m/^\@/) {
+      # path is relative and no template
+      Rex::Logger::debug("Relativ path $file");
+
+      $file = Rex::Helper::Path::get_file_path($file, caller());
+
+      Rex::Logger::debug("New filename: $file");
+    }
+
+    # if there is a file called filename.environment then use this file
+    # ex:
+    # $content = template("files/hosts.tpl");
+    #
+    # rex -E live ...
+    # will first look if files/hosts.tpl.live is available, if not it will
+    # use files/hosts.tpl
+    if(-f "$file." . Rex::Config->get_environment) {
+      $file = "$file." . Rex::Config->get_environment;
+    }
+
+    if(-f $file) {
+      $content = eval { local(@ARGV, $/) = ($file); <>; };
+    }
+    elsif($file =~ m/^\@/) {
+      my @caller = caller(0);
+      my $file_path = Rex::get_module_path($caller[0]);
+
+      if(! -f $file_path) {
+        if(-f "$file_path/__module__.pm") {
+          $file_path = "$file_path/__module__.pm";
+        }
+        elsif(-f "$file_path/Module.pm") {
+          $file_path = "$file_path/Module.pm";
+        }
+        elsif(-f $caller[1]) {
+          $file_path = $caller[1];
+        }
+      }
+      my $file_content = eval { local(@ARGV, $/) = ($file_path); <>; };
+      my ($data) = ($file_content =~ m/.*__DATA__(.*)/ms);
+      my $fp = Rex::File::Parser::Data->new(data => [ split(/\n/, $data) ]);
+      my $snippet_to_read = substr($file, 1);
+      $content = $fp->read($snippet_to_read);
+    }
+    else {
+      die("$file not found");
+    }
   }
 
   my %template_vars;

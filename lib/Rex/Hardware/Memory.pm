@@ -56,7 +56,7 @@ sub get {
 
     my ($free_cache) = grep { $_=$1 if /^Free \(cache[^\d]+\d+\s+(\d+)/ } @data;
     my ($free_list)  = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
-    my ($page_cache) = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
+    my ($page_cache) = grep { $_=$1 if /^Page cache\s+\d+\s+(\d+)/ } @data;
 
     my $free = $free_cache + $free_list;
     #my ($total, $total_e) = grep { $_=$1 if /^Memory Size: (\d+) ([a-z])/i } i_run "prtconf";

@@ -338,7 +338,7 @@ sub file {
     $new_md5 = md5($tmp_file_name);
 
     if($new_md5 && $old_md5 && $new_md5 eq $old_md5) {
-      Rex::Logger::debug("No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5.");
+      Rex::Logger::debug("No need to overwrite existing file. Old and new files are the same. $old_md5 eq $new_md5.");
       # md5 sums are the same, delete tmp.
       $fs->unlink($tmp_file_name);
       $need_md5 = 0; # we don't need to execute on_change hook

@@ -54,13 +54,13 @@ sub get {
   elsif($os eq "SunOS") {
     my @data = i_run "echo ::memstat | mdb -k";
 
-    my ($free_cache) = grep { $_=$1 if /^Free \(cache[^\d]+\d+\s+(\d+)/ } @data;
-    my ($free_list)  = grep { $_=$1 if /^Free \(freel[^\d]+\d+\s+(\d+)/ } @data;
-    my ($page_cache) = grep { $_=$1 if /^Page cache\s+\d+\s+(\d+)/ } @data;
+    my ($free_cache) = map { /\D+\d+\s+(\d+)/ } grep { /^Free \(cache/ } @data;
+    my ($free_list)  = map { /\D+\d+\s+(\d+)/ } grep { /^Free \(freel/ } @data;
+    my ($page_cache) = map { /\s+\d+\s+(\d+)/ } grep { /^Page cache/ } @data;
 
     my $free = $free_cache + $free_list;
     #my ($total, $total_e) = grep { $_=$1 if /^Memory Size: (\d+) ([a-z])/i } i_run "prtconf";
-    my ($total) = grep { $_=$1 if /^Total\s+\d+\s+(\d+)/ } @data;
+    my ($total) = map { /\s+\d+\s+(\d+)/ } grep { /^Total/ } @data;
 
     &$convert($free, "M");
     &$convert($total, "M");
@@ -144,11 +144,11 @@ sub get {
   elsif($os eq "OpenWrt") {
     my @data = i_run "cat /proc/meminfo";
 
-    my ($total)   = grep { $_=$1 if /^MemTotal:\s+(\d+)/ } @data;
-    my ($free)    = grep { $_=$1 if /^MemFree:\s+(\d+)/ } @data;
-    my ($shared)  = grep { $_=$1 if /^Shmem:\s+(\d+)/ } @data;
-    my ($buffers)  = grep { $_=$1 if /^Buffers:\s+(\d+)/ } @data;
-    my ($cached)  = grep { $_=$1 if /^Cached:\s+(\d+)/ } @data;
+    my ($total)   = map { /(\d+)/ } grep { /^MemTotal:/ } @data;
+    my ($free)    = map { /(\d+)/ } grep { /^MemFree:/ } @data;
+    my ($shared)  = map { /(\d+)/ } grep { /^Shmem:/ } @data;
+    my ($buffers) = map { /(\d+)/ } grep { /^Buffers:/ } @data;
+    my ($cached)  = map { /(\d+)/ } grep { /^Cached:/ } @data;
 
     $data = {
       total => $total,

@@ -1,3 +1,6 @@
+2014-04-13 Jan Gehring <jan.gehring, gmail.com> (0.45.3)
+  * fixed jiffybox endless loop on creating instances. #344 - Renee
+
 2014-04-12 Jan Gehring <jan.gehring, gmail.com> (0.45.2)
   * fixed special mkdir() case on local windows runs.
 

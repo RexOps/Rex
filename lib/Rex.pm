@@ -72,7 +72,7 @@ our (@EXPORT,
     $MODULE_PATHS,
     $WITH_EXIT_STATUS);
 
-$VERSION = "0.45.2";
+$VERSION = "0.45.3";
 my $cur_dir;
 
 
@@ -695,6 +695,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Rao Chenlin (Chenryn)
 
 =item RenatoCRON
+
+=item Renee Bäcker
 
 =item Samuele Tognini
 

@@ -152,7 +152,7 @@ sub run_instance {
 
   ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 
-  while($data->{"state"} ne "STOPPED") {
+  while($data->{"state"} ne "STOPPED" && $data->{"state"} ne "RUNNING") {
     Rex::Logger::debug("Waiting for instance to be created...");
     ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 

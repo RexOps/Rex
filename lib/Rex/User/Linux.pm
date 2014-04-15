@@ -52,17 +52,13 @@ sub create_user {
     $run_cmd = 1;
   }
   else {
-    # only the user should be there, no modifications. 
+    # only the user should be there, no modifications.
     # so just return
     if(! defined $data) {
-      if(Rex::Config->get_do_reporting) {
-        return {
-          changed => 0,
-          uid    => $uid,
-        };
-      }
-
-      return $uid;
+      return {
+        changed => 0,
+        uid    => $uid,
+      };
     }
 
     Rex::Logger::debug("User $user already exists. Updating...");
@@ -74,7 +70,7 @@ sub create_user {
     $cmd = "/usr/sbin/usermod ";
   }
 
-  if(exists $data->{non_uniq}) { 
+  if(exists $data->{non_uniq}) {
     $cmd .= " -o ";
     $run_cmd = 1;
   }
@@ -184,22 +180,18 @@ sub create_user {
   my $new_pw_md5 = md5("/etc/passwd");
   my $new_sh_md5 = md5("/etc/shadow");
 
-  if(Rex::Config->get_do_reporting) {
-    if($new_pw_md5 eq $old_pw_md5 && $new_sh_md5 eq $old_sh_md5) {
-      return {
-        changed => 0,
-        ret    => $self->get_uid($user),
-      };
-    }
-    else {
-      return {
-        changed => 1,
-        ret    => $self->get_uid($user),
-      },
-    }
+  if($new_pw_md5 eq $old_pw_md5 && $new_sh_md5 eq $old_sh_md5) {
+    return {
+      changed => 0,
+      ret    => $self->get_uid($user),
+    };
   }
-
-  return $self->get_uid($user);
+  else {
+    return {
+      changed => 1,
+      ret    => $self->get_uid($user),
+    },
+  }
 
 }
 

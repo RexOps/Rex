@@ -15,7 +15,7 @@ With this module you can manage user and groups.
 =head1 SYNOPSIS
 
  use Rex::Commands::User;
- 
+
  task "create-user", "remoteserver", sub {
    create_user "root",
      uid => 0,
@@ -77,12 +77,32 @@ Manage user account.
 sub account {
   my ( $name, %option ) = @_;
 
-  if ( exists $option{ensure} && $option{ensure} eq "present" ) {
-    delete $option{ensure};
-    create_user( $name, %option );
+  if ( !ref $name ) {
+    $name = [$name];
   }
-  elsif ( exists $option{ensure} && $option{ensure} eq "absent" ) {
-    delete_user $name;
+
+  for my $n ( @{$name} ) {
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "account", name => $n );
+
+    my $real_name = $n;
+    if(exists $option{name}) {
+      $real_name = $option{name};
+    }
+
+    if ( exists $option{ensure} && $option{ensure} eq "present" ) {
+      delete $option{ensure};
+      my $data = &create_user( $real_name, %option, __ret_changed => 1 );
+      Rex::get_current_connection()->{reporter}
+        ->report( changed => $data->{changed}, );
+    }
+    elsif ( exists $option{ensure} && $option{ensure} eq "absent" ) {
+      &delete_user($real_name);
+      Rex::get_current_connection()->{reporter}->report( changed => 1, );
+    }
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_end( type => "account", name => $n );
   }
 }
 
@@ -167,7 +187,11 @@ sub create_user {
   Rex::Hook::run_hook( create_user => "after", @_, $uid );
   ##############################
 
-  return $uid;
+  if ( $data->{__ret_changed} ) {
+    return $uid;
+  }
+
+  return $uid->{ret};
 }
 
 =item get_uid($user)

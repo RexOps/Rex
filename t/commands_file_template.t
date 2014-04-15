@@ -14,7 +14,7 @@ my $basename = basename __FILE__;
 {
     # templates from file
     my $tpl = File::Spec->catfile(
-        dirname( __FILE__ ),
+        dirname( __FILE__ ), 'commands', 'files',
         'test.tpl',
     );
     my $content = template

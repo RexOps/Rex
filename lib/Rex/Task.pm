@@ -14,7 +14,7 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 =head1 SYNOPSIS
 
  use Rex::Task
- 
+
   my $task = Rex::Task->new(name => "testtask");
   $task->set_server("remoteserver");
   $task->set_code(sub { say "Hello"; });
@@ -30,6 +30,7 @@ package Rex::Task;
 use strict;
 use warnings;
 use Data::Dumper;
+use Time::HiRes qw(time);
 
 use Rex::Logger;
 use Rex::TaskList;
@@ -576,8 +577,6 @@ sub connect {
   }
 
 
-  Rex::get_current_connection()->{reporter}->register_reporting_hooks;
-
   $self->run_hook(\$server, "around");
 
 }
@@ -659,7 +658,6 @@ sub run {
     $self->run_hook(\$server, "before");
     $self->connect($server);
 
-    my $reporter = Rex::get_current_connection()->{reporter};
     my $start_time = time;
 
     if(Rex::Args->is_opt("c")) {
@@ -686,15 +684,16 @@ sub run {
       if($@) {
         my $error = $@;
 
-        $reporter->report({
-            command   => "run_task",
-            module    => "Rex::TaskList::Base",
-            start_time => $start_time,
-            end_time  => time,
-            success   => 0,
-          }) if ($reporter);
+        Rex::get_current_connection()->{reporter}->report_resource_failed(message => $error);
 
-        $reporter->write_report if ($reporter);
+        Rex::get_current_connection()->{reporter}->report_task_execution(
+          failed     => 1,
+          start_time => $start_time,
+          end_time   => time,
+          message    => $error,
+        );
+
+        Rex::get_current_connection()->{reporter}->write_report();
 
         die($error);
       }
@@ -705,15 +704,13 @@ sub run {
       Rex::get_cache()->save();
     }
 
-    $reporter->report({
-        command   => "run_task",
-        module    => "Rex::TaskList::Base",
-        start_time => $start_time,
-        end_time  => time,
-        success   => 1,
-      }) if ($reporter);
+    Rex::get_current_connection()->{reporter}->report_task_execution(
+      failed     => 0,
+      start_time => $start_time,
+      end_time   => time,
+    );
 
-    $reporter->write_report if ($reporter);
+    Rex::get_current_connection()->{reporter}->write_report();
 
     $self->disconnect($server) unless($in_transaction);
     $self->run_hook(\$server, "after");

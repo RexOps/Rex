@@ -77,9 +77,9 @@ and notify it when you want to run it.
    run "extract-something",
      command     => "tar -C /foo -xzf /tmp/foo.tgz",
      only_notified => TRUE;
- 
+
    # some code ...
- 
+
    notify "run", "extract-something";  # now the command gets executed
  };
 
@@ -88,7 +88,7 @@ I<only_if> or I<unless> option.
 
  run "some-command",
    only_if => "ps -ef | grep -q httpd";   # only run if httpd is running
- 
+
  run "some-other-command",
    unless => "ps -ef | grep -q httpd";    # only run if httpd is not running
 
@@ -116,6 +116,8 @@ sub run {
     $option = {@_};
   }
 
+  my $res_cmd = $cmd;
+
   if ( exists $option->{only_notified} && $option->{only_notified} ) {
     Rex::Logger::debug(
       "This command runs only if notified. Passing by. ($cmd, $option->{command})"
@@ -140,12 +142,17 @@ sub run {
     $cmd = $option->{command};
   }
 
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "run", name => $res_cmd );
+
+  my $changed = 1;    # default for run() is 1
+
   if ( exists $option->{creates} ) {
     my $fs = Rex::Interface::Fs->create();
     if ( $fs->is_file( $option->{creates} ) ) {
       Rex::Logger::debug(
         "File $option->{creates} already exists. Not executing $cmd.");
-      return;
+      $changed = 0;
     }
   }
 
@@ -154,7 +161,7 @@ sub run {
     if ( $? != 0 ) {
       Rex::Logger::debug(
         "Don't executing $cmd because $option->{only_if} return $?.");
-      return;
+      $changed = 0;
     }
   }
 
@@ -163,47 +170,67 @@ sub run {
     if ( $? == 0 ) {
       Rex::Logger::debug(
         "Don't executing $cmd because $option->{unless} return $?.");
-      return;
+      $changed = 0;
     }
   }
 
-  my $path;
+  my $out_ret;
 
-  if ( !Rex::Config->get_no_path_cleanup() ) {
-    $path = join( ":", Rex::Config->get_path() );
-  }
+  if ($changed) {
+    my $path;
 
-  my $exec = Rex::Interface::Exec->create;
-  my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
-  chomp $out if $out;
-  chomp $err if $err;
-
-  $LAST_OUTPUT = [ $out, $err ];
-
-  if ( !defined $out ) {
-    $out = "";
-  }
-
-  if ( !defined $err ) {
-    $err = "";
-  }
-
-  if ( Rex::Config->get_exec_autodie() && Rex::Config->get_exec_autodie() == 1 )
-  {
-    if ( $? != 0 ) {
-      die("Error executing: $cmd.\nOutput:\n$out");
+    if ( !Rex::Config->get_no_path_cleanup() ) {
+      $path = join( ":", Rex::Config->get_path() );
     }
+
+    my $exec = Rex::Interface::Exec->create;
+    my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+    chomp $out if $out;
+    chomp $err if $err;
+
+    $LAST_OUTPUT = [ $out, $err ];
+
+    if ( !defined $out ) {
+      $out = "";
+    }
+
+    if ( !defined $err ) {
+      $err = "";
+    }
+
+    if ( Rex::Config->get_exec_autodie()
+      && Rex::Config->get_exec_autodie() == 1 )
+    {
+      if ( $? != 0 ) {
+        die("Error executing: $cmd.\nOutput:\n$out");
+      }
+    }
+
+    if ($code) {
+      $out_ret = &$code( $out, $err );
+    }
+
+    else {
+      $out_ret = $out;
+    }
+
+    Rex::get_current_connection()->{reporter}->report(
+      changed => 1,
+      message => "Command ($cmd) executed. Return-Code: $?"
+    );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
   }
 
-  if ($code) {
-    return &$code( $out, $err );
-  }
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "run", name => $res_cmd );
 
   if (wantarray) {
-    return split( /\r?\n/, $out );
+    $out_ret = [ split( /\r?\n/, $out_ret ) ];
   }
 
-  return $out;
+  return $out_ret;
 }
 
 =item can_run($command)
@@ -250,7 +277,7 @@ You can use this function to run one command with sudo privileges or to turn on 
  user "unprivuser";
  sudo_password "f00b4r";
  sudo -on;  # turn sudo globaly on
- 
+
  task prepare => sub {
    install "apache2";
    file "/etc/ntp.conf",
@@ -264,7 +291,7 @@ Or, if you don't turning sudo globaly on.
  task prepare => sub {
    file "/tmp/foo.txt",
      content => "this file was written without sudo privileges\n";
- 
+
    # everything in this section will be executed with sudo privileges
    sudo sub {
      install "apache2";

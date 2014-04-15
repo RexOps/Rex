@@ -12,6 +12,8 @@ Rex::Commands::Box - Functions / Class to manage Virtual Machines
 
 This is a Module to manage Virtual Machines or Cloud Instances in a simple way. Currently it supports only VirtualBox.
 
+Version <= 1.0: All these functions will not be reported.
+
 =head1 SYNOPSIS
 
  use Rex::Commands::Box;

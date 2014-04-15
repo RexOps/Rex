@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -34,43 +34,47 @@ Rex::Commands::Virtualization - Virtualization module
 
 With this module you can manage your virtualization.
 
+Version <= 1.0: All these functions will not be reported.
+
+All these functions are not idempotent.
+
 =head1 SYNOPSIS
 
  use Rex::Commands::Virtualization;
-   
+
  set virtualization => "LibVirt";
  set virtualization => "VBox";
-   
- use Data::Dumper;  
- 
+
+ use Data::Dumper;
+
  print Dumper vm list => "all";
  print Dumper vm list => "running";
-   
+
  vm destroy => "vm01";
-   
- vm delete => "vm01"; 
-    
+
+ vm delete => "vm01";
+
  vm start => "vm01";
-   
+
  vm shutdown => "vm01";
-   
+
  vm reboot => "vm01";
-   
+
  vm option => "vm01",
        max_memory => 1024*1024,
        memory    => 512*1024;
-          
+
  print Dumper vm info => "vm01";
-   
+
  # creating a vm on a kvm host
  vm create => "vm01",
     storage    => [
-      {  
+      {
         file  => "/mnt/data/libvirt/images/vm01.img",
         dev   => "vda",
-      }  
-    ];  
-     
+      }
+    ];
+
  print Dumper vm hypervisor => "capabilities";
 
 =head1 EXPORTED FUNCTIONS
@@ -92,7 +96,7 @@ With a cdrom as an iso image and a natted network. The bootorder is set to "dvd"
 
  vm create => "vm01",
     storage    => [
-      {  
+      {
         file  => "/mnt/data/vbox/vm01.img",
         size  => "10G",
       },
@@ -101,7 +105,7 @@ With a cdrom as an iso image and a natted network. The bootorder is set to "dvd"
       }
     ],
     memory => 512,
-    type => "Linux26", 
+    type => "Linux26",
     cpus => 1,
     boot => "dvd";
 
@@ -116,20 +120,20 @@ With a cdrom as an iso image and a bridged network on the bridge virbr0. The Boo
         size  => "10G",
         file  => "/mnt/data/libvirt/images/vm01.img",
       },
-                                                                                           
+
       {
         file    => "/mnt/data/iso/debian-6.0.2.1-amd64-netinst.iso",
       },
-    ]; 
+    ];
 
 This is the same as above, but with all options in use.
 
  vm create => "vm01",
     memory  => 512*1024,
-    cpus    => 1,    
+    cpus    => 1,
     arch    => "x86_64",
     boot    => "cdrom",
-    clock   => "utc", 
+    clock   => "utc",
     emulator => "/usr/bin/qemu-system-x86_64",
     on_poweroff => "destroy",
     on_reboot  => "restart",
@@ -155,7 +159,7 @@ This is the same as above, but with all options in use.
         dev    => "hdc",
         bus    => "ide",
         readonly => 1,
-        address  => {                                                                          
+        address  => {
           type     => "drive",
           controller => 0,
           bus      => 1,
@@ -184,7 +188,7 @@ Create a (Xen/HVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, clo
     storage    => [
       {
         file    => "/mnt/data/libvirt/images/vm01.img",
-        template => "/mnt/data/libvirt/images/svn01.img",                                                  
+        template => "/mnt/data/libvirt/images/svn01.img",
       },
     ];
 
@@ -205,7 +209,7 @@ This is the same as above, but with all options in use.
         file  => "/mnt/data/libvirt/images/vm01.img",
         dev   => "hda",
         bus   => "ide",
-        template => "/mnt/data/libvirt/images/svn01.img",                                                  
+        template => "/mnt/data/libvirt/images/svn01.img",
       },
       {  type    => "file",
         device  => "cdrom",
@@ -229,9 +233,9 @@ Create a (Xen/PVM) VM named "vm01" with 512 MB ram and 1 cpu. With one root part
       {
         file   => "/mnt/data/libvirt/images/domains/vm01/disk.img",
         dev    => "xvda2",
-        is_root => 1,                                                                          
+        is_root => 1,
       },
-      {  
+      {
         file  => "/mnt/data/libvirt/images/domains/vm01/swap.img",
         dev   => "xvda1",
       },

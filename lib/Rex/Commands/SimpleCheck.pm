@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 =head1 NAME
 
 Rex::Commands::SimpleCheck - Simple tcp/alive checks
@@ -11,6 +11,10 @@ Rex::Commands::SimpleCheck - Simple tcp/alive checks
 =head1 DESCRIPTION
 
 With this module you can do simple tcp/alive checks.
+
+Version <= 1.0: All these functions will not be reported.
+
+All these functions are not idempotent.
 
 =head1 SYNOPSIS
 
@@ -26,16 +30,16 @@ With this module you can do simple tcp/alive checks.
 
 
 package Rex::Commands::SimpleCheck;
-  
+
 use strict;
 use warnings;
 
 use IO::Socket;
-  
+
 require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
-   
+
 @EXPORT = qw(is_port_open);
 
 =item is_port_open($ip, $port)

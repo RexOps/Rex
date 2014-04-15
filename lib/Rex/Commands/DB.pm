@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -12,6 +12,8 @@ Rex::Commands::DB - Simple Database Access
 
 This module gives you simple access to a database. Currently I<select>, I<delete>, I<insert> and I<update> is supported.
 
+Version <= 1.0: All these functions will not be reported.
+
 =head1 SYNOPSIS
 
  use Rex::Commands::DB {
@@ -19,20 +21,20 @@ This module gives you simple access to a database. Currently I<select>, I<delete
                   user    => "username",
                   password => "password",
                 };
- 
+
  task "list", sub {
    my @data = db select => {
             fields => "*",
             from  => "table",
             where  => "enabled=1",
           };
-        
+
   db insert => "table", {
            field1 => "value1",
             field2 => "value2",
             field3 => 5,
           };
-           
+
   db update => "table", {
               set => {
                 field1 => "newvalue",
@@ -40,11 +42,11 @@ This module gives you simple access to a database. Currently I<select>, I<delete
               },
               where => "id=5",
            };
-           
+
   db delete => "table", {
             where => "id < 5",
           };
-        
+
  };
 
 
@@ -76,13 +78,13 @@ Do a database action.
           from  => "table",
           where  => "host='myhost'",
         };
-        
+
  db insert => "table", {
           field1 => "value1",
           field2 => "value2",
           field3 => 5,
         };
-         
+
  db update => "table", {
             set => {
               field1 => "newvalue",
@@ -90,7 +92,7 @@ Do a database action.
             },
             where => "id=5",
          };
-         
+
  db delete => "table", {
           where => "id < 5",
         };
@@ -195,11 +197,11 @@ sub import {
   my ($class, $opt) = @_;
 
   if($opt) {
-    $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "", $opt->{"attr"} );  
+    $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "", $opt->{"attr"} );
     $dbh->{mysql_auto_reconnect} = 1;
   }
 
-  my ($ns_register_to, $file, $line) = caller;  
+  my ($ns_register_to, $file, $line) = caller;
 
   no strict 'refs';
   for my $func_name (@EXPORT) {
@@ -210,6 +212,3 @@ sub import {
 }
 
 1;
-
-
-

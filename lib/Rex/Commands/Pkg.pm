@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
               source => "/export/files/etc/passwd"
             };
- 
+
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS
@@ -25,7 +25,6 @@ With this module you can install packages and files.
 =over 4
 
 =cut
-
 
 package Rex::Commands::Pkg;
 
@@ -54,51 +53,108 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for pkg);
+@EXPORT =
+  qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for pkg);
 
 =item pkg($package, %options)
 
 Since: 0.45
 
-Use this function to install or update a package.
+Use this resource to install or update a package. This resource will generate reports.
 
  pkg "httpd",
-   ensure => "latest";    # ensure that the newest version is installed (auto-update)
+   ensure    => "latest",    # ensure that the newest version is installed (auto-update)
+   on_change => sub { say "package was installed/updated"; };
+
  pkg "httpd",
    ensure => "absent";    # remove the package
+
  pkg "httpd",
    ensure => "present";   # ensure that some version is installed (no auto-update)
+
  pkg "httpd",
    ensure => "2.4.6";    # ensure that version 2.4.6 is installed
+
+ pkg "apache-server",    # with a custom resource name
+   package => "httpd",
+   ensure  => "present";
 
 =cut
 
 sub pkg {
-  my ($package, %option) = @_;
+  my ( $res_package, %option ) = @_;
+
+  my $package = $res_package;
+
+  if(exists $option{package}) {
+    $package = $option{package};
+  }
 
   $option{ensure} ||= "present";
 
-  if($option{ensure} eq "latest") {
-    return update(package => $package, \%option);
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "pkg", name => $res_package );
+
+  my $pkg = Rex::Pkg->get;
+  my ($old_package) = grep { $_->{name} eq $package } $pkg->get_installed;
+
+  if ( $option{ensure} eq "latest" ) {
+    &update( package => $package, \%option );
   }
-  elsif($option{ensure} eq "present") {
-    return install(package => $package, \%option);
+  elsif ( $option{ensure} =~ m/^(present|installed)$/ ) {
+    &install( package => $package, \%option );
   }
-  elsif($option{ensure} eq "absent") {
-    return remove(package => $package);
+  elsif ( $option{ensure} eq "absent" ) {
+    &remove( package => $package );
   }
-  elsif($option{ensure} =~ m/^\d/) {
+  elsif ( $option{ensure} =~ m/^\d/ ) {
+
     # looks like a version
-    return install(package => $package, {version => $option{ensure}});
+    &install( package => $package, { version => $option{ensure} } );
   }
   else {
     die("Unknown ensure parameter: $option{ensure}.");
   }
+
+  my ($new_package) = grep { $_->{name} eq $package } $pkg->get_installed;
+
+  if ( $old_package
+    && $new_package
+    && $old_package->{version} ne $new_package->{version} )
+  {
+    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+      $option{on_change}->( $package, %option );
+    }
+
+    Rex::get_current_connection()->{reporter}->report(
+      changed => 1,
+      message =>
+        "Package $package updated $old_package->{version} -> $new_package->{version}"
+    );
+  }
+  elsif ( !$old_package && $new_package ) {
+    Rex::get_current_connection()->{reporter}->report(
+      changed => 1,
+      message => "Package $package installed in version $new_package->{version}"
+    );
+  }
+  elsif ( $old_package && !$new_package ) {
+    Rex::get_current_connection()->{reporter}
+      ->report( changed => 1, message => "Package $package removed." );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "pkg", name => $res_package );
 }
 
 =item install($type, $data, $options)
 
 The install function can install packages (for CentOS, OpenSuSE and Debian) and files.
+
+If you need reports, please use the pkg() resource.
 
 =over 8
 
@@ -106,7 +162,7 @@ The install function can install packages (for CentOS, OpenSuSE and Debian) and 
 
  task "prepare", "server01", sub {
    install package => "perl";
- 
+
    # or if you have to install more packages.
    install package => [
                   "perl",
@@ -188,15 +244,15 @@ This gets executed right before the install() function returns.
 
 sub install {
 
-  if(! @_) {
+  if ( !@_ ) {
     return "install";
   }
 
   #### check and run before hook
   my @orig_params = @_;
   eval {
-    my @new_args = Rex::Hook::run_hook(install => "before", @_);
-    if(@new_args) {
+    my @new_args = Rex::Hook::run_hook( install => "before", @_ );
+    if (@new_args) {
       @_ = @new_args;
     }
     1;
@@ -205,66 +261,65 @@ sub install {
   };
   ##############################
 
-
-  my $type = shift;
+  my $type    = shift;
   my $package = shift;
   my $option;
   my $__ret;
 
-  if($type eq "file") {
+  if ( $type eq "file" ) {
 
-    if(ref($_[0]) eq "HASH") {
+    if ( ref( $_[0] ) eq "HASH" ) {
       $option = shift;
     }
     else {
-      $option = { @_ };
+      $option = {@_};
     }
 
-    Rex::Logger::debug("The install file => ... call is deprecated. Please use 'file' instead.");
+    Rex::Logger::debug(
+      "The install file => ... call is deprecated. Please use 'file' instead.");
     Rex::Logger::debug("This directive will be removed with (R)?ex 2.0");
-    Rex::Logger::debug("See http://rexify.org/api/Rex/Commands/File.pm for more information.");
+    Rex::Logger::debug(
+      "See http://rexify.org/api/Rex/Commands/File.pm for more information.");
 
-    my $source   = $option->{"source"};
-    my $need_md5  = ($option->{"on_change"} ? 1 : 0);
-    my $on_change = $option->{"on_change"} || sub {};
+    my $source    = $option->{"source"};
+    my $need_md5  = ( $option->{"on_change"} ? 1 : 0 );
+    my $on_change = $option->{"on_change"} || sub { };
     my $__ret;
 
-    my ($new_md5, $old_md5) = ("", "");
+    my ( $new_md5, $old_md5 ) = ( "", "" );
 
-    if($source =~ m/\.tpl$/) {
+    if ( $source =~ m/\.tpl$/ ) {
+
       # das ist ein template
 
-      my $content = eval { local(@ARGV, $/) = ($source); <>; };
+      my $content = eval { local ( @ARGV, $/ ) = ($source); <>; };
 
-      my $vars = $option->{"template"};
-      my %merge1 = %{$vars || {}};
-      my %merge2 = Rex::Hardware->get(qw/ All /);
-      my %template_vars = (%merge1, %merge2);
+      my $vars          = $option->{"template"};
+      my %merge1        = %{ $vars || {} };
+      my %merge2        = Rex::Hardware->get(qw/ All /);
+      my %template_vars = ( %merge1, %merge2 );
 
-      if($need_md5) {
-        eval {
-          $old_md5 = md5($package);
-        };
+      if ($need_md5) {
+        eval { $old_md5 = md5($package); };
       }
 
       my $fh = file_write($package);
-      $fh->write(Rex::Config->get_template_function()->($content, \%template_vars));
+      $fh->write(
+        Rex::Config->get_template_function()->( $content, \%template_vars ) );
       $fh->close;
 
-      if($need_md5) {
-        eval {
-          $new_md5 = md5($package);
-        };
+      if ($need_md5) {
+        eval { $new_md5 = md5($package); };
       }
 
     }
     else {
 
-      my $source = Rex::Helper::Path::get_file_path($source, caller());
-      my $content = eval { local(@ARGV, $/) = ($source); <>; };
+      my $source = Rex::Helper::Path::get_file_path( $source, caller() );
+      my $content = eval { local ( @ARGV, $/ ) = ($source); <>; };
 
       my $local_md5 = "";
-      if($option->{force}) {
+      if ( $option->{force} ) {
         upload $source, $package;
       }
       else {
@@ -277,38 +332,38 @@ sub install {
           $local_md5 = md5($source);
         };
 
-        unless($local_md5 eq $old_md5) {
-          Rex::Logger::debug("MD5 is different $local_md5 -> $old_md5 (uploading)");
+        unless ( $local_md5 eq $old_md5 ) {
+          Rex::Logger::debug(
+            "MD5 is different $local_md5 -> $old_md5 (uploading)");
           upload $source, $package;
         }
         else {
           Rex::Logger::debug("MD5 is equal. Not uploading $source -> $package");
         }
 
-        eval {
-          $new_md5 = md5($package);
-        };
+        eval { $new_md5 = md5($package); };
       }
     }
 
-    if(exists $option->{"owner"}) {
+    if ( exists $option->{"owner"} ) {
       chown $option->{"owner"}, $package;
     }
 
-    if(exists $option->{"group"}) {
+    if ( exists $option->{"group"} ) {
       chgrp $option->{"group"}, $package;
     }
 
-    if(exists $option->{"mode"}) {
+    if ( exists $option->{"mode"} ) {
       chmod $option->{"mode"}, $package;
     }
 
-    if($need_md5) {
-      unless($old_md5 && $new_md5 && $old_md5 eq $new_md5) {
+    if ($need_md5) {
+      unless ( $old_md5 && $new_md5 && $old_md5 eq $new_md5 ) {
         $old_md5 ||= "";
         $new_md5 ||= "";
 
-        Rex::Logger::debug("File $package has been changed... Running on_change");
+        Rex::Logger::debug(
+          "File $package has been changed... Running on_change");
         Rex::Logger::debug("old: $old_md5");
         Rex::Logger::debug("new: $new_md5");
 
@@ -318,75 +373,78 @@ sub install {
 
   }
 
-  elsif($type eq "package") {
+  elsif ( $type eq "package" ) {
 
-
-    if(ref($_[0]) eq "HASH") {
+    if ( ref( $_[0] ) eq "HASH" ) {
       $option = shift;
     }
-    elsif($_[0]) {
-      $option = { @_ };
+    elsif ( $_[0] ) {
+      $option = {@_};
     }
 
     my $pkg;
 
     $pkg = Rex::Pkg->get;
 
-    if(!ref($package)) {
+    if ( !ref($package) ) {
       $package = [$package];
     }
 
     my $changed = 0;
 
     # if we're being asked to install a single package
-    if(@{$package} == 1) {
+    if ( @{$package} == 1 ) {
       my $pkg_to_install = shift @{$package};
-      unless($pkg->is_installed($pkg_to_install)) {
+      unless ( $pkg->is_installed($pkg_to_install) ) {
         Rex::Logger::info("Installing $pkg_to_install.");
 
         #### check and run before_change hook
-        Rex::Hook::run_hook(install => "before_change", @orig_params);
+        Rex::Hook::run_hook( install => "before_change", @orig_params );
         ##############################
 
-        $pkg->install($pkg_to_install, $option);
+        $pkg->install( $pkg_to_install, $option );
         $changed = 1;
 
         #### check and run after_change hook
-        Rex::Hook::run_hook(install => "after_change", @orig_params, {changed => $changed});
+        Rex::Hook::run_hook(
+          install => "after_change",
+          @orig_params, { changed => $changed }
+        );
         ##############################
       }
-    } else {
+    }
+    else {
       my @pkgCandidates;
-      for my $pkg_to_install (@{$package}) {
-        unless($pkg->is_installed($pkg_to_install)) {
+      for my $pkg_to_install ( @{$package} ) {
+        unless ( $pkg->is_installed($pkg_to_install) ) {
           push @pkgCandidates, $pkg_to_install;
         }
       }
 
-      if(@pkgCandidates) {
+      if (@pkgCandidates) {
         Rex::Logger::info("Installing @pkgCandidates");
-        $pkg->bulk_install(\@pkgCandidates, $option); # here, i think $option is useless in its current form.
+        $pkg->bulk_install( \@pkgCandidates, $option )
+          ;    # here, i think $option is useless in its current form.
         $changed = 1;
       }
     }
 
-
-    if(Rex::Config->get_do_reporting) {
-      $__ret = {changed => $changed};
+    if ( Rex::Config->get_do_reporting ) {
+      $__ret = { changed => $changed };
     }
 
   }
   else {
     # unknown type, be a package
-    install("package", $type, $package, @_);
+    install( "package", $type, $package, @_ );
 
-    if(Rex::Config->get_do_reporting) {
-      $__ret = {skip => 1};
+    if ( Rex::Config->get_do_reporting ) {
+      $__ret = { skip => 1 };
     }
   }
 
   #### check and run after hook
-  Rex::Hook::run_hook(install => "after", @orig_params, $__ret);
+  Rex::Hook::run_hook( install => "after", @orig_params, $__ret );
   ##############################
 
   return $__ret;
@@ -395,25 +453,25 @@ sub install {
 
 sub update {
 
-  my ($type, $package, $option) = @_;
+  my ( $type, $package, $option ) = @_;
 
-  if($type eq "package") {
+  if ( $type eq "package" ) {
     my $pkg;
 
     $pkg = Rex::Pkg->get;
 
-    if(!ref($package)) {
+    if ( !ref($package) ) {
       $package = [$package];
     }
 
-    for my $pkg_to_install (@{$package}) {
+    for my $pkg_to_install ( @{$package} ) {
       Rex::Logger::info("Updating $pkg_to_install.");
-      $pkg->update($pkg_to_install, $option);
+      $pkg->update( $pkg_to_install, $option );
     }
 
   }
   else {
-    update("package", @_);
+    update( "package", @_ );
   }
 
 }
@@ -430,20 +488,19 @@ This function will remove the given package from a system.
 
 sub remove {
 
-  my ($type, $package, $option) = @_;
+  my ( $type, $package, $option ) = @_;
 
-
-  if($type eq "package") {
+  if ( $type eq "package" ) {
 
     my $pkg = Rex::Pkg->get;
-    unless(ref($package) eq "ARRAY") {
+    unless ( ref($package) eq "ARRAY" ) {
       $package = ["$package"];
     }
 
-    for my $_pkg (@{$package}) {
-      if($pkg->is_installed($_pkg)) {
+    for my $_pkg ( @{$package} ) {
+      if ( $pkg->is_installed($_pkg) ) {
         Rex::Logger::info("Removing $_pkg.");
-        $pkg->remove($_pkg, $option);
+        $pkg->remove( $_pkg, $option );
       }
       else {
         Rex::Logger::info("$_pkg is not installed.");
@@ -457,7 +514,7 @@ sub remove {
     #Rex::Logger::info("$type not supported.");
     #die("remove $type not supported");
     # no type given, assume package
-    remove("package", $type, $option);
+    remove( "package", $type, $option );
 
   }
 
@@ -477,9 +534,7 @@ For example I<apt-get upgrade> or I<yum update>.
 
 sub update_system {
   my $pkg = Rex::Pkg->get;
-  eval {
-    $pkg->update_system;
-  } or do {
+  eval { $pkg->update_system; } or do {
     Rex::Logger::info("There is no update_system function for your system.");
   };
 }
@@ -489,12 +544,12 @@ sub update_system {
 This function returns all installed packages and their version.
 
  task "get-installed", "server1", sub {
- 
+
     for my $pkg (installed_packages()) {
       say "name    : " . $pkg->{"name"};
       say "  version: " . $pkg->{"version"};
     }
- 
+
  };
 
 =cut
@@ -521,7 +576,7 @@ This function tests if $package is installed. Returns 1 if true. 0 if false.
 
 sub is_installed {
   my $package = shift;
-  my $pkg = Rex::Pkg->get;
+  my $pkg     = Rex::Pkg->get;
   return $pkg->is_installed($package);
 }
 
@@ -535,11 +590,11 @@ This function updates the local package database. For example, on CentOS it will
  };
 
 =cut
+
 sub update_package_db {
   my $pkg = Rex::Pkg->get;
   $pkg->update_pkg_db();
 }
-
 
 =item repository($action, %data)
 
@@ -570,7 +625,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
    repository add => "repository-name",
       url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
- 
+
  };
 
 To remove a repository just delete it with its name.
@@ -603,21 +658,22 @@ You can also use one call to repository to add repositories on multiple platform
 =cut
 
 sub repository {
-  my ($action, $name, @__data) = @_;
+  my ( $action, $name, @__data ) = @_;
 
   my %data;
 
-  if(ref($__data[0])) {
-    if(! exists $__data[0]->{get_operating_system()}) {
-      if(exists $__data[0]->{default}) {
+  if ( ref( $__data[0] ) ) {
+    if ( !exists $__data[0]->{ get_operating_system() } ) {
+      if ( exists $__data[0]->{default} ) {
         %data = $__data[0]->{default};
       }
       else {
-        die("No repository information found for os: " . get_operating_system());
+        die(
+          "No repository information found for os: " . get_operating_system() );
       }
     }
     else {
-      %data = %{ $__data[0]->{get_operating_system()} };
+      %data = %{ $__data[0]->{ get_operating_system() } };
     }
   }
   else {
@@ -629,14 +685,14 @@ sub repository {
   $data{"name"} = $name;
 
   my $ret;
-  if($action eq "add") {
+  if ( $action eq "add" ) {
     $ret = $pkg->add_repository(%data);
   }
-  elsif($action eq "remove" || $action eq "delete") {
+  elsif ( $action eq "remove" || $action eq "delete" ) {
     $ret = $pkg->rm_repository($name);
   }
 
-  if(exists $data{after}) {
+  if ( exists $data{after} ) {
     $data{after}->();
   }
 
@@ -648,10 +704,10 @@ sub repository {
 To set an other package provider as the default, use this function.
 
  user "root";
- 
+
  group "db" => "db[01..10]";
  package_provider_for SunOS => "blastwave";
- 
+
  task "prepare", group => "db", sub {
     install package => "vim";
  };
@@ -659,9 +715,10 @@ To set an other package provider as the default, use this function.
 This example will install I<vim> on every db server. If the server is a Solaris (SunOS) it will use the I<blastwave> Repositories.
 
 =cut
+
 sub package_provider_for {
-  my ($os, $provider) = @_;
-  Rex::Config->set("package_provider", {$os => $provider});
+  my ( $os, $provider ) = @_;
+  Rex::Config->set( "package_provider", { $os => $provider } );
 }
 
 =back

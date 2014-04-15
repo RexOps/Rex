@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -41,7 +41,7 @@ sub net_ssh2_exec {
   my $in_err = "";
 
   my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
-  my $buffer_size = 20;
+  my $buffer_size = 1024;
   if(exists $rex_int_conf->{read_buffer_size}) {
     $buffer_size = $rex_int_conf->{read_buffer_size};
   }
@@ -51,14 +51,22 @@ sub net_ssh2_exec {
 
     if($callback) {
       &$callback($buf);
-    } 
+    }
   }
 
   while ( my $len = $chan->read(my $buf_err, $buffer_size, 1) ) {
 	   $in_err .= $buf_err;
   }
 
-  $chan->close;
+  #select undef, undef, undef, 0.002; # wait a little before closing the channel
+  #sleep 1;
+$chan->send_eof;
+
+  while(! $chan->eof) {
+    Rex::Logger::debug("Waiting for eof on ssh channel.");
+  }
+
+  $chan->wait_closed;
   $? = $chan->exit_status;
 
   # if used with $chan->pty() we have to remove \r
@@ -90,7 +98,7 @@ sub net_ssh2_exec_output {
 
     if($callback) {
       &$callback($buf, $buf_err);
-    } 
+    }
     else {
       print $buf;
       print $buf_err;

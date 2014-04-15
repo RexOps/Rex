@@ -1,10 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
-  
+
+
 =head1 NAME
 
 Rex::Commands::Partition - Partition module
@@ -13,10 +13,15 @@ Rex::Commands::Partition - Partition module
 
 With this Module you can partition your harddrive.
 
+Version <= 1.0: All these functions will not be reported.
+
+All these functions are not idempotent.
+
+
 =head1 SYNOPSIS
 
  use Rex::Commands::Partition;
-    
+
 
 
 =head1 EXPORTED FUNCTIONS
@@ -26,7 +31,7 @@ With this Module you can partition your harddrive.
 =cut
 
 package Rex::Commands::Partition;
-  
+
 use strict;
 use warnings;
 
@@ -48,7 +53,7 @@ use Rex::Commands::Fs;
 Clear partitions on $drive.
 
  clearpart "sda";
-  
+
  clearpart "sda",
   initialize => "gpt";
 
@@ -94,25 +99,25 @@ Create a partition with mountpoint $mountpoint.
    size   => 15000,
    ondisk  => "sda",
    type   => "primary";
-   
+
  partition "none",
    type  => "extended",
    ondisk => "sda",
    grow  => 1,
    mount  => TRUE,
-   
+
  partition "swap",
    fstype => "swap",
    type  => "logical",
    ondisk => "sda",
    size  => 8000;
-   
+
  partition "none",
    lvm   => 1,
    type  => "primary",
    size  => 15000,
    ondisk => "vda";
-   
+
  partition "/",
    fstype => "ext3",
    size  => 10000,
@@ -200,7 +205,7 @@ sub partition {
     # nix
   }
   elsif(can_run("mkfs.$option{fstype}")) {
-    Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num"); 
+    Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$disk$part_num");
 
     my $add_opts = "";
 

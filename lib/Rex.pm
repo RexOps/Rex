@@ -50,7 +50,6 @@ See L<Rex::Commands> for a list of all commands you can use.
 
 =cut
 
-
 package Rex;
 
 use strict;
@@ -64,22 +63,19 @@ use Rex::Interface::Connection;
 use Cwd qw(getcwd);
 use Rex::Config;
 use Rex::Helper::Array;
+use Rex::Report;
+use Rex::Notify;
 
-our (@EXPORT,
-    $VERSION,
-    @CONNECTION_STACK,
-    $GLOBAL_SUDO,
-    $MODULE_PATHS,
-    $WITH_EXIT_STATUS);
+our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
+  $WITH_EXIT_STATUS );
 
 $VERSION = "0.45.99.1";
 my $cur_dir;
 
-
 BEGIN {
 
   sub _home_dir {
-    if($^O =~ m/^MSWin/) {
+    if ( $^O =~ m/^MSWin/ ) {
       return $ENV{'USERPROFILE'};
     }
 
@@ -88,71 +84,75 @@ BEGIN {
 
   $cur_dir = getcwd;
 
-  unshift(@INC, sub {
-    my $mod_to_load = $_[1];
-    return search_module_path($mod_to_load, 1);
-  });
+  unshift(
+    @INC,
+    sub {
+      my $mod_to_load = $_[1];
+      return search_module_path( $mod_to_load, 1 );
+    }
+  );
 
-
-  if(-d "$cur_dir/lib") {
-    push(@INC, "$cur_dir/lib");
+  if ( -d "$cur_dir/lib" ) {
+    push( @INC, "$cur_dir/lib" );
   }
 
   my $home_dir = _home_dir();
-  if(-d "$home_dir/.rex/recipes") {
-    push(@INC, "$home_dir/.rex/recipes");
+  if ( -d "$home_dir/.rex/recipes" ) {
+    push( @INC, "$home_dir/.rex/recipes" );
   }
 
-  push(@INC, sub {
-    my $mod_to_load = $_[1];
-    return search_module_path($mod_to_load, 0);
-  });
+  push(
+    @INC,
+    sub {
+      my $mod_to_load = $_[1];
+      return search_module_path( $mod_to_load, 0 );
+    }
+  );
 
-};
-
+}
 
 my $home = $ENV{'HOME'};
-if($^O =~ m/^MSWin/) {
+if ( $^O =~ m/^MSWin/ ) {
   $home = $ENV{'USERPROFILE'};
 }
 
-push(@INC, "$home/.rex/recipes");
+push( @INC, "$home/.rex/recipes" );
 
 sub search_module_path {
-  my ($mod_to_load, $pre) = @_;
+  my ( $mod_to_load, $pre ) = @_;
 
   $mod_to_load =~ s/\.pm//g;
 
   my @search_in;
-  if($pre) {
+  if ($pre) {
     @search_in = map { ("$_/$mod_to_load.pm") }
-              grep { -d } @INC;
+      grep { -d } @INC;
 
   }
   else {
-    @search_in = map { ("$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm") }
-              grep { -d } @INC;
+    @search_in =
+      map { ( "$_/$mod_to_load/__module__.pm", "$_/$mod_to_load/Module.pm" ) }
+      grep { -d } @INC;
   }
 
-
   for my $file (@search_in) {
-    if(-f $file) {
-      my ($path) = ($file =~ m/^(.*)\/.+?$/);
-      if($path !~ m/\//) {
+    if ( -f $file ) {
+      my ($path) = ( $file =~ m/^(.*)\/.+?$/ );
+      if ( $path !~ m/\// ) {
         $path = $cur_dir . "/$path";
       }
 
       # module found, register path
-      $MODULE_PATHS->{$mod_to_load} = {path => $path};
+      $MODULE_PATHS->{$mod_to_load} = { path => $path };
       my $mod_package_name = $mod_to_load;
       $mod_package_name =~ s/\//::/g;
-      $MODULE_PATHS->{$mod_package_name} = {path => $path};
+      $MODULE_PATHS->{$mod_package_name} = { path => $path };
 
-      if($pre) {
+      if ($pre) {
         return;
       }
 
-      open(my $fh, $file);
+      open( my $fh, $file );
       return $fh;
     }
   }
@@ -160,7 +160,7 @@ sub search_module_path {
 
 sub get_module_path {
   my ($module) = @_;
-  if(exists $MODULE_PATHS->{$module}) {
+  if ( exists $MODULE_PATHS->{$module} ) {
     return $MODULE_PATHS->{$module}->{path};
   }
 }
@@ -172,11 +172,11 @@ sub push_connection {
 
 sub pop_connection {
   pop @CONNECTION_STACK;
-  Rex::Logger::debug("Connections in queue: " . scalar(@CONNECTION_STACK));
+  Rex::Logger::debug( "Connections in queue: " . scalar(@CONNECTION_STACK) );
 }
 
 sub reconnect_lost_connections {
-  if(@CONNECTION_STACK > 0) {
+  if ( @CONNECTION_STACK > 0 ) {
     Rex::Logger::debug("Need to reinitialize connections.");
     for (@CONNECTION_STACK) {
       $_->{conn}->reconnect;
@@ -186,13 +186,14 @@ sub reconnect_lost_connections {
 
 # ... no words
 my @__modif_caller;
+
 sub unset_modified_caller {
   @__modif_caller = ();
 }
 
 sub modified_caller {
   my (@caller) = @_;
-  if(@caller) {
+  if (@caller) {
     @__modif_caller = @caller;
   }
   else {
@@ -223,14 +224,18 @@ The server name
 sub get_current_connection {
 
   # if no connection available, use local connect
-  unless(@CONNECTION_STACK) {
+  unless (@CONNECTION_STACK) {
     my $conn = Rex::Interface::Connection->create("Local");
 
-    Rex::push_connection({
-      conn  => $conn,
-      ssh   => $conn->get_connection_object,
-      cache => Rex::Interface::Cache->create(),
-    });
+    Rex::push_connection(
+      {
+        conn     => $conn,
+        ssh      => $conn->get_connection_object,
+        cache    => Rex::Interface::Cache->create(),
+        reporter => Rex::Report->create(),
+        notify   => Rex::Notify->new(),
+      }
+    );
   }
 
   $CONNECTION_STACK[-1];
@@ -243,9 +248,9 @@ Returns 1 if the current connection is a ssh connection. 0 if not.
 =cut
 
 sub is_ssh {
-  if($CONNECTION_STACK[-1]) {
-    my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
-    if($ref =~ m/SSH/) {
+  if ( $CONNECTION_STACK[-1] ) {
+    my $ref = ref( $CONNECTION_STACK[-1]->{"conn"} );
+    if ( $ref =~ m/SSH/ ) {
       return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
     }
   }
@@ -260,9 +265,9 @@ Returns 1 if the current connection is local. Otherwise 0.
 =cut
 
 sub is_local {
-  if($CONNECTION_STACK[-1]) {
-    my $ref = ref($CONNECTION_STACK[-1]->{"conn"});
-    if($ref =~ m/Local/) {
+  if ( $CONNECTION_STACK[-1] ) {
+    my $ref = ref( $CONNECTION_STACK[-1]->{"conn"} );
+    if ( $ref =~ m/Local/ ) {
       return $CONNECTION_STACK[-1]->{"conn"}->get_connection_object();
     }
   }
@@ -277,9 +282,9 @@ Returns 1 if the current operation is executed within sudo.
 =cut
 
 sub is_sudo {
-  if($GLOBAL_SUDO) { return 1; }
+  if ($GLOBAL_SUDO) { return 1; }
 
-  if($CONNECTION_STACK[-1]) {
+  if ( $CONNECTION_STACK[-1] ) {
     return $CONNECTION_STACK[-1]->{"use_sudo"};
   }
 
@@ -301,7 +306,7 @@ Returns the sftp object for the current ssh connection.
 =cut
 
 sub get_sftp {
-  if($CONNECTION_STACK[-1]) {
+  if ( $CONNECTION_STACK[-1] ) {
     return $CONNECTION_STACK[-1]->{"conn"}->get_fs_connection_object();
   }
 
@@ -309,7 +314,7 @@ sub get_sftp {
 }
 
 sub get_cache {
-  if($CONNECTION_STACK[-1]) {
+  if ( $CONNECTION_STACK[-1] ) {
     return $CONNECTION_STACK[-1]->{"cache"};
   }
 
@@ -342,42 +347,45 @@ Use this function to create a connection if you use Rex as a library.
 
 sub connect {
 
-  my ($param) = { @_ };
+  my ($param) = {@_};
 
-  my $server  = $param->{server};
-  my $port   = $param->{port} || 22;
-  my $timeout = $param->{timeout} || 5;
-  my $user = $param->{"user"};
-  my $pass = $param->{"password"};
+  my $server      = $param->{server};
+  my $port        = $param->{port} || 22;
+  my $timeout     = $param->{timeout} || 5;
+  my $user        = $param->{"user"};
+  my $pass        = $param->{"password"};
   my $cached_conn = $param->{"cached_connection"};
 
-  if(! $cached_conn) {
+  if ( !$cached_conn ) {
     my $conn = Rex::Interface::Connection->create("SSH");
 
     $conn->connect(
-      user    => $user,
+      user     => $user,
       password => $pass,
-      server  => $server,
-      port    => $port,
+      server   => $server,
+      port     => $port,
       timeout  => $timeout,
-      %{ $param },
+      %{$param},
     );
 
-    unless($conn->is_connected) {
+    unless ( $conn->is_connected ) {
       die("Connetion error or refused.");
     }
 
     # push a remote connection
-    my $rex_conn = Rex::push_connection({
-      conn  => $conn,
-      ssh   => $conn->get_connection_object,
-      server => $server,
-      cache => Rex::Interface::Cache->create(),
-    });
+    my $rex_conn = Rex::push_connection(
+      {
+        conn   => $conn,
+        ssh    => $conn->get_connection_object,
+        server => $server,
+        cache  => Rex::Interface::Cache->create(),
+      }
+    );
 
     # auth unsuccessfull
-    unless($conn->is_authenticated) {
-      Rex::Logger::info("Wrong username or password. Or wrong key.", "warn");
+    unless ( $conn->is_authenticated ) {
+      Rex::Logger::info( "Wrong username or password. Or wrong key.", "warn" );
+
       # after jobs
 
       die("Wrong username or password. Or wrong key.");
@@ -393,13 +401,13 @@ sub connect {
 }
 
 sub deprecated {
-  my ($func, $version, @msg) = @_;
+  my ( $func, $version, @msg ) = @_;
 
-  if($func) {
+  if ($func) {
     Rex::Logger::info("The call to $func is deprecated.");
   }
 
-  if(@msg) {
+  if (@msg) {
     for (@msg) {
       Rex::Logger::info($_);
     }
@@ -407,201 +415,216 @@ sub deprecated {
 
   Rex::Logger::info("");
 
-  Rex::Logger::info("Please rewrite your code. This function will disappear in (R)?ex version $version.");
-  Rex::Logger::info("If you need assistance please join #rex on irc.freenode.net or our google group.");
+  Rex::Logger::info(
+    "Please rewrite your code. This function will disappear in (R)?ex version $version."
+  );
+  Rex::Logger::info(
+    "If you need assistance please join #rex on irc.freenode.net or our google group."
+  );
 
 }
 
-
 sub import {
-  my ($class, $what, $addition1) = @_;
+  my ( $class, $what, $addition1 ) = @_;
 
   $what ||= "";
 
-  my ($register_to, $file, $line) = caller;
+  my ( $register_to, $file, $line ) = caller;
 
-  if($what eq "-base" || $what eq "base" || $what eq "-feature") {
+  if ( $what eq "-base" || $what eq "base" || $what eq "-feature" ) {
     require Rex::Commands;
-    Rex::Commands->import(register_in => $register_to);
+    Rex::Commands->import( register_in => $register_to );
 
     require Rex::Commands::Run;
-    Rex::Commands::Run->import(register_in => $register_to);
+    Rex::Commands::Run->import( register_in => $register_to );
 
     require Rex::Commands::Fs;
-    Rex::Commands::Fs->import(register_in => $register_to);
+    Rex::Commands::Fs->import( register_in => $register_to );
 
     require Rex::Commands::File;
-    Rex::Commands::File->import(register_in => $register_to);
+    Rex::Commands::File->import( register_in => $register_to );
+
+    require Rex::Commands::Cron;
+    Rex::Commands::Cron->import( register_in => $register_to );
+
+    require Rex::Commands::Host;
+    Rex::Commands::Host->import( register_in => $register_to );
 
     require Rex::Commands::Download;
-    Rex::Commands::Download->import(register_in => $register_to);
+    Rex::Commands::Download->import( register_in => $register_to );
 
     require Rex::Commands::Upload;
-    Rex::Commands::Upload->import(register_in => $register_to);
+    Rex::Commands::Upload->import( register_in => $register_to );
 
     require Rex::Commands::Gather;
-    Rex::Commands::Gather->import(register_in => $register_to);
+    Rex::Commands::Gather->import( register_in => $register_to );
 
     require Rex::Commands::Kernel;
-    Rex::Commands::Kernel->import(register_in => $register_to);
+    Rex::Commands::Kernel->import( register_in => $register_to );
 
     require Rex::Commands::Pkg;
-    Rex::Commands::Pkg->import(register_in => $register_to);
+    Rex::Commands::Pkg->import( register_in => $register_to );
 
     require Rex::Commands::Service;
-    Rex::Commands::Service->import(register_in => $register_to);
+    Rex::Commands::Service->import( register_in => $register_to );
 
     require Rex::Commands::Sysctl;
-    Rex::Commands::Sysctl->import(register_in => $register_to);
+    Rex::Commands::Sysctl->import( register_in => $register_to );
 
     require Rex::Commands::Tail;
-    Rex::Commands::Tail->import(register_in => $register_to);
+    Rex::Commands::Tail->import( register_in => $register_to );
 
     require Rex::Commands::Process;
-    Rex::Commands::Process->import(register_in => $register_to);
+    Rex::Commands::Process->import( register_in => $register_to );
 
     require Rex::Commands::Sync;
-    Rex::Commands::Sync->import(register_in => $register_to);
+    Rex::Commands::Sync->import( register_in => $register_to );
 
     require Rex::Commands::Notify;
-    Rex::Commands::Notify->import(register_in => $register_to);
+    Rex::Commands::Notify->import( register_in => $register_to );
 
     require Rex::Commands::User;
-    Rex::Commands::User->import(register_in => $register_to);
+    Rex::Commands::User->import( register_in => $register_to );
   }
 
-  if($what eq "-feature" || $what eq "feature") {
+  if ( $what eq "-feature" || $what eq "feature" ) {
 
-
-    if(! ref($addition1)) {
+    if ( !ref($addition1) ) {
       $addition1 = [$addition1];
     }
 
-    for my $add (@{ $addition1 }) {
+    for my $add ( @{$addition1} ) {
 
       my $found_feature = 0;
 
-      if($add =~ m/^(\d+\.\d+)$/) {
+      if ( $add =~ m/^(\d+\.\d+)$/ ) {
         my $vers = $1;
-        my ($major, $minor, $patch) = split(/\./, $VERSION);
-        my ($c_major, $c_minor) = split(/\./, $vers);
+        my ( $major, $minor, $patch ) = split( /\./, $VERSION );
+        my ( $c_major, $c_minor ) = split( /\./, $vers );
 
-        if( ($c_major > $major)
-            ||
-           ($c_major >= $major && $c_minor > $minor)
-        ) {
-          Rex::Logger::info("This Rexfile tries to enable features that are not supported with your version. Please update.", "warn");
+        if ( ( $c_major > $major )
+          || ( $c_major >= $major && $c_minor > $minor ) )
+        {
+          Rex::Logger::info(
+            "This Rexfile tries to enable features that are not supported with your version. Please update.",
+            "warn"
+          );
           exit 1;
         }
       }
 
       # remove default task auth
-      if($add =~ m/^\d+\.\d+$/ && $add  >= 0.31) {
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.31 ) {
         Rex::Logger::debug("activating featureset >= 0.31");
         Rex::TaskList->create()->set_default_auth(0);
         $found_feature = 1;
       }
 
-      if($add =~ m/^\d+\.\d+$/ && $add >= 0.35) {
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
         Rex::Logger::debug("activating featureset >= 0.35");
         $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
-        $found_feature = 1;
+        $found_feature                             = 1;
       }
 
-      if($add =~ m/^\d+\.\d+$/ && $add >= 0.40) {
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {
         Rex::Logger::debug("activating featureset >= 0.40");
         $Rex::Template::BE_LOCAL = 1;
-        $Rex::WITH_EXIT_STATUS = 1;
-        $found_feature = 1;
+        $Rex::WITH_EXIT_STATUS   = 1;
+        $found_feature           = 1;
       }
 
-
-      if($add eq "no_local_template_vars") {
+      if ( $add eq "no_local_template_vars" ) {
         Rex::Logger::debug("activating featureset no_local_template_vars");
         $Rex::Template::BE_LOCAL = 0;
-        $found_feature = 1;
+        $found_feature           = 1;
       }
 
-      if($add eq "exit_status") {
+      if ( $add eq "exit_status" ) {
         Rex::Logger::debug("activating featureset exit_status");
         $Rex::WITH_EXIT_STATUS = 1;
-        $found_feature = 1;
+        $found_feature         = 1;
       }
 
-      if($add eq "sudo_without_sh") {
-        Rex::Logger::debug("using sudo without sh. this might break some things.");
+      if ( $add eq "sudo_without_sh" ) {
+        Rex::Logger::debug(
+          "using sudo without sh. this might break some things.");
         Rex::Config->set_sudo_without_sh(1);
         $found_feature = 1;
       }
 
-      if($add eq "sudo_without_locales") {
-        Rex::Logger::debug("Using sudo without locales. this _will_ break things!");
+      if ( $add eq "sudo_without_locales" ) {
+        Rex::Logger::debug(
+          "Using sudo without locales. this _will_ break things!");
         Rex::Config->set_sudo_without_locales(1);
         $found_feature = 1;
       }
 
-      if($add eq "no_tty") {
+      if ( $add eq "no_tty" ) {
         Rex::Logger::debug("Disabling pty usage for ssh");
         Rex::Config->set_no_tty(1);
         $found_feature = 1;
       }
 
-      if($add eq "empty_groups") {
+      if ( $add eq "empty_groups" ) {
         Rex::Logger::debug("Enabling usage of empty groups");
         Rex::Config->set_allow_empty_groups(1);
         $found_feature = 1;
       }
 
-      if($add eq "use_server_auth") {
+      if ( $add eq "use_server_auth" ) {
         Rex::Logger::debug("Enabling use_server_auth");
         Rex::Config->set_use_server_auth(1);
         $found_feature = 1;
       }
 
-      if($add eq "exec_and_sleep") {
+      if ( $add eq "exec_and_sleep" ) {
         Rex::Logger::debug("Enabling exec_and_sleep");
         Rex::Config->set_sleep_hack(1);
         $found_feature = 1;
       }
 
-      if($add eq "disable_strict_host_key_checking") {
+      if ( $add eq "disable_strict_host_key_checking" ) {
         Rex::Logger::debug("Disabling strict host key checking for openssh");
-        Rex::Config->set_openssh_opt(StrictHostKeyChecking => "no");
+        Rex::Config->set_openssh_opt( StrictHostKeyChecking => "no" );
         $found_feature = 1;
       }
 
-      if($add eq "reporting" || $add eq "report" || exists $ENV{REX_REPORT_TYPE}) {
-        Rex::Logger::debug("Enabling reporting");
-        Rex::Config->set_do_reporting(1);
-        $found_feature = 1;
-      }
+  #if($add eq "reporting" || $add eq "report" || exists $ENV{REX_REPORT_TYPE}) {
+  #  Rex::Logger::debug("Enabling reporting");
+      Rex::Config->set_do_reporting(1);
 
-      if($add eq "source_profile") {
+      #  $found_feature = 1;
+      #}
+
+      if ( $add eq "source_profile" ) {
         Rex::Logger::debug("Enabling source_profile");
         Rex::Config->set_source_profile(1);
         $found_feature = 1;
       }
 
-      if($add eq "source_global_profile") {
+      if ( $add eq "source_global_profile" ) {
         Rex::Logger::debug("Enabling source_global_profile");
         Rex::Config->set_source_global_profile(1);
         $found_feature = 1;
       }
 
-      if($add eq "no_path_cleanup") {
+      if ( $add eq "no_path_cleanup" ) {
         Rex::Logger::debug("Enabling no_path_cleanup");
         Rex::Config->set_no_path_cleanup(1);
         $found_feature = 1;
       }
 
-      if($add eq "exec_autodie") {
+      if ( $add eq "exec_autodie" ) {
         Rex::Logger::debug("Enabling exec_autodie");
         Rex::Config->set_exec_autodie(1);
         $found_feature = 1;
       }
 
-      if($found_feature == 0) {
-        Rex::Logger::info("You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.", "warn");
+      if ( $found_feature == 0 ) {
+        Rex::Logger::info(
+          "You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.",
+          "warn"
+        );
         exit 1;
       }
 
@@ -609,7 +632,7 @@ sub import {
 
   }
 
-  if(exists $ENV{REX_REPORT_TYPE}) {
+  if ( exists $ENV{REX_REPORT_TYPE} ) {
     Rex::Logger::debug("Enabling reporting");
     Rex::Config->set_do_reporting(1);
   }
@@ -617,8 +640,6 @@ sub import {
   # we are always strict
   strict->import;
 }
-
-
 
 =back
 

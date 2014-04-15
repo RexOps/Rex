@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Interface::Fs::Sudo;
-  
+
 use strict;
 use warnings;
 
@@ -125,7 +125,7 @@ sub stat {
 
       my %ret;
 
-      $ret{'mode'}  = sprintf("%04o", $mode & 07777); 
+      $ret{'mode'}  = sprintf("%04o", $mode & 07777);
       $ret{'size'}  = $size;
       $ret{'uid'}  = $uid;
       $ret{'gid'}  = $gid;
@@ -176,7 +176,7 @@ sub readlink {
   my $rnd_file = $self->_write_to_rnd_file($script);
   my $out = $self->_exec("perl $rnd_file '$file'");
   chomp $out;
-  
+
   return $out;
 }
 

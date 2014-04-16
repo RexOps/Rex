@@ -76,9 +76,8 @@ sub groups_dbi {
       my $add = {};
       push @{ $group{$hash->{$k}->{'GROUP'}} }, Rex::Group::Entry::Server->new(name =>$hash->{$k}->{'HOST'}, %{ $add }); 
   }
-  print Dumper(%group);
-
-    for my $g (  keys %group ) {
+  
+  for my $g (  keys %group ) {
     group("$g" => @{$group{$g}} );
   }
 }

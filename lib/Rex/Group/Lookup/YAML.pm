@@ -36,17 +36,14 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 use YAML qw/LoadFile/;
-use Data::Dumper;
    
 @EXPORT = qw(groups_yaml);
-
 
 =item groups_yaml($file)
 
 With this function you can read groups from yaml files.
 
 File Example:
-
 
 webserver:
  - fe01
@@ -65,9 +62,7 @@ sub groups_yaml {
   my %hash;
 
   my $hash = LoadFile($file);
-  
-  print Dumper($hash);
-  
+    
   my %all_hosts;
 
   for my $k (keys %{ $hash }) {

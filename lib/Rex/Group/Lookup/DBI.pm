@@ -52,8 +52,7 @@ use Rex::Helper::DBI;
 `ID` int(11) NOT NULL,
 `GROUP` varchar(255) DEFAULT NULL,
 `HOST` varchar(255) NOT NULL,
-PRIMARY KEY (`ID`),
-UNIQUE KEY `HOST` (`HOST`)
+PRIMARY KEY (`ID`)
 );
 
 =item Data sample for MySQL
@@ -71,15 +70,19 @@ sub groups_dbi {
   my $hash = Rex::Helper::DBI::perform_request($dsn, $user, $pass, $sql);
 
   my %group;
-
+  my %all_hosts;
   for my $k (keys %{ $hash }) {
       my $add = {};
-      push @{ $group{$hash->{$k}->{'GROUP'}} }, Rex::Group::Entry::Server->new(name =>$hash->{$k}->{'HOST'}, %{ $add }); 
+      my $rex_host=Rex::Group::Entry::Server->new(name =>$hash->{$k}->{'HOST'}, %{ $add });
+      push @{ $group{$hash->{$k}->{'GROUP'}} }, $rex_host; 
+      
+      $all_hosts{$hash->{$k}->{'HOST'}}=$rex_host;
   }
   
   for my $g (  keys %group ) {
     group("$g" => @{$group{$g}} );
   }
+  group ("all", values %all_hosts);
 }
 
 =back

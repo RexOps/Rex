@@ -190,7 +190,7 @@ sub unlink {
       }
 
       my $tmp_path = Rex::Config->get_tmp_dir;
-      if($file !~ m/^$tmp_path[\/\\][a-z]+\.tmp$/ ) { # skip tmp rex files
+      if ( $file !~ m/^$tmp_path[\/\\][a-z]+\.tmp$/ ) {    # skip tmp rex files
         Rex::get_current_connection()->{reporter}
           ->report( changed => 1, message => "File $file removed." );
       }
@@ -251,7 +251,7 @@ sub rmdir {
     Rex::get_current_connection()->{reporter}
       ->report_resource_start( type => "rmdir", name => $dir );
 
-    if ( !$fs->is_dir($dir) ) {
+    if ( !$fs->is_dir($dir) && $dir !~ m/[\*\[]/ ) {
       Rex::get_current_connection()->{reporter}->report( changed => 0, );
     }
     else {
@@ -813,12 +813,12 @@ sub df {
 
   $ret = _parse_df(@lines);
 
-   if($dev) {
-      if ( keys %$ret == 1 ) {
-         ( $dev ) = keys %$ret;
-      }
-      return $ret->{$dev};
-   }
+  if ($dev) {
+    if ( keys %$ret == 1 ) {
+      ($dev) = keys %$ret;
+    }
+    return $ret->{$dev};
+  }
 
   return $ret;
 }

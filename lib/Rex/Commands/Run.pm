@@ -227,7 +227,7 @@ sub run {
     ->report_resource_end( type => "run", name => $res_cmd );
 
   if (wantarray) {
-    $out_ret = [ split( /\r?\n/, $out_ret ) ];
+    return split( /\r?\n/, $out_ret );
   }
 
   return $out_ret;

@@ -375,10 +375,12 @@ sub connect {
     # push a remote connection
     my $rex_conn = Rex::push_connection(
       {
-        conn   => $conn,
-        ssh    => $conn->get_connection_object,
-        server => $server,
-        cache  => Rex::Interface::Cache->create(),
+        conn     => $conn,
+        ssh      => $conn->get_connection_object,
+        server   => $server,
+        cache    => Rex::Interface::Cache->create(),
+        reporter => Rex::Report->create( Rex::Config->get_report_type ),
+        notify   => Rex::Notify->new(),
       }
     );
 

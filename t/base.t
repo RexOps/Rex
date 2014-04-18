@@ -1,4 +1,4 @@
-use Test::More tests => 157;
+use Test::More tests => 158;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -60,6 +60,7 @@ use_ok 'Rex::Helper::SSH2::Expect';
 use_ok 'Rex::Helper::SSH2';
 use_ok 'Rex::Helper::System';
 use_ok 'Rex::Helper::DBI';
+use_ok 'Rex::Helper::UserAgent';
 use_ok 'Rex::Interface::Connection::Base';
 use_ok 'Rex::Interface::Connection::Fake';
 use_ok 'Rex::Interface::Connection::HTTP';

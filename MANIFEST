@@ -93,6 +93,7 @@ lib/Rex/Helper/Run.pm
 lib/Rex/Helper/SSH2.pm
 lib/Rex/Helper/SSH2/Expect.pm
 lib/Rex/Helper/System.pm
+lib/Rex/Helper/UserAgent.pm
 lib/Rex/Hook.pm
 lib/Rex/Interface/Cache.pm
 lib/Rex/Interface/Cache/Base.pm

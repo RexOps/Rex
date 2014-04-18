@@ -11,6 +11,7 @@ lib/Rex/Batch.pm
 lib/Rex/Box.pm
 lib/Rex/Box/Amazon.pm
 lib/Rex/Box/Base.pm
+lib/Rex/Box/KVM.pm
 lib/Rex/Box/VBox.pm
 lib/Rex/CLI.pm
 lib/Rex/Cloud.pm
@@ -66,8 +67,10 @@ lib/Rex/FS/File.pm
 lib/Rex/Group.pm
 lib/Rex/Group/Entry/Server.pm
 lib/Rex/Group/Lookup/Command.pm
+lib/Rex/Group/Lookup/DBI.pm
 lib/Rex/Group/Lookup/File.pm
 lib/Rex/Group/Lookup/INI.pm
+lib/Rex/Group/Lookup/YAML.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm
 lib/Rex/Hardware/Kernel.pm
@@ -81,6 +84,7 @@ lib/Rex/Hardware/Network/Solaris.pm
 lib/Rex/Hardware/Swap.pm
 lib/Rex/Hardware/VirtInfo.pm
 lib/Rex/Helper/Array.pm
+lib/Rex/Helper/DBI.pm
 lib/Rex/Helper/Encode.pm
 lib/Rex/Helper/Hash.pm
 lib/Rex/Helper/INI.pm
@@ -246,12 +250,14 @@ lib/Rex/Virtualization/LibVirt/dumpxml.pm
 lib/Rex/Virtualization/LibVirt/guestinfo.pm
 lib/Rex/Virtualization/LibVirt/hypervisor.pm
 lib/Rex/Virtualization/LibVirt/iflist.pm
+lib/Rex/Virtualization/LibVirt/import.pm
 lib/Rex/Virtualization/LibVirt/info.pm
 lib/Rex/Virtualization/LibVirt/list.pm
 lib/Rex/Virtualization/LibVirt/option.pm
 lib/Rex/Virtualization/LibVirt/reboot.pm
 lib/Rex/Virtualization/LibVirt/shutdown.pm
 lib/Rex/Virtualization/LibVirt/start.pm
+lib/Rex/Virtualization/LibVirt/status.pm
 lib/Rex/Virtualization/LibVirt/vncdisplay.pm
 lib/Rex/Virtualization/VBox.pm
 lib/Rex/Virtualization/VBox/bridge.pm
@@ -292,6 +298,8 @@ t/cmdb/default/default.yml
 t/cmdb/default/foo.yml
 t/cmdb/foo.yml
 t/commands.t
+t/commands/file/test.tpl
+t/commands_file_template.t
 t/config-ssh.t
 t/config.t
 t/cron.ex

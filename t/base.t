@@ -1,4 +1,4 @@
-use Test::More tests => 154;
+use Test::More tests => 157;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -40,6 +40,8 @@ use_ok 'Rex::Fork::Task';
 use_ok 'Rex::FS::File';
 use_ok 'Rex::Group::Entry::Server';
 use_ok 'Rex::Group::Lookup::File';
+use_ok 'Rex::Group::Lookup::YAML';
+use_ok 'Rex::Group::Lookup::DBI';
 use_ok 'Rex::Group';
 use_ok 'Rex::Hardware::Host';
 use_ok 'Rex::Hardware::Kernel';
@@ -57,6 +59,7 @@ use_ok 'Rex::Helper::Hash';
 use_ok 'Rex::Helper::SSH2::Expect';
 use_ok 'Rex::Helper::SSH2';
 use_ok 'Rex::Helper::System';
+use_ok 'Rex::Helper::DBI';
 use_ok 'Rex::Interface::Connection::Base';
 use_ok 'Rex::Interface::Connection::Fake';
 use_ok 'Rex::Interface::Connection::HTTP';

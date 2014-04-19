@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 9;
+use File::Basename;
 use Cwd 'getcwd';
 
 use_ok 'Rex::Helper::Path';
@@ -37,9 +38,8 @@ ok(
 );
 
 $path = Rex::Helper::Path::get_tmp_file();
-if ( $^O =~ m/^MSWin/ ) {
-  ok( $path =~ m/c:[\/\\]/i, "found windows directory" );
-}
-else {
-  ok( $path =~ m/^\/tmp/ );
-}
+my ( $filename, $directory, $suffix ) = fileparse( $path, '.tmp' );
+
+ok( defined $filename, 'Got temp filename' );
+is( $suffix, '.tmp', 'Got filename with .tmp suffix' );
+ok( defined $directory, 'Got temp directory' );

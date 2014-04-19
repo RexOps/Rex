@@ -25,6 +25,7 @@ package Rex::Config;
 use strict;
 use warnings;
 
+use File::Spec;
 use Rex::Logger;
 use YAML;
 use Data::Dumper;
@@ -197,7 +198,7 @@ sub set_tmp_dir {
 }
 
 sub get_tmp_dir {
-  return $tmp_dir || "/tmp";
+  return $tmp_dir || File::Spec->tmpdir();
 }
 
 sub set_path {

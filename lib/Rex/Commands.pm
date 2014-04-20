@@ -980,7 +980,12 @@ You can call the function within a task to get the current environment.
 sub environment {
   if (@_) {
     my ( $name, $code ) = @_;
-    $environments->{$name} = $code;
+    $environments->{$name} = {
+      code        => $code,
+      description => $current_desc,
+      name        => $name,
+    };
+    $current_desc = "";
 
     if ( Rex::Config->get_environment eq $name ) {
       &$code();

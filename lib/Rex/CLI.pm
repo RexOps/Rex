@@ -483,7 +483,11 @@ CHECK_OVERWRITE: {
       }
     }
     _print_color( "Environments\n", "yellow" );
-    print "  " . join( "\n  ", Rex::Commands->get_environments() ) . "\n";
+    my @envs = map { Rex::Commands->get_environment($_) }
+      Rex::Commands->get_environments();
+    for my $e (@envs) {
+      printf "  %-30s %s\n", $e->{name}, $e->{description};
+    }
 
     my %groups = Rex::Group->get_groups;
     _print_color( "Server Groups\n", "yellow" ) if ( keys %groups );

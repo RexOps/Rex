@@ -7,6 +7,10 @@ perl:
   - "5.14"
 env: PERL_CPANM_OPT="-v"
 before_install:
+  - "sudo apt-get update"
+  # Net::SSH2 dependencies
+  - "sudo apt-get install libssh2-1-dev"
+  # Makefile.PL dependencies
   - "cpanm Net::SSH2"
   - "cpanm DBI"
   - "cpanm XML::Simple"

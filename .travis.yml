@@ -5,6 +5,7 @@ branches:
 language: perl
 perl:
   - "5.14"
+env: PERL_CPANM_OPT="-v"
 before_install:
   - "cpanm Net::SSH2"
   - "cpanm DBI"

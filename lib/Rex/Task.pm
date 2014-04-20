@@ -566,13 +566,17 @@ sub connect {
     $self->connection->connect(%connect_hash);
   $profiler->end("connect");
 
-  if($self->connection->is_authenticated) {
-    Rex::Logger::info("Successfully authenticated on $server.") if($self->connection->get_connection_type ne "Local");
-    $self->{"__was_authenticated"} = 1;
+  if(! $self->connection->is_connected) {
+    Rex::pop_connection();
+    die("Couldn't connect to $server.");
   }
-  else {
+  elsif(! $self->connection->is_authenticated) {
     Rex::pop_connection();
     die("Wrong username/password or wrong key on $server.");
+  }
+  else {
+    Rex::Logger::info("Successfully authenticated on $server.") if($self->connection->get_connection_type ne "Local");
+    $self->{"__was_authenticated"} = 1;
   }
 
 

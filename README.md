@@ -49,7 +49,7 @@ Tasks
   uname                     Show Unix version
 ```
 
-* Run Task **uname**
+* Run Task *uname*
 
 ```
 bash# rex uname

@@ -1,0 +1,28 @@
+branches:
+  only:
+    - development
+    - master
+language: perl
+perl:
+  - "5.14"
+env: PERL_CPANM_OPT="-v"
+before_install:
+  - "sudo apt-get update"
+  # Net::SSH2 dependencies
+  - "sudo apt-get install libssh2-1-dev"
+  # Makefile.PL dependencies
+  - "cpanm Net::SSH2"
+  - "cpanm DBI"
+  - "cpanm XML::Simple"
+  - "cpanm LWP::UserAgent"
+  - "cpanm MIME::Base64"
+  - "cpanm Digest::HMAC_SHA1"
+  - "cpanm HTTP::Date"
+  - "cpanm JSON::XS"
+  - "cpanm YAML"
+  - "cpanm LWP::Simple"
+  - "cpanm Storable"
+  - "cpanm IPC::Open3"
+  - "cpanm String::Escape"
+  - "cpanm Time::HiRes"
+  - "cpanm List::MoreUtils"

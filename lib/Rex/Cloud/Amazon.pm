@@ -289,6 +289,7 @@ sub list_volumes {
 }
 
 sub _make_instance_map {
+  my ($self, $instance_set) = @_;
   return (
     ip           => $_[1]->{"ipAddress"},
     id           => $_[1]->{"instanceId"},

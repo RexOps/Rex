@@ -23,17 +23,17 @@ use Rex::Helper::Path;
 use JSON::XS;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub create_user {
-  my ($self, $user, $data) = @_;
+  my ( $self, $user, $data ) = @_;
 
   my $cmd;
 
@@ -41,11 +41,11 @@ sub create_user {
 
   my $run_cmd = 0;
 
-  if(! defined $uid) {
+  if ( !defined $uid ) {
     Rex::Logger::debug("User $user does not exists. Creating it now.");
     $cmd = "/usr/sbin/useradd ";
 
-    if(exists $data->{system}) {
+    if ( exists $data->{system} ) {
       $cmd .= " -r";
     }
 
@@ -54,125 +54,127 @@ sub create_user {
   else {
     # only the user should be there, no modifications.
     # so just return
-    if(! defined $data) {
+    if ( !defined $data ) {
       return {
         changed => 0,
-        uid    => $uid,
+        uid     => $uid,
       };
     }
 
     Rex::Logger::debug("User $user already exists. Updating...");
 
-    if(exists $data->{uid} && $data->{uid} == $uid) {
+    if ( exists $data->{uid} && $data->{uid} == $uid ) {
       delete $data->{uid};
     }
 
     $cmd = "/usr/sbin/usermod ";
   }
 
-  if(exists $data->{non_uniq}) {
+  if ( exists $data->{non_uniq} ) {
     $cmd .= " -o ";
     $run_cmd = 1;
   }
 
-  if(exists $data->{uid}) {
+  if ( exists $data->{uid} ) {
     $cmd .= " --uid " . $data->{uid};
     $run_cmd = 1;
   }
 
-  if(exists $data->{home}) {
+  if ( exists $data->{home} ) {
     $run_cmd = 1;
     $cmd .= " -d " . $data->{home};
 
-    if(
-      (exists $data->{"no-create-home"} && $data->{"no-create-home"})
-        ||
-      (exists $data->{"no_create_home"} && $data->{"no_create_home"})
-      ) {
-      if(! $self->get_uid($user)) {
+    if ( ( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
+      || ( exists $data->{"no_create_home"} && $data->{"no_create_home"} ) )
+    {
+      if ( !$self->get_uid($user) ) {
         $cmd .= " -M";
       }
     }
-    elsif(!is_dir($data->{home})) {
+    elsif ( !is_dir( $data->{home} ) ) {
       $cmd .= " -m";
     }
   }
 
-  if(exists $data->{shell}) {
+  if ( exists $data->{shell} ) {
     $run_cmd = 1;
     $cmd .= " --shell " . $data->{shell};
   }
 
-  if(exists $data->{comment}) {
+  if ( exists $data->{comment} ) {
     $run_cmd = 1;
     $cmd .= " --comment '" . $data->{comment} . "'";
   }
 
-  if(exists $data->{expire}) {
+  if ( exists $data->{expire} ) {
     $run_cmd = 1;
     $cmd .= " --expiredate '" . $data->{expire} . "'";
   }
 
-  if(exists $data->{groups}) {
+  if ( exists $data->{groups} ) {
     $run_cmd = 1;
-    my @groups = @{$data->{groups}};
+    my @groups    = @{ $data->{groups} };
     my $pri_group = shift @groups;
 
     $cmd .= " --gid $pri_group";
 
-    if(@groups) {
-      $cmd .= " --groups " . join(",", @groups);
+    if (@groups) {
+      $cmd .= " --groups " . join( ",", @groups );
     }
   }
 
   my $old_pw_md5 = md5("/etc/passwd");
   my $old_sh_md5 = md5("/etc/shadow");
 
-
   # only run the cmd if needed
-  if($run_cmd) {
+  if ($run_cmd) {
     my $rnd_file = get_tmp_file;
-    my $fh = Rex::Interface::File->create;
-    $fh->open(">", $rnd_file);
+    my $fh       = Rex::Interface::File->create;
+    $fh->open( ">", $rnd_file );
     $fh->write("rm \$0\n$cmd $user\nexit \$?\n");
     $fh->close;
 
     i_run "/bin/sh $rnd_file";
-    if($? == 0) {
+    if ( $? == 0 ) {
       Rex::Logger::debug("User $user created/updated.");
     }
     else {
-      Rex::Logger::info("Error creating/updating user $user", "warn");
+      Rex::Logger::info( "Error creating/updating user $user", "warn" );
       die("Error creating/updating user $user");
     }
 
   }
 
-  if(exists $data->{password}) {
+  if ( exists $data->{password} ) {
     my $rnd_file = get_tmp_file;
-    my $fh = Rex::Interface::File->create;
-    $fh->open(">", $rnd_file);
-    $fh->write("rm \$0\n/bin/echo -e '" . $data->{password} . "\\n" . $data->{password} . "' | /usr/bin/passwd $user\nexit \$?\n");
+    my $fh       = Rex::Interface::File->create;
+    $fh->open( ">", $rnd_file );
+    $fh->write( "rm \$0\n/bin/echo -e '"
+        . $data->{password} . "\\n"
+        . $data->{password}
+        . "' | /usr/bin/passwd $user\nexit \$?\n" );
     $fh->close;
 
     Rex::Logger::debug("Changing password of $user.");
     i_run "/bin/sh $rnd_file";
-    if($? != 0) {
+    if ( $? != 0 ) {
       die("Error setting password for $user");
     }
 
   }
 
-  if(exists $data->{crypt_password} && $data->{crypt_password}) {
+  if ( exists $data->{crypt_password} && $data->{crypt_password} ) {
     my $rnd_file = get_tmp_file;
-    my $fh = Rex::Interface::File->create;
-    $fh->open(">", $rnd_file);
-    $fh->write("rm \$0\nusermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n");
+    my $fh       = Rex::Interface::File->create;
+    $fh->open( ">", $rnd_file );
+    $fh->write( "rm \$0\nusermod -p '"
+        . $data->{crypt_password}
+        . "' $user\nexit \$?\n" );
     $fh->close;
 
     Rex::Logger::debug("Setting encrypted password of $user");
     i_run "/bin/sh $rnd_file";
-    if($? != 0) {
+    if ( $? != 0 ) {
       die("Error setting password for $user");
     }
   }
@@ -180,57 +182,58 @@ sub create_user {
   my $new_pw_md5 = md5("/etc/passwd");
   my $new_sh_md5 = md5("/etc/shadow");
 
-  if($new_pw_md5 eq $old_pw_md5 && $new_sh_md5 eq $old_sh_md5) {
+  if ( $new_pw_md5 eq $old_pw_md5 && $new_sh_md5 eq $old_sh_md5 ) {
     return {
       changed => 0,
-      ret    => $self->get_uid($user),
+      ret     => $self->get_uid($user),
     };
   }
   else {
     return {
       changed => 1,
-      ret    => $self->get_uid($user),
-    },
+      ret     => $self->get_uid($user),
+      },
+      ;
   }
 
 }
 
 sub rm_user {
-  my ($self, $user, $data) = @_;
+  my ( $self, $user, $data ) = @_;
 
   Rex::Logger::debug("Removing user $user");
 
   my $cmd = "/usr/sbin/userdel";
 
-  if(exists $data->{delete_home}) {
+  if ( exists $data->{delete_home} ) {
     $cmd .= " --remove";
   }
 
-  if(exists $data->{force}) {
+  if ( exists $data->{force} ) {
     $cmd .= " --force";
   }
 
   i_run $cmd . " " . $user;
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error deleting user $user");
   }
 
 }
 
 sub get_uid {
-  my ($self, $user) = @_;
+  my ( $self, $user ) = @_;
 
   my %data = $self->get_user($user);
   return $data{uid};
 }
 
 sub user_groups {
-  my ($self, $user) = @_;
+  my ( $self, $user ) = @_;
 
   Rex::Logger::debug("Getting group membership of $user");
   my $rnd_file = get_tmp_file;
-  my $fh = Rex::Interface::File->create;
-  my $script = q|
+  my $fh       = Rex::Interface::File->create;
+  my $script   = q|
   unlink $0;
   $exe = "/usr/bin/groups";
   if(! -x $exe) {
@@ -239,13 +242,13 @@ sub user_groups {
 
   |;
 
-  $fh->open(">", $rnd_file);
+  $fh->open( ">", $rnd_file );
   $fh->write($script);
-  $fh->write(func_to_json());
+  $fh->write( func_to_json() );
   $fh->close;
 
   my $data_str = i_run "perl $rnd_file $user";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error getting group list");
   }
 
@@ -253,12 +256,13 @@ sub user_groups {
 
   my $wantarray = wantarray();
 
-  if(defined $wantarray && ! $wantarray) {
+  if ( defined $wantarray && !$wantarray ) {
+
     # arrayref
     return $data;
   }
 
-  return @{ $data };
+  return @{$data};
 }
 
 sub user_list {
@@ -266,18 +270,18 @@ sub user_list {
 
   Rex::Logger::debug("Getting user list");
   my $rnd_file = get_tmp_file;
-  my $script = q|
+  my $script   = q|
     unlink $0;
     print to_json([ map {chomp; $_ =~ s/^([^:]*):.*$/$1/; $_}  qx{/usr/bin/getent passwd} ]);
   |;
   my $fh = Rex::Interface::File->create;
-  $fh->open(">", $rnd_file);
+  $fh->open( ">", $rnd_file );
   $fh->write($script);
-  $fh->write(func_to_json());
+  $fh->write( func_to_json() );
   $fh->close;
 
   my $data_str = i_run "perl $rnd_file";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error getting user list");
   }
 
@@ -287,66 +291,66 @@ sub user_list {
 }
 
 sub get_user {
-  my ($self, $user) = @_;
+  my ( $self, $user ) = @_;
 
   Rex::Logger::debug("Getting information for $user");
   my $rnd_file = get_tmp_file;
-  my $fh = Rex::Interface::File->create;
-  my $script = q|
+  my $fh       = Rex::Interface::File->create;
+  my $script   = q|
     unlink $0;
     print to_json([ getpwnam($ARGV[0]) ]);
   |;
-  $fh->open(">", $rnd_file);
+  $fh->open( ">", $rnd_file );
   $fh->write($script);
-  $fh->write(func_to_json());
+  $fh->write( func_to_json() );
   $fh->close;
 
   my $data_str = i_run "perl $rnd_file $user";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error getting user information for $user");
   }
 
   my $data = decode_json($data_str);
 
   return (
-    name => $data->[0],
+    name     => $data->[0],
     password => $data->[1],
-    uid => $data->[2],
-    gid => $data->[3],
-    comment => $data->[5],
-    home => $data->[7],
-    shell => $data->[8],
-    expire => exists $data->[9]?$data->[9]:0,
+    uid      => $data->[2],
+    gid      => $data->[3],
+    comment  => $data->[5],
+    home     => $data->[7],
+    shell    => $data->[8],
+    expire   => exists $data->[9] ? $data->[9] : 0,
   );
 }
 
 sub create_group {
-  my ($self, $group, $data) = @_;
+  my ( $self, $group, $data ) = @_;
 
   my $cmd;
 
   my $gid = $self->get_gid($group);
 
-  if(! defined $gid) {
+  if ( !defined $gid ) {
     Rex::Logger::debug("Creating new group $group");
 
     $cmd = "/usr/sbin/groupadd ";
   }
-  elsif(exists $data->{gid} && $data->{gid} == $gid) {
-    if(Rex::Config->get_do_reporting) {
+  elsif ( exists $data->{gid} && $data->{gid} == $gid ) {
+    if ( Rex::Config->get_do_reporting ) {
       return {
         changed => 0,
-        ret    => $gid,
+        ret     => $gid,
       };
     }
     return $gid;
   }
   else {
-    if(! defined $data) {
-      if(Rex::Config->get_do_reporting) {
+    if ( !defined $data ) {
+      if ( Rex::Config->get_do_reporting ) {
         return {
           changed => 0,
-          ret    => $gid,
+          ret     => $gid,
         };
       }
 
@@ -356,17 +360,17 @@ sub create_group {
     $cmd = "/usr/sbin/groupmod ";
   }
 
-  if(exists $data->{gid}) {
+  if ( exists $data->{gid} ) {
     $cmd .= " -g " . $data->{gid};
     $gid = undef;
   }
 
   i_run $cmd . " " . $group;
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error creating/modifying group $group");
   }
 
-  if(defined $gid) {
+  if ( defined $gid ) {
     return $gid;
   }
 
@@ -374,37 +378,39 @@ sub create_group {
 }
 
 sub get_gid {
-  my ($self, $group) = @_;
+  my ( $self, $group ) = @_;
 
   my %data = $self->get_group($group);
   return $data{gid};
 }
 
 sub get_group {
-  my ($self, $group) = @_;
+  my ( $self, $group ) = @_;
 
   Rex::Logger::debug("Getting information for $group");
-  my @data = split(" ", "" . i_run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'"), 4);
-  if($? != 0) {
+  my @data =
+    split( " ",
+    "" . i_run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'"),
+    4 );
+  if ( $? != 0 ) {
     die("Error getting group information");
   }
 
   return (
-    name => $data[0],
+    name     => $data[0],
     password => $data[1],
-    gid => $data[2],
-    members => $data[3],
+    gid      => $data[2],
+    members  => $data[3],
   );
 }
 
 sub rm_group {
-  my ($self, $group) = @_;
+  my ( $self, $group ) = @_;
 
   i_run "/usr/sbin/groupdel $group";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error deleting group $group");
   }
 }
-
 
 1;

@@ -86,7 +86,7 @@ sub account {
       ->report_resource_start( type => "account", name => $n );
 
     my $real_name = $n;
-    if(exists $option{name}) {
+    if ( exists $option{name} ) {
       $real_name = $option{name};
     }
 

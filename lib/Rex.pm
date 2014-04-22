@@ -69,7 +69,7 @@ use Rex::Notify;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.45.99.1";
+$VERSION = "0.45.99.3";
 my $cur_dir;
 
 BEGIN {
@@ -718,6 +718,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Rao Chenlin (Chenryn)
 
 =item RenatoCRON
+
+=item Renee Bäcker
 
 =item Samuele Tognini
 

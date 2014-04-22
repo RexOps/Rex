@@ -22,7 +22,6 @@ use vars qw(@EXPORT);
 @EXPORT = qw(test);
 
 Rex::Commands::set( box => "VBox" );
-$Rex::Logger::silent = 1;
 
 =item new(name => $test_name)
 

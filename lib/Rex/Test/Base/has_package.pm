@@ -33,20 +33,20 @@ sub run_test {
     if ( $p->{name} eq $pkg ) {
       if ($version) {
         if ( $p->{version} eq $version ) {
-          $self->ok("Found package $pkg in version $version.");
+          $self->ok( 1, "Found package $pkg in version $version." );
           return 1;
         }
       }
       else {
-        $self->ok("Found package $pkg");
+        $self->ok( 1, "Found package $pkg" );
         return 1;
       }
     }
   }
 
-  $self->fail(
+  $self->ok( 0,
     "Found package $pkg" . ( $version ? " in version $version" : "" ) );
-    
+
   return 0;
 }
 

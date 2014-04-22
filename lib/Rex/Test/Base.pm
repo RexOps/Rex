@@ -96,19 +96,9 @@ sub run_task {
   );
 }
 
-sub test_ok {
-  my ($self, $test, $msg) = @_;
-  Test::More::ok($test, $msg);
-}
-
 sub ok {
   my ($self, $msg) = @_;
   Test::More::ok(1, $msg);
-}
-
-sub fail {
-  my ($self, $msg) = @_;
-  Test::More::ok(0, $msg);
 }
 
 sub finish {

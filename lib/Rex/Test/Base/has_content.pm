@@ -27,7 +27,7 @@ sub new {
 sub run_test {
   my ( $self, $file, $test ) = @_;
   my $content = cat $file;
-  $self->test_ok(($content =~ $test) >= 1, "Content of $file contain $test.");
+  $self->ok(($content =~ $test) >= 1, "Content of $file contain $test.");
 }
 
 1;

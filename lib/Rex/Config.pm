@@ -198,7 +198,19 @@ sub set_tmp_dir {
 }
 
 sub get_tmp_dir {
-  return $tmp_dir || File::Spec->tmpdir();
+  if ( !$tmp_dir ) {
+    if ( Rex::is_ssh() ) {
+      my $exec = Rex::Interface::Exec->create;
+      my ($out) =
+        $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
+      chomp $out;
+      return $out;
+    }
+    else {
+      return File::Spec->tmpdir;
+    }
+  }
+  return $tmp_dir;
 }
 
 sub set_path {

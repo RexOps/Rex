@@ -38,7 +38,17 @@ sub create_user {
 
   my $cmd;
 
-  if ( !defined $self->get_uid($user) ) {
+  my $uid = $self->get_uid($user);
+  my $should_create_home;
+
+  if ( $data->{'create_home'} || $data->{'create-home'} ) {
+    $should_create_home = 1;
+  }
+  elsif ( $data->{'no_create_home'} || $data->{'no-create-home'} ) {
+    $should_create_home = 0;
+  }
+
+  if ( !defined $uid ) {
     Rex::Logger::debug("User $user does not exists. Creating it now.");
     $cmd = "pw useradd ";
   }
@@ -53,19 +63,10 @@ sub create_user {
 
   if ( $data->{"home"} ) {
     $cmd .= " -d " . $data->{"home"};
+  }
 
-    if (
-      !(
-           ( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
-        || ( exists $data->{"no_create_home"} && $data->{"no_create_home"} )
-      )
-      )
-    {
-      if ( !$self->get_uid($user) ) {
-        $cmd .= " -m ";
-      }
-    }
-
+  if ( $should_create_home && !defined $uid ) {    #useradd mode
+    $cmd .= " -m ";
   }
 
   if ( exists $data->{shell} ) {

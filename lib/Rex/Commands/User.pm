@@ -25,7 +25,7 @@ With this module you can manage user and groups.
      groups  => ['root', '...'],
      password => 'blahblah',
      system => 1,
-     no_create_home => TRUE,
+     create_home => TRUE,
      ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
@@ -69,8 +69,8 @@ Manage user account.
     groups   => ['root', '...'],
     password => 'blahblah',
     system   => 1,
-    no_create_home => TRUE,
-    ssh_key        => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+    create_home => TRUE,
+    ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
 
 =cut
 
@@ -146,18 +146,7 @@ sub create_user {
 
   if ( defined $data->{"ssh_key"} ) {
 
-    if (
-      !( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
-
-      &&
-
-      !( exists $data->{"no_create_home"} && $data->{"no_create_home"} )
-
-      &&
-
-      !is_dir( $data->{"home"} . "/.ssh" )
-      )
-    {
+    if ( !is_dir( $data->{"home"} . "/.ssh" ) ) {
 
       eval {
         mkdir $data->{"home"} . "/.ssh",

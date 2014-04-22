@@ -40,6 +40,24 @@ sub create_user {
   my $uid = $self->get_uid($user);
 
   my $run_cmd = 0;
+  my $should_create_home;
+
+  # if any home creation intent has been defined,
+  # don't follow the default home creation policy
+  my $use_default_home_policy =
+    (    defined $data->{'create_home'}
+      || defined $data->{'create-home'}
+      || defined $data->{'no_create_home'}
+      || defined $data->{'no-create-home'} ) ? 0 : 1;
+
+  if ( !$use_default_home_policy ) {
+    if ( $data->{'create_home'} || $data->{'create-home'} ) {
+      $should_create_home = 1;
+    }
+    elsif ( $data->{'no_create_home'} || $data->{'no-create-home'} ) {
+      $should_create_home = 0;
+    }
+  }
 
   if ( !defined $uid ) {
     Rex::Logger::debug("User $user does not exists. Creating it now.");
@@ -84,15 +102,21 @@ sub create_user {
     $run_cmd = 1;
     $cmd .= " -d " . $data->{home};
 
-    if ( ( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
-      || ( exists $data->{"no_create_home"} && $data->{"no_create_home"} ) )
-    {
-      if ( !$self->get_uid($user) ) {
-        $cmd .= " -M";
+    # don't create home directory in useradd mode if it already exists
+    $should_create_home = 0 if ( !defined $uid && is_dir( $data->{home} ) );
+  }
+
+  if ( !$use_default_home_policy ) {
+    if ( !defined $uid ) {    #useradd mode
+      if ($should_create_home) {
+        $cmd .= " -m ";
+      }
+      else {
+        $cmd .= " -M ";
       }
     }
-    elsif ( !is_dir( $data->{home} ) ) {
-      $cmd .= " -m";
+    else {                    #usermod mode
+      $cmd .= "-m " if ( exists $data->{home} );
     }
   }
 

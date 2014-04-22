@@ -97,8 +97,8 @@ sub run_task {
 }
 
 sub ok {
-  my ($self, $msg) = @_;
-  Test::More::ok(1, $msg);
+  my ($self, $test, $msg) = @_;
+  Test::More::ok($test, $msg);
 }
 
 sub finish {

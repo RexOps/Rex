@@ -20,6 +20,7 @@ lib/Rex/Cloud/Base.pm
 lib/Rex/Cloud/Jiffybox.pm
 lib/Rex/Cloud/OpenStack.pm
 lib/Rex/CMDB.pm
+lib/Rex/CMDB/Base.pm
 lib/Rex/CMDB/YAML.pm
 lib/Rex/Commands.pm
 lib/Rex/Commands/Box.pm
@@ -220,6 +221,13 @@ lib/Rex/Task.pm
 lib/Rex/TaskList.pm
 lib/Rex/TaskList/Base.pm
 lib/Rex/Template.pm
+lib/Rex/Test.pm
+lib/Rex/Test/Base.pm
+lib/Rex/Test/Base/has_content.pm
+lib/Rex/Test/Base/has_file.pm
+lib/Rex/Test/Base/has_package.pm
+lib/Rex/Test/Base/has_service_running.pm
+lib/Rex/Test/Base/has_service_stopped.pm
 lib/Rex/Transaction.pm
 lib/Rex/User.pm
 lib/Rex/User/FreeBSD.pm

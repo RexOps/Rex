@@ -45,6 +45,11 @@ sub create_user {
   elsif ( $data->{'no_create_home'} || $data->{'no-create-home'} ) {
     $should_create_home = 0;
   }
+  elsif ( ( exists $data->{'no_create_home'} && $data->{'no_create_home'} == 0 )
+    || ( exists $data->{'no-create-home'} && $data->{'no-create-home'} == 0 ) )
+  {
+    $should_create_home = 1;
+  }
 
   if ( !defined $uid ) {
     Rex::Logger::debug("User $user does not exists. Creating it now.");

@@ -46,6 +46,11 @@ sub create_user {
   elsif ( $data->{'no_create_home'} || $data->{'no-create-home'} ) {
     $should_create_home = 0;
   }
+  elsif ( ( exists $data->{'no_create_home'} && $data->{'no_create_home'} == 0 )
+    || ( exists $data->{'no-create-home'} && $data->{'no-create-home'} == 0 ) )
+  {
+    $should_create_home = 1;
+  }
 
   if ( !defined $uid ) {
     Rex::Logger::debug("User $user does not exists. Creating it now.");
@@ -163,7 +168,7 @@ expect eof
     }
     else {
       die(
-"No expect found in /usr/local/bin or /usr/bin. Can't set user password."
+        "No expect found in /usr/local/bin or /usr/bin. Can't set user password."
       );
     }
   }

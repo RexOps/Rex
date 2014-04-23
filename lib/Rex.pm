@@ -94,6 +94,7 @@ BEGIN {
 
   if ( -d "$cur_dir/lib" ) {
     push( @INC, "$cur_dir/lib" );
+    push( @INC, "$cur_dir/lib/perl/lib/perl5" );
   }
 
   my $home_dir = _home_dir();

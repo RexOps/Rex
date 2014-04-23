@@ -319,26 +319,29 @@ sub resolve_deps {
           $branch = $perl_deps{$req}->{branch};
         }
 
-        my @path_parts = split /::/, $req;
-        my $path =
+        my $curdir = getcwd;
+        my $path = File::Spec->catdir( File::Spec->tmpdir, "tmp-build-$$" );
+
+        my $lib_path =
           File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
-          "lib", @path_parts );
+          "lib", "perl" );
 
-        if ( -d $path && !-d "$path/.git" ) {
-          Rex::Logger::info( "$req not under git control. Skipping.", "warn" );
-          next;
-        }
-
-        if ( -d "$path/.git" ) {
-          system "rm -rf $path";
-        }
-        
         Rex::Logger::info("Cloning $perl_deps{$req}->{git}#$branch to $path");
         system "git clone $perl_deps{$req}->{git} -b $branch $path";
+
+        chdir $path;
+        system "cpanm -l $lib_path -L $lib_path .";
+        chdir $curdir;
+
+        system "rm -rf $path";
       }
     }
     else {
-      system "cpanm -l lib $req";
+      my $lib_path =
+        File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
+        "lib", "perl" );
+
+      system "cpanm -l $lib_path -L $lib_path $req";
     }
   }
 

@@ -204,7 +204,10 @@ sub get_tmp_dir {
       my ($out) =
         $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
       chomp $out;
-      return $out;
+      if($? == 0 && $out) {
+        return $out;
+      }
+      return "/tmp";
     }
     else {
       return File::Spec->tmpdir;

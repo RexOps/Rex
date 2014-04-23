@@ -41,6 +41,7 @@ sub new {
   my ( $pkg, $file ) = caller(0);
 
   $self->{name} ||= $file;
+  $self->{redirect_port} = 2222;
 
   return $self;
 }
@@ -66,6 +67,11 @@ sub test(&) {
   $code->($test);
 }
 
+sub redirect_port {
+  my ( $self, $port ) = @_;
+  $self->{redirect_port} = $port;
+}
+
 sub run_task {
   my ( $self, $task ) = @_;
 
@@ -81,7 +87,7 @@ sub run_task {
       }
     );
 
-    $box->forward_port( ssh => [ 2222, 22 ] );
+    $box->forward_port( ssh => [ $self->{redirect_port}, 22 ] );
 
     $box->auth( %{ $self->{auth} } );
     $box->setup($task);
@@ -97,8 +103,8 @@ sub run_task {
 }
 
 sub ok {
-  my ($self, $test, $msg) = @_;
-  Test::More::ok($test, $msg);
+  my ( $self, $test, $msg ) = @_;
+  Test::More::ok( $test, $msg );
 }
 
 sub finish {
@@ -106,17 +112,18 @@ sub finish {
 }
 
 our $AUTOLOAD;
+
 sub AUTOLOAD {
   my $self = shift or return undef;
   ( my $method = $AUTOLOAD ) =~ s{.*::}{};
 
-  if($method eq "DESTROY") {
+  if ( $method eq "DESTROY" ) {
     return;
   }
 
   my $pkg = __PACKAGE__ . "::$method";
   eval "use $pkg";
-  if($@) {
+  if ($@) {
     confess "Error loading $pkg. No such test method.";
   }
 

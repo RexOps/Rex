@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Commands::MD5;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::User::Linux;
@@ -38,6 +39,8 @@ sub create_user {
 
   my $uid = $self->get_uid($user);
   my $should_create_home;
+
+  my $old_pw_md5 = md5("/etc/passwd");
 
   if ( $data->{'create_home'} || $data->{'create-home'} ) {
     $should_create_home = 1;
@@ -153,7 +156,21 @@ sub create_user {
     Rex::Interface::Fs->create()->unlink($rnd_file);
   }
 
-  return $self->get_uid($user);
+  my $new_pw_md5 = md5("/etc/passwd");
+
+  if ( $new_pw_md5 eq $old_pw_md5 ) {
+    return {
+      changed => 0,
+      ret     => $self->get_uid($user),
+    };
+  }
+  else {
+    return {
+      changed => 1,
+      ret     => $self->get_uid($user),
+      },
+      ;
+  }
 
 }
 

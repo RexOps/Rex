@@ -173,7 +173,10 @@ expect eof
     }
   }
 
-  return $self->get_uid($user);
+  return {
+    changed => 0,
+    ret     => $self->get_uid($user),
+  };
 
 }
 

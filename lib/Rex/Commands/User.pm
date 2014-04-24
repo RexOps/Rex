@@ -18,15 +18,15 @@ With this module you can manage user and groups.
 
  task "create-user", "remoteserver", sub {
    create_user "root",
-     uid => 0,
-     home => '/root',
-     comment => 'Root Account',
-     expire => '2011-05-30',
-     groups  => ['root', '...'],
-     password => 'blahblah',
-     system => 1,
+     uid         => 0,
+     home        => '/root',
+     comment     => 'Root Account',
+     expire      => '2011-05-30',
+     groups      => [ 'root', '...' ],
+     password    => 'blahblah',
+     system      => 1,
      create_home => TRUE,
-     ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+     ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -61,16 +61,23 @@ use base qw(Rex::Exporter);
 Manage user account.
 
  account "krimdomu",
-    ensure   => "present",
-    uid      => 509,
-    home     => '/root',
-    comment  => 'User Account',
-    expire   => '2011-05-30',
-    groups   => ['root', '...'],
-    password => 'blahblah',
-    system   => 1,
-    create_home => TRUE,
-    ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+   ensure      => "present",
+   uid         => 509,
+   home        => '/root',
+   comment     => 'User Account',
+   expire      => '2011-05-30',
+   groups      => [ 'root', '...' ],
+   password    => 'blahblah',
+   system      => 1,
+   create_home => TRUE,
+   ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+
+There is also a no_create_home option similar to create_home but doing the
+opposite. If both used, create_home takes precedence as it the preferred option
+to specify home directory creation policy.
+
+If none of them are specified, Rex follows the remote system's home creation
+policy.
 
 =cut
 

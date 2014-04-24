@@ -982,7 +982,7 @@ sub environment {
     my ( $name, $code ) = @_;
     $environments->{$name} = {
       code        => $code,
-      description => $current_desc,
+      description => $current_desc || '',
       name        => $name,
     };
     $current_desc = "";

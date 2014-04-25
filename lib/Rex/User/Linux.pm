@@ -123,7 +123,7 @@ sub create_user {
       }
     }
     else {                    #usermod mode
-      $cmd .= "-m " if ( exists $data->{home} );
+      $cmd .= " -m " if ( exists $data->{home} );
     }
   }
 

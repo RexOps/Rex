@@ -26,7 +26,7 @@ sub new {
 sub start {
   my($self, $service) = @_;
 
-  i_run "/etc/init.d/$service start >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/init.d/$service start >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -38,7 +38,7 @@ sub start {
 sub restart {
   my($self, $service) = @_;
 
-  i_run "/etc/init.d/$service restart >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/init.d/$service restart >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -50,7 +50,7 @@ sub restart {
 sub stop {
   my($self, $service) = @_;
 
-  i_run "/etc/init.d/$service stop >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/init.d/$service stop >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -62,7 +62,7 @@ sub stop {
 sub reload {
   my($self, $service) = @_;
 
-  i_run "/etc/init.d/$service reload >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/init.d/$service reload >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -101,7 +101,7 @@ sub ensure {
 sub action {
   my ($self, $service, $action) = @_;
 
-  i_run "/etc/init.d/$service $action >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/init.d/$service $action >/dev/null", nohup => 1;
   if($? == 0) { return 1; }
 }
 

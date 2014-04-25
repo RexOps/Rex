@@ -28,7 +28,7 @@ sub start {
   my($self, $service) = @_;
   $service = _prepare_service_name($service);
 
-  i_run "systemctl start $service >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "systemctl start $service >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -41,7 +41,7 @@ sub restart {
   my($self, $service) = @_;
   $service = _prepare_service_name($service);
 
-  i_run "systemctl restart $service >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "systemctl restart $service >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -54,7 +54,7 @@ sub stop {
   my($self, $service) = @_;
   $service = _prepare_service_name($service);
 
-  i_run "systemctl stop $service >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "systemctl stop $service >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -67,7 +67,7 @@ sub reload {
   my($self, $service) = @_;
   $service = _prepare_service_name($service);
 
-  i_run "systemctl reload $service >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "systemctl reload $service >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -120,7 +120,7 @@ sub _prepare_service_name {
 sub action {
   my ($self, $service, $action) = @_;
 
-  i_run "systemctl $action $service >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "systemctl $action $service >/dev/null", nohup => 1;
   if($? == 0) { return 1; }
 }
 

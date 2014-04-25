@@ -26,7 +26,7 @@ sub new {
 sub start {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/init.d/$service start >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/rc.d/init.d/$service start >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -40,7 +40,7 @@ sub restart {
 
   # sometimes we need to sleep a little bit... because
   # the ssh channel gets closed too fast... i don't know why, yet.
-  i_run "/etc/rc.d/init.d/$service restart >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/rc.d/init.d/$service restart >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -52,7 +52,7 @@ sub restart {
 sub stop {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/init.d/$service stop >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/rc.d/init.d/$service stop >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -64,7 +64,7 @@ sub stop {
 sub reload {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/init.d/$service reload >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/rc.d/init.d/$service reload >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -102,7 +102,7 @@ sub ensure {
 sub action {
   my ($self, $service, $action) = @_;
 
-  i_run "/etc/rc.d/init.d/$service $action >/dev/null ; f=\$?; sleep .00001 ; exit \$f";
+  i_run "/etc/rc.d/init.d/$service $action", nohup => 1;
   if($? == 0) { return 1; }
 }
 

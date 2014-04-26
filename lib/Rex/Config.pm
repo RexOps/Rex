@@ -201,7 +201,7 @@ sub get_tmp_dir {
   if ( !$tmp_dir ) {
     if ( Rex::is_ssh() ) {
       my $exec;
-      if(Rex::is_sudo()) {
+      if ( Rex::is_sudo() ) {
         $exec = Rex::Interface::Exec->create("SSH");
       }
       else {
@@ -210,7 +210,7 @@ sub get_tmp_dir {
       my ($out) =
         $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
       chomp $out;
-      if($? == 0 && $out) {
+      if ( $? == 0 && $out ) {
         return $out;
       }
       return "/tmp";

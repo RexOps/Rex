@@ -61,7 +61,7 @@ use base qw(Rex::Exporter);
 Manage user account.
 
  account "krimdomu",
-   ensure      => "present",
+   ensure      => "present",  # default
    uid         => 509,
    home        => '/root',
    comment     => 'User Account',
@@ -87,6 +87,8 @@ sub account {
   if ( !ref $name ) {
     $name = [$name];
   }
+
+  $option{ensure} ||= "present";
 
   for my $n ( @{$name} ) {
     Rex::get_current_connection()->{reporter}

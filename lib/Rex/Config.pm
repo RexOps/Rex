@@ -199,10 +199,15 @@ sub set_tmp_dir {
 
 sub get_tmp_dir {
   if ( !$tmp_dir ) {
-    if ( Rex::is_ssh() ) {
+    if ( my $ssh = Rex::is_ssh() ) {
       my $exec;
       if ( Rex::is_sudo() ) {
-        $exec = Rex::Interface::Exec->create("SSH");
+        if ( ref $ssh eq "Net::OpenSSH" ) {
+          $exec = Rex::Interface::Exec->create("OpenSSH");
+        }
+        else {
+          $exec = Rex::Interface::Exec->create("SSH");
+        }
       }
       else {
         $exec = Rex::Interface::Exec->create;

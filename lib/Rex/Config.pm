@@ -198,6 +198,11 @@ sub set_tmp_dir {
 }
 
 sub get_tmp_dir {
+  my $cache = Rex::get_cache();
+  if ( my $cached_tmp = $cache->get("tmpdir") ) {
+    return $cached_tmp;
+  }
+
   if ( !$tmp_dir ) {
     if ( my $ssh = Rex::is_ssh() ) {
       my $exec;
@@ -216,11 +221,14 @@ sub get_tmp_dir {
         $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
       chomp $out;
       if ( $? == 0 && $out ) {
+        $cache->set( "tmpdir", $out );
         return $out;
       }
+      $cache->set( "tmpdir", "/tmp" );
       return "/tmp";
     }
     else {
+      $cache->set( "tmpdir", File::Spec->tmpdir );
       return File::Spec->tmpdir;
     }
   }

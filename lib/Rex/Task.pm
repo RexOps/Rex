@@ -618,10 +618,7 @@ sub connect {
   }
   elsif ( !$self->connection->is_authenticated ) {
     Rex::pop_connection();
-    my $message = "Wrong username/password or wrong key on $server.";
-    $message .= "\nOr root is not permitted to login over SSH."
-      if ( $user eq 'root' );
-    die($message);
+    die("Wrong username/password or wrong key on $server.");
   }
   else {
     Rex::Logger::info("Successfully authenticated on $server.")

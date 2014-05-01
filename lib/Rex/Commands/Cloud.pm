@@ -480,7 +480,7 @@ Delete a volume. This will destroy all data.
 =cut
 
   elsif ( $action eq "delete" ) {
-    $cloud->delete_volume( volume_id => $data );
+    $cloud->delete_volume( volume_id => $data->{id} );
   }
 
   elsif ( $action eq "list" ) {

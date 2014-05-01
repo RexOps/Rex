@@ -69,7 +69,7 @@ use Rex::Notify;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.45.99.3";
+$VERSION = "0.45.99.8";
 my $cur_dir;
 
 BEGIN {

@@ -289,7 +289,7 @@ sub list_volumes {
 }
 
 sub _make_instance_map {
-  my ($self, $instance_set) = @_;
+  my ( $self, $instance_set ) = @_;
   return (
     ip           => $_[1]->{"ipAddress"},
     id           => $_[1]->{"instanceId"},
@@ -299,14 +299,9 @@ sub _make_instance_map {
     state        => $_[1]->{"instanceState"}->{"name"},
     launch_time  => $_[1]->{"launchTime"},
     (
-      name => defined(
-        $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-          ->{"value"}
-        )
-      ? $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-        ->{"value"}
-      : $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-        ->{"Name"}->{"value"}
+      name => exists( $instance_set->{"tagSet"}->{"item"}->{"value"} )
+      ? $instance_set->{"tagSet"}->{"item"}->{"value"}
+      : $instance_set->{"tagSet"}->{"item"}->{"Name"}->{"value"}
     ),
     private_ip => $_[1]->{"privateIpAddress"},
     (
@@ -322,22 +317,14 @@ sub _make_instance_map {
     (
       tags => {
         map {
-          if (
-            ref $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-            ->{$_} eq 'HASH' )
-          {
-            $_ =>
-              $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-              ->{$_}->{value};
+          if ( ref $instance_set->{"tagSet"}->{"item"}->{$_} eq 'HASH' ) {
+            $_ => $instance_set->{"tagSet"}->{"item"}->{$_}->{value};
           }
           else {
-            $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-              ->{key} =>
-              $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}
-              ->{value};
+            $instance_set->{"tagSet"}->{"item"}->{key} =>
+              $instance_set->{"tagSet"}->{"item"}->{value};
           }
-          } keys
-          %{ $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"} }
+        } keys %{ $instance_set->{"tagSet"}->{"item"} }
       }
     ),
   );

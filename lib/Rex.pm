@@ -623,7 +623,7 @@ sub import {
         $found_feature = 1;
       }
 
-      if($add eq "no_cache") {
+      if ( $add eq "no_cache" ) {
         Rex::Logger::debug("disable caching");
         Rex::Config->set_use_cache(0);
         $found_feature = 1;

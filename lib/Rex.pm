@@ -65,6 +65,7 @@ use Rex::Config;
 use Rex::Helper::Array;
 use Rex::Report;
 use Rex::Notify;
+use File::Basename;
 
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
@@ -95,6 +96,11 @@ BEGIN {
   if ( -d "$cur_dir/lib" ) {
     push( @INC, "$cur_dir/lib" );
     push( @INC, "$cur_dir/lib/perl/lib/perl5" );
+    if($^O =~ m/^MSWin/) {
+      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
+      my $mswin32_path = basename $special_win_path;
+      push( @INC, "$cur_dir/lib/perl/lib/perl5/$mswin32_path" );
+    }
   }
 
   my $home_dir = _home_dir();

@@ -343,6 +343,9 @@ sub mkdir {
       if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
         $splitted_dir[0] = "$1:\\";
       }
+      else {
+        $splitted_dir[0] =~ s/^\\//;
+      }
     }
     else {
       @splitted_dir = map { $_ = "/$_"; } split( /\//, $dir );

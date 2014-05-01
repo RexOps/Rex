@@ -28,7 +28,7 @@ sub _parse_path {
   $hw{server}      = Rex::Commands::connection()->server;
   $hw{environment} = Rex::Commands::environment();
 
-  $path =~ s/\{([^\}]+)\}/$hw{$1}/gms;
+  $path =~ s/\{(server|environment)\}/$hw{$1}/gms;
 
   if($path =~ m/\{([^\}]+)\}/) {
     # if there are still some variables to replace, we need some information of

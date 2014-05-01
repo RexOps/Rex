@@ -623,6 +623,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if($add eq "no_cache") {
+        Rex::Logger::debug("disable caching");
+        Rex::Config->set_use_cache(0);
+        $found_feature = 1;
+      }
+
       if ( $found_feature == 0 ) {
         Rex::Logger::info(
           "You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.",

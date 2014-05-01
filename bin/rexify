@@ -24,6 +24,7 @@ use Carp;
 use URI;
 use URI::QueryParam;
 use File::Spec;
+use File::Basename;
 
 $Rex::Logger::silent = 1;
 
@@ -167,6 +168,10 @@ sub download_recipe_git {
   $branch ||= "master";
   my $path = File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
     $splitted_path[-1] );
+    
+  my $parent_path = dirname $path;
+  mkdir $parent_path;
+
   my $clone_url = $u->scheme . '://' . $u->host . $u->path;
 
   Rex::Logger::info("Cloning $clone_url to $path. Using branch: $branch.");

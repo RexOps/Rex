@@ -24,13 +24,23 @@ sub new {
 
 sub _parse_path {
   my ( $self, $path ) = @_;
-  my %hw = Rex::Commands::Gather::get_system_information();
+  my %hw;
   $hw{server}      = Rex::Commands::connection()->server;
   $hw{environment} = Rex::Commands::environment();
 
   $path =~ s/\{([^\}]+)\}/$hw{$1}/gms;
 
+  if($path =~ m/\{([^\}]+)\}/) {
+    # if there are still some variables to replace, we need some information of
+    # the system.
+    %hw = Rex::Commands::Gather::get_system_information();
+    $path =~ s/\{([^\}]+)\}/$hw{$1}/gms;
+  }
+
+
   return $path;
 }
+
+
 
 1;

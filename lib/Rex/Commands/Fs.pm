@@ -190,7 +190,7 @@ sub unlink {
       }
 
       my $tmp_path = Rex::Config->get_tmp_dir;
-      if ( $file !~ m/^$tmp_path[\/\\][a-z]+\.tmp$/ ) {    # skip tmp rex files
+      if ( $file !~ m/^\Q$tmp_path\E[\/\\][a-z]+\.tmp$/ ) {    # skip tmp rex files
         Rex::get_current_connection()->{reporter}
           ->report( changed => 1, message => "File $file removed." );
       }

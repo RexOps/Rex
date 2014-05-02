@@ -70,7 +70,7 @@ use File::Basename;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.45.99.8";
+$VERSION = "0.46.0";
 my $cur_dir;
 
 BEGIN {
@@ -680,9 +680,13 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Daniel Baeurer
 
+=item David Golovan
+
 =item Dominik Danter
 
 =item Dominik Schulz
+
+=item eduardoj
 
 =item fanyeren
 
@@ -697,6 +701,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Hiroaki Nakamura
 
 =item Jean Charles Passard
+
+=item Jean-Marie Renouard
 
 =item Jeen Lee
 

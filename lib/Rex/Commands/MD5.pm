@@ -84,7 +84,12 @@ sub md5 {
     }
 
     unless($? == 0) {
-      ($md5) = split(/\s/, $exec->exec("md5sum '$file'"));
+      if($^O =~ /bsd/) {
+        $md5 = $exec->exec("/sbin/md5 -q '$file'");
+      }
+      else {
+        ($md5) = split(/\s/, $exec->exec("md5sum '$file'"));
+      }
     }
 
     unless($? == 0) {

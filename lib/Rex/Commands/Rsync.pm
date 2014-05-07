@@ -98,7 +98,7 @@ sub sync {
     $source = Rex::Helper::Path::get_file_path($source, caller());
   }
 
-  Rex::Logger::debug("Syning $source -> $dest with rsync.");
+  Rex::Logger::debug("Syncing $source -> $dest with rsync.");
   if($Rex::Logger::debug) {
     $Expect::Log_Stdout = 1;
   }
@@ -131,7 +131,7 @@ sub sync {
   my @expect_options = ();
 
   if($auth->{auth_type} eq "pass") {
-    $cmd = sprintf($cmd, 'ssh -o StrictHostKeyChecking=no ');
+    $cmd = sprintf($cmd, 'ssh -o StrictHostKeyChecking=no PubkeyAuthentication=no ');
     push(@expect_options, [
                     qr{Are you sure you want to continue connecting},
                     sub {

@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Helper::Run;
 
 use strict;
@@ -57,6 +57,11 @@ sub i_run {
   }
   elsif(scalar @_ > 0) {
     $option = { @_ };
+  }
+
+  if(exists $option->{nohup} && $option->{nohup}) {
+    $cmd = "nohup $cmd";
+    delete $option->{nohup};
   }
 
   my $path = join(":", Rex::Config->get_path());

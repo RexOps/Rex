@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Interface::Fs::Base;
-  
+
 use strict;
 use warnings;
 
@@ -35,6 +35,14 @@ sub is_writable { die("Must be implemented by Interface Class"); }
 sub upload { die("Must be implemented by Interface Class"); }
 sub download { die("Must be implemented by Interface Class"); }
 
+sub is_symlink {
+  my ($self, $path) = @_;
+
+  $self->_exec("/bin/sh -c '[ -L \"$path\" ]'");
+  my $ret = $?;
+
+  if($ret == 0) { return 1; }
+}
 
 sub ln {
   my ($self, $from, $to) = @_;
@@ -126,6 +134,12 @@ sub _normalize_path {
   }
 
   return @dirs;
+}
+
+sub _exec {
+  my ($self, $cmd) = @_;
+  my $exec = Rex::Interface::Exec->create;
+  return $exec->exec($cmd);
 }
 
 1;

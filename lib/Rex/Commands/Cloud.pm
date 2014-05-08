@@ -12,22 +12,24 @@ Rex::Commands::Cloud - Cloud Management Commands
 
 With this Module you can manage different Cloud services. Currently it supports Amazon EC2, Jiffybox and OpenStack.
 
+Version <= 1.0: All these functions will not be reported.
+
 =head1 SYNOPSIS
 
  use Rex::Commands::Cloud;
- 
+
  cloud_service "Amazon";
  cloud_auth "your-access-key", "your-private-access-key";
  cloud_region "ec2.eu-west-1.amazonaws.com";
- 
+
  task "list", sub {
    print Dumper cloud_instance_list;
    print Dumper cloud_volume_list;
  };
- 
+
  task "create", sub {
    my $vol_id = cloud_volume create => { size => 1, zone => "eu-west-1a", };
- 
+
    cloud_instance create => {
        image_id => "ami-xxxxxxx",
        name    => "test01",
@@ -36,11 +38,11 @@ With this Module you can manage different Cloud services. Currently it supports 
        zone    => "eu-west-1a",
      };
  };
- 
+
  task "destroy", sub {
    cloud_volume detach => "vol-xxxxxxx";
    cloud_volume delete => "vol-xxxxxxx";
- 
+
    cloud_instance terminate => "i-xxxxxxx";
  };
 
@@ -65,29 +67,31 @@ use Rex::Cloud;
 use Rex::Group::Entry::Server;
 
 @EXPORT = qw(cloud_instance cloud_volume cloud_network
-          cloud_instance_list cloud_volume_list cloud_network_list
-          cloud_service cloud_auth cloud_region
-          get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones
-          get_cloud_plans
-          get_cloud_operating_systems
-          cloud_image_list);
+  cloud_instance_list cloud_volume_list cloud_network_list
+  cloud_service cloud_auth cloud_region
+  get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones
+  get_cloud_plans
+  get_cloud_operating_systems
+  cloud_image_list);
 
-Rex::Config->register_set_handler("cloud" => sub {
-  my ($name, @options) = @_;
-  my $sub_name = "cloud_$name";
+Rex::Config->register_set_handler(
+  "cloud" => sub {
+    my ( $name, @options ) = @_;
+    my $sub_name = "cloud_$name";
 
-  if($name eq "service") {
-    cloud_service(@options);
+    if ( $name eq "service" ) {
+      cloud_service(@options);
+    }
+
+    if ( $name eq "auth" ) {
+      cloud_auth(@options);
+    }
+
+    if ( $name eq "region" ) {
+      cloud_region(@options);
+    }
   }
-
-  if($name eq "auth") {
-    cloud_auth(@options);
-  }
-
-  if($name eq "region") {
-    cloud_region(@options);
-  }
-});
+);
 
 =item cloud_service($cloud_service)
 
@@ -111,15 +115,15 @@ Define which cloud service to use.
 
 
 =cut
+
 sub cloud_service {
   ($cloud_service) = @_;
 
   # set retry counter to a higher value
-  if(Rex::Config->get_max_connect_fails() < 5) {
+  if ( Rex::Config->get_max_connect_fails() < 5 ) {
     Rex::Config->set_max_connect_fails(15);
   }
 }
-
 
 =item cloud_auth($param1, $param2, ...)
 
@@ -136,12 +140,13 @@ For JiffyBox:
 For OpenStack:
 
  cloud_auth(
-  tenantName => 'tenant',
-  username   => 'user',
-  password   => 'password',
+  tenant_name => 'tenant',
+  username    => 'user',
+  password    => 'password',
  );
 
 =cut
+
 sub cloud_auth {
   @cloud_auth = @_;
 }
@@ -219,6 +224,7 @@ Get all networks of a cloud service.
  };
 
 =cut
+
 sub cloud_network_list {
 
   my $cloud = get_cloud_service($cloud_service);
@@ -234,6 +240,7 @@ sub cloud_network_list {
 Get a list of all available cloud images.
 
 =cut
+
 sub cloud_image_list {
   my $cloud = get_cloud_service($cloud_service);
   $cloud->set_auth(@cloud_auth);
@@ -264,7 +271,7 @@ sub get_cloud_instances_as_group {
     my @ret;
 
     for my $instance (@list) {
-      push(@ret, Rex::Group::Entry::Server->new(name => $instance->{"ip"}));
+      push( @ret, Rex::Group::Entry::Server->new( name => $instance->{"ip"} ) );
     }
 
     return @ret;
@@ -280,13 +287,13 @@ This function controlls all aspects of a cloud instance.
 
 sub cloud_instance {
 
-  my ($action, $data) = @_;
+  my ( $action, $data ) = @_;
   my $cloud = get_cloud_service($cloud_service);
 
   $cloud->set_auth(@cloud_auth);
   $cloud->set_endpoint($cloud_region);
 
-  if($action eq "list") {
+  if ( $action eq "list" ) {
     return $cloud->list_running_instances();
   }
 
@@ -304,8 +311,9 @@ Create a new instance.
 
 =cut
 
-  elsif($action eq "create") {
+  elsif ( $action eq "create" ) {
     my %data_hash = (
+
       # image_id => $data->{"image_id"},
       # name    => $data->{"name"} || undef,
       # key    => $data->{"key"} || undef,
@@ -315,7 +323,7 @@ Create a new instance.
       # plan_id  => $data->{"plan_id"} || undef,
       # type    => $data->{"type"} || undef,
       # security_group => $data->{"security_group"} || undef,
-      %{ $data },
+      %{$data},
     );
 
     $cloud->run_instance(%data_hash);
@@ -329,8 +337,8 @@ Start an existing instance
 
 =cut
 
-  elsif($action eq "start") {
-    $cloud->start_instance(instance_id => $data);
+  elsif ( $action eq "start" ) {
+    $cloud->start_instance( instance_id => $data );
   }
 
 =item stop
@@ -341,8 +349,8 @@ Stop an existing instance
 
 =cut
 
-  elsif($action eq "stop") {
-    $cloud->stop_instance(instance_id => $data);
+  elsif ( $action eq "stop" ) {
+    $cloud->stop_instance( instance_id => $data );
   }
 
 =item terminate
@@ -353,8 +361,8 @@ Terminate an instance. This will destroy all data and remove the instance.
 
 =cut
 
-  elsif($action eq "terminate") {
-    $cloud->terminate_instance(instance_id => $data);
+  elsif ( $action eq "terminate" ) {
+    $cloud->terminate_instance( instance_id => $data );
   }
 
 }
@@ -383,12 +391,24 @@ This function controlls all aspects of a cloud volume.
 
 sub cloud_volume {
 
-  my ($action, $data) = @_;
+  my ( $action, @_data ) = @_;
+  my $data;
+  if ( @_data == 1 ) {
+    if ( ref $_data[0] ) {
+      $data = $_data[0];
+    }
+    else {
+      $data = { id => $_data[0] };
+    }
+  }
+  else {
+    $data = { "id", @_data };
+  }
+
   my $cloud = get_cloud_service($cloud_service);
 
   $cloud->set_auth(@cloud_auth);
   $cloud->set_endpoint($cloud_region);
-
 
 =item create
 
@@ -400,11 +420,32 @@ Create a new volume. Size is in Gigabytes.
 
 =cut
 
-  if($action eq "create") {
+  if ( $action eq "create" ) {
     $cloud->create_volume(
-                size => $data->{"size"} || 1,
-                zone => $data->{"zone"} || undef,
-              );
+      size => $data->{"size"} || 1,
+      %{$data},
+    );
+  }
+
+=item attach
+
+Attach a volume to an instance.
+
+ task "attach-vol", sub {
+   cloud_volume attach => "vol-xxxxxx", to => "server-id";
+ };
+
+=cut
+
+  elsif ( $action eq "attach" ) {
+    my $vol_id = $data->{id};
+    my $srv_id = $data->{to};
+
+    $cloud->attach_volume(
+      volume_id   => $vol_id,
+      server_id   => $srv_id,
+      device_name => $data->{device}
+    );
   }
 
 =item detach
@@ -412,23 +453,19 @@ Create a new volume. Size is in Gigabytes.
 Detach a volume from an instance.
 
  task "detach-vol", sub {
-   cloud_volume detach => "vol-xxxxxx";
+   cloud_volume detach => "vol-xxxxxx", from => "server-id";
  };
 
 =cut
 
-  elsif($action eq "detach") {
-    my $vol_id;
-
-    if(ref($data)) {
-      $vol_id = $data->{"id"};
-    }
-    else {
-      $vol_id = $data;
-    }
+  elsif ( $action eq "detach" ) {
+    my $vol_id = $data->{id};
+    my $srv_id = $data->{from};
 
     $cloud->detach_volume(
       volume_id => $vol_id,
+      server_id => $srv_id,
+      attach_id => $data->{attach_id}
     );
   }
 
@@ -442,11 +479,11 @@ Delete a volume. This will destroy all data.
 
 =cut
 
-  elsif($action eq "delete") {
-    $cloud->delete_volume(volume_id => $data);
+  elsif ( $action eq "delete" ) {
+    $cloud->delete_volume( volume_id => $data->{id} );
   }
 
-  elsif($action eq "list") {
+  elsif ( $action eq "list" ) {
     return $cloud->list_volumes();
   }
 
@@ -458,12 +495,11 @@ Delete a volume. This will destroy all data.
 
 sub cloud_network {
 
-  my ($action, $data) = @_;
+  my ( $action, $data ) = @_;
   my $cloud = get_cloud_service($cloud_service);
 
   $cloud->set_auth(@cloud_auth);
   $cloud->set_endpoint($cloud_region);
-
 
 =item create
 
@@ -475,8 +511,8 @@ Create a new network.
 
 =cut
 
-  if($action eq "create") {
-    $cloud->create_network(%{ $data });
+  if ( $action eq "create" ) {
+    $cloud->create_network( %{$data} );
   }
 
 =item delete
@@ -489,7 +525,7 @@ Delete a network.
 
 =cut
 
-  elsif($action eq "delete") {
+  elsif ( $action eq "delete" ) {
     $cloud->delete_network($data);
   }
 }
@@ -520,6 +556,7 @@ sub get_cloud_availability_zones {
 Retrieve information of the available cloud plans. If supported.
 
 =cut
+
 sub get_cloud_plans {
   my $cloud = get_cloud_service($cloud_service);
 
@@ -534,6 +571,7 @@ sub get_cloud_plans {
 Retrieve information of the available cloud plans. If supported.
 
 =cut
+
 sub get_cloud_operating_systems {
   my $cloud = get_cloud_service($cloud_service);
 
@@ -546,6 +584,5 @@ sub get_cloud_operating_systems {
 =back
 
 =cut
-
 
 1;

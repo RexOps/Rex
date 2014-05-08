@@ -4,7 +4,7 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::Virtualization::Docker::start;
+package Rex::Virtualization::Docker::daemon;
 
 use strict;
 use warnings;

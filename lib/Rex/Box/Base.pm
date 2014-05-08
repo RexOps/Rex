@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -19,7 +19,7 @@ These methods are shared across all other Rex::Box modules.
 =over 4
 
 =cut
-  
+
 package Rex::Box::Base;
 
 use strict;
@@ -177,7 +177,7 @@ Currently it supports 2 modes. I<nat> and I<bridged>. Currently it supports only
      type => "nat",
    },
  }
-   
+
  $box->network(
    1 => {
      type => "bridged",
@@ -190,6 +190,36 @@ sub network {
   my ($self, %option) = @_;
   $self->{__network} = \%option;
 }
+
+=item forward_port(%option)
+
+Set ports to be forwarded to the VM. This is not supported by all Box providers.
+
+ $box->forward_port(
+   name => [$from_host_port, $to_vm_port],
+   name2 => [$from_host_port_2, $to_vm_port_2],
+   ...
+ );
+
+=cut
+sub forward_port {
+  my ($self, %option) = @_;
+  $self->{__forward_port} = \%option;
+}
+
+=item list_boxes
+
+List all available boxes.
+
+=cut
+sub list_boxes {
+  my ($self) = @_;
+
+  my $vms = vm list => "all";
+
+  return @{ $vms };
+}
+
 
 =item url($url)
 

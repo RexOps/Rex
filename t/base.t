@@ -1,4 +1,4 @@
-use Test::More tests => 154;
+use Test::More tests => 166;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -40,6 +40,8 @@ use_ok 'Rex::Fork::Task';
 use_ok 'Rex::FS::File';
 use_ok 'Rex::Group::Entry::Server';
 use_ok 'Rex::Group::Lookup::File';
+use_ok 'Rex::Group::Lookup::YAML';
+use_ok 'Rex::Group::Lookup::DBI';
 use_ok 'Rex::Group';
 use_ok 'Rex::Hardware::Host';
 use_ok 'Rex::Hardware::Kernel';
@@ -57,6 +59,8 @@ use_ok 'Rex::Helper::Hash';
 use_ok 'Rex::Helper::SSH2::Expect';
 use_ok 'Rex::Helper::SSH2';
 use_ok 'Rex::Helper::System';
+use_ok 'Rex::Helper::DBI';
+use_ok 'Rex::Helper::UserAgent';
 use_ok 'Rex::Interface::Connection::Base';
 use_ok 'Rex::Interface::Connection::Fake';
 use_ok 'Rex::Interface::Connection::HTTP';
@@ -152,7 +156,14 @@ use_ok 'Rex::Interface::Shell::Base';
 use_ok 'Rex::Interface::Shell::Sh';
 use_ok 'Rex::Interface::Shell::Zsh';
 use_ok 'Rex';
-
+use_ok 'Rex::CMDB::Base';
+use_ok 'Rex::Test';
+use_ok 'Rex::Test::Base';
+use_ok 'Rex::Test::Base::has_content';
+use_ok 'Rex::Test::Base::has_file';
+use_ok 'Rex::Test::Base::has_package';
+use_ok 'Rex::Test::Base::has_service_running';
+use_ok 'Rex::Test::Base::has_service_stopped';
 
 use Data::Dumper;
 my @hosts = Rex::Commands::evaluate_hostname("web[01..10]");

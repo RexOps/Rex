@@ -1,15 +1,15 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
 #
 # Some of the code is based on Net::Amazon::EC2
 #
-  
+
 package Rex::Cloud::Amazon;
-  
+
 use strict;
 use warnings;
 
@@ -27,34 +27,34 @@ require XML::Simple;
 
 use Data::Dumper;
 
-
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   #$self->{"__version"} = "2009-11-30";
-  $self->{"__version"} = "2011-05-15";
+  $self->{"__version"}           = "2011-05-15";
   $self->{"__signature_version"} = 1;
-  $self->{"__endpoint"} = "us-east-1.ec2.amazonaws.com";
+  $self->{"__endpoint"}          = "us-east-1.ec2.amazonaws.com";
 
-  Rex::Logger::debug("Creating new Amazon Object, with endpoint: " . $self->{"__endpoint"});
-  Rex::Logger::debug("Using API Version: " . $self->{"__version"});
+  Rex::Logger::debug(
+    "Creating new Amazon Object, with endpoint: " . $self->{"__endpoint"} );
+  Rex::Logger::debug( "Using API Version: " . $self->{"__version"} );
 
   return $self;
 }
 
 sub set_auth {
-  my ($self, $access_key, $secret_access_key) = @_;
+  my ( $self, $access_key, $secret_access_key ) = @_;
 
-  $self->{"__access_key"} = $access_key;
+  $self->{"__access_key"}        = $access_key;
   $self->{"__secret_access_key"} = $secret_access_key;
 }
 
 sub set_endpoint {
-  my ($self, $endpoint) = @_;
+  my ( $self, $endpoint ) = @_;
   Rex::Logger::debug("Setting new endpoint to $endpoint");
   $self->{'__endpoint'} = $endpoint;
 }
@@ -68,17 +68,18 @@ sub timestamp {
 }
 
 sub run_instance {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   Rex::Logger::debug("Trying to start a new Amazon instance with data:");
-  Rex::Logger::debug("  $_ -> " . ($data{$_}?$data{$_}:"undef")) for keys %data;
+  Rex::Logger::debug( "  $_ -> " . ( $data{$_} ? $data{$_} : "undef" ) )
+    for keys %data;
 
   my $security_groups;
 
-  if(ref($data{security_group}) eq "ARRAY") {
+  if ( ref( $data{security_group} ) eq "ARRAY" ) {
     $security_groups = $data{security_group};
   }
-  elsif(exists $data{security_groups}) {
+  elsif ( exists $data{security_groups} ) {
     $security_groups = $data{security_groups};
   }
   else {
@@ -86,9 +87,9 @@ sub run_instance {
   }
 
   my %security_group = ();
-  if(ref($security_groups) eq "ARRAY") {
+  if ( ref($security_groups) eq "ARRAY" ) {
     my $i = 0;
-    for my $sg (@{ $security_groups }) {
+    for my $sg ( @{$security_groups} ) {
       $security_group{"SecurityGroup.$i"} = $sg;
       $i++;
     }
@@ -97,36 +98,44 @@ sub run_instance {
     $security_group{SecurityGroup} = $security_groups || "default";
   }
 
-  my $xml = $self->_request("RunInstances", 
-          ImageId  => $data{"image_id"},
-          MinCount => 1,
-          MaxCount => 1,
-          KeyName  => $data{"key"},
-          InstanceType => $data{"type"} || "m1.small",
-          "Placement.AvailabilityZone" => $data{"zone"} || "",
-          %security_group);
+  my $xml = $self->_request(
+    "RunInstances",
+    ImageId                      => $data{"image_id"},
+    MinCount                     => 1,
+    MaxCount                     => 1,
+    KeyName                      => $data{"key"},
+    InstanceType                 => $data{"type"} || "m1.small",
+    "Placement.AvailabilityZone" => $data{"zone"} || "",
+    %security_group
+  );
 
   my $ref = $self->_xml($xml);
 
-  if(exists $data{"name"}) {
-    $self->add_tag(id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
-              name => "Name",
-              value => $data{"name"});
+  if ( exists $data{"name"} ) {
+    $self->add_tag(
+      id    => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
+      name  => "Name",
+      value => $data{"name"}
+    );
   }
 
-  my ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_instances();
+  my ($info) =
+    grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} }
+    $self->list_instances();
 
-  while($info->{"state"} ne "running") {
+  while ( $info->{"state"} ne "running" ) {
     Rex::Logger::debug("Waiting for instance to be created...");
-    ($info) = grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} } $self->list_instances();
+    ($info) =
+      grep { $_->{"id"} eq $ref->{"instancesSet"}->{"item"}->{"instanceId"} }
+      $self->list_instances();
     sleep 1;
   }
 
-  if(exists $data{"volume"}) {
+  if ( exists $data{"volume"} ) {
     $self->attach_volume(
-      volume_id => $data{"volume"},
+      volume_id   => $data{"volume"},
       instance_id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
-      name => "/dev/sdh", # default for new instances
+      name => "/dev/sdh",    # default for new instances
     );
   }
 
@@ -134,101 +143,107 @@ sub run_instance {
 }
 
 sub attach_volume {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   Rex::Logger::debug("Trying to attach a new volume");
 
-  $self->_request("AttachVolume", 
-    VolumeId => $data{"volume_id"},
+  $self->_request(
+    "AttachVolume",
+    VolumeId   => $data{"volume_id"},
     InstanceId => $data{"instance_id"},
-    Device => $data{"name"} || "/dev/sdh");
-}
-
-sub detach_volume {
-  my ($self, %data) = @_;
-
-  Rex::Logger::debug("Trying to detach a volume");
-
-  $self->_request("DetachVolume",
-      VolumeId => $data{"volume_id"},
-    );
-}
-
-sub delete_volume {
-  my ($self, %data) = @_;
-
-  Rex::Logger::debug("Trying to delete a volume");
-
-  $self->_request("DeleteVolume", 
-    VolumeId => $data{"volume_id"},
+    Device     => $data{"name"} || "/dev/sdh"
   );
 }
 
+sub detach_volume {
+  my ( $self, %data ) = @_;
+
+  Rex::Logger::debug("Trying to detach a volume");
+
+  $self->_request( "DetachVolume", VolumeId => $data{"volume_id"}, );
+}
+
+sub delete_volume {
+  my ( $self, %data ) = @_;
+
+  Rex::Logger::debug("Trying to delete a volume");
+
+  $self->_request( "DeleteVolume", VolumeId => $data{"volume_id"}, );
+}
+
 sub terminate_instance {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   Rex::Logger::debug("Trying to terminate an instance");
 
-  $self->_request("TerminateInstances",
-          "InstanceId.1" => $data{"instance_id"});
+  $self->_request( "TerminateInstances",
+    "InstanceId.1" => $data{"instance_id"} );
 }
 
 sub start_instance {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   Rex::Logger::debug("Trying to start an instance");
 
-  $self->_request("StartInstances",
-          "InstanceId.1" => $data{instance_id});
+  $self->_request( "StartInstances", "InstanceId.1" => $data{instance_id} );
 
-  my ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+  my ($info) =
+    grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
 
-  while($info->{"state"} ne "running") {
+  while ( $info->{"state"} ne "running" ) {
     Rex::Logger::debug("Waiting for instance to be started...");
-    ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+    ($info) =
+      grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
     sleep 5;
   }
 
 }
 
 sub stop_instance {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   Rex::Logger::debug("Trying to stop an instance");
 
-  $self->_request("StopInstances",
-          "InstanceId.1" => $data{instance_id});
+  $self->_request( "StopInstances", "InstanceId.1" => $data{instance_id} );
 
-  my ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+  my ($info) =
+    grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
 
-  while($info->{"state"} ne "stopped") {
+  while ( $info->{"state"} ne "stopped" ) {
     Rex::Logger::debug("Waiting for instance to be stopped...");
-    ($info) = grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
+    ($info) =
+      grep { $_->{"id"} eq $data{"instance_id"} } $self->list_instances();
     sleep 5;
   }
 
 }
 
 sub add_tag {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
-  Rex::Logger::debug("Adding a new tag: " . $data{id} . " -> " . $data{name} .  " -> " . $data{value});
+  Rex::Logger::debug( "Adding a new tag: "
+      . $data{id} . " -> "
+      . $data{name} . " -> "
+      . $data{value} );
 
-  $self->_request("CreateTags",
-          "ResourceId.1" => $data{"id"},
-          "Tag.1.Key"   => $data{"name"},
-          "Tag.1.Value"  => $data{"value"});
+  $self->_request(
+    "CreateTags",
+    "ResourceId.1" => $data{"id"},
+    "Tag.1.Key"    => $data{"name"},
+    "Tag.1.Value"  => $data{"value"}
+  );
 }
 
 sub create_volume {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   Rex::Logger::debug("Creating a new volume");
 
-  my $xml = $self->_request("CreateVolume", 
-          "Size" => $data{"size"} || 1,
-          "AvailabilityZone" => $data{"zone"},
-          );
+  my $xml = $self->_request(
+    "CreateVolume",
+    "Size" => $data{"size"} || 1,
+    "AvailabilityZone" => $data{"zone"},
+  );
 
   my $ref = $self->_xml($xml);
 
@@ -236,7 +251,7 @@ sub create_volume {
 
   my ($info) = grep { $_->{"id"} eq $ref->{"volumeId"} } $self->list_volumes();
 
-  while($info->{"status"} ne "available") {
+  while ( $info->{"status"} ne "available" ) {
     Rex::Logger::debug("Waiting for volume to become ready...");
     ($info) = grep { $_->{"id"} eq $ref->{"volumeId"} } $self->list_volumes();
     sleep 1;
@@ -250,24 +265,69 @@ sub list_volumes {
   my $xml = $self->_request("DescribeVolumes");
   my $ref = $self->_xml($xml);
 
-  return unless($ref);
-  return unless(exists $ref->{"volumeSet"}->{"item"});
-  if(ref($ref->{"volumeSet"}->{"item"}) eq "HASH") {
+  return unless ($ref);
+  return unless ( exists $ref->{"volumeSet"}->{"item"} );
+  if ( ref( $ref->{"volumeSet"}->{"item"} ) eq "HASH" ) {
     $ref->{"volumeSet"}->{"item"} = [ $ref->{"volumeSet"}->{"item"} ];
   }
 
   my @volumes;
-  for my $vol (@{$ref->{"volumeSet"}->{"item"}}) {
-    push(@volumes, {
-      id => $vol->{"volumeId"},
-      status => $vol->{"status"},
-      zone => $vol->{"availabilityZone"},
-      size => $vol->{"size"},
-      attached_to => $vol->{"attachmentSet"}->{"item"}->{"instanceId"},
-    });
+  for my $vol ( @{ $ref->{"volumeSet"}->{"item"} } ) {
+    push(
+      @volumes,
+      {
+        id          => $vol->{"volumeId"},
+        status      => $vol->{"status"},
+        zone        => $vol->{"availabilityZone"},
+        size        => $vol->{"size"},
+        attached_to => $vol->{"attachmentSet"}->{"item"}->{"instanceId"},
+      }
+    );
   }
 
   return @volumes;
+}
+
+sub _make_instance_map {
+  my ( $self, $instance_set ) = @_;
+  return (
+    ip           => $_[1]->{"ipAddress"},
+    id           => $_[1]->{"instanceId"},
+    architecture => $_[1]->{"architecture"},
+    type         => $_[1]->{"instanceType"},
+    dns_name     => $_[1]->{"dnsName"},
+    state        => $_[1]->{"instanceState"}->{"name"},
+    launch_time  => $_[1]->{"launchTime"},
+    (
+      name => exists( $instance_set->{"tagSet"}->{"item"}->{"value"} )
+      ? $instance_set->{"tagSet"}->{"item"}->{"value"}
+      : $instance_set->{"tagSet"}->{"item"}->{"Name"}->{"value"}
+    ),
+    private_ip => $_[1]->{"privateIpAddress"},
+    (
+      security_group => ref $_[1]->{"groupSet"}->{"item"} eq 'ARRAY' ? join ',',
+      map { $_->{groupName} } @{ $_[1]->{"groupSet"}->{"item"} }
+      : $_[1]->{"groupSet"}->{"item"}->{"groupName"}
+    ),
+    (
+      security_groups => ref $_[1]->{"groupSet"}->{"item"} eq 'ARRAY'
+      ? [ map { $_->{groupName} } @{ $_[1]->{"groupSet"}->{"item"} } ]
+      : [ $_[1]->{"groupSet"}->{"item"}->{"groupName"} ]
+    ),
+    (
+      tags => {
+        map {
+          if ( ref $instance_set->{"tagSet"}->{"item"}->{$_} eq 'HASH' ) {
+            $_ => $instance_set->{"tagSet"}->{"item"}->{$_}->{value};
+          }
+          else {
+            $instance_set->{"tagSet"}->{"item"}->{key} =>
+              $instance_set->{"tagSet"}->{"item"}->{value};
+          }
+        } keys %{ $instance_set->{"tagSet"}->{"item"} }
+      }
+    ),
+  );
 }
 
 sub list_instances {
@@ -278,39 +338,28 @@ sub list_instances {
   my $xml = $self->_request("DescribeInstances");
   my $ref = $self->_xml($xml);
 
-  return unless($ref);
-  return unless(exists $ref->{"reservationSet"});
-  return unless(exists $ref->{"reservationSet"}->{"item"});
+  return unless ($ref);
+  return unless ( exists $ref->{"reservationSet"} );
+  return unless ( exists $ref->{"reservationSet"}->{"item"} );
 
-  if(ref $ref->{"reservationSet"}->{"item"} eq "HASH") {
+  if ( ref $ref->{"reservationSet"}->{"item"} eq "HASH" ) {
+
     # if only one instance is returned, turn it to an array
     $ref->{"reservationSet"}->{"item"} = [ $ref->{"reservationSet"}->{"item"} ];
   }
 
-  for my $instance_set (@{$ref->{"reservationSet"}->{"item"}}) {
-     if (ref $instance_set->{"instancesSet"}->{"item"} eq 'HASH') {
-	  push(@ret, {
-	     ip => $instance_set->{"instancesSet"}->{"item"}->{"ipAddress"},
-	     id => $instance_set->{"instancesSet"}->{"item"}->{"instanceId"},
-	     architecture => $instance_set->{"instancesSet"}->{"item"}->{"architecture"},
-	     type => $instance_set->{"instancesSet"}->{"item"}->{"instanceType"},
-	     dns_name => $instance_set->{"instancesSet"}->{"item"}->{"dnsName"},
-	     state => $instance_set->{"instancesSet"}->{"item"}->{"instanceState"}->{"name"},
-	     launch_time => $instance_set->{"instancesSet"}->{"item"}->{"launchTime"},
-	     name => $instance_set->{"instancesSet"}->{"item"}->{"tagSet"}->{"item"}->{"value"},
-	     private_ip => $instance_set->{"instancesSet"}->{"item"}->{"privateIpAddress"},
-	     (security_group =>
-		ref $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"} eq 'ARRAY'
-           ? join ',', map {$_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}}
-           :$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"}
-	     ),
-	     (security_groups =>
-		ref $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"} eq 'ARRAY'
-           ? [ map { $_->{groupName} } @{$instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}} ]
-           : [ $instance_set->{"instancesSet"}->{"item"}->{"groupSet"}->{"item"}->{"groupName"} ]
-	     ),
-		})
-     }
+  for my $instance_set ( @{ $ref->{"reservationSet"}->{"item"} } ) {
+
+    # push(@ret, $instance_set);
+    my $isi = $instance_set->{"instancesSet"}->{"item"};
+    if ( ref $isi eq 'HASH' ) {
+      push( @ret, { $self->_make_instance_map($isi) } );
+    }
+    elsif ( $isi eq 'ARRAY' ) {
+      for my $iset (@$isi) {
+        push( @ret, { $self->_make_instance_map($iset) } );
+      }
+    }
   }
 
   return @ret;
@@ -326,7 +375,10 @@ sub get_regions {
   my ($self) = @_;
 
   my $content = $self->_request("DescribeRegions");
-  my %items = ($content =~ m/<regionName>([^<]+)<\/regionName>\s+<regionEndpoint>([^<]+)<\/regionEndpoint>/gsim);
+  my %items =
+    ( $content =~
+      m/<regionName>([^<]+)<\/regionName>\s+<regionEndpoint>([^<]+)<\/regionEndpoint>/gsim
+    );
 
   return %items;
 }
@@ -338,32 +390,35 @@ sub get_availability_zones {
   my $ref = $self->_xml($xml);
 
   my @zones;
-  for my $item (@{$ref->{"availabilityZoneInfo"}->{"item"}}) {
-    push(@zones, {
-      zone_name => $item->{"zoneName"},
-      region_name => $item->{"regionName"},
-      zone_state => $item->{"zoneState"},
-    });
+  for my $item ( @{ $ref->{"availabilityZoneInfo"}->{"item"} } ) {
+    push(
+      @zones,
+      {
+        zone_name   => $item->{"zoneName"},
+        region_name => $item->{"regionName"},
+        zone_state  => $item->{"zoneState"},
+      }
+    );
   }
 
   return @zones;
 }
 
 sub _request {
-  my ($self, $action, %args) = @_;
+  my ( $self, $action, %args ) = @_;
 
   my $ua = LWP::UserAgent->new;
   $ua->env_proxy;
-  my %param = $self->_sign($action, %args);
+  my %param = $self->_sign( $action, %args );
 
-  Rex::Logger::debug("Sending request to: http://" . $self->{'__endpoint'});
-  Rex::Logger::debug("  $_ -> " . $param{$_}) for keys %param;
+  Rex::Logger::debug( "Sending request to: http://" . $self->{'__endpoint'} );
+  Rex::Logger::debug( "  $_ -> " . $param{$_} ) for keys %param;
 
-  my $res = $ua->post("http://" . $self->{'__endpoint'}, \%param);
+  my $res = $ua->post( "http://" . $self->{'__endpoint'}, \%param );
 
-  if($res->code >= 500) {
-    Rex::Logger::info("Error on request", "warn");
-    Rex::Logger::debug($res->content);
+  if ( $res->code >= 500 ) {
+    Rex::Logger::info( "Error on request", "warn" );
+    Rex::Logger::debug( $res->content );
     return;
   }
 
@@ -381,10 +436,10 @@ sub _request {
 }
 
 sub _sign {
-  my ($self, $action, %o_args) = @_;  
+  my ( $self, $action, %o_args ) = @_;
 
   my %args;
-  for my $key (keys %o_args) {
+  for my $key ( keys %o_args ) {
     next unless $key;
     next unless $o_args{$key};
 
@@ -392,16 +447,16 @@ sub _sign {
   }
 
   my %sign_hash = (
-    AWSAccessKeyId  => $self->{"__access_key"},
-    Action        => $action,
-    Timestamp      => $self->timestamp(),
-    Version       => $self->{"__version"},
+    AWSAccessKeyId   => $self->{"__access_key"},
+    Action           => $action,
+    Timestamp        => $self->timestamp(),
+    Version          => $self->{"__version"},
     SignatureVersion => $self->{"__signature_version"},
     %args
   );
 
   my $sign_this;
-  foreach my $key (sort { lc($a) cmp lc($b) } keys %sign_hash) {
+  foreach my $key ( sort { lc($a) cmp lc($b) } keys %sign_hash ) {
     $sign_this .= $key . $sign_hash{$key};
   }
 
@@ -410,12 +465,12 @@ sub _sign {
   my $encoded = $self->_hash($sign_this);
 
   my %params = (
-    Action        => $action,
-    SignatureVersion  => $self->{"__signature_version"},
+    Action           => $action,
+    SignatureVersion => $self->{"__signature_version"},
     AWSAccessKeyId   => $self->{"__access_key"},
-    Timestamp      => $self->timestamp(),
-    Version        => $self->{"__version"},
-    Signature      => $encoded,
+    Timestamp        => $self->timestamp(),
+    Version          => $self->{"__version"},
+    Signature        => $encoded,
     %args
   );
 
@@ -423,34 +478,37 @@ sub _sign {
 }
 
 sub _hash {
-  my ($self, $query_string) = @_;
+  my ( $self, $query_string ) = @_;
 
-  my $hashed = Digest::HMAC_SHA1->new($self->{"__secret_access_key"});
+  my $hashed = Digest::HMAC_SHA1->new( $self->{"__secret_access_key"} );
   $hashed->add($query_string);
 
-  return encode_base64($hashed->digest, "");
+  return encode_base64( $hashed->digest, "" );
 }
 
 sub _xml {
-  my ($self, $xml) = @_;
+  my ( $self, $xml ) = @_;
 
-  my $x = XML::Simple->new;
+  my $x   = XML::Simple->new;
   my $res = $x->XMLin($xml);
-  if(defined $res->{"Errors"}) {
-    if(ref($res->{"Errors"}) ne "ARRAY") {
+  if ( defined $res->{"Errors"} ) {
+    if ( ref( $res->{"Errors"} ) ne "ARRAY" ) {
       $res->{"Errors"} = [ $res->{"Errors"} ];
     }
 
     my @error_msg = ();
-    for my $error (@{$res->{"Errors"}}) {
-      push(@error_msg, $error->{"Error"}->{"Message"} . " (Code: " . $error->{"Error"}->{"Code"} . ")");
+    for my $error ( @{ $res->{"Errors"} } ) {
+      push( @error_msg,
+            $error->{"Error"}->{"Message"}
+          . " (Code: "
+          . $error->{"Error"}->{"Code"}
+          . ")" );
     }
 
-    die(join("\n", @error_msg));
+    die( join( "\n", @error_msg ) );
   }
 
   return $res;
 }
-
 
 1;

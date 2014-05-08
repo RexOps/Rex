@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -27,7 +27,7 @@ sub new {
 sub start {
   my($self, $service) = @_;
 
-  i_run "/usr/local/etc/rc.d/$service onestart >/dev/null";
+  i_run "/usr/local/etc/rc.d/$service onestart >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -39,7 +39,7 @@ sub start {
 sub restart {
   my($self, $service) = @_;
 
-  i_run "/usr/local/etc/rc.d/$service onerestart >/dev/null";
+  i_run "/usr/local/etc/rc.d/$service onerestart >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -51,7 +51,7 @@ sub restart {
 sub stop {
   my($self, $service) = @_;
 
-  i_run "/usr/local/etc/rc.d/$service onestop >/dev/null";
+  i_run "/usr/local/etc/rc.d/$service onestop >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -63,7 +63,7 @@ sub stop {
 sub reload {
   my($self, $service) = @_;
 
-  i_run "/usr/local/etc/rc.d/$service onereload >/dev/null";
+  i_run "/usr/local/etc/rc.d/$service onereload >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -102,7 +102,7 @@ sub ensure {
 sub action {
   my ($self, $service, $action) = @_;
 
-  i_run "/usr/local/etc/rc.d/$service $action >/dev/null";
+  i_run "/usr/local/etc/rc.d/$service $action >/dev/null", nohup => 1;
   if($? == 0) { return 1; }
 }
 

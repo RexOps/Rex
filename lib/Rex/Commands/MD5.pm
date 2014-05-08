@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -11,6 +11,8 @@ Rex::Commands::MD5 - Calculate MD5 sum of files
 =head1 DESCRIPTION
 
 With this module you calculate the md5 sum of a file.
+
+This is just a helper function and will not be reported.
 
 =head1 SYNOPSIS
 
@@ -97,10 +99,10 @@ sub md5 {
     Rex::Logger::debug("MD5SUM ($file): $md5");
     $md5 =~ s/[\r\n]//gms;
     return $md5;
-  
+
   }
   else {
-    
+
     Rex::Logger::debug("File $file not found.");
     die("File $file not found");
 

@@ -2,10 +2,10 @@
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
-   
+
 use strict;
 use warnings;
 
@@ -20,406 +20,598 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use JSON::XS;
 use Cwd qw(getcwd);
+use Carp;
+use URI;
+use URI::QueryParam;
+use File::Spec;
+use File::Basename;
 
 $Rex::Logger::silent = 1;
 
-my $opts = {}; 
+my $opts = {};
 
 ######
 # default server
-my $SEARCH_SERVER = "http://modules.rexify.org/api/0.45/get/recipes";
-my $RECIPE_SERVER = "http://modules.rexify.org/api/0.45/get/mod/%s";
-my $DEPEND_SERVER = "http://modules.rexify.org/api/0.45/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.45/get/perldep/%s";
+my $SEARCH_SERVER      = "http://modules.rexify.org/api/0.46/get/recipes";
+my $RECIPE_SERVER      = "http://modules.rexify.org/api/0.46/get/mod/%s";
+my $DEPEND_SERVER      = "http://modules.rexify.org/api/0.46/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.46/get/perldep/%s";
 
 my $AUTH_USER;
 my $AUTH_PASSWORD;
 my $AUTH_REALM;
 
-Rex::Config->register_config_handler("module_server", sub {
-   my ($param) = @_;
+Rex::Config->register_config_handler(
+  "module_server",
+  sub {
+    my ($param) = @_;
 
-   if(exists $param->{search}) {
+    if ( exists $param->{search} ) {
       $SEARCH_SERVER = $param->{search};
-   }
+    }
 
-   if(exists $param->{recipes}) {
+    if ( exists $param->{recipes} ) {
       $RECIPE_SERVER = $param->{recipes};
-   }
+    }
 
-   if(exists $param->{dependencies}) {
+    if ( exists $param->{dependencies} ) {
       $DEPEND_SERVER = $param->{dependencies};
-   }
+    }
 
-   if(exists $param->{perl_dependencies}) {
+    if ( exists $param->{perl_dependencies} ) {
       $PERL_DEPEND_SERVER = $param->{perl_dependencies};
-   }
+    }
 
-   if(exists $param->{username}) {
+    if ( exists $param->{username} ) {
       $AUTH_USER = $param->{username};
-   }
+    }
 
-   if(exists $param->{password}) {
+    if ( exists $param->{password} ) {
       $AUTH_PASSWORD = $param->{password};
-   }
+    }
 
-   if(exists $param->{realm}) {
+    if ( exists $param->{realm} ) {
       $AUTH_REALM = $param->{realm};
-   }
+    }
 
-});
+  }
+);
 
-for(my $i=0; $i<@ARGV; $i++) {
+for ( my $i = 0 ; $i < @ARGV ; $i++ ) {
 
-   if($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)=/) {
-      my $key = $1;
-      my ($c_key, $val) = split(/=/, $ARGV[$i]);
+  if ( $ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)=/ ) {
+    my $key = $1;
+    my ( $c_key, $val ) = split( /=/, $ARGV[$i], 2 );
 
-      if(exists $opts->{$key}) {
-         $opts->{$key} = [ $opts->{$key} ] if (! ref $opts->{$key});
-         push(@{$opts->{$key}}, $val);
+    if ( exists $opts->{$key} ) {
+      $opts->{$key} = [ $opts->{$key} ] if ( !ref $opts->{$key} );
+      push( @{ $opts->{$key} }, $val );
+    }
+    else {
+      $opts->{$key} = $val || 0;
+    }
+  }
+  elsif ( $ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/ ) {
+    my $key = $1;
+    if ( !$ARGV[ $i + 1 ] || $ARGV[ $i + 1 ] =~ m/^\-\-/ ) {
+      $opts->{$key} = 1;
+    }
+    else {
+      if ( exists $opts->{$key} ) {
+        $opts->{$key} = [ $opts->{$key} ] if ( !ref $opts->{$key} );
+
+        push( @{ $opts->{$key} }, $ARGV[ ++$i ] );
       }
       else {
-         $opts->{$key} = $val || 0;
+        $opts->{$key} = $ARGV[ ++$i ];
       }
-   }
-   elsif($ARGV[$i] =~ m/^\-\-([a-z0-9\-_]+)/) {
-      my $key = $1; 
-      if(! $ARGV[$i+1] || $ARGV[$i+1] =~ m/^\-\-/) {
-         $opts->{$key} = 1;                                                                                      
-      }   
-      else {
-         if(exists $opts->{$key}) {
-            $opts->{$key} = [ $opts->{$key} ] if (! ref $opts->{$key});
-
-            push(@{$opts->{$key}}, $ARGV[++$i]);
-         }   
-         else {
-            $opts->{$key} = $ARGV[++$i];
-         }   
-      }   
-   }   
+    }
+  }
 
 }
 
-if( ! $ARGV[0] || join("", @ARGV) =~ m/\-h|\-\-help/) {
-   print STDERR "Usage: rexify <project-name> [<directory>] [<options>]\n";
-   print STDERR "\n";
-   print STDERR "Options:";
-   print STDERR "\n";
-   print STDERR "\t--search=value\t\t\tWill search community recipes\n";
-   print STDERR "\t--use=recipe\t\t\tWill download community recipe\n";
-   print STDERR "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
-   print STDERR "\t--create-module\t\t\tCreate a module skeleton.\n";
-   print STDERR "\t--create-module=Mod::Name\tCreate a module skeleton inside a Rex project.\n";
-   print STDERR "\t--sudo\t\t\t\tTo use sudo for Perl Module installation.\n";
-   print STDERR "\t--no-install-perl-deps\t\tUse this if you don't want that rexify tries to install Perl Modules.\n";
+if ( !$ARGV[0] || join( "", @ARGV ) =~ m/\-h|\-\-help/ ) {
+  print STDERR "Usage: rexify <project-name> [<directory>] [<options>]\n";
+  print STDERR "\n";
+  print STDERR "Options:";
+  print STDERR "\n";
+  print STDERR "\t--search=value\t\t\tWill search community recipes\n";
+  print STDERR "\t--use=recipe\t\t\tWill download community recipe\n";
+  print STDERR
+    "\t--init=git-url\t\t\tWill download and initialize the given repo\n";
+  print STDERR "\t--update-from-git\t\tUpdate the cloned repository.\n";
+  print STDERR
+    "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
+  print STDERR "\t--create-module\t\t\tCreate a module skeleton.\n";
+  print STDERR
+    "\t--create-module=Mod::Name\tCreate a module skeleton inside a Rex project.\n";
+  print STDERR "\t--sudo\t\t\t\tTo use sudo for Perl Module installation.\n";
+  print STDERR
+    "\t--resolve-deps\t\t\tRead meta.yml and try to resolve project dependencies\n";
+  print STDERR
+    "\t--no-install-perl-deps\t\tUse this if you don't want that rexify tries to install Perl Modules.\n";
 
-   print STDERR "\n";
-   print STDERR "Custom Templates:\n";
-   print STDERR "   box - Template to use for Rex::Commands::Box projects.\n";
-   exit 1;
+  print STDERR "\n";
+  print STDERR "Custom Templates:\n";
+  print STDERR "   box - Template to use for Rex::Commands::Box projects.\n";
+  exit 1;
 }
-
 
 sub print_found {
-   my ($name, $data) = @_;
+  my ( $name, $data ) = @_;
 
-   $name =~ s/\//::/g;
-   $name =~ s/\.pm$//;
-   print "* $name\n";
-   print "    Author     : " . $data->{Author} . "\n";
-   print "    Requires   : " . join(", ", @{ $data->{Requires} }) . "\n" if($data->{Requires});
-   print "    License    : " . $data->{License} . "\n" if($data->{License});
-   print "    Description: " . $data->{Description} . "\n";
+  $name =~ s/\//::/g;
+  $name =~ s/\.pm$//;
+  print "* $name\n";
+  print "    Author     : " . $data->{Author} . "\n";
+  print "    Requires   : " . join( ", ", @{ $data->{Requires} } ) . "\n"
+    if ( $data->{Requires} );
+  print "    License    : " . $data->{License} . "\n" if ( $data->{License} );
+  print "    Description: " . $data->{Description} . "\n";
+}
+
+sub update_from_git {
+  system "git pull origin";
+  resolve_deps("meta.yml");
+}
+
+sub download_recipe_git {
+  my ($url) = @_;
+  $Rex::Logger::silent = 0;
+
+  my $u      = URI->new($url);
+  my $branch = $u->query_param("branch");
+
+  my @splitted_path = split /\//, $u->path;
+  $splitted_path[-1] =~ s/\.git$//;
+
+  $branch ||= "master";
+  my $path = File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
+    $splitted_path[-1] );
+
+  my $parent_path = dirname $path;
+  mkdir $parent_path;
+
+  my $clone_url = $u->scheme . '://' . $u->host . $u->path;
+
+  Rex::Logger::info("Cloning $clone_url to $path. Using branch: $branch.");
+
+  system "git clone $url -b $branch $path";
+
+  chdir $path;
+  resolve_deps("meta.yml");
 }
 
 sub download_recipe {
-   my ($name) = @_;
+  my ($name) = @_;
 
-   if(! -f "Rexfile") {
-      print STDERR "This is not a Rex project directory. There is no Rexfile.\n";
-      exit 1;
-   }
+  if ( $name =~ m/^(https|git):\/\// ) {
 
-   if(! -d "lib") { mkdir "lib"; }
+    # seems to be a git link
+    download_recipe_git($name);
+    return;
+  }
 
-   print "Getting dependencies for $name...\n";
-   my $deps = decode_json(get(sprintf($DEPEND_SERVER, $name)));
-   if(scalar(@{ $deps }) > 0) {
-      print "   Found: \n      - " . join("\n      - ", @{ $deps }) . "\n";
-      for my $dep (@{ $deps }) {
-         download_recipe($dep);
+  if ( !-f "Rexfile" ) {
+    print STDERR "This is not a Rex project directory. There is no Rexfile.\n";
+    exit 1;
+  }
+
+  if ( !-d "lib" ) { mkdir "lib"; }
+
+  print "Getting dependencies for $name...\n";
+  my $deps = decode_json( get( sprintf( $DEPEND_SERVER, $name ) ) );
+  if ( scalar( @{$deps} ) > 0 ) {
+    print "   Found: \n      - " . join( "\n      - ", @{$deps} ) . "\n";
+    for my $dep ( @{$deps} ) {
+      download_recipe($dep);
+    }
+  }
+  else {
+    print "   None found.\n";
+  }
+
+  if ( !exists $opts->{"no-install-perl-deps"} ) {
+    print "Getting perl dependencies for $name...\n";
+    my $perl_deps = decode_json( get( sprintf( $PERL_DEPEND_SERVER, $name ) ) );
+    if ( scalar( @{$perl_deps} ) > 0 ) {
+      print "   Found: \n      - " . join( "\n      - ", @{$perl_deps} ) . "\n";
+      for my $dep ( @{$perl_deps} ) {
+        install_perl_module($dep);
       }
-   }
-   else {
+    }
+    else {
       print "   None found.\n";
-   }
+    }
+  }
 
-   if( ! exists $opts->{"no-install-perl-deps"}) {
-      print "Getting perl dependencies for $name...\n";
-      my $perl_deps = decode_json(get(sprintf($PERL_DEPEND_SERVER, $name)));
-      if(scalar(@{ $perl_deps }) > 0) {
-         print "   Found: \n      - " . join("\n      - ", @{ $perl_deps }) . "\n";
-         for my $dep (@{ $perl_deps }) {
-            install_perl_module($dep);
-         }
+  print "Downloading $name...   ";
+  $name =~ s/::/\//g;
+  my $content = get( sprintf( $RECIPE_SERVER, $name ) );
+  open( my $fh, ">", "tmp-mod.tar.gz" ) or die($!);
+  binmode $fh;
+  print $fh $content;
+  close($fh);
+  chdir("lib");
+  system("tar xvzf ../tmp-mod.tar.gz >dl.log 2>&1");
+  unlink("dl.log");
+  chdir("..");
+  unlink("tmp-mod.tar.gz");
+
+  print "done.\n";
+
+}
+
+sub resolve_deps {
+  my ($file) = @_;
+  $Rex::Logger::silent = 0;
+
+  $file ||= "meta.yml";
+
+  if ( !-f $file ) {
+    confess "No $file file found.";
+  }
+
+  my $ref = YAML::LoadFile($file);
+
+  my ( %deps, %perl_deps );
+
+  if ( exists $ref->{Require} ) {
+    if ( ref $ref->{Require} eq "ARRAY" ) {
+      $deps{$_} = $_ for @{ $ref->{Require} };
+    }
+    else {
+      %deps = %{ $ref->{Require} };
+    }
+  }
+
+  if ( exists $ref->{PerlRequire} ) {
+    if ( ref $ref->{PerlRequire} eq "ARRAY" ) {
+      $perl_deps{$_} = $_ for @{ $ref->{PerlRequire} };
+    }
+    else {
+      %perl_deps = %{ $ref->{PerlRequire} };
+    }
+  }
+
+  Rex::Logger::debug("Found dependencies: ");
+  Rex::Logger::debug( Dumper( \%deps ) );
+
+  for my $req ( keys %deps ) {
+    if ( ref $deps{$req} ) {
+      if ( exists $deps{$req}->{git} ) {
+
+        # git dep
+        my $branch = "master";
+        if ( exists $deps{$req}->{branch} ) {
+          $branch = $deps{$req}->{branch};
+        }
+
+        my @path_parts = split /::/, $req;
+        my $path =
+          File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
+          "lib", @path_parts );
+
+        my $parent_path = dirname $path;
+        if ( !-d $parent_path ) {
+          mkdir $parent_path;
+        }
+
+        if ( -d $path && !-d "$path/.git" ) {
+          Rex::Logger::info( "$req not under git control. Skipping.", "warn" );
+          next;
+        }
+
+        if ( -d "$path/.git" ) {
+          system "rm -rf $path";
+        }
+
+        Rex::Logger::info("Cloning $deps{$req}->{git}#$branch to $path");
+        system "git clone $deps{$req}->{git} -b $branch $path";
+        resolve_deps("$path/meta.yml");
       }
-      else {
-         print "   None found.\n";
+    }
+    else {
+      download_recipe($req);
+    }
+  }
+
+  Rex::Logger::debug("Found perl dependencies: ");
+  Rex::Logger::debug( Dumper( \%perl_deps ) );
+
+  for my $req ( keys %perl_deps ) {
+    if ( ref $perl_deps{$req} ) {
+      if ( exists $perl_deps{$req}->{git} ) {
+
+        # git dep
+        my $branch = "master";
+        if ( exists $perl_deps{$req}->{branch} ) {
+          $branch = $perl_deps{$req}->{branch};
+        }
+
+        my $curdir = getcwd;
+        my $path = File::Spec->catdir( File::Spec->tmpdir, "tmp-build-$$" );
+
+        my $lib_path =
+          File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
+          "lib", "perl" );
+
+        my $parent_path = dirname $lib_path;
+        if ( !-d $parent_path ) {
+          mkdir $parent_path;
+        }
+
+        Rex::Logger::info("Cloning $perl_deps{$req}->{git}#$branch to $path");
+        system "git clone $perl_deps{$req}->{git} -b $branch $path";
+
+        chdir $path;
+        system "cpanm -l $lib_path -L $lib_path .";
+        chdir $curdir;
+
+        system "rm -rf $path";
       }
-   }
+    }
+    else {
+      # we need relative directories, because auf a cpanm bug on windows.
+      my $lib_path = File::Spec->catdir( File::Spec->curdir(), "lib", "perl" );
 
-   print "Downloading $name...   ";
-   $name =~ s/::/\//g;
-   my $content = get(sprintf($RECIPE_SERVER, $name));
-   open(my $fh, ">", "tmp-mod.tar.gz") or die($!);
-   binmode $fh;
-   print $fh $content;
-   close($fh);
-   chdir("lib");
-   system("tar xvzf ../tmp-mod.tar.gz >dl.log 2>&1");
-   unlink("dl.log");
-   chdir("..");
-   unlink("tmp-mod.tar.gz");
-
-   print "done.\n";
+      system "cpanm -l $lib_path -L $lib_path $req";
+    }
+  }
 
 }
 
 sub install_perl_module {
-   my ($mod) = @_;
+  my ($mod) = @_;
 
-   print "Checking $mod: ";
-   eval "use $mod";
-   if($@) {
+  print "Checking $mod: ";
+  eval "use $mod";
+  if ($@) {
+    print "[failed]\n";
+  }
+  else {
+    print "[ok]\n";
+    return;
+  }
+
+  print "Trying to install $mod... ";
+
+  my $cmd = "cpanm";
+  my $out = qx($cmd --help 2>&1);
+  if ( $? != 0 ) {
+    $cmd = "cpan";
+    $out = qx($cmd -h 2>&1);
+
+    if ( $? != 0 ) {
       print "[failed]\n";
-   }
-   else {
-      print "[ok]\n";
+      print "Can't find cpanm or cpan. Please install $mod manually.\n";
       return;
-   }
+    }
 
-   print "Trying to install $mod... ";
+  }
 
-   my $cmd = "cpanm";
-   my $out = qx($cmd --help 2>&1);
-   if($? != 0) {
-      $cmd = "cpan";
-      $out = qx($cmd -h 2>&1);
+  my $cpanm_opts = "";
+  if ( exists $opts->{sudo} ) {
+    $cmd = "sudo $cmd";
+  }
 
-      if($? != 0) {
-         print "[failed]\n";
-         print "Can't find cpanm or cpan. Please install $mod manually.\n";
-         return;
-      }
-
-   }
-
-   my $cpanm_opts = "";
-   if(exists $opts->{sudo}) {
-      $cmd = "sudo $cmd";
-   }
-
-   $out = qx($cmd $cpanm_opts $mod 2>&1);
-   open(my $log, ">>", "rexify-install.log") or die($!);
-   print $log $out;
-   close($log);
-   if($? != 0) {
-      print "[failed]\n";
-      print "!! Please install $mod manually. See rexify-install.log for more details.\n";
-   }
-   else {
-      print "[ok]\n";
-   }
+  $out = qx($cmd $cpanm_opts $mod 2>&1);
+  open( my $log, ">>", "rexify-install.log" ) or die($!);
+  print $log $out;
+  close($log);
+  if ( $? != 0 ) {
+    print "[failed]\n";
+    print
+      "!! Please install $mod manually. See rexify-install.log for more details.\n";
+  }
+  else {
+    print "[ok]\n";
+  }
 }
 
-if(exists $opts->{search}) {
-   my $search_string = $opts->{search};
-   # only a search
-   print "Downloading recipes.yml ... ";
-   my $recipes = get($SEARCH_SERVER);
-   print " done.\n";
+if ( exists $opts->{search} ) {
+  my $search_string = $opts->{search};
 
-   print "Searching...\n\n";
+  # only a search
+  print "Downloading recipes.yml ... ";
+  my $recipes = get($SEARCH_SERVER);
+  print " done.\n";
 
-   my $data    = Load($recipes);
+  print "Searching...\n\n";
 
-   for my $mod (keys %{ $data }) {
-      if($mod =~ qr{$search_string}i) {
-         print_found($mod, $data->{$mod});
-         next;
-      }
+  my $data = Load($recipes);
 
-      if($data->{$mod}->{Description} =~ qr{$search_string}i) {
-         print_found($mod, $data->{$mod});
-      }
-   }
+  for my $mod ( keys %{$data} ) {
+    if ( $mod =~ qr{$search_string}i ) {
+      print_found( $mod, $data->{$mod} );
+      next;
+    }
 
-   exit 0;
+    if ( $data->{$mod}->{Description} =~ qr{$search_string}i ) {
+      print_found( $mod, $data->{$mod} );
+    }
+  }
+
+  exit 0;
+}
+if ( exists $opts->{"update-from-git"} ) {
+  update_from_git();
+  exit 0;
 }
 
-if(exists $opts->{use} && $ARGV[0] =~ /^\-\-use/) {
-   if($opts->{use}) {
-      if(! ref $opts->{use}) {
-         $opts->{use} = [ $opts->{use} ];
-      }
-
-      for my $use_mod (@{ $opts->{use} }) {
-         download_recipe($use_mod);
-      }
-   }
-
-   exit 0;
+if ( exists $opts->{init} ) {
+  download_recipe_git( $opts->{init} );
+  exit 0;
 }
 
-if(exists $opts->{"create-module"}) {
-   my $dir = $ARGV[0];
-   my $module_name = $dir;
+if ( exists $opts->{use} && $ARGV[0] =~ /^\-\-use/ ) {
+  if ( $opts->{use} ) {
+    if ( !ref $opts->{use} ) {
+      $opts->{use} = [ $opts->{use} ];
+    }
 
-   if($dir !~ m/^[a-zA-Z][a-zA-Z_:0-9]+$/) {
-      print "USAGE: $0 Module::Name --create-module\n";
-      print "       Allowed characters: a-z, A-Z, _, 0-9, '::'.\n";
-      exit 1;
-   }
+    for my $use_mod ( @{ $opts->{use} } ) {
+      download_recipe($use_mod);
+    }
+  }
 
-   if(-f "Rexfile" && $opts->{"create-module"}) {
-      $dir = "lib/$dir";
-   }
-
-   if($dir =~ m/\-\-create\-module/) {
-      print "USAGE: $0 Module::Name --create-module\n";
-      print "       Allowed characters: a-z, A-Z, _, 0-9, '::'.\n";
-      exit 1;
-   }
-
-   $dir =~ s/::/\//g;
-
-   print "Creating module $module_name...\n";
-
-   print "   mkdir $dir\n";
-   mkdir $dir, recursive => 1;
-   chdir $dir;
-
-   print "   Creating template file: __module__.pm\n";
-   file "__module__.pm",
-      content => template('@module.pm.tpl', dir => $dir, module_name => $module_name);
-
-   print "   Creating template file: meta.yml\n";
-   file "meta.yml",
-      content => template('@meta.yml.tpl', dir => $dir, module_name => $module_name);
-
-   print "\n";
-   print "Your module has been created in $dir.\n";
-   
-   exit 0;
+  exit 0;
+}
+if ( exists $opts->{"resolve-deps"} && $opts->{"resolve-deps"} ) {
+  resolve_deps("meta.yml");
+  exit 0;
 }
 
+if ( exists $opts->{"create-module"} ) {
+  my $dir         = $ARGV[0];
+  my $module_name = $dir;
+
+  if ( $dir !~ m/^[a-zA-Z][a-zA-Z_:0-9]+$/ ) {
+    print "USAGE: $0 Module::Name --create-module\n";
+    print "       Allowed characters: a-z, A-Z, _, 0-9, '::'.\n";
+    exit 1;
+  }
+
+  if ( -f "Rexfile" && $opts->{"create-module"} ) {
+    $dir = "lib/$dir";
+  }
+
+  if ( $dir =~ m/\-\-create\-module/ ) {
+    print "USAGE: $0 Module::Name --create-module\n";
+    print "       Allowed characters: a-z, A-Z, _, 0-9, '::'.\n";
+    exit 1;
+  }
+
+  $dir =~ s/::/\//g;
+
+  print "Creating module $module_name...\n";
+
+  print "   mkdir $dir\n";
+  mkdir $dir, recursive => 1;
+  chdir $dir;
+
+  print "   Creating template file: __module__.pm\n";
+  file "__module__.pm",
+    content =>
+    template( '@module.pm.tpl', dir => $dir, module_name => $module_name );
+
+  print "   Creating template file: meta.yml\n";
+  file "meta.yml",
+    content =>
+    template( '@meta.yml.tpl', dir => $dir, module_name => $module_name );
+
+  print "\n";
+  print "Your module has been created in $dir.\n";
+
+  exit 0;
+}
 
 my $dir = $ARGV[0];
 
-if(defined $ARGV[1] && $ARGV[1] !~ m/^\-\-/) {
-   $dir = $ARGV[1];
+if ( defined $ARGV[1] && $ARGV[1] !~ m/^\-\-/ ) {
+  $dir = $ARGV[1];
 }
 
-if($dir !~ m/^[a-zA-Z][a-zA-Z_:0-9]+$/) {
-   print "USAGE: $0 Project::Name\n";
-   print "       Allowed characters: a-z, A-Z, 0-9, _, '::'.\n";
-   exit 1;
+if ( $dir !~ m/^[a-zA-Z][a-zA-Z_:0-9]+$/ ) {
+  print "USAGE: $0 Project::Name\n";
+  print "       Allowed characters: a-z, A-Z, 0-9, _, '::'.\n";
+  exit 1;
 }
 
-if(exists $opts->{template} && -f $opts->{template} && $opts->{template} !~ m/^\//) {
-   my $cwd = getcwd;
-   $opts->{template} = "$cwd/" . $opts->{template};
+if ( exists $opts->{template}
+  && -f $opts->{template}
+  && $opts->{template} !~ m/^\// )
+{
+  my $cwd = getcwd;
+  $opts->{template} = "$cwd/" . $opts->{template};
 }
-elsif(exists $opts->{template} && $opts->{template} !~ m/^\//) {
-   $opts->{template} = '@' . $opts->{template};
+elsif ( exists $opts->{template} && $opts->{template} !~ m/^\// ) {
+  $opts->{template} = '@' . $opts->{template};
 }
 
-unless(-d $dir) {
-   print "Created $dir\n";
-   mkdir($dir);
+unless ( -d $dir ) {
+  print "Created $dir\n";
+  mkdir($dir);
 }
 print "chdir to $dir\n";
 chdir($dir);
 
-unless(-d 'lib') {
-   mkdir('lib');
+unless ( -d 'lib' ) {
+  mkdir('lib');
 }
 
-unless(-f 'lib' . $ARGV[0] . '.pm') {
-   open(my $fh, ">", "lib/$ARGV[0].pm") or die($!);
-   print $fh template('@libfile', lib => $ARGV[0]);
-   close($fh);
+unless ( -f 'lib' . $ARGV[0] . '.pm' ) {
+  open( my $fh, ">", "lib/$ARGV[0].pm" ) or die($!);
+  print $fh template( '@libfile', lib => $ARGV[0] );
+  close($fh);
 
-   print STDERR "Created lib/Rex/$ARGV[0].pm\n";
+  print STDERR "Created lib/Rex/$ARGV[0].pm\n";
 
-   if($opts->{template}) {
-      open($fh, ">", "Rexfile") or die($!);
-      print $fh template($opts->{template}, lib => $ARGV[0]);
-      close($fh);
-   }
-   else {
-      open($fh, ">", "Rexfile") or die($!);
-      print $fh template('@rexfile', lib => $ARGV[0]);
-      close($fh);
-   }
+  if ( $opts->{template} ) {
+    open( $fh, ">", "Rexfile" ) or die($!);
+    print $fh template( $opts->{template}, lib => $ARGV[0] );
+    close($fh);
+  }
+  else {
+    open( $fh, ">", "Rexfile" ) or die($!);
+    print $fh template( '@rexfile', lib => $ARGV[0] );
+    close($fh);
+  }
 
-   if($opts->{use}) {
-      if(! ref $opts->{use}) {
-         $opts->{use} = [ $opts->{use} ];
-      }
+  if ( $opts->{use} ) {
+    if ( !ref $opts->{use} ) {
+      $opts->{use} = [ $opts->{use} ];
+    }
 
-      for my $use_mod (@{ $opts->{use} }) {
-         download_recipe($use_mod);
-      }
-   }
+    for my $use_mod ( @{ $opts->{use} } ) {
+      download_recipe($use_mod);
+    }
+  }
 
-   print STDERR "Created Rexfile.\n";
-   print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
-   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
-   print STDERR "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
+  print STDERR "Created Rexfile.\n";
+  print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
+  print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
+  print STDERR
+    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
 }
 else {
 
-   if($opts->{use}) {
-      if(! ref $opts->{use}) {
-         $opts->{use} = [ $opts->{use} ];
-      }
+  if ( $opts->{use} ) {
+    if ( !ref $opts->{use} ) {
+      $opts->{use} = [ $opts->{use} ];
+    }
 
-      for my $use_mod (@{ $opts->{use} }) {
-         download_recipe($use_mod);
-      }
-   }
+    for my $use_mod ( @{ $opts->{use} } ) {
+      download_recipe($use_mod);
+    }
+  }
 
-
-
-   exit;
+  exit;
 }
 
 sub get {
-   my ($url) = @_;
+  my ($url) = @_;
 
-   my $ua = LWP::UserAgent->new;
-   $ua->env_proxy;
+  my $ua = LWP::UserAgent->new;
+  $ua->env_proxy;
 
-   if($AUTH_USER && $AUTH_PASSWORD) {
-      my ($netloc) = ($RECIPE_SERVER =~ m/^https?:\/\/([^\/]+)\//);
-      unless($netloc =~ m/\:\d+$/)  {
-         if($netloc =~ m/^https/) {
-            $netloc .= ":443";
-         }
-         else {
-            $netloc .= ":80";
-         }
+  if ( $AUTH_USER && $AUTH_PASSWORD ) {
+    my ($netloc) = ( $RECIPE_SERVER =~ m/^https?:\/\/([^\/]+)\// );
+    unless ( $netloc =~ m/\:\d+$/ ) {
+      if ( $netloc =~ m/^https/ ) {
+        $netloc .= ":443";
       }
-      $ua->credentials($netloc, $AUTH_REALM, $AUTH_USER, $AUTH_PASSWORD);
-   }
+      else {
+        $netloc .= ":80";
+      }
+    }
+    $ua->credentials( $netloc, $AUTH_REALM, $AUTH_USER, $AUTH_PASSWORD );
+  }
 
-   my $resp = $ua->get($url);
-   if($resp->is_success) {
-      return $resp->decoded_content;
-   }
+  my $resp = $ua->get($url);
+  if ( $resp->is_success ) {
+    return $resp->decoded_content;
+  }
 }
 
 __DATA__
@@ -506,7 +698,7 @@ task "init", sub {
          password => "box",
       );
 
-      # if you want to provision the machine, 
+      # if you want to provision the machine,
       # you can define the tasks to do that
       $box->setup(qw/install_webserver/);
    };
@@ -518,7 +710,7 @@ task "init", sub {
 # rex down --name=<%= $::lib %>
 desc "Stop the VM: rex down --name=vmname";
 task "down", sub {
-   
+
    my $param = shift;
 
    my $box = Rex::Commands::Box->new(name => $param->{name});
@@ -567,7 +759,7 @@ $::module_name - {{ SHORT DESCRIPTION }}
 {{ USAGE DESCRIPTION }}
 
  include qw/<%= $::module_name %>/;
-  
+
  task yourtask => sub {
     <%= $::module_name %>::example();
  };

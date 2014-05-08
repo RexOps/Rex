@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -11,6 +11,10 @@ Rex::Commands::Rsync - Simple Rsync Frontend
 =head1 DESCRIPTION
 
 With this module you can sync 2 directories via the I<rsync> command.
+
+Version <= 1.0: All these functions will not be reported.
+
+All these functions are not idempotent.
 
 =head1 DEPENDENCIES
 
@@ -23,7 +27,7 @@ With this module you can sync 2 directories via the I<rsync> command.
 =head1 SYNOPSIS
 
  use Rex::Commands::Rsync;
- 
+
  sync "dir1", "dir2";
 
 =head1 EXPORTED FUNCTIONS
@@ -62,7 +66,7 @@ This function executes rsync to sync $source and $dest.
     parameters => '--backup --delete',
    };
  };
- 
+
  task "sync", "server01", sub {
    sync "html/*", "/var/www/html", {
     exclude => ["*.sw*", "*.tmp"],
@@ -228,7 +232,7 @@ sub sync {
                         Rex::Logger::debug("Finished transfer very fast");
                         die;
                       }
-                    
+
                     ]);
 
       $exp->expect(undef, [

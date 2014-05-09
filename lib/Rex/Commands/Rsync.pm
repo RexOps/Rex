@@ -141,7 +141,8 @@ sub sync {
   my @expect_options = ();
 
   if ( $auth->{auth_type} eq "pass" ) {
-    $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );
+    $cmd = sprintf( $cmd,
+      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ' );
     push(
       @expect_options,
       [

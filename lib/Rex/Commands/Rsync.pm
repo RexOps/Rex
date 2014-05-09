@@ -51,7 +51,6 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(sync);
 
-
 =item sync($source, $dest, $opts)
 
 This function executes rsync to sync $source and $dest.
@@ -88,27 +87,27 @@ This function executes rsync to sync $source and $dest.
 =cut
 
 sub sync {
-  my ($source, $dest, $opt) = @_;
+  my ( $source, $dest, $opt ) = @_;
 
   my $current_connection = Rex::get_current_connection();
-  my $server = $current_connection->{server};
+  my $server             = $current_connection->{server};
   my $cmd;
 
   my $auth = $current_connection->{conn}->get_auth;
 
+  if ( !exists $opt->{download} && $source !~ m/^\// ) {
 
-  if(! exists $opt->{download} && $source !~ m/^\//) {
     # relative path, calculate from module root
-    $source = Rex::Helper::Path::get_file_path($source, caller());
+    $source = Rex::Helper::Path::get_file_path( $source, caller() );
   }
 
   Rex::Logger::debug("Syning $source -> $dest with rsync.");
-  if($Rex::Logger::debug) {
+  if ($Rex::Logger::debug) {
     $Expect::Log_Stdout = 1;
   }
 
   my $params = "";
-  if($opt && exists $opt->{'exclude'}) {
+  if ( $opt && exists $opt->{'exclude'} ) {
     my $excludes = $opt->{'exclude'};
     $excludes = [$excludes] unless ref($excludes) eq "ARRAY";
     for my $exclude (@$excludes) {
@@ -116,106 +115,122 @@ sub sync {
     }
   }
 
-  if($opt && exists $opt->{parameters}) {
+  if ( $opt && exists $opt->{parameters} ) {
     $params .= " " . $opt->{parameters};
   }
 
-  if($opt && exists $opt->{'download'} && $opt->{'download'} == 1) {
+  if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     Rex::Logger::debug("Downloading $source -> $dest");
-    $cmd = "rsync -a -e '\%s' --verbose --stats $params " . $auth->{user} . "\@" . $server . ":"
-              . $source . " " . $dest;
+    $cmd =
+        "rsync -a -e '\%s' --verbose --stats $params "
+      . $auth->{user} . "\@"
+      . $server . ":"
+      . $source . " "
+      . $dest;
   }
   else {
     Rex::Logger::debug("Uploading $source -> $dest");
-    $cmd = "rsync -a -e '\%s' --verbose --stats $params $source " . $auth->{user} . "\@" . $server . ":"
-              . $dest;
+    $cmd =
+        "rsync -a -e '\%s' --verbose --stats $params $source "
+      . $auth->{user} . "\@"
+      . $server . ":"
+      . $dest;
   }
 
-  my $pass = $auth->{password};
+  my $pass           = $auth->{password};
   my @expect_options = ();
 
-  if($auth->{auth_type} eq "pass") {
-    $cmd = sprintf($cmd, 'ssh -o StrictHostKeyChecking=no ');
-    push(@expect_options, [
-                    qr{Are you sure you want to continue connecting},
-                    sub {
-                      Rex::Logger::debug("Accepting key..");
-                      my $fh = shift;
-                      $fh->send("yes\n");
-                      exp_continue;
-                    }
-                   ],
-                   [
-                    qr{password: ?$}i,
-                    sub {
-                      Rex::Logger::debug("Want Password");
-                      my $fh = shift;
-                      $fh->send($pass . "\n");
-                      exp_continue;
-                    }
-                  ],
-                  [
-                      qr{rsync error: error in rsync protocol},
-                      sub {
-                        Rex::Logger::debug("Error in rsync");
-                        die;
-                      }
-                  ],
-                  [
-                        qr{rsync error: remote command not found},
-                        sub {
-                           Rex::Logger::info("Remote rsync command not found");
-                           Rex::Logger::info("Please install rsync, or use Rex::Commands::Sync sync_up/sync_down");
-                           die;
-                        }
-                  ],
+  if ( $auth->{auth_type} eq "pass" ) {
+    $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );
+    push(
+      @expect_options,
+      [
+        qr{Are you sure you want to continue connecting},
+        sub {
+          Rex::Logger::debug("Accepting key..");
+          my $fh = shift;
+          $fh->send("yes\n");
+          exp_continue;
+          }
+      ],
+      [
+        qr{password: ?$}i,
+        sub {
+          Rex::Logger::debug("Want Password");
+          my $fh = shift;
+          $fh->send( $pass . "\n" );
+          exp_continue;
+          }
+      ],
+      [
+        qr{rsync error: error in rsync protocol},
+        sub {
+          Rex::Logger::debug("Error in rsync");
+          die;
+          }
+      ],
+      [
+        qr{rsync error: remote command not found},
+        sub {
+          Rex::Logger::info("Remote rsync command not found");
+          Rex::Logger::info(
+            "Please install rsync, or use Rex::Commands::Sync sync_up/sync_down"
+          );
+          die;
+          }
+      ],
 
     );
   }
   else {
-    $cmd = sprintf($cmd, 'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no ");
-    push(@expect_options, [
-                    qr{Are you sure you want to continue connecting},
-                    sub {
-                      Rex::Logger::debug("Accepting key..");
-                      my $fh = shift;
-                      $fh->send("yes\n");
-                      exp_continue;
-                    }
-                   ],
-                   [
-                    qr{password: ?$}i,
-                    sub {
-                      Rex::Logger::debug("Want Password");
-                      my $fh = shift;
-                      $fh->send($pass . "\n");
-                      exp_continue;
-                    }
-                  ],
-                  [
-                    qr{Enter passphrase for key.*: $},
-                    sub {
-                      Rex::Logger::debug("Want Passphrase");
-                      my $fh = shift;
-                      $fh->send($pass . "\n");
-                      exp_continue;
-                    }
-                  ],
-                  [
-                      qr{rsync error: error in rsync protocol},
-                      sub {
-                        Rex::Logger::debug("Error in rsync");
-                        die;
-                      }
-                  ],
-                  [
-                        qr{rsync error: remote command not found},
-                        sub {
-                           Rex::Logger::info("Remote rsync command not found");
-                           Rex::Logger::info("Please install rsync, or use Rex::Commands::Sync sync_up/sync_down");
-                           die;
-                        }
-                  ],
+    $cmd = sprintf( $cmd,
+      'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no " );
+    push(
+      @expect_options,
+      [
+        qr{Are you sure you want to continue connecting},
+        sub {
+          Rex::Logger::debug("Accepting key..");
+          my $fh = shift;
+          $fh->send("yes\n");
+          exp_continue;
+          }
+      ],
+      [
+        qr{password: ?$}i,
+        sub {
+          Rex::Logger::debug("Want Password");
+          my $fh = shift;
+          $fh->send( $pass . "\n" );
+          exp_continue;
+          }
+      ],
+      [
+        qr{Enter passphrase for key.*: $},
+        sub {
+          Rex::Logger::debug("Want Passphrase");
+          my $fh = shift;
+          $fh->send( $pass . "\n" );
+          exp_continue;
+          }
+      ],
+      [
+        qr{rsync error: error in rsync protocol},
+        sub {
+          Rex::Logger::debug("Error in rsync");
+          die;
+          }
+      ],
+      [
+        qr{rsync error: remote command not found},
+        sub {
+          Rex::Logger::info("Remote rsync command not found");
+          Rex::Logger::info(
+            "Please install rsync, or use Rex::Commands::Sync sync_up/sync_down"
+          );
+          die;
+          }
+      ],
 
     );
   }
@@ -226,30 +241,36 @@ sub sync {
     my $exp = Expect->spawn($cmd) or die($!);
 
     eval {
-      $exp->expect(Rex::Config->get_timeout, @expect_options, [
-                      qr{total size is \d+\s+speedup is },
-                      sub {
-                        Rex::Logger::debug("Finished transfer very fast");
-                        die;
-                      }
+      $exp->expect(
+        Rex::Config->get_timeout,
+        @expect_options,
+        [
+          qr{total size is \d+\s+speedup is },
+          sub {
+            Rex::Logger::debug("Finished transfer very fast");
+            die;
+            }
 
-                    ]);
+        ]
+      );
 
-      $exp->expect(undef, [
-                  qr{total size is \d+\s+speedup is },
-                  sub {
-                    Rex::Logger::debug("Finished transfer");
-                    exp_continue;
-                  }
-                ],
-                [
-                    qr{rsync error: error in rsync protocol},
-                    sub {
-                      Rex::Logger::debug("Error in rsync");
-                      die;
-                    }
-                ],
-                );
+      $exp->expect(
+        undef,
+        [
+          qr{total size is \d+\s+speedup is },
+          sub {
+            Rex::Logger::debug("Finished transfer");
+            exp_continue;
+            }
+        ],
+        [
+          qr{rsync error: error in rsync protocol},
+          sub {
+            Rex::Logger::debug("Error in rsync");
+            die;
+            }
+        ],
+      );
 
     };
 
@@ -257,8 +278,7 @@ sub sync {
     $? = $exp->exitstatus;
   };
 
-
-  if($@) {
+  if ($@) {
     Rex::Logger::info($@);
   }
 

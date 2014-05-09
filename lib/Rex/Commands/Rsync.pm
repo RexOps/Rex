@@ -101,7 +101,7 @@ sub sync {
     $source = Rex::Helper::Path::get_file_path( $source, caller() );
   }
 
-  Rex::Logger::debug("Syning $source -> $dest with rsync.");
+  Rex::Logger::debug("Syncing $source -> $dest with rsync.");
   if ($Rex::Logger::debug) {
     $Expect::Log_Stdout = 1;
   }

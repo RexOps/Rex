@@ -359,7 +359,7 @@ sub file {
 
     if ( $new_md5 && $old_md5 && $new_md5 eq $old_md5 ) {
       Rex::Logger::debug(
-        "No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5."
+        "No need to overwrite existing file. Old and new files are the same. $old_md5 eq $new_md5."
       );
 
       # md5 sums are the same, delete tmp.
@@ -369,7 +369,7 @@ sub file {
       Rex::get_current_connection()->{reporter}->report(
         changed => 0,
         message =>
-          "No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5."
+          "No need to overwrite existing file. Old and new files are the same. $old_md5 eq $new_md5."
       );
     }
     else {

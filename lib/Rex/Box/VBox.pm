@@ -119,11 +119,14 @@ Constructor if used in OO mode.
 sub new {
   my $class = shift;
   my $proto = ref($class) || $class;
-  my $self = $proto->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, ref($class) || $class);
+  bless( $self, ref($class) || $class );
 
-  if(exists $self->{options} && exists $self->{options}->{headless} && $self->{options}->{headless}) {
+  if ( exists $self->{options}
+    && exists $self->{options}->{headless}
+    && $self->{options}->{headless} )
+  {
     set virtualization => { type => "VBox", headless => TRUE };
   }
 
@@ -137,21 +140,22 @@ sub import_vm {
   my $vms = vm list => "all";
 
   my $vm_exists = 0;
-  for my $vm (@{ $vms }) {
-    if($vm->{name} eq $self->{name}) {
+  for my $vm ( @{$vms} ) {
+    if ( $vm->{name} eq $self->{name} ) {
       Rex::Logger::debug("VM already exists. Don't import anything.");
       $vm_exists = 1;
     }
   }
 
-  if(! $vm_exists) {
+  if ( !$vm_exists ) {
+
     # if not, create it
     $self->_download;
 
-    my $filename = basename($self->{url});
+    my $filename = basename( $self->{url} );
 
     Rex::Logger::info("Importing VM ./tmp/$filename");
-    vm import => $self->{name}, file => "./tmp/$filename", %{ $self };
+    vm import => $self->{name}, file => "./tmp/$filename", %{$self};
 
     #unlink "./tmp/$filename";
   }
@@ -159,35 +163,43 @@ sub import_vm {
   my $vminfo = vm info => $self->{name};
 
   # check if networksettings should be set
-  if(exists $self->{__network} && $vminfo->{VMState} ne "running") {
+  if ( exists $self->{__network} && $vminfo->{VMState} ne "running" ) {
     my $option = $self->{__network};
-    for my $nic_no (keys %{ $option }) {
+    for my $nic_no ( keys %{$option} ) {
 
-      if($option->{$nic_no}->{type}) {
-        Rex::Logger::debug("Setting network type (dev: $nic_no) to: " . $option->{$nic_no}->{type});
-        vm option => $self->{name},
-            "nic$nic_no" => $option->{$nic_no}->{type};
+      if ( $option->{$nic_no}->{type} ) {
+        Rex::Logger::debug( "Setting network type (dev: $nic_no) to: "
+            . $option->{$nic_no}->{type} );
+        vm
+          option       => $self->{name},
+          "nic$nic_no" => $option->{$nic_no}->{type};
 
-        if($option->{$nic_no}->{type} eq "bridged") {
+        if ( $option->{$nic_no}->{type} eq "bridged" ) {
 
           $option->{$nic_no}->{bridge} = select_bridge()
-            if(!$option->{$nic_no}->{bridge});
+            if ( !$option->{$nic_no}->{bridge} );
 
-          Rex::Logger::debug("Setting network bridge (dev: $nic_no) to: " . ($option->{$nic_no}->{bridge} || "eth0"));
-          vm option => $self->{name},
-            "bridgeadapter$nic_no" => ($option->{$nic_no}->{bridge} || "eth0");
+          Rex::Logger::debug( "Setting network bridge (dev: $nic_no) to: "
+              . ( $option->{$nic_no}->{bridge} || "eth0" ) );
+          vm
+            option => $self->{name},
+            "bridgeadapter$nic_no" =>
+            ( $option->{$nic_no}->{bridge} || "eth0" );
         }
       }
 
-      if($option->{$nic_no}->{driver}) {
-        Rex::Logger::debug("Setting network driver (dev: $nic_no) to: " . $option->{$nic_no}->{driver});
-        vm option => $self->{name},
-            "nictype$nic_no" => $option->{$nic_no}->{driver};
+      if ( $option->{$nic_no}->{driver} ) {
+        Rex::Logger::debug( "Setting network driver (dev: $nic_no) to: "
+            . $option->{$nic_no}->{driver} );
+        vm
+          option           => $self->{name},
+          "nictype$nic_no" => $option->{$nic_no}->{driver};
       }
 
     }
   }
-  if(exists $self->{__forward_port} && $vminfo->{VMState} ne "running") {
+  if ( exists $self->{__forward_port} && $vminfo->{VMState} ne "running" ) {
+
     # remove all forwards
     vm forward_port => $self->{name}, delete => -all;
 
@@ -196,48 +208,46 @@ sub import_vm {
   }
 
   # shared folder
-  if(exists $self->{__shared_folder} && $vminfo->{VMState} ne "running") {
+  if ( exists $self->{__shared_folder} && $vminfo->{VMState} ne "running" ) {
     vm share_folder => $self->{name}, add => $self->{__shared_folder};
   }
 
-  if($vminfo->{VMState} ne "running") {
+  if ( $vminfo->{VMState} ne "running" ) {
     $self->start;
   }
 
   $self->{info} = vm guestinfo => $self->{name};
 }
 
-
-
 sub provision_vm {
-  my ($self, @tasks) = @_;
+  my ( $self, @tasks ) = @_;
 
-  if(! @tasks) {
+  if ( !@tasks ) {
     @tasks = @{ $self->{__tasks} };
   }
 
   my $server = $self->ip;
 
-  my ($ip, $port) = split(/:/, $server);
+  my ( $ip, $port ) = split( /:/, $server );
   $port ||= 22;
 
   print STDERR "Waiting for SSH to come up on $ip:$port.";
-  while( ! is_port_open ($ip, $port) ) {
+  while ( !is_port_open( $ip, $port ) ) {
     print STDERR ".";
     sleep 1;
   }
 
-  my $i=5;
-  while($i != 0) {
+  my $i = 5;
+  while ( $i != 0 ) {
     sleep 1;
     print STDERR ".";
     $i--;
   }
 
-  print  STDERR "\n";
+  print STDERR "\n";
 
   for my $task (@tasks) {
-    Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
+    Rex::TaskList->create()->get_task($task)->set_auth( %{ $self->{__auth} } );
     Rex::TaskList->create()->get_task($task)->run($server);
   }
 }
@@ -246,31 +256,31 @@ sub select_bridge {
   my $bridges = vm "bridge";
 
   my $ifname;
-  if (@$bridges == 1) {
-    Rex::Logger::debug("Only one bridged interface available. Using it by default.");
+  if ( @$bridges == 1 ) {
+    Rex::Logger::debug(
+      "Only one bridged interface available. Using it by default.");
     $ifname = $bridges->[0]->{name};
   }
-  elsif (@$bridges > 1) {
-    for (my $i = 0; $i < @$bridges; $i++) {
+  elsif ( @$bridges > 1 ) {
+    for ( my $i = 0 ; $i < @$bridges ; $i++ ) {
       my $bridge = $bridges->[$i];
-      next if ($bridge->{status} =~ /^down$/i);
+      next if ( $bridge->{status} =~ /^down$/i );
       local $Rex::Logger::format = "%s";
-      Rex::Logger::info($i + 1 . " $bridge->{name}");
+      Rex::Logger::info( $i + 1 . " $bridge->{name}" );
     }
 
     my $choice;
     do {
       print "What interface should network bridge to? ";
-      chomp($choice = <STDIN>);
+      chomp( $choice = <STDIN> );
       $choice = int($choice);
-    } while(!$choice);
+    } while ( !$choice );
 
-    $ifname = $bridges->[$choice - 1]->{name};
+    $ifname = $bridges->[ $choice - 1 ]->{name};
   }
 
   return $ifname;
 }
-
 
 =item share_folder(%option)
 
@@ -282,17 +292,18 @@ Creates a shared folder inside the VM with the content from a folder from the Ho
  );
 
 =cut
+
 sub share_folder {
-  my ($self, %option) = @_;
+  my ( $self, %option ) = @_;
   $self->{__shared_folder} = \%option;
 }
-
 
 =item info
 
 Returns a hashRef of vm information.
 
 =cut
+
 sub info {
   my ($self) = @_;
   $self->ip;
@@ -300,12 +311,13 @@ sub info {
   my $vm_info = vm info => $self->{name};
 
   # get forwarded ports
-  my @forwarded_ports = grep { m/^Forwarding/ } keys %{ $vm_info };
+  my @forwarded_ports = grep { m/^Forwarding/ } keys %{$vm_info};
 
   my %forward_port;
   for my $fwp (@forwarded_ports) {
-    my ($name, $proto, $host_ip, $host_port, $vm_ip, $vm_port) = split(/,/, $vm_info->{$fwp});
-    $forward_port{$name} = [$host_port, $vm_port];
+    my ( $name, $proto, $host_ip, $host_port, $vm_ip, $vm_port ) =
+      split( /,/, $vm_info->{$fwp} );
+    $forward_port{$name} = [ $host_port, $vm_port ];
   }
   $self->forward_port(%forward_port);
 
@@ -324,10 +336,16 @@ sub ip {
   $self->{info} = vm guestinfo => $self->{name};
 
   my $server = $self->{info}->{net}->[0]->{ip};
-  if($self->{__forward_port} && $self->{__forward_port}->{ssh} && ! Rex::is_local()) {
+  if ( $self->{__forward_port}
+    && $self->{__forward_port}->{ssh}
+    && !Rex::is_local() )
+  {
     $server = connection->server . ":" . $self->{__forward_port}->{ssh}->[0];
   }
-  elsif($self->{__forward_port} && $self->{__forward_port}->{ssh} && Rex::is_local()) {
+  elsif ( $self->{__forward_port}
+    && $self->{__forward_port}->{ssh}
+    && Rex::is_local() )
+  {
     $server = "127.0.0.1:" . $self->{__forward_port}->{ssh}->[0];
   }
 

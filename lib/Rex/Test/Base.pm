@@ -70,8 +70,6 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 @EXPORT = qw(test);
 
-Rex::Commands::set( box => "VBox" );
-
 =item new(name => $test_name)
 
 Constructor if used in OO mode.

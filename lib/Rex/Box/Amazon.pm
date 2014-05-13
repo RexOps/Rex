@@ -16,7 +16,7 @@ This is a Rex/Boxes module to use Amazon EC2.
 
 To use this module inside your Rexfile you can use the following commands.
 
- use Rex::Commands::Boxes;
+ use Rex::Commands::Box;
  set box => "Amazon", {
    access_key => "your-access-key",
    private_access_key => "your-private-access-key",

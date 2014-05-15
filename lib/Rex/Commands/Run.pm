@@ -216,21 +216,13 @@ sub run {
       $err = "";
     }
 
-    if ( Rex::Config->get_exec_autodie()
-      && Rex::Config->get_exec_autodie() == 1 )
-    {
-      if ( $? != 0 ) {
-        die("Error executing: $cmd.\nOutput:\n$out");
-      }
-    }
-
     if ( $? == 127 ) {
       Rex::Logger::info( "$cmd: Command not found.", "error" );
     }
     elsif ( $? != 0 && $? != 300 ) {
       Rex::Logger::info( "Error executing $cmd: Return-Code: $?", "warn" );
     }
-    elsif($? == 0) {
+    elsif ( $? == 0 ) {
       Rex::Logger::info("Successfully executed $cmd.");
     }
 
@@ -253,6 +245,14 @@ sub run {
 
   Rex::get_current_connection()->{reporter}
     ->report_resource_end( type => "run", name => $res_cmd );
+
+  if ( Rex::Config->get_exec_autodie()
+    && Rex::Config->get_exec_autodie() == 1 )
+  {
+    if ( $? != 0 ) {
+      die("Error executing: $cmd.\nOutput:\n$out_ret");
+    }
+  }
 
   if (wantarray) {
     return split( /\r?\n/, $out_ret );

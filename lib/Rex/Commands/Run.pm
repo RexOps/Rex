@@ -183,8 +183,26 @@ sub run {
       $path = join( ":", Rex::Config->get_path() );
     }
 
+    my ( $out, $err );
     my $exec = Rex::Interface::Exec->create;
-    my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+
+    if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
+      eval {
+        local $SIG{ALRM} = sub { die("timeout"); };
+        alarm $option->{timeout};
+        ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+        alarm 0;
+      };
+
+      if ( $@ =~ m/^timeout at/ ) {
+        Rex::Logger::info( "Timeout executing $cmd.", "error" );
+        $? = 300;
+      }
+    }
+    else {
+      ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+    }
+
     chomp $out if $out;
     chomp $err if $err;
 
@@ -204,6 +222,16 @@ sub run {
       if ( $? != 0 ) {
         die("Error executing: $cmd.\nOutput:\n$out");
       }
+    }
+
+    if ( $? == 127 ) {
+      Rex::Logger::info( "$cmd: Command not found.", "error" );
+    }
+    elsif ( $? != 0 && $? != 300 ) {
+      Rex::Logger::info( "Error executing $cmd: Return-Code: $?", "warn" );
+    }
+    elsif($? == 0) {
+      Rex::Logger::info("Successfully executed $cmd.");
     }
 
     if ($code) {

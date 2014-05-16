@@ -535,7 +535,7 @@ For example I<apt-get upgrade> or I<yum update>.
 sub update_system {
   my $pkg = Rex::Pkg->get;
   eval { $pkg->update_system; } or do {
-    Rex::Logger::info("There is no update_system function for your system.");
+    Rex::Logger::info("An error occured for update_system: $@", "warn");
   };
 }
 

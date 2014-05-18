@@ -54,6 +54,12 @@ sub new {
     delete $self->{password};
   }
 
+  if($self->{port}) {
+    $self->{auth}->{port} = $self->{port};
+    delete $self->{port};
+  }
+
+
   if($self->{public_key}) {
     $self->{auth}->{public_key} = $self->{public_key};
     delete $self->{public_key};
@@ -153,6 +159,19 @@ sub get_password {
   return Rex::Config->get_password;
 }
 
+
+
+ sub get_port {                                                   
+     my ($self) = @_;                                            
+                                                                  
+     if(exists $self->{auth}->{port}) {                            
+        return $self->{auth}->{port};                            
+     }                                                             
+                                                                  
+     return Rex::Config->get_port;                                
+  }  
+
+
 sub get_public_key {
   my ($self) = @_;
 
@@ -235,7 +254,7 @@ sub merge_auth {
   my ($self, $other_auth) = @_;
 
   my %new_auth;
-  my @keys = qw/user password private_key public_key auth_type sudo sudo_password/;
+  my @keys = qw/user password port private_key public_key auth_type sudo sudo_password/;
 
   for my $key (@keys) {
     my $call = "get_$key";

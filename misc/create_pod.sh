@@ -7,7 +7,7 @@ HEADER=$(cat <<EOF
 % content_for header => begin
       <meta name="description" content="{{DESC}}">
       <meta name="keywords" content="Rex, API, Documentation">
-% end 
+% end
 
 EOF
 
@@ -107,9 +107,7 @@ for x in lib/Rex/Commands/Cloud.pm \
                   | perl -lpe "s|\{PATH\}|$RELPATH|g" \
                   | perl -lpe 's|<a href=".+?&quot">(.+?)&quot</a>;|$1&quot;|g' \
                   | perl -lpe 's|&quot;|"|g'
-      
+
          ) > doc/html/${x/lib\//}.html.ep
 
    done
-
-

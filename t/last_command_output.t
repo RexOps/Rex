@@ -3,6 +3,8 @@ use Test::More tests => 5;
 use_ok 'Rex::Commands';
 use_ok 'Rex::Commands::Run';
 
+$::QUIET = 1;
+
 Rex::Commands->import;
 Rex::Commands::Run->import;
 

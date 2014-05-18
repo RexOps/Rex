@@ -51,6 +51,7 @@ for x in lib/Rex/Commands/Box.pm \
    lib/Rex/Commands/Virtualization.pm \
    lib/Rex/Box/Base.pm \
    lib/Rex/Box/Amazon.pm \
+   lib/Rex/Box/KVM.pm \
    lib/Rex/Box/VBox.pm \
    lib/Rex/Virtualization/VBox.pm \
    lib/Rex/Virtualization/LibVirt.pm \

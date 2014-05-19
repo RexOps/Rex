@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 =head1 NAME
 
 Rex::Commands::Box - Functions / Class to manage Virtual Machines
@@ -12,43 +12,45 @@ Rex::Commands::Box - Functions / Class to manage Virtual Machines
 
 This is a Module to manage Virtual Machines or Cloud Instances in a simple way. Currently it supports only VirtualBox.
 
+Version <= 1.0: All these functions will not be reported.
+
 =head1 SYNOPSIS
 
  use Rex::Commands::Box;
-   
+
  set box => "VBox";
-  
+
  group all_my_boxes => map { get_box($_->{name})->{ip} } list_boxes;
-  
+
  task mytask => sub {
-   
+
    box {
      my ($box) = @_;
      $box->name("boxname");
      $box->url("http://box.rexify.org/box/base-image.box");
-       
+
      $box->network(1 => {
       type => "nat",
      });
-        
+
      $box->network(1 => {
       type => "bridged",
       bridge => "eth0",
      });
-       
+
      $box->forward_port(ssh => [2222, 22]);
-       
+
      $box->share_folder(myhome => "/home/myuser");
-       
+
      $box->auth(
       user => "root",
       password => "box",
      );
-      
+
      $box->setup(qw/task_to_customize_box/);
-     
+
    };
-   
+
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -121,28 +123,28 @@ With this function you can create a new Rex/Box. The first parameter of this fun
    my ($box) = @_;
    $box->name("boxname");
    $box->url("http://box.rexify.org/box/base-image.box");
-     
+
    $box->network(1 => {
     type => "nat",
    });
-      
+
    $box->network(1 => {
     type => "bridged",
     bridge => "eth0",
    });
-     
+
    $box->forward_port(ssh => [2222, 22]);
-     
+
    $box->share_folder(myhome => "/home/myuser");
-     
+
    $box->auth(
     user => "root",
     password => "box",
    );
-    
+
    $box->setup(qw/task_to_customize_box/);
  };
- 
+
 
 =cut
 
@@ -182,15 +184,15 @@ This function returns an array of hashes containing all information that can be 
 
 =cut
 sub list_boxes {
-  my $ref = LOCAL {
-    my $box = Rex::Box->create;
-    my @ret = $box->list_boxes;
+  my $box = Rex::Box->create;
+  my @ret = $box->list_boxes;
 
+  my $ref = LOCAL {
     if( -f ".box.cache") {
       my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
       $yaml_str .= "\n";
       my $yaml_ref = Load($yaml_str);
-      
+
       for my $box (keys %{ $yaml_ref }) {
         my ($found_box) = grep { $_->{name} eq $box } @ret;
         if(! $found_box) {
@@ -228,14 +230,18 @@ This function tries to gather all information of a Rex/Box. This function also s
 sub get_box {
   my ($box_name) = @_;
 
-  return LOCAL {
-    my $box = Rex::Box->create(name => $box_name);
-    $box->info;
+  my $box = Rex::Box->create(name => $box_name);
+  $box->info;
 
-    if($box->status eq "stopped") {
-      $box->start;
-      $box->wait_for_ssh;
-    }
+  if($box->status eq "stopped") {
+    $box->start;
+    $box->wait_for_ssh;
+  }
+
+  my $box_ip   = $box->ip;
+  my $box_info = $box->info;
+
+  return LOCAL {
 
     if( -f ".box.cache") {
       Rex::Logger::debug("Loading box information of cache file: .box.cache.");
@@ -264,7 +270,7 @@ sub get_box {
     $::QUIET = 1;
 
     eval {
-      $vm_infos{$box_name} = run_task "get_sys_info", on => $box->ip;
+      $vm_infos{$box_name} = run_task "get_sys_info", on => $box_ip;
     } or do {
       $::QUIET = $old_q;
       print STDERR "\n";
@@ -276,17 +282,16 @@ sub get_box {
     };
     $::QUIET = $old_q;
 
-    my $box_info = $box->info;
     for my $key (keys %{ $box_info }) {
       $vm_infos{$box_name}->{$key} = $box_info->{$key};
     }
 
-    kill 9, $pid;
-    print "\n";
-
     open(my $fh, ">", ".box.cache") or die($!);
     print $fh Dump(\%vm_infos);
     close($fh);
+
+    kill 9, $pid;
+    print "\n";
 
     return $vm_infos{$box_name};
   };

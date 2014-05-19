@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 =head1 NAME
 
 Rex::Box::VBox - Rex/Boxes VirtualBox Module
@@ -18,32 +18,32 @@ To use this module inside your Rexfile you can use the following commands.
 
  use Rex::Commands::Boxes;
  set box => "VBox";
-  
+
  task "prepare_box", sub {
    box {
      my ($box) = @_;
-       
+
      $box->name("mybox");
      $box->url("http://box.rexify.org/box/ubuntu-server-12.10-amd64.ova");
-       
+
      $box->network(1 => {
        type => "nat",
      });
-       
+
      $box->network(1 => {
        type => "bridged",
        bridge => "eth0",
      });
-        
+
      $box->forward_port(ssh => [2222, 22]);
-       
+
      $box->share_folder(myhome => "/home/myuser");
-        
+
      $box->auth(
        user => "root",
        password => "box",
      );
-        
+
      $box->setup("setup_task");
    };
  };
@@ -65,7 +65,7 @@ If you want to use a YAML file you can use the following template.
 And then you can use it the following way in your Rexfile.
 
  use Rex::Commands::Box init_file => "file.yml";
-   
+
  task "prepare_vms", sub {
    boxes "init";
  };
@@ -221,20 +221,20 @@ sub provision_vm {
   my ($ip, $port) = split(/:/, $server);
   $port ||= 22;
 
-  print "Waiting for SSH to come up on $ip:$port.";
+  print STDERR "Waiting for SSH to come up on $ip:$port.";
   while( ! is_port_open ($ip, $port) ) {
-    print ".";
+    print STDERR ".";
     sleep 1;
   }
 
   my $i=5;
   while($i != 0) {
     sleep 1;
-    print ".";
+    print STDERR ".";
     $i--;
   }
 
-  print "\n";
+  print  STDERR "\n";
 
   for my $task (@tasks) {
     Rex::TaskList->create()->get_task($task)->set_auth(%{ $self->{__auth} });
@@ -271,21 +271,6 @@ sub select_bridge {
   return $ifname;
 }
 
-=item forward_port(%option)
-
-Set ports to be forwarded to the VM. This only work with VirtualBox in NAT network mode.
-
- $box->forward_port(
-   name => [$from_host_port, $to_vm_port],
-   name2 => [$from_host_port_2, $to_vm_port_2],
-   ...
- );
-
-=cut
-sub forward_port {
-  my ($self, %option) = @_;
-  $self->{__forward_port} = \%option;
-}
 
 =item share_folder(%option)
 
@@ -302,13 +287,6 @@ sub share_folder {
   $self->{__shared_folder} = \%option;
 }
 
-sub list_boxes {
-  my ($self) = @_;
-  
-  my $vms = vm list => "all";
-
-  return @{ $vms };
-}
 
 =item info
 

@@ -364,6 +364,8 @@ sub _set_network_defaults {
     ];
   }
 
+  my $slot = 10;
+
   for my $netdev ( @{ $opts->{"network"} } ) {
 
     if ( !exists $netdev->{"type"} ) {
@@ -392,9 +394,11 @@ sub _set_network_defaults {
           type     => "pci",
           domain   => "0x0000",
           bus      => "0x00",
-          slot     => "0x03",
+          slot     => "0x" . sprintf('%02i', $slot),
           function => "0x0",
         };
+
+        $slot++;
 
       }
 
@@ -452,7 +456,7 @@ __DATA__
     <% if(exists $netdev->{mac}) { %>
     <mac address='<%= $netdev->{mac} %>'/>
     <% } %>
-    <% if($netdev->{type} eq "bridge") { %>
+    <% if($netdev->{type} =~ m/^bridge/) { %>
     <source bridge="<%= $netdev->{bridge} %>"/>
     <% } elsif($netdev->{type} eq "network") { %>
     <source network="<%= $netdev->{network} %>"/>
@@ -523,7 +527,7 @@ __DATA__
     <% if(exists $netdev->{mac}) { %>
     <mac address='<%= $netdev->{mac} %>'/>
     <% } %>
-    <% if($netdev->{type} eq "bridge") { %>
+    <% if($netdev->{type} =~ m/^bridge/) { %>
     <source bridge="<%= $netdev->{bridge} %>"/>
     <% } %>
    </interface>
@@ -585,7 +589,7 @@ __DATA__
     <% if(exists $netdev->{mac}) { %>
     <mac address="<%= $netdev->{mac} %>"/>
     <% } %>
-    <% if($netdev->{type} eq "bridge") { %>
+    <% if($netdev->{type} =~ m/^bridge/) { %>
     <source bridge="<%= $netdev->{bridge} %>"/>
     <% } %>
    </interface>

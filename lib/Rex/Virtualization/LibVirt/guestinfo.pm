@@ -14,6 +14,7 @@ use Rex::Logger;
 use Rex::Helper::Run;
 use Rex::Virtualization::LibVirt::iflist;
 use Rex::Commands::Gather;
+use Rex::Virtualization::LibVirt::info;
 
 sub execute {
   my ( $class, $vmname ) = @_;
@@ -23,6 +24,11 @@ sub execute {
   }
 
   Rex::Logger::debug("Getting info of guest: $vmname");
+
+  my $info = Rex::Virtualization::LibVirt::info->execute($vmname);
+  if($info->{State} eq "shut off") {
+    return {};
+  }
 
   my $ifs = Rex::Virtualization::LibVirt::iflist->execute($vmname);
 

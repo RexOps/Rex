@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -27,7 +27,7 @@ sub new {
 sub start {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/$service start >/dev/null";
+  i_run "/etc/rc.d/$service start >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -39,7 +39,7 @@ sub start {
 sub restart {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/$service restart >/dev/null";
+  i_run "/etc/rc.d/$service restart >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -51,7 +51,7 @@ sub restart {
 sub stop {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/$service stop >/dev/null";
+  i_run "/etc/rc.d/$service stop >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -63,7 +63,7 @@ sub stop {
 sub reload {
   my($self, $service) = @_;
 
-  i_run "/etc/rc.d/$service reload >/dev/null";
+  i_run "/etc/rc.d/$service reload >/dev/null", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -102,7 +102,7 @@ sub ensure {
 sub action {
   my ($self, $service, $action) = @_;
 
-  i_run "/etc/rc.d/$service $action >/dev/null";
+  i_run "/etc/rc.d/$service $action >/dev/null", nohup => 1;
   if($? == 0) { return 1; }
 }
 

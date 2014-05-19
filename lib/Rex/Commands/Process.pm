@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -11,6 +11,10 @@ Rex::Commands::Process - Process management commands
 =head1 DESCRIPTION
 
 With this module you can manage processes. List, Kill, and so on.
+
+Version <= 1.0: All these functions will not be reported.
+
+All these functions are not idempotent.
 
 =head1 SYNOPSIS
 
@@ -139,7 +143,7 @@ sub ps {
 
     return @ret;
   }
-  
+
   elsif(operating_system_is("SunOS") && operating_system_version() <= 510) {
     if(@custom) {
       @list = run("/usr/ucb/ps awwx -o" . join(",", @custom));

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -15,38 +15,36 @@ With this module you can do file system tasks like creating a directory, removin
 =head1 SYNOPSIS
 
  my @files = list_files "/etc";
- 
+
  unlink("/tmp/file");
- 
+
  rmdir("/tmp");
  mkdir("/tmp");
- 
+
  my %stat = stat("/etc/passwd");
- 
+
  my $link = readlink("/path/to/a/link");
  symlink("/source", "/dest");
- 
+
  rename("oldname", "newname");
- 
+
  chdir("/tmp");
- 
+
  is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
-   
+
  chmod 755, "/tmp";
  chown "user", "/tmp";
  chgrp "group", "/tmp";
- 
+
 
 =head1 EXPORTED FUNCTIONS
 
 =over 4
 
 =cut
-
-
 
 package Rex::Commands::Fs;
 
@@ -62,17 +60,19 @@ use Rex::Commands;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::Interface::File;
+use File::Basename;
+use Rex::Commands::MD5;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(list_files ls
-        unlink rm rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
-        chown chgrp chmod
-        is_file is_dir is_readable is_writeable is_writable
-        df du
-        mount umount
-        glob);
+  unlink rm rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
+  chown chgrp chmod
+  is_file is_dir is_readable is_writeable is_writable
+  df du
+  mount umount
+  glob);
 
 use vars qw(%file_handles);
 
@@ -84,13 +84,15 @@ This function list all entries (files, directories, ...) in a given directory an
    my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
  };
 
+This command will not be reported.
+
 =cut
 
 sub list_files {
   my $path = shift;
   $path = resolv_path($path);
 
-  my $fs = Rex::Interface::Fs->create;
+  my $fs  = Rex::Interface::Fs->create;
   my @ret = $fs->ls($path);
 
   return @ret;
@@ -117,12 +119,27 @@ This function will create a symlink from $from to $to.
 =cut
 
 sub symlink {
-  my ($from, $to) = @_;
+  my ( $from, $to ) = @_;
   $from = resolv_path($from);
-  $to = resolv_path($to);
+  $to   = resolv_path($to);
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "symlink", name => $to );
 
   my $fs = Rex::Interface::Fs->create;
-  $fs->ln($from, $to) or die("Can't link $from -> $to");
+  if ( $fs->is_symlink($to) ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+  else {
+    $fs->ln( $from, $to ) or die("Can't link $from -> $to");
+    Rex::get_current_connection()->{reporter}
+      ->report( changed => 1, message => "Symlink created: $from -> $to." );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "symlink", name => $to );
+
+  return 1;
 }
 
 =item ln($from, $to)
@@ -147,10 +164,45 @@ This function will remove the given file.
 
 sub unlink {
   my @files = @_;
-  @files = map { resolv_path($_) } @files;
 
-  my $fs = Rex::Interface::Fs->create;
-  $fs->unlink(@files);
+  my $f;
+  if ( ref $files[0] eq "ARRAY" ) {
+    $f = $files[0];
+  }
+  else {
+    $f = \@files;
+  }
+
+  if ( scalar @{$f} == 1 ) {
+    my $file = resolv_path $f->[0];
+    my $fs   = Rex::Interface::Fs->create;
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "unlink", name => $file );
+
+    if ( !$fs->is_file($file) ) {
+      Rex::get_current_connection()->{reporter}->report( changed => 0, );
+    }
+    else {
+      $fs->unlink($file);
+      if ( $fs->is_file($file) ) {
+        die "Can't remove $file.";
+      }
+
+      my $tmp_path = Rex::Config->get_tmp_dir;
+      if ( $file !~ m/^\Q$tmp_path\E[\/\\][a-z]+\.tmp$/ ) {    # skip tmp rex files
+        Rex::get_current_connection()->{reporter}
+          ->report( changed => 1, message => "File $file removed." );
+      }
+    }
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_end( type => "unlink", name => $file );
+  }
+  else {
+    &unlink($_) for @{$f};
+  }
+
 }
 
 =item rm($file)
@@ -171,32 +223,76 @@ This function will remove the given directory.
    rmdir("/tmp");
  };
 
+
+Since: 0.45 Please use the file() resource instead.
+
+ task "prepare", sub {
+   file "/tmp",
+     ensure => "absent";
+ };
+
 =cut
 
 sub rmdir {
   my @dirs = @_;
-  @dirs = map { resolv_path($_) } @dirs;
 
-  my $fs = Rex::Interface::Fs->create;
-
-  if(! $fs->rmdir(@dirs)) {
-    Rex::Logger::debug("Can't delete " . join(", ", @dirs));
-    die("Can't delete " . join(", ", @dirs));
+  my $d;
+  if ( ref $dirs[0] eq "ARRAY" ) {
+    $d = $dirs[0];
+  }
+  else {
+    $d = \@dirs;
   }
 
+  if ( scalar @{$d} == 1 ) {
+    my $dir = resolv_path $d->[0];
+    my $fs  = Rex::Interface::Fs->create;
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "rmdir", name => $dir );
+
+    if ( !$fs->is_dir($dir) && $dir !~ m/[\*\[]/ ) {
+      Rex::get_current_connection()->{reporter}->report( changed => 0, );
+    }
+    else {
+      $fs->rmdir($dir);
+      if ( $fs->is_dir($dir) ) {
+        die "Can't remove $dir.";
+      }
+
+      Rex::get_current_connection()->{reporter}
+        ->report( changed => 1, message => "Directory $dir removed." );
+    }
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_end( type => "rmdir", name => $dir );
+  }
+  else {
+    &rmdir($_) for @{$d};
+  }
 }
 
 =item mkdir($newdir)
 
 This function will create a new directory.
 
+Since: 0.45 Please use the file() resource instead.
+
+ task "prepare", sub {
+   file "/tmp",
+     ensure => "directory",
+     owner  => "root",
+     group  => "root",
+     mode   => 1777;
+ };
+
  task "mkdir", "server01", sub {
    mkdir "/tmp";
-      
+
    mkdir "/tmp",
-    owner => "root",
-    group => "root",
-    mode => 1777;
+     owner => "root",
+     group => "root",
+     mode => 1777;
  };
 
 =cut
@@ -206,126 +302,113 @@ sub mkdir {
   my $dir = shift;
   $dir = resolv_path($dir);
 
-  my $options = { @_ };
+  my $options = {@_};
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "mkdir", name => $dir );
 
   my $fs = Rex::Interface::Fs->create;
 
   my $not_created = 0;
   my %old_stat;
-  if(Rex::Config->get_do_reporting) {
-    if($fs->is_dir($dir)) {
-      $not_created = 1;
-    }
+  my $changed = 0;
+
+  if ( $fs->is_dir($dir) ) {
+    $not_created = 1;
+    %old_stat    = &stat($dir);
   }
 
-  my $mode  = $options->{"mode"}  || 755;
-  my $owner = $options->{"owner"} || "";
-  my $group = $options->{"group"} || "";
+  my $mode          = $options->{"mode"}          || 755;
+  my $owner         = $options->{"owner"}         || "";
+  my $group         = $options->{"group"}         || "";
   my $not_recursive = $options->{"not_recursive"} || 0;
 
-  if($not_recursive) {
-    if(! $fs->mkdir($dir)) {
+  if ($not_recursive) {
+    if ( !$fs->mkdir($dir) ) {
       Rex::Logger::debug("Can't create directory $dir");
       die("Can't create directory $dir");
     }
 
-    my ($ret_a, $ret_b, $ret_c);
-
-    $ret_a = &chown($owner, $dir) if $owner;
-    $ret_b = &chgrp($group, $dir) if $group;
-    $ret_c = &chmod($mode, $dir)  if $owner;
-
-    if(Rex::Config->get_do_reporting) {
-      my $changed = 0;
-      if(ref $ret_a) {
-        $changed = $ret_a->{changed};
-      }
-
-      if(ref $ret_b) {
-        $changed = $ret_b->{changed};
-      }
-
-      if(ref $ret_c) {
-        $changed = $ret_c->{changed};
-      }
-
-      if(! $not_created) {
-        $changed = 1;
-      }
-
-      return {
-        changed => $changed,
-        ret    => undef,
-      };
-    }
-
-    return;
-  }
-
-  my @splitted_dir;
- 
-  if(Rex::is_ssh == 0 && $^O =~ m/^MSWin/) {
-    # special case for local windows runs
-    @splitted_dir = map { $_="\\$_"; } split(/[\\\/]/, $dir);
-    if ($splitted_dir[0] =~ m/([a-z]):/i) {
-      $splitted_dir[0] = "$1:\\";
-    }
+    &chown( $owner, $dir ) if $owner;
+    &chgrp( $group, $dir ) if $group;
+    &chmod( $mode, $dir ) if $owner;
   }
   else {
-    @splitted_dir = map { $_="/$_"; } split(/\//, $dir);
-   
-    unless($splitted_dir[0] eq "/") {
-      $splitted_dir[0] = "." . $splitted_dir[0];
+    my @splitted_dir;
+
+    if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
+
+      # special case for local windows runs
+      @splitted_dir = map { $_ = "\\$_"; } split( /[\\\/]/, $dir );
+      if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
+        $splitted_dir[0] = "$1:\\";
+      }
+      else {
+        $splitted_dir[0] =~ s/^\\//;
+      }
     }
     else {
-      shift @splitted_dir;
-    }
-  }
+      @splitted_dir = map { $_ = "/$_"; } split( /\//, $dir );
 
-  my $str_part="";
-  my $changed = 0;
-  for my $part (@splitted_dir) {
-    $str_part .= "$part";
-
-    if(! is_dir($str_part) && ! is_file($str_part)) {
-      if(! $fs->mkdir($str_part)) {
-        Rex::Logger::debug("Can't create directory $dir");
-        die("Can't create directory $dir");
+      unless ( $splitted_dir[0] eq "/" ) {
+        $splitted_dir[0] = "." . $splitted_dir[0];
       }
+      else {
+        shift @splitted_dir;
+      }
+    }
 
-      my ($ret_a, $ret_b, $ret_c);
+    my $str_part = "";
+    for my $part (@splitted_dir) {
+      $str_part .= "$part";
 
-      $ret_a = &chown($owner, $str_part) if $owner;
-      $ret_b = &chgrp($group, $str_part) if $group;
-      $ret_c = &chmod($mode, $str_part)  if $owner;
-
-      if(Rex::Config->get_do_reporting) {
-        my $changed = 0;
-        if(ref $ret_a) {
-          $changed = $ret_a->{changed};
+      if ( !is_dir($str_part) && !is_file($str_part) ) {
+        if ( !$fs->mkdir($str_part) ) {
+          Rex::Logger::debug("Can't create directory $dir");
+          die("Can't create directory $dir");
         }
 
-        if(ref $ret_b) {
-          $changed = $ret_b->{changed};
-        }
-
-        if(ref $ret_c) {
-          $changed = $ret_c->{changed};
-        }
-
-        if(! $not_created) {
-          $changed = 1;
-        }
-
+        &chown( $owner, $str_part ) if $owner;
+        &chgrp( $group, $str_part ) if $group;
+        &chmod( $mode, $str_part ) if $owner;
       }
     }
   }
 
-  return {
-    changed => $changed,
-    ret    => undef,
-  };
+  my %new_stat = &stat($dir);
 
+  if ( !$not_created ) {
+    Rex::get_current_connection()->{reporter}
+      ->report( changed => 1, message => "Directory created." );
+    $changed = 1;
+  }
+
+  if ( %old_stat && $old_stat{uid} != $new_stat{uid} ) {
+    Rex::get_current_connection()->{reporter}
+      ->report( changed => 1, message => "Owner updated." );
+    $changed = 1;
+  }
+
+  if ( %old_stat && $old_stat{gid} != $new_stat{gid} ) {
+    Rex::get_current_connection()->{reporter}
+      ->report( changed => 1, message => "Group updated." );
+    $changed = 1;
+  }
+
+  if ( %old_stat && $old_stat{mode} ne $new_stat{mode} ) {
+    Rex::get_current_connection()->{reporter}
+      ->report( changed => 1, message => "Mode updated." );
+    $changed = 1;
+  }
+
+  if ( $changed == 0 ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "mkdir", name => $dir );
+
+  return 1;
 }
 
 =item chown($owner, $file)
@@ -333,41 +416,23 @@ sub mkdir {
 Change the owner of a file or a directory.
 
  chown "www-data", "/var/www/html";
-    
+
  chown "www-data", "/var/www/html",
                 recursive => 1;
+
+
+This command will not be reported.
+
+If you want to use reports, please use the file() resource instead.
 
 =cut
 
 sub chown {
-  my ($user, $file, @opts) = @_;
+  my ( $user, $file, @opts ) = @_;
+
   $file = resolv_path($file);
-
   my $fs = Rex::Interface::Fs->create;
-  my %stat;
-  if(Rex::Config->get_do_reporting) {
-    %stat = $fs->stat($file);
-  }
-
-  my $ret = $fs->chown($user, $file, @opts) or die("Can't chown $file");
-
-  if(Rex::Config->get_do_reporting) {
-    my %new_stat = $fs->stat($file);
-    if($stat{uid} == $new_stat{uid}) {
-      return {
-        changed => 0,
-        ret    => $ret,
-      };
-    }
-    else {
-      return {
-        changed => 1,
-        ret    => $ret,
-      };
-    }
-  }
-
-  return $ret;
+  return $fs->chown( $user, $file, @opts ) or die("Can't chown $file");
 }
 
 =item chgrp($group, $file)
@@ -375,42 +440,23 @@ sub chown {
 Change the group of a file or a directory.
 
  chgrp "nogroup", "/var/www/html";
-   
+
  chgrp "nogroup", "/var/www/html",
               recursive => 1;
+
+
+This command will not be reported.
+
+If you want to use reports, please use the file() resource instead.
 
 =cut
 
 sub chgrp {
-  my ($group, $file, @opts) = @_;
+  my ( $group, $file, @opts ) = @_;
   $file = resolv_path($file);
 
   my $fs = Rex::Interface::Fs->create;
-  my %stat;
-
-  if(Rex::Config->get_do_reporting) {
-    %stat = $fs->stat($file);
-  }
-
-  my $ret = $fs->chgrp($group, $file, @opts) or die("Can't chgrp $file");
-
-  if(Rex::Config->get_do_reporting) {
-    my %new_stat = $fs->stat($file);
-    if($stat{gid} == $new_stat{gid}) {
-      return {
-        changed => 0,
-        ret    => $ret,
-      };
-    }
-    else {
-      return {
-        changed => 1,
-        ret    => $ret,
-      };
-    }
-  }
-
-  return $ret;
+  return $fs->chgrp( $group, $file, @opts ) or die("Can't chgrp $file");
 }
 
 =item chmod($mode, $file)
@@ -418,43 +464,24 @@ sub chgrp {
 Change the permissions of a file or a directory.
 
  chmod 755, "/var/www/html";
-   
+
  chmod 755, "/var/www/html",
           recursive => 1;
+
+
+This command will not be reported.
+
+If you want to use reports, please use the file() resource instead.
 
 =cut
 
 sub chmod {
-  my ($mode, $file, @opts) = @_;
+  my ( $mode, $file, @opts ) = @_;
   $file = resolv_path($file);
 
   my $fs = Rex::Interface::Fs->create;
-  my %stat;
-  if(Rex::Config->get_do_reporting) {
-    %stat = $fs->stat($file);
-  }
-
-  my $ret = $fs->chmod($mode, $file, @opts) or die("Can't chmod $file");
-
-  if(Rex::Config->get_do_reporting) {
-    my %new_stat = $fs->stat($file);
-    if($stat{mode} eq $new_stat{mode}) {
-      return {
-        changed => 0,
-        ret    => $ret,
-      };
-    }
-    else {
-      return {
-        changed => 1,
-        ret    => $ret,
-      };
-    }
-  }
-
-  return $ret;
+  return $fs->chmod( $mode, $file, @opts ) or die("Can't chmod $file");
 }
-
 
 =item stat($file)
 
@@ -480,6 +507,8 @@ This function will return a hash with the following information about a file or 
    my %file_stat = stat("/etc/passwd");
  };
 
+
+This command will not be reported.
 
 =cut
 
@@ -509,12 +538,14 @@ This function tests if $file is a file. Returns 1 if true. 0 if false.
    }
  };
 
+This command will not be reported.
+
 =cut
 
 sub is_file {
   my ($file) = @_;
   $file = resolv_path($file);
-  
+
   my $fs = Rex::Interface::Fs->create;
   return $fs->is_file($file);
 }
@@ -532,6 +563,8 @@ This function tests if $dir is a directory. Returns 1 if true. 0 if false.
    }
  };
 
+This command will not be reported.
+
 =cut
 
 sub is_dir {
@@ -541,6 +574,31 @@ sub is_dir {
   my $fs = Rex::Interface::Fs->create;
   return $fs->is_dir($path);
 
+}
+
+=item is_symlink($file)
+
+This function tests if $file is a symlink. Returns 1 if true. 0 if false.
+
+ task "issym", "server01", sub {
+   if( is_symlink("/etc/foo.txt") ) {
+     say "it is a symlink.";
+   }
+   else {
+     say "hm, this is not a symlink.";
+   }
+ };
+
+This command will not be reported.
+
+=cut
+
+sub is_symlink {
+  my ($path) = @_;
+  $path = resolv_path($path);
+
+  my $fs = Rex::Interface::Fs->create;
+  return $fs->is_symlink($path);
 }
 
 =item is_readable($file)
@@ -556,8 +614,9 @@ This function tests if $file is readable. It returns 1 if true. 0 if false.
    }
  };
 
-=cut
+This command will not be reported.
 
+=cut
 
 sub is_readable {
   my ($file) = @_;
@@ -581,8 +640,9 @@ This function tests if $file is writable. It returns 1 if true. 0 if false.
    }
  };
 
-=cut
+This command will not be reported.
 
+=cut
 
 sub is_writable {
   my ($file) = @_;
@@ -596,6 +656,8 @@ sub is_writable {
 =item is_writeable($file)
 
 This is only an alias for I<is_writable>.
+
+This command will not be reported.
 
 =cut
 
@@ -613,9 +675,11 @@ This function returns the link endpoint if $link is a symlink. If $link is not a
    eval {
      $link = readlink("/tmp/testlink");
    };
-   
+
    say "this is a link" if($link);
  };
+
+This command will not be reported.
 
 =cut
 
@@ -624,10 +688,10 @@ sub readlink {
   $file = resolv_path($file);
   Rex::Logger::debug("Reading link of $file");
 
-  my $fs = Rex::Interface::Fs->create;
+  my $fs   = Rex::Interface::Fs->create;
   my $link = $fs->readlink($file);
 
-  unless($link) {
+  unless ($link) {
     Rex::Logger::debug("readlink: $file is not a link.");
     die("readlink: $file is not a link.");
   }
@@ -641,23 +705,51 @@ This function will rename $old to $new. Will return 1 on success and 0 on failur
 
  task "rename", "server01", sub {
    rename("/tmp/old", "/tmp/new");
- }; 
+ };
 
 =cut
 
 sub rename {
-  my ($old, $new) = @_;
+  my ( $old, $new ) = @_;
   $old = resolv_path($old);
   $new = resolv_path($new);
 
-  Rex::Logger::debug("Renaming $old to $new");
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "rename", name => "$old -> $new" );
 
   my $fs = Rex::Interface::Fs->create;
-  if(! $fs->rename($old, $new)) {
+
+  my $old_present = 0;
+  if ( $fs->is_file($old) || $fs->is_dir($old) || $fs->is_symlink($old) ) {
+    $old_present = 1;
+  }
+
+  Rex::Logger::debug("Renaming $old to $new");
+
+  if ( !$fs->rename( $old, $new ) ) {
     Rex::Logger::info("Rename failed ($old -> $new)");
     die("Rename failed $old -> $new");
   }
 
+  my $new_present = 0;
+  if ( $fs->is_file($new) || $fs->is_dir($new) || $fs->is_symlink($new) ) {
+    $new_present = 1;
+  }
+
+  my $old_absent = 0;
+  if ( !( $fs->is_file($old) || $fs->is_dir($old) || $fs->is_symlink($old) ) ) {
+    $old_absent = 1;
+  }
+
+  if ( $old_present == 1 && $new_present == 1 && $old_absent == 1 ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 1 );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0 );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "rename", name => "$old -> $new" );
 }
 
 =item mv($old, $new)
@@ -678,11 +770,13 @@ This function will change the current workdirectory to $newdir. This function cu
    chdir("/tmp");
  };
 
+This command will not be reported.
+
 =cut
 
 sub chdir {
   Rex::Logger::debug("chdir behaviour will be changed in the future.");
-  CORE::chdir($_[0]);
+  CORE::chdir( $_[0] );
 }
 
 =item cd($newdir)
@@ -692,7 +786,7 @@ This is an alias of I<chdir>.
 =cut
 
 sub cd {
-  &chdir($_[0]);
+  &chdir( $_[0] );
 }
 
 =item df([$device])
@@ -704,6 +798,7 @@ This function returns a hashRef reflecting the output of I<df>
     my $df_on_sda1 = df("/dev/sda1");
  };
 
+This command will not be reported.
 
 =cut
 
@@ -715,13 +810,16 @@ sub df {
   $dev ||= "";
 
   my $exec = Rex::Interface::Exec->create;
-  my ($out, $err) = $exec->exec("df $dev 2>/dev/null");
+  my ( $out, $err ) = $exec->exec("df $dev 2>/dev/null");
 
-  my @lines = split(/\r?\n/, $out);
+  my @lines = split( /\r?\n/, $out );
 
   $ret = _parse_df(@lines);
 
-  if($dev) {
+  if ($dev) {
+    if ( keys %$ret == 1 ) {
+      ($dev) = keys %$ret;
+    }
     return $ret->{$dev};
   }
 
@@ -738,18 +836,19 @@ sub _parse_df {
   my $current_fs = "";
 
   for my $line (@lines) {
-    my ($fs, $size, $used, $free, $use_per, $mounted_on) = split(/\s+/, $line, 6);
+    my ( $fs, $size, $used, $free, $use_per, $mounted_on ) =
+      split( /\s+/, $line, 6 );
     $current_fs = $fs if $fs;
 
-    if(! $size) {
+    if ( !$size ) {
       next;
     }
 
     $ret->{$current_fs} = {
-      size => $size,
-      used => $used,
-      free => $free,
-      used_perc => $use_per,
+      size       => $size,
+      used       => $used,
+      free       => $free,
+      used_perc  => $use_per,
       mounted_on => $mounted_on
     };
   }
@@ -765,15 +864,17 @@ Returns the disk usage of $path.
    say "size of /var/www: " . du("/var/www");
  };
 
+This command will not be reported.
+
 =cut
 
 sub du {
   my ($path) = @_;
   $path = resolv_path($path);
 
-  my $exec = Rex::Interface::Exec->create;
+  my $exec  = Rex::Interface::Exec->create;
   my @lines = $exec->exec("du -s $path");
-  my ($du) = ($lines[0] =~ m/^(\d+)/);
+  my ($du)  = ( $lines[0] =~ m/^(\d+)/ );
 
   return $du;
 }
@@ -789,14 +890,38 @@ cp will copy $source to $destination (it is recursive)
 =cut
 
 sub cp {
-  my ($source, $dest) = @_;
+  my ( $source, $dest ) = @_;
+
   $source = resolv_path($source);
-  $dest = resolv_path($dest);
+  $dest   = resolv_path($dest);
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "cp", name => "$source -> $dest" );
 
   my $fs = Rex::Interface::Fs->create;
-  if( ! $fs->cp($source, $dest)) {
+
+  my $new_present = 0;
+  if ( $fs->is_file($source) && $fs->is_dir($dest) ) {
+    $dest = "$dest/" . basename $source;
+  }
+
+  if ( $fs->is_file($dest) || $fs->is_dir($dest) || $fs->is_symlink($dest) ) {
+    $new_present = 1;
+  }
+
+  if ( !$fs->cp( $source, $dest ) ) {
     die("Copy failed from $source to $dest");
   }
+
+  if ( $new_present == 0 ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 1, );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "cp", name => "$source -> $dest" );
 }
 
 =item mount($device, $mount_point, @options)
@@ -806,90 +931,166 @@ Mount devices.
  task "mount", "server01", sub {
    mount "/dev/sda5", "/tmp";
    mount "/dev/sda6", "/mnt/sda6",
-          fs => "ext3",
-          options => [qw/noatime async/];
+          ensure    => "present",
+          fs        => "ext3",
+          options   => [qw/noatime async/],
+          on_change => sub { say "device mounted"; };
    #
    # mount persistent with entry in /etc/fstab
-    
+
    mount "/dev/sda6", "/mnt/sda6",
-          fs => "ext3",
-          options => [qw/noatime async/],
-          persistent => TRUE;
+          ensure     => "persistent",
+          fs         => "ext3",
+          options    => [qw/noatime async/],
+          on_change  => sub { say "device mounted"; };
+
+   # to umount a device
+  mount "/dev/sda6", "/mnt/sda6",
+          ensure => "absent";
+
  };
 
 =cut
+
 sub mount {
-  my ($device, $mount_point, @options) = @_;
-  my $option = { @options };
+  my ( $device, $mount_point, @options ) = @_;
+  my $option = {@options};
 
-  my $cmd = sprintf("mount %s %s %s %s", 
-                  $option->{"fs"}?"-t " . $option->{"fs"}:"",  # file system
-                  $option->{"options"}?" -o " . join(",", @{$option->{"options"}}):"",
-                  $device,
-                  $mount_point);
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "mount", name => "$mount_point" );
 
-  my $exec = Rex::Interface::Exec->create;
-  $exec->exec($cmd);
-  if($? != 0) { die("Mount failed of $mount_point"); }
+  $option->{ensure} ||= "present";    # default
 
-  if(exists $option->{persistent}) {
-    if(! exists $option->{fs}) {
-      # no fs given, so get it from mount output
-      my ($out, $err) = $exec->exec("mount");
-      my @output = split(/\r?\n/, $out);
-      my ($line) = grep { /^$device/ } @output;
-      my ($_d, $_o, $_p, $_t, $fs_type) = split(/\s+/, $line);
-      $option->{fs} = $fs_type;
-
-      my ($_options) = ($line =~ m/\((.+?)\)/);
-      $option->{options} = $_options;
-    }
-
-    my $fh = Rex::Interface::File->create;
-
-    if( ! $fh->open("<", "/etc/fstab")) {
-      Rex::Logger::debug("Can't open /etc/fstab for reading.");
-      die("Can't open /etc/fstab for reading.");
-    }
-
-    my $f = Rex::FS::File->new(fh => $fh);
-    my @content = $f->read_all;
-    $f->close;
-
-    my @new_content = grep { ! /^$device\s/ } @content;
-
-    $option->{options} ||= "defaults";
-
-    if(ref($option->{options}) eq "ARRAY") {
-      my $mountops = join(",", @{$option->{"options"}});
-      if($option->{label}) {
-        push(@new_content, "LABEL=" . $option->{label} . "\t$mount_point\t$option->{fs}\t$mountops\t0 0\n");
-      }
-      else {
-        push(@new_content, "$device\t$mount_point\t$option->{fs}\t$mountops\t0 0\n");
-      }
-    }
-    else {
-      if($option->{label}) {
-        push(@new_content, "LABEL=" . $option->{label} . "\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n");
-      }
-      else {
-        push(@new_content, "$device\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n");
-      }
-    }
-
-    $fh = Rex::Interface::File->create;
-
-    if( ! $fh->open(">", "/etc/fstab")) {
-      Rex::Logger::debug("Can't open /etc/fstab for writing.");
-      die("Can't open /etc/fstab for writing.");
-    }
-
-    $f = Rex::FS::File->new(fh => $fh);
-    $f->write(join("\n", @new_content));
-    $f->close;
-
+  if ( $option->{ensure} eq "absent" ) {
+    &umount(
+      $mount_point,
+      device => $device,
+      on_change =>
+        ( exists $option->{on_change} ? $option->{on_change} : undef )
+    );
   }
+  else {
+    if ( $option->{ensure} eq "persistent" ) {
+      $option->{persistent} = 1;
+    }
+
+    my $changed = 0;
+    my $exec    = Rex::Interface::Exec->create;
+
+    my ( $m_out, $m_err ) = $exec->exec("mount");
+    my @mounted = split( /\r?\n/, $m_out );
+    my ($already_mounted) = grep { m/$device on $mount_point/ } @mounted;
+    if ($already_mounted) {
+      Rex::Logger::debug("Device ($device) already mounted on $mount_point.");
+      $changed = 0;
+    }
+
+    my $cmd = sprintf(
+      "mount %s %s %s %s",
+      $option->{"fs"} ? "-t " . $option->{"fs"} : "",    # file system
+      $option->{"options"}
+      ? " -o " . join( ",", @{ $option->{"options"} } )
+      : "",
+      $device,
+      $mount_point
+    );
+
+    unless ($already_mounted) {
+      $exec->exec($cmd);
+      if ( $? != 0 ) { die("Mount failed of $mount_point"); }
+      $changed = 1;
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message => "Device $device mounted on $mount_point."
+      );
+    }
+
+    if ( exists $option->{persistent} ) {
+      if ( !exists $option->{fs} ) {
+
+        # no fs given, so get it from mount output
+        my ( $out, $err ) = $exec->exec("mount");
+        my @output = split( /\r?\n/, $out );
+        my ($line) = grep { /^$device/ } @output;
+        my ( $_d, $_o, $_p, $_t, $fs_type ) = split( /\s+/, $line );
+        $option->{fs} = $fs_type;
+
+        my ($_options) = ( $line =~ m/\((.+?)\)/ );
+        $option->{options} = $_options;
+      }
+
+      my $fh = Rex::Interface::File->create;
+
+      my $old_md5 = md5("/etc/fstab");
+
+      if ( !$fh->open( "<", "/etc/fstab" ) ) {
+        Rex::Logger::debug("Can't open /etc/fstab for reading.");
+        die("Can't open /etc/fstab for reading.");
+      }
+
+      my $f = Rex::FS::File->new( fh => $fh );
+      my @content = $f->read_all;
+      $f->close;
+
+      my @new_content = grep { !/^$device\s/ } @content;
+
+      $option->{options} ||= "defaults";
+
+      if ( ref( $option->{options} ) eq "ARRAY" ) {
+        my $mountops = join( ",", @{ $option->{"options"} } );
+        if ( $option->{label} ) {
+          push( @new_content,
+                "LABEL="
+              . $option->{label}
+              . "\t$mount_point\t$option->{fs}\t$mountops\t0 0\n" );
+        }
+        else {
+          push( @new_content,
+            "$device\t$mount_point\t$option->{fs}\t$mountops\t0 0\n" );
+        }
+      }
+      else {
+        if ( $option->{label} ) {
+          push( @new_content,
+                "LABEL="
+              . $option->{label}
+              . "\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n" );
+        }
+        else {
+          push( @new_content,
+            "$device\t$mount_point\t$option->{fs}\t$option->{options}\t0 0\n" );
+        }
+      }
+
+      $fh = Rex::Interface::File->create;
+
+      if ( !$fh->open( ">", "/etc/fstab" ) ) {
+        Rex::Logger::debug("Can't open /etc/fstab for writing.");
+        die("Can't open /etc/fstab for writing.");
+      }
+
+      $f = Rex::FS::File->new( fh => $fh );
+      $f->write( join( "\n", @new_content ) );
+      $f->close;
+
+      my $new_md5 = md5("/etc/fstab");
+
+      if ( $new_md5 ne $old_md5 ) {
+        Rex::get_current_connection()->{reporter}
+          ->report( changed => 1, message => "File /etc/fstab updated." );
+        $changed = 1;
+      }
+    }
+
+    if ( $changed == 1 ) {
+      if ( exists $option->{on_change} && ref $option->{on_change} eq "CODE" ) {
+        $option->{on_change}->( $device, $mount_point );
+      }
+    }
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "mount", name => "$mount_point" );
 }
 
 =item umount($mount_point)
@@ -901,12 +1102,51 @@ Unmount device.
  };
 
 =cut
+
 sub umount {
-  my ($mount_point) = @_;
+  my ( $mount_point, %option ) = @_;
+
+  my $device;
+
+  if ( exists $option{device} ) {
+    $device = $option{device};
+  }
+
   my $exec = Rex::Interface::Exec->create;
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "umount", name => "$mount_point" );
+
+  my $changed = 0;
+  my ( $m_out, $m_err ) = $exec->exec("mount");
+  my @mounted = split( /\r?\n/, $m_out );
+  my $already_mounted;
+
+  if ($device) {
+    ($already_mounted) = grep { m/$device on $mount_point/ } @mounted;
+  }
+  else {
+    ($already_mounted) = grep { m/on $mount_point/ } @mounted;
+  }
+
+  if ($already_mounted) {
+    $changed = 1;
+  }
+
   $exec->exec("umount $mount_point");
 
-  if($? != 0) { die("Umount failed of $mount_point"); }
+  if ( $? != 0 ) { die("Umount failed of $mount_point"); }
+
+  if ($changed) {
+    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+      $option{on_change}->( $mount_point, %option );
+    }
+    Rex::get_current_connection()->{reporter}
+      ->report( chaned => 1, "Unmounted $mount_point." );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "umount", name => "$mount_point" );
 }
 
 =item glob($glob)
@@ -915,7 +1155,10 @@ sub umount {
    my @files_with_p = grep { is_file($_) } glob("/etc/p*");
  };
 
+This command will not be reported.
+
 =cut
+
 sub glob {
   my ($glob) = @_;
   $glob = resolv_path($glob);
@@ -927,6 +1170,5 @@ sub glob {
 =back
 
 =cut
-
 
 1;

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -12,13 +12,15 @@ Rex::Commands::Download - Download remote files
 
 With this module you can download a remotefile via sftp, http and ftp from a host to your local computer.
 
+Version <= 1.0: All these functions will not be reported.
+
 =head1 SYNOPSIS
 
  # sftp
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
- 
+
  # http
  task "download2", sub {
    download "http://server/remote/file";
@@ -35,13 +37,15 @@ package Rex::Commands::Download;
 
 use strict;
 use warnings;
+use Rex::Helper::UserAgent;
+use Carp;
 
 use vars qw($has_wget $has_curl $has_lwp);
 
 # check which download type we should use
 BEGIN {
 
-  if($^O !~ m/^MSWin/) {
+  if ( $^O !~ m/^MSWin/ ) {
     system("which wget >/dev/null 2>&1");
     $has_wget = !$?;
 
@@ -50,16 +54,15 @@ BEGIN {
   }
 
   eval {
-    require LWP::Simple;
-    LWP::Simple->import;
+    require Rex::Helper::UserAgent;
     $has_lwp = 1;
   };
 
-  if($^O =~ m/^MSWin/ && ! $has_lwp) {
-    Rex::Logger::info("Please install LWP::Simple to allow file downloads.");
+  if ( $^O =~ m/^MSWin/ && !$has_lwp ) {
+    Rex::Logger::info("Please install LWP::UserAgent to allow file downloads.");
   }
 
-};
+}
 
 require Rex::Exporter;
 
@@ -80,7 +83,7 @@ Perform a download. If no local file is specified it will download the file to t
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
- 
+
  task "download", sub {
    download "http://www.rexify.org/index.html", "localfile.html";
  };
@@ -88,86 +91,103 @@ Perform a download. If no local file is specified it will download the file to t
 =cut
 
 sub download {
-  my $remote = shift;
-  my $local = shift;
+  my ( $remote, $local, %option ) = @_;
 
   $remote = resolv_path($remote);
-  $local  = resolv_path($local, 1);
+  $local = resolv_path( $local, 1 );
 
-  if($remote =~ m/^(https?|ftp):\/\//) {
-    _http_download($remote, $local);
+  if ( $remote =~ m/^(https?|ftp):\/\// ) {
+    _http_download( $remote, $local, %option );
   }
   else {
-    _sftp_download($remote, $local);
+    _sftp_download( $remote, $local, %option );
   }
 }
 
 sub _sftp_download {
   my $remote = shift;
-  my $local = shift;
-
+  my $local  = shift;
 
   my $fs = Rex::Interface::Fs->create;
 
   Rex::Logger::debug("Downloading via SFTP");
-  unless($local) {
+  unless ($local) {
     $local = basename($remote);
   }
   Rex::Logger::debug("saving file to $local");
 
-  unless(is_file($remote)) {
+  unless ( is_file($remote) ) {
     Rex::Logger::info("File $remote not found");
     die("$remote not found.");
   }
-  
-  unless(is_readable($remote)) {
+
+  unless ( is_readable($remote) ) {
     Rex::Logger::info("File $remote is not readable.");
     die("$remote is not readable.");
   }
 
-  if(-d $local) {
+  if ( -d $local ) {
     $local = $local . '/' . basename($remote);
   }
 
-  $fs->download($remote, $local);
+  $fs->download( $remote, $local );
 
 }
 
 sub _http_download {
-  my ($remote, $local) = @_;
+  my ( $remote, $local, %option ) = @_;
 
-  unless($local) {
+  unless ($local) {
     $local = basename($remote);
   }
   Rex::Logger::debug("saving file to $local");
 
-  my $content = _get_http($remote);
+  my $content = _get_http( $remote, %option );
 
-  if(-d $local) {
+  if ( -d $local ) {
     $local = $local . '/' . basename($remote);
   }
 
-  open(my $fh, ">", $local) or die($!);
+  open( my $fh, ">", $local ) or die($!);
   binmode $fh;
   print $fh $content;
   close($fh);
 }
 
 sub _get_http {
-  my ($url) = @_;
+  my ( $url, %option ) = @_;
 
   my $html;
-  if($has_curl) {
+  if ($has_curl) {
     Rex::Logger::debug("Downloading via curl");
-    $html = qx{curl -# -L -k '$url' 2>/dev/null};
+    if ( exists $option{user} && exists $option{password} ) {
+      $html =
+        qx{curl -u '$option{user}:$option{password}' -# -L -k '$url' 2>/dev/null};
+    }
+    else {
+      $html = qx{curl -# -L -k '$url' 2>/dev/null};
+    }
   }
-  elsif($has_wget) {
+  elsif ($has_wget) {
     Rex::Logger::debug("Downloading via wget");
-    $html = qx{wget --no-check-certificate -O - '$url' 2>/dev/null};
+    if ( exists $option{user} && exists $option{password} ) {
+      $html =
+        qx{wget --http-user=$option{user} '--http-password=$option{password}' --no-check-certificate -O - '$url' 2>/dev/null};
+    }
+    else {
+      $html = qx{wget --no-check-certificate -O - '$url' 2>/dev/null};
+    }
   }
-  elsif($has_lwp) {
-    Rex::Logger::debug("Downloading via LWP::Simple");
-    $html = get($url);
+  elsif ($has_lwp) {
+    Rex::Logger::debug("Downloading via LWP::UserAgent");
+    my $ua =  Rex::Helper::UserAgent->new;
+    my $resp = $ua->get($url, %option);
+    if($resp->is_success) {
+      $html = $resp->content;
+    }
+    else {
+      confess "Error downloading $url.";
+    }
   }
   else {
     die("No tool found to download something. (curl, wget, LWP::Simple)");
@@ -179,6 +199,5 @@ sub _get_http {
 =back
 
 =cut
-
 
 1;

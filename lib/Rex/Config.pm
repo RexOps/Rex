@@ -20,50 +20,40 @@ With this module you can specify own configuration parameters for your modules.
 
 =cut
 
-
 package Rex::Config;
 
 use strict;
 use warnings;
 
+use File::Spec;
 use Rex::Logger;
 use YAML;
 use Data::Dumper;
 
-our ($user, $password, $port,
-        $timeout, $max_connect_fails,
-        $password_auth, $key_auth, $krb5_auth, $public_key, $private_key, $parallelism, $log_filename, $log_facility, $sudo_password,
-        $ca_file, $ca_cert, $ca_key,
-        $path, $no_path_cleanup,
-        $set_param,
-        $environment,
-        $connection_type,
-        $distributor,
-        $template_function,
-        $SET_HANDLER, $HOME_CONFIG, $HOME_CONFIG_YAML,
-        %SSH_CONFIG_FOR,
-        $sudo_without_locales,
-        $sudo_without_sh,
-        $no_tty,
-        $source_global_profile, $source_profile,
-        %executor_for,
-        $allow_empty_groups,
-        $use_server_auth,
-        $tmp_dir,
-        %openssh_opt,
-        $use_cache, $cache_type,
-        $use_sleep_hack,
-        $report_type,
-        $do_reporting,
-        $say_format,
-        $exec_autodie);
+our (
+  $user,            $password,              $port,
+  $timeout,         $max_connect_fails,     $password_auth,
+  $key_auth,        $krb5_auth,             $public_key,
+  $private_key,     $parallelism,           $log_filename,
+  $log_facility,    $sudo_password,         $ca_file,
+  $ca_cert,         $ca_key,                $path,
+  $no_path_cleanup, $set_param,             $environment,
+  $connection_type, $distributor,           $template_function,
+  $SET_HANDLER,     $HOME_CONFIG,           $HOME_CONFIG_YAML,
+  %SSH_CONFIG_FOR,  $sudo_without_locales,  $sudo_without_sh,
+  $no_tty,          $source_global_profile, $source_profile,
+  %executor_for,    $allow_empty_groups,    $use_server_auth,
+  $tmp_dir,         %openssh_opt,           $use_cache,
+  $cache_type,      $use_sleep_hack,        $report_type,
+  $do_reporting,    $say_format,            $exec_autodie
+);
 
 # some defaults
 %executor_for = (
-  perl  => "perl",
+  perl   => "perl",
   python => "python",
-  ruby  => "ruby",
-  bash  => "bash",
+  ruby   => "ruby",
+  bash   => "bash",
 );
 
 sub set_exec_autodie {
@@ -74,6 +64,7 @@ sub set_exec_autodie {
 sub get_exec_autodie {
   return $exec_autodie;
 }
+
 sub set_no_path_cleanup {
   my $class = shift;
   $no_path_cleanup = shift;
@@ -116,7 +107,7 @@ sub set_report_type {
 }
 
 sub get_report_type {
-  if(exists $ENV{REX_REPORT_TYPE}) {
+  if ( exists $ENV{REX_REPORT_TYPE} ) {
     return $ENV{REX_REPORT_TYPE};
   }
 
@@ -138,7 +129,7 @@ sub set_cache_type {
 }
 
 sub get_cache_type {
-  if(exists $ENV{REX_CACHE_TYPE}) {
+  if ( exists $ENV{REX_CACHE_TYPE} ) {
     return $ENV{REX_CACHE_TYPE};
   }
 
@@ -163,8 +154,8 @@ sub get_sudo_without_sh {
 }
 
 sub set_openssh_opt {
-  my ($class, $key, $val) = @_;
-  if(! defined $val) {
+  my ( $class, $key, $val ) = @_;
+  if ( !defined $val ) {
     $openssh_opt{$key} = undef;
     delete $openssh_opt{$key};
     return;
@@ -189,15 +180,15 @@ sub set_sudo_without_sh {
 
 sub set_executor_for {
   my $class = shift;
-  my $for  = shift;
-  my $e    = shift;
+  my $for   = shift;
+  my $e     = shift;
 
   $executor_for{$for} = $e;
 }
 
 sub get_executor_for {
   my $class = shift;
-  my $e    = shift;
+  my $e     = shift;
 
   return $executor_for{$e};
 }
@@ -207,7 +198,43 @@ sub set_tmp_dir {
 }
 
 sub get_tmp_dir {
-  return $tmp_dir || "/tmp";
+  my $cache = Rex::get_cache();
+  if ( my $cached_tmp = $cache->get("tmpdir") ) {
+    return $cached_tmp;
+  }
+
+  if ( !$tmp_dir ) {
+    if ( my $ssh = Rex::is_ssh() ) {
+      my $exec;
+      if ( Rex::is_sudo() ) {
+        if ( ref $ssh eq "Net::OpenSSH" ) {
+          $exec = Rex::Interface::Exec->create("OpenSSH");
+        }
+        else {
+          $exec = Rex::Interface::Exec->create("SSH");
+        }
+      }
+      else {
+        $exec = Rex::Interface::Exec->create;
+      }
+      my ($out) =
+        $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
+      chomp $out;
+      $out =~ s/[\r\n]//gms;
+
+      if ( $? == 0 && $out ) {
+        $cache->set( "tmpdir", $out );
+        return $out;
+      }
+      $cache->set( "tmpdir", "/tmp" );
+      return "/tmp";
+    }
+    else {
+      $cache->set( "tmpdir", File::Spec->tmpdir );
+      return File::Spec->tmpdir;
+    }
+  }
+  return $tmp_dir;
 }
 
 sub set_path {
@@ -216,10 +243,14 @@ sub set_path {
 }
 
 sub get_path {
-  if(!$path) {
-    return ("/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/local/bin", "/usr/local/sbin", "/usr/pkg/bin", "/usr/pkg/sbin");
+  if ( !$path ) {
+    return (
+      "/bin",         "/sbin",          "/usr/bin",
+      "/usr/sbin",    "/usr/local/bin", "/usr/local/sbin",
+      "/usr/pkg/bin", "/usr/pkg/sbin"
+    );
   }
-  return @{ $path };
+  return @{$path};
 }
 
 sub set_user {
@@ -258,11 +289,13 @@ sub set_max_connect_fails {
 
 sub get_max_connect_fails {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{connectionattempts}) {
-    return $SSH_CONFIG_FOR{$param->{server}}->{connectionattempts};
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{connectionattempts} )
+  {
+    return $SSH_CONFIG_FOR{ $param->{server} }->{connectionattempts};
   }
 
   return $max_connect_fails || 3;
@@ -275,7 +308,7 @@ sub has_user {
 
 sub get_user {
   my $class = shift;
-  if($user) {
+  if ($user) {
     return $user;
   }
 
@@ -289,11 +322,13 @@ sub get_password {
 
 sub get_port {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{port}) {
-    return $SSH_CONFIG_FOR{$param->{server}}->{port};
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{port} )
+  {
+    return $SSH_CONFIG_FOR{ $param->{server} }->{port};
   }
 
   return $port;
@@ -301,10 +336,10 @@ sub get_port {
 
 sub get_sudo_password {
   my $class = shift;
-  if($sudo_password) {
+  if ($sudo_password) {
     return $sudo_password;
   }
-  elsif(! defined $sudo_password) {
+  elsif ( !defined $sudo_password ) {
     return "";
   }
   else {
@@ -321,11 +356,13 @@ sub set_timeout {
 
 sub get_timeout {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{connecttimeout}) {
-    return $SSH_CONFIG_FOR{$param->{server}}->{connecttimeout};
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{connecttimeout} )
+  {
+    return $SSH_CONFIG_FOR{ $param->{server} }->{connecttimeout};
   }
 
   return $timeout || 2;
@@ -333,23 +370,23 @@ sub get_timeout {
 
 sub set_password_auth {
   my $class = shift;
-  $key_auth = 0;
-  $krb5_auth = 0;
+  $key_auth      = 0;
+  $krb5_auth     = 0;
   $password_auth = shift || 1;
 }
 
 sub set_key_auth {
   my $class = shift;
   $password_auth = 0;
-  $krb5_auth = 0;
-  $key_auth = shift || 1;
+  $krb5_auth     = 0;
+  $key_auth      = shift || 1;
 }
 
 sub set_krb5_auth {
   my $class = shift;
   $password_auth = 0;
-  $key_auth = 0;
-  $krb5_auth = shift || 1;
+  $key_auth      = 0;
+  $krb5_auth     = shift || 1;
 }
 
 sub get_password_auth {
@@ -374,7 +411,7 @@ sub has_public_key {
 }
 
 sub get_public_key {
-  if($public_key) {
+  if ($public_key) {
     return $public_key;
   }
 
@@ -391,7 +428,7 @@ sub has_private_key {
 }
 
 sub get_private_key {
-  if($private_key) {
+  if ($private_key) {
     return $private_key;
   }
 
@@ -429,7 +466,7 @@ sub get_log_facility {
 }
 
 sub set_environment {
-  my ($class, $env) = @_;
+  my ( $class, $env ) = @_;
   $environment = $env;
 }
 
@@ -439,11 +476,13 @@ sub get_environment {
 
 sub get_ssh_config_username {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{user}) {
-    return $SSH_CONFIG_FOR{$param->{server}}->{user};
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{user} )
+  {
+    return $SSH_CONFIG_FOR{ $param->{server} }->{user};
   }
 
   return 0;
@@ -451,11 +490,13 @@ sub get_ssh_config_username {
 
 sub get_ssh_config_hostname {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{hostname}) {
-    return $SSH_CONFIG_FOR{$param->{server}}->{hostname};
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{hostname} )
+  {
+    return $SSH_CONFIG_FOR{ $param->{server} }->{hostname};
   }
 
   return 0;
@@ -463,12 +504,14 @@ sub get_ssh_config_hostname {
 
 sub get_ssh_config_private_key {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{identityfile}) {
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{identityfile} )
+  {
 
-    my $file = $SSH_CONFIG_FOR{$param->{server}}->{identityfile};
+    my $file     = $SSH_CONFIG_FOR{ $param->{server} }->{identityfile};
     my $home_dir = _home_dir();
     $file =~ s/^~/$home_dir/;
 
@@ -480,11 +523,13 @@ sub get_ssh_config_private_key {
 
 sub get_ssh_config_public_key {
   my $class = shift;
-  my $param = { @_ };
+  my $param = {@_};
 
-  if(exists $param->{server} && exists $SSH_CONFIG_FOR{$param->{server}}
-      && exists $SSH_CONFIG_FOR{$param->{server}}->{identityfile}) {
-    my $file = $SSH_CONFIG_FOR{$param->{server}}->{identityfile} . ".pub";
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{identityfile} )
+  {
+    my $file     = $SSH_CONFIG_FOR{ $param->{server} }->{identityfile} . ".pub";
     my $home_dir = _home_dir();
     $file =~ s/^~/$home_dir/;
     return $file;
@@ -513,7 +558,6 @@ sub get_ca_key {
   return $ca_key || "";
 }
 
-
 sub set_distributor {
   my $class = shift;
   $distributor = shift;
@@ -530,15 +574,15 @@ sub set_template_function {
 }
 
 sub get_template_function {
-  if(ref($template_function) eq "CODE") {
+  if ( ref($template_function) eq "CODE" ) {
     return $template_function;
   }
 
   return sub {
-      my ($content, $template_vars) = @_;
-      use Rex::Template;
-      my $template = Rex::Template->new;
-      return $template->parse($content, $template_vars);
+    my ( $content, $template_vars ) = @_;
+    use Rex::Template;
+    my $template = Rex::Template->new;
+    return $template->parse( $content, $template_vars );
   };
 }
 
@@ -565,29 +609,31 @@ And now you can use this handler in your I<Rexfile> like this:
  set foo => "bar";
 
 =cut
+
 sub register_set_handler {
-  my ($class, $handler_name, $code) = @_;
+  my ( $class, $handler_name, $code ) = @_;
   $SET_HANDLER->{$handler_name} = $code;
 }
 
 sub set {
-  my ($class, $var, $data) = @_;
+  my ( $class, $var, $data ) = @_;
 
-  if(exists($SET_HANDLER->{$var})) {
-    shift; shift;
+  if ( exists( $SET_HANDLER->{$var} ) ) {
+    shift;
+    shift;
     return &{ $SET_HANDLER->{$var} }(@_);
   }
 
-  if(ref($data) eq "HASH") {
-    if(! ref($set_param->{$var})) {
+  if ( ref($data) eq "HASH" ) {
+    if ( !ref( $set_param->{$var} ) ) {
       $set_param->{$var} = {};
     }
-    for my $key (keys %{$data}) {
+    for my $key ( keys %{$data} ) {
       $set_param->{$var}->{$key} = $data->{$key};
     }
   }
-  elsif(ref($data) eq "ARRAY") {
-    push(@{$set_param->{$var}}, @{$data});
+  elsif ( ref($data) eq "ARRAY" ) {
+    push( @{ $set_param->{$var} }, @{$data} );
   }
   else {
     $set_param->{$var} = $data;
@@ -595,14 +641,14 @@ sub set {
 }
 
 sub unset {
-  my ($class, $var) = @_;
+  my ( $class, $var ) = @_;
   $set_param->{$var} = undef;
   delete $set_param->{$var};
 }
 
 sub get {
-  my ($class, $var) = @_;
-  if(exists $set_param->{$var}) {
+  my ( $class, $var ) = @_;
+  if ( exists $set_param->{$var} ) {
     return $set_param->{$var};
   }
 }
@@ -632,14 +678,15 @@ And now the user can set this in his configuration file:
    bar: baz
 
 =cut
-sub register_config_handler {
-  my ($class, $topic, $code) = @_;
 
-  if(! ref($HOME_CONFIG)) { $HOME_CONFIG = {}; }
+sub register_config_handler {
+  my ( $class, $topic, $code ) = @_;
+
+  if ( !ref($HOME_CONFIG) ) { $HOME_CONFIG = {}; }
   $HOME_CONFIG->{$topic} = $code;
 
-  if(ref($HOME_CONFIG_YAML) && exists $HOME_CONFIG_YAML->{$topic}) {
-    &$code($HOME_CONFIG_YAML->{$topic});
+  if ( ref($HOME_CONFIG_YAML) && exists $HOME_CONFIG_YAML->{$topic} ) {
+    &$code( $HOME_CONFIG_YAML->{$topic} );
   }
 }
 
@@ -647,22 +694,20 @@ sub read_config_file {
   my ($config_file) = @_;
   $config_file ||= _home_dir() . "/.rex/config.yml";
 
-  if(-f $config_file) {
-    my $yaml = eval { local(@ARGV, $/) = ($config_file); <>; };
-    eval {
-      $HOME_CONFIG_YAML = Load($yaml);
-    };
+  if ( -f $config_file ) {
+    my $yaml = eval { local ( @ARGV, $/ ) = ($config_file); <>; };
+    eval { $HOME_CONFIG_YAML = Load($yaml); };
 
-    if($@) {
+    if ($@) {
       print STDERR "Error loading $config_file\n";
       print STDERR "$@\n";
       exit 2;
     }
 
-    for my $key (keys %{ $HOME_CONFIG }) {
-      if(exists $HOME_CONFIG_YAML->{$key}) {
+    for my $key ( keys %{$HOME_CONFIG} ) {
+      if ( exists $HOME_CONFIG_YAML->{$key} ) {
         my $code = $HOME_CONFIG->{$key};
-        &$code($HOME_CONFIG_YAML->{$key});
+        &$code( $HOME_CONFIG_YAML->{$key} );
       }
     }
   }
@@ -672,8 +717,8 @@ sub read_ssh_config_file {
   my ($config_file) = @_;
   $config_file ||= _home_dir() . '/.ssh/config';
 
-  if(-f $config_file) {
-    my @lines = eval { local(@ARGV) = ($config_file); <>;  };
+  if ( -f $config_file ) {
+    my @lines = eval { local (@ARGV) = ($config_file); <>; };
     %SSH_CONFIG_FOR = _parse_ssh_config(@lines);
   }
 }
@@ -683,32 +728,33 @@ sub _parse_ssh_config {
 
   my %ret = ();
 
-  my (@host, $in_host);
+  my ( @host, $in_host );
   for my $line (@lines) {
     chomp $line;
-    next if ($line =~ m/^\s*#/);
-    next if ($line =~ m/^\s*$/);
+    next if ( $line =~ m/^\s*#/ );
+    next if ( $line =~ m/^\s*$/ );
 
-    if($line =~ m/^Host(?:\s*=\s*|\s+)(.*)$/i) {
+    if ( $line =~ m/^Host(?:\s*=\s*|\s+)(.*)$/i ) {
       my $host_tmp = $1;
-      @host = split(/\s+/, $host_tmp);
+      @host = split( /\s+/, $host_tmp );
       $in_host = 1;
       for my $h (@host) {
         $ret{$h} = {};
       }
       next;
     }
-    elsif($in_host) {
+    elsif ($in_host) {
+
       #my ($key, $val) = ($line =~ m/^\s*([^\s]+)\s+=?\s*(.*)$/);
       $line =~ s/^\s*//g;
-      my ($key, $val_tmp) = split(/[\s=]/, $line, 2);
+      my ( $key, $val_tmp ) = split( /[\s=]/, $line, 2 );
       $val_tmp =~ s/^[\s=]+//g;
       my $val = $val_tmp;
 
       $val =~ s/^\s+//;
       $val =~ s/\s+$//;
       for my $h (@host) {
-        $ret{$h}->{lc($key)} = $val;
+        $ret{$h}->{ lc($key) } = $val;
       }
     }
   }
@@ -717,8 +763,8 @@ sub _parse_ssh_config {
 }
 
 sub set_allow_empty_groups {
-  my ($class, $set) = @_;
-  if($set) {
+  my ( $class, $set ) = @_;
+  if ($set) {
     $allow_empty_groups = 1;
   }
   else {
@@ -727,7 +773,7 @@ sub set_allow_empty_groups {
 }
 
 sub get_allow_empty_groups {
-  if($allow_empty_groups) {
+  if ($allow_empty_groups) {
     return 1;
   }
 
@@ -735,8 +781,8 @@ sub get_allow_empty_groups {
 }
 
 sub set_use_server_auth {
-  my ($class, $set) = @_;
-  if($set) {
+  my ( $class, $set ) = @_;
+  if ($set) {
     $use_server_auth = 1;
   }
   else {
@@ -745,7 +791,7 @@ sub set_use_server_auth {
 }
 
 sub get_use_server_auth {
-  if($use_server_auth) {
+  if ($use_server_auth) {
     return 1;
   }
 
@@ -758,52 +804,62 @@ sub import {
 }
 
 no strict 'refs';
-__PACKAGE__->register_config_handler(base => sub {
-  my ($param) = @_;
+__PACKAGE__->register_config_handler(
+  base => sub {
+    my ($param) = @_;
 
-  for my $key (keys %{ $param }) {
+    for my $key ( keys %{$param} ) {
 
-    if($key eq "keyauth") {
-      $key_auth = $param->{keyauth};
-      next;
+      if ( $key eq "keyauth" ) {
+        $key_auth = $param->{keyauth};
+        next;
+      }
+
+      if ( $key eq "passwordauth" ) {
+        $password_auth = $param->{passwordauth};
+        next;
+      }
+
+      if ( $key eq "passauth" ) {
+        $password_auth = $param->{passauth};
+        next;
+      }
+
+      $$key = $param->{$key};
     }
-
-    if($key eq "passwordauth") {
-      $password_auth = $param->{passwordauth};
-      next;
-    }
-
-    if($key eq "passauth") {
-      $password_auth = $param->{passauth};
-      next;
-    }
-
-    $$key = $param->{$key};
   }
-});
+);
 
-my @set_handler = qw/user password private_key public_key -keyauth -passwordauth -passauth parallelism sudo_password connection ca cert key distributor template_function/;
+my @set_handler =
+  qw/user password private_key public_key -keyauth -passwordauth -passauth
+  parallelism sudo_password connection ca cert key distributor
+  template_function port/;
 for my $hndl (@set_handler) {
-  __PACKAGE__->register_set_handler($hndl => sub {
-    my ($val) = @_;
-    if($hndl =~ m/^\-/) {
-      $hndl = substr($hndl, 1);
-    }
-    if($hndl eq "keyauth") { $hndl = "key_auth"; $val = 1; }
-    if($hndl eq "passwordauth" || $hndl eq "passauth") { $hndl = "password_auth"; $val = 1; }
-    if($hndl eq "connection") { $hndl = "connection_type"; }
-    if($hndl eq "ca") { $hndl = "ca_file"; }
-    if($hndl eq "cert") { $hndl = "ca_cert"; }
-    if($hndl eq "key") { $hndl = "ca_key"; }
+  __PACKAGE__->register_set_handler(
+    $hndl => sub {
+      my ($val) = @_;
+      if ( $hndl =~ m/^\-/ ) {
+        $hndl = substr( $hndl, 1 );
+      }
+      if ( $hndl eq "keyauth" ) { $hndl = "key_auth"; $val = 1; }
+      if ( $hndl eq "passwordauth" || $hndl eq "passauth" ) {
+        $hndl = "password_auth";
+        $val  = 1;
+      }
+      if ( $hndl eq "connection" ) { $hndl = "connection_type"; }
+      if ( $hndl eq "ca" )         { $hndl = "ca_file"; }
+      if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
+      if ( $hndl eq "key" )        { $hndl = "ca_key"; }
 
-    $$hndl = $val;
-  });
+      $$hndl = $val;
+    }
+  );
 }
 
 use strict;
 
 sub _home_dir {
-  if($^O =~ m/^MSWin/) {
+  if ( $^O =~ m/^MSWin/ ) {
     return $ENV{'USERPROFILE'};
   }
 

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -26,7 +26,7 @@ sub new {
 sub start {
   my($self, $service) = @_;
 
-  i_run "service $service start";
+  i_run "service $service start", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -38,7 +38,7 @@ sub start {
 sub restart {
   my($self, $service) = @_;
 
-  i_run "service $service restart";
+  i_run "service $service restart", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -50,7 +50,7 @@ sub restart {
 sub stop {
   my($self, $service) = @_;
 
-  i_run "service $service stop";
+  i_run "service $service stop", nohup => 1;
 
   if($? == 0) {
     return 1;
@@ -106,7 +106,7 @@ sub ensure {
 sub action {
   my ($self, $service, $action) = @_;
 
-  i_run "service $service $action";
+  i_run "service $service $action", nohup => 1;
   if($? == 0) { return 1; }
 }
 

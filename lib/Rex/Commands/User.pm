@@ -15,18 +15,18 @@ With this module you can manage user and groups.
 =head1 SYNOPSIS
 
  use Rex::Commands::User;
- 
+
  task "create-user", "remoteserver", sub {
    create_user "root",
-     uid => 0,
-     home => '/root',
-     comment => 'Root Account',
-     expire => '2011-05-30',
-     groups  => ['root', '...'],
-     password => 'blahblah',
-     system => 1,
-     no_create_home => TRUE,
-     ssh_key => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+     uid         => 0,
+     home        => '/root',
+     comment     => 'Root Account',
+     expire      => '2011-05-30',
+     groups      => [ 'root', '...' ],
+     password    => 'blahblah',
+     system      => 1,
+     create_home => TRUE,
+     ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -61,28 +61,57 @@ use base qw(Rex::Exporter);
 Manage user account.
 
  account "krimdomu",
-    ensure   => "present",
-    uid      => 509,
-    home     => '/root',
-    comment  => 'User Account',
-    expire   => '2011-05-30',
-    groups   => ['root', '...'],
-    password => 'blahblah',
-    system   => 1,
-    no_create_home => TRUE,
-    ssh_key        => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+   ensure      => "present",  # default
+   uid         => 509,
+   home        => '/root',
+   comment     => 'User Account',
+   expire      => '2011-05-30',
+   groups      => [ 'root', '...' ],
+   password    => 'blahblah',
+   system      => 1,
+   create_home => TRUE,
+   ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+
+There is also a no_create_home option similar to create_home but doing the
+opposite. If both used, create_home takes precedence as it the preferred option
+to specify home directory creation policy.
+
+If none of them are specified, Rex follows the remote system's home creation
+policy.
 
 =cut
 
 sub account {
   my ( $name, %option ) = @_;
 
-  if ( exists $option{ensure} && $option{ensure} eq "present" ) {
-    delete $option{ensure};
-    create_user( $name, %option );
+  if ( !ref $name ) {
+    $name = [$name];
   }
-  elsif ( exists $option{ensure} && $option{ensure} eq "absent" ) {
-    delete_user $name;
+
+  $option{ensure} ||= "present";
+
+  for my $n ( @{$name} ) {
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "account", name => $n );
+
+    my $real_name = $n;
+    if ( exists $option{name} ) {
+      $real_name = $option{name};
+    }
+
+    if ( exists $option{ensure} && $option{ensure} eq "present" ) {
+      delete $option{ensure};
+      my $data = &create_user( $real_name, %option, __ret_changed => 1 );
+      Rex::get_current_connection()->{reporter}
+        ->report( changed => $data->{changed}, );
+    }
+    elsif ( exists $option{ensure} && $option{ensure} eq "absent" ) {
+      &delete_user($real_name);
+      Rex::get_current_connection()->{reporter}->report( changed => 1, );
+    }
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_end( type => "account", name => $n );
   }
 }
 
@@ -126,18 +155,7 @@ sub create_user {
 
   if ( defined $data->{"ssh_key"} ) {
 
-    if (
-      !( exists $data->{"no-create-home"} && $data->{"no-create-home"} )
-
-      &&
-
-      !( exists $data->{"no_create_home"} && $data->{"no_create_home"} )
-
-      &&
-
-      !is_dir( $data->{"home"} . "/.ssh" )
-      )
-    {
+    if ( !is_dir( $data->{"home"} . "/.ssh" ) ) {
 
       eval {
         mkdir $data->{"home"} . "/.ssh",
@@ -167,7 +185,11 @@ sub create_user {
   Rex::Hook::run_hook( create_user => "after", @_, $uid );
   ##############################
 
-  return $uid;
+  if ( $data->{__ret_changed} ) {
+    return $uid;
+  }
+
+  return $uid->{ret};
 }
 
 =item get_uid($user)

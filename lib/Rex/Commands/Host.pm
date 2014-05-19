@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -36,13 +36,73 @@ require Rex::Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
+use Rex::Commands::MD5;
 use Rex::Logger;
 use Data::Dumper;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
-@EXPORT = qw(create_host get_host delete_host);
+@EXPORT = qw(create_host get_host delete_host host_entry);
+
+=item host_entry($name, %option)
+
+Manages the entries in /etc/hosts.
+
+ host_entry "rexify.org",
+   ensure    => "present",
+   ip        => "88.198.93.110",
+   aliases   => ["www.rexify.org"],
+   on_change => sub { say "added host entry"; };
+
+  host_entry "rexify.org",
+    ensure    => "absent",
+    on_change => sub { say "removed host entry"; };
+
+=cut
+
+sub host_entry {
+  my ( $res_name, %option ) = @_;
+
+  $option{ensure} ||= "present";
+
+  my $name = $res_name;
+  if(exists $option{host}) {
+    $name = $option{host};
+  }
+
+  my $file = "/etc/hosts";
+
+  if(exists $option{file}) {
+    $file = $option{file};
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "host_entry", name => $res_name );
+
+  my $old_md5 = md5($file);
+  if ( $option{ensure} eq "present" ) {
+    &create_host( $name, \%option );
+  }
+  else {
+    &delete_host($name);
+  }
+  my $new_md5 = md5($file);
+
+  if ( $new_md5 ne $old_md5 ) {
+    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+      $option{on_change}->( $name, %option );
+    }
+
+    Rex::get_current_connection()->{reporter}->report(
+      changed => 1,
+      message => "Resource host_entry changed to $option{ensure}"
+    );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "host_entry", name => $res_name );
+}
 
 =item create_host($)
 
@@ -56,29 +116,33 @@ Update or create a /etc/hosts entry.
 =cut
 
 sub create_host {
-  my ($host, $data) = @_;
+  my ( $host, $data ) = @_;
 
-  if(! defined $data->{"ip"}) {
+  if ( !defined $data->{"ip"} ) {
     Rex::Logger::info("You need to set an ip for $host");
     die("You need to set an ip for $host");
   }
 
+  $data->{file} ||= "/etc/hosts";
+
   Rex::Logger::debug("Creating host $host");
 
-  my @cur_host = get_host($host);
-  if(! @cur_host) {
-    my $fh = file_append "/etc/hosts";
-    $fh->write($data->{"ip"} . "\t" . $host);
-    if(exists $data->{"aliases"}) {
-      $fh->write(" " . join(" ", @{$data->{"aliases"}}));
+  my @cur_host = get_host($host, { file => $data->{file} });
+  if ( !@cur_host ) {
+    my $fh = file_append $data->{file};
+    $fh->write( $data->{"ip"} . "\t" . $host );
+    if ( exists $data->{"aliases"} ) {
+      $fh->write( " " . join( " ", @{ $data->{"aliases"} } ) );
     }
     $fh->write("\n");
     $fh->close;
   }
   else {
-    my @host = get_host($host);
-    if($data->{"ip"} eq $host[0]->{"ip"} 
-      && join(" ", @{$data->{"aliases"}}) eq join(" ", @{$host[0]->{"aliases"}})) {
+    my @host = get_host($host, { file => $data->{file} });
+    if ( $data->{"ip"} eq $host[0]->{"ip"}
+      && join( " ", @{ $data->{"aliases"} || [] } ) eq
+      join( " ", @{ $host[0]->{"aliases"} } ) )
+    {
 
       Rex::Logger::debug("Nothing to update for host $host");
       return;
@@ -86,7 +150,7 @@ sub create_host {
     }
     Rex::Logger::debug("Host already exists. Updating...");
 
-    delete_host($host);
+    delete_host($host, $data->{file});
     return create_host(@_);
   }
 }
@@ -100,18 +164,19 @@ Delete a host from /etc/hosts.
 =cut
 
 sub delete_host {
-  my ($host) = @_;
+  my ($host, $file) = @_;
 
   Rex::Logger::debug("Deleting host $host");
+  $file ||= "/etc/hosts";
 
-  if(get_host($host)) {
-    my $fh = file_read "/etc/hosts";
+  if ( get_host($host, { file => $file }) ) {
+    my $fh      = file_read $file;
     my @content = $fh->read_all;
     $fh->close;
 
-    my @new_content = grep { ! /\s$host\s?/ } @content;
+    my @new_content = grep { !/\s$host\s?/ } @content;
 
-    $fh = file_write "/etc/hosts";
+    $fh = file_write $file;
     $fh->write(@new_content);
     $fh->close;
   }
@@ -130,16 +195,21 @@ Returns the information of $host in /etc/hosts.
 =cut
 
 sub get_host {
-  my ($hostname, @lines) = @_;
+  my ( $hostname, @lines ) = @_;
 
   Rex::Logger::debug("Getting host ($hostname) information");
 
+  my $file = "/etc/hosts";
+
   my @content;
-  if(@lines) {
+  if (@lines && ! ref $lines[0]) {
     @content = @lines;
   }
   else {
-    my $fh = file_read "/etc/hosts";
+    if(ref $lines[0] eq "HASH") {
+      $file = $lines[0]->{file};
+    }
+    my $fh = file_read $file;
     @content = $fh->read_all;
     $fh->close;
   }
@@ -147,11 +217,11 @@ sub get_host {
   my @hosts = _parse_hosts(@content);
   my @ret;
   for my $item (@hosts) {
-    if($item->{host} eq $hostname) {
+    if ( $item->{host} eq $hostname ) {
       push @ret, $item;
     }
     else {
-      push @ret, $item if(grep { $_ eq $hostname } @{$item->{aliases}});
+      push @ret, $item if ( grep { $_ eq $hostname } @{ $item->{aliases} } );
     }
   }
 
@@ -160,21 +230,23 @@ sub get_host {
 
 sub _parse_hosts {
   my (@lines) = @_;
-  
+
   my @ret;
 
   for my $line (@lines) {
     chomp $line;
-    next if($line =~ m/^#/);
-    next if(! $line);
-    next if($line =~ m/^\s*$/);
+    next if ( $line =~ m/^#/ );
+    next if ( !$line );
+    next if ( $line =~ m/^\s*$/ );
 
-    my ($ip, $_host, @aliases) = split(/\s+/, $line);
+    my ( $ip, $_host, @aliases ) = split( /\s+/, $line );
 
-    push @ret, { ip => $ip,
-      host => $_host,
+    push @ret,
+      {
+      ip      => $ip,
+      host    => $_host,
       aliases => \@aliases,
-    };
+      };
 
   }
 

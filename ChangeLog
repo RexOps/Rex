@@ -1,5 +1,36 @@
+2014-05-01 Jan Gehring <jan.gehring, gmail.com> (0.46.1)
+  * fixed a dependency problem
+  * fixed a problem detecting the temporary directory
+  * 'set port' ignored in Rexfile - #366
+  * update_system / better error message - #367
+  * set sudo auth for a special server in a group causes endless loops - #368
+
+2014-05-01 Jan Gehring <jan.gehring, gmail.com> (0.46.0)
+  * Rex::Box, added kvm support - #174
+  * core: allow passing template content to template command - #345 - reneeb
+  * core/report: refactored report generation. This change break backward compat. because the report format changed.
+  * core: added groups_dbi() function to generate server groups from sql - #346 - Jean-Marie RENOUARD
+  * core: added groups_yaml() function to generate server groups from yaml file - Jean-Marie RENOUARD
+  * core: add support for df on a given mount point - Simon Bertrang
+  * cloud/amazon: fixed a case where amazon returns instance item in an array - Kasim Tuman
+  * core: added authentication to download() function. - #340
+  * core: refactored tmp dir generation - FErki
+  * cloud: added cloud_volume detach/attach function
+  * cloud/amazon: fixed multiple tags - David Golovan
+  * core: added description to environments - #274
+  * refactored README.pod to README.md, added build badge - eduardoj
+  * core: extended rexify command to work with git
+  * core/test: Added Rex::Test - Framework to run tests
+  * core: Connect failure reports "Error running task/batch: Wrong username/password or wrong key"  - #359 - eduardoj
+  * core/cmdb: path can now have variables / can be extended
+  * core/user: refactored handling of home directory creation. This might break compat. because we are following the system default now. (added create_home option) - #270 - FErki
+  * core: added a special load path for perl libraries, so that we don't mix up perl and rex modules.
+  * core/service: using nohup to work around a bug in Net::SSH2/libssh2
+  * core: the caching is now enabled by default. this might break backward compat. if you are using chroot() to another system inside a task.
+  * core: added 'no_cache' feature.
+
 2014-04-13 Jan Gehring <jan.gehring, gmail.com> (0.45.3)
-  * fixed jiffybox endless loop on creating instances. #344 - Renee
+  * fixed jiffybox endless loop on creating instances. #344 - reneeb
 
 2014-04-12 Jan Gehring <jan.gehring, gmail.com> (0.45.2)
   * fixed special mkdir() case on local windows runs.

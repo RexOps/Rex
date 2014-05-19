@@ -96,7 +96,7 @@ BEGIN {
   if ( -d "$cur_dir/lib" ) {
     push( @INC, "$cur_dir/lib" );
     push( @INC, "$cur_dir/lib/perl/lib/perl5" );
-    if($^O =~ m/^MSWin/) {
+    if ( $^O =~ m/^MSWin/ ) {
       my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
       my $mswin32_path = basename $special_win_path;
       push( @INC, "$cur_dir/lib/perl/lib/perl5/$mswin32_path" );
@@ -290,6 +290,12 @@ Returns 1 if the current operation is executed within sudo.
 
 sub is_sudo {
   if ($GLOBAL_SUDO) { return 1; }
+
+  if ( exists $CONNECTION_STACK[-1]->{server}->{auth}->{sudo}
+    && $CONNECTION_STACK[-1]->{server}->{auth}->{sudo} == 1 )
+  {
+    return 1;
+  }
 
   if ( $CONNECTION_STACK[-1] ) {
     return $CONNECTION_STACK[-1]->{"use_sudo"};

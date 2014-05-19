@@ -1,3 +1,10 @@
+2014-05-01 Jan Gehring <jan.gehring, gmail.com> (0.46.1)
+  * fixed a dependency problem
+  * fixed a problem detecting the temporary directory
+  * 'set port' ignored in Rexfile - #366
+  * update_system / better error message - #367
+  * set sudo auth for a special server in a group causes endless loops - #368
+
 2014-05-01 Jan Gehring <jan.gehring, gmail.com> (0.46.0)
   * Rex::Box, added kvm support - #174
   * core: allow passing template content to template command - #345 - reneeb

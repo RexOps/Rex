@@ -3,6 +3,8 @@ use Test::More tests => 5;
 use_ok 'Rex::Commands::Run';
 use_ok 'Rex::Config';
 
+$::QUIET = 1;
+
 Rex::Commands::Run->import;
 
 if($^O =~ m/^MSWin/) {

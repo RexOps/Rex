@@ -59,7 +59,6 @@ Version <= 1.0: All these functions will not be reported.
 
 =cut
 
-
 package Rex::Commands::Box;
 
 use strict;
@@ -74,7 +73,6 @@ use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::Gather;
 
-
 $|++;
 
 ################################################################################
@@ -85,22 +83,24 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT %vm_infos $VM_STRUCT);
 use Rex::Box;
+
 #@EXPORT = qw(box $box);
 @EXPORT = qw(box list_boxes get_box boxes);
 
-Rex::Config->register_set_handler("box", sub {
-  my ($type, @data) = @_;
-  Rex::Config->set("box_type", $type);
+Rex::Config->register_set_handler(
+  "box",
+  sub {
+    my ( $type, @data ) = @_;
+    Rex::Config->set( "box_type", $type );
 
-  if(ref($data[0])) {
-    Rex::Config->set("box_options", $data[0]);
+    if ( ref( $data[0] ) ) {
+      Rex::Config->set( "box_options", $data[0] );
+    }
+    else {
+      Rex::Config->set( "box_options", {@data} );
+    }
   }
-  else {
-    Rex::Config->set("box_options", { @data });
-  }
-});
-
-
+);
 
 =item new(name => $box_name)
 
@@ -183,37 +183,38 @@ This function returns an array of hashes containing all information that can be 
  };
 
 =cut
+
 sub list_boxes {
   my $box = Rex::Box->create;
   my @ret = $box->list_boxes;
 
   my $ref = LOCAL {
-    if( -f ".box.cache") {
-      my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
+    if ( -f ".box.cache" ) {
+      my $yaml_str = eval { local ( @ARGV, $/ ) = (".box.cache"); <>; };
       $yaml_str .= "\n";
       my $yaml_ref = Load($yaml_str);
 
-      for my $box (keys %{ $yaml_ref }) {
+      for my $box ( keys %{$yaml_ref} ) {
         my ($found_box) = grep { $_->{name} eq $box } @ret;
-        if(! $found_box) {
+        if ( !$found_box ) {
           $yaml_ref->{$box} = undef;
           delete $yaml_ref->{$box};
         }
       }
 
-      open(my $fh, ">", ".box.cache") or die($!);
+      open( my $fh, ">", ".box.cache" ) or die($!);
       print $fh Dump($yaml_ref);
       close($fh);
     }
 
-    if(wantarray) {
+    if (wantarray) {
       return @ret;
     }
 
     return \@ret;
   };
 
-  return @{ $ref };
+  return @{$ref};
 }
 
 =item get_box($box_name)
@@ -227,13 +228,14 @@ This function tries to gather all information of a Rex/Box. This function also s
  };
 
 =cut
+
 sub get_box {
   my ($box_name) = @_;
 
-  my $box = Rex::Box->create(name => $box_name);
+  my $box = Rex::Box->create( name => $box_name );
   $box->info;
 
-  if($box->status eq "stopped") {
+  if ( $box->status eq "stopped" ) {
     $box->start;
     $box->wait_for_ssh;
   }
@@ -243,22 +245,23 @@ sub get_box {
 
   return LOCAL {
 
-    if( -f ".box.cache") {
+    if ( -f ".box.cache" ) {
       Rex::Logger::debug("Loading box information of cache file: .box.cache.");
-      my $yaml_str = eval { local(@ARGV, $/) = (".box.cache"); <>; };
+      my $yaml_str = eval { local ( @ARGV, $/ ) = (".box.cache"); <>; };
       $yaml_str .= "\n";
       my $yaml_ref = Load($yaml_str);
-      %vm_infos = %{ $yaml_ref };
+      %vm_infos = %{$yaml_ref};
     }
 
-    if(exists $vm_infos{$box_name}) {
+    if ( exists $vm_infos{$box_name} ) {
       return $vm_infos{$box_name};
     }
 
     my $pid = fork;
-    if($pid == 0) {
-      print "Gathering system information from $box_name.\nThis may take a while..";
-      while(1) {
+    if ( $pid == 0 ) {
+      print
+        "Gathering system information from $box_name.\nThis may take a while..";
+      while (1) {
         print ".";
         sleep 1;
       }
@@ -269,25 +272,29 @@ sub get_box {
     my $old_q = $::QUIET;
     $::QUIET = 1;
 
-    eval {
-      $vm_infos{$box_name} = run_task "get_sys_info", on => $box_ip;
-    } or do {
+    eval { $vm_infos{$box_name} = run_task "get_sys_info", on => $box_ip; }
+      or do {
       $::QUIET = $old_q;
       print STDERR "\n";
-      Rex::Logger::info("There was an error connecting to your Box. Please verify the login credentials.", "warn");
-      Rex::Logger::debug("You have to define login credentials before calling get_box()");
+      Rex::Logger::info(
+"There was an error connecting to your Box. Please verify the login credentials.",
+        "warn"
+      );
+      Rex::Logger::debug(
+        "You have to define login credentials before calling get_box()");
+
       # cleanup
       kill 9, $pid;
       CORE::exit(1);
-    };
+      };
     $::QUIET = $old_q;
 
-    for my $key (keys %{ $box_info }) {
+    for my $key ( keys %{$box_info} ) {
       $vm_infos{$box_name}->{$key} = $box_info->{$key};
     }
 
-    open(my $fh, ">", ".box.cache") or die($!);
-    print $fh Dump(\%vm_infos);
+    open( my $fh, ">", ".box.cache" ) or die($!);
+    print $fh Dump( \%vm_infos );
     close($fh);
 
     kill 9, $pid;
@@ -331,16 +338,17 @@ This action stop one or more Rex/Boxes.
 =back
 
 =cut
-sub boxes {
-  my ($action, @data) = @_;
 
-  if(substr($action, 0, 1) eq "-") {
-    $action = substr($action, 1);
+sub boxes {
+  my ( $action, @data ) = @_;
+
+  if ( substr( $action, 0, 1 ) eq "-" ) {
+    $action = substr( $action, 1 );
   }
 
-  if($action eq "init") {
+  if ( $action eq "init" ) {
 
-    if(-f ".box.cache") {
+    if ( -f ".box.cache" ) {
       unlink ".box.cache";
     }
 
@@ -348,12 +356,15 @@ sub boxes {
 
     my @vms;
 
-    if(ref $yaml_ref->{vms} eq "HASH") {
-      for my $vm (keys %{ $yaml_ref->{vms} }) {
-        push(@vms, {
-          name => $vm,
-          %{ $yaml_ref->{vms}->{$vm} }
-        });
+    if ( ref $yaml_ref->{vms} eq "HASH" ) {
+      for my $vm ( keys %{ $yaml_ref->{vms} } ) {
+        push(
+          @vms,
+          {
+            name => $vm,
+            %{ $yaml_ref->{vms}->{$vm} }
+          }
+        );
       }
     }
     else {
@@ -367,57 +378,61 @@ sub boxes {
 
         $box->name($vm);
 
-        for my $key (keys %{ $vm_ref }) {
-          if(ref($vm_ref->{$key}) eq "HASH") {
-            $box->$key(%{ $vm_ref->{$key} });
+        for my $key ( keys %{$vm_ref} ) {
+          if ( ref( $vm_ref->{$key} ) eq "HASH" ) {
+            $box->$key( %{ $vm_ref->{$key} } );
           }
-          elsif(ref($vm_ref->{$key}) eq "ARRAY") {
-            $box->$key(@{ $vm_ref->{$key} });
+          elsif ( ref( $vm_ref->{$key} ) eq "ARRAY" ) {
+            $box->$key( @{ $vm_ref->{$key} } );
           }
           else {
-            $box->$key($vm_ref->{$key});
+            $box->$key( $vm_ref->{$key} );
           }
         }
       };
     }
   }
 
-  if($action eq "stop") {
+  if ( $action eq "stop" ) {
     for my $box (@data) {
-      my $o = Rex::Commands::Box->new(name => $box);
+      my $o = Rex::Commands::Box->new( name => $box );
       $o->stop;
     }
   }
 
-  if($action eq "start") {
+  if ( $action eq "start" ) {
     for my $box (@data) {
-      my $o = Rex::Commands::Box->new(name => $box);
+      my $o = Rex::Commands::Box->new( name => $box );
       $o->start;
     }
   }
 
 }
 
-Rex::TaskList->create()->create_task("get_sys_info", sub {
-  return { get_system_information() };
-}, { dont_register => 1, exit_on_connect_fail => 0 });
+Rex::TaskList->create()->create_task(
+  "get_sys_info",
+  sub {
+    return { get_system_information() };
+  },
+  { dont_register => 1, exit_on_connect_fail => 0 }
+);
 
 sub import {
-  my ($class, %option) = @_;
+  my ( $class, %option ) = @_;
 
-  if($option{init_file}) {
+  if ( $option{init_file} ) {
     my $file = $option{init_file};
 
-    if(! -f $file) {
+    if ( !-f $file ) {
       die("Error: Wrong configuration file: $file.");
     }
 
-    my $yaml_str = eval { local(@ARGV, $/) = ($file); <>; };
+    my $yaml_str = eval { local ( @ARGV, $/ ) = ($file); <>; };
     $yaml_str .= "\n";
 
     my $yaml_ref = Load($yaml_str);
 
-    if(! exists $yaml_ref->{type}) {
+    if ( !exists $yaml_ref->{type} ) {
       die("You have to define a type.");
     }
 
@@ -425,10 +440,10 @@ sub import {
     set box_type => $type;
 
     # set special box options, like amazon out
-    if(exists $yaml_ref->{"\L$type"}) {
+    if ( exists $yaml_ref->{"\L$type"} ) {
       set box_options => $yaml_ref->{"\L$type"};
     }
-    elsif(exists $yaml_ref->{$type}) {
+    elsif ( exists $yaml_ref->{$type} ) {
       set box_options => $yaml_ref->{$type};
     }
 
@@ -437,7 +452,7 @@ sub import {
     @_ = ($class);
   }
 
-  __PACKAGE__->export_to_level(1, @_);
+  __PACKAGE__->export_to_level( 1, @_ );
 }
 
 =back

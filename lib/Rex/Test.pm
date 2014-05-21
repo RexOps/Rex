@@ -8,6 +8,7 @@ package Rex::Test;
 
 use Rex -base;
 use Data::Dumper;
+use Rex::Commands::Box;
 
 task run => make {
   Rex::Logger::info("Running integration tests...");

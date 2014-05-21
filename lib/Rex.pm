@@ -173,6 +173,10 @@ sub get_module_path {
 }
 
 sub push_connection {
+  if ( !ref $_[0]->{server} ) {
+    $_[0]->{server} = Rex::Group::Entry::Server->new( name => $_[0]->{server} );
+  }
+
   push @CONNECTION_STACK, $_[0];
   return $_[0];
 }

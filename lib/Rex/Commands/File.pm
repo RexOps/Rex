@@ -156,7 +156,7 @@ sub template {
 
       if(! -f $file_path) {
         my ($mod_name) = ($caller[0] =~ m/^.*::(.*?)$/);
-        if(-f "$file_path/$mod_name.pm") {
+        if($mod_name && -f "$file_path/$mod_name.pm") {
           $file_path = "$file_path/$mod_name.pm";
         }
         elsif(-f "$file_path/__module__.pm") {

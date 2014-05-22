@@ -82,7 +82,7 @@ use Rex::Interface::Exec;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 
-use File::Basename qw(dirname);
+use File::Basename qw(dirname basename);
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -155,7 +155,11 @@ sub template {
       my $file_path = Rex::get_module_path($caller[0]);
 
       if(! -f $file_path) {
-        if(-f "$file_path/__module__.pm") {
+        my ($mod_name) = ($caller[0] =~ m/^.*::(.*?)$/);
+        if(-f "$file_path/$mod_name.pm") {
+          $file_path = "$file_path/$mod_name.pm";
+        }
+        elsif(-f "$file_path/__module__.pm") {
           $file_path = "$file_path/__module__.pm";
         }
         elsif(-f "$file_path/Module.pm") {

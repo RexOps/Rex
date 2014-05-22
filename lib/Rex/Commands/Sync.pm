@@ -133,7 +133,7 @@ sub sync_up {
   #
 
   for my $file (@diff) {
-    next if $file->{name} ~~ @excluded_files;
+    next if grep { $_ eq $file->{name} } @excluded_files;
 
     my ($dir)      = ($file->{path} =~ m/(.*)\/[^\/]+$/);
     my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);
@@ -263,7 +263,7 @@ sub sync_down {
   #
 
   for my $file (@diff) {
-    next if $file->{name} ~~ @excluded_files;
+    next if grep { $_ eq $file->{name} } @excluded_files;
 
     my ($dir)      = ($file->{path} =~ m/(.*)\/[^\/]+$/);
     my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);

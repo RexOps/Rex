@@ -16,7 +16,7 @@ This is a Rex/Boxes module to use VirtualBox VMs.
 
 To use this module inside your Rexfile you can use the following commands.
 
- use Rex::Commands::Boxes;
+ use Rex::Commands::Box;
  set box => "VBox";
 
  task "prepare_box", sub {

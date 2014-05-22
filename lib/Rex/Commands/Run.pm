@@ -112,7 +112,7 @@ sub run {
   if ( ref $_[0] eq "CODE" ) {
     $code = shift;
   }
-  elsif ( scalar @_ > 0 ) {
+  if ( scalar @_ > 0 ) {
     $option = {@_};
   }
 

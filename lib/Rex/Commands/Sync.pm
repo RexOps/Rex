@@ -109,10 +109,32 @@ sub sync_up {
   #print Dumper(\@diff);
 
   #
-  # fourth, upload the different files
+  # fourth, build excludes list
+  #
+
+  my $excludes = $options->{exclude} ||= [];
+  $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
+
+  my @excluded_files;
+  foreach my $ex (@$excludes) {
+    LOCAL {
+      if (is_dir $ex) {
+        map { push(@excluded_files, sprintf('/%s', File::Spec->canonpath("$ex/$_->{name}"))) } _get_local_files($ex);
+      } else {
+        foreach my $path (glob $ex) {
+          push(@excluded_files, sprintf('/%s', File::Spec->canonpath($path)));
+        }
+      }
+    };
+  }
+
+  #
+  # fifth, upload the different files
   #
 
   for my $file (@diff) {
+    next if $file->{name} ~~ @excluded_files;
+
     my ($dir)      = ($file->{path} =~ m/(.*)\/[^\/]+$/);
     my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);
 
@@ -217,10 +239,32 @@ sub sync_down {
   #print Dumper(\@diff);
 
   #
-  # fourth, upload the different files
+  # fourth, build excludes list
+  #
+
+  my $excludes = $options->{exclude} ||= [];
+  $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
+
+  my @excluded_files;
+  foreach my $ex (@$excludes) {
+    LOCAL {
+      if (is_dir $ex) {
+        map { push(@excluded_files, sprintf('/%s', File::Spec->canonpath("$ex/$_->{name}"))) } _get_local_files($ex);
+      } else {
+        foreach my $path (glob $ex) {
+          push(@excluded_files, sprintf('/%s', File::Spec->canonpath($path)));
+        }
+      }
+    };
+  }
+
+  #
+  # fifth, upload the different files
   #
 
   for my $file (@diff) {
+    next if $file->{name} ~~ @excluded_files;
+
     my ($dir)      = ($file->{path} =~ m/(.*)\/[^\/]+$/);
     my ($remote_dir) = ($file->{name} =~ m/\/(.*)\/[^\/]+$/);
 

@@ -47,7 +47,7 @@ sub execute {
     Rex::Logger::debug(
       "converting $cwd/tmp/$vmdk[0] -> $cwd/storage/$file.qcow2");
     i_run
-      "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $cwd/storage/$file.qcow2";
+      "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $cwd/$file.qcow2";
 
     if ( $? != 0 ) {
       Rex::Logger::info(

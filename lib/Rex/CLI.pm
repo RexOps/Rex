@@ -485,9 +485,9 @@ CHECK_OVERWRITE: {
           "    " . join( " ", Rex::Batch->get_batch($batch) ) . "\n" );
       }
     }
-    _print_color( "Environments\n", "yellow" );
     my @envs = map { Rex::Commands->get_environment($_) }
       Rex::Commands->get_environments();
+    _print_color( "Environments\n", "yellow" ) if scalar @envs;
     for my $e (@envs) {
       printf "  %-30s %s\n", $e->{name}, $e->{description};
     }

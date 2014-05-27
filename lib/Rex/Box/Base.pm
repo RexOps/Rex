@@ -37,16 +37,16 @@ use File::Basename qw(basename);
 use Data::Dumper;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   # default auth for rex boxes
   $self->{__auth} = {
-    user      => Rex::Config->get_user(),
-    password   => Rex::Config->get_password(),
+    user        => Rex::Config->get_user(),
+    password    => Rex::Config->get_password(),
     private_key => Rex::Config->get_private_key(),
     public_key  => Rex::Config->get_public_key(),
   };
@@ -59,6 +59,7 @@ sub new {
 Returns a hashRef of vm information.
 
 =cut
+
 sub info {
   my ($self) = @_;
   return $self->{info};
@@ -69,8 +70,9 @@ sub info {
 Sets the name of the virtual machine.
 
 =cut
+
 sub name {
-  my ($self, $name) = @_;
+  my ( $self, $name ) = @_;
   $self->{name} = $name;
 }
 
@@ -79,8 +81,9 @@ sub name {
 Sets the tasks that should be executed as soon as the VM is available throu SSH.
 
 =cut
+
 sub setup {
-  my ($self, @tasks) = @_;
+  my ( $self, @tasks ) = @_;
   $self->{__tasks} = \@tasks;
 }
 
@@ -89,6 +92,7 @@ sub setup {
 This method must be overwriten by the implementing class.
 
 =cut
+
 sub import_vm {
   my ($self) = @_;
   die("This method must be overwriten.");
@@ -99,6 +103,7 @@ sub import_vm {
 Stops the VM.
 
 =cut
+
 sub stop {
   my ($self) = @_;
   $self->info;
@@ -110,6 +115,7 @@ sub stop {
 Starts the VM.
 
 =cut
+
 sub start {
   my ($self) = @_;
   $self->info;
@@ -122,6 +128,7 @@ sub start {
 Return the ip:port to which rex will connect to.
 
 =cut
+
 sub ip { die("Must be implemented by box class.") }
 
 =item status()
@@ -131,6 +138,7 @@ Returns the status of a VM.
 Valid return values are "running" and "stopped".
 
 =cut
+
 sub status {
   my ($self) = @_;
   return vm status => $self->{name};
@@ -141,8 +149,9 @@ sub status {
 Execute's the given tasks on the VM.
 
 =cut
+
 sub provision_vm {
-  my ($self, @tasks) = @_;
+  my ( $self, @tasks ) = @_;
   die("This method must be overwriten.");
 }
 
@@ -151,8 +160,9 @@ sub provision_vm {
 Set the amount of CPUs for the VM.
 
 =cut
+
 sub cpus {
-  my ($self, $cpus) = @_;
+  my ( $self, $cpus ) = @_;
   $self->{cpus} = $cpus;
 }
 
@@ -161,8 +171,9 @@ sub cpus {
 Sets the memory of a VM in megabyte.
 
 =cut
+
 sub memory {
-  my ($self, $mem) = @_;
+  my ( $self, $mem ) = @_;
   $self->{memory} = $mem;
 }
 
@@ -186,8 +197,9 @@ Currently it supports 2 modes. I<nat> and I<bridged>. Currently it supports only
  );
 
 =cut
+
 sub network {
-  my ($self, %option) = @_;
+  my ( $self, %option ) = @_;
   $self->{__network} = \%option;
 }
 
@@ -202,8 +214,9 @@ Set ports to be forwarded to the VM. This is not supported by all Box providers.
  );
 
 =cut
+
 sub forward_port {
-  my ($self, %option) = @_;
+  my ( $self, %option ) = @_;
   $self->{__forward_port} = \%option;
 }
 
@@ -212,23 +225,24 @@ sub forward_port {
 List all available boxes.
 
 =cut
+
 sub list_boxes {
   my ($self) = @_;
 
   my $vms = vm list => "all";
 
-  return @{ $vms };
+  return @{$vms};
 }
-
 
 =item url($url)
 
 The URL where to download the Base VM Image. You can use self-made images or prebuild images from http://box.rexify.org/.
 
 =cut
+
 sub url {
-  my ($self, $url, $force) = @_;
-  $self->{url} = $url;
+  my ( $self, $url, $force ) = @_;
+  $self->{url}   = $url;
   $self->{force} = $force;
 }
 
@@ -244,27 +258,28 @@ Configure the authentication to the VM.
  );
 
 =cut
+
 sub auth {
-  my ($self, %auth) = @_;
+  my ( $self, %auth ) = @_;
   $self->{__auth} = \%auth;
 }
 
 sub wait_for_ssh {
-  my ($self, $ip, $port) = @_;
+  my ( $self, $ip, $port ) = @_;
 
-  if(! $ip) {
-    ($ip, $port) = split(/:/, $self->ip);
+  if ( !$ip ) {
+    ( $ip, $port ) = split( /:/, $self->ip );
     $port ||= 22;
   }
 
   print "Waiting for SSH to come up on $ip:$port.";
-  while( ! is_port_open ($ip, $port) ) {
+  while ( !is_port_open( $ip, $port ) ) {
     print ".";
     sleep 1;
   }
 
-  my $i=5;
-  while($i != 0) {
+  my $i = 5;
+  while ( $i != 0 ) {
     sleep 1;
     print ".";
     $i--;
@@ -276,80 +291,93 @@ sub wait_for_ssh {
 sub _download {
   my ($self) = @_;
 
-  my $filename = basename($self->{url});
+  my $filename = basename( $self->{url} );
   my $force = $self->{force} || FALSE;
 
-  if(is_file("./tmp/$filename")) {
-    Rex::Logger::info("File already downloaded. Please remove the file ./tmp/$filename if you want to download a fresh copy.");
+  if ( is_file("./tmp/$filename") ) {
+    Rex::Logger::info(
+      "File already downloaded. Please remove the file ./tmp/$filename if you want to download a fresh copy."
+    );
   }
   else {
     $force = TRUE;
   }
 
-  if($force) {
+  if ($force) {
     Rex::Logger::info("Downloading $self->{url} to ./tmp/$filename");
     mkdir "tmp";
-    if(Rex::is_local()) {
+    if ( Rex::is_local() ) {
       my $ua = LWP::UserAgent->new();
       $ua->env_proxy;
-      my $final_data = "";
-      my $current_size = 0;
+      my $final_data     = "";
+      my $current_size   = 0;
       my $current_modulo = 0;
-      my $start_time = [gettimeofday()];
-      open(my $fh, ">", "./tmp/$filename") or die($!);
+      my $start_time     = [ gettimeofday() ];
+      open( my $fh, ">", "./tmp/$filename" ) or die($!);
       binmode $fh;
-      my $resp = $ua->get($self->{url}, ':content_cb' => sub {
-        my ($data, $response, $protocol) = @_;
+      my $resp = $ua->get(
+        $self->{url},
+        ':content_cb' => sub {
+          my ( $data, $response, $protocol ) = @_;
 
-        $current_size += length($data);
+          $current_size += length($data);
 
-        my $content_length = $response->header("content-length");
+          my $content_length = $response->header("content-length");
 
-        print $fh $data;
+          print $fh $data;
 
-        my $current_time = [gettimeofday()];
-        my $time_diff = tv_interval($start_time, $current_time);
+          my $current_time = [ gettimeofday() ];
+          my $time_diff = tv_interval( $start_time, $current_time );
 
-        my $bytes_per_seconds = $current_size / $time_diff;
+          my $bytes_per_seconds = $current_size / $time_diff;
 
-        my $mbytes_per_seconds = $bytes_per_seconds / 1024 / 1024;
+          my $mbytes_per_seconds = $bytes_per_seconds / 1024 / 1024;
 
-        my $mbytes_current = $current_size / 1024 / 1024;
-        my $mbytes_total = $content_length / 1024 / 1024;
+          my $mbytes_current = $current_size / 1024 / 1024;
+          my $mbytes_total   = $content_length / 1024 / 1024;
 
-        my $left_bytes = $content_length - $current_size;
+          my $left_bytes = $content_length - $current_size;
 
-        my $time_one_byte  = $time_diff / $current_size;
-        my $time_all_bytes = $time_one_byte * ($content_length - $current_size);
+          my $time_one_byte = $time_diff / $current_size;
+          my $time_all_bytes =
+            $time_one_byte * ( $content_length - $current_size );
 
-        if( (($current_size / (1024 * 1024)) % (1024 * 1024)) > $current_modulo ) {
-          print ".";
-          $current_modulo++;
+          if ( ( ( $current_size / ( 1024 * 1024 ) ) % ( 1024 * 1024 ) ) >
+            $current_modulo )
+          {
+            print ".";
+            $current_modulo++;
 
-          if( $current_modulo % 10 == 0) {
-            printf(". %.2f MBytes/s (%.2f MByte / %.2f MByte) %.2f secs left\n", $mbytes_per_seconds, $mbytes_current, $mbytes_total, $time_all_bytes);
+            if ( $current_modulo % 10 == 0 ) {
+              printf(
+                ". %.2f MBytes/s (%.2f MByte / %.2f MByte) %.2f secs left\n",
+                $mbytes_per_seconds, $mbytes_current,
+                $mbytes_total,       $time_all_bytes
+              );
+            }
+
           }
 
         }
-
-      });
+      );
       close($fh);
 
-      if($resp->is_success) {
+      if ( $resp->is_success ) {
         print " done.\n";
       }
       else {
-        Rex::Logger::info("Error downloading box image.", "warn");
+        Rex::Logger::info( "Error downloading box image.", "warn" );
         unlink "./tmp/$filename";
       }
-
 
     }
     else {
       run "wget -c -qO ./tmp/$filename $self->{url}";
 
-      if($? != 0) {
-        die("Downloading of $self->{url} failed. Please verify if wget is installed and if you have the right permissions to download this box.");
+      if ( $? != 0 ) {
+        die(
+          "Downloading of $self->{url} failed. Please verify if wget is installed and if you have the right permissions to download this box."
+        );
       }
     }
   }
@@ -358,6 +386,5 @@ sub _download {
 =back
 
 =cut
-
 
 1;

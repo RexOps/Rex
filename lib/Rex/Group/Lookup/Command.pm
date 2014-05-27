@@ -47,11 +47,11 @@ sub lookup_command {
 
   if ( defined $command && $command ) {
     $command_to_exec = $command;
-    Rex::Logger::info("command: $command");
+    Rex::Logger::info("Command: $command");
   }
 
   unless ( defined $command_to_exec && $command_to_exec ) {
-    Rex::Logger::info("you must give a valid command.");
+    Rex::Logger::info("You must give a valid command.");
     return @content;
   }
 
@@ -62,7 +62,7 @@ sub lookup_command {
 
     chomp @content;
   };
-  Rex::Logger::info("you must give a valid command.") unless $#content;
+  Rex::Logger::info("You must give a valid command.") unless $#content;
   return @content;
 }
 

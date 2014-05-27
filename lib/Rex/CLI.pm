@@ -194,7 +194,7 @@ FORCE_SERVER: {
       $::FORCE_SERVER = join( " ", split /\n|,|;/, $host_eval );
     }
     else {
-      Rex::Logger::info("you must give a valid command.");
+      Rex::Logger::info("You must give a valid command.");
     }
   }
 

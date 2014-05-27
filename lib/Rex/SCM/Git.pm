@@ -31,7 +31,7 @@ sub checkout {
       sprintf( $CLONE_COMMAND, $repo_info->{"url"}, $checkout_to );
     Rex::Logger::debug("clone_cmd: $clone_cmd");
 
-    Rex::Logger::info( "cloning "
+    Rex::Logger::info( "Cloning "
         . $repo_info->{"url"} . " to "
         . ( $checkout_to ? $checkout_to : "." ) );
     my $out = run "$clone_cmd", cwd => dirname($checkout_to);
@@ -54,7 +54,7 @@ sub checkout {
         $checkout_opt->{"branch"} );
       Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
-      Rex::Logger::info( "switching to branch " . $checkout_opt->{"branch"} );
+      Rex::Logger::info( "Switching to branch " . $checkout_opt->{"branch"} );
 
       $out = run "$checkout_cmd", cwd => $checkout_to;
       Rex::Logger::debug($out);

@@ -108,7 +108,7 @@ sub execute {
     }
   }
 
-  Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
+  Rex::Logger::info("Creating domain: \"$opts->{'name'}\"");
 
   $parsed_template =~ s/[\n\r]//gms;
 

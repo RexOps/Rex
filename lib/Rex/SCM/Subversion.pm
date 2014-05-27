@@ -62,7 +62,7 @@ sub checkout {
   }
   Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
-  Rex::Logger::info( "cloning "
+  Rex::Logger::info( "Cloning "
       . $repo_info->{"url"} . " to "
       . ( $checkout_to ? $checkout_to : "." ) );
   my $out = run "$checkout_cmd";

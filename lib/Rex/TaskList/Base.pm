@@ -278,7 +278,7 @@ sub modify {
   }
   else {
     Rex::Logger::info(
-      "can't add $type $task, as its not yet defined\nsee $file line $line");
+      "Can't add $type $task, as its not yet defined\nsee $file line $line");
   }
 }
 

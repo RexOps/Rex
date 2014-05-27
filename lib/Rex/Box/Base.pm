@@ -78,7 +78,7 @@ sub name {
 
 =item setup(@tasks)
 
-Sets the tasks that should be executed as soon as the VM is available throu SSH.
+Sets the tasks that should be executed as soon as the VM is available through SSH.
 
 =cut
 
@@ -89,13 +89,13 @@ sub setup {
 
 =item import_vm()
 
-This method must be overwriten by the implementing class.
+This method must be overwritten by the implementing class.
 
 =cut
 
 sub import_vm {
   my ($self) = @_;
-  die("This method must be overwriten.");
+  die("This method must be overwritten.");
 }
 
 =item stop()
@@ -146,13 +146,13 @@ sub status {
 
 =item provision_vm([@tasks])
 
-Execute's the given tasks on the VM.
+Executes the given tasks on the VM.
 
 =cut
 
 sub provision_vm {
   my ( $self, @tasks ) = @_;
-  die("This method must be overwriten.");
+  die("This method must be overwritten.");
 }
 
 =item cpus($count)
@@ -181,7 +181,7 @@ sub memory {
 
 Configure the network for a VM.
 
-Currently it supports 2 modes. I<nat> and I<bridged>. Currently it supports only one network card.
+Currently it supports 2 modes: I<nat> and I<bridged>. Currently it supports only one network card.
 
  $box->network(
    1 => {

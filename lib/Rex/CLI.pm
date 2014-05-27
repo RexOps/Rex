@@ -113,9 +113,10 @@ sub __run__ {
 
   Rex::Config->set_use_cache(1);
   if ( $opts{"c"} ) {
-  #  Rex::Config->set_use_cache(1);
-  # since 0.46 just a pseudo option
-  # cache is enabled by default
+
+    #  Rex::Config->set_use_cache(1);
+    # since 0.46 just a pseudo option
+    # cache is enabled by default
   }
   elsif ( $opts{"C"} ) {
     Rex::Config->set_use_cache(0);

@@ -394,7 +394,7 @@ sub _set_network_defaults {
           type     => "pci",
           domain   => "0x0000",
           bus      => "0x00",
-          slot     => "0x" . sprintf('%02i', $slot),
+          slot     => "0x" . sprintf( '%02i', $slot ),
           function => "0x0",
         };
 

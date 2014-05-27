@@ -39,25 +39,24 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(lookup_command);
 
-
 sub lookup_command {
   my $command = shift;
 
   my $command_to_exec;
   my @content;
 
-  if (defined $command && $command) {
+  if ( defined $command && $command ) {
     $command_to_exec = $command;
     Rex::Logger::info("command: $command");
   }
 
-  unless (defined $command_to_exec && $command_to_exec) {
+  unless ( defined $command_to_exec && $command_to_exec ) {
     Rex::Logger::info("you must give a valid command.");
     return @content;
   }
 
   eval {
-    open(my $command_rt, "$command_to_exec |") or die($!);
+    open( my $command_rt, "$command_to_exec |" ) or die($!);
     @content = grep { !/^\s*$|^#/ } <$command_rt>;
     close($command_rt);
 
@@ -66,7 +65,6 @@ sub lookup_command {
   Rex::Logger::info("you must give a valid command.") unless $#content;
   return @content;
 }
-
 
 =back
 

@@ -138,7 +138,7 @@ use base qw(Rex::Exporter);
   cache
 );
 
-our $REGISTER_SUB_HASH_PARAMTER = 0;
+our $REGISTER_SUB_HASH_PARAMETER = 0;
 
 =item no_ssh([$task])
 
@@ -299,7 +299,7 @@ sub task {
         $code->(@_);
       }
       else {
-        if ($REGISTER_SUB_HASH_PARAMTER) {
+        if ($REGISTER_SUB_HASH_PARAMETER) {
           $code->( {@_} );
         }
         else {

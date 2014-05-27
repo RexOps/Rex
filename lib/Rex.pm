@@ -541,8 +541,8 @@ sub import {
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
         Rex::Logger::debug("activating featureset >= 0.35");
-        $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
-        $found_feature                             = 1;
+        $Rex::Commands::REGISTER_SUB_HASH_PARAMETER = 1;
+        $found_feature                              = 1;
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {

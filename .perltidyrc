@@ -1,1 +1,2 @@
--i=2 # indent with two spaces
+--indent-columns=2
+--no-outdent-long-quotes

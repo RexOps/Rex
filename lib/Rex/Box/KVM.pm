@@ -148,29 +148,11 @@ sub provision_vm {
     @tasks = @{ $self->{__tasks} };
   }
 
-  my $server = $self->ip;
-
-  my ( $ip, $port ) = split( /:/, $server );
-  $port ||= 22;
-
-  print "Waiting for SSH to come up on $ip:$port.";
-  while ( !is_port_open( $ip, $port ) ) {
-    print ".";
-    sleep 1;
-  }
-
-  my $i = 5;
-  while ( $i != 0 ) {
-    sleep 1;
-    print ".";
-    $i--;
-  }
-
-  print "\n";
+  $self->wait_for_ssh();
 
   for my $task (@tasks) {
     Rex::TaskList->create()->get_task($task)->set_auth( %{ $self->{__auth} } );
-    Rex::TaskList->create()->get_task($task)->run($server);
+    Rex::TaskList->create()->get_task($task)->run( $self->ip );
   }
 }
 

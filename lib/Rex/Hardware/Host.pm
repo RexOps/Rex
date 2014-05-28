@@ -113,6 +113,10 @@ sub get_operating_system {
     }
   }
 
+  if(is_file("/etc/yum.repos.d/amzn-main.repo")) {
+    return "Amazon";
+  }
+
   if ( is_dir("c:/") ) {
 
     # windows

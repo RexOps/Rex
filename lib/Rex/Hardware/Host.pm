@@ -113,14 +113,17 @@ sub get_operating_system {
     }
   }
 
-  if(is_file("/etc/yum.repos.d/amzn-main.repo")) {
-    return "Amazon";
-  }
-
   if ( is_dir("c:/") ) {
 
     # windows
     return "Windows";
+  }
+
+  if(is_file("/etc/system-release")) {
+    my $content = cat "/etc/system-release";
+    if($content =~ m/Amazon/sm) {
+      return "Amazon";
+    }
   }
 
   if ( is_file("/etc/debian_version") ) {

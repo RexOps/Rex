@@ -15,26 +15,26 @@ With this module you can do file system tasks like creating a directory, removin
 =head1 SYNOPSIS
 
  my @files = list_files "/etc";
-
+ 
  unlink("/tmp/file");
-
+ 
  rmdir("/tmp");
  mkdir("/tmp");
-
+ 
  my %stat = stat("/etc/passwd");
-
+ 
  my $link = readlink("/path/to/a/link");
  symlink("/source", "/dest");
-
+ 
  rename("oldname", "newname");
-
+ 
  chdir("/tmp");
-
+ 
  is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
-
+ 
  chmod 755, "/tmp";
  chown "user", "/tmp";
  chgrp "group", "/tmp";
@@ -285,10 +285,10 @@ Since: 0.45 Please use the file() resource instead.
      group  => "root",
      mode   => 1777;
  };
-
+ 
  task "mkdir", "server01", sub {
    mkdir "/tmp";
-
+ 
    mkdir "/tmp",
      owner => "root",
      group => "root",
@@ -416,7 +416,7 @@ sub mkdir {
 Change the owner of a file or a directory.
 
  chown "www-data", "/var/www/html";
-
+ 
  chown "www-data", "/var/www/html",
                 recursive => 1;
 
@@ -440,7 +440,7 @@ sub chown {
 Change the group of a file or a directory.
 
  chgrp "nogroup", "/var/www/html";
-
+ 
  chgrp "nogroup", "/var/www/html",
               recursive => 1;
 
@@ -464,7 +464,7 @@ sub chgrp {
 Change the permissions of a file or a directory.
 
  chmod 755, "/var/www/html";
-
+ 
  chmod 755, "/var/www/html",
           recursive => 1;
 
@@ -675,7 +675,7 @@ This function returns the link endpoint if $link is a symlink. If $link is not a
    eval {
      $link = readlink("/tmp/testlink");
    };
-
+ 
    say "this is a link" if($link);
  };
 
@@ -937,17 +937,17 @@ Mount devices.
           on_change => sub { say "device mounted"; };
    #
    # mount persistent with entry in /etc/fstab
-
+ 
    mount "/dev/sda6", "/mnt/sda6",
           ensure     => "persistent",
           fs         => "ext3",
           options    => [qw/noatime async/],
           on_change  => sub { say "device mounted"; };
-
+ 
    # to umount a device
   mount "/dev/sda6", "/mnt/sda6",
           ensure => "absent";
-
+ 
  };
 
 =cut

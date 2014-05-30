@@ -177,7 +177,7 @@ Currently it supports 2 modes. I<nat> and I<bridged>. Currently it supports only
      type => "nat",
    },
  }
-
+ 
  $box->network(
    1 => {
      type => "bridged",

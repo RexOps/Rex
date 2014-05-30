@@ -15,19 +15,19 @@ With this module you can manage Linux services.
 =head1 SYNOPSIS
 
  use Rex::Commands::Service
-
+ 
  service apache2 => "start";
-
+ 
  service apache2 => "stop";
-
+ 
  service apache2 => "restart";
-
+ 
  service apache2 => "status";
-
+ 
  service apache2 => "reload";
-
+ 
  service apache2 => "ensure", "started";
-
+ 
  service apache2 => "ensure", "stopped";
 
 =head1 EXPORTED FUNCTIONS
@@ -381,10 +381,10 @@ sub old_service {
 To set an other service provider as the default, use this function.
 
  user "root";
-
+ 
  group "db" => "db[01..10]";
  service_provider_for SunOS => "svcadm";
-
+ 
  task "start", group => "db", sub {
     service ssh => "restart";
  };

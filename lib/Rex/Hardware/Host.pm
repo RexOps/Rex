@@ -119,6 +119,13 @@ sub get_operating_system {
     return "Windows";
   }
 
+  if(is_file("/etc/system-release")) {
+    my $content = cat "/etc/system-release";
+    if($content =~ m/Amazon/sm) {
+      return "Amazon";
+    }
+  }
+
   if ( is_file("/etc/debian_version") ) {
     return "Debian";
   }

@@ -19,26 +19,26 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::SCM;
-
+ 
  set repository => "myrepo",
     url => "git@foo.bar:myrepo.git";
-
+ 
  set repository => "myrepo2",
     url => "https://foo.bar/myrepo",
     type => "subversion",
     username => "myuser",
     password => "mypass";
-
+ 
  task "checkout", sub {
    checkout "myrepo";
-
+ 
    checkout "myrepo",
      path => "webapp";
-
+ 
    checkout "myrepo",
      path => "webapp",
      branch => 1.6;    # branch only for git
-
+ 
    checkout "myrepo2";
  };
 

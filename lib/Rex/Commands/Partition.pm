@@ -52,7 +52,7 @@ use Rex::Commands::Fs;
 Clear partitions on $drive.
 
  clearpart "sda";
-
+ 
  clearpart "sda",
   initialize => "gpt";
 
@@ -102,25 +102,25 @@ Create a partition with mountpoint $mountpoint.
    size   => 15000,
    ondisk  => "sda",
    type   => "primary";
-
+ 
  partition "none",
    type  => "extended",
    ondisk => "sda",
    grow  => 1,
    mount  => TRUE,
-
+ 
  partition "swap",
    fstype => "swap",
    type  => "logical",
    ondisk => "sda",
    size  => 8000;
-
+ 
  partition "none",
    lvm   => 1,
    type  => "primary",
    size  => 15000,
    ondisk => "vda";
-
+ 
  partition "/",
    fstype => "ext3",
    size  => 10000,

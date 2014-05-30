@@ -15,16 +15,16 @@ This module is the core commands module.
 =head1 SYNOPSIS
 
  desc "Task description";
-
+ 
  task "taskname", sub { ... };
  task "taskname", "server1", ..., "server20", sub { ... };
-
+ 
  group "group" => "server1", "server2", ...;
-
+ 
  user "user";
-
+ 
  password "password";
-
+ 
  environment live => sub {
    user "root";
    password "foobar";
@@ -204,7 +204,7 @@ If you want, you can overwrite the servers with the I<-H> command line parameter
 You can define server groups with the I<group> function.
 
  group "allserver" => "server[1..3]", "workstation[1..10]";
-
+ 
  task "mytask", group => "allserver", sub {
    say "Do something";
  };
@@ -421,24 +421,24 @@ With this function you can modify/set special authentication parameters for task
 If you want to set special login information for a group you have to activate that feature first.
 
  use Rex -feature => 0.31; # activate setting auth for a group
-
+ 
  group frontends => "web[01..10]";
  group backends => "be[01..05]";
-
+ 
  auth for => "frontends" =>
             user => "root",
             password => "foobar";
-
+ 
  auth for => "backends" =>
             user => "admin",
             private_key => "/path/to/id_rsa",
             public_key => "/path/to/id_rsa.pub",
             sudo => TRUE;
-
+ 
  task "prepare", group => ["frontends", "backends"], sub {
    # do something
  };
-
+ 
  auth for => "prepare" =>
             user => "root";
 
@@ -563,7 +563,7 @@ Call $task from an other task. Will execute the given $task with the servers def
    say "Running on server1";
    do_task "task2";
  };
-
+ 
  task "task2", "server2", sub {
    say "Running on server2";
  };
@@ -602,7 +602,7 @@ Do something on server5 if memory is less than 100 MB free on server3.
      # create a new server instance on server5 to unload server3
    }
  };
-
+ 
  task "get_free_mem", sub {
     return memory->{free};
  };
@@ -614,7 +614,7 @@ If called without a hostname the task is run localy.
    # this will call task check_something. but this task will run on localhost.
    my $check = run_task "check_something";
  }
-
+ 
  task "check_something", "server4", sub {
    return "foo";
  };
@@ -700,7 +700,7 @@ If you want to use password authentication, then you need to call I<pass_auth>.
 
  user "root";
  password "root";
-
+ 
  pass_auth;
 
 =cut
@@ -717,7 +717,7 @@ If you want to use pubkey authentication, then you need to call I<key_auth>.
  user "bob";
  private_key "/home/bob/.ssh/id_rsa"; # passphrase-less key
  public_key "/home/bob/.ssh/id_rsa.pub";
-
+ 
  key_auth;
 
 =cut
@@ -939,26 +939,26 @@ Define an environment. With environments one can use the same task for different
  user "root";
  password "foobar";
  pass_auth;
-
+ 
  # define default frontend group containing only testwww01.
  group frontend => "testwww01";
-
+ 
  # define live environment, with different user/password
  # and a frontend server group containing www01, www02 and www03.
  environment live => sub {
    user "root";
    password "livefoo";
    pass_auth;
-
+ 
    group frontend => "www01", "www02", "www03";
  };
-
+ 
  # define stage environment with default user and password. but with
  # a own frontend group containing only stagewww01.
  environment stage => sub {
    group frontend => "stagewww01";
  };
-
+ 
  task "prepare", group => "frontend", sub {
     say run "hostname";
  };
@@ -1005,7 +1005,7 @@ With the LOCAL function you can do local commands within a task that is defined 
  task "mytask", "server1", "server2", sub {
     # this will call 'uptime' on the servers 'server1' and 'server2'
     say run "uptime";
-
+ 
     # this will call 'uptime' on the local machine.
     LOCAL {
       say run "uptime";
@@ -1054,7 +1054,7 @@ sub path {
 Set a configuration parameter. These Variables can be used in templates as well.
 
  set database => "db01";
-
+ 
  task "prepare", sub {
    my $db = get "database";
  };
@@ -1075,7 +1075,7 @@ sub set {
 Get a configuration parameter.
 
  set database => "db01";
-
+ 
  task "prepare", sub {
    my $db = get "database";
  };
@@ -1127,7 +1127,7 @@ Note: must come after the definition of the specified task
  after mytask => sub {
   my ($server, $failed) = @_;
   if($failed) { say "Connection to $server failed."; }
-
+ 
   run "vzctl stop vm$server";
  };
 
@@ -1150,7 +1150,7 @@ Note: must come after the definition of the specified task
 
  around mytask => sub {
   my ($server, $position) = @_;
-
+ 
   unless($position) {
     say "Before Task\n";
   }
@@ -1303,12 +1303,12 @@ This is a function to compare a string with some given options.
                  Debian  => "ntp",
                  default => "ntpd",
                };
-
+ 
    my $ntp_service = case operating_sytem, {
                  qr{debian}i => "ntp",
                  default    => "ntpd",
                };
-
+ 
    my $ntp_service = case operating_sytem, {
                  qr{debian}i => "ntp",
                  default    => sub { return "foo"; },
@@ -1376,7 +1376,7 @@ task "mytask", "myserver", sub {
     name => "foo",
     sys  => "bar",
   };
-
+ 
   inspect $myvar;
 };
 

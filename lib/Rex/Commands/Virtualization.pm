@@ -41,31 +41,31 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::Virtualization;
-
+ 
  set virtualization => "LibVirt";
  set virtualization => "VBox";
-
+ 
  use Data::Dumper;
-
+ 
  print Dumper vm list => "all";
  print Dumper vm list => "running";
-
+ 
  vm destroy => "vm01";
-
+ 
  vm delete => "vm01";
-
+ 
  vm start => "vm01";
-
+ 
  vm shutdown => "vm01";
-
+ 
  vm reboot => "vm01";
-
+ 
  vm option => "vm01",
        max_memory => 1024*1024,
        memory    => 512*1024;
-
+ 
  print Dumper vm info => "vm01";
-
+ 
  # creating a vm on a kvm host
  vm create => "vm01",
     storage    => [
@@ -74,7 +74,7 @@ All these functions are not idempotent.
         dev   => "vda",
       }
     ];
-
+ 
  print Dumper vm hypervisor => "capabilities";
 
 =head1 EXPORTED FUNCTIONS
@@ -120,7 +120,7 @@ With a cdrom as an iso image and a bridged network on the bridge virbr0. The Boo
         size  => "10G",
         file  => "/mnt/data/libvirt/images/vm01.img",
       },
-
+ 
       {
         file    => "/mnt/data/iso/debian-6.0.2.1-amd64-netinst.iso",
       },

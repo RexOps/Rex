@@ -34,12 +34,12 @@ You can find examples and howtos on L<http://rexify.org/>
 
  user "root";
  password "ch4ngem3";
-
+ 
  desc "Show Unix version";
  task "uname", sub {
     say run "uname -a";
  };
-
+ 
  bash# rex -H "server[01..10]" uname
 
 See L<Rex::Commands> for a list of all commands you can use.
@@ -345,7 +345,7 @@ Use this function to create a connection if you use Rex as a library.
  use Rex;
  use Rex::Commands::Run;
  use Rex::Commands::Fs;
-
+ 
  Rex::connect(
    server    => "remotehost",
    user      => "root",
@@ -353,11 +353,11 @@ Use this function to create a connection if you use Rex as a library.
    private_key => "/path/to/private/key/file",
    public_key  => "/path/to/public/key/file",
  );
-
+ 
  if(is_file("/foo/bar")) {
    print "Do something...\n";
  }
-
+ 
  my $output = run("uptime");
 
 =cut

@@ -1,4 +1,9 @@
-2014-05-01 Jan Gehring <jan.gehring, gmail.com> (0.46.1)
+2014-05-22 Jan Gehring <jan.gehring, gmail.com> (0.46.2)
+  * fixed tmp_dir configuration
+  * load Rex::Commands::Box if Rex::Test is loaded, so that set(box => '') work
+  * fixed a problem with Test:run
+
+2014-05-19 Jan Gehring <jan.gehring, gmail.com> (0.46.1)
   * fixed a dependency problem
   * fixed a problem detecting the temporary directory
   * 'set port' ignored in Rexfile - #366

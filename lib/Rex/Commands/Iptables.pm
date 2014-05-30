@@ -19,36 +19,36 @@ Only I<open_port> and I<close_port> are idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::Iptables;
-
+ 
  task "firewall", sub {
    iptables_clear;
-
+ 
    open_port 22;
    open_port [22, 80] => {
      dev => "eth0",
    };
-
+ 
    close_port 22 => {
      dev => "eth0",
    };
    close_port "all";
-
+ 
    redirect_port 80 => 10080;
    redirect_port 80 => {
      dev => "eth0",
      to  => 10080,
    };
-
+ 
    default_state_rule;
    default_state_rule dev => "eth0";
-
+ 
    is_nat_gateway;
-
+ 
    iptables t => "nat",
          A => "POSTROUTING",
          o => "eth0",
          j => "MASQUERADE";
-
+ 
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -91,7 +91,7 @@ Open a port for inbound connections.
    open_port [22, 80],
      dev => "eth1";
  };
-
+ 
  task "firewall", sub {
   open_port 22,
     dev    => "eth1",
@@ -225,7 +225,7 @@ Write standard iptable comands.
  task "firewall", sub {
    iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
    iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
-
+ 
    iptables "flush";
    iptables -F;
    iptables flush => "filter";

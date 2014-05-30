@@ -27,7 +27,7 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::Rsync;
-
+ 
  sync "dir1", "dir2";
 
 =head1 EXPORTED FUNCTIONS
@@ -66,7 +66,7 @@ This function executes rsync to sync $source and $dest.
     parameters => '--backup --delete',
    };
  };
-
+ 
  task "sync", "server01", sub {
    sync "html/*", "/var/www/html", {
     exclude => ["*.sw*", "*.tmp"],

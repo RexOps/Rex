@@ -18,23 +18,23 @@ To use this module inside your Rexfile you can use the following commands.
 
  use Rex::Commands::Boxes;
  set box => "KVM";
-
+ 
  task "prepare_box", sub {
     box {
        my ($box) = @_;
-
+ 
        $box->name("mybox");
        $box->url("http://box.rexify.org/box/ubuntu-server-12.10-amd64.kvm.qcow2");
-
+ 
        $box->network(1 => {
           name => "default",
        });
-
+ 
        $box->auth(
           user => "root",
           password => "box",
        );
-
+ 
        $box->setup("setup_task");
     };
  };
@@ -50,7 +50,7 @@ If you want to use a YAML file you can use the following template.
 And then you can use it the following way in your Rexfile.
 
  use Rex::Commands::Box init_file => "file.yml";
-
+ 
  task "prepare_vms", sub {
     boxes "init";
  };

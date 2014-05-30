@@ -186,7 +186,7 @@ Return an HashRef of all memory information.
 
  task "get_memory_information", "server01", sub {
    my $memory = memory();
-
+ 
    say "Total:  " . $memory->{"total"};
    say "Free:   " . $memory->{"free"};
    say "Used:   " . $memory->{"used"};
@@ -237,7 +237,7 @@ sub is_freebsd {
 sub is_redhat {
   my $os = @_ ? shift : get_operating_system();
 
-  my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific", "RedHatEnterpriseServer" ,"RedHatEnterpriseES", "RedHatEnterpriseWorkstation");
+  my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific", "RedHatEnterpriseServer" ,"RedHatEnterpriseES", "RedHatEnterpriseWorkstation", "Amazon");
 
   if(grep { /$os/i } @redhat_clones) {
     return 1;

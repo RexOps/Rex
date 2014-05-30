@@ -54,7 +54,7 @@ Manages the entries in /etc/hosts.
    ip        => "88.198.93.110",
    aliases   => ["www.rexify.org"],
    on_change => sub { say "added host entry"; };
-
+ 
   host_entry "rexify.org",
     ensure    => "absent",
     on_change => sub { say "removed host entry"; };

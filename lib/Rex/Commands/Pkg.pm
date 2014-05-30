@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
               source => "/export/files/etc/passwd"
             };
-
+ 
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS
@@ -65,16 +65,16 @@ Use this resource to install or update a package. This resource will generate re
  pkg "httpd",
    ensure    => "latest",    # ensure that the newest version is installed (auto-update)
    on_change => sub { say "package was installed/updated"; };
-
+ 
  pkg "httpd",
    ensure => "absent";    # remove the package
-
+ 
  pkg "httpd",
    ensure => "present";   # ensure that some version is installed (no auto-update)
-
+ 
  pkg "httpd",
    ensure => "2.4.6";    # ensure that version 2.4.6 is installed
-
+ 
  pkg "apache-server",    # with a custom resource name
    package => "httpd",
    ensure  => "present";
@@ -162,7 +162,7 @@ If you need reports, please use the pkg() resource.
 
  task "prepare", "server01", sub {
    install package => "perl";
-
+ 
    # or if you have to install more packages.
    install package => [
                   "perl",
@@ -544,12 +544,12 @@ sub update_system {
 This function returns all installed packages and their version.
 
  task "get-installed", "server1", sub {
-
+ 
     for my $pkg (installed_packages()) {
       say "name    : " . $pkg->{"name"};
       say "  version: " . $pkg->{"version"};
     }
-
+ 
  };
 
 =cut
@@ -625,7 +625,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
    repository add => "repository-name",
       url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
-
+ 
  };
 
 To remove a repository just delete it with its name.
@@ -704,10 +704,10 @@ sub repository {
 To set an other package provider as the default, use this function.
 
  user "root";
-
+ 
  group "db" => "db[01..10]";
  package_provider_for SunOS => "blastwave";
-
+ 
  task "prepare", group => "db", sub {
     install package => "vim";
  };

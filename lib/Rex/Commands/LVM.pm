@@ -20,7 +20,7 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::LVM;
-
+ 
  my @physical_devices = pvs;
  my @volume_groups = vgs;
  my @logical_volumes = lvs;
@@ -53,10 +53,10 @@ Get Information of all your physical volumes.
 
  use Data::Dumper;
  use Rex::Commands::LVM;
-
+ 
  task "lvm", sub {
    my @physical_volumes = pvs;
-
+ 
    for my $physical_volume (@physical_volumes) {
      say Dumper($physical_volume);
    }
@@ -99,10 +99,10 @@ Get Information of all your volume groups.
 
  use Data::Dumper;
  use Rex::Commands::LVM;
-
+ 
  task "lvm", sub {
    my @volume_groups = vgs;
-
+ 
    for my $volume_group (@volume_groups) {
      say Dumper($volume_group);
    }
@@ -152,10 +152,10 @@ Get Information of all your logical volumes.
 
  use Data::Dumper;
  use Rex::Commands::LVM;
-
+ 
  task "lvm", sub {
    my @logical_volumes = lvs;
-
+ 
    for my $logical_volume (@logical_volumes) {
      say Dumper($logical_volume);
    }

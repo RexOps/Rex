@@ -2,61 +2,24 @@
 
 With (R)?ex you can manage all your boxes from a central point through the complete process of configuration management and software deployment.
 
-## Usage
+## Installation
 
-A small example:
+There are several methods to install (R)?ex: use your distro's package manager, download it from CPAN or build it from source. Check out the [Get Rex](http://www.rexify.org/get/index.html) page on the website for the different options, and choose the one that fits you best.
 
-### Rexfile
+## Getting started
 
-```
-set user => "root";
-set password => "root";
-set -passauth;
+We have a [Getting started guide](http://www.rexify.org/howtos/start.html) on the website that should help you with the first steps.
 
-group frontend => "frontend[01..09]", "varnish[01..04]";
+## Need help?
 
-desc "Show Unix version";
-task "uname", group => "frontend", sub {
-    say run "uname -a";
-};
+If a new user has difficulties to get on board, then it's a bug. Let us know!
 
-desc "Install needed packages and configurations";
-task "prepare", group => "frontend", sub {
-   install "apache2";
-   install "mysql-server";
+Feel free to join us on irc.freenode.net in the #rex channel, ask us on the [Rex Users](https://groups.google.com/group/rex-users/) on Google Groups, or browse and open [issues on GitHub](https://github.com/RexOps/Rex/issues).
 
-   file "/path/on/the/remote/machine",
-      content => "Hello World!",
-      mode    => 600,
-      owner   => "root",
-      group   => "root";
-};
-```
+If you need commercial support for (R)?ex, check out the [Support](http://www.rexify.org/support/index.html) page on the website.
 
-### Commandline
+## Contributing
 
-* Run commands directly from command line
+All contributions are welcome: documentation, patches, bug reports, ideas, promoting (R)?ex at conferences and meetups, or anything else you can think of.
 
-```
-bash# rex -e 'say run "uptime";' -H "frontend[01..10] middleware[01..05]" -u root -p password
-```
-
-* List all known Tasks
-
-```
-bash# rex -T
-Tasks
-  uname                     Show Unix version
-```
-
-* Run Task **uname**
-
-```
-bash# rex uname
-Running task: uname
-Connecting to server1 (root)
-Linux mango 2.6.27-openvz-briullov.1-r4 #1 SMP Tue Nov 24 23:25:52 CET 2009 x86_64 Intel(R) Pentium(R) D CPU 2.80GHz GenuineIntel GNU/Linux
-Running task: uname
-Connecting to server2 (root)
-Linux debian01 2.6.26-2-amd64 #1 SMP Tue Aug 31 09:11:22 UTC 2010 x86_64 GNU/Linux
-```
+For more details, see the [Help (R)?ex](http://www.rexify.org/contribute/index.html) page on the website.

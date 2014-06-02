@@ -27,7 +27,7 @@ else {
 WriteMakefile1(
    META_MERGE => {
       resources => {
-         repository => 'https://github.com/krimdomu/Rex',
+         repository => 'https://github.com/RexOps/Rex',
       },
    },
    #BUILD_REQUIRES => {

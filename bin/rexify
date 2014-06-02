@@ -572,7 +572,7 @@ unless ( -f 'lib' . $ARGV[0] . '.pm' ) {
   print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
   print STDERR
-    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
+    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/RexOps/Rex/issues\n\n";
 }
 else {
 

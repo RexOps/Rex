@@ -24,7 +24,7 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =item * IRC: irc.freenode.net #rex
 
-=item * Bug Tracker: L<https://github.com/krimdomu/Rex/issues>
+=item * Bug Tracker: L<https://github.com/RexOps/Rex/issues>
 
 =item * Twitter: L<http://twitter.com/jfried83>
 

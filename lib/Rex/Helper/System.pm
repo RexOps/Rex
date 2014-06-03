@@ -13,7 +13,7 @@ use Rex::Helper::Hash;
 
 sub info {
 
-  return eval {
+  return (eval {
     my %merge1 = ();
     my %merge2 = Rex::Hardware->get(qw/ All /);
     my %template_vars = (%merge1, %merge2);
@@ -42,9 +42,7 @@ sub info {
     }
 
     return %template_vars;
-  } or do {
-    return ();
-  };
+  });
 }
 
 

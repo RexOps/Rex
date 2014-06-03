@@ -432,7 +432,7 @@ sub chown {
 
   $file = resolv_path($file);
   my $fs = Rex::Interface::Fs->create;
-  return $fs->chown( $user, $file, @opts ) or die("Can't chown $file");
+  $fs->chown( $user, $file, @opts ) or die("Can't chown $file");
 }
 
 =item chgrp($group, $file)
@@ -456,7 +456,7 @@ sub chgrp {
   $file = resolv_path($file);
 
   my $fs = Rex::Interface::Fs->create;
-  return $fs->chgrp( $group, $file, @opts ) or die("Can't chgrp $file");
+  $fs->chgrp( $group, $file, @opts ) or die("Can't chgrp $file");
 }
 
 =item chmod($mode, $file)
@@ -480,7 +480,7 @@ sub chmod {
   $file = resolv_path($file);
 
   my $fs = Rex::Interface::Fs->create;
-  return $fs->chmod( $mode, $file, @opts ) or die("Can't chmod $file");
+  $fs->chmod( $mode, $file, @opts ) or die("Can't chmod $file");
 }
 
 =item stat($file)

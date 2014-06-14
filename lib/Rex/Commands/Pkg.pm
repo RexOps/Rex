@@ -187,7 +187,7 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
               };
  };
 
-=item installing a file and do somthing if the file was changed.
+=item installing a file and do something if the file was changed.
 
  task "prepare", "server01", sub {
    install file => "/etc/httpd/apache2.conf", {
@@ -522,7 +522,7 @@ sub remove {
 
 =item update_system
 
-This function do a complete system update.
+This function does a complete system update.
 
 For example I<apt-get upgrade> or I<yum update>.
 

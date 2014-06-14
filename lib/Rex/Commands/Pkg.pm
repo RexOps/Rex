@@ -86,7 +86,7 @@ sub pkg {
 
   my $package = $res_package;
 
-  if(exists $option{package}) {
+  if ( exists $option{package} ) {
     $package = $option{package};
   }
 
@@ -535,7 +535,7 @@ For example I<apt-get upgrade> or I<yum update>.
 sub update_system {
   my $pkg = Rex::Pkg->get;
   eval { $pkg->update_system; } or do {
-    Rex::Logger::info("An error occured for update_system: $@", "warn");
+    Rex::Logger::info( "An error occured for update_system: $@", "warn" );
   };
 }
 

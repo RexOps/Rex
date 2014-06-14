@@ -76,8 +76,8 @@ use Rex::Commands::Gather;
 use Rex::Logger;
 
 @EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear
-          open_port close_port redirect_port
-          default_state_rule);
+  open_port close_port redirect_port
+  default_state_rule);
 
 sub iptables;
 
@@ -100,25 +100,26 @@ Open a port for inbound connections.
 
 
 =cut
+
 sub open_port {
 
-  my ($port, $option) = @_;
+  my ( $port, $option ) = @_;
 
   my %option_h;
-  if(ref $option ne "HASH") {
-    ($port, %option_h) = @_;
+  if ( ref $option ne "HASH" ) {
+    ( $port, %option_h ) = @_;
 
-    if(exists $option_h{only_if}) {
-      run($option_h{only_if});
-      if($? != 0) {
+    if ( exists $option_h{only_if} ) {
+      run( $option_h{only_if} );
+      if ( $? != 0 ) {
         return;
       }
     }
 
     delete $option_h{only_if};
-    $option = { %option_h };
+    $option = {%option_h};
   }
-  _open_or_close_port("i", "I", "INPUT", "ACCEPT", $port, $option);
+  _open_or_close_port( "i", "I", "INPUT", "ACCEPT", $port, $option );
 
 }
 
@@ -135,26 +136,27 @@ Close a port for inbound connections.
  };
 
 =cut
+
 sub close_port {
 
-  my ($port, $option) = @_;
+  my ( $port, $option ) = @_;
 
   my %option_h;
-  if(ref $option ne "HASH") {
-    ($port, %option_h) = @_;
+  if ( ref $option ne "HASH" ) {
+    ( $port, %option_h ) = @_;
 
-    if(exists $option_h{only_if}) {
-      run($option_h{only_if});
-      if($? != 0) {
+    if ( exists $option_h{only_if} ) {
+      run( $option_h{only_if} );
+      if ( $? != 0 ) {
         return;
       }
     }
 
     delete $option_h{only_if};
-    $option = { %option_h };
+    $option = {%option_h};
   }
 
-  _open_or_close_port("i", "A", "INPUT", "DROP", $port, $option);
+  _open_or_close_port( "i", "A", "INPUT", "DROP", $port, $option );
 
 }
 
@@ -171,48 +173,57 @@ Redirect $in_port to an other local port.
  };
 
 =cut
+
 sub redirect_port {
-  my ($in_port, $option) = @_;
+  my ( $in_port, $option ) = @_;
 
   my @opts;
 
-  push (@opts, "t", "nat");
+  push( @opts, "t", "nat" );
 
-  if(! ref($option)) {
+  if ( !ref($option) ) {
     my $net_info = network_interfaces();
-    my @devs = keys %{$net_info};
+    my @devs     = keys %{$net_info};
 
     for my $dev (@devs) {
-      redirect_port($in_port, {
-        dev => $dev,
-        to  => $option,
-      });
+      redirect_port(
+        $in_port,
+        {
+          dev => $dev,
+          to  => $option,
+        }
+      );
     }
 
     return;
   }
 
-  unless(exists $option->{"dev"}) {
+  unless ( exists $option->{"dev"} ) {
     my $net_info = network_interfaces();
-    my @devs = keys %{$net_info};
+    my @devs     = keys %{$net_info};
 
     for my $dev (@devs) {
       $option->{"dev"} = $dev;
-      redirect_port($in_port, $option);
+      redirect_port( $in_port, $option );
     }
 
     return;
   }
 
-  if($option->{"to"} =~ m/^\d+$/) {
+  if ( $option->{"to"} =~ m/^\d+$/ ) {
     $option->{"proto"} ||= "tcp";
 
-    push(@opts, "I", "PREROUTING", "i", $option->{"dev"}, "p", $option->{"proto"}, "m", $option->{"proto"});
-    push(@opts, "dport", $in_port, "j", "REDIRECT", "to-ports", $option->{"to"});
+    push( @opts,
+      "I", "PREROUTING",       "i", $option->{"dev"},
+      "p", $option->{"proto"}, "m", $option->{"proto"} );
+    push( @opts,
+      "dport", $in_port, "j", "REDIRECT", "to-ports", $option->{"to"} );
 
   }
   else {
-    Rex::Logger::info("Redirect to other hosts isn't supported right now. Please do it by hand.");
+    Rex::Logger::info(
+      "Redirect to other hosts isn't supported right now. Please do it by hand."
+    );
   }
 
   iptables @opts;
@@ -233,11 +244,12 @@ Write standard iptable comands.
  };
 
 =cut
+
 sub iptables {
   my (@params) = @_;
 
-  if($params[0] eq "flush" || $params[0] eq "-flush" || $params[0] eq "-F") {
-    if($params[1]) {
+  if ( $params[0] eq "flush" || $params[0] eq "-flush" || $params[0] eq "-F" ) {
+    if ( $params[1] ) {
       run "iptables -F -t $params[1]";
     }
     else {
@@ -248,16 +260,16 @@ sub iptables {
   }
 
   my $cmd = "";
-  my $n = -1;
-  while( $params[++$n] ) {
-    my ($key, $val) = reverse @params[$n, $n++];
+  my $n   = -1;
+  while ( $params[ ++$n ] ) {
+    my ( $key, $val ) = reverse @params[ $n, $n++ ];
 
-    if(ref($key) eq "ARRAY") {
-      $cmd .= join(" ", @{$key});
+    if ( ref($key) eq "ARRAY" ) {
+      $cmd .= join( " ", @{$key} );
       last;
     }
 
-    if(length($key) == 1) {
+    if ( length($key) == 1 ) {
       $cmd .= "-$key $val ";
     }
     else {
@@ -265,11 +277,11 @@ sub iptables {
     }
   }
 
-  if(can_run("iptables")) {
+  if ( can_run("iptables") ) {
     run "iptables $cmd";
 
-    if($? != 0) {
-      Rex::Logger::info("Error setting iptable rule: $cmd", "warn");
+    if ( $? != 0 ) {
+      Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
       die("Error setting iptable rule: $cmd");
     }
   }
@@ -288,16 +300,17 @@ This function create a nat gateway for the device the default route points to.
  };
 
 =cut
+
 sub is_nat_gateway {
 
   Rex::Logger::debug("Changing this system to a nat gateway.");
 
-  if(can_run("ip")) {
+  if ( can_run("ip") ) {
 
     my @iptables_option = ();
 
     my ($default_line) = run "/sbin/ip r |grep ^default";
-    my ($dev) = ($default_line =~ m/dev ([a-z0-9]+)/i);
+    my ($dev)          = ( $default_line =~ m/dev ([a-z0-9]+)/i );
     Rex::Logger::debug("Default GW Device is $dev");
 
     sysctl "net.ipv4.ip_forward" => 1;
@@ -321,21 +334,28 @@ Set the default state rules for the given device.
  };
 
 =cut
+
 sub default_state_rule {
   my (%option) = @_;
 
-  unless(exists $option{"dev"}) {
+  unless ( exists $option{"dev"} ) {
     my $net_info = network_interfaces();
-    my @devs = keys %{$net_info};
+    my @devs     = keys %{$net_info};
 
     for my $dev (@devs) {
-      default_state_rule(dev => $dev);
+      default_state_rule( dev => $dev );
     }
 
     return;
   }
 
-  iptables t => "filter", A => "INPUT", i => $option{"dev"}, m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
+  iptables
+    t     => "filter",
+    A     => "INPUT",
+    i     => $option{"dev"},
+    m     => "state",
+    state => "RELATED,ESTABLISHED",
+    j     => "ACCEPT";
 }
 
 =item iptables_list
@@ -347,40 +367,42 @@ List all iptables rules.
  };
 
 =cut
+
 sub iptables_list {
   my @lines = run "/sbin/iptables-save";
   _iptables_list(@lines);
 }
 
 sub _iptables_list {
-  my (%tables, $ret);
+  my ( %tables, $ret );
   my (@lines) = @_;
 
   my ($current_table);
   for my $line (@lines) {
     chomp $line;
 
-    next if($line eq "COMMIT");
-    next if($line =~ m/^#/);
-    next if($line =~ m/^:/);
+    next if ( $line eq "COMMIT" );
+    next if ( $line =~ m/^#/ );
+    next if ( $line =~ m/^:/ );
 
-    if($line =~ m/^\*([a-z]+)$/) {
+    if ( $line =~ m/^\*([a-z]+)$/ ) {
       $current_table = $1;
       $tables{$current_table} = [];
       next;
     }
 
-    #my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/(\-\-?[^\s]+\s[^\s]+)/i, $line);
-    my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/^\-\-?|\s+\-\-?/i, $line);
+#my @parts = grep { ! /^\s+$/ && ! /^$/ } split (/(\-\-?[^\s]+\s[^\s]+)/i, $line);
+    my @parts = grep { !/^\s+$/ && !/^$/ } split( /^\-\-?|\s+\-\-?/i, $line );
 
     my @option = ();
     for my $part (@parts) {
-      my ($key, $value) = split(/\s/, $part, 2);
+      my ( $key, $value ) = split( /\s/, $part, 2 );
+
       #$key =~ s/^\-+//;
-      push(@option, $key => $value);
+      push( @option, $key => $value );
     }
 
-    push (@{$ret->{$current_table}}, \@option);
+    push( @{ $ret->{$current_table} }, \@option );
 
   }
 
@@ -396,6 +418,7 @@ Remove all iptables rules.
  };
 
 =cut
+
 sub iptables_clear {
 
   for my $table (qw/nat mangle filter/) {
@@ -410,57 +433,59 @@ sub iptables_clear {
 }
 
 sub _open_or_close_port {
-  my ($dev_type, $push_type, $chain, $jump, $port, $option) = @_;
+  my ( $dev_type, $push_type, $chain, $jump, $port, $option ) = @_;
 
   my @opts;
 
-  push(@opts, "t", "filter", "$push_type", "$chain");
+  push( @opts, "t", "filter", "$push_type", "$chain" );
 
-  unless(exists $option->{"dev"}) {
+  unless ( exists $option->{"dev"} ) {
     my $net_info = network_interfaces();
-    my @dev = keys %{$net_info};
+    my @dev      = keys %{$net_info};
     $option->{"dev"} = \@dev;
   }
 
-  if(exists $option->{"dev"} && ! ref($option->{"dev"})) {
-    push(@opts, "$dev_type", $option->{"dev"});
+  if ( exists $option->{"dev"} && !ref( $option->{"dev"} ) ) {
+    push( @opts, "$dev_type", $option->{"dev"} );
   }
-  elsif(ref($option->{"dev"}) eq "ARRAY") {
-    for my $dev (@{$option->{"dev"}}) {
+  elsif ( ref( $option->{"dev"} ) eq "ARRAY" ) {
+    for my $dev ( @{ $option->{"dev"} } ) {
       my $new_option = $option;
       $new_option->{"dev"} = $dev;
 
-      _open_or_close_port($dev_type, $push_type, $chain, $jump, $port, $new_option);
+      _open_or_close_port( $dev_type, $push_type, $chain, $jump, $port,
+        $new_option );
     }
 
     return;
   }
 
-  if(exists $option->{"proto"}) {
-    push(@opts, "p", $option->{"proto"});
-    push(@opts, "m", $option->{"proto"});
+  if ( exists $option->{"proto"} ) {
+    push( @opts, "p", $option->{"proto"} );
+    push( @opts, "m", $option->{"proto"} );
   }
   else {
-    push(@opts, "p", "tcp");
-    push(@opts, "m", "tcp");
+    push( @opts, "p", "tcp" );
+    push( @opts, "m", "tcp" );
   }
 
-  if($port eq "all") {
-    push(@opts, "j", "$jump");
+  if ( $port eq "all" ) {
+    push( @opts, "j", "$jump" );
   }
   else {
-    if(ref($port) eq "ARRAY") {
-      for my $port_num (@{$port}) {
-        _open_or_close_port($dev_type, $push_type, $chain, $jump, $port_num, $option);
+    if ( ref($port) eq "ARRAY" ) {
+      for my $port_num ( @{$port} ) {
+        _open_or_close_port( $dev_type, $push_type, $chain, $jump, $port_num,
+          $option );
       }
       return;
     }
 
-    push(@opts, "dport", $port);
-    push(@opts, "j", $jump);
+    push( @opts, "dport", $port );
+    push( @opts, "j",     $jump );
   }
 
-  if(_rule_exists(@opts)) {
+  if ( _rule_exists(@opts) ) {
     Rex::Logger::debug("IPTables rule already exists. skipping...");
     return;
   }
@@ -476,16 +501,16 @@ sub _rule_exists {
   shift @check_rule;
   shift @check_rule;
 
-  my $str_check_rule = join(" ", "A", @check_rule);
+  my $str_check_rule = join( " ", "A", @check_rule );
 
   my $current_tables = iptables_list();
-  if(exists $current_tables->{filter}) {
-    for my $rule (@{ $current_tables->{filter} }) {
-      my $str_rule = join(" ", @{ $rule });
+  if ( exists $current_tables->{filter} ) {
+    for my $rule ( @{ $current_tables->{filter} } ) {
+      my $str_rule = join( " ", @{$rule} );
       $str_rule =~ s/\s$//;
 
       Rex::Logger::debug("comparing: '$str_rule' == '$str_check_rule'");
-      if($str_rule eq $str_check_rule) {
+      if ( $str_rule eq $str_check_rule ) {
         return 1;
       }
     }
@@ -497,6 +522,5 @@ sub _rule_exists {
 =back
 
 =cut
-
 
 1;

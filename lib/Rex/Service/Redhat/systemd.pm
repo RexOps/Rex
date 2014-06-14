@@ -15,22 +15,22 @@ use Rex::Logger;
 use Rex::Commands::Fs;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub start {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
   $service = _prepare_service_name($service);
 
   i_run "systemctl start $service >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -38,12 +38,12 @@ sub start {
 }
 
 sub restart {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
   $service = _prepare_service_name($service);
 
   i_run "systemctl restart $service >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -51,12 +51,12 @@ sub restart {
 }
 
 sub stop {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
   $service = _prepare_service_name($service);
 
   i_run "systemctl stop $service >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -64,12 +64,12 @@ sub stop {
 }
 
 sub reload {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
   $service = _prepare_service_name($service);
 
   i_run "systemctl reload $service >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -77,12 +77,12 @@ sub reload {
 }
 
 sub status {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
   $service = _prepare_service_name($service);
 
   i_run "systemctl status $service >/dev/null";
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -90,19 +90,20 @@ sub status {
 }
 
 sub ensure {
-  my ($self, $service, $what) = @_;
+  my ( $self, $service, $what ) = @_;
   $service = _prepare_service_name($service);
 
-  if($what =~  /^stop/) {
+  if ( $what =~ /^stop/ ) {
     $self->stop($service);
     i_run "systemctl disable $service";
   }
-  elsif($what =~ /^start/ || $what =~ m/^run/) {
+  elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start($service);
     i_run "systemctl enable $service";
   }
 
-  if($? == 0) { return 1; } else { return 0; }
+  if   ( $? == 0 ) { return 1; }
+  else             { return 0; }
 }
 
 # all systemd services must end with .service
@@ -110,7 +111,7 @@ sub ensure {
 sub _prepare_service_name {
   my ($service) = @_;
 
-  unless($service =~ m/\./) {
+  unless ( $service =~ m/\./ ) {
     $service .= ".service";
   }
 
@@ -118,10 +119,10 @@ sub _prepare_service_name {
 }
 
 sub action {
-  my ($self, $service, $action) = @_;
+  my ( $self, $service, $action ) = @_;
 
   i_run "systemctl $action $service >/dev/null", nohup => 1;
-  if($? == 0) { return 1; }
+  if ( $? == 0 ) { return 1; }
 }
 
 1;

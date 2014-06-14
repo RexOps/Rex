@@ -25,7 +25,7 @@ sub new {
 }
 
 sub direct_exec {
-  my ($self, $exec, $option) = @_;
+  my ( $self, $exec, $option ) = @_;
 
   Rex::Commands::profiler()->start("direct_exec: $exec");
 
@@ -75,8 +75,8 @@ sub exec {
     $shell->source_profile(1);
   }
 
-  if(exists $option->{env}) {
-    $shell->set_environment($option->{env});
+  if ( exists $option->{env} ) {
+    $shell->set_environment( $option->{env} );
   }
 
   my $exec = $shell->exec( $cmd, $option );

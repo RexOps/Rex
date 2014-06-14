@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -18,27 +18,27 @@ require Rex::Hardware;
 
 sub get {
 
-  my $cache = Rex::get_cache();
+  my $cache          = Rex::get_cache();
   my $cache_key_name = $cache->gen_key_name("hardware.network");
 
-  if($cache->valid($cache_key_name)) {
+  if ( $cache->valid($cache_key_name) ) {
     return $cache->get($cache_key_name);
   }
 
   my $hw_class = _get_class();
 
-  unless($hw_class) {
+  unless ($hw_class) {
     return {};
   }
 
   my $data = {
- 
-    networkdevices => $hw_class->get_network_devices(),
+
+    networkdevices       => $hw_class->get_network_devices(),
     networkconfiguration => $hw_class->get_network_configuration(),
 
   };
 
-  $cache->set($cache_key_name, $data);
+  $cache->set( $cache_key_name, $data );
 
   return $data;
 
@@ -59,13 +59,13 @@ sub netstat {
 sub _get_class {
   my $os_type = Rex::Commands::Gather::get_operating_system();
 
-  $os_type = "Linux"  if Rex::Commands::Gather::is_linux();
+  $os_type = "Linux"   if Rex::Commands::Gather::is_linux();
   $os_type = "Solaris" if Rex::Commands::Gather::is_solaris();
 
   my $hw_class = "Rex::Hardware::Network::$os_type";
   eval "use $hw_class;";
 
-  if($@) {
+  if ($@) {
     Rex::Logger::debug("No network information on $os_type");
     return;
   }

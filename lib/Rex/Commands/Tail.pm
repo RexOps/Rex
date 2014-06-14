@@ -27,7 +27,6 @@ With this module you can tail a file
 
 =cut
 
-
 package Rex::Commands::Tail;
 
 use strict;
@@ -68,51 +67,50 @@ Or, if you want to format the output by yourself, you can define a callback func
 =cut
 
 sub tail {
-  my $file = shift;
+  my $file     = shift;
   my $callback = shift;
 
-  if(Rex::is_sudo()) {
+  if ( Rex::is_sudo() ) {
     die("Can't use tail within sudo environment.");
   }
 
   Rex::Logger::debug("Tailing: $file");
 
-  if(my $ssh = Rex::is_ssh()) {
-    my %stat = stat $file;
+  if ( my $ssh = Rex::is_ssh() ) {
+    my %stat      = stat $file;
     my $orig_size = $stat{'size'};
-    my $new_pos = $stat{'size'} - 1024;
-    if($new_pos < 0) { $new_pos = 0; }
+    my $new_pos   = $stat{'size'} - 1024;
+    if ( $new_pos < 0 ) { $new_pos = 0; }
 
     my %new_stat;
     my $old_pos;
-    while(1) {
-      if(!%new_stat || $new_stat{'size'} > $stat{'size'}) {
+    while (1) {
+      if ( !%new_stat || $new_stat{'size'} > $stat{'size'} ) {
         my $fh = file_read $file;
-        unless($fh) {
+        unless ($fh) {
           die("Error opening $file for reading");
         }
         my $data;
 
-        if(!%new_stat) {
-          $fh->seek($stat{'size'} - 1024);
+        if ( !%new_stat ) {
+          $fh->seek( $stat{'size'} - 1024 );
           $data = $fh->read(1024);
         }
         else {
           $fh->seek($old_pos);
-          $data = $fh->read($new_stat{'size'} - $old_pos);
+          $data = $fh->read( $new_stat{'size'} - $old_pos );
         }
 
-
-        my @lines = split(/\n/, $data);
+        my @lines = split( /\n/, $data );
         shift @lines unless $old_pos;
 
-        if($callback) {
+        if ($callback) {
           for my $line (@lines) {
             &$callback($line);
           }
         }
         else {
-          print join("\n", @lines) . "\n";
+          print join( "\n", @lines ) . "\n";
         }
 
         $fh->close;
@@ -124,7 +122,8 @@ sub tail {
       %new_stat = stat $file;
     }
 
-  } else {
+  }
+  else {
     system("tail -f $file");
   }
 

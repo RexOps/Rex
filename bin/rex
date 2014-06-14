@@ -2,7 +2,7 @@
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
@@ -14,7 +14,6 @@ use Rex::CLI;
 my $rex = Rex::CLI->new;
 $rex->__run__;
 
-    
 __END__
 
 =pod

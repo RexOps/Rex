@@ -161,8 +161,7 @@ sub get {
       ->(),
     dimms => sub {
       my $ret = [];
-      push( @{$ret}, $_->get_all() )
-        for @dimms;
+      push( @{$ret}, $_->get_all() ) for @dimms;
       return $ret;
       }
       ->(),

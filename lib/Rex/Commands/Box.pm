@@ -277,7 +277,7 @@ sub get_box {
       $::QUIET = $old_q;
       print STDERR "\n";
       Rex::Logger::info(
-"There was an error connecting to your Box. Please verify the login credentials.",
+        "There was an error connecting to your Box. Please verify the login credentials.",
         "warn"
       );
       Rex::Logger::debug(

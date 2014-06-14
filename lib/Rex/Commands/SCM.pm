@@ -49,7 +49,6 @@ All these functions are not idempotent.
 
 =cut
 
-
 package Rex::Commands::SCM;
 
 use strict;
@@ -63,33 +62,35 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT %REPOS);
 @EXPORT = qw(checkout);
 
-Rex::Config->register_set_handler("repository" => sub {
-  my ($name, %option) = @_;
-  $REPOS{$name} = \%option;
-});
-
+Rex::Config->register_set_handler(
+  "repository" => sub {
+    my ( $name, %option ) = @_;
+    $REPOS{$name} = \%option;
+  }
+);
 
 =item checkout($name, %data);
 
 With this function you can checkout a repository defined with I<set repository>. See Synopsis.
 
 =cut
+
 sub checkout {
-  my ($name, %data) = @_;
+  my ( $name, %data ) = @_;
 
   my $type = $REPOS{"$name"}->{"type"} ? $REPOS{$name}->{"type"} : "git";
   my $class = "Rex::SCM::\u$type";
 
   my $co_to = exists $data{"path"} ? $data{"path"} : "";
 
-  if($data{"path"}) {
+  if ( $data{"path"} ) {
     $data{"path"} = undef;
     delete $data{"path"};
   }
 
   eval "use $class;";
-  if($@) {
-    Rex::Logger::info("Error loading SCM: $@\n", "warn");
+  if ($@) {
+    Rex::Logger::info( "Error loading SCM: $@\n", "warn" );
     die("Error loading SCM: $@");
   }
 
@@ -97,7 +98,7 @@ sub checkout {
 
   my $repo = Rex::Config->get("repository");
   Rex::Logger::debug("Checking out $repo -> $co_to");
-  $scm->checkout($REPOS{$name}, $co_to, \%data);
+  $scm->checkout( $REPOS{$name}, $co_to, \%data );
 }
 
 =back

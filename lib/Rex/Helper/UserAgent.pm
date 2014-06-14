@@ -23,19 +23,19 @@ sub new {
 
 sub get_basic_credentials {
   my ($self) = @_;
-  
-  if(exists $self->{__user__} && $self->{__password__}) {
+
+  if ( exists $self->{__user__} && $self->{__password__} ) {
     return $self->{__user__}, $self->{__password__};
   }
   return;
 }
 
 sub get {
-  my ($self, $url, %option) = @_;
-  if(exists $option{user}) {
+  my ( $self, $url, %option ) = @_;
+  if ( exists $option{user} ) {
     $self->{__user__} = $option{user};
   }
-  if(exists $option{password}) {
+  if ( exists $option{password} ) {
     $self->{__password__} = $option{password};
   }
 

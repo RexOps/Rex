@@ -18,12 +18,11 @@ use Rex::Virtualization;
 
 @EXPORT = qw(vm);
 
-
 sub vm {
-  my ($action, $vmname, @opt) = @_;
+  my ( $action, $vmname, @opt ) = @_;
 
   my $vm_obj = Rex::Virtualization->create();
-  return $vm_obj->execute($action, $vmname, @opt);
+  return $vm_obj->execute( $action, $vmname, @opt );
 }
 
 =head1 NAME
@@ -317,6 +316,5 @@ Currently you can only modify the memory.
  vm hypervisor => "capabilities";
 
 =cut
-
 
 1;

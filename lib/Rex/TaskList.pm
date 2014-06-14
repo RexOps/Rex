@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::TaskList;
-  
+
 use strict;
 use warnings;
 
@@ -23,8 +23,9 @@ sub create {
   my ($class) = @_;
 
   # create only one object
-  if(ref($task_list) =~ m/^Rex::TaskList::/) {
-    Rex::Logger::debug("Returning existing distribution class of type: " . ref($task_list));
+  if ( ref($task_list) =~ m/^Rex::TaskList::/ ) {
+    Rex::Logger::debug(
+      "Returning existing distribution class of type: " . ref($task_list) );
     return $task_list;
   }
 
@@ -34,13 +35,14 @@ sub create {
   my $class_name = "Rex::TaskList::$type";
 
   eval "use $class_name";
-  if($@) {
+  if ($@) {
     die("TaskList module not found.");
   }
 
   $task_list = $class_name->new;
 
-  Rex::Logger::debug("new distribution class of type " . ref($task_list) . " created.");
+  Rex::Logger::debug(
+    "new distribution class of type " . ref($task_list) . " created." );
 
   return $task_list;
 }

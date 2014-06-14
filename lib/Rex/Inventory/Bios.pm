@@ -1,12 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
 
 package Rex::Inventory::Bios;
-  
+
 use strict;
 use warnings;
 
@@ -18,7 +17,7 @@ use Rex::Inventory::DMIDecode;
 
 sub get {
 
-  if(Rex::Hardware::Host::get_operating_system() eq "SunOS") {
+  if ( Rex::Hardware::Host::get_operating_system() eq "SunOS" ) {
     return Rex::Inventory::SMBios->new;
   }
   else {

@@ -1,4 +1,4 @@
-use Test::More tests => 4; 
+use Test::More tests => 4;
 
 use_ok 'Rex::Box';
 use_ok 'Rex::Box::Base';

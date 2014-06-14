@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -23,9 +23,9 @@ With this module you can define hostgroups out of an ini style file.
 =over 4
 
 =cut
-  
+
 package Rex::Group::Lookup::INI;
-  
+
 use strict;
 use warnings;
 
@@ -36,9 +36,8 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Helper::INI;
-   
-@EXPORT = qw(groups_file);
 
+@EXPORT = qw(groups_file);
 
 =item groups_file($file)
 
@@ -58,32 +57,35 @@ File Example:
  groups_file($file);
 
 =cut
+
 sub groups_file {
   my ($file) = @_;
 
   my $section;
   my %hash;
 
-  open (my $INI, "$file") || die "Can't open $file: $!\n";
+  open( my $INI, "$file" ) || die "Can't open $file: $!\n";
   my @lines = <$INI>;
   chomp @lines;
   close($INI);
 
   my $hash = Rex::Helper::INI::parse(@lines);
 
-  for my $k (keys %{ $hash }) {
+  for my $k ( keys %{$hash} ) {
     my @servers;
-    for my $servername (keys %{ $hash->{$k} }) {
+    for my $servername ( keys %{ $hash->{$k} } ) {
       my $add = {};
-      if(exists $hash->{$k}->{$servername} && ref $hash->{$k}->{$servername} eq "HASH") {
+      if ( exists $hash->{$k}->{$servername}
+        && ref $hash->{$k}->{$servername} eq "HASH" )
+      {
         $add = $hash->{$k}->{$servername};
       }
 
-      my $obj = Rex::Group::Entry::Server->new(name => $servername, %{ $add });
+      my $obj = Rex::Group::Entry::Server->new( name => $servername, %{$add} );
       push @servers, $obj;
     }
 
-    group("$k" => @servers);
+    group( "$k" => @servers );
   }
 }
 

@@ -14,27 +14,28 @@ my @new_file;
 
 print "[+] sanitizing $ARGV[0]\n";
 
-for(my $i = 0; $i <= $#lines; $i++) {
-  my $prev_line = $lines[$i-1];
-  my $next_line = $lines[$i+1];
+for ( my $i = 0 ; $i <= $#lines ; $i++ ) {
+  my $prev_line = $lines[ $i - 1 ];
+  my $next_line = $lines[ $i + 1 ];
   my $cur_line  = $lines[$i];
 
-  if($cur_line =~ m/^=cut/) {
+  if ( $cur_line =~ m/^=cut/ ) {
     $in_pod = 0;
     push @new_file, $cur_line;
     next;
   }
 
-  if($cur_line =~ m/^=/) {
+  if ( $cur_line =~ m/^=/ ) {
     $in_pod = 1;
     push @new_file, $cur_line;
     next;
   }
 
-  if($prev_line =~ m/^ +/ 
-     && $next_line =~ m/^ +/ 
-     && $cur_line =~ m/^$/
-     && $in_pod) {
+  if ( $prev_line =~ m/^ +/
+    && $next_line =~ m/^ +/
+    && $cur_line =~ m/^$/
+    && $in_pod )
+  {
     push @new_file, " $cur_line";
   }
   else {
@@ -45,6 +46,6 @@ for(my $i = 0; $i <= $#lines; $i++) {
 push @new_file, "";
 
 open my $out, ">", $ARGV[0] or ie $!;
-print $out join("\n", @new_file);
+print $out join( "\n", @new_file );
 close $out;
 

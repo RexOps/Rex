@@ -98,6 +98,7 @@ sub new {
 The name of the test. For each test a new vm will be created named after $name.
 
 =cut
+
 sub name {
   my ( $self, $name ) = @_;
   $self->{name} = $name;
@@ -108,6 +109,7 @@ sub name {
 Authentication option for the VM.
 
 =cut
+
 sub vm_auth {
   my ( $self, %auth ) = @_;
   $self->{auth} = \%auth;
@@ -118,6 +120,7 @@ sub vm_auth {
 The url to a vm that should be used as base VM.
 
 =cut
+
 sub base_vm {
   my ( $self, $vm ) = @_;
   $self->{vm} = $vm;
@@ -134,6 +137,7 @@ sub test(&) {
 The redirected SSH port. Default 2222.
 
 =cut
+
 sub redirect_port {
   my ( $self, $port ) = @_;
   $self->{redirect_port} = $port;
@@ -144,6 +148,7 @@ sub redirect_port {
 The task to run on the test vm.
 
 =cut
+
 sub run_task {
   my ( $self, $task ) = @_;
 
@@ -182,7 +187,6 @@ sub ok {
 sub finish {
   Test::More::done_testing();
 }
-
 
 =back
 

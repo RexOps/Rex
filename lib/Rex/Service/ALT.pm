@@ -11,21 +11,21 @@ use Rex::Helper::Run;
 use Rex::Logger;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub start {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/sbin/service $service start >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -33,11 +33,11 @@ sub start {
 }
 
 sub restart {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/sbin/service $service restart >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -45,11 +45,11 @@ sub restart {
 }
 
 sub stop {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/sbin/service $service stop >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -57,11 +57,11 @@ sub stop {
 }
 
 sub reload {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/sbin/service $service reload >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -69,11 +69,11 @@ sub reload {
 }
 
 sub status {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/sbin/service $service status >/dev/null";
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -81,26 +81,26 @@ sub status {
 }
 
 sub ensure {
-  my ($self, $service, $what) = @_;
+  my ( $self, $service, $what ) = @_;
 
-  if($what =~  /^stop/) {
+  if ( $what =~ /^stop/ ) {
     $self->stop($service);
     i_run "/sbin/chkconfig $service off";
   }
-  elsif($what =~ /^start/ || $what =~ m/^run/) {
+  elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start($service);
     i_run "/sbin/chkconfig $service on";
   }
 
-  if($? == 0) { return 1; } else { return 0; }
+  if   ( $? == 0 ) { return 1; }
+  else             { return 0; }
 }
 
 sub action {
-  my ($self, $service, $action) = @_;
+  my ( $self, $service, $action ) = @_;
 
   i_run "/sbin/service $service $action >/dev/null", nohup => 1;
-  if($? == 0) { return 1; }
+  if ( $? == 0 ) { return 1; }
 }
-
 
 1;

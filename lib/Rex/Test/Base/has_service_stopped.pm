@@ -26,7 +26,7 @@ sub new {
 
 sub run_test {
   my ( $self, $service ) = @_;
-  $self->ok(service($service, "status") == 0, "Service $service stopped.");
+  $self->ok( service( $service, "status" ) == 0, "Service $service stopped." );
 }
 
 1;

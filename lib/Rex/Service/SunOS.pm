@@ -15,21 +15,21 @@ use Rex::Logger;
 use Rex::Commands::Fs;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub start {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/etc/init.d/$service start >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -37,11 +37,11 @@ sub start {
 }
 
 sub restart {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/etc/init.d/$service restart >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -49,11 +49,11 @@ sub restart {
 }
 
 sub stop {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/etc/init.d/$service stop >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -61,11 +61,11 @@ sub stop {
 }
 
 sub reload {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/etc/init.d/$service reload >/dev/null", nohup => 1;
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -73,11 +73,11 @@ sub reload {
 }
 
 sub status {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   my $ret = i_run "/etc/init.d/$service status >/dev/null";
 
-  if($ret =~ m/online/) {
+  if ( $ret =~ m/online/ ) {
     return 1;
   }
 
@@ -85,15 +85,15 @@ sub status {
 }
 
 sub ensure {
-  my ($self, $service, $what) = @_;
+  my ( $self, $service, $what ) = @_;
 
-  if($what =~  /^stop/) {
+  if ( $what =~ /^stop/ ) {
     $self->stop($service);
     i_run "rm /etc/rc*.d/S*$service";
   }
-  elsif($what =~ /^start/ || $what =~ m/^run/) {
+  elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start($service);
-    my ($runlevel) = grep { $_=$1 if m/run\-level (\d)/ } i_run "who -r";
+    my ($runlevel) = grep { $_ = $1 if m/run\-level (\d)/ } i_run "who -r";
     ln "/etc/init.d/$service", "/etc/rc${runlevel}.d/S99$service";
   }
 
@@ -101,11 +101,10 @@ sub ensure {
 }
 
 sub action {
-  my ($self, $service, $action) = @_;
+  my ( $self, $service, $action ) = @_;
 
   i_run "/etc/init.d/$service $action >/dev/null", nohup => 1;
-  if($? == 0) { return 1; }
+  if ( $? == 0 ) { return 1; }
 }
-
 
 1;

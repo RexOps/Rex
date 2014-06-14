@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -17,21 +17,21 @@ use Rex::Service::Debian;
 use base qw(Rex::Service::Debian);
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub status {
-  my($self, $service) = @_;
+  my ( $self, $service ) = @_;
 
   i_run "/sbin/start-stop-daemon -K -t -q -n $service";
 
-  if($? == 0) {
+  if ( $? == 0 ) {
     return 1;
   }
 
@@ -39,18 +39,19 @@ sub status {
 }
 
 sub ensure {
-  my ($self, $service, $what) = @_;
+  my ( $self, $service, $what ) = @_;
 
-  if($what =~  /^stop/) {
+  if ( $what =~ /^stop/ ) {
     $self->stop($service);
     i_run "/etc/init.d/$service disable";
   }
-  elsif($what =~ /^start/ || $what =~ m/^run/) {
+  elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start($service);
     i_run "/etc/init.d/$service enable";
   }
 
-  if($? == 0) { return 1; } else { return 0; }
+  if   ( $? == 0 ) { return 1; }
+  else             { return 0; }
 }
 
 1;

@@ -173,7 +173,7 @@ sub partition {
   }
 
   run
-"parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";
+    "parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";
 
   if ( $? != 0 ) {
     die("Error creating partition.");

@@ -1,14 +1,13 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-
 ###### DEPRECATED
-  
+
 package Rex::Sudo::File;
-  
+
 use strict;
 use warnings;
 
@@ -20,45 +19,46 @@ use Rex::Helper::Path;
 use IO::File;
 
 sub open {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = {};
+  my $self  = {};
 
-  $self->{mode} = shift;
-  $self->{file} = shift;
+  $self->{mode}    = shift;
+  $self->{file}    = shift;
   $self->{rndfile} = get_tmp_file;
 
-  if(my $sftp = Rex::get_sftp()) {
-    if($self->{mode} eq ">") {
-      $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_CREAT | O_TRUNC );
+  if ( my $sftp = Rex::get_sftp() ) {
+    if ( $self->{mode} eq ">" ) {
+      $self->{fh} =
+        $sftp->open( $self->{rndfile}, O_WRONLY | O_CREAT | O_TRUNC );
     }
-    elsif($self->{mode} eq ">>") {
-      cp($self->{file}, $self->{rndfile});
-      chmod(666, $self->{rndfile});
-      $self->{fh} = $sftp->open($self->{rndfile}, O_WRONLY | O_APPEND );
+    elsif ( $self->{mode} eq ">>" ) {
+      cp( $self->{file}, $self->{rndfile} );
+      chmod( 666, $self->{rndfile} );
+      $self->{fh} = $sftp->open( $self->{rndfile}, O_WRONLY | O_APPEND );
       my %stat = stat $self->{rndfile};
-      $self->{fh}->seek($stat{size});
+      $self->{fh}->seek( $stat{size} );
     }
     else {
-      cp($self->{file}, $self->{rndfile});
-      chmod(666, $self->{rndfile});
-      $self->{fh} = $sftp->open($self->{rndfile}, O_RDONLY);
+      cp( $self->{file}, $self->{rndfile} );
+      chmod( 666, $self->{rndfile} );
+      $self->{fh} = $sftp->open( $self->{rndfile}, O_RDONLY );
     }
   }
   else {
     $self->{fh} = IO::File->new;
-    $self->{fh}->open($self->{mode} . " " . $self->{rndfile});
+    $self->{fh}->open( $self->{mode} . " " . $self->{rndfile} );
   }
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub write {
-  my ($self, $content) = @_;
+  my ( $self, $content ) = @_;
 
-  if(ref($self->{fh}) eq "Net::SSH2::File") {
+  if ( ref( $self->{fh} ) eq "Net::SSH2::File" ) {
     $self->{fh}->write($content);
   }
   else {
@@ -67,22 +67,22 @@ sub write {
 }
 
 sub seek {
-  my ($self, $offset) = @_;
+  my ( $self, $offset ) = @_;
 
-  if(ref($self->{fh}) eq "Net::SSH2::File") {
+  if ( ref( $self->{fh} ) eq "Net::SSH2::File" ) {
     $self->{fh}->seek($offset);
   }
   else {
-    $self->{fh}->seek($offset, 0);
+    $self->{fh}->seek( $offset, 0 );
   }
 }
 
 sub read {
-  my ($self, $len) = @_;
+  my ( $self, $len ) = @_;
   $len ||= 64;
 
   my $buf;
-  $self->{fh}->read($buf, $len);
+  $self->{fh}->read( $buf, $len );
 
   return $buf;
 }
@@ -92,7 +92,7 @@ sub close {
 
   return unless $self->{fh};
 
-  if(ref($self->{fh}) eq "Net::SSH2::File") {
+  if ( ref( $self->{fh} ) eq "Net::SSH2::File" ) {
     $self->{fh} = undef;
   }
   else {
@@ -100,9 +100,9 @@ sub close {
   }
 
   # use cat to not overwrite attributes/owner/group
-  if($self->{mode} eq ">" || $self->{mode} eq ">>") {
+  if ( $self->{mode} eq ">" || $self->{mode} eq ">>" ) {
     run "cat " . $self->{rndfile} . " >" . $self->{file};
-    rm($self->{rndfile});
+    rm( $self->{rndfile} );
   }
 }
 

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -24,8 +24,6 @@ This module is the base class for hardware/information gathering.
 =over 4
 
 =cut
-
-
 
 package Rex::Hardware;
 
@@ -71,22 +69,23 @@ Available modules:
 =cut
 
 my %HW_PROVIDER;
+
 sub register_hardware_provider {
-  my ($class, $service_name, $service_class) = @_;
+  my ( $class, $service_name, $service_class ) = @_;
   $HW_PROVIDER{"\L$service_name"} = $service_class;
   return 1;
 }
 
 sub get {
-  my($class, @modules) = @_;
+  my ( $class, @modules ) = @_;
 
   my %hardware_information;
 
-  if("all" eq "\L$modules[0]") {
+  if ( "all" eq "\L$modules[0]" ) {
 
     @modules = qw(Host Kernel Memory Network Swap VirtInfo);
-    push(@modules, keys(%HW_PROVIDER));
-  
+    push( @modules, keys(%HW_PROVIDER) );
+
   }
 
   for my $mod_string (@modules) {
@@ -94,14 +93,14 @@ sub get {
     Rex::Commands::profiler()->start("hardware: $mod_string");
 
     my $mod = "Rex::Hardware::$mod_string";
-    if(exists $HW_PROVIDER{$mod_string}) {
+    if ( exists $HW_PROVIDER{$mod_string} ) {
       $mod = $HW_PROVIDER{$mod_string};
     }
 
     Rex::Logger::debug("Loading $mod");
     eval "use $mod";
 
-    if($@) {
+    if ($@) {
       Rex::Logger::info("$mod not found.");
       Rex::Logger::debug("$@");
       next;

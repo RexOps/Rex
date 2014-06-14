@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Shared::Var::Array;
-  
+
 use strict;
 use warnings;
 
@@ -19,23 +19,20 @@ sub __retr;
 sub __store;
 
 sub TIEARRAY {
-  my $self = {
-    varname => $_[1],
-  };
+  my $self = { varname => $_[1], };
 
   bless $self, $_[0];
 
 }
 
 sub STORE {
-  my $self = shift;
+  my $self  = shift;
   my $index = shift;
   my $value = shift;
 
-
   return __lock {
     my $ref = __retr;
-    my $ret = $ref->{$self->{varname}}->{data}->[$index] = $value;
+    my $ret = $ref->{ $self->{varname} }->{data}->[$index] = $value;
     __store $ref;
 
     return $ret;
@@ -44,12 +41,12 @@ sub STORE {
 }
 
 sub FETCH {
-  my $self = shift;
+  my $self  = shift;
   my $index = shift;
 
   return __lock {
     my $ref = __retr;
-    my $ret = $ref->{$self->{varname}}->{data}->[$index];
+    my $ret = $ref->{ $self->{varname} }->{data}->[$index];
 
     return $ret;
   };
@@ -60,32 +57,31 @@ sub CLEAR {
 
   __lock {
     my $ref = __retr;
-    $ref->{$self->{varname}} = { data => [] };
+    $ref->{ $self->{varname} } = { data => [] };
     __store $ref;
   };
 
 }
 
 sub DELETE {
-  my $self = shift;
+  my $self  = shift;
   my $index = shift;
-
 
   __lock {
     my $ref = __retr;
-    delete $ref->{$self->{varname}}->{data}->[$index];
+    delete $ref->{ $self->{varname} }->{data}->[$index];
     __store $ref;
   };
 
 }
 
 sub EXISTS {
-  my $self = shift;
+  my $self  = shift;
   my $index = shift;
 
   return __lock {
     my $ref = __retr;
-    return exists $ref->{$self->{varname}}->{data}->[$index];
+    return exists $ref->{ $self->{varname} }->{data}->[$index];
   };
 
 }
@@ -97,11 +93,11 @@ sub PUSH {
   __lock {
     my $ref = __retr;
 
-    if(! ref($ref->{$self->{varname}}->{data}) eq "ARRAY") {
-      $ref->{$self->{varname}}->{data} = [];
+    if ( !ref( $ref->{ $self->{varname} }->{data} ) eq "ARRAY" ) {
+      $ref->{ $self->{varname} }->{data} = [];
     }
 
-    push(@{ $ref->{$self->{varname}}->{data} }, @data);
+    push( @{ $ref->{ $self->{varname} }->{data} }, @data );
 
     __store $ref;
   };
@@ -109,12 +105,12 @@ sub PUSH {
 }
 
 sub EXTEND {
-  my $self = shift;
+  my $self  = shift;
   my $count = shift;
 }
 
 sub STORESIZE {
-  my $self = shift;
+  my $self    = shift;
   my $newsize = shift;
 }
 
@@ -123,10 +119,10 @@ sub FETCHSIZE {
 
   return __lock {
     my $ref = __retr;
-    if(! exists $ref->{$self->{varname}}) {
+    if ( !exists $ref->{ $self->{varname} } ) {
       return 0;
     }
-    return scalar(@{ $ref->{$self->{varname}}->{data} });
+    return scalar( @{ $ref->{ $self->{varname} }->{data} } );
   };
 
 }
@@ -137,24 +133,24 @@ sub DESTROY {
 
 sub __lock(&) {
 
-  sysopen(my $dblock, "vars.db.lock", O_RDONLY | O_CREAT) or die($!);
-  flock($dblock, LOCK_SH) or die($!);
+  sysopen( my $dblock, "vars.db.lock", O_RDONLY | O_CREAT ) or die($!);
+  flock( $dblock, LOCK_SH ) or die($!);
 
   my $ret = &{ $_[0] }();
 
   close($dblock);
-  
+
   return $ret;
 }
 
 sub __store {
   my $ref = shift;
-  store($ref, "vars.db");
+  store( $ref, "vars.db" );
 }
 
 sub __retr {
 
-  if(! -f "vars.db") {
+  if ( !-f "vars.db" ) {
     return {};
   }
 

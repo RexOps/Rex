@@ -194,8 +194,8 @@ sub get_executor_for {
 }
 
 sub set_tmp_dir {
-  my ($class, $dir) = @_;
-  if($class eq "Rex::Config") {
+  my ( $class, $dir ) = @_;
+  if ( $class eq "Rex::Config" ) {
     $tmp_dir = $dir;
   }
   else {

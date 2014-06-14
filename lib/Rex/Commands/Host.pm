@@ -67,13 +67,13 @@ sub host_entry {
   $option{ensure} ||= "present";
 
   my $name = $res_name;
-  if(exists $option{host}) {
+  if ( exists $option{host} ) {
     $name = $option{host};
   }
 
   my $file = "/etc/hosts";
 
-  if(exists $option{file}) {
+  if ( exists $option{file} ) {
     $file = $option{file};
   }
 
@@ -127,7 +127,7 @@ sub create_host {
 
   Rex::Logger::debug("Creating host $host");
 
-  my @cur_host = get_host($host, { file => $data->{file} });
+  my @cur_host = get_host( $host, { file => $data->{file} } );
   if ( !@cur_host ) {
     my $fh = file_append $data->{file};
     $fh->write( $data->{"ip"} . "\t" . $host );
@@ -138,7 +138,7 @@ sub create_host {
     $fh->close;
   }
   else {
-    my @host = get_host($host, { file => $data->{file} });
+    my @host = get_host( $host, { file => $data->{file} } );
     if ( $data->{"ip"} eq $host[0]->{"ip"}
       && join( " ", @{ $data->{"aliases"} || [] } ) eq
       join( " ", @{ $host[0]->{"aliases"} } ) )
@@ -150,7 +150,7 @@ sub create_host {
     }
     Rex::Logger::debug("Host already exists. Updating...");
 
-    delete_host($host, $data->{file});
+    delete_host( $host, $data->{file} );
     return create_host(@_);
   }
 }
@@ -164,12 +164,12 @@ Delete a host from /etc/hosts.
 =cut
 
 sub delete_host {
-  my ($host, $file) = @_;
+  my ( $host, $file ) = @_;
 
   Rex::Logger::debug("Deleting host $host");
   $file ||= "/etc/hosts";
 
-  if ( get_host($host, { file => $file }) ) {
+  if ( get_host( $host, { file => $file } ) ) {
     my $fh      = file_read $file;
     my @content = $fh->read_all;
     $fh->close;
@@ -202,11 +202,11 @@ sub get_host {
   my $file = "/etc/hosts";
 
   my @content;
-  if (@lines && ! ref $lines[0]) {
+  if ( @lines && !ref $lines[0] ) {
     @content = @lines;
   }
   else {
-    if(ref $lines[0] eq "HASH") {
+    if ( ref $lines[0] eq "HASH" ) {
       $file = $lines[0]->{file};
     }
     my $fh = file_read $file;

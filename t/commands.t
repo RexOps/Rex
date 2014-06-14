@@ -15,54 +15,63 @@ use_ok 'Rex::Commands::Upload';
 Rex::Commands->import();
 
 user("test");
-ok(Rex::Config->get_user eq "test", "setting user");
+ok( Rex::Config->get_user eq "test", "setting user" );
 
 password("test");
-ok(Rex::Config->get_password eq "test", "setting password");
+ok( Rex::Config->get_password eq "test", "setting password" );
 
 sudo_password("test");
-ok(Rex::Config->get_sudo_password eq "test", "setting password");
+ok( Rex::Config->get_sudo_password eq "test", "setting password" );
 
 timeout(5);
-ok(Rex::Config->get_timeout == 5, "setting timeout");
+ok( Rex::Config->get_timeout == 5, "setting timeout" );
 
 max_connect_retries(5);
-ok(Rex::Config->get_max_connect_fails == 5, "setting max connect retries");
+ok( Rex::Config->get_max_connect_fails == 5, "setting max connect retries" );
 
-ok(length(get_random(5, 'a' .. 'z')) == 5, "get random string");
+ok( length( get_random( 5, 'a' .. 'z' ) ) == 5, "get random string" );
 
 public_key("/tmp/pub.key");
-ok(Rex::Config->get_public_key eq "/tmp/pub.key", "set public key");
+ok( Rex::Config->get_public_key eq "/tmp/pub.key", "set public key" );
 
 private_key("/tmp/priv.key");
-ok(Rex::Config->get_private_key eq "/tmp/priv.key", "set private key");
+ok( Rex::Config->get_private_key eq "/tmp/priv.key", "set private key" );
 
 pass_auth();
-ok(Rex::Config->get_password_auth, "password auth");
+ok( Rex::Config->get_password_auth, "password auth" );
 
 parallelism(5);
-ok(Rex::Config->get_parallelism == 5, "set parallelism");
+ok( Rex::Config->get_parallelism == 5, "set parallelism" );
 parallelism(1);
 
-path("/bin", "/sbin");
-ok(join(",", Rex::Config->get_path) eq "/bin,/sbin", "set path");
+path( "/bin", "/sbin" );
+ok( join( ",", Rex::Config->get_path ) eq "/bin,/sbin", "set path" );
 
-set("foo", "bar");
-ok(get("foo") eq "bar", "set/get");
+set( "foo", "bar" );
+ok( get("foo") eq "bar", "set/get" );
 
 my @ret = Rex::Commands::evaluate_hostname("test[01..04]");
-ok(join(",", @ret) eq "test01,test02,test03,test04", "evaluate hostname");
+ok( join( ",", @ret ) eq "test01,test02,test03,test04", "evaluate hostname" );
 
 @ret = Rex::Commands::evaluate_hostname("test[01..04].rexify.org");
-ok(join(",", @ret) eq "test01.rexify.org,test02.rexify.org,test03.rexify.org,test04.rexify.org", "evaluate hostname / with domain");
+ok(
+  join( ",", @ret ) eq
+    "test01.rexify.org,test02.rexify.org,test03.rexify.org,test04.rexify.org",
+  "evaluate hostname / with domain"
+);
 
 @ret = Rex::Commands::evaluate_hostname("test[1..4]");
-ok(join(",", @ret) eq "test1,test2,test3,test4", "evaluate hostname without zeros");
+ok( join( ",", @ret ) eq "test1,test2,test3,test4",
+  "evaluate hostname without zeros" );
 
 @ret = Rex::Commands::evaluate_hostname("test[1..4].rexify.org");
-ok(join(",", @ret) eq "test1.rexify.org,test2.rexify.org,test3.rexify.org,test4.rexify.org", "evaluate hostname with domainname / without zero");
+ok(
+  join( ",", @ret ) eq
+    "test1.rexify.org,test2.rexify.org,test3.rexify.org,test4.rexify.org",
+  "evaluate hostname with domainname / without zero"
+);
 
 @ret = Rex::Commands::evaluate_hostname("10.5.9.[8..11]");
-ok(join(",", @ret) eq "10.5.9.8,10.5.9.9,10.5.9.10,10.5.9.11", "evaluate ip");
-
+ok( join( ",", @ret ) eq "10.5.9.8,10.5.9.9,10.5.9.10,10.5.9.11",
+  "evaluate ip" );
 

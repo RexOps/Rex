@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -19,29 +19,29 @@ use List::MoreUtils qw(uniq);
 use Data::Dumper;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
-
 sub get_servers {
   my ($self) = @_;
 
-  my @servers = map { ref($_->to_s) eq "CODE" ? &{ $_->to_s } : $_ } @{ $self->{servers} };
+  my @servers = map { ref( $_->to_s ) eq "CODE" ? &{ $_->to_s } : $_ }
+    @{ $self->{servers} };
 
   return @servers;
 }
 
 sub set_auth {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
   $self->{auth} = \%data;
 
-  map { $_->set_auth(%{ $self->get_auth }) } $self->get_servers;
+  map { $_->set_auth( %{ $self->get_auth } ) } $self->get_servers;
 }
 
 sub get_auth {
@@ -49,34 +49,35 @@ sub get_auth {
   return $self->{auth};
 }
 
-
 ################################################################################
 # STATIC FUNCTIONS
 ################################################################################
 
 sub create_group {
-  my $class = shift;
+  my $class      = shift;
   my $group_name = shift;
-  my @server = uniq grep { defined } @_;
+  my @server     = uniq grep { defined } @_;
 
-  $groups{$group_name} = Rex::Group->new(servers => [ map {
-                                          if(ref($_) ne "Rex::Group::Entry::Server") {
-                                            $_ = Rex::Group::Entry::Server->new(name => $_)
-                                          }
-                                          else {
-                                            $_;
-                                          }
-                                        } @server
-                                    ]
-                            );
+  $groups{$group_name} = Rex::Group->new(
+    servers => [
+      map {
+        if ( ref($_) ne "Rex::Group::Entry::Server" ) {
+          $_ = Rex::Group::Entry::Server->new( name => $_ );
+        }
+        else {
+          $_;
+        }
+      } @server
+    ]
+  );
 }
 
 # returns the servers in the group
 sub get_group {
-  my $class = shift;
+  my $class      = shift;
   my $group_name = shift;
 
-  if(exists $groups{$group_name}) {
+  if ( exists $groups{$group_name} ) {
     return $groups{$group_name}->get_servers;
   }
 
@@ -84,18 +85,18 @@ sub get_group {
 }
 
 sub is_group {
-  my $class = shift;
+  my $class      = shift;
   my $group_name = shift;
 
-  if(defined $groups{$group_name}) { return 1; }
+  if ( defined $groups{$group_name} ) { return 1; }
   return 0;
 }
 
 sub get_groups {
   my $class = shift;
-  my %ret = ();
-  
-  for my $key (keys %groups) {
+  my %ret   = ();
+
+  for my $key ( keys %groups ) {
     $ret{$key} = [ $groups{$key}->get_servers ];
   }
 
@@ -104,7 +105,7 @@ sub get_groups {
 
 sub get_group_object {
   my $class = shift;
-  my $name = shift;
+  my $name  = shift;
 
   return $groups{$name};
 }

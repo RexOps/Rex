@@ -69,18 +69,18 @@ Constructor: You need to parse an connected Net::SSH2 Object.
 our $Log_Stdout = 1;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = {};
+  my $self  = {};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   $self->{"__shell"} = $_[0]->channel();
   $self->{"__shell"}->pty("vt100");
   $self->{"__shell"}->shell;
 
   $self->{"__log_stdout"} = $Rex::Helper::SSH2::Expect::Log_Stdout;
-  $self->{"__log_to"} = sub {};
+  $self->{"__log_to"} = sub { };
 
   return $self;
 }
@@ -90,8 +90,9 @@ sub new {
 Log on STDOUT.
 
 =cut
+
 sub log_stdout {
-  my ($self, $log) = @_;
+  my ( $self, $log ) = @_;
   $self->{"__log_stdout"} = $log;
 }
 
@@ -100,8 +101,9 @@ sub log_stdout {
 Log everything to a file. $file can be a filename, a filehandle or a subRef.
 
 =cut
+
 sub log_file {
-  my ($self, $file) = @_;
+  my ( $self, $file ) = @_;
   $self->{"__log_to"} = $file;
 }
 
@@ -115,10 +117,11 @@ sub shell {
 Spawn $command with @parameters as parameters.
 
 =cut
-sub spawn {
-  my ($self, $command, @parameters) = @_;
 
-  my $cmd = "$command " . join(" ", @parameters);
+sub spawn {
+  my ( $self, $command, @parameters ) = @_;
+
+  my $cmd = "$command " . join( " ", @parameters );
   $self->shell->write("$cmd\n");
 }
 
@@ -151,22 +154,22 @@ This method controls the execution of your process.
 =cut
 
 sub expect {
-  my ($self, $timeout, @match_patterns) = @_;
+  my ( $self, $timeout, @match_patterns ) = @_;
 
   eval {
     local $SIG{'ALRM'} = sub { die; };
     alarm $timeout;
 
     my $line = "";
-    while(1) {
+    while (1) {
       my $buf;
-      $self->shell->read($buf, 1);
+      $self->shell->read( $buf, 1 );
 
       # log to stdout if wanted
       print $buf if $self->{"__log_stdout"};
       $self->_log($buf);
 
-      if($self->_check_patterns($line, @match_patterns)) {
+      if ( $self->_check_patterns( $line, @match_patterns ) ) {
         $line = "";
         alarm $timeout;
         next;
@@ -183,36 +186,36 @@ Send a string to the running command.
 =cut
 
 sub send {
-  my ($self, $str) = @_;
+  my ( $self, $str ) = @_;
   $self->shell->write($str);
 }
 
 sub _check_patterns {
-  my ($self, $line, @match_patterns) = @_;
+  my ( $self, $line, @match_patterns ) = @_;
 
   for my $pattern (@match_patterns) {
-    if($line =~ $pattern->[0]) {
+    if ( $line =~ $pattern->[0] ) {
       my $code = $pattern->[1];
-      &$code($self, $line);
+      &$code( $self, $line );
       return 1;
     }
   }
 }
 
 sub _log {
-  my ($self, $str) = @_;
+  my ( $self, $str ) = @_;
 
   my $log_to = $self->{"__log_to"};
 
-  if(ref($log_to) eq "CODE") {
+  if ( ref($log_to) eq "CODE" ) {
     &$log_to($str);
   }
-  elsif(ref($log_to) eq "GLOB") {
+  elsif ( ref($log_to) eq "GLOB" ) {
     print $log_to $str;
   }
   else {
     # log to a file
-    open(my $fh, ">>", $log_to) or die($!);
+    open( my $fh, ">>", $log_to ) or die($!);
     print $fh $str;
     close($fh);
   }

@@ -46,8 +46,7 @@ sub execute {
 
     Rex::Logger::debug(
       "converting $cwd/tmp/$vmdk[0] -> $cwd/storage/$file.qcow2");
-    i_run
-      "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $cwd/$file.qcow2";
+    i_run "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $cwd/$file.qcow2";
 
     if ( $? != 0 ) {
       Rex::Logger::info(
@@ -80,7 +79,7 @@ sub execute {
   for (@network) {
     $_->{type} = "bridge"  if ( $_->{type} eq "bridged" );
     $_->{type} = "network" if ( $_->{type} eq "nat" );
-    if($_->{type} eq "network" && ! exists $_->{network}) {
+    if ( $_->{type} eq "network" && !exists $_->{network} ) {
       $_->{network} = "default";
     }
   }
@@ -97,9 +96,11 @@ sub execute {
     network => \@network,
   );
 
-  if(exists $opt{__forward_port}) {
+  if ( exists $opt{__forward_port} ) {
+
     # currently not supported
-    Rex::Logger::info("Port-forwarding is currently not supported for KVM boxes.", "warn");
+    Rex::Logger::info(
+      "Port-forwarding is currently not supported for KVM boxes.", "warn" );
   }
 
 }

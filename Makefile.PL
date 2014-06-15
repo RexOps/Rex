@@ -16,6 +16,7 @@ my %deps = (
   'String::Escape'    => 0,
   'Time::HiRes'       => 0,
   'List::MoreUtils'   => 0,
+  'Mojolicious'       => '4.0',
 );
 
 if ( $^O =~ m/^MSWin/ ) {
@@ -66,4 +67,3 @@ sub WriteMakefile1
 
   WriteMakefile(%params);
 }
-

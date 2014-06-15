@@ -1,4 +1,4 @@
-use Test::More tests => 166;
+use Test::More tests => 168;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -164,6 +164,8 @@ use_ok 'Rex::Test::Base::has_file';
 use_ok 'Rex::Test::Base::has_package';
 use_ok 'Rex::Test::Base::has_service_running';
 use_ok 'Rex::Test::Base::has_service_stopped';
+use_ok 'Rex::RexIO';
+use_ok 'Rex::Interface::Cache::RexIO';
 
 use Data::Dumper;
 my @hosts = Rex::Commands::evaluate_hostname("web[01..10]");

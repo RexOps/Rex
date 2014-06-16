@@ -54,21 +54,35 @@ sub get_auth {
 # STATIC FUNCTIONS
 ################################################################################
 
+# Creates a new server group
+# Possible calls:
+#   create_group(name => "g1", "srv1", "srv2");
+#   create_group(name => "g1", Rex::Group::Entry::Server->new(name => "srv1"), "srv2");
+#   create_group(name => "g1", "srv1" => { user => "other" }, "srv2");
 sub create_group {
   my $class = shift;
   my $group_name = shift;
   my @server = uniq grep { defined } @_;
 
-  $groups{$group_name} = Rex::Group->new(servers => [ map {
-                                          if(ref($_) ne "Rex::Group::Entry::Server") {
-                                            $_ = Rex::Group::Entry::Server->new(name => $_)
-                                          }
-                                          else {
-                                            $_;
-                                          }
-                                        } @server
-                                    ]
-                            );
+  my @server_obj;
+  for (my $i=0; $i<=$#server; $i++) {
+  	next if ref $server[$i] eq 'HASH'; # already processed by previous loop
+  	
+  	# if argument is already a Rex::Group::Entry::Server
+    if (ref($server[$i]) eq "Rex::Group::Entry::Server") {
+      push @server_obj, $server[$i];
+      next;
+    }
+  	
+  	# if next argument is a HashRef, use it as options for the server
+    my %options = ($i<$#server and ref $server[$i+1] eq 'HASH')
+      ? %{ $server[$i+1] }
+      : ();
+
+    push @server_obj, Rex::Group::Entry::Server->new(name => $server[$i], %options);
+  }
+
+  $groups{$group_name} = Rex::Group->new(servers => \@server_obj);
 }
 
 # returns the servers in the group

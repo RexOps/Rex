@@ -534,9 +534,8 @@ For example I<apt-get upgrade> or I<yum update>.
 
 sub update_system {
   my $pkg = Rex::Pkg->get;
-  eval { $pkg->update_system; } or do {
-    Rex::Logger::info( "An error occured for update_system: $@", "warn" );
-  };
+  eval { $pkg->update_system; };
+  Rex::Logger::info( "An error occured for update_system: $@", "warn" ) if $@;
 }
 
 =item installed_packages

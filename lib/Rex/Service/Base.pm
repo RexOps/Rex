@@ -154,7 +154,6 @@ sub ensure {
 sub action {
   my ( $self, $service, $action ) = @_;
   $service = $self->_prepare_service_name($service);
-  $self->_filter_options( $service, $options );
 
   my $cmd = sprintf $self->{commands}->{action}, $service, $action;
   return $self->_execute($cmd);

@@ -77,9 +77,9 @@ and notify it when you want to run it.
    run "extract-something",
      command     => "tar -C /foo -xzf /tmp/foo.tgz",
      only_notified => TRUE;
- 
+
    # some code ...
- 
+
    notify "run", "extract-something";  # now the command gets executed
  };
 
@@ -88,7 +88,7 @@ I<only_if> or I<unless> option.
 
  run "some-command",
    only_if => "ps -ef | grep -q httpd";   # only run if httpd is running
- 
+
  run "some-other-command",
    unless => "ps -ef | grep -q httpd";    # only run if httpd is not running
 
@@ -217,13 +217,16 @@ sub run {
     }
 
     if ( $? == 127 ) {
-      Rex::Logger::info( "$cmd: Command not found.", "error" );
+      Rex::Logger::info( "$cmd: Command not found.", "error" )
+        if ( Rex::Config->get_verbose_run );
     }
     elsif ( $? != 0 && $? != 300 ) {
-      Rex::Logger::info( "Error executing $cmd: Return-Code: $?", "warn" );
+      Rex::Logger::info( "Error executing $cmd: Return-Code: $?", "warn" )
+        if ( Rex::Config->get_verbose_run );
     }
     elsif ( $? == 0 ) {
-      Rex::Logger::info("Successfully executed $cmd.");
+      Rex::Logger::info("Successfully executed $cmd.")
+        if ( Rex::Config->get_verbose_run );
     }
 
     if ($code) {
@@ -305,7 +308,7 @@ You can use this function to run one command with sudo privileges or to turn on 
  user "unprivuser";
  sudo_password "f00b4r";
  sudo -on;  # turn sudo globaly on
- 
+
  task prepare => sub {
    install "apache2";
    file "/etc/ntp.conf",
@@ -319,7 +322,7 @@ Or, if you don't turning sudo globaly on.
  task prepare => sub {
    file "/tmp/foo.txt",
      content => "this file was written without sudo privileges\n";
- 
+
    # everything in this section will be executed with sudo privileges
    sudo sub {
      install "apache2";

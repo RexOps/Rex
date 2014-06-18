@@ -45,7 +45,8 @@ our (
   %executor_for,    $allow_empty_groups,    $use_server_auth,
   $tmp_dir,         %openssh_opt,           $use_cache,
   $cache_type,      $use_sleep_hack,        $report_type,
-  $do_reporting,    $say_format,            $exec_autodie
+  $do_reporting,    $say_format,            $exec_autodie,
+  $verbose_run,
 );
 
 # some defaults
@@ -55,6 +56,16 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_verbose_run {
+  my $class = shift;
+  $verbose_run = shift;
+}
+
+sub get_verbose_run {
+  return $verbose_run;
+}
+
 
 sub set_exec_autodie {
   my $class = shift;

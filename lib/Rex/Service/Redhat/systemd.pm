@@ -14,102 +14,32 @@ use Rex::Helper::Run;
 use Rex::Logger;
 use Rex::Commands::Fs;
 
+use base qw(Rex::Service::Base);
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
+  $self->{commands} = {
+    start        => 'systemctl start %s >/dev/null',
+    restart      => 'systemctl restart %s >/dev/null',
+    stop         => 'systemctl stop %s >/dev/null',
+    reload       => 'systemctl reload %s >/dev/null',
+    status       => 'systemctl status %s >/dev/null',
+    ensure_stop  => 'systemctl disable %s',
+    ensure_start => 'systemctl enable %s',
+  };
+
   return $self;
-}
-
-sub start {
-  my ( $self, $service ) = @_;
-  $service = _prepare_service_name($service);
-
-  i_run "systemctl start $service >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub restart {
-  my ( $self, $service ) = @_;
-  $service = _prepare_service_name($service);
-
-  i_run "systemctl restart $service >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub stop {
-  my ( $self, $service ) = @_;
-  $service = _prepare_service_name($service);
-
-  i_run "systemctl stop $service >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub reload {
-  my ( $self, $service ) = @_;
-  $service = _prepare_service_name($service);
-
-  i_run "systemctl reload $service >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub status {
-  my ( $self, $service ) = @_;
-  $service = _prepare_service_name($service);
-
-  i_run "systemctl status $service >/dev/null";
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub ensure {
-  my ( $self, $service, $what ) = @_;
-  $service = _prepare_service_name($service);
-
-  if ( $what =~ /^stop/ ) {
-    $self->stop($service);
-    i_run "systemctl disable $service";
-  }
-  elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    $self->start($service);
-    i_run "systemctl enable $service";
-  }
-
-  if   ( $? == 0 ) { return 1; }
-  else             { return 0; }
 }
 
 # all systemd services must end with .service
 # so it will be appended if there is no "." in the name.
 sub _prepare_service_name {
-  my ($service) = @_;
+  my ( $self, $service ) = @_;
 
   unless ( $service =~ m/\./ ) {
     $service .= ".service";

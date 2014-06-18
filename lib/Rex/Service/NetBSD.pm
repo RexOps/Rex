@@ -14,96 +14,42 @@ use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Logger;
 
+use base qw(Rex::Service::Base);
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
+
+  $self->{commands} = {
+    start   => '/etc/rc.d/%s onestart >/dev/null',
+    restart => '/etc/rc.d/%s onerestart >/dev/null',
+    stop    => '/etc/rc.d/%s onestop >/dev/null',
+    reload  => '/etc/rc.d/%s onereload >/dev/null',
+    status  => '/etc/rc.d/%s onestatus >/dev/null',
+    action  => '/etc/rc.d/%s %s >/dev/null',
+  };
 
   return $self;
 }
 
-sub start {
-  my ( $self, $service ) = @_;
-
-  i_run "/etc/rc.d/$service onestart >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub restart {
-  my ( $self, $service ) = @_;
-
-  i_run "/etc/rc.d/$service onerestart >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub stop {
-  my ( $self, $service ) = @_;
-
-  i_run "/etc/rc.d/$service onestop >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub reload {
-  my ( $self, $service ) = @_;
-
-  i_run "/etc/rc.d/$service onereload >/dev/null", nohup => 1;
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub status {
-  my ( $self, $service ) = @_;
-
-  i_run "/etc/rc.d/$service onestatus >/dev/null";
-
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
-}
-
 sub ensure {
-  my ( $self, $service, $what ) = @_;
+  my ( $self, $service, $options ) = @_;
+
+  my $what = $options->{ensure};
 
   if ( $what =~ /^stop/ ) {
-    $self->stop($service);
+    $self->stop($service, $options);
     delete_lines_matching "/etc/rc.conf", matching => qr/${service}=YES/;
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    $self->start($service);
+    $self->start($service, $options);
     append_if_no_such_line "/etc/rc.conf", "${service}=YES\n";
   }
 
   return 1;
-}
-
-sub action {
-  my ( $self, $service, $action ) = @_;
-
-  i_run "/etc/rc.d/$service $action >/dev/null", nohup => 1;
-  if ( $? == 0 ) { return 1; }
 }
 
 1;

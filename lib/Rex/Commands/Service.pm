@@ -15,19 +15,19 @@ With this module you can manage Linux services.
 =head1 SYNOPSIS
 
  use Rex::Commands::Service
- 
+
  service apache2 => "start";
- 
+
  service apache2 => "stop";
- 
+
  service apache2 => "restart";
- 
+
  service apache2 => "status";
- 
+
  service apache2 => "reload";
- 
+
  service apache2 => "ensure", "started";
- 
+
  service apache2 => "ensure", "stopped";
 
 =head1 EXPORTED FUNCTIONS
@@ -111,6 +111,18 @@ The service function accepts 2 parameters. The first is the service name and the
      ensure => "stopped";
  };
 
+
+If you need to define a custom command for start, stop, restart, reload or status you can do this with the corresponding options.
+
+ task "prepare", sub {
+   service "apache2",
+     ensure  => "started",
+     start   => "/usr/local/bin/httpd -f /etc/my/httpd.conf",
+     stop    => "killall httpd",
+     status  => "ps -efww | grep httpd",
+     restart => "killall httpd && /usr/local/bin/httpd -f /etc/my/httpd.conf",
+     reload  => "killall httpd && /usr/local/bin/httpd -f /etc/my/httpd.conf";
+ };
 
 This function supports the following hooks:
 
@@ -210,18 +222,18 @@ sub service {
 
     if ( $opt_ref->{ensure} =~ m/^(start|run|enable)/ ) {
       if ( exists $opt_ref->{no_boot} && $opt_ref->{no_boot} ) {
-        $return = $srvc->start($service);
+        $return = $srvc->start( $service, $opt_ref );
       }
       else {
-        $return = $srvc->ensure( $service, $opt_ref->{ensure} );
+        $return = $srvc->ensure( $service, $opt_ref );
       }
     }
     elsif ( $opt_ref->{ensure} =~ m/^(stop|disable)/ ) {
       if ( exists $opt_ref->{no_boot} && $opt_ref->{no_boot} ) {
-        $return = $srvc->stop($service);
+        $return = $srvc->stop( $service, $opt_ref );
       }
       else {
-        $return = $srvc->ensure( $service, $opt_ref->{ensure} );
+        $return = $srvc->ensure( $service, $opt_ref );
       }
     }
     else {
@@ -229,7 +241,7 @@ sub service {
       confess "$opt_ref->{ensure} unknown ensure value.";
     }
 
-    my $a_status = $srvc->status($service);
+    my $a_status = $srvc->status( $service, $opt_ref );
 
     $changed = 0;
     if ( $a_status != $b_status ) {
@@ -346,7 +358,7 @@ sub old_service {
 
   elsif ( $action eq "ensure" ) {
 
-    if ( $srvc->ensure( $service, $options ) ) {
+    if ( $srvc->ensure( $service, { ensure => $options } ) ) {
       $changed = 0;
       $return = 1 if !$is_multiple;
     }
@@ -381,10 +393,10 @@ sub old_service {
 To set an other service provider as the default, use this function.
 
  user "root";
- 
+
  group "db" => "db[01..10]";
  service_provider_for SunOS => "svcadm";
- 
+
  task "start", group => "db", sub {
     service ssh => "restart";
  };

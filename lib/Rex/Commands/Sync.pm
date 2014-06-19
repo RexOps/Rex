@@ -15,11 +15,11 @@ This module can sync directories between your Rex system and your servers withou
 =head1 SYNOPSIS
 
  use Rex::Commands::Sync;
-   
+
  task "prepare", "mysystem01", sub {
-   # upload directory recursively to remote system. 
+   # upload directory recursively to remote system.
    sync_up "/local/directory", "/remote/directory";
-   
+
    sync_up "/local/directory", "/remote/directory", {
      # setting custom file permissions for every file
      files => {
@@ -37,10 +37,10 @@ This module can sync directories between your Rex system and your servers withou
       my (@files_changed) = @_;
      },
    };
-    
+
    # download a directory recursively from the remote system to the local machine
    sync_down "/remote/directory", "/local/directory";
- }; 
+ };
 
 =cut
 
@@ -109,10 +109,37 @@ sub sync_up {
   #print Dumper(\@diff);
 
   #
-  # fourth, upload the different files
+  # fourth, build excludes list
+  #
+
+  my $excludes = $options->{exclude} ||= [];
+  $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
+
+  my @excluded_files;
+  foreach my $ex (@$excludes) {
+    LOCAL {
+      if ( is_dir $ex) {
+        map {
+          push( @excluded_files,
+            sprintf( '/%s', File::Spec->canonpath("$ex/$_->{name}") ) )
+        } _get_local_files($ex);
+      }
+      else {
+        foreach my $path ( glob $ex ) {
+          push( @excluded_files,
+            sprintf( '/%s', File::Spec->canonpath($path) ) );
+        }
+      }
+    };
+  }
+
+  #
+  # fifth, upload the different files
   #
 
   for my $file (@diff) {
+    next if grep { $_ eq $file->{name} } @excluded_files;
+
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
 
@@ -226,10 +253,37 @@ sub sync_down {
   #print Dumper(\@diff);
 
   #
-  # fourth, upload the different files
+  # fourth, build excludes list
+  #
+
+  my $excludes = $options->{exclude} ||= [];
+  $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
+
+  my @excluded_files;
+  foreach my $ex (@$excludes) {
+    LOCAL {
+      if ( is_dir $ex) {
+        map {
+          push( @excluded_files,
+            sprintf( '/%s', File::Spec->canonpath("$ex/$_->{name}") ) )
+        } _get_local_files($ex);
+      }
+      else {
+        foreach my $path ( glob $ex ) {
+          push( @excluded_files,
+            sprintf( '/%s', File::Spec->canonpath($path) ) );
+        }
+      }
+    };
+  }
+
+  #
+  # fifth, upload the different files
   #
 
   for my $file (@diff) {
+    next if grep { $_ eq $file->{name} } @excluded_files;
+
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
 
@@ -321,7 +375,7 @@ use warnings;
 unlink $0;
 
 my $dest = $ARGV[0];
-my @dirs = ($dest);  
+my @dirs = ($dest);
 my @tree = ();
 
 for my $dir (@dirs) {

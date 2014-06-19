@@ -411,10 +411,10 @@ sub _request {
   $ua->env_proxy;
   my %param = $self->_sign( $action, %args );
 
-  Rex::Logger::debug( "Sending request to: http://" . $self->{'__endpoint'} );
+  Rex::Logger::debug( "Sending request to: https://" . $self->{'__endpoint'} );
   Rex::Logger::debug( "  $_ -> " . $param{$_} ) for keys %param;
 
-  my $res = $ua->post( "http://" . $self->{'__endpoint'}, \%param );
+  my $res = $ua->post( "https://" . $self->{'__endpoint'}, \%param );
 
   if ( $res->code >= 500 ) {
     Rex::Logger::info( "Error on request", "warn" );

@@ -19,40 +19,18 @@ use base qw(Rex::Pkg::Base);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
+  $self->{commands} = {
+    install           => 'opkg install %s',
+    install_version   => 'opkg install %s',
+    remove            => 'opkg remove %s',
+    update_package_db => 'opkg update',
+  };
+
   return $self;
-}
-
-sub is_installed {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  my @pkg_info = $self->get_installed($pkg);
-
-  unless (@pkg_info) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ( $self, $pkg, $option ) = @_;
-
-  if ( $self->is_installed($pkg) && !$option->{"version"} ) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update( $pkg, $option );
-
-  return 1;
 }
 
 sub bulk_install {
@@ -62,25 +40,6 @@ sub bulk_install {
     ;    # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
-
-  return 1;
-}
-
-sub update {
-  my ( $self, $pkg, $option ) = @_;
-
-  my $version = $option->{'version'} || '';
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run("opkg install $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error installing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
 
   return 1;
 }
@@ -97,23 +56,6 @@ sub update_system {
   my $packages_to_upgrade = join( " ", @pkgs );
 
   i_run( "opkg upgrade " . $packages_to_upgrade );
-}
-
-sub remove {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run("opkg remove $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error removing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
-
-  return 1;
 }
 
 sub get_installed {
@@ -139,15 +81,6 @@ sub get_installed {
   }
 
   return @pkgs;
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run "opkg update";
-  if ( $? != 0 ) {
-    die("Error updating package database");
-  }
 }
 
 sub add_repository {

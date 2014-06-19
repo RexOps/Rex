@@ -17,77 +17,18 @@ use base qw(Rex::Pkg::Base);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
+  $self->{commands} = {
+    install           => '/usr/bin/apt-get -y install %s',
+    install_version   => '/usr/bin/apt-get -y install %s-%s',
+    remove            => '/usr/bin/apt-get -y remove %s',
+    update_package_db => '/usr/bin/apt-get update',
+  };
+
   return $self;
-}
-
-sub is_installed {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  i_run("/usr/bin/rpm -ql $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ( $self, $pkg, $option ) = @_;
-
-  if ( $self->is_installed($pkg) && !$option->{"version"} ) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update( $pkg, $option );
-
-  return 1;
-}
-
-sub update {
-  my ( $self, $pkg, $option ) = @_;
-
-  my $version = $option->{"version"} || "";
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run(
-    "/usr/bin/apt-get -y install $pkg" . ( $version ? "-$version" : "" ) );
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error installing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
-
-  return 1;
-}
-
-sub remove {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run("/usr/bin/apt-get -y remove $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error removing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
-
-  return 1;
 }
 
 sub get_installed {
@@ -114,15 +55,6 @@ sub get_installed {
   }
 
   return @pkg;
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run "/usr/bin/apt-get update";
-  if ( $? != 0 ) {
-    die("Error updating package repository");
-  }
 }
 
 sub add_repository {

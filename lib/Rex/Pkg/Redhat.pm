@@ -19,40 +19,20 @@ use base qw(Rex::Pkg::Base);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
+  $self->{commands} = {
+    install           => $self->_yum('-y install %s'),
+    install_version   => $self->_yum('-y install %s-%s'),
+    update_system     => $self->_yum("-y upgrade"),
+    remove            => $self->_yum('-y erase %s'),
+    update_package_db => $self->_yum("clean all") . " ; "
+      . $self->_yum("makecache"),
+  };
+
   return $self;
-}
-
-sub is_installed {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  i_run("rpm -ql $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ( $self, $pkg, $option ) = @_;
-
-  if ( $self->is_installed($pkg) && !$option->{"version"} ) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update( $pkg, $option );
-
-  return 1;
 }
 
 sub bulk_install {
@@ -62,42 +42,6 @@ sub bulk_install {
     ;    # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
-
-  return 1;
-}
-
-sub update {
-  my ( $self, $pkg, $option ) = @_;
-
-  my $version = $option->{"version"} || "";
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run( _yum( "-y install $pkg" . ( $version ? "-$version" : "" ) ) );
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error installing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
-
-  return 1;
-}
-
-sub remove {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run( _yum("-y erase $pkg") );
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error removing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
 
   return 1;
 }
@@ -128,21 +72,6 @@ sub get_installed {
   return @pkg;
 }
 
-sub update_system {
-  my ($self) = @_;
-  i_run( _yum("-y upgrade") );
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run( _yum("clean all") );
-  i_run( _yum("makecache") );
-  if ( $? != 0 ) {
-    die("Error updating package repository");
-  }
-}
-
 sub add_repository {
   my ( $self, %data ) = @_;
 
@@ -168,7 +97,7 @@ sub rm_repository {
 }
 
 sub _yum {
-  my (@cmd) = @_;
+  my ( $self, @cmd ) = @_;
 
   my $str;
 

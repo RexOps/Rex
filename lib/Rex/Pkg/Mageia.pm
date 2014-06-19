@@ -17,80 +17,19 @@ use base qw(Rex::Pkg::Base);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
+  $self->{commands} = {
+    install           => 'urpmi --auto --quiet %s',
+    install_version   => 'urpmi --auto --quiet %s',
+    update_system     => 'urpmi --auto --quiet --auto-update',
+    remove            => 'urpme --auto %s',
+    update_package_db => 'urpmi.update -a',
+  };
+
   return $self;
-}
-
-sub is_installed {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  i_run("rpm -ql $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ( $self, $pkg, $option ) = @_;
-
-  if ( $self->is_installed($pkg) && !$option->{"version"} ) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update( $pkg, $option );
-
-  return 1;
-}
-
-sub update {
-  my ( $self, $pkg, $option ) = @_;
-
-  my $version = $option->{"version"} || "";
-
-  my $f = i_run("urpmi --auto --quiet $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error installing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
-
-  return 1;
-}
-
-sub update_system {
-  my ($self) = @_;
-  i_run "urpmi --auto --quiet --auto-update";
-}
-
-sub remove {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run("urpme --auto $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error removing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
-
-  return 1;
 }
 
 sub get_installed {
@@ -117,15 +56,6 @@ sub get_installed {
   }
 
   return @pkg;
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run "urpmi.update -a";
-  if ( $? != 0 ) {
-    die("Error updating package repository");
-  }
 }
 
 sub add_repository {

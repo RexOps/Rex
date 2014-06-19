@@ -20,42 +20,22 @@ use base qw(Rex::Pkg::Base);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
+  $self->{commands} = {
+    install =>
+      'DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install %s',
+    install_version =>
+      'DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install %s=%s',
+    update_system => 'DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
+    remove        => 'apt-get -y remove %s',
+    purge         => 'dpkg --purge %s',
+    update_package_db => 'apt-get -y update',
+  };
+
   return $self;
-}
-
-sub is_installed {
-
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  my @pkg_info = $self->get_installed($pkg);
-
-  unless (@pkg_info) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-
-}
-
-sub install {
-  my ( $self, $pkg, $option ) = @_;
-
-  if ( $self->is_installed($pkg) && !$option->{"version"} ) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update( $pkg, $option );
-
-  return 1;
 }
 
 sub bulk_install {
@@ -65,52 +45,6 @@ sub bulk_install {
     ;    # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
-
-  return 1;
-}
-
-sub update {
-  my ( $self, $pkg, $option ) = @_;
-
-  my $version = $option->{'version'} || '';
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run(
-    "DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install $pkg"
-      . ( $version ? "=$version" : "" ) );
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error installing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
-
-  return 1;
-}
-
-sub update_system {
-  my ($self) = @_;
-  i_run("DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade");
-}
-
-sub remove {
-  my ( $self, $pkg ) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run("apt-get -y remove $pkg");
-
-  Rex::Logger::debug("Purging $pkg");
-  i_run("dpkg --purge $pkg");
-
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error removing $pkg.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
 
   return 1;
 }
@@ -139,15 +73,6 @@ sub get_installed {
   }
 
   return @pkgs;
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run "apt-get -y update";
-  if ( $? != 0 ) {
-    die("Error updating package database");
-  }
 }
 
 sub add_repository {

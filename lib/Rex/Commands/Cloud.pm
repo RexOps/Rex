@@ -17,19 +17,19 @@ Version <= 1.0: All these functions will not be reported.
 =head1 SYNOPSIS
 
  use Rex::Commands::Cloud;
- 
+
  cloud_service "Amazon";
  cloud_auth "your-access-key", "your-private-access-key";
  cloud_region "ec2.eu-west-1.amazonaws.com";
- 
+
  task "list", sub {
    print Dumper cloud_instance_list;
    print Dumper cloud_volume_list;
  };
- 
+
  task "create", sub {
    my $vol_id = cloud_volume create => { size => 1, zone => "eu-west-1a", };
- 
+
    cloud_instance create => {
        image_id => "ami-xxxxxxx",
        name    => "test01",
@@ -38,11 +38,11 @@ Version <= 1.0: All these functions will not be reported.
        zone    => "eu-west-1a",
      };
  };
- 
+
  task "destroy", sub {
    cloud_volume detach => "vol-xxxxxxx";
    cloud_volume delete => "vol-xxxxxxx";
- 
+
    cloud_instance terminate => "i-xxxxxxx";
  };
 
@@ -72,7 +72,8 @@ use Rex::Group::Entry::Server;
   get_cloud_instances_as_group get_cloud_regions get_cloud_availability_zones
   get_cloud_plans
   get_cloud_operating_systems
-  cloud_image_list);
+  cloud_image_list
+  cloud_object);
 
 Rex::Config->register_set_handler(
   "cloud" => sub {
@@ -177,13 +178,7 @@ Get all instances of a cloud service.
 =cut
 
 sub cloud_instance_list {
-
-  my $cloud = get_cloud_service($cloud_service);
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->list_instances();
-
+  return cloud_object()->list_instances();
 }
 
 =item cloud_volume_list
@@ -202,13 +197,7 @@ Get all volumes of a cloud service.
 =cut
 
 sub cloud_volume_list {
-
-  my $cloud = get_cloud_service($cloud_service);
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->list_volumes();
-
+  return cloud_object()->list_volumes();
 }
 
 =item cloud_network_list
@@ -226,13 +215,7 @@ Get all networks of a cloud service.
 =cut
 
 sub cloud_network_list {
-
-  my $cloud = get_cloud_service($cloud_service);
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->list_networks();
-
+  return cloud_object()->list_networks();
 }
 
 =item cloud_image_list
@@ -242,11 +225,7 @@ Get a list of all available cloud images.
 =cut
 
 sub cloud_image_list {
-  my $cloud = get_cloud_service($cloud_service);
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->list_images();
+  return cloud_object()->list_images();
 }
 
 =item get_cloud_instances_as_group
@@ -262,11 +241,7 @@ sub get_cloud_instances_as_group {
 
   # return funcRef
   return sub {
-    my $cloud = get_cloud_service($cloud_service);
-    $cloud->set_auth(@cloud_auth);
-    $cloud->set_endpoint($cloud_region);
-
-    my @list = $cloud->list_running_instances();
+    my @list = cloud_object()->list_running_instances();
 
     my @ret;
 
@@ -288,10 +263,7 @@ This function controlls all aspects of a cloud instance.
 sub cloud_instance {
 
   my ( $action, $data ) = @_;
-  my $cloud = get_cloud_service($cloud_service);
-
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
+  my $cloud = cloud_object();
 
   if ( $action eq "list" ) {
     return $cloud->list_running_instances();
@@ -374,13 +346,7 @@ Returns all regions as an array.
 =cut
 
 sub get_cloud_regions {
-
-  my $cloud = get_cloud_service($cloud_service);
-
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->get_regions;
+  return cloud_object()->get_regions;
 }
 
 =item cloud_volume($action , $data)
@@ -405,10 +371,7 @@ sub cloud_volume {
     $data = { "id", @_data };
   }
 
-  my $cloud = get_cloud_service($cloud_service);
-
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
+  my $cloud = cloud_object();
 
 =item create
 
@@ -496,10 +459,7 @@ Delete a volume. This will destroy all data.
 sub cloud_network {
 
   my ( $action, $data ) = @_;
-  my $cloud = get_cloud_service($cloud_service);
-
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
+  my $cloud = cloud_object();
 
 =item create
 
@@ -541,14 +501,7 @@ Returns all availability zones of a cloud services. If available.
 =cut
 
 sub get_cloud_availability_zones {
-
-  my $cloud = get_cloud_service($cloud_service);
-
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->get_availability_zones();
-
+  return cloud_object()->get_availability_zones();
 }
 
 =item get_cloud_plans
@@ -558,12 +511,7 @@ Retrieve information of the available cloud plans. If supported.
 =cut
 
 sub get_cloud_plans {
-  my $cloud = get_cloud_service($cloud_service);
-
-  $cloud->set_auth(@cloud_auth);
-  $cloud->set_endpoint($cloud_region);
-
-  return $cloud->list_plans;
+  return cloud_object()->list_plans;
 }
 
 =item get_cloud_operating_systems
@@ -573,12 +521,22 @@ Retrieve information of the available cloud plans. If supported.
 =cut
 
 sub get_cloud_operating_systems {
+  return cloud_object()->list_operating_systems;
+}
+
+=item cloud_object
+
+Returns the cloud object itself.
+
+=cut
+
+sub cloud_object {
   my $cloud = get_cloud_service($cloud_service);
 
   $cloud->set_auth(@cloud_auth);
   $cloud->set_endpoint($cloud_region);
 
-  return $cloud->list_operating_systems;
+  return $cloud;
 }
 
 =back

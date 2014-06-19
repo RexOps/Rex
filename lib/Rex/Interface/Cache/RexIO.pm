@@ -14,6 +14,7 @@ use Rex::Interface::Cache::Base;
 use base qw(Rex::Interface::Cache::Base);
 use Data::Dumper;
 use Mojo::UserAgent;
+use Rex::Inventory;
 
 require Rex::Commands;
 
@@ -98,6 +99,73 @@ sub save {
 
   Rex::Logger::info("Got os id: $os_id");
 
+  my @network_adapter;
+
+  for my $nw_dev (
+    keys %{ $self->{__data__}->{"hardware.network"}->{networkconfiguration} } )
+  {
+    next
+      if $self->{__data__}->{"hardware.network"}->{networkconfiguration}
+      ->{$nw_dev}->{is_bridge};
+
+    push @network_adapter,
+      {
+      dev => $nw_dev,
+      broadcast =>
+        $self->{__data__}->{"hardware.network"}->{networkconfiguration}
+        ->{$nw_dev}->{broadcast},
+      ip => $self->{__data__}->{"hardware.network"}->{networkconfiguration}
+        ->{$nw_dev}->{ip},
+      mac => $self->{__data__}->{"hardware.network"}->{networkconfiguration}
+        ->{$nw_dev}->{mac},
+      netmask =>
+        $self->{__data__}->{"hardware.network"}->{networkconfiguration}
+        ->{$nw_dev}->{netmask},
+      };
+  }
+
+  my $inventory = Rex::Inventory->new;
+  my $inv_data  = $inventory->get;
+
+  my @harddrives;
+
+  for my $hd ( @{ $inv_data->{storage} } ) {
+    push @harddrives,
+      {
+      devname => $hd->{dev},
+      vendor  => $hd->{vendor} || '',
+      };
+  }
+
+  my @cpus;
+
+  for my $cpu ( @{ $inv_data->{cpus} } ) {
+    my ($speed) = ( $cpu->{max_speed} =~ m/(\d+)/ );
+    push @cpus,
+      {
+      modelname => $cpu->{family} || '',
+      vendor    => $cpu->{vendor} || '',
+      mhz       => $speed         || 0,
+      };
+  }
+
+  my @memories;
+
+  for my $mem ( @{ $inv_data->{dimms} } ) {
+    my ($size)  = ( $mem->{size} =~ m/(\d+)/ );
+    my ($bank)  = ( $mem->{bank_locator} =~ m/(\d+)/ );
+    my ($speed) = ( $mem->{speed} =~ m/(\d+)/ );
+
+    push @memories,
+      {
+      size         => $size                 || 0,
+      bank         => $bank                 || 0,
+      serialnumber => $mem->{serial_number} || '',
+      speed        => $speed                || 0,
+      type         => $mem->{type}          || '',
+      };
+  }
+
   my $new_hw = $self->_ua->post(
     $self->rexio("url") . "/1.0/hardware/hardware",
     json => {
@@ -107,21 +175,15 @@ sub save {
       permission_set_id => 1,
       kernelrelease => $self->{__data__}->{"hardware.kernel"}->{kernelrelease},
       kernelversion => $self->{__data__}->{"hardware.kernel"}->{kernelversion},
-      network_adapter => [
-        {
-          dev => 'eth0',
-          broadcast =>
-            $self->{__data__}->{"hardware.network"}->{networkconfiguration}
-            ->{eth0}->{broadcast},
-          ip => $self->{__data__}->{"hardware.network"}->{networkconfiguration}
-            ->{eth0}->{ip},
-          mac => $self->{__data__}->{"hardware.network"}->{networkconfiguration}
-            ->{eth0}->{mac},
-          netmask =>
-            $self->{__data__}->{"hardware.network"}->{networkconfiguration}
-            ->{eth0}->{netmask},
-        },
-      ],
+      uuid          => $inv_data->{system_info}->{uuid} || '',
+      bios          => {
+        version      => $inv_data->{system_info}->{bios}->{version},
+        manufacturer => $inv_data->{system_info}->{bios}->{vendor},
+      },
+      harddrives       => \@harddrives,
+      cpus             => \@cpus,
+      memories         => \@memories,
+      network_adapters => \@network_adapter,
     }
   )->res->json;
 

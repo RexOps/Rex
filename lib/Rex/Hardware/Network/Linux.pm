@@ -15,6 +15,32 @@ use Rex::Commands::Run;
 use Rex::Helper::Array;
 use Data::Dumper;
 
+sub get_bridge_devices {
+  local $/ = "\n";
+  my @lines = i_run 'brctl show';
+  chomp @lines;
+  shift @lines;
+
+  my $current_bridge;
+  my $data = {};
+  for my $line (@lines) {
+    if ( $line =~ m/^[A-Za-z0-9_.]+/ ) {
+      my ( $br, $br_id, $stp, $dev ) = split( /\s+/, $line );
+      $current_bridge = $br;
+      $data->{$br}->{stp} = 0;
+      push @{ $data->{$br}->{devices} }, $dev;
+      next;
+    }
+
+    my ($dev) = ( $line =~ m/([a-zA-Z0-9_.]+)$/ );
+    if ($dev) {
+      push @{ $data->{$current_bridge}->{devices} }, $dev;
+    }
+  }
+
+  return $data;
+}
+
 sub get_network_devices {
 
   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
@@ -36,9 +62,23 @@ sub get_network_configuration {
   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
   my @output = i_run("$command");
 
-  return ( $command eq 'ip addr show' )
+  my $br_data = get_bridge_devices();
+
+  my $data =
+    ( $command eq 'ip addr show' )
     ? _parse_ip(@output)
     : _parse_ifconfig(@output);
+
+  for my $dev ( keys %{$data} ) {
+    if ( exists $br_data->{$dev} ) {
+      $data->{$dev}->{is_bridge} = 1;
+    }
+    else {
+      $data->{$dev}->{is_bridge} = 0;
+    }
+  }
+
+  return $data;
 }
 
 sub _parse_ifconfig {

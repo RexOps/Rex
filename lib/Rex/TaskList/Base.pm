@@ -162,6 +162,14 @@ sub get_tasks {
     sort      { $a cmp $b } keys %{ $self->{tasks} };
 }
 
+sub get_all_tasks {
+  my $self   = shift;
+  my $regexp = shift;
+
+  return grep { $_ =~ $regexp }
+    keys %{ $self->{tasks} };
+}
+
 sub get_tasks_for {
   my $self = shift;
   my $host = shift;
@@ -268,17 +276,26 @@ sub modify {
       #do we need to detect for base -Rex ?
       $package =~ s/^Rex:://;
       $package =~ s/::/:/g;
-      $task = $package . ":" . $task;
     }
   }
 
-  my $taskref = $self->get_task($task);
-  if ( defined($taskref) ) {
-    $taskref->modify( $type => $code );
-  }
-  else {
+  my @all_tasks = map { $self->get_task($_); } grep {
+    if ( $package ne "main" && $package ne "Rex::CLI" ) {
+      $_ =~ m/^\Q$package\E:/;
+    }
+    else {
+      $_ !~ m/:/;
+    }
+  } $self->get_all_tasks($task);
+
+  if ( !@all_tasks ) {
     Rex::Logger::info(
       "Can't add $type $task, as it is not yet defined\nsee $file line $line");
+    return;
+  }
+
+  for my $taskref (@all_tasks) {
+    $taskref->modify( $type => $code );
   }
 }
 

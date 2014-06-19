@@ -651,6 +651,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "disable_taskname_warning" ) {
+        Rex::Logger::debug("Enabling disable_taskname_warning feature");
+        Rex::Config->set_disable_taskname_warning(1);
+        $found_feature = 1;
+      }
+
       if ( $found_feature == 0 ) {
         Rex::Logger::info(
           "You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.",

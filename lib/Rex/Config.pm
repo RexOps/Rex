@@ -31,22 +31,30 @@ use YAML;
 use Data::Dumper;
 
 our (
-  $user,            $password,              $port,
-  $timeout,         $max_connect_fails,     $password_auth,
-  $key_auth,        $krb5_auth,             $public_key,
-  $private_key,     $parallelism,           $log_filename,
-  $log_facility,    $sudo_password,         $ca_file,
-  $ca_cert,         $ca_key,                $path,
-  $no_path_cleanup, $set_param,             $environment,
-  $connection_type, $distributor,           $template_function,
-  $SET_HANDLER,     $HOME_CONFIG,           $HOME_CONFIG_YAML,
-  %SSH_CONFIG_FOR,  $sudo_without_locales,  $sudo_without_sh,
-  $no_tty,          $source_global_profile, $source_profile,
-  %executor_for,    $allow_empty_groups,    $use_server_auth,
-  $tmp_dir,         %openssh_opt,           $use_cache,
-  $cache_type,      $use_sleep_hack,        $report_type,
-  $do_reporting,    $say_format,            $exec_autodie,
-  $verbose_run,
+  $user,                 $password,
+  $port,                 $timeout,
+  $max_connect_fails,    $password_auth,
+  $key_auth,             $krb5_auth,
+  $public_key,           $private_key,
+  $parallelism,          $log_filename,
+  $log_facility,         $sudo_password,
+  $ca_file,              $ca_cert,
+  $ca_key,               $path,
+  $no_path_cleanup,      $set_param,
+  $environment,          $connection_type,
+  $distributor,          $template_function,
+  $SET_HANDLER,          $HOME_CONFIG,
+  $HOME_CONFIG_YAML,     %SSH_CONFIG_FOR,
+  $sudo_without_locales, $sudo_without_sh,
+  $no_tty,               $source_global_profile,
+  $source_profile,       %executor_for,
+  $allow_empty_groups,   $use_server_auth,
+  $tmp_dir,              %openssh_opt,
+  $use_cache,            $cache_type,
+  $use_sleep_hack,       $report_type,
+  $do_reporting,         $say_format,
+  $exec_autodie,         $verbose_run,
+  $disable_taskname_warning,
 );
 
 # some defaults
@@ -57,6 +65,15 @@ our (
   bash   => "bash",
 );
 
+sub set_disable_taskname_warning {
+  my $class = shift;
+  $disable_taskname_warning = shift;
+}
+
+sub get_disable_taskname_warning {
+  return $disable_taskname_warning;
+}
+
 sub set_verbose_run {
   my $class = shift;
   $verbose_run = shift;
@@ -65,7 +82,6 @@ sub set_verbose_run {
 sub get_verbose_run {
   return $verbose_run;
 }
-
 
 sub set_exec_autodie {
   my $class = shift;

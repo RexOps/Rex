@@ -1,5 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
+# (c) Nathan Abu <aloha2004@gmail.com>
 # 
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
@@ -196,7 +197,7 @@ sub get_auth_type {
   }
   elsif(exists $self->{auth}->{user} && $self->{auth}->{user}
       && exists $self->{auth}->{password} && $self->{auth}->{password} ne "") {
-    return "try";
+    return "pass";
   }
   elsif(Rex::Config->get_krb5_auth) {
     return "krb5";

@@ -196,7 +196,7 @@ sub get_auth_type {
   }
   elsif(exists $self->{auth}->{user} && $self->{auth}->{user}
       && exists $self->{auth}->{password} && $self->{auth}->{password} ne "") {
-    return "try";
+    return "pass";
   }
   elsif(Rex::Config->get_krb5_auth) {
     return "krb5";

@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 my %deps = (
                   'Net::SSH2' => '0.33',
                   'DBI' => 0,
-                  'XML::Simple' => 0,
+                  'XML::LibXML' => 0,
                   'LWP::UserAgent' => 0,
                   'MIME::Base64' => 0,
                   'Digest::HMAC_SHA1' => 0,

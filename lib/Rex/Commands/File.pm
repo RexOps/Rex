@@ -471,6 +471,8 @@ sub file {
       #### check and run after_change hook
       Rex::Hook::run_hook( file => "after_change", @_, $__ret );
       ##############################
+      
+      goto FINISH_FILE; # Following tasks are not needed. otherwise a file will be created instead of the removed directory.
 
     }
     elsif ( $option->{ensure} eq "directory" ) {
@@ -490,7 +492,7 @@ sub file {
     }
   }
 
-  if ( !exists $option->{content} && !exists $option->{source} ) {
+  if ( !exists $option->{content} && !exists $option->{source} )  {
 
     # no content and no source, so just verify that the file is present
     if ( !$fs->is_file($file) && !$is_directory ) {
@@ -581,15 +583,15 @@ sub file {
       $__ret = { changed => 1 };
     }
   }
-
-  #### check and run before hook
-  Rex::Hook::run_hook( file => "after", @_, $__ret );
-  ##############################
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "file", name => $file );
-
-  return $__ret->{changed};
+  FINISH_FILE:
+	  #### check and run before hook
+	  Rex::Hook::run_hook( file => "after", @_, $__ret );
+	  ##############################
+	
+	  Rex::get_current_connection()->{reporter}
+	    ->report_resource_end( type => "file", name => $file );
+	
+	  return $__ret->{changed};
 }
 
 =item file_write($file_name)

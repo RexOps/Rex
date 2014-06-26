@@ -1,5 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
+#
 # 
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
@@ -13,7 +14,7 @@ use Fcntl;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::SSH;
 use Net::SFTP::Foreign::Constants qw(:flags);
-use base qw(Rex::Interface::Fs::SSH);
+use base 						  qw(Rex::Interface::Fs::SSH);
 
 require Rex::Commands;
 
@@ -51,40 +52,6 @@ sub ls {
   return @ret;
 }
 
-sub is_dir {
-  my ($self, $path) = @_;
-
-  my $ret = 0;
-
-  Rex::Commands::profiler()->start("is_dir: $path");
-  my $sftp = Rex::get_sftp();
-  if(my $hndl = $sftp->opendir($path)) {
-    # return true if $path can be opened as a directory
-    $sftp->closedir($hndl);
-    $ret = 1;
-  }
-  Rex::Commands::profiler()->end("is_dir: $path");
-
-  return $ret;
-}
-
-sub is_file {
-  my ($self, $file) = @_;
-
-  my $ret;
-
-  my $sftp = Rex::get_sftp();
-  Rex::Commands::profiler()->start("is_file: $file");
-  if(my $hndl = $sftp->open($file, SSH2_FXF_READ) ) {
-    # return true if $file can be opened read only
-    $sftp->close($hndl);
-    $ret = 1;
-  }
-  Rex::Commands::profiler()->end("is_file: $file");
-
-  return $ret;
-}
-
 sub unlink {
   my ($self, @files) = @_;
 
@@ -113,6 +80,7 @@ sub stat {
     gid => $ret->gid,
     atime => $ret->atime,
     mtime => $ret->mtime,
+    perms => $ret->perm
   );
 
   Rex::Commands::profiler()->end("stat: $file");

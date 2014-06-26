@@ -108,6 +108,8 @@ sub save {
       if $self->{__data__}->{"hardware.network"}->{networkconfiguration}
       ->{$nw_dev}->{is_bridge};
 
+    next if $nw_dev eq "lo";
+
     push @network_adapter,
       {
       dev => $nw_dev,
@@ -130,10 +132,12 @@ sub save {
   my @harddrives;
 
   for my $hd ( @{ $inv_data->{storage} } ) {
+    my $size = sprintf( "%i", $hd->{size} / 1024 / 1024 / 1024 );
     push @harddrives,
       {
       devname => $hd->{dev},
       vendor  => $hd->{vendor} || '',
+      size    => $size || 0,
       };
   }
 

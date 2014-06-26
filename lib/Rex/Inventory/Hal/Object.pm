@@ -23,32 +23,36 @@ sub has {
 
   my ( $class, $keys ) = @_;
   for my $k ( @{$keys} ) {
-    my $key      = $k->{"key"};
-    my $accessor = $k->{"accessor"};
+    my $key       = $k->{key};
+    my $accessor  = $k->{accessor};
+    my $overwrite = $k->{overwrite};
 
     no strict 'refs';
-    *{"${class}::get_$accessor"} = sub {
-      my ($self) = @_;
-      if ( $k->{"parent"} ) {
-        return $self->parent()->get($key);
-      }
-      else {
-        if ( ref($key) eq "ARRAY" ) {
-          for my $_k ( @{$key} ) {
-            if ( my $ret = $self->get($_k) ) {
-              return $ret;
-            }
-
-            return "";
-          }
+    if ( !$overwrite ) {
+      *{"${class}::get_$accessor"} = sub {
+        my ($self) = @_;
+        if ( $k->{"parent"} ) {
+          return $self->parent()->get($key);
         }
         else {
-          return $self->get($key);
-        }
-      }
-    };
+          if ( ref($key) eq "ARRAY" ) {
+            for my $_k ( @{$key} ) {
+              if ( my $ret = $self->get($_k) ) {
+                return $ret;
+              }
 
+              return "";
+            }
+          }
+          else {
+            return $self->get($key);
+          }
+        }
+      };
+
+    }
     push( @{"${class}::items"}, $k );
+
     use strict;
   }
 

@@ -1111,8 +1111,8 @@ sub get {
 
 =item before($task => sub {})
 
-Run code before executing the specified task.
-(if called repeatedly, each sub will be appended to a list of 'before' functions)
+Run code before executing the specified task. The special taskname 'ALL' can be used to run code before all tasks.
+If called repeatedly, each sub will be appended to a list of 'before' functions.
 
 Note: must come after the definition of the specified task
 
@@ -1137,8 +1137,8 @@ sub before {
 
 =item after($task => sub {})
 
-Run code after the task is finished.
-(if called repeatedly, each sub will be appended to a list of 'after' functions)
+Run code after the task is finished. The special taskname 'ALL' can be used to run code after all tasks.
+If called repeatedly, each sub will be appended to a list of 'after' functions.
 
 Note: must come after the definition of the specified task
 
@@ -1166,8 +1166,8 @@ sub after {
 
 =item around($task => sub {})
 
-Run code before and after the task is finished.
-(if called repeatedly, each sub will be appended to a list of 'around' functions)
+Run code before and after the task is finished. The special taskname 'ALL' can be used to run code around all tasks.
+If called repeatedly, each sub will be appended to a list of 'around' functions.
 
 Note: must come after the definition of the specified task
 

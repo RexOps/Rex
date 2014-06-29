@@ -13,7 +13,8 @@ use Fcntl;
 use Rex::Helper::Encode;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::Base;
-use base qw(Rex::Interface::Fs::Base);
+use Fcntl 				     qw(:mode);
+use base 					 qw(Rex::Interface::Fs::Base);
 
 require Rex::Commands;
 
@@ -56,15 +57,13 @@ sub ls {
 
 sub is_dir {
   my ($self, $path) = @_;
-
+  my %stat;
   my $ret = 0;
 
   Rex::Commands::profiler()->start("is_dir: $path");
-  my $sftp = Rex::get_sftp();
-  if($sftp->opendir($path)) {
-    # return true if $path can be opened as a directory
-    $ret = 1;
-  }
+  %stat = $self->stat($path);
+  $ret  = 1 if ( %stat and S_ISDIR($stat{perms}) );
+  
   Rex::Commands::profiler()->end("is_dir: $path");
 
   return $ret;
@@ -72,15 +71,13 @@ sub is_dir {
 
 sub is_file {
   my ($self, $file) = @_;
-
-  my $ret;
+  my %stat;
+  my $ret = 0;
 
   Rex::Commands::profiler()->start("is_file: $file");
-  my $sftp = Rex::get_sftp();
-  if( $sftp->open($file, O_RDONLY) ) {
-    # return true if $file can be opened read only
-    $ret = 1;
-  }
+  %stat = $self->stat($file);
+  $ret  = 1 if ( %stat and not S_ISDIR($stat{perms}) );
+  
   Rex::Commands::profiler()->end("is_file: $file");
 
   return $ret;
@@ -124,8 +121,9 @@ sub stat {
   my %ret = $sftp->stat($file);
 
   if(! %ret) { return; }
-
-  $ret{'mode'} = sprintf("%04o", $ret{'mode'} & 07777);
+  
+  $ret{'perms'} = $ret{'mode'};
+  $ret{'mode'}  = sprintf("%04o", $ret{'mode'} & 07777);
 
   Rex::Commands::profiler()->end("stat: $file");
 

@@ -570,7 +570,7 @@ sub get_random {
 
 =item do_task($task)
 
-Call $task from an other task. Will execute the given $task with the servers defined in $task.
+Call $task from an other task. It will establish a new connection to the server defined in $task and then execute $task there.
 
  task "task1", "server1", sub {
    say "Running on server1";

@@ -41,12 +41,12 @@ sub ensure {
   my $what = $options->{ensure};
 
   if ( $what =~ /^stop/ ) {
-    $self->stop($service, $options);
+    $self->stop( $service, $options );
     delete_lines_matching "/etc/rc.conf",
       matching => qr/${service}_enable="YES"/;
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    $self->start($service, $options);
+    $self->start( $service, $options );
     append_if_no_such_line "/etc/rc.conf", "${service}_enable=\"YES\"\n";
   }
 

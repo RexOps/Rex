@@ -36,12 +36,10 @@ sub new {
   return $self;
 }
 
-
 sub status {
   my ( $self, $service, $options ) = @_;
 
-  my $ret = $self->SUPER::status($service, $options);
-
+  my $ret = $self->SUPER::status( $service, $options );
 
   # bad... really bad ...
   if ( $ret == 0 ) {

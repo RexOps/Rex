@@ -51,10 +51,10 @@ sub ensure {
   my $what = $options->{ensure};
 
   if ( $what =~ /^stop/ ) {
-    $self->stop($service, $options);
+    $self->stop( $service, $options );
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    $self->start($service, $options);
+    $self->start( $service, $options );
   }
 
   return 1;

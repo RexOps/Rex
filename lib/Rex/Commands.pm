@@ -368,9 +368,13 @@ With this function you can group servers, so that you don't need to write too mu
 
  group "servergroup", "www1", "www2", "www3", "memcache01", "memcache02", "memcache03";
 
-Or with the expression syntax.
+Or with the expression syntax:
 
  group "servergroup", "www[1..3]", "memcache[01..03]";
+
+You can also specify server options after a server name with a hash reference:
+
+ group "servergroup", "www1" => { user => "other" }, "www2";
 
 =cut
 

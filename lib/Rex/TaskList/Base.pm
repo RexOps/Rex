@@ -59,9 +59,16 @@ sub create_task {
   if ($::FORCE_SERVER) {
 
     if ( $::FORCE_SERVER =~ m/^\0/ ) {
+      my $group_name = substr( $::FORCE_SERVER, 1 );
+
+      if ( !Rex::Group->is_group($group_name) ) {
+        Rex::Logger::info( "No group $group_name defined.", "error" );
+        exit 1;
+      }
+
       push( @server,
         map { Rex::Group::Entry::Server->new( name => $_ ); }
-          Rex::Group->get_group( substr( $::FORCE_SERVER, 1 ) ) );
+          Rex::Group->get_group($group_name) );
     }
     else {
       my @servers = split( /\s+/, $::FORCE_SERVER );

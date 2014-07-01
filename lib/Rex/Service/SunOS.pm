@@ -41,11 +41,11 @@ sub ensure {
   my $what = $options->{ensure};
 
   if ( $what =~ /^stop/ ) {
-    $self->stop($service, $options);
+    $self->stop( $service, $options );
     i_run "rm /etc/rc*.d/S*$service";
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    $self->start($service, $options);
+    $self->start( $service, $options );
     my ($runlevel) = grep { $_ = $1 if m/run\-level (\d)/ } i_run "who -r";
     ln "/etc/init.d/$service", "/etc/rc${runlevel}.d/S99$service";
   }

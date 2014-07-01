@@ -8,6 +8,7 @@ package Rex::Pkg::Base;
 
 use strict;
 use warnings;
+use Rex::Helper::Run;
 use Rex::Interface::Exec;
 
 sub new {

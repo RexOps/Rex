@@ -33,6 +33,7 @@ This module can sync directories between your Rex system and your servers withou
        group => "bar",
        mode  => 700,
      },
+     exclude => [ '*.tmp' ],
      on_change => sub {
       my (@files_changed) = @_;
      },

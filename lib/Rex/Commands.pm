@@ -368,9 +368,13 @@ With this function you can group servers, so that you don't need to write too mu
 
  group "servergroup", "www1", "www2", "www3", "memcache01", "memcache02", "memcache03";
 
-Or with the expression syntax.
+Or with the expression syntax:
 
  group "servergroup", "www[1..3]", "memcache[01..03]";
+
+You can also specify server options after a server name with a hash reference:
+
+ group "servergroup", "www1" => { user => "other" }, "www2";
 
 =cut
 
@@ -570,7 +574,7 @@ sub get_random {
 
 =item do_task($task)
 
-Call $task from an other task. Will execute the given $task with the servers defined in $task.
+Call $task from an other task. It will establish a new connection to the server defined in $task and then execute $task there.
 
  task "task1", "server1", sub {
    say "Running on server1";
@@ -1111,8 +1115,8 @@ sub get {
 
 =item before($task => sub {})
 
-Run code before executing the specified task.
-(if called repeatedly, each sub will be appended to a list of 'before' functions)
+Run code before executing the specified task. The special taskname 'ALL' can be used to run code before all tasks.
+If called repeatedly, each sub will be appended to a list of 'before' functions.
 
 Note: must come after the definition of the specified task
 
@@ -1137,8 +1141,8 @@ sub before {
 
 =item after($task => sub {})
 
-Run code after the task is finished.
-(if called repeatedly, each sub will be appended to a list of 'after' functions)
+Run code after the task is finished. The special taskname 'ALL' can be used to run code after all tasks.
+If called repeatedly, each sub will be appended to a list of 'after' functions.
 
 Note: must come after the definition of the specified task
 
@@ -1166,8 +1170,8 @@ sub after {
 
 =item around($task => sub {})
 
-Run code before and after the task is finished.
-(if called repeatedly, each sub will be appended to a list of 'around' functions)
+Run code before and after the task is finished. The special taskname 'ALL' can be used to run code around all tasks.
+If called repeatedly, each sub will be appended to a list of 'around' functions.
 
 Note: must come after the definition of the specified task
 

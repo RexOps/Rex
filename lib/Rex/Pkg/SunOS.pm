@@ -22,8 +22,7 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-  };
+  $self->{commands} = {};
 
   return $self;
 }
@@ -117,6 +116,5 @@ sub get_installed {
 
   return @pkg;
 }
-
 
 1;

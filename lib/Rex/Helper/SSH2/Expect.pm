@@ -78,6 +78,7 @@ sub new {
   $self->{"__shell"} = $_[0]->channel();
   $self->{"__shell"}->pty("vt100");
   $self->{"__shell"}->shell;
+  $self->{"__shell"}->write("stty -echo\n");
 
   $self->{"__log_stdout"} = $Rex::Helper::SSH2::Expect::Log_Stdout;
   $self->{"__log_to"} = sub {};
@@ -224,4 +225,3 @@ sub _log {
 =cut
 
 1;
-

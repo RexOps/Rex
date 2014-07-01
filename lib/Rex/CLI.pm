@@ -12,7 +12,8 @@ use warnings;
 use FindBin;
 use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);
-use Cwd qw(getcwd);
+use Cwd         qw(getcwd);
+use List::Util  qw(max);
 
 use Rex;
 use Rex::Config;
@@ -467,8 +468,10 @@ CHECK_OVERWRITE: {
     if ( defined $ARGV[0] ) {
       @tasks = map { Rex::TaskList->create()->is_task($_) ? $_ : () } @ARGV;
     }
+    my $max_task_str = max map { length } @tasks;
     for my $task (@tasks) {
-      printf "  %-30s %s\n", $task, Rex::TaskList->create()->get_desc($task);
+      my $padding = $max_task_str - length($task);  
+ 	  print " $task  " . ' ' x $padding . " " . Rex::TaskList->create()->get_desc($task) . "\n";
       if ( $opts{'v'} ) {
         _print_color(
           "    Servers: "

@@ -16,6 +16,7 @@ my %deps = (
   'String::Escape'    => 0,
   'Time::HiRes'       => 0,
   'List::MoreUtils'   => 0,
+  'XML::LibXML'       => 0,
 );
 
 if ( $^O =~ m/^MSWin/ ) {

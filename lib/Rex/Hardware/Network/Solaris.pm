@@ -39,7 +39,8 @@ sub get_network_configuration {
       broadcast => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
       mac => [
         ( $ifconfig =~ m/(ether|address:|lladdr) (..?:..?:..?:..?:..?:..?)/ )
-      ]->[1],
+        ]->[1],
+      is_bridge => 0,
     };
 
   }

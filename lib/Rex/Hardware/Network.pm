@@ -26,7 +26,6 @@ sub get {
   }
 
   my $hw_class = _get_class();
-
   unless ($hw_class) {
     return {};
   }

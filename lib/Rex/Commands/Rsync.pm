@@ -27,7 +27,7 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::Rsync;
- 
+
  sync "dir1", "dir2";
 
 =head1 EXPORTED FUNCTIONS
@@ -65,7 +65,7 @@ This function executes rsync to sync $source and $dest.
     parameters => '--backup --delete',
    };
  };
- 
+
  task "sync", "server01", sub {
    sync "html/*", "/var/www/html", {
     exclude => ["*.sw*", "*.tmp"],
@@ -140,7 +140,17 @@ sub sync {
   my $pass           = $auth->{password};
   my @expect_options = ();
 
-  if ( $auth->{auth_type} eq "pass" ) {
+  my $auth_type = $auth->{auth_type};
+  if ( $auth_type eq "try" ) {
+    if ( $server->get_private_key && -f $server->get_private_key ) {
+      $auth_type = "key";
+    }
+    else {
+      $auth_type = "pass";
+    }
+  }
+
+  if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
       'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ' );
     push(
@@ -184,8 +194,15 @@ sub sync {
     );
   }
   else {
-    $cmd = sprintf( $cmd,
-      'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no " );
+    if ( $auth_type eq "key" ) {
+      $cmd = sprintf( $cmd,
+            'ssh -i '
+          . $server->get_private_key
+          . " -o StrictHostKeyChecking=no " );
+    }
+    else {
+      $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );
+    }
     push(
       @expect_options,
       [

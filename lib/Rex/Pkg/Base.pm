@@ -27,7 +27,7 @@ sub is_installed {
 
   Rex::Logger::debug("Checking if $pkg is installed");
 
-  my @pkg_info = $self->get_installed($pkg);
+  my @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
 
   unless (@pkg_info) {
     Rex::Logger::debug("$pkg is NOT installed.");

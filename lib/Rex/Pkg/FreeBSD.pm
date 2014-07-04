@@ -23,7 +23,7 @@ sub new {
   bless( $self, $proto );
 
   i_run("which pkg");
-  if($? == 0) {
+  if ( $? == 0 ) {
     $self->{commands} = {
       install         => 'pkg install -q -y %s',
       install_version => 'pkg install -q -y %s',

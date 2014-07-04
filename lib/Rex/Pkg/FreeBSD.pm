@@ -22,11 +22,23 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-    install         => 'pkg_add -r %s',
-    install_version => 'pkg_add -r %s',
-    remove          => 'pkg_delete %s',
-  };
+  i_run("which pkg");
+  if($? == 0) {
+    $self->{commands} = {
+      install         => 'pkg install -q -y %s',
+      install_version => 'pkg install -q -y %s',
+      remove          => 'pkg remove -y %s',
+      query           => 'pkg info',
+    };
+  }
+  else {
+    $self->{commands} = {
+      install         => 'pkg_add -r %s',
+      install_version => 'pkg_add -r %s',
+      remove          => 'pkg_delete %s',
+      query           => 'pkg_info',
+    };
+  }
 
   return $self;
 }
@@ -43,7 +55,7 @@ sub remove {
 sub get_installed {
   my ($self) = @_;
 
-  my @lines = i_run "pkg_info";
+  my @lines = i_run $self->{commands}->{query};
 
   my @pkg;
 

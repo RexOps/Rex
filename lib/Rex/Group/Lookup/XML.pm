@@ -70,7 +70,7 @@ A global that defines the XSD schema for which the XML is check against.
 
 =cut
 
-our $schema_file =<<"XSD";
+our $schema_file = <<"XSD";
 <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
     <xsd:element name="configuration">
@@ -101,25 +101,33 @@ our $schema_file =<<"XSD";
 XSD
 
 sub xml_validate {
-	my $xmldoc = shift;
-	my $schema = XML::LibXML::Schema->new(string => $schema_file);
-	
-	eval { $schema->validate($xmldoc); 1 } or die "Could not validate XML file against the XSD schema: $@";
+  my $xmldoc = shift;
+  my $schema = XML::LibXML::Schema->new( string => $schema_file );
+
+  eval { $schema->validate($xmldoc); 1 }
+    or die "Could not validate XML file against the XSD schema: $@";
 }
 
 sub groups_xml {
-  my  $file  = shift;
+  my $file   = shift;
   my $parser = XML::LibXML->new();
   my $xmldoc = $parser->parse_file($file);
   my %groups;
-  
+
   xml_validate($xmldoc);
-  
-  foreach my $server_node ($xmldoc->findnodes('/configuration/group/server')) {
-  	   my ($group) = map { $_->getValue() } grep { $_->nodeName eq 'name' } $server_node->parentNode->attributes();
-  	   my %atts    = map { $_->nodeName => $_->getValue() } $server_node->attributes();
-  	   
-  	   push(@{ $groups{$group} }, Rex::Group::Entry::Server->new( name => delete($atts{name}), %atts ) );  	   
+
+  foreach my $server_node ( $xmldoc->findnodes('/configuration/group/server') )
+  {
+    my ($group) =
+      map  { $_->getValue() }
+      grep { $_->nodeName eq 'name' } $server_node->parentNode->attributes();
+    my %atts =
+      map { $_->nodeName => $_->getValue() } $server_node->attributes();
+
+    push(
+      @{ $groups{$group} },
+      Rex::Group::Entry::Server->new( name => delete( $atts{name} ), %atts )
+    );
   }
   group( $_ => @{ $groups{$_} } ) foreach ( keys(%groups) );
 }

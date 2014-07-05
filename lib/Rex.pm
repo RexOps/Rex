@@ -686,13 +686,19 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =over 4
 
+=item alex1line
+
 =item Alexandr Ciornii
 
 =item Anders Ossowicki
 
 =item Andrej Zverev
 
+=item bollwarm
+
 =item Boris Däppen
+
+=item Cameron Daniel
 
 =item Chris Steigmeier
 
@@ -722,11 +728,15 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Hiroaki Nakamura
 
+=item Ilya Evseev
+
 =item Jean Charles Passard
 
 =item Jean-Marie Renouard
 
 =item Jeen Lee
+
+=item Jens Berthold
 
 =item Jonathan Delgado
 
@@ -743,6 +753,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Laird Liu
 
 =item Mario Domgoergen
+
+=item Nathan Abu
 
 =item Naveed Massjouni
 

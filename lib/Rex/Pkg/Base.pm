@@ -113,7 +113,7 @@ sub purge {
   my ( $self, $pkg ) = @_;
   return 1 if ( !exists $self->{commands}->{purge} );
   Rex::Logger::debug("Purging $pkg");
-  my $cmd = sprintf $self->{purge}, $pkg;
+  my $cmd = sprintf $self->{commands}->{purge}, $pkg;
 
   my $f = i_run $cmd;
 

@@ -70,7 +70,7 @@ use File::Basename;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.46.99.1";
+$VERSION = "0.47.0";
 my $cur_dir;
 
 BEGIN {

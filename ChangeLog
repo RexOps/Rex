@@ -1,4 +1,5 @@
 2014-07-05 Jan Gehring <jan.gehring, gmail.com> (0.47.0)
+  * Rex::Test now also working with KVM - FErki
   * Update default VNC listen address for KVM machines - FErki
   * added pkgng commands for FreeBSD 10
   * A module which allows to read configuration files from an XML file. - nathanIL

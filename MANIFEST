@@ -55,6 +55,7 @@ lib/Rex/Commands/Upload.pm
 lib/Rex/Commands/User.pm
 lib/Rex/Commands/Virtualization.pm
 lib/Rex/Config.pm
+lib/Rex/Constants.pm
 lib/Rex/Cron.pm
 lib/Rex/Cron/Base.pm
 lib/Rex/Cron/Linux.pm
@@ -71,12 +72,14 @@ lib/Rex/Group/Lookup/Command.pm
 lib/Rex/Group/Lookup/DBI.pm
 lib/Rex/Group/Lookup/File.pm
 lib/Rex/Group/Lookup/INI.pm
+lib/Rex/Group/Lookup/XML.pm
 lib/Rex/Group/Lookup/YAML.pm
 lib/Rex/Hardware.pm
 lib/Rex/Hardware/Host.pm
 lib/Rex/Hardware/Kernel.pm
 lib/Rex/Hardware/Memory.pm
 lib/Rex/Hardware/Network.pm
+lib/Rex/Hardware/Network/Darwin.pm
 lib/Rex/Hardware/Network/FreeBSD.pm
 lib/Rex/Hardware/Network/Linux.pm
 lib/Rex/Hardware/Network/NetBSD.pm
@@ -196,6 +199,7 @@ lib/Rex/SCM/Subversion.pm
 lib/Rex/Service.pm
 lib/Rex/Service/ALT.pm
 lib/Rex/Service/ALT/systemd.pm
+lib/Rex/Service/Base.pm
 lib/Rex/Service/Debian.pm
 lib/Rex/Service/FreeBSD.pm
 lib/Rex/Service/Gentoo.pm
@@ -356,6 +360,8 @@ t/task.t
 t/task_hosts.t
 t/template.t
 t/test.ini
+t/test.xml
 t/url_encode.t
 t/vbox.t
 t/virtualization.t
+t/xml.t

@@ -166,14 +166,15 @@ sub _parse_ip {
     }
 
     if ( $line =~
-      m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) brd (\d+\.\d+\.\d+\.\d+) scope ([^\s]+) (.*)$/
+      m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) (brd (\d+\.\d+\.\d+\.\d+) )?scope ([^\s]+) (\w+\s)?(.+?)$/
       )
     {
       my $ip          = $1;
       my $cidr_prefix = $2;
-      my $broadcast   = $3;
-      my $scope       = $4;
-      my $dev_name    = $5;
+      my $broadcast   = $4 || '';
+      my $scope       = $5;
+      my $dev_name    = $7 || $6;
+      chomp $dev_name;
 
       if ( $scope eq "global" && $dev_name ne $cur_dev ) {
 
@@ -200,7 +201,6 @@ sub _parse_ip {
   }
 
   return $dev;
-
 }
 
 sub route {

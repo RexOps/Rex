@@ -28,8 +28,6 @@ All these functions are not idempotent.
 
 =cut
 
-
-
 package Rex::Commands::Process;
 
 use strict;
@@ -44,9 +42,8 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(kill killall
-          ps
-          nice);
-
+  ps
+  nice);
 
 =item kill($pid, $sig)
 
@@ -60,11 +57,11 @@ Will kill the given process id. If $sig is specified it will kill with this.
 =cut
 
 sub kill {
-  my ($process, $sig) = @_;
+  my ( $process, $sig ) = @_;
   $sig ||= "";
 
-  run ("kill $sig " . $process);
-  if($? != 0) {
+  run( "kill $sig " . $process );
+  if ( $? != 0 ) {
     die("Error killing $process");
   }
 }
@@ -81,12 +78,12 @@ Will kill the given process. If $sig is specified it will kill with this.
 =cut
 
 sub killall {
-  my ($process, $sig) = @_;
+  my ( $process, $sig ) = @_;
   $sig ||= "";
 
-  if(can_run("killall")) {
-    run ("killall $sig $process");
-    if($? != 0) {
+  if ( can_run("killall") ) {
+    run("killall $sig $process");
+    if ( $? != 0 ) {
       die("Error killing $process");
     }
   }
@@ -123,47 +120,51 @@ sub ps {
   my (@custom) = @_;
   my @list;
 
-  if(is_openwrt) {
+  if (is_openwrt) {
+
     # openwrt doesn't have ps aux
     @list = run("ps");
 
     my @ret = ();
     for my $line (@list) {
       $line =~ s/^\s*|\s*$//g;
-      my ($pid, $user, $vsz, $stat, $command) = split(/\s+/, $line, 5);
+      my ( $pid, $user, $vsz, $stat, $command ) = split( /\s+/, $line, 5 );
 
-      push( @ret, {
-        user    => $user,
-        pid    => $pid,
-        vsz    => $vsz,
-        stat    => $stat,
-        command  => $command,
-      });
+      push(
+        @ret,
+        {
+          user    => $user,
+          pid     => $pid,
+          vsz     => $vsz,
+          stat    => $stat,
+          command => $command,
+        }
+      );
     }
 
     return @ret;
   }
 
-  elsif(operating_system_is("SunOS") && operating_system_version() <= 510) {
-    if(@custom) {
-      @list = run("/usr/ucb/ps awwx -o" . join(",", @custom));
+  elsif ( operating_system_is("SunOS") && operating_system_version() <= 510 ) {
+    if (@custom) {
+      @list = run( "/usr/ucb/ps awwx -o" . join( ",", @custom ) );
     }
     else {
       @list = run("/usr/ucb/ps auwwx");
     }
   }
   else {
-    if(@custom) {
-      @list = run("ps awwx -o" . join(",", @custom));
+    if (@custom) {
+      @list = run( "ps awwx -o" . join( ",", @custom ) );
     }
     else {
       @list = run("ps auwwx");
     }
   }
 
-  if($? != 0) {
-    if(@custom) {
-      die("Error running ps ax -o" . join(",", @custom));
+  if ( $? != 0 ) {
+    if (@custom) {
+      die( "Error running ps ax -o" . join( ",", @custom ) );
     }
     else {
       die("Error running ps aux");
@@ -172,45 +173,49 @@ sub ps {
   shift @list;
 
   my @ret = ();
-  if(@custom) {
+  if (@custom) {
     for my $line (@list) {
       $line =~ s/^\s+//;
-      my @col_vals = split(/\s+/, $line, scalar(@custom));
+      my @col_vals = split( /\s+/, $line, scalar(@custom) );
       my %vals;
       @vals{@custom} = @col_vals;
-      push @ret, { %vals };
+      push @ret, {%vals};
     }
   }
   else {
     for my $line (@list) {
-      my ($user, $pid, $cpu, $mem, $vsz, $rss, $tty, $stat, $start, $time, $command) = split(/\s+/, $line, 11);
+      my (
+        $user, $pid,  $cpu,   $mem,  $vsz, $rss,
+        $tty,  $stat, $start, $time, $command
+      ) = split( /\s+/, $line, 11 );
 
-      push( @ret, {
-        user    => $user,
-        pid    => $pid,
-        cpu    => $cpu,
-        mem    => $mem,
-        vsz    => $vsz,
-        rss    => $rss,
-        tty    => $tty,
-        stat    => $stat,
-        start   => $start,
-        time    => $time,
-        command  => $command,
-      });
+      push(
+        @ret,
+        {
+          user    => $user,
+          pid     => $pid,
+          cpu     => $cpu,
+          mem     => $mem,
+          vsz     => $vsz,
+          rss     => $rss,
+          tty     => $tty,
+          stat    => $stat,
+          start   => $start,
+          time    => $time,
+          command => $command,
+        }
+      );
     }
   }
 
   return @ret;
 }
 
-
 #Will try to start a process with nohup in the background.
 #
 # task "start_in_bg", "server01", sub {
 #   nohup "/opt/srv/myserver";
 # };
-
 
 #sub nohup {
 #  my ($cmd) = @_;
@@ -229,9 +234,9 @@ Renice a process identified by $pid with the priority $level.
 =cut
 
 sub nice {
-  my ($pid, $level) = @_;
+  my ( $pid, $level ) = @_;
   run "renice $level $pid";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error renicing $pid");
   }
 }
@@ -239,6 +244,5 @@ sub nice {
 =back
 
 =cut
-
 
 1;

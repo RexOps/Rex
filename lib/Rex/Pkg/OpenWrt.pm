@@ -17,69 +17,29 @@ use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
+
+  $self->{commands} = {
+    install           => 'opkg install %s',
+    install_version   => 'opkg install %s',
+    remove            => 'opkg remove %s',
+    update_package_db => 'opkg update',
+  };
 
   return $self;
 }
 
-sub is_installed {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  my @pkg_info = $self->get_installed($pkg);
-
-  unless(@pkg_info) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ($self, $pkg, $option) = @_;
-
-  if($self->is_installed($pkg) && ! $option->{"version"}) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update($pkg, $option);
-
-  return 1;
-}
-
 sub bulk_install {
-  my ($self, $packages_aref, $option) = @_;
-  
-  delete $option->{version}; # makes no sense to specify the same version for several packages
-   
-  $self->update("@{$packages_aref}", $option);
-  
-  return 1;
-}
+  my ( $self, $packages_aref, $option ) = @_;
 
-sub update {
-  my ($self, $pkg, $option) = @_;
+  delete $option->{version}
+    ;    # makes no sense to specify the same version for several packages
 
-  my $version = $option->{'version'} || '';
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run("opkg install $pkg");
-
-  unless($? == 0) {
-    Rex::Logger::info("Error installing $pkg.", "warn");
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
+  $self->update( "@{$packages_aref}", $option );
 
   return 1;
 }
@@ -90,64 +50,41 @@ sub update_system {
   my @lines = i_run("opkg list-upgradable");
 
   for my $line (@lines) {
-    if($line =~ m/^(.*) - .* - .*$/) { push(@pkgs, $1); }
+    if ( $line =~ m/^(.*) - .* - .*$/ ) { push( @pkgs, $1 ); }
   }
 
-  my $packages_to_upgrade = join(" ", @pkgs);
+  my $packages_to_upgrade = join( " ", @pkgs );
 
-  i_run("opkg upgrade " . $packages_to_upgrade);
-}
-
-sub remove {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run("opkg remove $pkg");
-
-  unless($? == 0) {
-    Rex::Logger::info("Error removing $pkg.", "warn");
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
-
-  return 1;
+  i_run( "opkg upgrade " . $packages_to_upgrade );
 }
 
 sub get_installed {
-  my ($self, $pkg) = @_;
+  my ( $self, $pkg ) = @_;
   my @pkgs;
   my $opkg_cmd = 'opkg list-installed';
   if ($pkg) {
-     $opkg_cmd .= ' | grep "^' . $pkg . ' "';
+    $opkg_cmd .= ' | grep "^' . $pkg . ' "';
   }
 
   my @lines = i_run $opkg_cmd;
 
   for my $line (@lines) {
-    if($line =~ m/^(.*) - (.*)$/) {
-      push(@pkgs, {
-        name   => $1,
-        version => $2,
-      });
+    if ( $line =~ m/^(.*) - (.*)$/ ) {
+      push(
+        @pkgs,
+        {
+          name    => $1,
+          version => $2,
+        }
+      );
     }
   }
 
   return @pkgs;
 }
 
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run "opkg update";
-  if($? != 0) {
-    die("Error updating package database");
-  }
-}
-
 sub add_repository {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
   append_if_no_such_line "/etc/opkg.conf",
     "src/gz " . $data{"name"} . " " . $data{"url"},
     $data{"name"},
@@ -155,7 +92,7 @@ sub add_repository {
 }
 
 sub rm_repository {
-  my ($self, $name) = @_;
+  my ( $self, $name ) = @_;
   delete_lines_matching "/etc/opkg.conf" => "src/gz " . $name . " ";
 }
 

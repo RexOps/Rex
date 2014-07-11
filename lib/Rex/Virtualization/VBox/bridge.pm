@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -18,7 +18,7 @@ sub execute {
   my $class = shift;
 
   my $result = i_run "VBoxManage list bridgedifs";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error running VBoxManage list bridgedifs");
   }
 
@@ -29,16 +29,16 @@ sub execute {
     my $if = {};
     my @lines = split /\n/, $block;
     for my $line (@lines) {
-      if ($line =~ /^Name:\s+(.+?)$/) {
+      if ( $line =~ /^Name:\s+(.+?)$/ ) {
         $if->{name} = $1;
       }
-      elsif ($line =~ /^IPAddress:\s+(.+?)$/) {
+      elsif ( $line =~ /^IPAddress:\s+(.+?)$/ ) {
         $if->{ip} = $1;
       }
-      elsif ($line =~ /^NetworkMask:\s+(.+?)$/) {
+      elsif ( $line =~ /^NetworkMask:\s+(.+?)$/ ) {
         $if->{netmask} = $1;
       }
-      elsif ($line =~ /^Status:\s+(.+?)$/) {
+      elsif ( $line =~ /^Status:\s+(.+?)$/ ) {
         $if->{status} = $1;
       }
     }

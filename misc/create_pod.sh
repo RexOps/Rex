@@ -7,7 +7,7 @@ HEADER=$(cat <<EOF
 % content_for header => begin
       <meta name="description" content="{{DESC}}">
       <meta name="keywords" content="Rex, API, Documentation">
-% end 
+% end
 
 EOF
 
@@ -19,8 +19,7 @@ EOF
 
 )
 
-for x in lib/Rex/Commands/Cloud.pm \
-   lib/Rex/Commands/Box.pm \
+for x in lib/Rex/Commands/Box.pm \
    lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/Cron.pm \
    lib/Rex/Commands/DB.pm \
@@ -52,6 +51,7 @@ for x in lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/Virtualization.pm \
    lib/Rex/Box/Base.pm \
    lib/Rex/Box/Amazon.pm \
+   lib/Rex/Box/KVM.pm \
    lib/Rex/Box/VBox.pm \
    lib/Rex/Virtualization/VBox.pm \
    lib/Rex/Virtualization/LibVirt.pm \
@@ -85,7 +85,8 @@ for x in lib/Rex/Commands/Cloud.pm \
                   | sed -e "s/<hr.*>//g" \
                   | sed -e "s/<code>//g" \
                   | sed -e "s/<\/code>//g" \
-                  | sed -e "s/<pre>/<pre><code class=\"perl\">/" \
+                  | sed -e "s/<pre>/<div class=\"btn btn-default copy-button pull-right\" data-clipboard-target=\"clipboardCOUNTER\">Copy to clipboard<\/div>\n<pre><code class=\"perl\" id=\"clipboardCOUNTER\">/" \
+                  | perl -pe's:(?<=clipboard)(COUNTER):int($count++/2):e' \
                   | sed -e "s/<dl>/<ul>/g" \
                   | sed -e "s/<\/dl>/<\/ul>/g" \
                   | sed -e "s/<dd>//g" \
@@ -107,9 +108,7 @@ for x in lib/Rex/Commands/Cloud.pm \
                   | perl -lpe "s|\{PATH\}|$RELPATH|g" \
                   | perl -lpe 's|<a href=".+?&quot">(.+?)&quot</a>;|$1&quot;|g' \
                   | perl -lpe 's|&quot;|"|g'
-      
+
          ) > doc/html/${x/lib\//}.html.ep
 
    done
-
-

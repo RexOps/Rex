@@ -1,11 +1,11 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Hardware::Network::Solaris;
-  
+
 use strict;
 use warnings;
 
@@ -16,7 +16,7 @@ use Rex::Helper::Array;
 
 sub get_network_devices {
 
-  my @device_list = grep { $_=$1 if /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
+  my @device_list = grep { $_ = $1 if /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
 
   @device_list = array_uniq(@device_list);
   return \@device_list;
@@ -24,20 +24,23 @@ sub get_network_devices {
 }
 
 sub get_network_configuration {
-  
+
   my $devices = get_network_devices();
 
   my $device_info = {};
 
-  for my $dev (@{$devices}) {
+  for my $dev ( @{$devices} ) {
 
     my $ifconfig = i_run("ifconfig $dev");
 
     $device_info->{$dev} = {
-      ip       => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-      netmask    => [ ( $ifconfig =~ m/(netmask 0x|netmask )([a-f0-9]+)/ ) ]->[1],
-      broadcast  => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-      mac      => [ ( $ifconfig =~ m/(ether|address:|lladdr) (..?:..?:..?:..?:..?:..?)/ ) ]->[1],
+      ip      => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+      netmask => [ ( $ifconfig =~ m/(netmask 0x|netmask )([a-f0-9]+)/ ) ]->[1],
+      broadcast => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+      mac => [
+        ( $ifconfig =~ m/(ether|address:|lladdr) (..?:..?:..?:..?:..?:..?)/ )
+        ]->[1],
+      is_bridge => 0,
     };
 
   }
@@ -50,34 +53,39 @@ sub route {
 
   my @ret = ();
 
-  my @route = i_run "netstat -nr";  
-  if($? != 0) {
+  my @route = i_run "netstat -nr";
+  if ( $? != 0 ) {
     die("Error running netstat");
   }
 
-  shift @route; shift @route; # remove first 2 lines
-  shift @route; shift @route; # remove first 2 lines
+  shift @route;
+  shift @route;    # remove first 2 lines
+  shift @route;
+  shift @route;    # remove first 2 lines
 
   for my $route_entry (@route) {
 
-    if(
-      $route_entry =~ m/^$/
+    if ( $route_entry =~ m/^$/
       || $route_entry =~ m/^Routing Table:/
       || $route_entry =~ m/^\s+Destination/
-      || $route_entry =~ m/^---------/
-    ) {
+      || $route_entry =~ m/^---------/ )
+    {
       next;
     }
 
-    my ($dest, $gw, $flags, $ref, $use, $iface) = split(/\s+/, $route_entry, 6);
-    push(@ret, {
-      destination => $dest,
-      gateway    => $gw,
-      flags     => $flags,
-      ref      => $ref,
-      use      => $use,
-      iface     => $iface,
-    });
+    my ( $dest, $gw, $flags, $ref, $use, $iface ) =
+      split( /\s+/, $route_entry, 6 );
+    push(
+      @ret,
+      {
+        destination => $dest,
+        gateway     => $gw,
+        flags       => $flags,
+        ref         => $ref,
+        use         => $use,
+        iface       => $iface,
+      }
+    );
   }
 
   return @ret;
@@ -86,18 +94,18 @@ sub route {
 
 sub default_gateway {
 
-  my ($class, $new_default_gw) = @_;
+  my ( $class, $new_default_gw ) = @_;
 
-  if($new_default_gw) {
-    if(default_gateway()) {
+  if ($new_default_gw) {
+    if ( default_gateway() ) {
       i_run "route delete default " . default_gateway();
-      if($? != 0) {
+      if ( $? != 0 ) {
         die("Error running route del default");
       }
     }
 
     i_run "route add default $new_default_gw";
-    if($? != 0) {
+    if ( $? != 0 ) {
       die("Error route add default");
     }
 
@@ -105,7 +113,11 @@ sub default_gateway {
   else {
     my @route = route();
 
-    my ($default_route) = grep { $_->{"flags"} =~ m/UG/ && ( $_->{"destination"} eq "0.0.0.0" || $_->{"destination"} eq "default" ) } @route;
+    my ($default_route) = grep {
+      $_->{"flags"} =~ m/UG/
+        && ( $_->{"destination"} eq "0.0.0.0"
+        || $_->{"destination"} eq "default" )
+    } @route;
     return $default_route->{"gateway"} if $default_route;
   }
 }
@@ -114,159 +126,197 @@ sub netstat {
 
   my @ret;
   my @netstat = i_run "netstat -na -f inet -f inet6";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error running netstat");
   }
 
-
-  my ($proto, $udp_v4, $udp_v6, $tcp_v4, $tcp_v6, $sctp);
+  my ( $proto, $udp_v4, $udp_v6, $tcp_v4, $tcp_v6, $sctp );
   for my $line (@netstat) {
 
-    if(
-      $line =~ m/^$/
+    if ( $line =~ m/^$/
       || $line =~ m/^\s+Local/
-      || $line =~ m/^--------/
-    ) {
+      || $line =~ m/^--------/ )
+    {
       next;
     }
 
-    if($line =~ m/^UDP: IPv4/) {
-      $udp_v4 = 0; $udp_v6 = 0; $tcp_v4 = 0; $tcp_v6 = 0; $sctp = 0;
+    if ( $line =~ m/^UDP: IPv4/ ) {
+      $udp_v4 = 0;
+      $udp_v6 = 0;
+      $tcp_v4 = 0;
+      $tcp_v6 = 0;
+      $sctp   = 0;
       $udp_v4 = 1;
-      $proto = "udp";
+      $proto  = "udp";
       next;
     }
 
-    if($line =~ m/^UDP: IPv6/) {
-      $udp_v4 = 0; $udp_v6 = 0; $tcp_v4 = 0; $tcp_v6 = 0; $sctp = 0;
+    if ( $line =~ m/^UDP: IPv6/ ) {
+      $udp_v4 = 0;
+      $udp_v6 = 0;
+      $tcp_v4 = 0;
+      $tcp_v6 = 0;
+      $sctp   = 0;
       $udp_v6 = 1;
-      $proto = "udp6";
+      $proto  = "udp6";
       next;
     }
 
-    if($line =~ m/^TCP: IPv4/) {
-      $udp_v4 = 0; $udp_v6 = 0; $tcp_v4 = 0; $tcp_v6 = 0; $sctp = 0;
+    if ( $line =~ m/^TCP: IPv4/ ) {
+      $udp_v4 = 0;
+      $udp_v6 = 0;
+      $tcp_v4 = 0;
+      $tcp_v6 = 0;
+      $sctp   = 0;
       $tcp_v4 = 1;
-      $proto = "tcp";
+      $proto  = "tcp";
       next;
     }
 
-    if($line =~ m/^TCP: IPv6/) {
-      $udp_v4 = 0; $udp_v6 = 0; $tcp_v4 = 0; $tcp_v6 = 0; $sctp = 0;
+    if ( $line =~ m/^TCP: IPv6/ ) {
+      $udp_v4 = 0;
+      $udp_v6 = 0;
+      $tcp_v4 = 0;
+      $tcp_v6 = 0;
+      $sctp   = 0;
       $tcp_v6 = 1;
-      $proto = "tcp6";
+      $proto  = "tcp6";
       next;
     }
 
-    if($line =~ m/^SCTP:/) {
-      $udp_v4 = 0; $udp_v6 = 0; $tcp_v4 = 0; $tcp_v6 = 0; $sctp = 0;
-      $sctp = 1;
-      $proto = "sctp";
+    if ( $line =~ m/^SCTP:/ ) {
+      $udp_v4 = 0;
+      $udp_v6 = 0;
+      $tcp_v4 = 0;
+      $tcp_v6 = 0;
+      $sctp   = 0;
+      $sctp   = 1;
+      $proto  = "sctp";
       next;
     }
 
     $line =~ s/^\s+//;
 
-    if($udp_v4) {
+    if ($udp_v4) {
       $line = " $line";
-      my ($local_addr, $remote_addr, $state) = ($line =~ m/\s+?([^\s]+)\s+([^\s]+)?\s+([^\s]+)/);
-      push(@ret, {
-        proto => $proto,
-        local_addr => $local_addr,
-        foreign_addr => $remote_addr,
-        state => $state,
-      });
+      my ( $local_addr, $remote_addr, $state ) =
+        ( $line =~ m/\s+?([^\s]+)\s+([^\s]+)?\s+([^\s]+)/ );
+      push(
+        @ret,
+        {
+          proto        => $proto,
+          local_addr   => $local_addr,
+          foreign_addr => $remote_addr,
+          state        => $state,
+        }
+      );
       next;
     }
 
-    if($udp_v6) {
+    if ($udp_v6) {
       $line = " $line";
-      my ($local_addr, $remote_addr, $state, $if) = ($line =~ m/\s+?([^\s]+)\s+([^\s]+)?\s+([^\s]+)\s+([^\s]+)/);
-      push(@ret, {
-        proto => $proto,
-        local_addr => $local_addr,
-        foreign_addr => $remote_addr,
-        state => $state,
-        if => $if,
-      });
+      my ( $local_addr, $remote_addr, $state, $if ) =
+        ( $line =~ m/\s+?([^\s]+)\s+([^\s]+)?\s+([^\s]+)\s+([^\s]+)/ );
+      push(
+        @ret,
+        {
+          proto        => $proto,
+          local_addr   => $local_addr,
+          foreign_addr => $remote_addr,
+          state        => $state,
+          if           => $if,
+        }
+      );
       next;
     }
 
-    if($tcp_v4) {
-      my ($local_addr, $remote_addr, $swind, $sendq, $rwind, $recvq, $state) = split(/\s+/, $line, 7);
-      push(@ret, {
-        proto => $proto,
-        local_addr => $local_addr,
-        foreign_addr => $remote_addr,
-        swind => $swind,
-        sendq => $sendq,
-        rwind => $rwind,
-        recvq => $recvq,
-        state => $state,
-      });
+    if ($tcp_v4) {
+      my ( $local_addr, $remote_addr, $swind, $sendq, $rwind, $recvq, $state )
+        = split( /\s+/, $line, 7 );
+      push(
+        @ret,
+        {
+          proto        => $proto,
+          local_addr   => $local_addr,
+          foreign_addr => $remote_addr,
+          swind        => $swind,
+          sendq        => $sendq,
+          rwind        => $rwind,
+          recvq        => $recvq,
+          state        => $state,
+        }
+      );
       next;
     }
 
-    if($tcp_v6) {
-      my ($local_addr, $remote_addr, $swind, $sendq, $rwind, $recvq, $state, $if) = split(/\s+/, $line, 8);
-      push(@ret, {
-        proto => $proto,
-        local_addr => $local_addr,
-        foreign_addr => $remote_addr,
-        swind => $swind,
-        sendq => $sendq,
-        rwind => $rwind,
-        recvq => $recvq,
-        state => $state,
-        if => $if,
-      });
+    if ($tcp_v6) {
+      my ( $local_addr, $remote_addr, $swind, $sendq, $rwind, $recvq, $state,
+        $if )
+        = split( /\s+/, $line, 8 );
+      push(
+        @ret,
+        {
+          proto        => $proto,
+          local_addr   => $local_addr,
+          foreign_addr => $remote_addr,
+          swind        => $swind,
+          sendq        => $sendq,
+          rwind        => $rwind,
+          recvq        => $recvq,
+          state        => $state,
+          if           => $if,
+        }
+      );
       next;
     }
 
-    if($sctp) {
-      my ($local_addr, $remote_addr, $swind, $sendq, $rwind, $recvq, $strs, $state) = split(/\s+/, $line, 8);
-      push(@ret, {
-        proto => $proto,
-        local_addr => $local_addr,
-        foreign_addr => $remote_addr,
-        swind => $swind,
-        sendq => $sendq,
-        rwind => $rwind,
-        recvq => $recvq,
-        state => $state,
-        strsio => $strs,
-      });
+    if ($sctp) {
+      my ( $local_addr, $remote_addr, $swind, $sendq, $rwind, $recvq, $strs,
+        $state )
+        = split( /\s+/, $line, 8 );
+      push(
+        @ret,
+        {
+          proto        => $proto,
+          local_addr   => $local_addr,
+          foreign_addr => $remote_addr,
+          swind        => $swind,
+          sendq        => $sendq,
+          rwind        => $rwind,
+          recvq        => $recvq,
+          state        => $state,
+          strsio       => $strs,
+        }
+      );
       next;
     }
-
-
 
   }
 
-
   @netstat = i_run "netstat -na -f unix";
-  shift @netstat; shift @netstat; shift @netstat;
+  shift @netstat;
+  shift @netstat;
+  shift @netstat;
 
   for my $line (@netstat) {
-    my ($address, $type, $vnode, $conn, $local_addr, $remote_addr) = split(/\s+/, $line, 7);
+    my ( $address, $type, $vnode, $conn, $local_addr, $remote_addr ) =
+      split( /\s+/, $line, 7 );
 
     my $data = {
-      proto      => "unix",
-      address    => $address,
-      type      => $type,
-      nvnode     => $vnode,
-      conn      => $conn,
-      path      => $local_addr,
+      proto   => "unix",
+      address => $address,
+      type    => $type,
+      nvnode  => $vnode,
+      conn    => $conn,
+      path    => $local_addr,
     };
 
-    push(@ret, $data);
+    push( @ret, $data );
 
   }
 
   return @ret;
 
 }
-
-
 
 1;

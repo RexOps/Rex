@@ -1,22 +1,22 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 #
 # this is a simple helper class for the get() function
-  
+
 package Rex::Value;
 
 use strict;
 use warnings;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }

@@ -618,7 +618,10 @@ sub connect {
   }
   elsif ( !$self->connection->is_authenticated ) {
     Rex::pop_connection();
-    die("Wrong username/password or wrong key on $server.");
+    my $message = "Wrong username/password or wrong key on $server.";
+    $message .= " Or root is not permitted to login over SSH."
+      if ( $connect_hash{user} eq 'root' );
+    die($message);
   }
   else {
     Rex::Logger::info("Successfully authenticated on $server.")
@@ -723,7 +726,7 @@ sub run {
 
     if ( !$server->test_perl ) {
       Rex::Logger::info(
-"There is no perl interpreter found on this system. Some commands may not work. Sudo won't work.",
+        "There is no perl interpreter found on this system. Some commands may not work. Sudo won't work.",
         "warn"
       );
       sleep 3;

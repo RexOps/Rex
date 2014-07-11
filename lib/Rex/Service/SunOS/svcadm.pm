@@ -14,70 +14,31 @@ use Rex::Helper::Run;
 use Rex::Logger;
 use Rex::Commands::Fs;
 
-sub new {
-  my $that = shift;
-  my $proto = ref($that) || $that;
-  my $self = { @_ };
+use base qw(Rex::Service::Base);
 
-  bless($self, $proto);
+sub new {
+  my $that  = shift;
+  my $proto = ref($that) || $that;
+  my $self  = $proto->SUPER::new(@_);
+
+  bless( $self, $proto );
+
+  $self->{commands} = {
+    start   => 'svcadm enable %s >/dev/null',
+    restart => 'svcadm restart %s >/dev/null',
+    stop    => 'svcadm disable %s >/dev/null',
+    reload  => 'svcadm refresh %s >/dev/null',
+  };
 
   return $self;
 }
 
-sub start {
-  my($self, $service) = @_;
-
-  i_run "svcadm enable $service >/dev/null", nohup => 1;
-
-  if($? == 0) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub restart {
-  my($self, $service) = @_;
-
-  i_run "svcadm restart $service >/dev/null", nohup => 1;
-
-  if($? == 0) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub stop {
-  my($self, $service) = @_;
-
-  i_run "svcadm disable $service >/dev/null", nohup => 1;
-
-  if($? == 0) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub reload {
-  my($self, $service) = @_;
-
-  i_run "svcadm refresh $service >/dev/null", nohup => 1;
-
-  if($? == 0) {
-    return 1;
-  }
-
-  return 0;
-}
-
 sub status {
-  my($self, $service) = @_;
+  my ( $self, $service, $options ) = @_;
 
-  my ($state) = grep { $_=$1 if /state\s+([a-z]+)/ } i_run "svcs -l $service";
+  my ($state) = grep { $_ = $1 if /state\s+([a-z]+)/ } i_run "svcs -l $service";
 
-  if($state eq "online") {
+  if ( $state eq "online" ) {
     return 1;
   }
 
@@ -85,23 +46,25 @@ sub status {
 }
 
 sub ensure {
-  my ($self, $service, $what) = @_;
+  my ( $self, $service, $options ) = @_;
 
-  if($what =~  /^stop/) {
-    $self->stop($service);
+  my $what = $options->{ensure};
+
+  if ( $what =~ /^stop/ ) {
+    $self->stop( $service, $options );
   }
-  elsif($what =~ /^start/ || $what =~ m/^run/) {
-    $self->start($service);
+  elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
+    $self->start( $service, $options );
   }
 
   return 1;
 }
 
 sub action {
-  my ($self, $service, $action) = @_;
+  my ( $self, $service, $action ) = @_;
 
   i_run "svcadm $action $service >/dev/null", nohup => 1;
-  if($? == 0) { return 1; }
+  if ( $? == 0 ) { return 1; }
 }
 
 1;

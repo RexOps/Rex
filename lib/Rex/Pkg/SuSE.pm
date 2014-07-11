@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -14,88 +14,31 @@ use Rex::Helper::Run;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
 
-
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
+
+  $self->{commands} = {
+    install           => 'zypper -n install %s',
+    install_version   => 'zypper -n install $pkg-%s',
+    update_system     => 'zypper -n up',
+    remove            => 'zypper -n remove %s',
+    update_package_db => 'zypper --no-gpg-checks -n ref -fd',
+  };
 
   return $self;
 }
 
-sub is_installed {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  i_run("rpm -ql $pkg");
-
-  unless($? == 0) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-  
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ($self, $pkg, $option) = @_;
-
-  if($self->is_installed($pkg) && ! $option->{"version"}) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update($pkg, $option);
-
-  return 1;
-}
-
 sub bulk_install {
-  my ($self, $packages_aref, $option) = @_;
-  
-  delete $option->{version}; # makes no sense to specify the same version for several packages
-   
-  $self->update("@{$packages_aref}", $option);
-  
-  return 1;
-}
+  my ( $self, $packages_aref, $option ) = @_;
 
-sub update {
-  my ($self, $pkg, $option) = @_;
+  delete $option->{version}
+    ;    # makes no sense to specify the same version for several packages
 
-  my $version = $option->{"version"} || "";
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run("zypper -n install $pkg".($version?"-$version":""));
-
-  unless($? == 0) {
-    Rex::Logger::info("Error installing $pkg.", "warn");
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
-
-  return 1;
-}
-
-sub remove {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run("zypper -n remove $pkg");
-
-  unless($? == 0) {
-    Rex::Logger::info("Error removing $pkg.", "warn");
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
+  $self->update( "@{$packages_aref}", $option );
 
   return 1;
 }
@@ -103,61 +46,54 @@ sub remove {
 sub get_installed {
   my ($self) = @_;
 
-  my @lines = i_run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
+  my @lines = i_run
+    'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
 
   my @pkg;
 
   for my $line (@lines) {
-    if($line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/) {
-      push(@pkg, {
-        name   => $1,
-        epoch  => $2,
-        version => $3,
-        release => $4,
-        arch   => $5,
-      });
+    if ( $line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/ ) {
+      push(
+        @pkg,
+        {
+          name    => $1,
+          epoch   => $2,
+          version => $3,
+          release => $4,
+          arch    => $5,
+        }
+      );
     }
   }
 
   return @pkg;
 }
 
-sub update_system {
-  my ($self) = @_;
-  i_run "zypper -n up";
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run "zypper --no-gpg-checks -n ref -fd";
-  if($? != 0) {
-    die("Error updating package repository");
-  }
-}
-
 sub add_repository {
-  my ($self, %data) = @_;
-  i_run "zypper addrepo -f -n " . $data{"name"} . " " . $data{"url"} . " " . $data{"name"};
-  if($? == 4) {
-    if(Rex::Config->get_do_reporting) {
-      return {changed => 0};
+  my ( $self, %data ) = @_;
+  i_run "zypper addrepo -f -n "
+    . $data{"name"} . " "
+    . $data{"url"} . " "
+    . $data{"name"};
+  if ( $? == 4 ) {
+    if ( Rex::Config->get_do_reporting ) {
+      return { changed => 0 };
     }
   }
-  if($? != 0) {
-    die("Error adding repository " . $data{name});
+  if ( $? != 0 ) {
+    die( "Error adding repository " . $data{name} );
   }
 }
 
 sub rm_repository {
-  my ($self, $name) = @_;
+  my ( $self, $name ) = @_;
   i_run "zypper removerepo $name";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error removing repository $name");
   }
 
-  if(Rex::Config->get_do_reporting) {
-    return {changed => 1};
+  if ( Rex::Config->get_do_reporting ) {
+    return { changed => 1 };
   }
 }
 

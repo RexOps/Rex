@@ -23,7 +23,6 @@ This module exports the notify() function.
 
 =cut
 
-
 package Rex::Commands::Notify;
 
 use strict;
@@ -43,7 +42,7 @@ This function will notify the given $resource_name of the given $resource_type t
 =cut
 
 sub notify {
-  my ($resource_type, $resource_name) = @_;
+  my ( $resource_type, $resource_name ) = @_;
   my $notify = Rex::get_current_connection()->{notify};
   $notify->run(
     type => $resource_type,

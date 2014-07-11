@@ -167,7 +167,15 @@ use_ok 'Rex::Test::Base::has_service_stopped';
 
 use Data::Dumper;
 my @hosts = Rex::Commands::evaluate_hostname("web[01..10]");
-ok(join(",", @hosts) eq "web01,web02,web03,web04,web05,web06,web07,web08,web09,web10", "host evaluation 1");
+ok(
+  join( ",", @hosts ) eq
+    "web01,web02,web03,web04,web05,web06,web07,web08,web09,web10",
+  "host evaluation 1"
+);
 
 @hosts = Rex::Commands::evaluate_hostname("web[01..10]:5000");
-ok(join(",", @hosts) eq "web01:5000,web02:5000,web03:5000,web04:5000,web05:5000,web06:5000,web07:5000,web08:5000,web09:5000,web10:5000", "host evaluation 2");
+ok(
+  join( ",", @hosts ) eq
+    "web01:5000,web02:5000,web03:5000,web04:5000,web05:5000,web06:5000,web07:5000,web08:5000,web09:5000,web10:5000",
+  "host evaluation 2"
+);

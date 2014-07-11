@@ -1,25 +1,25 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Output;
-  
+
 use strict;
 use warnings;
 
 use vars qw($output_object);
 
 sub get {
-  my ($class, $output_module) = @_;
+  my ( $class, $output_module ) = @_;
 
-  return $output_object if($output_object);
+  return $output_object if ($output_object);
 
-  return unless($output_module);
+  return unless ($output_module);
 
   eval "use Rex::Output::$output_module;";
-  if($@) {
+  if ($@) {
     die("Output Module ,,$output_module'' not found.");
   }
 

@@ -109,7 +109,7 @@ sub template {
   my ( $file, @params ) = @_;
   my $param;
 
-  if(ref $params[0] eq "HASH") {
+  if ( ref $params[0] eq "HASH" ) {
     $param = $params[0];
   }
   else {
@@ -127,11 +127,12 @@ sub template {
   else {
     $file = resolv_path($file);
 
-    unless($file =~ m/^\// || $file =~ m/^\@/) {
+    unless ( $file =~ m/^\// || $file =~ m/^\@/ ) {
+
       # path is relative and no template
       Rex::Logger::debug("Relativ path $file");
 
-      $file = Rex::Helper::Path::get_file_path($file, caller());
+      $file = Rex::Helper::Path::get_file_path( $file, caller() );
 
       Rex::Logger::debug("New filename: $file");
     }
@@ -143,36 +144,36 @@ sub template {
     # rex -E live ...
     # will first look if files/hosts.tpl.live is available, if not it will
     # use files/hosts.tpl
-    if(-f "$file." . Rex::Config->get_environment) {
+    if ( -f "$file." . Rex::Config->get_environment ) {
       $file = "$file." . Rex::Config->get_environment;
     }
 
-    if(-f $file) {
-      $content = eval { local(@ARGV, $/) = ($file); <>; };
+    if ( -f $file ) {
+      $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
     }
-    elsif($file =~ m/^\@/) {
-      my @caller = caller(0);
-      my $file_path = Rex::get_module_path($caller[0]);
+    elsif ( $file =~ m/^\@/ ) {
+      my @caller    = caller(0);
+      my $file_path = Rex::get_module_path( $caller[0] );
 
-      if(! -f $file_path) {
-        my ($mod_name) = ($caller[0] =~ m/^.*::(.*?)$/);
-        if($mod_name && -f "$file_path/$mod_name.pm") {
+      if ( !-f $file_path ) {
+        my ($mod_name) = ( $caller[0] =~ m/^.*::(.*?)$/ );
+        if ( $mod_name && -f "$file_path/$mod_name.pm" ) {
           $file_path = "$file_path/$mod_name.pm";
         }
-        elsif(-f "$file_path/__module__.pm") {
+        elsif ( -f "$file_path/__module__.pm" ) {
           $file_path = "$file_path/__module__.pm";
         }
-        elsif(-f "$file_path/Module.pm") {
+        elsif ( -f "$file_path/Module.pm" ) {
           $file_path = "$file_path/Module.pm";
         }
-        elsif(-f $caller[1]) {
+        elsif ( -f $caller[1] ) {
           $file_path = $caller[1];
         }
       }
-      my $file_content = eval { local(@ARGV, $/) = ($file_path); <>; };
-      my ($data) = ($file_content =~ m/.*__DATA__(.*)/ms);
-      my $fp = Rex::File::Parser::Data->new(data => [ split(/\n/, $data) ]);
-      my $snippet_to_read = substr($file, 1);
+      my $file_content = eval { local ( @ARGV, $/ ) = ($file_path); <>; };
+      my ($data) = ( $file_content =~ m/.*__DATA__(.*)/ms );
+      my $fp = Rex::File::Parser::Data->new( data => [ split( /\n/, $data ) ] );
+      my $snippet_to_read = substr( $file, 1 );
       $content = $fp->read($snippet_to_read);
     }
     else {
@@ -363,7 +364,7 @@ sub file {
 
     if ( $new_md5 && $old_md5 && $new_md5 eq $old_md5 ) {
       Rex::Logger::debug(
-        "No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5."
+        "No need to overwrite existing file. Old and new files are the same. $old_md5 eq $new_md5."
       );
 
       # md5 sums are the same, delete tmp.
@@ -373,7 +374,7 @@ sub file {
       Rex::get_current_connection()->{reporter}->report(
         changed => 0,
         message =>
-          "No need to overwrite exiting file. Old and new files are the same. $old_md5 eq $new_md5."
+          "No need to overwrite existing file. Old and new files are the same. $old_md5 eq $new_md5."
       );
     }
     else {

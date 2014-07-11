@@ -59,7 +59,7 @@ use base qw(Rex::Exporter);
 
 =item run($command [, $callback])
 
-This function will execute the given command and returns the output.
+This function will execute the given command and returns the output. In scalar context it returns the raw output as is, and in list context it returns the list of output lines.
 
  task "uptime", "server01", sub {
    say run "uptime";
@@ -77,9 +77,9 @@ and notify it when you want to run it.
    run "extract-something",
      command     => "tar -C /foo -xzf /tmp/foo.tgz",
      only_notified => TRUE;
- 
+
    # some code ...
- 
+
    notify "run", "extract-something";  # now the command gets executed
  };
 
@@ -88,7 +88,7 @@ I<only_if> or I<unless> option.
 
  run "some-command",
    only_if => "ps -ef | grep -q httpd";   # only run if httpd is running
- 
+
  run "some-other-command",
    unless => "ps -ef | grep -q httpd";    # only run if httpd is not running
 
@@ -112,7 +112,7 @@ sub run {
   if ( ref $_[0] eq "CODE" ) {
     $code = shift;
   }
-  elsif ( scalar @_ > 0 ) {
+  if ( scalar @_ > 0 ) {
     $option = {@_};
   }
 
@@ -183,8 +183,26 @@ sub run {
       $path = join( ":", Rex::Config->get_path() );
     }
 
+    my ( $out, $err );
     my $exec = Rex::Interface::Exec->create;
-    my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+
+    if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
+      eval {
+        local $SIG{ALRM} = sub { die("timeout"); };
+        alarm $option->{timeout};
+        ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+        alarm 0;
+      };
+
+      if ( $@ =~ m/^timeout at/ ) {
+        Rex::Logger::info( "Timeout executing $cmd.", "error" );
+        $? = 300;
+      }
+    }
+    else {
+      ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+    }
+
     chomp $out if $out;
     chomp $err if $err;
 
@@ -198,12 +216,17 @@ sub run {
       $err = "";
     }
 
-    if ( Rex::Config->get_exec_autodie()
-      && Rex::Config->get_exec_autodie() == 1 )
-    {
-      if ( $? != 0 ) {
-        die("Error executing: $cmd.\nOutput:\n$out");
-      }
+    if ( $? == 127 ) {
+      Rex::Logger::info( "$cmd: Command not found.", "error" )
+        if ( Rex::Config->get_verbose_run );
+    }
+    elsif ( $? != 0 && $? != 300 ) {
+      Rex::Logger::info( "Error executing $cmd: Return-Code: $?", "warn" )
+        if ( Rex::Config->get_verbose_run );
+    }
+    elsif ( $? == 0 ) {
+      Rex::Logger::info("Successfully executed $cmd.")
+        if ( Rex::Config->get_verbose_run );
     }
 
     if ($code) {
@@ -225,6 +248,14 @@ sub run {
 
   Rex::get_current_connection()->{reporter}
     ->report_resource_end( type => "run", name => $res_cmd );
+
+  if ( Rex::Config->get_exec_autodie()
+    && Rex::Config->get_exec_autodie() == 1 )
+  {
+    if ( $? != 0 ) {
+      die("Error executing: $cmd.\nOutput:\n$out_ret");
+    }
+  }
 
   if (wantarray) {
     return split( /\r?\n/, $out_ret );
@@ -277,7 +308,7 @@ You can use this function to run one command with sudo privileges or to turn on 
  user "unprivuser";
  sudo_password "f00b4r";
  sudo -on;  # turn sudo globaly on
- 
+
  task prepare => sub {
    install "apache2";
    file "/etc/ntp.conf",
@@ -291,7 +322,7 @@ Or, if you don't turning sudo globaly on.
  task prepare => sub {
    file "/tmp/foo.txt",
      content => "this file was written without sudo privileges\n";
- 
+
    # everything in this section will be executed with sudo privileges
    sudo sub {
      install "apache2";

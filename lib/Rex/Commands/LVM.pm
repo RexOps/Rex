@@ -4,7 +4,6 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-
 =head1 NAME
 
 Rex::Commands::LVM - Get LVM Information
@@ -32,7 +31,6 @@ All these functions are not idempotent.
 =over 4
 
 =cut
-
 
 package Rex::Commands::LVM;
 
@@ -67,7 +65,7 @@ Get Information of all your physical volumes.
 sub pvs {
 
   my @lines = run 'pvdisplay --units b --columns --separator "|" --noheadings';
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error running pvdisplay");
   }
 
@@ -75,18 +73,22 @@ sub pvs {
   for my $line (@lines) {
     chomp $line;
     $line =~ s/^\s+//g;
-    my ($phy_vol, $vol_group, $format, $attr, $psize, $pfree) = split(/\|/, $line);
+    my ( $phy_vol, $vol_group, $format, $attr, $psize, $pfree ) =
+      split( /\|/, $line );
     $pfree =~ s/B$//;
     $psize =~ s/B$//;
 
-    push(@ret, {
-      physical_volume => $phy_vol,
-      volume_group => $vol_group,
-      format => $format,
-      attributes => $attr,
-      size => $psize,
-      free => $pfree,
-    });
+    push(
+      @ret,
+      {
+        physical_volume => $phy_vol,
+        volume_group    => $vol_group,
+        format          => $format,
+        attributes      => $attr,
+        size            => $psize,
+        free            => $pfree,
+      }
+    );
   }
 
   return @ret;
@@ -114,14 +116,14 @@ sub vgs {
 
   my ($vg) = @_;
 
-
-  my $cmd = 'vgdisplay --units b --columns --separator "|" --noheadings -o "pv_name,vg_name,vg_size,vg_free,vg_attr"';
-  if($vg) {
+  my $cmd =
+    'vgdisplay --units b --columns --separator "|" --noheadings -o "pv_name,vg_name,vg_size,vg_free,vg_attr"';
+  if ($vg) {
     $cmd .= " $vg";
   }
 
   my @lines = run $cmd;
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error running vgdisplay");
   }
 
@@ -129,17 +131,21 @@ sub vgs {
   for my $line (@lines) {
     chomp $line;
     $line =~ s/^\s+//g;
-    my ($pv_name, $vg_name, $vg_size, $vg_free, $vg_attr) = split(/\|/, $line);
+    my ( $pv_name, $vg_name, $vg_size, $vg_free, $vg_attr ) =
+      split( /\|/, $line );
     $vg_free =~ s/B$//;
     $vg_size =~ s/B$//;
 
-    push(@ret, {
-      physical_volume => $pv_name,
-      volume_group => $vg_name,
-      size => $vg_size,
-      free => $vg_free,
-      attributes => $vg_attr,
-    });
+    push(
+      @ret,
+      {
+        physical_volume => $pv_name,
+        volume_group    => $vg_name,
+        size            => $vg_size,
+        free            => $vg_free,
+        attributes      => $vg_attr,
+      }
+    );
   }
 
   return @ret;
@@ -167,13 +173,14 @@ sub lvs {
 
   my ($vg) = @_;
 
-  my $cmd = 'lvdisplay --units b --columns --separator "|" -o "lv_name,vg_name,lv_attr,lv_size" --noheading';
-  if($vg) {
+  my $cmd =
+    'lvdisplay --units b --columns --separator "|" -o "lv_name,vg_name,lv_attr,lv_size" --noheading';
+  if ($vg) {
     $cmd .= " " . $vg;
   }
 
   my @lines = run $cmd;
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error running lvdisplay");
   }
 
@@ -182,24 +189,26 @@ sub lvs {
     chomp $line;
     $line =~ s/^\s+//g;
 
-    my($lv_name, $vg_name, $lv_attr, $lv_size) = split(/\|/, $line);
+    my ( $lv_name, $vg_name, $lv_attr, $lv_size ) = split( /\|/, $line );
     $lv_size =~ s/B$//;
-    push(@ret, {
-      name => $lv_name,
-      path => "/dev/$vg_name/$lv_name",
-      attributes => $lv_attr,
-      size => $lv_size,
-    });
+    push(
+      @ret,
+      {
+        name       => $lv_name,
+        path       => "/dev/$vg_name/$lv_name",
+        attributes => $lv_attr,
+        size       => $lv_size,
+      }
+    );
   }
 
   return @ret;
 }
 
-
 sub pvcreate {
   my ($dev) = @_;
   my $s = run "pvcreate $dev";
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error creating pv.\n$s\n");
   }
 
@@ -207,10 +216,10 @@ sub pvcreate {
 }
 
 sub vgcreate {
-  my ($vgname, @devices) = @_;
+  my ( $vgname, @devices ) = @_;
 
-  my $s = run "vgcreate $vgname " . join(" ", @devices);
-  if($? != 0) {
+  my $s = run "vgcreate $vgname " . join( " ", @devices );
+  if ( $? != 0 ) {
     die("Error creating vg.\n$s\n");
   }
 
@@ -218,30 +227,30 @@ sub vgcreate {
 }
 
 sub lvcreate {
-  my ($lvname, %option) = @_;
+  my ( $lvname, %option ) = @_;
 
-  if(! exists $option{size} || ! exists $option{onvg}) {
+  if ( !exists $option{size} || !exists $option{onvg} ) {
     die("Missing parameter size or onvg.");
   }
 
-  unless($lvname =~ m/^[a-z0-9\-_]+$/i) {
+  unless ( $lvname =~ m/^[a-z0-9\-_]+$/i ) {
     die("Error in lvname. Allowed characters a-z, 0-9 and _- .");
   }
 
   my $size = $option{size};
-  if($size =~ m/^[0-9]+$/) { $size .= "M"; }
+  if ( $size =~ m/^[0-9]+$/ ) { $size .= "M"; }
   my $onvg = $option{onvg};
 
   my $s = run "lvcreate -n $lvname -L $size $onvg";
 
   my $lv_path = $option{onvg} . "/" . $lvname;
 
-  if(exists $option{fstype}) {
-    if(can_run("mkfs.$option{fstype}")) {
+  if ( exists $option{fstype} ) {
+    if ( can_run("mkfs.$option{fstype}") ) {
       Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$lv_path");
       run "mkfs.$option{fstype} /dev/$lv_path";
     }
-    elsif($option{fstype} eq "swap") {
+    elsif ( $option{fstype} eq "swap" ) {
       Rex::Logger::info("Creating swap space on /dev/$lv_path");
       run "mkswap -f /dev/$lv_path";
     }
@@ -250,7 +259,7 @@ sub lvcreate {
     }
   }
 
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error creating lv.\n$s\n");
   }
 
@@ -258,11 +267,11 @@ sub lvcreate {
 }
 
 sub vgextend {
-  my ($vgname, @devices) = @_;
+  my ( $vgname, @devices ) = @_;
 
-  my $s = run "vgextend $vgname " . join(" ", @devices);
+  my $s = run "vgextend $vgname " . join( " ", @devices );
 
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error extending vg.\n$s\n");
   }
 
@@ -272,6 +281,5 @@ sub vgextend {
 =back
 
 =cut
-
 
 1;

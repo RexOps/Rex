@@ -25,17 +25,19 @@ use URI;
 use URI::QueryParam;
 use File::Spec;
 use File::Basename;
+require Rex;
 
 $Rex::Logger::silent = 1;
 
+my ($major_minor) = ($Rex::VERSION =~ m/^(\d*\.\d*)/);
 my $opts = {};
 
 ######
 # default server
-my $SEARCH_SERVER      = "http://modules.rexify.org/api/0.46/get/recipes";
-my $RECIPE_SERVER      = "http://modules.rexify.org/api/0.46/get/mod/%s";
-my $DEPEND_SERVER      = "http://modules.rexify.org/api/0.46/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/0.46/get/perldep/%s";
+my $SEARCH_SERVER      = "http://modules.rexify.org/api/$major_minor/get/recipes";
+my $RECIPE_SERVER      = "http://modules.rexify.org/api/$major_minor/get/mod/%s";
+my $DEPEND_SERVER      = "http://modules.rexify.org/api/$major_minor/get/dep/%s";
+my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/$major_minor/get/perldep/%s";
 
 my $AUTH_USER;
 my $AUTH_PASSWORD;
@@ -572,7 +574,7 @@ unless ( -f 'lib' . $ARGV[0] . '.pm' ) {
   print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
   print STDERR
-    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/krimdomu/Rex/issues\n\n";
+    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/RexOps/Rex/issues\n\n";
 }
 else {
 

@@ -1,34 +1,34 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::File::Parser::Ini;
-  
+
 use strict;
 use warnings;
 
 use Data::Dumper;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
 
 sub get {
-  my ($self, $section, $key) = @_;
+  my ( $self, $section, $key ) = @_;
 
-  unless(exists $self->{"__data"}->{$section}) {
+  unless ( exists $self->{"__data"}->{$section} ) {
     die("$section not found");
   }
 
-  unless(exists $self->{"__data"}->{$section}->{$key}) {
+  unless ( exists $self->{"__data"}->{$section}->{$key} ) {
     die("$key not found in $section");
   }
 
@@ -37,7 +37,7 @@ sub get {
 
 sub get_sections {
   my ($self) = @_;
-  return keys %{$self->{"__data"}};
+  return keys %{ $self->{"__data"} };
 }
 
 sub read {
@@ -51,20 +51,20 @@ sub _read_file {
   my $data = {};
 
   my $section;
-  open(my $fh, "<", $self->{"file"});
-  while(my $line = <$fh>) {
+  open( my $fh, "<", $self->{"file"} );
+  while ( my $line = <$fh> ) {
     chomp $line;
-    next if($line =~ m/^\s*?;/);
-    next if($line =~ m/^\s*?$/);
+    next if ( $line =~ m/^\s*?;/ );
+    next if ( $line =~ m/^\s*?$/ );
 
-    if($line =~ m/^\[(.+)\]$/) {
+    if ( $line =~ m/^\[(.+)\]$/ ) {
       $section = $1;
       $data->{$section} = {};
       next;
     }
 
-    if($section) {
-      my ($key, $val) = split(/=/, $line, 2);
+    if ($section) {
+      my ( $key, $val ) = split( /=/, $line, 2 );
       $val =~ s/^\s+|\s+$//g;
       $key =~ s/^\s+|\s+$//g;
 
@@ -76,5 +76,4 @@ sub _read_file {
   return $data;
 }
 
-  
 1;

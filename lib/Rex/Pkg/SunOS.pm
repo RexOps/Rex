@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -15,48 +15,20 @@ use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
 
-
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
+
+  $self->{commands} = {};
 
   return $self;
 }
 
-sub is_installed {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  i_run("pkginfo $pkg");
-
-  unless($? == 0) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-  
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ($self, $pkg, $option) = @_;
-
-  if($self->is_installed($pkg) && ! $option->{"version"}) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update($pkg, $option);
-
-  return 1;
-}
-
 sub update {
-  my ($self, $pkg, $option) = @_;
+  my ( $self, $pkg, $option ) = @_;
 
   my $version = $option->{'version'} || '';
 
@@ -65,43 +37,41 @@ sub update {
 
   my $cmd = "pkgadd ";
 
-  if(! exists $option->{"source"}) {
+  if ( !exists $option->{"source"} ) {
     die("You have to specify the source.");
   }
 
-  $cmd .= " -a " . $option->{"adminfile"} if($option->{"adminfile"});
-  $cmd .= " -r " . $option->{"responsefile"} if($option->{"responsefile"});
+  $cmd .= " -a " . $option->{"adminfile"}    if ( $option->{"adminfile"} );
+  $cmd .= " -r " . $option->{"responsefile"} if ( $option->{"responsefile"} );
 
   $cmd .= " -d " . $option->{"source"};
   $cmd .= " -n " . $pkg;
 
   my $f = i_run($cmd);
 
-  unless($? == 0) {
-    Rex::Logger::info("Error installing $pkg.", "warn");
+  unless ( $? == 0 ) {
+    Rex::Logger::info( "Error installing $pkg.", "warn" );
     Rex::Logger::debug($f);
     die("Error installing $pkg");
   }
 
   Rex::Logger::debug("$pkg successfully installed.");
 
-
   return 1;
 }
 
 sub remove {
-  my ($self, $pkg, $option) = @_;
-
+  my ( $self, $pkg, $option ) = @_;
 
   Rex::Logger::debug("Removing $pkg");
 
   my $cmd = "pkgrm -n ";
-  $cmd .= " -a " . $option->{"adminfile"} if($option->{"adminfile"});
+  $cmd .= " -a " . $option->{"adminfile"} if ( $option->{"adminfile"} );
 
-  my $f = i_run($cmd . " $pkg");
+  my $f = i_run( $cmd . " $pkg" );
 
-  unless($? == 0) {
-    Rex::Logger::info("Error removing $pkg.", "warn");
+  unless ( $? == 0 ) {
+    Rex::Logger::info( "Error removing $pkg.", "warn" );
     Rex::Logger::debug($f);
     die("Error removing $pkg");
   }
@@ -111,36 +81,34 @@ sub remove {
   return 1;
 }
 
-
 sub get_installed {
   my ($self) = @_;
 
   my @lines = i_run "pkginfo -l";
 
-  my (@pkg, %current);
+  my ( @pkg, %current );
 
   for my $line (@lines) {
-    if($line =~ m/^$/) {
-      push(@pkg, { %current });
+    if ( $line =~ m/^$/ ) {
+      push( @pkg, {%current} );
       next;
     }
 
-    if($line =~ m/PKGINST:\s+([^\s]+)/) {
+    if ( $line =~ m/PKGINST:\s+([^\s]+)/ ) {
       $current{"name"} = $1;
       next;
     }
 
-    if($line =~ m/VERSION:\s+([^\s]+)/) {
-      my ($version, $rev) = split(/,/, $1);
+    if ( $line =~ m/VERSION:\s+([^\s]+)/ ) {
+      my ( $version, $rev ) = split( /,/, $1 );
       $current{"version"} = $version;
-      $rev =~ s/^REV=// if($rev);
+      $rev =~ s/^REV=// if ($rev);
       $current{"revision"} = $rev;
       next;
     }
 
-
-    if($line =~ m/STATUS:\s+(.*?)$/) {
-      $current{"status"} = ($1 eq "completely installed"?"installed":$1);
+    if ( $line =~ m/STATUS:\s+(.*?)$/ ) {
+      $current{"status"} = ( $1 eq "completely installed" ? "installed" : $1 );
       next;
     }
 
@@ -148,21 +116,5 @@ sub get_installed {
 
   return @pkg;
 }
-
-sub update_pkg_db {
-  my ($self) = @_;
-  Rex::Logger::debug("Not supported under Solaris");
-}
-
-sub add_repository {
-  my ($self, %data) = @_;
-  Rex::Logger::debug("Not supported under Solaris");
-}
-
-sub rm_repository {
-  my ($self, $name) = @_;
-  Rex::Logger::debug("Not supported under Solaris");
-}
-
 
 1;

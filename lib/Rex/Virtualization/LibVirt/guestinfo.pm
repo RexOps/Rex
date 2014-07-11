@@ -26,7 +26,7 @@ sub execute {
   Rex::Logger::debug("Getting info of guest: $vmname");
 
   my $info = Rex::Virtualization::LibVirt::info->execute($vmname);
-  if($info->{State} eq "shut off") {
+  if ( $info->{State} eq "shut off" ) {
     return {};
   }
 

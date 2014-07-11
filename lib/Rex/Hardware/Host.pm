@@ -119,9 +119,9 @@ sub get_operating_system {
     return "Windows";
   }
 
-  if(is_file("/etc/system-release")) {
+  if ( is_file("/etc/system-release") ) {
     my $content = cat "/etc/system-release";
-    if($content =~ m/Amazon/sm) {
+    if ( $content =~ m/Amazon/sm ) {
       return "Amazon";
     }
   }

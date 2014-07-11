@@ -108,7 +108,7 @@ sub execute {
     }
   }
 
-  Rex::Logger::info("creating domain: \"$opts->{'name'}\"");
+  Rex::Logger::info("Creating domain: \"$opts->{'name'}\"");
 
   $parsed_template =~ s/[\n\r]//gms;
 
@@ -394,7 +394,7 @@ sub _set_network_defaults {
           type     => "pci",
           domain   => "0x0000",
           bus      => "0x00",
-          slot     => "0x" . sprintf('%02i', $slot),
+          slot     => "0x" . sprintf( '%02i', $slot ),
           function => "0x0",
         };
 
@@ -472,7 +472,7 @@ __DATA__
     <target port="0"/>
    </console>
    <input type="mouse" bus="ps2"/>
-   <graphics type="vnc" autoport="yes" listen="*"/>
+   <graphics type="vnc" autoport="yes" listen="0.0.0.0"/>
    <video>
     <model type="cirrus" vram="9216" heads="1"/>
     <address type="pci" domain="0x0000" bus="0x00" slot="0x02" function="0x0"/>

@@ -13,6 +13,7 @@ use FindBin;
 use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Cwd qw(getcwd);
+use List::Util qw(max);
 
 use Rex;
 use Rex::Config;
@@ -113,9 +114,10 @@ sub __run__ {
 
   Rex::Config->set_use_cache(1);
   if ( $opts{"c"} ) {
-  #  Rex::Config->set_use_cache(1);
-  # since 0.46 just a pseudo option
-  # cache is enabled by default
+
+    #  Rex::Config->set_use_cache(1);
+    # since 0.46 just a pseudo option
+    # cache is enabled by default
   }
   elsif ( $opts{"C"} ) {
     Rex::Config->set_use_cache(0);
@@ -193,7 +195,7 @@ FORCE_SERVER: {
       $::FORCE_SERVER = join( " ", split /\n|,|;/, $host_eval );
     }
     else {
-      Rex::Logger::info("you must give a valid command.");
+      Rex::Logger::info("You must give a valid command.");
     }
   }
 
@@ -466,8 +468,12 @@ CHECK_OVERWRITE: {
     if ( defined $ARGV[0] ) {
       @tasks = map { Rex::TaskList->create()->is_task($_) ? $_ : () } @ARGV;
     }
+    my $max_task_str = max map { length } @tasks;
     for my $task (@tasks) {
-      printf "  %-30s %s\n", $task, Rex::TaskList->create()->get_desc($task);
+      my $padding = $max_task_str - length($task);
+      print " $task  "
+        . ' ' x $padding . " "
+        . Rex::TaskList->create()->get_desc($task) . "\n";
       if ( $opts{'v'} ) {
         _print_color(
           "    Servers: "
@@ -485,9 +491,9 @@ CHECK_OVERWRITE: {
           "    " . join( " ", Rex::Batch->get_batch($batch) ) . "\n" );
       }
     }
-    _print_color( "Environments\n", "yellow" );
     my @envs = map { Rex::Commands->get_environment($_) }
       Rex::Commands->get_environments();
+    _print_color( "Environments\n", "yellow" ) if scalar @envs;
     for my $e (@envs) {
       printf "  %-30s %s\n", $e->{name}, $e->{description};
     }

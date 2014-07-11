@@ -1,9 +1,9 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Hook;
 
 use strict;
@@ -20,9 +20,9 @@ my $__hooks = {};
 sub register_function_hooks {
   my ($hooks) = @_;
 
-  for my $state (keys %{ $hooks }) {
-    for my $func (keys %{ $hooks->{$state} }) {
-      if(! exists $__hooks->{$state}->{$func}) {
+  for my $state ( keys %{$hooks} ) {
+    for my $func ( keys %{ $hooks->{$state} } ) {
+      if ( !exists $__hooks->{$state}->{$func} ) {
         $__hooks->{$state}->{$func} = [];
       }
 
@@ -32,15 +32,15 @@ sub register_function_hooks {
 }
 
 sub run_hook {
-  my ($command, $state, @args) = @_;
+  my ( $command, $state, @args ) = @_;
 
-  if(! exists $__hooks->{$state}->{$command}) {
+  if ( !exists $__hooks->{$state}->{$command} ) {
     return;
   }
 
   my $func_arr = $__hooks->{$state}->{$command};
 
-  for my $func (@{ $func_arr }) {
+  for my $func ( @{$func_arr} ) {
     @args = $func->(@args);
   }
 

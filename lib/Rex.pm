@@ -24,7 +24,7 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =item * IRC: irc.freenode.net #rex
 
-=item * Bug Tracker: L<https://github.com/krimdomu/Rex/issues>
+=item * Bug Tracker: L<https://github.com/RexOps/Rex/issues>
 
 =item * Twitter: L<http://twitter.com/jfried83>
 
@@ -34,12 +34,12 @@ You can find examples and howtos on L<http://rexify.org/>
 
  user "root";
  password "ch4ngem3";
- 
+
  desc "Show Unix version";
  task "uname", sub {
     say run "uname -a";
  };
- 
+
  bash# rex -H "server[01..10]" uname
 
 See L<Rex::Commands> for a list of all commands you can use.
@@ -70,7 +70,7 @@ use File::Basename;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.46.3";
+$VERSION = "0.47.99.1";
 my $cur_dir;
 
 BEGIN {
@@ -345,7 +345,7 @@ Use this function to create a connection if you use Rex as a library.
  use Rex;
  use Rex::Commands::Run;
  use Rex::Commands::Fs;
- 
+
  Rex::connect(
    server    => "remotehost",
    user      => "root",
@@ -353,11 +353,11 @@ Use this function to create a connection if you use Rex as a library.
    private_key => "/path/to/private/key/file",
    public_key  => "/path/to/public/key/file",
  );
- 
+
  if(is_file("/foo/bar")) {
    print "Do something...\n";
  }
- 
+
  my $output = run("uptime");
 
 =cut
@@ -541,8 +541,8 @@ sub import {
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
         Rex::Logger::debug("activating featureset >= 0.35");
-        $Rex::Commands::REGISTER_SUB_HASH_PARAMTER = 1;
-        $found_feature                             = 1;
+        $Rex::Commands::REGISTER_SUB_HASH_PARAMETER = 1;
+        $found_feature                              = 1;
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {
@@ -645,6 +645,18 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "verbose_run" ) {
+        Rex::Logger::debug("Enabling verbose_run feature");
+        Rex::Config->set_verbose_run(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "disable_taskname_warning" ) {
+        Rex::Logger::debug("Enabling disable_taskname_warning feature");
+        Rex::Config->set_disable_taskname_warning(1);
+        $found_feature = 1;
+      }
+
       if ( $found_feature == 0 ) {
         Rex::Logger::info(
           "You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.",
@@ -674,13 +686,19 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =over 4
 
+=item alex1line
+
 =item Alexandr Ciornii
 
 =item Anders Ossowicki
 
 =item Andrej Zverev
 
+=item bollwarm
+
 =item Boris Däppen
+
+=item Cameron Daniel
 
 =item Chris Steigmeier
 
@@ -710,11 +728,15 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Hiroaki Nakamura
 
+=item Ilya Evseev
+
 =item Jean Charles Passard
 
 =item Jean-Marie Renouard
 
 =item Jeen Lee
+
+=item Jens Berthold
 
 =item Jonathan Delgado
 
@@ -731,6 +753,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Laird Liu
 
 =item Mario Domgoergen
+
+=item Nathan Abu
 
 =item Naveed Massjouni
 

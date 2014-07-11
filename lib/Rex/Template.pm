@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -23,9 +23,7 @@ This is a simple template engine for configuration files.
 
 =cut
 
-
 package Rex::Template;
-
 
 use strict;
 use warnings;
@@ -38,19 +36,19 @@ our $DO_CHOMP = 0;
 our $BE_LOCAL = 1;
 
 sub function {
-  my ($class, $name, $code) = @_;
-  
+  my ( $class, $name, $code ) = @_;
+
   no strict 'refs';
   *{ $class . "::" . $name } = $code;
   use strict;
 }
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }
@@ -61,81 +59,84 @@ sub parse {
 
   my $vars = {};
 
-  if(ref($_[0]) eq "HASH") {
+  if ( ref( $_[0] ) eq "HASH" ) {
     $vars = shift;
   }
   else {
-    $vars = { @_ };
+    $vars = {@_};
   }
 
   my $new_data;
-  my $___r="";
+  my $___r = "";
 
   my $config_values = Rex::Config->get_all;
-  for my $key (keys %{ $config_values }) {
-    if(! exists $vars->{$key}) {
+  for my $key ( keys %{$config_values} ) {
+    if ( !exists $vars->{$key} ) {
       $vars->{$key} = $config_values->{$key};
     }
   }
 
   my $do_chomp = 0;
-  $new_data = join("\n", map {
-    my ($code, $type, $text) = ($_ =~ m/(\<%)*([+=])*(.+)%\>/s);
+  $new_data = join(
+    "\n",
+    map {
+      my ( $code, $type, $text ) = ( $_ =~ m/(\<%)*([+=])*(.+)%\>/s );
 
-    if($code) {
-      my $pcmd = substr($text, -1);
-      if($pcmd eq "-") {
-        $text = substr($text, 0, -1);
-        $do_chomp = 1;
+      if ($code) {
+        my $pcmd = substr( $text, -1 );
+        if ( $pcmd eq "-" ) {
+          $text = substr( $text, 0, -1 );
+          $do_chomp = 1;
+        }
+
+        my ( $var_type, $var_name ) = ( $text =~ m/([\$])::([a-zA-Z0-9_]+)/ );
+
+        if ( $var_name && !ref( $vars->{$var_name} ) && !$BE_LOCAL ) {
+          $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
+        }
+        elsif ( $var_name && !ref( $vars->{$var_name} ) && $BE_LOCAL ) {
+          $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1$2/g;
+        }
+        else {
+          $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
+        }
+
+        if ( $type && $type =~ m/^[+=]$/ ) {
+          $_ = "\$___r .= $text;";
+        }
+        else {
+          $_ = $text;
+        }
+
       }
 
-      my($var_type, $var_name) = ($text =~ m/([\$])::([a-zA-Z0-9_]+)/);
-
-      if($var_name && ! ref($vars->{$var_name}) && ! $BE_LOCAL) {
-        $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1\{\$$2\}/g;
-      }
-      elsif($var_name && ! ref($vars->{$var_name}) && $BE_LOCAL) {
-        $text =~ s/([\$])::([a-zA-Z0-9_]+)/$1$2/g;
-      }
       else {
-        $text =~ s/([\$])::([a-zA-Z0-9_]+)/\$$2/g;
+        if ( $DO_CHOMP || $do_chomp ) {
+          chomp $_;
+          $do_chomp = 0;
+        }
+        $_ = '$___r .= "' . _quote($_) . '";';
+
       }
 
-      if($type && $type =~ m/^[+=]$/) {
-        $_ = "\$___r .= $text;";
-      }
-      else {
-        $_ = $text;
-      }
-
-    } 
-    
-    else {
-      if($DO_CHOMP || $do_chomp) {
-        chomp $_;
-        $do_chomp = 0;
-      }
-      $_ = '$___r .= "' . _quote($_) . '";';
-
-
-    }
-
-  } split(/(\<%.*?%\>)/s, $data));
+    } split( /(\<%.*?%\>)/s, $data )
+  );
 
   eval {
     no strict 'refs';
     no strict 'vars';
 
-    for my $var (keys %{$vars}) {
+    for my $var ( keys %{$vars} ) {
       Rex::Logger::debug("Registering: $var");
-      unless(ref($vars->{$var})) {
+      unless ( ref( $vars->{$var} ) ) {
         $$var = \$vars->{$var};
-      } else {
+      }
+      else {
         $$var = $vars->{$var};
       }
     }
 
-    if($BE_LOCAL == 1) {
+    if ( $BE_LOCAL == 1 ) {
       my $var_data = '
       
       return sub {
@@ -145,11 +146,11 @@ sub parse {
       ';
 
       my @code_values;
-      for my $var (keys %{$vars}) {
+      for my $var ( keys %{$vars} ) {
         my $new_var = _normalize_var_name($var);
         Rex::Logger::debug("Registering local: $new_var");
         $var_data .= '$' . $new_var . ", \n";
-        push(@code_values, $vars->{$var});
+        push( @code_values, $vars->{$var} );
       }
 
       $var_data .= '$this_is_really_nothing) = @_;';
@@ -164,13 +165,13 @@ sub parse {
       Rex::Logger::debug("BE_LOCAL==1");
 
       my %args = Rex::Args->getopts;
-      if(defined $args{'d'} && $args{'d'} > 1) {
+      if ( defined $args{'d'} && $args{'d'} > 1 ) {
         Rex::Logger::debug($var_data);
       }
 
       my $tpl_code = eval($var_data);
 
-      if($@) {
+      if ($@) {
         Rex::Logger::info($@);
       }
 
@@ -180,27 +181,28 @@ sub parse {
     else {
       Rex::Logger::debug("BE_LOCAL==0");
       my %args = Rex::Args->getopts;
-      if(defined $args{'d'} && $args{'d'} > 1) {
+      if ( defined $args{'d'} && $args{'d'} > 1 ) {
         Rex::Logger::debug($new_data);
       }
 
       $___r = eval($new_data);
 
-      if($@) {
+      if ($@) {
         Rex::Logger::info($@);
       }
     }
 
     # undef the vars
-    for my $var (keys %{$vars}) {
+    for my $var ( keys %{$vars} ) {
       $$var = undef;
     }
 
   };
 
-  if(! $___r) {
-    Rex::Logger::info("It seems that there was an error processing the template", "warn");
-    Rex::Logger::info("because the result is empty.", "warn");
+  if ( !$___r ) {
+    Rex::Logger::info(
+      "It seems that there was an error processing the template", "warn" );
+    Rex::Logger::info( "because the result is empty.", "warn" );
     die("Error processing template");
   }
 
@@ -220,7 +222,7 @@ sub _quote {
 }
 
 sub _normalize_var_name {
-  my($input) = @_;
+  my ($input) = @_;
   $input =~ s/[^A-Za-z0-9_]/_/g;
   return $input;
 }
@@ -236,8 +238,8 @@ You can use this function inside your templates.
 =cut
 
 sub is_defined {
-  my ($check_var, $default) = @_;
-  if(defined $check_var) { return $check_var; }
+  my ( $check_var, $default ) = @_;
+  if ( defined $check_var ) { return $check_var; }
 
   return $default;
 }

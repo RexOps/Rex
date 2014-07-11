@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -19,56 +19,57 @@ use Rex::Virtualization::VBox::info;
 #
 
 sub execute {
-  my ($class, $arg1, $action, $option) = @_;
+  my ( $class, $arg1, $action, $option ) = @_;
 
-  unless($arg1) {
+  unless ($arg1) {
     die("You have to define the vm name!");
   }
 
   my $dom = $arg1;
 
-  unless($dom) {
+  unless ($dom) {
     die("VM $dom not found.");
   }
 
-  if($action eq "add") {
-    FOLDER: for my $folder (keys %{ $option }) {
+  if ( $action eq "add" ) {
+  FOLDER: for my $folder ( keys %{$option} ) {
       my $info = Rex::Virtualization::VBox::info->execute($dom);
-      my @keys = grep { m/^SharedFolderNameMachineMapping/ } keys %{ $info };
+      my @keys = grep { m/^SharedFolderNameMachineMapping/ } keys %{$info};
       for my $k (@keys) {
-        if($info->{$k} eq $folder) {
+        if ( $info->{$k} eq $folder ) {
+
           # folder already mapped
           next FOLDER;
         }
       }
 
       my $from_path = $option->{$folder};
-      i_run "VBoxManage sharedfolder add \"$dom\" --name \"$folder\" --automount --hostpath \"$from_path\"";
+      i_run
+        "VBoxManage sharedfolder add \"$dom\" --name \"$folder\" --automount --hostpath \"$from_path\"";
     }
   }
   else {
-    if($option ne "-all") {
+    if ( $option ne "-all" ) {
       i_run "VBoxManage sharedfolder remove \"$dom\" --name \"$option\"";
     }
     else {
       # if no name is given, remove all redirects
       # output: SharedFolderNameMachineMapping1
       my $info = Rex::Virtualization::VBox::info->execute($dom);
-      my @keys = grep { m/^SharedFolderNameMachineMapping/ } keys %{ $info };
+      my @keys = grep { m/^SharedFolderNameMachineMapping/ } keys %{$info};
 
       for my $k (@keys) {
         i_run "VBoxManage sharedfolder delete \"$dom\" --name \"$info->{$k}\"";
       }
     }
-    
+
   }
 
-  if($? != 0) {
+  if ( $? != 0 ) {
     die("Error setting folder shares for vm $dom");
   }
 
 }
 
 1;
-
 

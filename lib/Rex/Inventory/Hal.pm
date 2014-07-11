@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -18,11 +18,11 @@ use strict;
 use warnings;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   $self->_read_lshal();
 
@@ -33,11 +33,11 @@ sub new {
 # like net or storage
 sub get_devices_of {
 
-  my ($self, $cat, $rex_class) = @_;
+  my ( $self, $cat, $rex_class ) = @_;
   my @ret;
 
-  for my $dev (keys %{ $self->{'__hal'}->{$cat} }) {
-    push( @ret, $self->get_object_by_cat_and_udi($cat, $dev, $rex_class));
+  for my $dev ( keys %{ $self->{'__hal'}->{$cat} } ) {
+    push( @ret, $self->get_object_by_cat_and_udi( $cat, $dev, $rex_class ) );
   }
 
   return @ret;
@@ -57,12 +57,15 @@ sub get_storage_devices {
   my ($self) = @_;
   my $os = get_operating_system();
 
-  if($os =~ m/BSD/) {
-    return grep { ! $_->is_cdrom && ! $_->is_volume && ! $_->is_floppy } $self->get_devices_of('block', 'storage');
+  if ( $os =~ m/BSD/ ) {
+    return
+      grep { !$_->is_cdrom && !$_->is_volume && !$_->is_floppy }
+      $self->get_devices_of( 'block', 'storage' );
   }
   else {
     # default linux
-    return grep { ! $_->is_cdrom && ! $_->is_floppy } $self->get_devices_of('storage');
+    return
+      grep { !$_->is_cdrom && !$_->is_floppy } $self->get_devices_of('storage');
   }
 
 }
@@ -74,8 +77,10 @@ sub get_storage_volumes {
 
   my $os = get_operating_system();
 
-  if($os =~ m/BSD/) {
-    return grep { ! $_->is_cdrom && $_->is_volume && ! $_->is_floppy } $self->get_devices_of('block', 'volume');
+  if ( $os =~ m/BSD/ ) {
+    return
+      grep { !$_->is_cdrom && $_->is_volume && !$_->is_floppy }
+      $self->get_devices_of( 'block', 'volume' );
   }
   else {
     # default linux
@@ -86,28 +91,30 @@ sub get_storage_volumes {
 
 # get a hal object from category and udi
 sub get_object_by_cat_and_udi {
-  my ($self, $cat, $udi, $rex_class) = @_;
+  my ( $self, $cat, $udi, $rex_class ) = @_;
 
   $rex_class ||= $cat;
 
   my $class_name = "Rex::Inventory::Hal::Object::\u$rex_class";
   eval "use $class_name";
-  if($@) {
-    Rex::Logger::debug("This Hal Object isn't supported yet. Falling back to Base Object.");
+  if ($@) {
+    Rex::Logger::debug(
+      "This Hal Object isn't supported yet. Falling back to Base Object.");
     $class_name = "Rex::Inventory::Hal::Object";
   }
 
-  return $class_name->new(%{$self->{'__hal'}->{$cat}->{$udi}}, hal => $self);
+  return $class_name->new( %{ $self->{'__hal'}->{$cat}->{$udi} },
+    hal => $self );
 }
 
 # get object by udi
 sub get_object_by_udi {
-  my ($self, $udi) = @_;
+  my ( $self, $udi ) = @_;
 
-  for my $cat (keys %{$self->{'__hal'}}) {
-    for my $dev (keys %{$self->{'__hal'}->{$cat}}) {
-      if($dev eq $udi) {
-        return $self->get_object_by_cat_and_udi($cat, $dev);
+  for my $cat ( keys %{ $self->{'__hal'} } ) {
+    for my $dev ( keys %{ $self->{'__hal'}->{$cat} } ) {
+      if ( $dev eq $udi ) {
+        return $self->get_object_by_cat_and_udi( $cat, $dev );
       }
     }
   }
@@ -119,7 +126,7 @@ sub _read_lshal {
 
   my ($self) = @_;
 
-  unless(can_run "lshal") {
+  unless ( can_run "lshal" ) {
     Rex::Logger::info("No lshal available");
     die;
   }
@@ -128,30 +135,30 @@ sub _read_lshal {
   my %devices;
   my %tmp_devices;
 
-  my $in_dev= 0;
+  my $in_dev = 0;
   my %data;
   my $dev_name;
 
   for my $l (@lines) {
     chomp $l;
 
-    if($l =~ m/^udi = '(.*?)'/) {
-      $in_dev = 1;
+    if ( $l =~ m/^udi = '(.*?)'/ ) {
+      $in_dev   = 1;
       $dev_name = $1;
     }
 
-    if($l =~ m/^$/) {
+    if ( $l =~ m/^$/ ) {
       $in_dev = 0;
       unless ($dev_name) {
         %data = ();
         next;
       }
-      $tmp_devices{$dev_name} = { %data };
+      $tmp_devices{$dev_name} = {%data};
       %data = ();
     }
 
-    if($in_dev) {
-      my ($key, $val) = split(/ = /, $l, 2);
+    if ($in_dev) {
+      my ( $key, $val ) = split( / = /, $l, 2 );
       $key =~ s/^\s+//;
       $key =~ s/^'|'$//g;
       $val =~ s/\(.*?\)$//;
@@ -163,22 +170,23 @@ sub _read_lshal {
 
   }
 
+  for my $dev ( keys %tmp_devices ) {
 
-  for my $dev (keys %tmp_devices) {
-
-    my $s_key = $tmp_devices{$dev}->{"info.subsystem"} || $tmp_devices{$dev}->{"linux.subsystem"};
+    my $s_key = $tmp_devices{$dev}->{"info.subsystem"}
+      || $tmp_devices{$dev}->{"linux.subsystem"};
     $s_key ||= $tmp_devices{$dev}->{"info.category"};
 
-    if(! $s_key) {
+    if ( !$s_key ) {
+
       #print Dumper($tmp_devices{$dev});
       next;
     }
 
-    if($s_key =~ m/\./) {
-      ($s_key) = split(/\./, $s_key);
+    if ( $s_key =~ m/\./ ) {
+      ($s_key) = split( /\./, $s_key );
     }
 
-    if(! exists $devices{$s_key}) {
+    if ( !exists $devices{$s_key} ) {
       $devices{$s_key} = {};
     }
 
@@ -192,15 +200,15 @@ sub _read_lshal {
 
 sub _parse_hal_string {
 
-  my ($self, $line) = @_;
+  my ( $self, $line ) = @_;
 
-  if($line =~ m/^\{.*\}$/) {
+  if ( $line =~ m/^\{.*\}$/ ) {
     $line =~ s/^\{/[/;
     $line =~ s/\}$/]/;
 
     return eval $line;
   }
-  
+
   return $line;
 
 }

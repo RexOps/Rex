@@ -25,7 +25,6 @@ All these functions will not be reported. These functions don't change things.
 
 =cut
 
-
 package Rex::Commands::Gather;
 
 use strict;
@@ -45,9 +44,9 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory
-          get_operating_system operating_system operating_system_version operating_system_release
-          is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora
-          get_system_information dump_system_information);
+  get_operating_system operating_system operating_system_version operating_system_release
+  is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora
+  get_system_information dump_system_information);
 
 =item get_operating_system
 
@@ -76,6 +75,7 @@ sub operating_system {
 Will return a hash of all system information. These Information will be also used by the template function.
 
 =cut
+
 sub get_system_information {
   return Rex::Helper::System::info();
 }
@@ -85,14 +85,14 @@ sub get_system_information {
 This function dumps all known system information on stdout.
 
 =cut
+
 sub dump_system_information {
   my ($info) = @_;
   my %sys_info = get_system_information();
 
-  inspect(\%sys_info, { prepend_key => '$', key_value_sep => " = ", no_root => 1 });
+  inspect( \%sys_info,
+    { prepend_key => '$', key_value_sep => " = ", no_root => 1 } );
 }
-
-
 
 =item operating_system_is($string)
 
@@ -112,7 +112,7 @@ sub operating_system_is {
 
   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-  if($operatingsystem eq $os) {
+  if ( $operatingsystem eq $os ) {
     return 1;
   }
 
@@ -186,7 +186,7 @@ Return an HashRef of all memory information.
 
  task "get_memory_information", "server01", sub {
    my $memory = memory();
- 
+
    say "Total:  " . $memory->{"total"};
    say "Free:   " . $memory->{"free"};
    say "Used:   " . $memory->{"used"};
@@ -218,9 +218,10 @@ Returns true if the target system is a FreeBSD.
  };
 
 =cut
+
 sub is_freebsd {
   my $os = @_ ? shift : get_operating_system();
-  if($os =~ m/FreeBSD/i) {
+  if ( $os =~ m/FreeBSD/i ) {
     return 1;
   }
 }
@@ -234,12 +235,18 @@ sub is_freebsd {
  };
 
 =cut
+
 sub is_redhat {
   my $os = @_ ? shift : get_operating_system();
 
-  my @redhat_clones = ("Fedora", "Redhat", "CentOS", "Scientific", "RedHatEnterpriseServer" ,"RedHatEnterpriseES", "RedHatEnterpriseWorkstation", "Amazon");
+  my @redhat_clones = (
+    "Fedora",                      "Redhat",
+    "CentOS",                      "Scientific",
+    "RedHatEnterpriseServer",      "RedHatEnterpriseES",
+    "RedHatEnterpriseWorkstation", "Amazon"
+  );
 
-  if(grep { /$os/i } @redhat_clones) {
+  if ( grep { /$os/i } @redhat_clones ) {
     return 1;
   }
 }
@@ -253,12 +260,13 @@ sub is_redhat {
  };
 
 =cut
+
 sub is_fedora {
   my $os = @_ ? shift : get_operating_system();
 
   my @fedora_clones = ("Fedora");
 
-  if(grep { /$os/i } @fedora_clones) {
+  if ( grep { /$os/i } @fedora_clones ) {
     return 1;
   }
 }
@@ -272,12 +280,13 @@ sub is_fedora {
  };
 
 =cut
+
 sub is_suse {
   my $os = @_ ? shift : get_operating_system();
 
-  my @suse_clones = ("OpenSuSE", "SuSE", "openSUSE project");
+  my @suse_clones = ( "OpenSuSE", "SuSE", "openSUSE project" );
 
-  if(grep { /$os/i } @suse_clones) {
+  if ( grep { /$os/i } @suse_clones ) {
     return 1;
   }
 }
@@ -291,14 +300,14 @@ sub is_suse {
  };
 
 =cut
+
 sub is_mageia {
   my $os = @_ ? shift : get_operating_system();
 
-  if($os =~ m/mageia/i) {
+  if ( $os =~ m/mageia/i ) {
     return 1;
   }
 }
-
 
 =item is_debian
 
@@ -309,12 +318,13 @@ sub is_mageia {
  };
 
 =cut
+
 sub is_debian {
   my $os = @_ ? shift : get_operating_system();
 
-  my @debian_clones = ("Debian", "Ubuntu");
+  my @debian_clones = ( "Debian", "Ubuntu" );
 
-  if(grep { /$os/i } @debian_clones) {
+  if ( grep { /$os/i } @debian_clones ) {
     return 1;
   }
 }
@@ -328,16 +338,16 @@ sub is_debian {
  };
 
 =cut
+
 sub is_alt {
   my $os = @_ ? shift : get_operating_system();
 
   my @alt_clones = ("ALT");
 
-  if(grep { /$os/i } @alt_clones) {
+  if ( grep { /$os/i } @alt_clones ) {
     return 1;
   }
 }
-
 
 =item is_netbsd
 
@@ -353,9 +363,10 @@ Returns true if the target system is a NetBSD.
  };
 
 =cut
+
 sub is_netbsd {
   my $os = @_ ? shift : get_operating_system();
-  if($os =~ m/NetBSD/i) {
+  if ( $os =~ m/NetBSD/i ) {
     return 1;
   }
 }
@@ -374,9 +385,10 @@ Returns true if the target system is an OpenBSD.
  };
 
 =cut
+
 sub is_openbsd {
   my $os = @_ ? shift : get_operating_system();
-  if($os =~ m/OpenBSD/i) {
+  if ( $os =~ m/OpenBSD/i ) {
     return 1;
   }
 }
@@ -395,10 +407,14 @@ Returns true if the target system is a Linux System.
  };
 
 =cut
+
 sub is_linux {
 
   my $host = Rex::Hardware::Host->get();
-  if(exists $host->{kernelname} && $host->{kernelname} && $host->{kernelname} =~ m/Linux/) {
+  if ( exists $host->{kernelname}
+    && $host->{kernelname}
+    && $host->{kernelname} =~ m/Linux/ )
+  {
     return 1;
   }
 }
@@ -417,10 +433,11 @@ Returns true if the target system is a BSD System.
  };
 
 =cut
+
 sub is_bsd {
 
   my $host = Rex::Hardware::Host->get();
-  if($host->{"kernelname"} =~ m/BSD/) {
+  if ( $host->{"kernelname"} =~ m/BSD/ ) {
     return 1;
   }
 }
@@ -439,10 +456,14 @@ Returns true if the target system is a Solaris System.
  };
 
 =cut
+
 sub is_solaris {
 
   my $host = Rex::Hardware::Host->get();
-  if(exists $host->{kernelname} && $host->{kernelname} && $host->{"kernelname"} =~ m/SunOS/) {
+  if ( exists $host->{kernelname}
+    && $host->{kernelname}
+    && $host->{"kernelname"} =~ m/SunOS/ )
+  {
     return 1;
   }
 }
@@ -452,10 +473,13 @@ sub is_solaris {
 Returns true if the target system is a Windows System.
 
 =cut
+
 sub is_windows {
 
   my $host = Rex::Hardware::Host->get();
-  if($host->{"operatingsystem"} =~ m/^MSWin/ || $host->{operatingsystem} eq "Windows") {
+  if ( $host->{"operatingsystem"} =~ m/^MSWin/
+    || $host->{operatingsystem} eq "Windows" )
+  {
     return 1;
   }
 
@@ -466,9 +490,10 @@ sub is_windows {
 Returns true if the target system is an OpenWrt System.
 
 =cut
+
 sub is_openwrt {
   my $os = get_operating_system();
-  if($os =~ m/OpenWrt/i) {
+  if ( $os =~ m/OpenWrt/i ) {
     return 1;
   }
 
@@ -479,9 +504,10 @@ sub is_openwrt {
 Returns true if the target system is a Gentoo System.
 
 =cut
+
 sub is_gentoo {
   my $os = get_operating_system();
-  if($os =~ m/Gentoo/i) {
+  if ( $os =~ m/Gentoo/i ) {
     return 1;
   }
 

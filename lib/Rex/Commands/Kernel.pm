@@ -28,7 +28,6 @@ All these functions are not idempotent.
 
 =cut
 
-
 package Rex::Commands::Kernel;
 
 use strict;
@@ -69,72 +68,73 @@ If you're using NetBSD or OpenBSD you have to specify the complete path and, if 
 =cut
 
 sub kmod {
-  my ($action, $module, @rest) = @_;
+  my ( $action, $module, @rest ) = @_;
 
-  my $options = { @_ };
+  my $options = {@_};
 
   my $os = get_operating_system();
 
-  my $load_command = "modprobe";
+  my $load_command   = "modprobe";
   my $unload_command = "rmmod";
 
-  if($os eq "FreeBSD") {
-    $load_command = "kldload";
+  if ( $os eq "FreeBSD" ) {
+    $load_command   = "kldload";
     $unload_command = "kldunload";
   }
-  elsif($os eq "NetBSD" || $os eq "OpenBSD") {
-    $load_command = "modload";
+  elsif ( $os eq "NetBSD" || $os eq "OpenBSD" ) {
+    $load_command   = "modload";
     $unload_command = "modunload";
 
-    if($options->{"entry"}) {
+    if ( $options->{"entry"} ) {
       $load_command .= " -e " . $options->{"entry"};
     }
-  } elsif($os eq "SunOS") {
+  }
+  elsif ( $os eq "SunOS" ) {
     $load_command = "modload -p ";
 
-    if($options->{"exec_file"}) {
+    if ( $options->{"exec_file"} ) {
       $load_command .= " -e " . $options->{"exec_file"} . " ";
     }
 
     $unload_command = sub {
-      my @mod_split = split(/\//, $module);
+      my @mod_split = split( /\//, $module );
       my $mod = $mod_split[-1];
 
-      my ($mod_id) = grep { $_=$1 if $_ =~ qr{(\d+).*$mod} } run "modinfo";
+      my ($mod_id) = grep { $_ = $1 if $_ =~ qr{(\d+).*$mod} } run "modinfo";
       my $cmd = "modunload -i $mod_id";
 
-      if($options->{"exec_file"}) {
+      if ( $options->{"exec_file"} ) {
         $cmd .= " -e " . $options->{"exec_file"};
       }
 
       return $cmd;
     };
-  } elsif($os eq "OpenWrt") {
+  }
+  elsif ( $os eq "OpenWrt" ) {
     $load_command = "insmod";
   }
 
-
-  if($action eq "load") {
+  if ( $action eq "load" ) {
     Rex::Logger::debug("Loading Kernel Module: $module");
     run "$load_command $module";
-    unless($? == 0) {
-      Rex::Logger::info("Error loading Kernel Module: $module", "warn");
+    unless ( $? == 0 ) {
+      Rex::Logger::info( "Error loading Kernel Module: $module", "warn" );
       die("Error loading Kernel Module: $module");
     }
     else {
       Rex::Logger::debug("Kernel Module $module loaded.");
     }
   }
-  elsif($action eq "unload") {
+  elsif ( $action eq "unload" ) {
     Rex::Logger::debug("Unloading Kernel Module: $module");
     my $unload_command_str = $unload_command;
-    if(ref($unload_command) eq "CODE") {
+    if ( ref($unload_command) eq "CODE" ) {
       $unload_command_str = &$unload_command();
     }
 
     run "$unload_command_str $module";
-    unless($? == 0) {
-      Rex::Logger::info("Error unloading Kernel Module: $module", "warn");
+    unless ( $? == 0 ) {
+      Rex::Logger::info( "Error unloading Kernel Module: $module", "warn" );
       die("Error unloading Kernel Module: $module");
     }
     else {

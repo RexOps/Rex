@@ -55,7 +55,7 @@ sub execute {
 
   for my $line ( @{ $xml->{'capabilities'}->{'guest'} } ) {
 
-    next if ($line->{'arch'}->{'name'} ne "x86_64");
+    next if ( $line->{'arch'}->{'name'} ne "x86_64" );
 
     $ret{ $line->{'arch'}->{'name'} } = 'true'
       if defined( $line->{'arch'}->{'name'} );

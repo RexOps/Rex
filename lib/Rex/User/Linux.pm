@@ -156,9 +156,7 @@ sub create_user {
 
   my $old_pw_md5 = md5("/etc/passwd");
   my $old_sh_md5 = "";
-  eval {
-    $old_sh_md5 = md5("/etc/shadow");
-  };
+  eval { $old_sh_md5 = md5("/etc/shadow"); };
 
   # only run the cmd if needed
   if ($run_cmd) {
@@ -215,10 +213,7 @@ sub create_user {
 
   my $new_pw_md5 = md5("/etc/passwd");
   my $new_sh_md5 = "";
-  eval {
-    $new_sh_md5 = md5("/etc/shadow");
-  };
-
+  eval { $new_sh_md5 = md5("/etc/shadow"); };
 
   if ( $new_pw_md5 eq $old_pw_md5 && $new_sh_md5 eq $old_sh_md5 ) {
     return {

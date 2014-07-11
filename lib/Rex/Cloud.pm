@@ -1,26 +1,26 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
-  
+
 package Rex::Cloud;
-  
+
 use strict;
 use warnings;
-  
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Logger;
-   
+
 @EXPORT = qw(get_cloud_service);
 
 my %CLOUD_SERVICE;
 
 sub register_cloud_service {
-  my ($class, $service_name, $service_class) = @_;
+  my ( $class, $service_name, $service_class ) = @_;
   $CLOUD_SERVICE{"\L$service_name"} = $service_class;
   return 1;
 }
@@ -34,7 +34,7 @@ sub get_cloud_service {
 
   my ($service) = @_;
 
-  if(exists $CLOUD_SERVICE{"\L$service"}) {
+  if ( exists $CLOUD_SERVICE{"\L$service"} ) {
     eval "use " . $CLOUD_SERVICE{"\L$service"};
 
     my $mod = $CLOUD_SERVICE{"\L$service"};
@@ -43,7 +43,7 @@ sub get_cloud_service {
   else {
     eval "use Rex::Cloud::$service";
 
-    if($@) {
+    if ($@) {
       Rex::Logger::info("Cloud Service $service not supported.");
       Rex::Logger::info($@);
       return 0;
@@ -53,8 +53,6 @@ sub get_cloud_service {
     return $mod->new;
   }
 
-  
-
 }
-  
+
 1;

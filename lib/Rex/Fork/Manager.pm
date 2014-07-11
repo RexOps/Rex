@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -12,29 +12,29 @@ use warnings;
 use Rex::Fork::Task;
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
-  $self->{'forks'}  = [];
+  $self->{'forks'}   = [];
   $self->{'running'} = 0;
 
   return $self;
 }
 
 sub add {
-  my ($self, $task, $start) = @_;
-  my $f = Rex::Fork::Task->new(task => $task);
+  my ( $self, $task, $start ) = @_;
+  my $f = Rex::Fork::Task->new( task => $task );
 
-  push(@{$self->{'forks'}}, $f);
+  push( @{ $self->{'forks'} }, $f );
 
-  if($start) {
+  if ($start) {
     $f->start;
     ++$self->{'running'};
 
-    if($self->{'running'} >= $self->{'max'}) {
+    if ( $self->{'running'} >= $self->{'max'} ) {
       $self->wait_for_one;
     }
   }
@@ -43,11 +43,11 @@ sub add {
 sub start {
   my ($self) = @_;
 
-  my @threads = @{$self->{'forks'}};
-  for (my $i = 0; $i < scalar(@threads); ++$i) {
+  my @threads = @{ $self->{'forks'} };
+  for ( my $i = 0 ; $i < scalar(@threads) ; ++$i ) {
     $threads[$i]->start;
     ++$self->{'running'};
-    if($self->{'running'} >= $self->{'max'}) {
+    if ( $self->{'running'} >= $self->{'max'} ) {
       $self->wait_for_one;
     }
   }
@@ -66,18 +66,18 @@ sub wait_for_all {
 }
 
 sub wait_for {
-  my ($self, $all) = @_;
+  my ( $self, $all ) = @_;
   do {
-    for( my $i = 0; $i < scalar(@{$self->{'forks'}}); $i++) {
+    for ( my $i = 0 ; $i < scalar( @{ $self->{'forks'} } ) ; $i++ ) {
       my $thr = $self->{'forks'}->[$i];
-      unless ($thr->{'running'}) {
+      unless ( $thr->{'running'} ) {
         next;
       }
 
       my $kid;
       $kid = $thr->wait;
 
-      if($kid == -1) {
+      if ( $kid == -1 ) {
         $thr = undef;
         $thr->{running} = 0;
         --$self->{'running'};

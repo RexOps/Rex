@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -17,49 +17,56 @@ use Rex::Hardware::Host;
 use Rex::Logger;
 
 my %SERVICE_PROVIDER;
+
 sub register_service_provider {
-  my ($class, $service_name, $service_class) = @_;
+  my ( $class, $service_name, $service_class ) = @_;
   $SERVICE_PROVIDER{"\L$service_name"} = $service_class;
   return 1;
 }
 
 sub get {
 
-  my $operatingsystem = Rex::Hardware::Host->get_operating_system();
+  my $operatingsystem   = Rex::Hardware::Host->get_operating_system();
   my $can_run_systemctl = can_run("systemctl");
   my $class;
 
   $class = "Rex::Service::" . $operatingsystem;
-  if(is_redhat($operatingsystem) && $can_run_systemctl) {
+  if ( is_redhat($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Redhat::systemd";
-  } elsif (is_redhat($operatingsystem)) {
+  }
+  elsif ( is_redhat($operatingsystem) ) {
+
     # this also counts for fedora, centos, ...
     $class = "Rex::Service::Redhat";
-  } elsif(is_suse($operatingsystem) && $can_run_systemctl) {
+  }
+  elsif ( is_suse($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::SuSE::systemd";
-  } elsif (is_alt($operatingsystem) && $can_run_systemctl) {
+  }
+  elsif ( is_alt($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::ALT::systemd";
-  } elsif (is_gentoo($operatingsystem) && $can_run_systemctl) {
+  }
+  elsif ( is_gentoo($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Gentoo::systemd";
-  } elsif (is_mageia($operatingsystem) && $can_run_systemctl) {
+  }
+  elsif ( is_mageia($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Mageia::systemd";
   }
 
   my $provider_for = Rex::Config->get("service_provider") || {};
   my $provider;
 
-  if(ref($provider_for) && exists $provider_for->{$operatingsystem}) {
+  if ( ref($provider_for) && exists $provider_for->{$operatingsystem} ) {
     $provider = $provider_for->{$operatingsystem};
     $class .= "::\L$provider";
   }
-  elsif(exists $SERVICE_PROVIDER{$provider_for}) {
+  elsif ( exists $SERVICE_PROVIDER{$provider_for} ) {
     $class = $SERVICE_PROVIDER{$provider_for};
   }
 
   Rex::Logger::debug("service using class: $class");
   eval "use $class";
 
-  if($@) {
+  if ($@) {
 
     Rex::Logger::info("OS ($operatingsystem) not supported");
     exit 1;

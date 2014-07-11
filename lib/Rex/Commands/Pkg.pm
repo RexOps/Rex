@@ -17,7 +17,7 @@ With this module you can install packages and files.
  install file => "/etc/passwd", {
               source => "/export/files/etc/passwd"
             };
- 
+
  install package => "perl";
 
 =head1 EXPORTED FUNCTIONS
@@ -65,16 +65,16 @@ Use this resource to install or update a package. This resource will generate re
  pkg "httpd",
    ensure    => "latest",    # ensure that the newest version is installed (auto-update)
    on_change => sub { say "package was installed/updated"; };
- 
+
  pkg "httpd",
    ensure => "absent";    # remove the package
- 
+
  pkg "httpd",
    ensure => "present";   # ensure that some version is installed (no auto-update)
- 
+
  pkg "httpd",
    ensure => "2.4.6";    # ensure that version 2.4.6 is installed
- 
+
  pkg "apache-server",    # with a custom resource name
    package => "httpd",
    ensure  => "present";
@@ -86,7 +86,7 @@ sub pkg {
 
   my $package = $res_package;
 
-  if(exists $option{package}) {
+  if ( exists $option{package} ) {
     $package = $option{package};
   }
 
@@ -162,7 +162,7 @@ If you need reports, please use the pkg() resource.
 
  task "prepare", "server01", sub {
    install package => "perl";
- 
+
    # or if you have to install more packages.
    install package => [
                   "perl",
@@ -187,7 +187,7 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
               };
  };
 
-=item installing a file and do somthing if the file was changed.
+=item installing a file and do something if the file was changed.
 
  task "prepare", "server01", sub {
    install file => "/etc/httpd/apache2.conf", {
@@ -501,6 +501,7 @@ sub remove {
       if ( $pkg->is_installed($_pkg) ) {
         Rex::Logger::info("Removing $_pkg.");
         $pkg->remove( $_pkg, $option );
+        $pkg->purge( $_pkg, $option );
       }
       else {
         Rex::Logger::info("$_pkg is not installed.");
@@ -522,7 +523,7 @@ sub remove {
 
 =item update_system
 
-This function do a complete system update.
+This function does a complete system update.
 
 For example I<apt-get upgrade> or I<yum update>.
 
@@ -534,9 +535,8 @@ For example I<apt-get upgrade> or I<yum update>.
 
 sub update_system {
   my $pkg = Rex::Pkg->get;
-  eval { $pkg->update_system; } or do {
-    Rex::Logger::info("An error occured for update_system: $@", "warn");
-  };
+  eval { $pkg->update_system; };
+  Rex::Logger::info( "An error occured for update_system: $@", "warn" ) if $@;
 }
 
 =item installed_packages
@@ -544,12 +544,12 @@ sub update_system {
 This function returns all installed packages and their version.
 
  task "get-installed", "server1", sub {
- 
+
     for my $pkg (installed_packages()) {
       say "name    : " . $pkg->{"name"};
       say "  version: " . $pkg->{"version"};
     }
- 
+
  };
 
 =cut
@@ -625,7 +625,7 @@ For CentOS, Mageia and SuSE only the name and the url are needed.
  task "add-repo", "server1", "server2", sub {
    repository add => "repository-name",
       url => 'http://rex.linux-files.org/CentOS/$releasever/rex/$basearch/';
- 
+
  };
 
 To remove a repository just delete it with its name.
@@ -704,10 +704,10 @@ sub repository {
 To set an other package provider as the default, use this function.
 
  user "root";
- 
+
  group "db" => "db[01..10]";
  package_provider_for SunOS => "blastwave";
- 
+
  task "prepare", group => "db", sub {
     install package => "vim";
  };

@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -13,19 +13,23 @@ use Rex::Inventory::SMBios::Section;
 use Rex::Logger;
 use base qw(Rex::Inventory::SMBios::Section);
 
-
 __PACKAGE__->section("processor");
 
-__PACKAGE__->has([ { key => 'Max Speed', from => "Maximum Speed" }, 
-             'Family',
-             { key => 'Status', from => "Processor Status" },], 1);  # is_array 1
+__PACKAGE__->has(
+  [
+    { key => 'Max Speed', from => "Maximum Speed" },
+    'Family',
+    { key => 'Status', from => "Processor Status" },
+  ],
+  1
+);    # is_array 1
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = $that->SUPER::new(@_);
+  my $self  = $that->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }

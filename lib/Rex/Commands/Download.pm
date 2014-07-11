@@ -180,9 +180,9 @@ sub _get_http {
   }
   elsif ($has_lwp) {
     Rex::Logger::debug("Downloading via LWP::UserAgent");
-    my $ua =  Rex::Helper::UserAgent->new;
-    my $resp = $ua->get($url, %option);
-    if($resp->is_success) {
+    my $ua = Rex::Helper::UserAgent->new;
+    my $resp = $ua->get( $url, %option );
+    if ( $resp->is_success ) {
       $html = $resp->content;
     }
     else {

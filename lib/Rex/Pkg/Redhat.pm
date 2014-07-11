@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -16,89 +16,32 @@ use Rex::Commands::Fs;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
 
-
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = $proto->SUPER::new(@_);
 
-  bless($self, $proto);
+  bless( $self, $proto );
+
+  $self->{commands} = {
+    install           => $self->_yum('-y install %s'),
+    install_version   => $self->_yum('-y install %s-%s'),
+    update_system     => $self->_yum("-y upgrade"),
+    remove            => $self->_yum('-y erase %s'),
+    update_package_db => $self->_yum("clean all") . " ; "
+      . $self->_yum("makecache"),
+  };
 
   return $self;
 }
 
-sub is_installed {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Checking if $pkg is installed");
-
-  i_run("rpm -ql $pkg");
-
-  unless($? == 0) {
-    Rex::Logger::debug("$pkg is NOT installed.");
-    return 0;
-  }
-  
-  Rex::Logger::debug("$pkg is installed.");
-  return 1;
-}
-
-sub install {
-  my ($self, $pkg, $option) = @_;
-
-  if($self->is_installed($pkg) && ! $option->{"version"}) {
-    Rex::Logger::info("$pkg is already installed");
-    return 1;
-  }
-
-  $self->update($pkg, $option);
-
-  return 1;
-}
-
 sub bulk_install {
-  my ($self, $packages_aref, $option) = @_;
-  
-  delete $option->{version}; # makes no sense to specify the same version for several packages
-   
-  $self->update("@{$packages_aref}", $option);
-  
-  return 1;
-}
+  my ( $self, $packages_aref, $option ) = @_;
 
-sub update {
-  my ($self, $pkg, $option) = @_;
+  delete $option->{version}
+    ;    # makes no sense to specify the same version for several packages
 
-  my $version = $option->{"version"} || "";
-
-  Rex::Logger::debug("Installing $pkg / $version");
-  my $f = i_run(_yum("-y install $pkg" . ($version?"-$version":"")));
-
-  unless($? == 0) {
-    Rex::Logger::info("Error installing $pkg.", "warn");
-    Rex::Logger::debug($f);
-    die("Error installing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully installed.");
-
-
-  return 1;
-}
-
-sub remove {
-  my ($self, $pkg) = @_;
-
-  Rex::Logger::debug("Removing $pkg");
-  my $f = i_run(_yum("-y erase $pkg"));
-
-  unless($? == 0) {
-    Rex::Logger::info("Error removing $pkg.", "warn");
-    Rex::Logger::debug($f);
-    die("Error removing $pkg");
-  }
-
-  Rex::Logger::debug("$pkg successfully removed.");
+  $self->update( "@{$packages_aref}", $option );
 
   return 1;
 }
@@ -106,42 +49,31 @@ sub remove {
 sub get_installed {
   my ($self) = @_;
 
-  my @lines = i_run 'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
+  my @lines = i_run
+    'rpm -qa --nosignature --nodigest --qf "%{NAME} %|EPOCH?{%{EPOCH}}:{0}| %{VERSION} %{RELEASE} %{ARCH}\n"';
 
   my @pkg;
 
   for my $line (@lines) {
-    if($line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/) {
-      push(@pkg, {
-        name   => $1,
-        epoch  => $2,
-        version => $3,
-        release => $4,
-        arch   => $5,
-      });
+    if ( $line =~ m/^([^\s]+)\s([^\s]+)\s([^\s]+)\s([^\s]+)\s(.*)$/ ) {
+      push(
+        @pkg,
+        {
+          name    => $1,
+          epoch   => $2,
+          version => $3,
+          release => $4,
+          arch    => $5,
+        }
+      );
     }
   }
 
   return @pkg;
 }
 
-sub update_system {
-  my ($self) = @_;
-  i_run(_yum("-y upgrade"));
-}
-
-sub update_pkg_db {
-  my ($self) = @_;
-
-  i_run(_yum("clean all"));
-  i_run(_yum("makecache"));
-  if($? != 0) {
-    die("Error updating package repository");
-  }
-}
-
 sub add_repository {
-  my ($self, %data) = @_;
+  my ( $self, %data ) = @_;
 
   my $name = $data{"name"};
   my $desc = $data{"description"} || $data{"name"};
@@ -151,29 +83,29 @@ sub add_repository {
   $fh->write("# This file is managed by Rex\n");
   $fh->write("[$name]\n");
   $fh->write("name=$desc\n");
-  $fh->write("baseurl=" . $data{"url"} . "\n");
+  $fh->write( "baseurl=" . $data{"url"} . "\n" );
   $fh->write("enabled=1\n");
-  $fh->write("gpgcheck=" . $data{"gpgcheck"} ."\n") if defined $data{"gpgcheck"};
+  $fh->write( "gpgcheck=" . $data{"gpgcheck"} . "\n" )
+    if defined $data{"gpgcheck"};
 
   $fh->close;
 }
 
 sub rm_repository {
-  my ($self, $name) = @_;
+  my ( $self, $name ) = @_;
   unlink "/etc/yum.repos.d/$name.repo";
 }
 
-
 sub _yum {
-  my (@cmd) = @_;
+  my ( $self, @cmd ) = @_;
 
   my $str;
 
-  if($Rex::Logger::debug) {
-    $str = join(' ', "yum ", @cmd);
+  if ($Rex::Logger::debug) {
+    $str = join( ' ', "yum ", @cmd );
   }
   else {
-    $str = join(' ', "yum -q ", @cmd);
+    $str = join( ' ', "yum -q ", @cmd );
   }
 
   return $str;

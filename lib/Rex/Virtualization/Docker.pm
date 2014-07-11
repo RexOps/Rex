@@ -1,6 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
-# 
+#
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
@@ -47,7 +47,6 @@ With this module you can manage Docker.
 
 =cut
 
-
 package Rex::Virtualization::Docker;
 
 use strict;
@@ -57,11 +56,11 @@ use Rex::Virtualization::Base;
 use base qw(Rex::Virtualization::Base);
 
 sub new {
-  my $that = shift;
+  my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = { @_ };
+  my $self  = {@_};
 
-  bless($self, $proto);
+  bless( $self, $proto );
 
   return $self;
 }

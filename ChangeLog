@@ -1,3 +1,28 @@
+2014-07-05 Jan Gehring <jan.gehring, gmail.com> (0.47.0)
+  * Rex::Test now also working with KVM - FErki
+  * Update default VNC listen address for KVM machines - FErki
+  * added pkgng commands for FreeBSD 10
+  * A module which allows to read configuration files from an XML file. - nathanIL
+  * Fixed a problem with auth_type try for rsync
+  * Fixed using -G cli switch with a non existing group it will run localy #379
+  * added Darwin (MacOSX) network module
+  * documentation updates - FErki
+  * Ident task description when running -T - Nathan Abu
+  * use https to communicate with amazon
+  * allow set callback and environment together #374  (run command) - alex1line
+  * added exclude option to sync commands - Cameron Daniel
+  * General tasks before/after sub #353
+  * shell_path variable is not checked for empty value before use #376 - Ilya Evseev
+  * verbose_run feature flag #375
+  * Syntax enhancement of "group" command #369 - Jens Berthold
+  * extend service() function, so that it knows how to get a status for a service if the init script doesn't have a status call
+  * Avoid warning if there's nothing to upgrade (update_system) - FErki
+  * Possible precedence issue with control flow operator with perl-5.20.0 - FErki
+  * added Rex::Constants library
+  * don't use shadow file if not present - user module
+  * detect amazon system and use redhat classes
+  * fixed inline templates for modules
+
 2014-05-22 Jan Gehring <jan.gehring, gmail.com> (0.46.2)
   * fixed tmp_dir configuration
   * load Rex::Commands::Box if Rex::Test is loaded, so that set(box => '') work

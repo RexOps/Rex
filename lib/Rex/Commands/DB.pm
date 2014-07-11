@@ -101,8 +101,8 @@ Do a database action.
 
 sub db {
 
-  my ($type, $table, $data) = @_;
-  if(ref($table)) {
+  my ( $type, $table, $data ) = @_;
+  if ( ref($table) ) {
     my %d = %{$table};
     delete $d{"from"};
     $data = \%d;
@@ -110,77 +110,82 @@ sub db {
     $table = $table->{"from"};
   }
 
-  unless($table) {
+  unless ($table) {
     Rex::Logger::info("No table defined...')");
     return;
   }
 
-  if($type eq "select") {
-    my $sql = sprintf("SELECT %s FROM %s WHERE %s", $data->{"fields"} || "*", $table, $data->{"where"} || "1=1");
-    if(defined $data->{"order"}) {
+  if ( $type eq "select" ) {
+    my $sql = sprintf(
+      "SELECT %s FROM %s WHERE %s",
+      $data->{"fields"} || "*",
+      $table, $data->{"where"} || "1=1"
+    );
+    if ( defined $data->{"order"} ) {
       $sql .= " ORDER BY " . $data->{"order"};
     }
     Rex::Logger::debug("sql: $sql");
 
     my $sth = $dbh->prepare($sql);
-    $sth->execute or die($sth->errstr);
+    $sth->execute or die( $sth->errstr );
 
     my @return;
 
-    while(my $row = $sth->fetchrow_hashref) {
+    while ( my $row = $sth->fetchrow_hashref ) {
       push @return, $row;
     }
     $sth->finish;
 
     return @return;
   }
-  elsif($type eq "insert") {
+  elsif ( $type eq "insert" ) {
     my $sql = "INSERT INTO %s (%s) VALUES(%s)";
 
     my @values;
-    for my $key (keys %{$data}) {
-      push(@values, "?");
+    for my $key ( keys %{$data} ) {
+      push( @values, "?" );
     }
 
-    $sql = sprintf($sql, $table, join(",", keys %{$data}), join(",", @values));
+    $sql =
+      sprintf( $sql, $table, join( ",", keys %{$data} ), join( ",", @values ) );
     Rex::Logger::debug("sql: $sql");
 
     my $sth = $dbh->prepare($sql);
-    my $i=1;
-    for my $key (keys %{$data}) {
+    my $i   = 1;
+    for my $key ( keys %{$data} ) {
       $data->{$key} ||= '';
-      Rex::Logger::debug("sql: binding: " . $data->{$key});
-      $sth->bind_param($i, $data->{$key}) or die($sth->errstr);
+      Rex::Logger::debug( "sql: binding: " . $data->{$key} );
+      $sth->bind_param( $i, $data->{$key} ) or die( $sth->errstr );
       $i++;
     }
 
-    $sth->execute or die($sth->errstr);
+    $sth->execute or die( $sth->errstr );
   }
-  elsif($type eq "update") {
+  elsif ( $type eq "update" ) {
     my $sql = "UPDATE %s SET %s WHERE %s";
 
     my @values;
-    for my $key (keys %{$data->{"set"}}) {
-      push(@values, "$key = ?");
+    for my $key ( keys %{ $data->{"set"} } ) {
+      push( @values, "$key = ?" );
     }
 
-    $sql = sprintf($sql, $table, join(",", @values), $data->{"where"});
+    $sql = sprintf( $sql, $table, join( ",", @values ), $data->{"where"} );
     Rex::Logger::debug("sql: $sql");
 
     my $sth = $dbh->prepare($sql);
-    my $i=1;
-    for my $key (keys %{$data->{"set"}}) {
-      Rex::Logger::debug("sql: binding: " . $data->{"set"}->{$key});
-      $sth->bind_param($i, $data->{"set"}->{$key}) or die($sth->errstr);
+    my $i   = 1;
+    for my $key ( keys %{ $data->{"set"} } ) {
+      Rex::Logger::debug( "sql: binding: " . $data->{"set"}->{$key} );
+      $sth->bind_param( $i, $data->{"set"}->{$key} ) or die( $sth->errstr );
       $i++;
     }
 
-    $sth->execute or die($sth->errstr);
+    $sth->execute or die( $sth->errstr );
   }
-  elsif($type eq "delete") {
-    my $sql = sprintf("DELETE FROM %s WHERE %s", $table, $data->{"where"});
+  elsif ( $type eq "delete" ) {
+    my $sql = sprintf( "DELETE FROM %s WHERE %s", $table, $data->{"where"} );
     my $sth = $dbh->prepare($sql);
-    $sth->execute or die($sth->errstr);
+    $sth->execute or die( $sth->errstr );
   }
   else {
     Rex::Logger::info("DB: action $type not supported.");
@@ -194,14 +199,17 @@ sub db {
 
 sub import {
 
-  my ($class, $opt) = @_;
+  my ( $class, $opt ) = @_;
 
-  if($opt) {
-    $dbh = DBI->connect($opt->{"dsn"}, $opt->{"user"}, $opt->{"password"} || "", $opt->{"attr"} );
+  if ($opt) {
+    $dbh = DBI->connect(
+      $opt->{"dsn"}, $opt->{"user"},
+      $opt->{"password"} || "", $opt->{"attr"}
+    );
     $dbh->{mysql_auto_reconnect} = 1;
   }
 
-  my ($ns_register_to, $file, $line) = caller;
+  my ( $ns_register_to, $file, $line ) = caller;
 
   no strict 'refs';
   for my $func_name (@EXPORT) {

@@ -1,3 +1,6 @@
+2014-07-12 Jan Gehring <jan.gehring, rexify.org> (0.49.0)
+  * Added FreeBSD 10 Support for pkgng. #280
+
 2014-07-05 Jan Gehring <jan.gehring, gmail.com> (0.47.0)
   * Rex::Test now also working with KVM - FErki
   * Update default VNC listen address for KVM machines - FErki

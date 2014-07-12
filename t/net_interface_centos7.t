@@ -16,6 +16,4 @@ ok($info->{eth0}->{mac} eq '00:1c:42:fe:5a:b5', 'eth0 mac');
 @in = eval { local (@ARGV) = ("t/ip.out_centos7_alias"); <>; };
 $info = Rex::Hardware::Network::Linux::_parse_ip(@in);
 
-print STDERR Dumper $info;
-
 1;

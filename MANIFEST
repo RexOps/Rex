@@ -345,10 +345,13 @@ t/interface_fs_local.t
 t/ip.out1
 t/ip.out2
 t/ip.out3
+t/ip.out_centos7
+t/ip.out_centos7_alias
 t/iptables.t
 t/last_command_output.t
 t/libvirt.t
 t/needs.t
+t/net_interface_centos7.t
 t/network_linux.t
 t/no_tty.t
 t/partition.t

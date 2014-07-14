@@ -1,3 +1,6 @@
+2014-07-14 Jan Gehring <jan.gehring, rexify.org> (0.50.0)
+  * added proxy_command support - fixed #380
+
 2014-07-12 Jan Gehring <jan.gehring, rexify.org> (0.49.0)
   * Added FreeBSD 10 Support for pkgng. #280
 

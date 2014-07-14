@@ -107,7 +107,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group
   user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh
-  get_random batch timeout max_connect_retries parallelism
+  get_random batch timeout max_connect_retries parallelism proxy_command
   do_task run_task run_batch needs
   exit
   evaluate_hostname
@@ -768,6 +768,20 @@ Will execute the tasks in parallel on the given servers. $count is the thread co
 
 sub parallelism {
   Rex::Config->set_parallelism( $_[0] );
+}
+
+=item proxy_command($cmd)
+
+Set a proxy command to use for the connection. This is only possible with OpenSSH connection method.
+
+ set connection => "OpenSSH";
+ proxy_command "ssh user@jumphost nc %s %s 2>/dev/null";
+
+The first %s gets replaced by the host given at the task description. And the second %s gets replaced by the port.
+
+=cut
+sub proxy_command {
+  Rex::Config->set_proxy_command($_[0]);
 }
 
 =item set_distributor($distributor)

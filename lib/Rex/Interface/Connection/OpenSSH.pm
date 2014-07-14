@@ -60,8 +60,6 @@ sub connect {
   $port ||= Rex::Config->get_port( server => $server ) || 22;
   $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
 
-  $proxy_command = sprintf( $proxy_command, $server, $port );
-
   $server =
     Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
 

@@ -775,9 +775,7 @@ sub parallelism {
 Set a proxy command to use for the connection. This is only possible with OpenSSH connection method.
 
  set connection => "OpenSSH";
- proxy_command "ssh user@jumphost nc %s %s 2>/dev/null";
-
-The first %s gets replaced by the host given at the task description. And the second %s gets replaced by the port.
+ proxy_command "ssh user@jumphost nc %h %p 2>/dev/null";
 
 =cut
 sub proxy_command {

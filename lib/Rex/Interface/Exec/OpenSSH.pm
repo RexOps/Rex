@@ -30,6 +30,9 @@ sub _exec {
 
   my $ssh = Rex::is_ssh();
   my ( $out, $err ) = $ssh->capture2($exec);
+  if($ssh->error) {
+    $? = $? >> 8;
+  }
 
   return ( $out, $err );
 }

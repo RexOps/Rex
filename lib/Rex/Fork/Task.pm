@@ -36,12 +36,14 @@ sub start {
   else {
     $self->{chld} = 1;
     my $func = $self->{task};
-    if ($Rex::WITH_EXIT_STATUS) {
+    # only allow this if no parallelism is given.
+    # with parallelism active it doesn't make sense.
+    if ($Rex::WITH_EXIT_STATUS && Rex::Config->get_parallelism == 1) {
       eval {
         &$func($self);
         1;
       } or do {
-        push( @PROCESS_LIST, 1 );
+        push( @PROCESS_LIST, $? || 1 );
         $self->{'running'} = 0;
         die($@);
       };

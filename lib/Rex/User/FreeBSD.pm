@@ -15,6 +15,7 @@ use Rex::Commands::MD5;
 use Rex::Helper::Run;
 use Rex::Helper::Encode;
 use Rex::Commands::Fs;
+use Rex::Commands::File;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
@@ -218,19 +219,38 @@ sub create_group {
     Rex::Logger::debug("Creating new group $group");
 
     $cmd = "pw groupadd ";
+
+    if ( exists $data->{gid} ) {
+      $cmd .= " -g " . $data->{gid};
+    }
+
+    i_run $cmd . " -n " . $group;
+    if ( $? != 0 ) {
+      die("Error creating/modifying group $group");
+    }
   }
   else {
     Rex::Logger::debug("Group $group already exists. Updating...");
-    $cmd = "pw groupmod ";
-  }
 
-  if ( exists $data->{gid} ) {
-    $cmd .= " -g " . $data->{gid};
-  }
+    # updating with pw groupmod doesn't work good in freebsd 10
+    # so we directly edit the /etc/group file
+    #$cmd = "pw groupmod ";
 
-  i_run $cmd . " -n " . $group;
-  if ( $? != 0 ) {
-    die("Error creating/modifying group $group");
+    if ( exists $data->{gid} ) {
+      eval {
+        my @content = split( /\n/, cat("/etc/group") );
+        my $gid = $data->{gid};
+        for (@content) {
+          s/^$group:([^:]+):(\d+):/$group:$1:$gid:/;
+        }
+        my $fh = file_write("/etc/group");
+        $fh->write( join( "\n", @content ) );
+        $fh->close;
+        1;
+      } or do {
+        die("Error creating/modifying group $group");
+      };
+    }
   }
 
   return $self->get_gid($group);

@@ -55,6 +55,7 @@ sub connect {
   $self->{server} = $server;
 
   my $fail_connect = 0;
+  my $proxy_command = Rex::Config->get_proxy_command( server => $server );
 
   $port ||= Rex::Config->get_port( server => $server ) || 22;
   $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
@@ -78,6 +79,7 @@ sub connect {
   my @connection_props = ( $server, user => $user, port => $port );
   push @connection_props, master_opts      => \@ssh_opts_line if @ssh_opts_line;
   push @connection_props, default_ssh_opts => \@ssh_opts_line if @ssh_opts_line;
+  push @connection_props, proxy_command    => $proxy_command  if $proxy_command;
 
   if ( $auth_type && $auth_type eq "pass" ) {
     Rex::Logger::debug("OpenSSH: pass_auth: $server:$port - $user - ******");

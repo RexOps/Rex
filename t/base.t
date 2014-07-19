@@ -1,4 +1,4 @@
-use Test::More tests => 166;
+use Test::More tests => 167;
 
 use_ok 'Rex::Batch';
 use_ok 'Rex::Interface::Cache';
@@ -137,6 +137,7 @@ use_ok 'Rex::Shared::Var';
 use_ok 'Rex::Sudo::File';
 use_ok 'Rex::Task';
 use_ok 'Rex::TaskList::Base';
+use_ok 'Rex::TaskList::Parallel_ForkManager';
 use_ok 'Rex::TaskList';
 use_ok 'Rex::Template';
 use_ok 'Rex::Transaction';

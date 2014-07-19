@@ -9,7 +9,7 @@ package Rex::Interface::Fs::SSH;
 use strict;
 use warnings;
 
-use Fcntl;
+use Fcntl qw(:DEFAULT :mode);
 use Rex::Helper::Encode;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::Base;
@@ -57,35 +57,25 @@ sub ls {
 sub is_dir {
   my ( $self, $path ) = @_;
 
-  my $ret = 0;
-
   Rex::Commands::profiler()->start("is_dir: $path");
+
   my $sftp = Rex::get_sftp();
-  if ( $sftp->opendir($path) ) {
+  my $stat = $sftp->stat($path);
+  defined $stat ? return S_ISDIR( $stat->{mode} ) : return undef;
 
-    # return true if $path can be opened as a directory
-    $ret = 1;
-  }
   Rex::Commands::profiler()->end("is_dir: $path");
-
-  return $ret;
 }
 
 sub is_file {
   my ( $self, $file ) = @_;
 
-  my $ret;
-
   Rex::Commands::profiler()->start("is_file: $file");
+
   my $sftp = Rex::get_sftp();
-  if ( $sftp->open( $file, O_RDONLY ) ) {
+  my $stat = $sftp->stat($file);
+  defined $stat ? return S_ISREG( $stat->{mode} ) : return undef;
 
-    # return true if $file can be opened read only
-    $ret = 1;
-  }
   Rex::Commands::profiler()->end("is_file: $file");
-
-  return $ret;
 }
 
 sub unlink {

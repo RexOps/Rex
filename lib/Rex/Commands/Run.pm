@@ -257,7 +257,7 @@ sub run {
     }
   }
 
-  if (wantarray) {
+  if (wantarray && $out_ret) {
     return split( /\r?\n/, $out_ret );
   }
 

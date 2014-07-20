@@ -1,3 +1,10 @@
+2014-07-20 Jan Gehring <jan.gehring, rexify.org> (0.50.0)
+  * Use stat() output for directory and file tests (fix #391)
+  * added Paralell::ForkManager as optional component - #295
+  * fixed Problem with failed conditionals in Rex::Command::Run - #389
+  * activate exit_status feature by default for non parallel task execution
+  * added proxy_command support - fixed #380
+
 2014-07-12 Jan Gehring <jan.gehring, rexify.org> (0.49.0)
   * Added FreeBSD 10 Support for pkgng. #280
 

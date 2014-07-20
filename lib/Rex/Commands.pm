@@ -786,7 +786,7 @@ sub proxy_command {
 
 This sets the task distribution module. Default is "Base".
 
-Possible values are: Base, Gearman
+Possible values are: Base, Gearman, Parallel_ForkManager
 
 =cut
 

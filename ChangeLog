@@ -1,5 +1,5 @@
 2014-07-20 Jan Gehring <jan.gehring, rexify.org> (0.50.0)
-  * Use stat() output for directory and file tests (fix #391)
+  * Use stat() output for directory and file tests (fix #391) - FErki
   * added Paralell::ForkManager as optional component - #295
   * fixed Problem with failed conditionals in Rex::Command::Run - #389
   * activate exit_status feature by default for non parallel task execution

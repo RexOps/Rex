@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Commands::Inventory - Inventor your systems
+Rex::Commands::Inventory - Get an inventory of your systems
 
 =head1 DESCRIPTION
 
@@ -18,7 +18,7 @@ All these functions will not be reported. These functions don't change things.
 
  use Data::Dumper;
  task "inventory", "remoteserver", sub {
-   my $inventory = inventor();
+   my $inventory = inventory();
    print Dumper($inventory);
  };
 
@@ -44,9 +44,9 @@ use base qw(Rex::Exporter);
 
 =item inventory
 
-This function returns an hashRef of all gathered hardware. Use the Data::Dumper module to see its structure.
+This function returns a hashRef of all gathered hardware. Use the Data::Dumper module to see its structure.
 
- task "get-inventory", sub {
+ task "get_inventory", sub {
    my $inventory = inventory();
    print Dumper($inventory);
  };

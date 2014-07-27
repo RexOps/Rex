@@ -58,10 +58,10 @@ sub get {
   for my $file (@files) {
     Rex::Logger::debug("CMDB - Opening $file");
     if ( -f $file ) {
-      my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
-      $content .= "\n";    # for safety
+      #my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
+      #$content .= "\n";    # for safety
 
-      my $ref = Load($content);
+      my $ref = YAML::LoadFile($file);
 
       if ( !$item ) {
         for my $key ( keys %{$ref} ) {

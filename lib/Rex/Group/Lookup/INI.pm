@@ -32,7 +32,7 @@ use warnings;
 use Rex -base;
 
 require Exporter;
-use base qw(Exporter);
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Helper::INI;

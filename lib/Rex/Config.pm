@@ -55,6 +55,7 @@ our (
   $do_reporting,             $say_format,
   $exec_autodie,             $verbose_run,
   $disable_taskname_warning, $proxy_command,
+  $task_call_by_method,
 );
 
 # some defaults
@@ -64,6 +65,15 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_task_call_by_method {
+  my $class = shift;
+  $task_call_by_method = shift;
+}
+
+sub get_task_call_by_method {
+  return $task_call_by_method;
+}
 
 sub set_disable_taskname_warning {
   my $class = shift;

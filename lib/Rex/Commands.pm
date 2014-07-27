@@ -308,11 +308,16 @@ sub task {
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
       Rex::Logger::info("Running task $task_name_save on current connection");
+
+      if( Rex::Config->get_task_call_by_method && $_[0] =~ m/^[A-Za-z0-9_:]+$/ && ref $_[1] eq "HASH" ) {
+        shift;
+      }
+
       if ( ref( $_[0] ) eq "HASH" ) {
         $code->(@_);
       }
       else {
-        if ($REGISTER_SUB_HASH_PARAMETER) {
+        if ($REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
           $code->( {@_} );
         }
         else {

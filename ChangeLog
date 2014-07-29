@@ -1,3 +1,6 @@
+2014-07-29 Jan Gehring <jan.gehring, rexify.org> (0.51.0)
+  * possibility to call tasks as a method (prettier dsl) load cmdb by default load ini group module by default, if server.ini exists
+
 2014-07-20 Jan Gehring <jan.gehring, rexify.org> (0.50.0)
   * Use stat() output for directory and file tests (fix #391) - FErki
   * added Paralell::ForkManager as optional component - #295

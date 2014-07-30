@@ -1,4 +1,5 @@
 2014-07-29 Jan Gehring <jan.gehring, rexify.org> (0.51.0)
+  * Added "." in the allowed char of lvm create #393 - samuelet
   * possibility to call tasks as a method (prettier dsl)
   * load cmdb by default
   * load ini group module by default, if server.ini exists

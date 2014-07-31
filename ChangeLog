@@ -1,4 +1,6 @@
-2014-07-29 Jan Gehring <jan.gehring, rexify.org> (0.51.0)
+2014-07-29 Jan Gehring <jan.gehring, rexify.org> (0.51.2)
+  * Fixed #394 - export of is_symlink function
+  * Fixed #395 - is_file compatibility bug, doesn't detect symlinks anymore
   * Added "." in the allowed char of lvm create #393 - samuelet
   * possibility to call tasks as a method (prettier dsl)
   * load cmdb by default

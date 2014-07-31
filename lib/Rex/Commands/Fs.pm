@@ -69,7 +69,7 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(list_files ls
   unlink rm rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
   chown chgrp chmod
-  is_file is_dir is_readable is_writeable is_writable
+  is_file is_dir is_readable is_writeable is_writable is_symlink
   df du
   mount umount
   glob);

@@ -117,7 +117,6 @@ sub pkg {
   }
 
   my ($new_package) = grep { $_->{name} eq $package } $pkg->get_installed;
-
   if ( $old_package
     && $new_package
     && $old_package->{version} ne $new_package->{version} )
@@ -137,10 +136,18 @@ sub pkg {
       changed => 1,
       message => "Package $package installed in version $new_package->{version}"
     );
+
+    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+      $option{on_change}->( $package, %option );
+    }
   }
   elsif ( $old_package && !$new_package ) {
     Rex::get_current_connection()->{reporter}
       ->report( changed => 1, message => "Package $package removed." );
+
+    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+      $option{on_change}->( $package, %option );
+    }
   }
   else {
     Rex::get_current_connection()->{reporter}->report( changed => 0, );

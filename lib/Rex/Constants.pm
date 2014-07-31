@@ -9,8 +9,8 @@ package Rex::Constants;
 use strict;
 use warnings;
 
-require Exporter;
-use base qw(Exporter);
+require Rex::Exporter;
+use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 @EXPORT = qw(present absent latest running started stopped);

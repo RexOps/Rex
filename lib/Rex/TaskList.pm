@@ -12,7 +12,6 @@ use warnings;
 use Rex::Config;
 use Rex::Logger;
 use Rex::Interface::Executor;
-use Rex::Fork::Manager;
 
 use vars qw(%tasks);
 
@@ -46,4 +45,3 @@ sub create {
 
   return $task_list;
 }
-

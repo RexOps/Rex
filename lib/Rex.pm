@@ -70,7 +70,9 @@ use File::Basename;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.49.99.1";
+$VERSION          = "0.51.2";
+$WITH_EXIT_STATUS = 1;          # since 0.50 activated by default
+
 my $cur_dir;
 
 BEGIN {
@@ -504,6 +506,7 @@ sub import {
 
     require Rex::Commands::User;
     Rex::Commands::User->import( register_in => $register_to );
+
   }
 
   if ( $what eq "-feature" || $what eq "feature" ) {
@@ -550,6 +553,33 @@ sub import {
         $Rex::Template::BE_LOCAL = 1;
         $Rex::WITH_EXIT_STATUS   = 1;
         $found_feature           = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.51 ) {
+        Rex::Logger::debug("activating featureset >= 0.51");
+        Rex::Config->set_task_call_by_method(1);
+
+        require Rex::Constants;
+        Rex::Constants->import( register_in => $register_to );
+
+        require Rex::CMDB;
+        Rex::CMDB->import( register_in => $register_to );
+
+        Rex::Commands::set(
+          cmdb => {
+            type => "YAML",
+            path => [
+              "cmdb/{operatingsystem}/{hostname}.yml",
+              "cmdb/{operatingsystem}/default.yml",
+              "cmdb/{environment}/{hostname}.yml",
+              "cmdb/{environment}/default.yml",
+              "cmdb/{hostname}.yml",
+              "cmdb/default.yml",
+            ],
+          }
+        );
+
+        $found_feature = 1;
       }
 
       if ( $add eq "no_local_template_vars" ) {

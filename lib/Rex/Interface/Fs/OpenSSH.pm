@@ -70,7 +70,13 @@ sub is_file {
 
   my $sftp = Rex::get_sftp();
   my $attr = $sftp->stat($file);
-  defined $attr ? return S_ISREG( $attr->perm ) : return undef;
+  defined $attr
+    ? return ( S_ISREG( $attr->perm )
+      || S_ISLNK( $attr->perm )
+      || S_ISBLK( $attr->perm )
+      || S_ISCHR( $attr->perm )
+      || S_ISFIFO( $attr->perm ) )
+    : return undef;
 
   Rex::Commands::profiler()->end("is_file: $file");
 }

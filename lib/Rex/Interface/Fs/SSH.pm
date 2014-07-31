@@ -73,7 +73,14 @@ sub is_file {
 
   my $sftp = Rex::get_sftp();
   my $stat = $sftp->stat($file);
-  defined $stat ? return S_ISREG( $stat->{mode} ) : return undef;
+
+  defined $stat
+    ? return ( S_ISREG( $stat->{mode} )
+      || S_ISLNK( $stat->{mode} )
+      || S_ISBLK( $stat->{mode} )
+      || S_ISCHR( $stat->{mode} )
+      || S_ISFIFO( $stat->{mode} ) )
+    : return undef;
 
   Rex::Commands::profiler()->end("is_file: $file");
 }

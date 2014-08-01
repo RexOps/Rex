@@ -458,8 +458,16 @@ Delete a volume. This will destroy all data.
 
 Returns first available floating IP
 
- task "get-zones", sub {
-   print Dumper get_cloud_floating_ip;
+ task "get_floating_ip", sub {
+
+   my $ip = get_cloud_floating_ip;
+
+   my $instance = cloud_instance create => {
+      image_id => 'edffd57d-82bf-4ffe-b9e8-af22563741bf',
+      name => 'instance1',
+      plan_id => 17,
+      floating_ip => $ip
+    };
  };
 
 =cut

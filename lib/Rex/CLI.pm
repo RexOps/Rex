@@ -280,7 +280,7 @@ FORCE_SERVER: {
 
     eval {
       my $server_ini_file = dirname($::rexfile) . "/server.ini";
-      if(-f $server_ini_file) {
+      if ( -f $server_ini_file ) {
         require Rex::Group::Lookup::INI;
         Rex::Group::Lookup::INI::groups_file($server_ini_file);
       }

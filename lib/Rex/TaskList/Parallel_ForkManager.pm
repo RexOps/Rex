@@ -26,7 +26,7 @@ my @PROCESS_LIST;
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self = $proto->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
@@ -44,11 +44,13 @@ sub run {
   my $fm = Parallel::ForkManager->new( $task->parallelism
       || Rex::Config->get_parallelism );
 
-  $fm->run_on_finish(sub {
-    my ($pid, $exit_code) = @_;
-    Rex::Logger::debug("Fork exited: $pid -> $exit_code");
-    push @PROCESS_LIST, $exit_code;
-  });
+  $fm->run_on_finish(
+    sub {
+      my ( $pid, $exit_code ) = @_;
+      Rex::Logger::debug("Fork exited: $pid -> $exit_code");
+      push @PROCESS_LIST, $exit_code;
+    }
+  );
 
   for my $server (@all_server) {
 
@@ -83,8 +85,9 @@ sub run {
         $forked_sub->();
         1;
       } or do {
+
         # exit with error
-        $? = 255 if ! $?;   # unknown error
+        $? = 255 if !$?;    # unknown error
         exit $?;
       };
       $fm->finish;

@@ -26,15 +26,29 @@ sub new {
 }
 
 sub _exec {
-  my ( $self, $exec ) = @_;
-
+  my ( $self, $exec, $option ) = @_;
+  my ( $out, $err, $pid, $out_fh, $err_fh );
   my $ssh = Rex::is_ssh();
-  my ( $out, $err ) = $ssh->capture2($exec);
-  if($ssh->error) {
+
+  ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( {}, $exec );
+  while (<$out_fh>) {
+    $out .= $_;
+    $self->execute_line_based_operation( $_, $option )
+      && do { kill( 'KILL', $pid ); goto END_OPEN };
+
+  }
+  while (<$err_fh>) {
+    $err .= $_;
+    $self->execute_line_based_operation( $_, $option )
+      && do { kill( 'KILL', $pid ); goto END_OPEN };
+  }
+
+END_OPEN:
+  waitpid( $pid, 0 ) or die($!);
+  if ( $ssh->error || $? ) {
     $? = $? >> 8;
   }
 
   return ( $out, $err );
 }
-
 1;

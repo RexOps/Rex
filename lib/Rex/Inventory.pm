@@ -157,37 +157,37 @@ sub get {
       my $ret = [];
       push( @{$ret}, ( ref $_ ne "HASH" ? $_->get_all() : $_ ) ) for @cpus;
       return $ret;
-      }
+    }
       ->(),
     dimms => sub {
       my $ret = [];
       push( @{$ret}, $_->get_all() ) for @dimms;
       return $ret;
-      }
+    }
       ->(),
     mem_arrays => sub {
       my $ret = [];
       push( @{$ret}, $_->get_all() ) for @mem_arrays;
       return $ret;
-      }
+    }
       ->(),
     net => sub {
       my $ret = [];
       push( @{$ret}, $_->get_all() ) for @net_devs;
       return $ret;
-      }
+    }
       ->(),
     storage => sub {
       my $ret = [];
       push( @{$ret}, $_->get_all() ) for @storage;
       return $ret;
-      }
+    }
       ->(),
     volumes => sub {
       my $ret = [];
       push( @{$ret}, $_->get_all() ) for @volumes;
       return $ret;
-      }
+    }
       ->(),
     raid => {
       controller => \@raid_controller,

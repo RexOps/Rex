@@ -58,6 +58,7 @@ sub get {
   for my $file (@files) {
     Rex::Logger::debug("CMDB - Opening $file");
     if ( -f $file ) {
+
       #my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
       #$content .= "\n";    # for safety
 

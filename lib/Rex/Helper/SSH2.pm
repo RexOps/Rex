@@ -22,7 +22,7 @@ our $READ_STDERR    = 1;
 our $EXEC_AND_SLEEP = 0;
 
 sub net_ssh2_exec {
-  my ( $ssh, $cmd, $callback ) = @_;
+  my ( $ssh, $cmd, $base, $option ) = @_;
 
   my $chan = $ssh->channel;
 
@@ -48,18 +48,18 @@ sub net_ssh2_exec {
 
   while ( my $len = $chan->read( my $buf, $buffer_size ) ) {
     $in .= $buf;
-
-    if ($callback) {
-      &$callback($buf);
-    }
+    $base->execute_line_based_operation( $buf, $option ) && goto END_READ;
   }
 
   while ( my $len = $chan->read( my $buf_err, $buffer_size, 1 ) ) {
     $in_err .= $buf_err;
+    $base->execute_line_based_operation( $buf_err, $option )
+      && goto END_READ;
   }
 
   #select undef, undef, undef, 0.002; # wait a little before closing the channel
   #sleep 1;
+END_READ:
   $chan->send_eof;
 
   while ( !$chan->eof ) {

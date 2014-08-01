@@ -73,7 +73,8 @@ use Rex::Group::Entry::Server;
   get_cloud_plans
   get_cloud_operating_systems
   cloud_image_list
-  cloud_object);
+  cloud_object
+  get_cloud_floating_ip);
 
 Rex::Config->register_set_handler(
   "cloud" => sub {
@@ -178,7 +179,7 @@ Get all instances of a cloud service.
 =cut
 
 sub cloud_instance_list {
-  return cloud_object()->list_instances();
+  return cloud_object()->list_instances(@_);
 }
 
 =item cloud_volume_list
@@ -279,6 +280,7 @@ Create a new instance.
      name    => "fe-ec2-01",  # name is not necessary
      volume  => "vol-yyyyy",  # volume is not necessary
      zone    => "eu-west-1a",  # zone is not necessary
+     floating_ip  => "89.39.38.160" # floating_ip is not necessary
    };
 
 =cut
@@ -451,6 +453,28 @@ Delete a volume. This will destroy all data.
   }
 
 }
+
+=item get_cloud_floating_ip
+
+Returns first available floating IP
+
+ task "get_floating_ip", sub {
+
+   my $ip = get_cloud_floating_ip;
+
+   my $instance = cloud_instance create => {
+      image_id => 'edffd57d-82bf-4ffe-b9e8-af22563741bf',
+      name => 'instance1',
+      plan_id => 17,
+      floating_ip => $ip
+    };
+ };
+
+=cut
+sub get_cloud_floating_ip {
+  return cloud_object()->get_floating_ip
+}
+
 
 =item cloud_network
 

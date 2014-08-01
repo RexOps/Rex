@@ -143,6 +143,15 @@ sub run_instance {
     );
   }
 
+  if ( exists $data{floating_ip} ) {
+    $self->associate_floating_ip(
+      instance_id => $id,
+      floating_ip => $data{floating_ip},
+    );
+
+    ($info) = grep { $_->{id} eq $id } $self->list_running_instances;
+  }
+
   return $info;
 }
 
@@ -164,26 +173,58 @@ sub terminate_instance {
 
 sub list_instances {
   my $self     = shift;
+  my %options  = @_;
+
+  $options{private_network} ||= "private";
+  $options{public_network}  ||= "public";
+  $options{public_ip_type}  ||= "floating";
+  $options{private_ip_type} ||= "fixed";
+
   my $nova_url = $self->get_nova_url;
   my @instances;
 
   my $content = $self->_request( GET => $nova_url . '/servers/detail' );
 
   for my $instance ( @{ $content->{servers} } ) {
+    my %networks;
+    for my $net ( keys %{ $instance->{addresses} } ) {
+      for my $ip_conf ( @{ $instance->{addresses}->{$net} } ) {
+        push @{ $networks{$net} },
+          {
+          mac  => $ip_conf->{'OS-EXT-IPS-MAC:mac_addr'},
+          ip   => $ip_conf->{addr},
+          type => $ip_conf->{'OS-EXT-IPS:type'},
+          };
+      }
+    }
+
     push @instances,
       {
-      ip           => $instance->{addresses}{public}[0]{addr},
+      ip => (
+        [
+          map { $_->{"OS-EXT-IPS:type"} eq $options{public_ip_type} ? $_->{'addr'} : () }
+            @{ $instance->{addresses}{$options{public_network}} }
+        ]->[0]
+          || undef
+      ),
       id           => $instance->{id},
       architecture => undef,
       type         => $instance->{flavor}{id},
       dns_name     => undef,
       state   => ( $instance->{status} eq 'ACTIVE' ? 'running' : 'stopped' ),
       __state => $instance->{status},
-      launch_time     => $instance->{'OS-SRV-USG:launched_at'},
-      name            => $instance->{name},
-      private_ip      => $instance->{addresses}{private}[0]{addr},
-      security_groups => join ',',
-      map { $_->{name} } @{ $instance->{security_groups} },
+      launch_time => $instance->{'OS-SRV-USG:launched_at'},
+      name        => $instance->{name},
+      private_ip  => (
+        [
+          map { $_->{"OS-EXT-IPS:type"} eq $options{private_ip_type} ? $_->{'addr'} : () }
+            @{ $instance->{addresses}{$options{private_network}} }
+        ]->[0]
+          || undef
+      ),
+      security_groups =>
+        ( join ',', map { $_->{name} } @{ $instance->{security_groups} } ),
+      networks => \%networks,
       };
   }
 
@@ -360,6 +401,39 @@ sub detach_volume {
       . $data{instance_id}
       . '/os-volume_attachments/'
       . $data{volume_id} );
+}
+
+sub get_floating_ip {
+  my $self     = shift;
+  my $nova_url = $self->get_nova_url;
+
+  # look for available floating IP
+  my $floating_ips = $self->_request( GET => $nova_url . '/os-floating-ips' );
+
+  for my $floating_ip ( @{ $floating_ips->{floating_ips} } ) {
+    return $floating_ip->{ip} if ( !$floating_ip->{instance_id} );
+  }
+  confess "No floating IP available.";
+}
+
+sub associate_floating_ip {
+  my ( $self, %data ) = @_;
+  my $nova_url = $self->get_nova_url;
+
+  # associate available floating IP to instance id
+  my $request_data = {
+    addFloatingIp => {
+      address => $data{floating_ip}
+    }
+  };
+
+  Rex::Logger::debug('Associating floating IP to instance');
+
+  my $content = $self->_request(
+    POST         => $nova_url . '/servers/' . $data{instance_id} . '/action',
+    content_type => 'application/json',
+    content      => encode_json($request_data),
+  );
 }
 
 1;

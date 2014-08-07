@@ -18,6 +18,7 @@ my %deps = (
   'List::MoreUtils'       => 0,
   'XML::LibXML'           => 0,
   'Parallel::ForkManager' => 0,
+  'IPC::Shareable'        => 0
 );
 
 if ( $^O =~ m/^MSWin/ ) {

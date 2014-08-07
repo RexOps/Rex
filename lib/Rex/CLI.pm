@@ -570,7 +570,7 @@ CHECK_OVERWRITE: {
   for my $exit_hook (@exit) {
     &$exit_hook();
   }
-
+  Rex::Output->get->write() if ( defined Rex::Output->get );
   if ($Rex::WITH_EXIT_STATUS) {
     for my $exit_code (@exit_codes) {
       if ( $exit_code != 0 ) {

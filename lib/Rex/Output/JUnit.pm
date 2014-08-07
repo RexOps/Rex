@@ -11,73 +11,75 @@ use warnings;
 
 use Data::Dumper;
 use Rex::Template;
+use base 'Rex::Output::Base';
 
 sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = {@_};
+	my $that  = shift;
+	my $proto = ref($that) || $that;
+	my $self  = {@_};
 
-  bless( $self, $proto );
+	bless( $self, $proto );
 
-  $self->{time}  = time();
-  $self->{error} = "";
+	$self->{time}  = time();
+	$self->{error} = "";
 
-  return $self;
+	return $self;
 }
 
 sub add {
-  my ( $self, $task, %option ) = @_;
-  $option{name} = $task;
-  $option{time} = time() - $self->{time};
+	my ( $self, $task, %option ) = @_;
+	$option{name} = $task;
+	$option{time} = time() - $self->{time};
 
-  push( @{ $self->{"data"} }, {%option} );
+	push( @{ $self->{"data"} }, {%option} );
 
-  if ( exists $option{error} ) {
-    $self->error( $option{msg} );
-  }
+	if ( exists $option{error} ) {
+		$self->error( $option{msg} );
+	}
 }
 
 sub error {
-  my ( $self, $msg ) = @_;
-  $self->{error} .= $msg . "\n";
+	my ( $self, $msg ) = @_;
+	$self->{error} .= $msg . "\n";
 }
 
-sub DESTROY {
-  my ($self) = @_;
+sub write {
+	my ($self) = @_;
 
-  if ( !exists $self->{data} ) { return; }
+	if ( !exists $self->{data} ) { return; }
 
-  my $t    = Rex::Template->new;
-  my $data = eval { local $/; <DATA>; };
-  my $time = time() - $self->{time};
+	my $t    = Rex::Template->new;
+	my $data = eval { local $/; <DATA>; };
+	my $time = time() - $self->{time};
 
-  if ( !exists $self->{data} ) {
-    return;
-  }
+	if ( !exists $self->{data} ) {
+		return;
+	}
 
-  if ( scalar( @{ $self->{data} } ) == 0 ) {
-    return;
-  }
+	if ( scalar( @{ $self->{data} } ) == 0 ) {
+		return;
+	}
 
-  my $s = $t->parse(
-    $data,
-    {
-      errors => scalar(
-        grep { $_->{"error"} && $_->{"error"} == 1 } @{ $self->{"data"} }
-      ),
-      tests         => scalar( @{ $self->{"data"} } ),
-      time_over_all => $time,
-      system_out    => $self->{"error"} || "",
-      items         => $self->{"data"},
-    }
-  );
+	my $s = $t->parse(
+		$data,
+		{
+			errors => scalar(
+				grep { $_->{"error"} && $_->{"error"} == 1 }
+				  @{ $self->{"data"} }
+			),
+			tests         => scalar( @{ $self->{"data"} } ),
+			time_over_all => $time,
+			system_out    => $self->{"error"} || "",
+			items         => $self->{"data"},
+		}
+	);
 
-  print $s;
-  if ($s) {
-    open( my $fh, ">", "junit_output.xml" ) or die($!);
-    print $fh $s;
-    close($fh);
-  }
+	print $s;
+	if ($s) {
+		open( my $fh, ">", "junit_output.xml" ) or die($!);
+		print $fh $s;
+		close($fh);
+	}
 }
 
 1;

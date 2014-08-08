@@ -14,7 +14,7 @@ my $report;
 
 sub create {
   my ( $class, $type ) = @_;
-  if ($report && ref($report) =~ m/::\Q$type\E$/) { return $report; }
+  if ( $report && $type && ref($report) =~ m/::\Q$type\E$/ ) { return $report; }
 
   $type ||= "Base";
 

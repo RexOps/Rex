@@ -214,7 +214,7 @@ sub _get_std_template_vars {
 
 =item file($file_name, %options)
 
-This function is the successor of I<install file>. Please use this function to upload files to you server.
+This function is the successor of I<install file>. Please use this function to upload files to your server.
 
  task "prepare", "server1", "server2", sub {
    file "/file/on/remote/machine",

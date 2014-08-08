@@ -436,7 +436,7 @@ sub file {
         ##############################
 
       }
-      else {
+      elsif ( !$__ret->{changed} ) {
         $__ret = { changed => 0 };
         Rex::get_current_connection()->{reporter}->report( changed => 0, );
       }

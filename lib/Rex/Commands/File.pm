@@ -314,6 +314,9 @@ sub file {
   };
   ##############################
 
+  # default: ensure = present
+  $option->{ensure} ||= "present";
+
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "file", name => $file );
 
@@ -491,7 +494,10 @@ sub file {
     }
   }
 
-  if ( !exists $option->{content} && !exists $option->{source} ) {
+  if ( !exists $option->{content}
+    && !exists $option->{source}
+    && $option->{ensure} ne "absent" )
+  {
 
     # no content and no source, so just verify that the file is present
     if ( !$fs->is_file($file) && !$is_directory ) {
@@ -541,7 +547,7 @@ sub file {
 
   my %stat_new = $fs->stat($file);
 
-  if ( $stat_old{mode} ne $stat_new{mode} ) {
+  if ( %stat_old && %stat_new && $stat_old{mode} ne $stat_new{mode} ) {
     Rex::get_current_connection()->{reporter}->report(
       changed => 1,
       message =>
@@ -549,14 +555,14 @@ sub file {
     );
   }
 
-  if ( $stat_old{uid} ne $stat_new{uid} ) {
+  if ( %stat_old && %stat_new && $stat_old{uid} ne $stat_new{uid} ) {
     Rex::get_current_connection()->{reporter}->report(
       changed => 1,
       message => "Owner changed from $stat_old{uid} to $stat_new{uid}.",
     );
   }
 
-  if ( $stat_old{gid} ne $stat_new{gid} ) {
+  if ( %stat_old && %stat_new && $stat_old{gid} ne $stat_new{gid} ) {
     Rex::get_current_connection()->{reporter}->report(
       changed => 1,
       message => "Group changed from $stat_old{gid} to $stat_new{gid}.",

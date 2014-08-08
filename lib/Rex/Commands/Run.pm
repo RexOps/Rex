@@ -116,6 +116,9 @@ sub run {
     $option = {@_};
   }
 
+  $option->{auto_die} = Rex::Config->get_exec_autodie()
+    if !exists $option->{auto_die};
+
   my $res_cmd = $cmd;
 
   if ( exists $option->{only_notified} && $option->{only_notified} ) {
@@ -157,16 +160,17 @@ sub run {
   }
 
   if ( exists $option->{only_if} ) {
-    run( $option->{only_if} );
+    run( $option->{only_if}, auto_die => 0 );
     if ( $? != 0 ) {
       Rex::Logger::debug(
         "Don't executing $cmd because $option->{only_if} return $?.");
       $changed = 0;
+      $?       = 0;    # reset $?
     }
   }
 
   if ( exists $option->{unless} ) {
-    run( $option->{unless} );
+    run( $option->{unless}, auto_die => 0 );
     if ( $? == 0 ) {
       Rex::Logger::debug(
         "Don't executing $cmd because $option->{unless} return $?.");
@@ -185,7 +189,6 @@ sub run {
 
     my ( $out, $err );
     my $exec = Rex::Interface::Exec->create;
-
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
       eval {
         local $SIG{ALRM} = sub { die("timeout"); };
@@ -249,15 +252,13 @@ sub run {
   Rex::get_current_connection()->{reporter}
     ->report_resource_end( type => "run", name => $res_cmd );
 
-  if ( Rex::Config->get_exec_autodie()
-    && Rex::Config->get_exec_autodie() == 1 )
-  {
+  if ( exists $option->{auto_die} && $option->{auto_die} ) {
     if ( $? != 0 ) {
       die("Error executing: $cmd.\nOutput:\n$out_ret");
     }
   }
 
-  if (wantarray && defined $out_ret) {
+  if ( wantarray && defined $out_ret ) {
     return split( /\r?\n/, $out_ret );
   }
 

@@ -181,7 +181,8 @@ OLD_PKG:
   NEW_PKG:
     for my $new_pkg (@new_installed) {
       if ( $old_pkg->{name} eq $new_pkg->{name} ) {
-        # flag the package as found in new package list, 
+
+        # flag the package as found in new package list,
         # to find removed and new ones.
         $old_pkg->{found} = 1;
         $new_pkg->{found} = 1;
@@ -196,10 +197,13 @@ OLD_PKG:
 
   # getting removed old packages
   push @modifications,
-    map { $_->{action} = 'removed'; $_ } grep { !exists $_->{found} } @old_installed;
+    map { $_->{action} = 'removed'; $_ }
+    grep { !exists $_->{found} } @old_installed;
+
   # getting new packages
   push @modifications,
-    map { $_->{action} = 'installed'; $_ } grep { !exists $_->{found} } @new_installed;
+    map { $_->{action} = 'installed'; $_ }
+    grep { !exists $_->{found} } @new_installed;
 
   map { delete $_->{found} } @modifications;
 

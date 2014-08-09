@@ -538,12 +538,48 @@ For example I<apt-get upgrade> or I<yum update>.
    update_system;
  };
 
+If you want to get the packages that where updated, you can use the I<on_change> hook.
+
+ task "update-system", "server1", sub {
+   update_system
+     on_change => sub {
+       my (@modified_packages) = @_;
+       for my $pkg (@modified_packages) {
+         say "Name: $pkg->{name}";
+         say "Version: $pkg->{version}";
+         say "Action: $pkg->{action}";   # some of updated, installed or removed
+       }
+     };
+ };
+
+
 =cut
 
 sub update_system {
   my $pkg = Rex::Pkg->get;
+  my (%option) = @_;
+
+  # safe the currently installed packages, so that we can compare
+  # the package db for changes
+  my @old_installed = $pkg->get_installed;
+
   eval { $pkg->update_system; };
   Rex::Logger::info( "An error occured for update_system: $@", "warn" ) if $@;
+
+  my @new_installed = $pkg->get_installed;
+
+  my @modifications =
+    $pkg->diff_package_list( \@old_installed, \@new_installed );
+
+  if ( scalar @modifications > 0 ) {
+
+    # there where some changes in the package database
+    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+
+      # run the on_change hook
+      $option{on_change}->(@modifications);
+    }
+  }
 }
 
 =item installed_packages

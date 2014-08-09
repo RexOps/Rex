@@ -100,6 +100,10 @@ If you want to set custom environment variables you can do this like this:
      env_var_2 => "the value for 2",
    };
 
+If you want to end the command upon receiving a certain output:
+ run "my_command",
+   end_if_matched => qr/PATTERN/;
+   
 =cut
 
 our $LAST_OUTPUT;    # this variable stores the last output of a run.

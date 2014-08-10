@@ -176,6 +176,16 @@ Get all instances of a cloud service.
    }
  };
 
+There are some parameters for this function that can change the gathering of ip addresses for some cloud providers (like OpenStack).
+
+ task "list", sub {
+   my @instances = cloud_instance_list 
+                      private_network => 'private',
+                      public_network  => 'public',
+                      public_ip_type  => 'floating',
+                      private_ip_type => 'fixed';
+ };
+
 =cut
 
 sub cloud_instance_list {

@@ -18,6 +18,9 @@ use JSON::XS;
 use LWP::UserAgent;
 use Data::Dumper;
 use Carp;
+use MIME::Base64 qw(decode_base64);
+use Digest::MD5 qw(md5_hex);
+use File::Basename;
 
 sub new {
   my $that  = shift;
@@ -431,6 +434,60 @@ sub associate_floating_ip {
 
   my $content = $self->_request(
     POST         => $nova_url . '/servers/' . $data{instance_id} . '/action',
+    content_type => 'application/json',
+    content      => encode_json($request_data),
+  );
+}
+
+sub list_keys {
+  my $self     = shift;
+  my $nova_url = $self->get_nova_url;
+
+  my $content = $self->_request( GET => $nova_url . '/os-keypairs' );
+
+  # return finger print list, hex format without ':'
+  map { $_->{keypair}->{fingerprint} =~ s/://gr } @{ $content->{keypairs} };
+}
+
+sub upload_key {
+  my ($self) = shift;
+  my $nova_url = $self->get_nova_url;
+
+  my $public_key = glob(Rex::Config->get_public_key);
+  my ($public_key_name, undef, undef) = fileparse($public_key, qr/\.[^.]*/);
+
+  my ($type, $key, $comment);
+
+  # read public key
+  unless ( open(FILE, glob($public_key)) ) {
+    Rex::Logger::debug("Cannot read $public_key");
+    return undef;
+  }
+
+  { local $/ = undef; ($type, $key, $comment) = split(/\s+/, <FILE>); }
+  close FILE;
+
+  # calculate key fingerprint so we can compare them
+  my $fingerprint = md5_hex( decode_base64($key) );
+  Rex::Logger::debug("Public key fingerprint is $fingerprint");
+
+  # upoad only new key
+  if ( grep( /$fingerprint/, $self->list_keys() ) ) {
+    Rex::Logger::debug("Public key already uploaded");
+    return undef;
+  }
+
+  my $request_data = {
+    keypair => {
+      public_key => "$type $key",
+      name     => $public_key_name,
+      #name => 'cloud-key'
+    }
+  };
+
+  Rex::Logger::info('Uploading public key');
+  $self->_request(
+    POST => $nova_url . '/os-keypairs',
     content_type => 'application/json',
     content      => encode_json($request_data),
   );

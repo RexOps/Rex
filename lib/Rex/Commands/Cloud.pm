@@ -74,7 +74,8 @@ use Rex::Group::Entry::Server;
   get_cloud_operating_systems
   cloud_image_list
   cloud_object
-  get_cloud_floating_ip);
+  get_cloud_floating_ip
+  cloud_upload_key);
 
 Rex::Config->register_set_handler(
   "cloud" => sub {
@@ -237,6 +238,26 @@ Get a list of all available cloud images.
 
 sub cloud_image_list {
   return cloud_object()->list_images();
+}
+
+=item cloud_upload_key
+
+Upload public SSH key to cloud provider
+
+private_key '~/.ssh/mykey
+public_key  '~/.ssh/mykey.pub';
+
+task cloudprovider => sub {
+    cloud_upload_key;
+
+    cloud_instance create => {
+      ...
+    }
+
+=cut
+
+sub cloud_upload_key {
+  return cloud_object()->upload_key();
 }
 
 =item get_cloud_instances_as_group
@@ -481,10 +502,10 @@ Returns first available floating IP
  };
 
 =cut
-sub get_cloud_floating_ip {
-  return cloud_object()->get_floating_ip
-}
 
+sub get_cloud_floating_ip {
+  return cloud_object()->get_floating_ip;
+}
 
 =item cloud_network
 

@@ -445,8 +445,11 @@ sub list_keys {
 
   my $content = $self->_request( GET => $nova_url . '/os-keypairs' );
 
-  # return finger print list, hex format without ':'
-  map { $_->{keypair}->{fingerprint} =~ s/://gr } @{ $content->{keypairs} };
+  # remove ':' from fingerprint string
+  foreach ( @{ $content->{keypairs} } ) {
+    $_->{keypair}->{fingerprint} =~ s/://g;
+  }
+  return @{ $content->{keypairs} }
 }
 
 sub upload_key {
@@ -472,16 +475,16 @@ sub upload_key {
   Rex::Logger::debug("Public key fingerprint is $fingerprint");
 
   # upoad only new key
-  if ( grep( /$fingerprint/, $self->list_keys() ) ) {
+  my $online_key= pop [ map { $_->{keypair}->{fingerprint} eq $fingerprint ? $_ : () } $self->list_keys() ];
+  if ( $online_key ) {
     Rex::Logger::debug("Public key already uploaded");
-    return undef;
+    return $online_key->{keypair}->{name};
   }
 
   my $request_data = {
     keypair => {
       public_key => "$type $key",
       name     => $public_key_name,
-      #name => 'cloud-key'
     }
   };
 
@@ -491,6 +494,8 @@ sub upload_key {
     content_type => 'application/json',
     content      => encode_json($request_data),
   );
+
+  return $public_key_name;
 }
 
 1;

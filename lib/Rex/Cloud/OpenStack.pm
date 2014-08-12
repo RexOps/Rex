@@ -122,6 +122,7 @@ sub run_instance {
       flavorRef => $data{plan_id},
       imageRef  => $data{image_id},
       name      => $data{name},
+      key_name  => $data{key},
     }
   };
 

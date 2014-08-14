@@ -293,6 +293,7 @@ sub _make_instance_map {
   return (
     ip           => $_[1]->{"ipAddress"},
     id           => $_[1]->{"instanceId"},
+    image_id     => $_[1]->{"imageId"},
     architecture => $_[1]->{"architecture"},
     type         => $_[1]->{"instanceType"},
     dns_name     => $_[1]->{"dnsName"},

@@ -46,7 +46,6 @@ use Rex::Commands;
 use Rex::Hook;
 
 use Data::Dumper;
-use Digest::MD5;
 
 require Rex::Exporter;
 

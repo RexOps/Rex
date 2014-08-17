@@ -41,8 +41,10 @@ package Rex::Commands::Rsync;
 use strict;
 use warnings;
 
-use Expect;
-$Expect::Log_Stdout = 0;
+BEGIN {
+  Expect->use;
+  $Expect::Log_Stdout = 0;
+};
 
 require Rex::Exporter;
 

@@ -8,7 +8,7 @@ package Rex::Output;
 
 use strict;
 use warnings;
-use IPC::Shareable;
+BEGIN { IPC::Shareable->use };
 use base 'Rex::Output::Base';
 
 use vars qw($output_object);

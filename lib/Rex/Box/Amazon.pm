@@ -86,7 +86,10 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Cloud;
 
-use LWP::UserAgent;
+BEGIN {
+  LWP::UserAgent->use;
+};
+
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 

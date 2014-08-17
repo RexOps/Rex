@@ -65,13 +65,13 @@ use Rex::Config;
 use Rex::Helper::Array;
 use Rex::Report;
 use Rex::Notify;
+use Rex::Require;
 use File::Basename;
 
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION          = "0.51.99.0";
-$WITH_EXIT_STATUS = 1;             # since 0.50 activated by default
+$WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
 
 my $cur_dir;
 

@@ -13,9 +13,11 @@ use Rex::Logger;
 
 use base 'Rex::Cloud::Base';
 
-use HTTP::Request::Common qw(:DEFAULT DELETE);
-use JSON::XS;
-use LWP::UserAgent;
+BEGIN {
+  JSON::XS->use;
+  HTTP::Request::Common->use(qw(:DEFAULT DELETE));
+  LWP::UserAgent->use;
+};
 use Data::Dumper;
 use Carp;
 

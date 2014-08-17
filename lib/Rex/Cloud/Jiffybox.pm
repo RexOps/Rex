@@ -10,9 +10,11 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use LWP::UserAgent;
-use HTTP::Request::Common;
-use JSON::XS;
+BEGIN {
+  LWP::UserAgent->use;
+  HTTP::Request::Common->use;
+  JSON::XS->use;
+};
 use Data::Dumper;
 
 use Rex::Cloud::Base;

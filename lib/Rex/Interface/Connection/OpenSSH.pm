@@ -11,7 +11,8 @@ use warnings;
 
 use Rex::Interface::Connection::Base;
 
-use Net::OpenSSH;
+Net::OpenSSH->require;
+
 use base qw(Rex::Interface::Connection::Base);
 
 sub new {

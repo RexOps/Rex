@@ -11,6 +11,7 @@ use warnings;
 
 use Data::Dumper;
 use Rex::Template;
+use base 'Rex::Output::Base';
 
 sub new {
   my $that  = shift;
@@ -42,7 +43,7 @@ sub error {
   $self->{error} .= $msg . "\n";
 }
 
-sub DESTROY {
+sub write {
   my ($self) = @_;
 
   if ( !exists $self->{data} ) { return; }

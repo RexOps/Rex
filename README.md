@@ -29,3 +29,25 @@ If you want to contribute new functionality or fix things, you can just clone th
 We use perltidy to help us to maintain a consequent code style throughout the project (check out our .perltidyrc for more details). We recommend setting it up with your favorite IDE or text editor, so you can apply formatting easily or even automatically to your changes before committing them.
 
 If you have any questions about how to implement something, join us on irc.freenode.net / #rex.
+
+## Build from source
+
+If you want to build Rex from this source tree, you need to install [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla).
+
+Dist::Zilla comes with the *dzil* command.
+
+To build a .tar.gz release file:
+```
+dzil build
+```
+
+To install rex you can use:
+```
+dzil install
+```
+
+To install the dependencies with *cpanm* you can use:
+```
+dzil listdeps --missing | cpanm
+```
+

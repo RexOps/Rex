@@ -8,13 +8,13 @@ package Rex::Report;
 
 use strict;
 use warnings;
+use Data::Dumper;
 
 my $report;
 
 sub create {
   my ( $class, $type ) = @_;
-
-  if ($report) { return $report; }
+  if ( $report && $type && ref($report) =~ m/::\Q$type\E$/ ) { return $report; }
 
   $type ||= "Base";
 

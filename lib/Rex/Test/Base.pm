@@ -59,7 +59,7 @@ use strict;
 use warnings;
 
 #use Rex -base;
-require Test::More;
+Test::More->require;
 require Rex::Commands;
 use Rex::Commands::Box;
 use Data::Dumper;

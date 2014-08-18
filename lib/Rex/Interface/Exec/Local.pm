@@ -15,6 +15,9 @@ use Rex::Commands;
 use Symbol 'gensym';
 use IPC::Open3;
 
+# Use 'parent' is recommended, but from Perl 5.10.1 its in core
+use base 'Rex::Interface::Exec::Base';
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
@@ -41,7 +44,7 @@ sub set_env {
 sub exec {
   my ( $self, $cmd, $path, $option ) = @_;
 
-  my ( $out, $err );
+  my ( $out, $err, $pid );
 
   if ( exists $option->{cwd} ) {
     $cmd = "cd " . $option->{cwd} . " && $cmd";
@@ -87,21 +90,31 @@ sub exec {
   $error = gensym;
 
   if ( Rex::Config->get_no_tty ) {
-    my $pid = open3( $writer, $reader, $error, $cmd );
+    $pid = open3( $writer, $reader, $error, $cmd );
 
     while ( my $output = <$reader> ) {
       $out .= $output;
+      $self->execute_line_based_operation( $output, $option )
+        && goto END_OPEN3;
     }
 
     while ( my $errout = <$error> ) {
       $err .= $errout;
+      $self->execute_line_based_operation( $errout, $option )
+        && goto END_OPEN3;
     }
-
+  END_OPEN3:
     waitpid( $pid, 0 ) or die($!);
   }
   else {
-    $cmd .= " 2>&1";
-    $out = qx{$cmd};
+    $pid = open( my $fh, "$cmd 2>&1 |" ) or die($!);
+    while (<$fh>) {
+      $out .= $_;
+      $self->execute_line_based_operation( $_, $option )
+        && do { kill( 'KILL', $pid ); last };
+    }
+    waitpid( $pid, 0 ) or die($!);
+
   }
 
   $? >>= 8;

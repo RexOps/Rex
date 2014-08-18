@@ -309,7 +309,10 @@ sub task {
     *{"${class}::$task_name_save"} = sub {
       Rex::Logger::info("Running task $task_name_save on current connection");
 
-      if( Rex::Config->get_task_call_by_method && $_[0] =~ m/^[A-Za-z0-9_:]+$/ && ref $_[1] eq "HASH" ) {
+      if ( Rex::Config->get_task_call_by_method
+        && $_[0] =~ m/^[A-Za-z0-9_:]+$/
+        && ref $_[1] eq "HASH" )
+      {
         shift;
       }
 
@@ -317,7 +320,7 @@ sub task {
         $code->(@_);
       }
       else {
-        if ($REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
+        if ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
           $code->( {@_} );
         }
         else {
@@ -783,8 +786,9 @@ Set a proxy command to use for the connection. This is only possible with OpenSS
  proxy_command "ssh user@jumphost nc %h %p 2>/dev/null";
 
 =cut
+
 sub proxy_command {
-  Rex::Config->set_proxy_command($_[0]);
+  Rex::Config->set_proxy_command( $_[0] );
 }
 
 =item set_distributor($distributor)

@@ -10,8 +10,6 @@ use strict;
 use warnings;
 use DBI;
 
-use String::Escape 'string2hash';
-
 my %db_connections;
 
 sub perform_request {

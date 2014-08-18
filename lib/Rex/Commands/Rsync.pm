@@ -41,8 +41,10 @@ package Rex::Commands::Rsync;
 use strict;
 use warnings;
 
-use Expect;
-$Expect::Log_Stdout = 0;
+BEGIN {
+  Expect->use;
+  $Expect::Log_Stdout = 0;
+};
 
 require Rex::Exporter;
 
@@ -162,7 +164,7 @@ sub sync {
           my $fh = shift;
           $fh->send("yes\n");
           exp_continue;
-          }
+        }
       ],
       [
         qr{password: ?$}i,
@@ -171,7 +173,7 @@ sub sync {
           my $fh = shift;
           $fh->send( $pass . "\n" );
           exp_continue;
-          }
+        }
       ],
       [
         qr{password for.*:$}i,
@@ -180,14 +182,14 @@ sub sync {
           my $fh = shift;
           $fh->send( $pass . "\n" );
           exp_continue;
-          }
+        }
       ],
       [
         qr{rsync error: error in rsync protocol},
         sub {
           Rex::Logger::debug("Error in rsync");
           die;
-          }
+        }
       ],
       [
         qr{rsync error: remote command not found},
@@ -197,7 +199,7 @@ sub sync {
             "Please install rsync, or use Rex::Commands::Sync sync_up/sync_down"
           );
           die;
-          }
+        }
       ],
 
     );
@@ -221,7 +223,7 @@ sub sync {
           my $fh = shift;
           $fh->send("yes\n");
           exp_continue;
-          }
+        }
       ],
       [
         qr{password: ?$}i,
@@ -230,7 +232,7 @@ sub sync {
           my $fh = shift;
           $fh->send( $pass . "\n" );
           exp_continue;
-          }
+        }
       ],
       [
         qr{Enter passphrase for key.*: $},
@@ -239,14 +241,14 @@ sub sync {
           my $fh = shift;
           $fh->send( $pass . "\n" );
           exp_continue;
-          }
+        }
       ],
       [
         qr{rsync error: error in rsync protocol},
         sub {
           Rex::Logger::debug("Error in rsync");
           die;
-          }
+        }
       ],
       [
         qr{rsync error: remote command not found},
@@ -256,7 +258,7 @@ sub sync {
             "Please install rsync, or use Rex::Commands::Sync sync_up/sync_down"
           );
           die;
-          }
+        }
       ],
 
     );
@@ -276,7 +278,7 @@ sub sync {
           sub {
             Rex::Logger::debug("Finished transfer very fast");
             die;
-            }
+          }
 
         ]
       );
@@ -288,14 +290,14 @@ sub sync {
           sub {
             Rex::Logger::debug("Finished transfer");
             exp_continue;
-            }
+          }
         ],
         [
           qr{rsync error: error in rsync protocol},
           sub {
             Rex::Logger::debug("Error in rsync");
             die;
-            }
+          }
         ],
       );
 

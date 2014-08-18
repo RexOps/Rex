@@ -18,12 +18,14 @@ use Rex::Cloud::Base;
 
 use base qw(Rex::Cloud::Base);
 
-use LWP::UserAgent;
-use MIME::Base64 qw(encode_base64 decode_base64);
-use Digest::HMAC_SHA1;
-use HTTP::Date qw(time2isoz);
+BEGIN {
+  LWP::UserAgent->use;
+  Digest::HMAC_SHA1->use;
+  HTTP::Date->use(qw(time2isoz));
+  MIME::Base64->use(qw(encode_base64 decode_base64));
+  XML::Simple->require;
+};
 
-require XML::Simple;
 
 use Data::Dumper;
 
@@ -293,6 +295,7 @@ sub _make_instance_map {
   return (
     ip           => $_[1]->{"ipAddress"},
     id           => $_[1]->{"instanceId"},
+    image_id     => $_[1]->{"imageId"},
     architecture => $_[1]->{"architecture"},
     type         => $_[1]->{"instanceType"},
     dns_name     => $_[1]->{"dnsName"},

@@ -12,7 +12,9 @@ use warnings;
 use Fcntl;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;
-use Net::SFTP::Foreign::Constants qw(:flags :fxp);
+
+BEGIN { Net::SFTP::Foreign::Constants->use(qw(:flags :fxp)); };
+
 use base qw(Rex::Interface::File::Base);
 
 sub new {

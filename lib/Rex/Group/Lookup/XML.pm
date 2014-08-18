@@ -33,7 +33,7 @@ use Rex -base;
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
-use XML::LibXML;
+XML::LibXML->require;
 
 @EXPORT = qw(groups_xml);
 
@@ -45,14 +45,14 @@ File Example:
 
 <configuration>
    <group name="database">
-   		<server name="machine01" user="root" password="foob4r" sudo="true" hdd="300" loc="/opt" />
+       <server name="machine01" user="root" password="foob4r" sudo="true" hdd="300" loc="/opt" />
    </group>
    <group name="application">
-   		<server name="machine01" user="root" password="foob4r" sudo="true" hdd="50" loc="/export" />
-   		<server name="machine02" user="root" password="foob5r" sudo="true"/>
+       <server name="machine01" user="root" password="foob4r" sudo="true" hdd="50" loc="/export" />
+       <server name="machine02" user="root" password="foob5r" sudo="true"/>
    </group>
    <group name="profiler">
-   		<server name="machine03" user="root" password="blue123"/>
+       <server name="machine03" user="root" password="blue123"/>
    </group>
 </configuration>
  

@@ -10,7 +10,6 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Output;
 use Data::Dumper;
 
 use Rex::Interface::Executor::Base;
@@ -43,8 +42,9 @@ sub exec {
     $ret = &$code($opts);
   };
 
+  my %opts = Rex::Args->getopts;
   if ($@) {
-    if ( Rex::Output->get ) {
+    if ( exists $opts{c} ) {
       Rex::Output->get->add( $task->name, error => 1, msg => $@ );
     }
     else {
@@ -53,7 +53,7 @@ sub exec {
     }
   }
   else {
-    if ( Rex::Output->get ) {
+    if ( exists $opts{c} ) {
       Rex::Output->get->add( $task->name );
     }
   }

@@ -53,7 +53,7 @@ sub exec {
     }
   }
   else {
-    if ( exists $opts{c} ) {
+    if ( exists $opts{o} ) {
       Rex::Output->get->add( $task->name );
     }
   }

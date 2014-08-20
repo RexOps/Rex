@@ -42,6 +42,7 @@ use strict;
 use warnings;
 
 BEGIN {
+  use Rex::Require;
   Expect->use;
   $Expect::Log_Stdout = 0;
 };

@@ -275,7 +275,7 @@ sub sync {
         Rex::Config->get_timeout,
         @expect_options,
         [
-          qr{total size is \d+\s+speedup is },
+          qr{total size is [\d,]+\s+speedup is },
           sub {
             Rex::Logger::debug("Finished transfer very fast");
             die;
@@ -287,7 +287,7 @@ sub sync {
       $exp->expect(
         undef,
         [
-          qr{total size is \d+\s+speedup is },
+          qr{total size is [\d,]+\s+speedup is },
           sub {
             Rex::Logger::debug("Finished transfer");
             exp_continue;

@@ -11,6 +11,7 @@ use warnings;
 
 use Rex::Logger;
 BEGIN {
+  use Rex::Require;
   LWP::UserAgent->use;
   HTTP::Request::Common->use;
   JSON::XS->use;

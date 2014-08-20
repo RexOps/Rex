@@ -14,6 +14,7 @@ use Rex::Logger;
 use base 'Rex::Cloud::Base';
 
 BEGIN {
+  use Rex::Require;
   JSON::XS->use;
   HTTP::Request::Common->use(qw(:DEFAULT DELETE));
   LWP::UserAgent->use;

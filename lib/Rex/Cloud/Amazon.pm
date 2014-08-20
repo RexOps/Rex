@@ -19,6 +19,7 @@ use Rex::Cloud::Base;
 use base qw(Rex::Cloud::Base);
 
 BEGIN {
+  use Rex::Require;
   LWP::UserAgent->use;
   Digest::HMAC_SHA1->use;
   HTTP::Date->use(qw(time2isoz));

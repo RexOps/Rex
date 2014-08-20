@@ -13,7 +13,7 @@ use Data::Dumper;
 
 BEGIN {
   MIME::Base64->use;
-};
+}
 
 use Rex::Commands;
 use Rex::Interface::Fs;

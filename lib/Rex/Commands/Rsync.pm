@@ -45,7 +45,7 @@ BEGIN {
   use Rex::Require;
   Expect->use;
   $Expect::Log_Stdout = 0;
-};
+}
 
 require Rex::Exporter;
 

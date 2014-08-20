@@ -10,10 +10,11 @@ use strict;
 use warnings;
 
 use Rex::Interface::Connection::Base;
+
 BEGIN {
   LWP::UserAgent->use;
   JSON::XS->use;
-};
+}
 
 use Data::Dumper;
 

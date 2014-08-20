@@ -9,7 +9,7 @@ package Rex::Helper::INI;
 use strict;
 use warnings;
 
-BEGIN { String::Escape->use('string2hash'); };
+BEGIN { String::Escape->use('string2hash'); }
 
 sub parse {
   my (@lines) = @_;

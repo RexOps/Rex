@@ -19,11 +19,11 @@ BEGIN { require UNIVERSAL; }
 my $module_name_rx = qr/[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*/;
 
 sub UNIVERSAL::require {
-  my ($module, %option) = @_;
+  my ( $module, %option ) = @_;
 
   $option{level} ||= 0;
 
-  my ( $caller_package, $caller_file, $caller_line ) = caller($option{level});
+  my ( $caller_package, $caller_file, $caller_line ) = caller( $option{level} );
 
   my $file = $module . ".pm";
   $file =~ s/::/\//g;
@@ -41,15 +41,15 @@ sub UNIVERSAL::require {
 }
 
 sub UNIVERSAL::use {
-  my ($module, @imports) = @_;
+  my ( $module, @imports ) = @_;
 
-  $module->require(level => 1);
+  $module->require( level => 1 );
 
   my ( $caller_package, $caller_file, $caller_line ) = caller(0);
 
   eval "package $caller_package;\n\$module->import(\@imports);\n1;";
 
-  if($@) {
+  if ($@) {
     confess $@;
   }
 
@@ -63,7 +63,7 @@ sub UNIVERSAL::is_loadable {
     1;
   };
 
-  if($@) { return 0; };
+  if ($@) { return 0; }
   return 1;
 }
 

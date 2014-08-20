@@ -18,7 +18,7 @@ BEGIN {
   JSON::XS->use;
   HTTP::Request::Common->use(qw(:DEFAULT DELETE));
   LWP::UserAgent->use;
-};
+}
 use Data::Dumper;
 use Carp;
 use MIME::Base64 qw(decode_base64);
@@ -209,7 +209,7 @@ sub list_instances {
       ip => (
         [
           map {
-            $_->{"OS-EXT-IPS:type"} eq $options{public_ip_type}
+                $_->{"OS-EXT-IPS:type"} eq $options{public_ip_type}
               ? $_->{'addr'}
               : ()
           } @{ $instance->{addresses}{ $options{public_network} } }
@@ -227,7 +227,7 @@ sub list_instances {
       private_ip  => (
         [
           map {
-            $_->{"OS-EXT-IPS:type"} eq $options{private_ip_type}
+                $_->{"OS-EXT-IPS:type"} eq $options{private_ip_type}
               ? $_->{'addr'}
               : ()
           } @{ $instance->{addresses}{ $options{private_network} } }

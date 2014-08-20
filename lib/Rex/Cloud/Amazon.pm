@@ -25,8 +25,7 @@ BEGIN {
   HTTP::Date->use(qw(time2isoz));
   MIME::Base64->use(qw(encode_base64 decode_base64));
   XML::Simple->require;
-};
-
+}
 
 use Data::Dumper;
 

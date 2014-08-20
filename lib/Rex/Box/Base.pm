@@ -33,7 +33,7 @@ use Rex::Commands::SimpleCheck;
 
 BEGIN {
   LWP::UserAgent->use;
-};
+}
 
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);

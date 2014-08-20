@@ -13,9 +13,10 @@ use Rex::Commands;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::Base;
 use Data::Dumper;
+
 BEGIN {
   MIME::Base64->use;
-};
+}
 use base qw(Rex::Interface::Fs::Base);
 
 sub new {

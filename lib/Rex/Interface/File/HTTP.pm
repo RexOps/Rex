@@ -12,6 +12,7 @@ use warnings;
 use Data::Dumper;
 
 BEGIN {
+  use Rex::Require;
   MIME::Base64->use;
 }
 

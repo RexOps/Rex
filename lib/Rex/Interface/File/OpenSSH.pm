@@ -13,7 +13,10 @@ use Fcntl;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;
 
-BEGIN { Net::SFTP::Foreign::Constants->use(qw(:flags :fxp)); }
+BEGIN {
+  use Rex::Require;
+  Net::SFTP::Foreign::Constants->use(qw(:flags :fxp));
+}
 
 use base qw(Rex::Interface::File::Base);
 

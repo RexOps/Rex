@@ -13,7 +13,10 @@ use Fcntl qw(:DEFAULT :mode);
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::SSH;
 
-BEGIN { Net::SFTP::Foreign::Constants->use(qw(:flags)); }
+BEGIN {
+  use Rex::Require;
+  Net::SFTP::Foreign::Constants->use(qw(:flags));
+}
 
 use base qw(Rex::Interface::Fs::SSH);
 

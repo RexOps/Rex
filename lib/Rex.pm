@@ -55,7 +55,6 @@ package Rex;
 use strict;
 use warnings;
 
-use Net::SSH2;
 use Rex::Logger;
 use Rex::Interface::Cache;
 use Data::Dumper;

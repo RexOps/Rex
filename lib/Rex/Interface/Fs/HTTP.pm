@@ -15,6 +15,7 @@ use Rex::Interface::Fs::Base;
 use Data::Dumper;
 
 BEGIN {
+  use Rex::Require;
   MIME::Base64->use;
 }
 use base qw(Rex::Interface::Fs::Base);

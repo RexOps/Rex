@@ -18,7 +18,10 @@ use Rex::TaskList::Base;
 use Rex::Report;
 use Time::HiRes qw(time);
 
-Parallel::ForkManager->require;
+BEGIN {
+  use Rex::Require;
+  Parallel::ForkManager->require;
+}
 
 use base qw(Rex::TaskList::Base);
 

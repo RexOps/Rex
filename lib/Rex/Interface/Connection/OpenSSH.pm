@@ -9,10 +9,12 @@ package Rex::Interface::Connection::OpenSSH;
 use strict;
 use warnings;
 
+BEGIN {
+  use Rex::Require;
+  Net::OpenSSH->require;
+}
+
 use Rex::Interface::Connection::Base;
-
-Net::OpenSSH->require;
-
 use base qw(Rex::Interface::Connection::Base);
 
 sub new {

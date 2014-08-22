@@ -73,7 +73,10 @@ use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
 
-use LWP::UserAgent;
+BEGIN {
+  LWP::UserAgent->use;
+}
+
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 

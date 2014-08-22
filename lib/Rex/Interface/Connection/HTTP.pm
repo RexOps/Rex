@@ -10,8 +10,12 @@ use strict;
 use warnings;
 
 use Rex::Interface::Connection::Base;
-use LWP::UserAgent;
-use JSON::XS;
+
+BEGIN {
+  LWP::UserAgent->use;
+  JSON::XS->use;
+}
+
 use Data::Dumper;
 
 use base qw(Rex::Interface::Connection::Base);

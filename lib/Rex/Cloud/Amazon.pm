@@ -18,12 +18,14 @@ use Rex::Cloud::Base;
 
 use base qw(Rex::Cloud::Base);
 
-use LWP::UserAgent;
-use MIME::Base64 qw(encode_base64 decode_base64);
-use Digest::HMAC_SHA1;
-use HTTP::Date qw(time2isoz);
-
-require XML::Simple;
+BEGIN {
+  use Rex::Require;
+  LWP::UserAgent->use;
+  Digest::HMAC_SHA1->use;
+  HTTP::Date->use(qw(time2isoz));
+  MIME::Base64->use(qw(encode_base64 decode_base64));
+  XML::Simple->require;
+}
 
 use Data::Dumper;
 

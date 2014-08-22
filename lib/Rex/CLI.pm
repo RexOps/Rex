@@ -21,7 +21,6 @@ use Rex::Group;
 use Rex::Batch;
 use Rex::TaskList;
 use Rex::Logger;
-use Rex::Output;
 
 use Data::Dumper;
 
@@ -200,6 +199,7 @@ FORCE_SERVER: {
   }
 
   if ( $opts{'o'} ) {
+    Rex::Output->require;
     Rex::Output->get( $opts{'o'} );
   }
 
@@ -280,8 +280,7 @@ FORCE_SERVER: {
 
     eval {
       my $server_ini_file = dirname($::rexfile) . "/server.ini";
-      if ( -f $server_ini_file ) {
-        require Rex::Group::Lookup::INI;
+      if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
         Rex::Group::Lookup::INI::groups_file($server_ini_file);
       }
 
@@ -570,7 +569,11 @@ CHECK_OVERWRITE: {
   for my $exit_hook (@exit) {
     &$exit_hook();
   }
-  Rex::Output->get->write() if ( defined Rex::Output->get );
+
+  if ( $opts{'o'} ) {
+    Rex::Output->get->write() if ( defined Rex::Output->get );
+  }
+
   if ($Rex::WITH_EXIT_STATUS) {
     for my $exit_code (@exit_codes) {
       if ( $exit_code != 0 ) {

@@ -196,13 +196,11 @@ OLD_PKG:
   }
 
   # getting removed old packages
-  push @modifications,
-    map { $_->{action} = 'removed'; $_ }
+  push @modifications, map { $_->{action} = 'removed'; $_ }
     grep { !exists $_->{found} } @old_installed;
 
   # getting new packages
-  push @modifications,
-    map { $_->{action} = 'installed'; $_ }
+  push @modifications, map { $_->{action} = 'installed'; $_ }
     grep { !exists $_->{found} } @new_installed;
 
   map { delete $_->{found} } @modifications;

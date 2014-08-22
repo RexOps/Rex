@@ -13,11 +13,17 @@ use Rex::Logger;
 
 use base 'Rex::Cloud::Base';
 
-use HTTP::Request::Common qw(:DEFAULT DELETE);
-use JSON::XS;
-use LWP::UserAgent;
+BEGIN {
+  use Rex::Require;
+  JSON::XS->use;
+  HTTP::Request::Common->use(qw(:DEFAULT DELETE));
+  LWP::UserAgent->use;
+}
 use Data::Dumper;
 use Carp;
+use MIME::Base64 qw(decode_base64);
+use Digest::MD5 qw(md5_hex);
+use File::Basename;
 
 sub new {
   my $that  = shift;
@@ -119,6 +125,7 @@ sub run_instance {
       flavorRef => $data{plan_id},
       imageRef  => $data{image_id},
       name      => $data{name},
+      key_name  => $data{key},
     }
   };
 
@@ -172,8 +179,8 @@ sub terminate_instance {
 }
 
 sub list_instances {
-  my $self     = shift;
-  my %options  = @_;
+  my $self    = shift;
+  my %options = @_;
 
   $options{private_network} ||= "private";
   $options{public_network}  ||= "public";
@@ -198,12 +205,14 @@ sub list_instances {
       }
     }
 
-    push @instances,
-      {
+    push @instances, {
       ip => (
         [
-          map { $_->{"OS-EXT-IPS:type"} eq $options{public_ip_type} ? $_->{'addr'} : () }
-            @{ $instance->{addresses}{$options{public_network}} }
+          map {
+                $_->{"OS-EXT-IPS:type"} eq $options{public_ip_type}
+              ? $_->{'addr'}
+              : ()
+          } @{ $instance->{addresses}{ $options{public_network} } }
         ]->[0]
           || undef
       ),
@@ -217,15 +226,18 @@ sub list_instances {
       name        => $instance->{name},
       private_ip  => (
         [
-          map { $_->{"OS-EXT-IPS:type"} eq $options{private_ip_type} ? $_->{'addr'} : () }
-            @{ $instance->{addresses}{$options{private_network}} }
+          map {
+                $_->{"OS-EXT-IPS:type"} eq $options{private_ip_type}
+              ? $_->{'addr'}
+              : ()
+          } @{ $instance->{addresses}{ $options{private_network} } }
         ]->[0]
           || undef
       ),
       security_groups =>
         ( join ',', map { $_->{name} } @{ $instance->{security_groups} } ),
       networks => \%networks,
-      };
+    };
   }
 
   return @instances;
@@ -434,6 +446,68 @@ sub associate_floating_ip {
     content_type => 'application/json',
     content      => encode_json($request_data),
   );
+}
+
+sub list_keys {
+  my $self     = shift;
+  my $nova_url = $self->get_nova_url;
+
+  my $content = $self->_request( GET => $nova_url . '/os-keypairs' );
+
+  # remove ':' from fingerprint string
+  foreach ( @{ $content->{keypairs} } ) {
+    $_->{keypair}->{fingerprint} =~ s/://g;
+  }
+  return @{ $content->{keypairs} };
+}
+
+sub upload_key {
+  my ($self) = shift;
+  my $nova_url = $self->get_nova_url;
+
+  my $public_key = glob( Rex::Config->get_public_key );
+  my ( $public_key_name, undef, undef ) = fileparse( $public_key, qr/\.[^.]*/ );
+
+  my ( $type, $key, $comment );
+
+  # read public key
+  my $fh;
+  unless ( open( $fh, glob($public_key) ) ) {
+    Rex::Logger::debug("Cannot read $public_key");
+    return undef;
+  }
+
+  { local $/ = undef; ( $type, $key, $comment ) = split( /\s+/, <$fh> ); }
+  close $fh;
+
+  # calculate key fingerprint so we can compare them
+  my $fingerprint = md5_hex( decode_base64($key) );
+  Rex::Logger::debug("Public key fingerprint is $fingerprint");
+
+  # upoad only new key
+  my $online_key =
+    pop [ map { $_->{keypair}->{fingerprint} eq $fingerprint ? $_ : () }
+      $self->list_keys() ];
+  if ($online_key) {
+    Rex::Logger::debug("Public key already uploaded");
+    return $online_key->{keypair}->{name};
+  }
+
+  my $request_data = {
+    keypair => {
+      public_key => "$type $key",
+      name       => $public_key_name,
+    }
+  };
+
+  Rex::Logger::info('Uploading public key');
+  $self->_request(
+    POST         => $nova_url . '/os-keypairs',
+    content_type => 'application/json',
+    content      => encode_json($request_data),
+  );
+
+  return $public_key_name;
 }
 
 1;

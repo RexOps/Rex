@@ -4,6 +4,28 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::CMDB - Function to access the CMDB.
+
+=head1 DESCRIPTION
+
+This module exports a function to access a CMDB via a common interface.
+
+=head1 SYNOPSIS
+
+ task "prepare", "server1", sub {
+   my $virtual_host = cmdb("vhost");
+   my %all_information = cmdb;
+ };
+
+
+=head1 EXPORTED FUNCTIONS
+
+=over 4
+
+=cut
+
 package Rex::CMDB;
 
 use strict;
@@ -54,5 +76,9 @@ sub cmdb {
   my $cmdb = $klass->new( %{$CMDB_PROVIDER} );
   return Rex::Value->new( value => $cmdb->get( $item, $server ) );
 }
+
+=back
+
+=cut
 
 1;

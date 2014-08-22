@@ -19,3 +19,6 @@ doc/bootstrap.pod
 doc/html
 *.txt
 screencasts
+.build
+vars.db
+vars.db.lock

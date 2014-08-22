@@ -10,7 +10,12 @@ use strict;
 use warnings;
 
 use Data::Dumper;
-use MIME::Base64;
+
+BEGIN {
+  use Rex::Require;
+  MIME::Base64->use;
+}
+
 use Rex::Commands;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;

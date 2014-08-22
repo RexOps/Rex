@@ -9,8 +9,12 @@ package Rex::Interface::Connection::SSH;
 use strict;
 use warnings;
 
-use Rex::Interface::Connection::Base;
+BEGIN {
+  use Rex::Require;
+  Net::SSH2->require;
+}
 
+use Rex::Interface::Connection::Base;
 use base qw(Rex::Interface::Connection::Base);
 
 sub new {

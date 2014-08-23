@@ -61,16 +61,17 @@ use base qw(Rex::Exporter);
 Manage user account.
 
  account "krimdomu",
-   ensure      => "present",  # default
-   uid         => 509,
-   home        => '/root',
-   comment     => 'User Account',
-   expire      => '2011-05-30',
-   groups      => [ 'root', '...' ],
-   password    => 'blahblah',
-   system      => 1,
-   create_home => TRUE,
-   ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+   ensure         => "present",  # default
+   uid            => 509,
+   home           => '/root',
+   comment        => 'User Account',
+   expire         => '2011-05-30',
+   groups         => [ 'root', '...' ],
+   password       => 'blahblah',
+   crypt_password => '*', # on Linux, OpenBSD and NetBSD
+   system         => 1,
+   create_home    => TRUE,
+   ssh_key        => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
 
 There is also a no_create_home option similar to create_home but doing the
 opposite. If both used, create_home takes precedence as it the preferred option
@@ -78,6 +79,10 @@ to specify home directory creation policy.
 
 If none of them are specified, Rex follows the remote system's home creation
 policy.
+
+The crypt_password option specifies the encrypted value as found in
+/etc/shadow; on Linux special values are '*' and '!' which mean
+'disabled password' and 'disabled login' respectively.
 
 =cut
 

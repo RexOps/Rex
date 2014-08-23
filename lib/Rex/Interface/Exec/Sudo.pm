@@ -62,7 +62,7 @@ sub exec {
   #   $shell->set_environment($option->{env});
   # }
 
-  my $sudo_password = task->get_sudo_password;
+  my $sudo_password = (defined task() ? task->get_sudo_password : Rex::Config->get_sudo_password);
   my $enc_pw;
   my $random_file = "";
 

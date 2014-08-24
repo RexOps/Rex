@@ -69,6 +69,8 @@ This is the constructor.
     before => [sub {}, sub {}, ...],
     after  => [sub {}, sub {}, ...],
     around => [sub {}, sub {}, ...],
+    before_task_start => [sub {}, sub {}, ...],
+    after_task_finished => [sub {}, sub {}, ...],
     name => $task_name,
     executor => Rex::Interface::Executor->create,
   );

@@ -529,7 +529,7 @@ CHECK_OVERWRITE: {
       for my $task (@ARGV) {
         if ( Rex::TaskList->create()->is_task($task) ) {
           Rex::Logger::debug("Running task: $task");
-          Rex::TaskList->create()->run($task);
+          Rex::TaskList->run($task);
         }
       }
     }

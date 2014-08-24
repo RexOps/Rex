@@ -52,12 +52,12 @@ sub run {
   my $task_object = $class->create()->get_task($task_name);
 
   for my $code (@{ $task_object->{before_task_start} }) {
-    $code->();
+    $code->($task_object);
   }
 
   $class->create()->run($task_name);
 
   for my $code (@{ $task_object->{after_task_finished} }) {
-    $code->();
+    $code->($task_object);
   }
 }

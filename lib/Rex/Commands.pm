@@ -119,7 +119,7 @@ use base qw(Rex::Exporter);
   path
   set
   get
-  before after around
+  before after around before_task_start after_task_finished
   logformat log_format
   sayformat say_format
   connection
@@ -604,11 +604,11 @@ sub do_task {
 
   if ( ref($task) eq "ARRAY" ) {
     for my $t ( @{$task} ) {
-      Rex::TaskList->create()->run($t);
+      Rex::TaskList->run($t);
     }
   }
   else {
-    return Rex::TaskList->create()->run($task);
+    return Rex::TaskList->run($task);
   }
 }
 
@@ -1220,6 +1220,56 @@ sub around {
 
   Rex::TaskList->create()
     ->modify( 'around', $task, $code, $package, $file, $line );
+}
+
+=item before_task_start($task => sub {})
+
+Run code before executing the specified task. This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
+If called repeatedly, each sub will be appended to a list of 'before' functions.
+
+Note: must come after the definition of the specified task
+
+ before_task_start mytask => sub {
+   # do some things
+ };
+
+=cut
+
+sub before_task_start {
+  my ( $task, $code ) = @_;
+
+  if ( $task eq "ALL" ) {
+    $task = qr{.*};
+  }
+
+  my ( $package, $file, $line ) = caller;
+  Rex::TaskList->create()
+    ->modify( 'before_task_start', $task, $code, $package, $file, $line );
+}
+
+=item after_task_finished($task => sub {})
+
+Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
+If called repeatedly, each sub will be appended to a list of 'before' functions.
+
+Note: must come after the definition of the specified task
+
+ after_task_finished mytask => sub {
+   # do some things
+ };
+
+=cut
+
+sub after_task_finished {
+  my ( $task, $code ) = @_;
+
+  if ( $task eq "ALL" ) {
+    $task = qr{.*};
+  }
+
+  my ( $package, $file, $line ) = caller;
+  Rex::TaskList->create()
+    ->modify( 'after_task_finished', $task, $code, $package, $file, $line );
 }
 
 =item logformat($format)

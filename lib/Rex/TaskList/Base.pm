@@ -144,6 +144,8 @@ sub create_task {
     before          => [],
     after           => [],
     around          => [],
+    after_task_finished => [],
+    before_task_start   => [],
     name            => $task_name,
     executor        => Rex::Interface::Executor->create,
     connection_type => Rex::Config->get_connection_type,

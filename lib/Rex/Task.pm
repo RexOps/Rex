@@ -45,6 +45,7 @@ use Rex::Interface::Cache;
 use Rex::Report;
 use Rex::Helper::Run;
 use Rex::Notify;
+use Carp;
 
 require Rex::Commands;
 
@@ -571,20 +572,22 @@ Initiate the connection to $server.
 =cut
 
 sub connect {
-  my ( $self, $server ) = @_;
+  my ( $self, $server, %override ) = @_;
 
   if ( ref($server) ne "Rex::Group::Entry::Server" ) {
     $server = Rex::Group::Entry::Server->new( name => $server );
   }
   $self->{current_server} = $server;
 
-  my $user        = $self->user;
-  my $password    = $self->password;
-  my $public_key  = "";
-  my $private_key = "";
+  my $user = $self->user;
 
   #print Dumper($self);
   my $auth = $self->merge_auth($server);
+
+  if ( exists $override{auth} ) {
+    $auth = $override{auth};
+    $user = $auth->{user};
+  }
 
   my $rex_int_conf = Rex::Commands::get("rex_internals");
   Rex::Logger::debug( Dumper($rex_int_conf) );
@@ -611,19 +614,39 @@ sub connect {
   );
 
   $profiler->start("connect");
-  $self->connection->connect(%connect_hash);
+  eval {
+    $self->connection->connect(%connect_hash);
+    1;
+  } or do {
+    if(! defined Rex::Config->get_fallback_auth) {
+      croak $@;
+    }
+  };
   $profiler->end("connect");
 
   if ( !$self->connection->is_connected ) {
     Rex::pop_connection();
-    die("Couldn't connect to $server.");
+    croak("Couldn't connect to $server.");
   }
   elsif ( !$self->connection->is_authenticated ) {
     Rex::pop_connection();
     my $message = "Wrong username/password or wrong key on $server.";
     $message .= " Or root is not permitted to login over SSH."
       if ( $connect_hash{user} eq 'root' );
-    die($message);
+
+    if ( !exists $override{auth} ) {
+      my $fallback_auth = Rex::Config->get_fallback_auth;
+      if ( ref $fallback_auth eq "ARRAY" ) {
+        my $ret_eval;
+        for my $fallback_a ( @{$fallback_auth} ) {
+          $ret_eval = eval { $self->connect( $server, auth => $fallback_a ); };
+        }
+
+        return $ret_eval if $ret_eval;
+      }
+    }
+
+    croak($message);
   }
   else {
     Rex::Logger::info("Successfully authenticated on $server.")
@@ -633,6 +656,7 @@ sub connect {
 
   $self->run_hook( \$server, "around" );
 
+  return 1;
 }
 
 =item disconnect

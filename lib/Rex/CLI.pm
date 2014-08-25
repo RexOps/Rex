@@ -279,11 +279,11 @@ FORCE_SERVER: {
     }
 
     eval {
-      my $env = environment;
-      my $ini_dir = dirname($::rexfile);
+      my $env             = environment;
+      my $ini_dir         = dirname($::rexfile);
       my $server_ini_file = "$ini_dir/server.$env.ini";
       $server_ini_file = "$ini_dir/server.ini"
-          if ! -f $server_ini_file;
+        if !-f $server_ini_file;
       if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
         Rex::Group::Lookup::INI::groups_file($server_ini_file);
       }

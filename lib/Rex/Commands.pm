@@ -106,7 +106,7 @@ use vars
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group
-  user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh
+  user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh fallback_authentication
   get_random batch timeout max_connect_retries parallelism proxy_command
   do_task run_task run_batch needs
   exit
@@ -467,9 +467,32 @@ If you want to set special login information for a group you have to activate th
  auth for => "prepare" =>
             user => "root";
 
+ auth fallback => {
+   user        => "fallback_user1",
+   password    => "fallback_pw1",
+   public_key  => "",
+   private_key => "",
+ }, {
+   user        => "fallback_user2",
+   password    => "fallback_pw2",
+   public_key  => "keys/public.key",
+   private_key => "keys/private.key",
+   sudo        => TRUE,
+ };
+
 =cut
 
 sub auth {
+
+  if ( !ref $_[0] && $_[0] eq "fallback" ) {
+
+    # set fallback authentication
+    shift;
+
+    Rex::Config->set_fallback_auth(@_);
+    return 1;
+  }
+
   my ( $_d, $entity, %data ) = @_;
 
   my $group = Rex::Group->get_group_object($entity);

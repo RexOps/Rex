@@ -14,6 +14,7 @@ BEGIN {
   Net::SSH2->require;
 }
 
+use Carp;
 use Rex::Interface::Connection::Base;
 use base qw(Rex::Interface::Connection::Base);
 
@@ -108,6 +109,10 @@ CON_SSH:
   }
   elsif ( $auth_type && $auth_type eq "key" ) {
     Rex::Logger::debug("Using key authentication.");
+
+    croak "No public_key file defined."  if !$public_key;
+    croak "No private_key file defined." if !$private_key;
+
     $self->{auth_ret} =
       $self->{ssh}->auth_publickey( $user, $public_key, $private_key, $pass );
   }

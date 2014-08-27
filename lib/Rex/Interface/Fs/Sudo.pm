@@ -96,9 +96,16 @@ sub is_file {
   my ( $self, $file ) = @_;
 
   $self->_exec("/bin/sh -c '[ -e \"$file\" ]'");
-  my $ret = $?;
+  my $is_file = $?;
 
-  if ( $ret == 0 ) { return 1; }
+  $self->_exec("/bin/sh -c '[ -d \"$file\" ]'");
+  my $is_dir = $?;
+
+  if ( $is_file == 0 && $is_dir != 0 ) {
+    return 1;
+  }
+
+  return 0;
 }
 
 sub unlink {
@@ -142,7 +149,12 @@ sub stat {
 
   my $rnd_file = $self->_write_to_rnd_file($script);
   my $out      = $self->_exec("perl $rnd_file '$file'");
-  my $tmp      = decode_json($out);
+
+  if ( !$out ) {
+    return ();
+  }
+
+  my $tmp = decode_json($out);
 
   return %{$tmp};
 }

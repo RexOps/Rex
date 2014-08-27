@@ -618,7 +618,7 @@ sub connect {
     $self->connection->connect(%connect_hash);
     1;
   } or do {
-    if(! defined Rex::Config->get_fallback_auth) {
+    if ( !defined Rex::Config->get_fallback_auth ) {
       croak $@;
     }
   };

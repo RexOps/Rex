@@ -109,7 +109,7 @@ sub pkg {
   elsif ( $option{ensure} =~ m/^\d/ ) {
 
     # looks like a version
-    &install( package => $package, { version => $option{ensure} } );
+    &update( package => $package, { version => $option{ensure} } );
   }
   else {
     die("Unknown ensure parameter: $option{ensure}.");

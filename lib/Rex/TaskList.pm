@@ -48,16 +48,16 @@ sub create {
 }
 
 sub run {
-  my ($class, $task_name) = @_;
+  my ( $class, $task_name ) = @_;
   my $task_object = $class->create()->get_task($task_name);
 
-  for my $code (@{ $task_object->{before_task_start} }) {
+  for my $code ( @{ $task_object->{before_task_start} } ) {
     $code->($task_object);
   }
 
   $class->create()->run($task_name);
 
-  for my $code (@{ $task_object->{after_task_finished} }) {
+  for my $code ( @{ $task_object->{after_task_finished} } ) {
     $code->($task_object);
   }
 }

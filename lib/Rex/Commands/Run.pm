@@ -59,7 +59,11 @@ use base qw(Rex::Exporter);
 
 =item run($command [, $callback])
 
-This function will execute the given command and returns the output. In scalar context it returns the raw output as is, and in list context it returns the list of output lines.
+This function will execute the given command and returns the output. In
+scalar context it returns the raw output as is, and in list context it
+returns the list of output lines. The exit value of the command is stored
+in the $? variable.
+
 
  task "uptime", "server01", sub {
    say run "uptime";

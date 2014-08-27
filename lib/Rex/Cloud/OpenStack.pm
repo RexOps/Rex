@@ -485,9 +485,12 @@ sub upload_key {
   Rex::Logger::debug("Public key fingerprint is $fingerprint");
 
   # upoad only new key
-  my $online_key =
-    pop @{ [ map { $_->{keypair}->{fingerprint} eq $fingerprint ? $_ : () }
-      $self->list_keys() ] };
+  my $online_key = pop @{
+    [
+      map { $_->{keypair}->{fingerprint} eq $fingerprint ? $_ : () }
+        $self->list_keys()
+    ]
+  };
   if ($online_key) {
     Rex::Logger::debug("Public key already uploaded");
     return $online_key->{keypair}->{name};

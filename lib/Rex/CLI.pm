@@ -574,8 +574,9 @@ CHECK_OVERWRITE: {
     &$exit_hook();
   }
 
-  if ( $opts{'o'} ) {
-    Rex::Output->get->write() if ( defined Rex::Output->get );
+  if ( $opts{'o'} && defined(Rex::Output->get) ) {
+    Rex::Output->get->write();
+    IPC::Shareable->clean_up_all();
   }
 
   if ($Rex::WITH_EXIT_STATUS) {

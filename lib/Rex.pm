@@ -32,6 +32,9 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =head1 SYNOPSIS
 
+ use strict;
+ use warnings;
+
  user "root";
  password "ch4ngem3";
 

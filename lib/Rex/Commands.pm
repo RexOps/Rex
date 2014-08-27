@@ -1036,6 +1036,9 @@ You can call the function within a task to get the current environment.
    }
  };
 
+If no I<-E> option is passed on the command line, the default environment
+(named 'default') will be used.
+
 =cut
 
 sub environment {
@@ -1123,6 +1126,13 @@ Set a configuration parameter. These Variables can be used in templates as well.
 Or in a template
 
  DB: <%= $::database %>
+
+The following list of configuration parameters are Rex specific:
+
+=over
+
+=back
+
 
 =cut
 

@@ -22,6 +22,14 @@ All these functions are not idempotent.
 
 =item Expect
 
+The I<Expect> Perl module is required to be installed on the machine
+executing the rsync task.
+
+=item rsync
+
+The I<rsync> command has to be installed on both machines involved in
+the execution of the rsync task.
+
 =back
 
 =head1 SYNOPSIS

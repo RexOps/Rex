@@ -128,6 +128,12 @@ B<Define parallelism>
 
 =head3 Group your servers
 
+Rex gives you the possibility to B<group your servers>. One way is to do
+it in code within the Rexfile. Another is to use a I<server.ini> file
+in the same directory as the Rexfile.
+
+=head4 Code in the Rexfile
+
 Rex gives you the possibility to B<group your servers>. So you don't need to type every servername multiple times.
 
  group "frontends" => "frontend01", "frontend02", "frontend03", "frontend04";
@@ -135,6 +141,13 @@ Rex gives you the possibility to B<group your servers>. So you don't need to typ
 You can even B<define ranges> in the servernames:
 
  group "frontends" => "frontend[01..04]";
+
+=head4 Using server.ini
+
+The same group definition can be stored in a I<server.ini> file:
+
+ [frontends]
+ frontend[01..04]
 
 =head3 Your tasks
 

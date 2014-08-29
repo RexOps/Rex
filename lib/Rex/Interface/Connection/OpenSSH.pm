@@ -104,17 +104,17 @@ sub connect {
 
   $self->{ssh} = Net::OpenSSH->new(@connection_props);
 
-  if ( $self->{ssh} && $self->{ssh}->error ) {
-    Rex::Logger::info(
-      "Can't connect to $server (" . $self->{ssh}->error() . ")", "warn" );
+  if ( !$self->{ssh} ) {
+    Rex::Logger::info( "Can't connect to $server", "warn" );
     $self->{connected} = 0;
 
     return;
   }
 
-  if ( !$self->{ssh} ) {
-    Rex::Logger::info( "Can't connect to $server", "warn" );
-    $self->{connected} = 0;
+  if ( $self->{ssh} && $self->{ssh}->error ) {
+    Rex::Logger::info(
+      "Can't connect to $server (" . $self->{ssh}->error() . ")", "warn" );
+    $self->{connected} = 1;
 
     return;
   }

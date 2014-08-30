@@ -1,3 +1,16 @@
+2014-08-30 Jan Gehring <jan.gehring, rexify.org> (0.52.0)
+  * fixed #381 - file NAME, ensure => 'absent' for a directory
+  * fixed #392 - run conditional options with exec_autodie
+  * added on_change hook for update_system function. fixed #401
+  * Added support for end_if_matched option to run command
+  * Rex::Output to persist across different processes (forks)
+  * Add floating ip support for openstack provider - #398
+  * Auto upload ssh key to openstack cloud provider
+  * Implement feature to tie server.ini to specified -E environment (server.$environment.ini).
+  * #409 - added before_task_start and after_task_finished hooks
+  * [#408] - define fallback authentication
+  * [#416] - fixed pkg with ensure => 'ver.si.on'
+
 2014-07-29 Jan Gehring <jan.gehring, rexify.org> (0.51.2)
   * Fixed #394 - export of is_symlink function
   * Fixed #395 - is_file compatibility bug, doesn't detect symlinks anymore

@@ -474,10 +474,17 @@ CHECK_OVERWRITE: {
     my @envs = Rex::Commands->get_environments();
     my %groups = Rex::Group->get_groups;
 
+    my %real_groups;
+
+    for my $group (keys %groups) {
+      my @servers = map { $_->get_servers } Rex::Group->get_group_object($group)->get_servers;
+      $real_groups{$group} = \@servers;
+    }
+
     print YAML::Dump({
       tasks => \@tasks,
       envs  => \@envs,
-      groups => \%groups,
+      groups => \%real_groups,
     });
   }
   elsif ( $opts{'T'} ) {

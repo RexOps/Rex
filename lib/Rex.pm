@@ -750,6 +750,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item eduardoj
 
+=item Erik Huelsmann
+
 =item fanyeren
 
 =item Ferenc Erki
@@ -791,6 +793,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Nathan Abu
 
 =item Naveed Massjouni
+
+=item Nicolas Leclercq
 
 =item Niklas Larsson
 

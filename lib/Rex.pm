@@ -75,6 +75,8 @@ our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
 
 $WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
 
+$VERSION = "0.51.99.2";
+
 my $cur_dir;
 
 BEGIN {

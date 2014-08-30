@@ -178,7 +178,7 @@ sub download_recipe_git {
 
   Rex::Logger::info("Cloning $clone_url to $path. Using branch: $branch.");
 
-  system "git clone $url -b $branch $path";
+  system "git clone $url -b $branch '$path'";
 
   chdir $path;
   resolve_deps("meta.yml");
@@ -305,11 +305,11 @@ sub resolve_deps {
         }
 
         if ( -d "$path/.git" ) {
-          system "rm -rf $path";
+          system "rm -rf '$path'";
         }
 
         Rex::Logger::info("Cloning $deps{$req}->{git}#$branch to $path");
-        system "git clone $deps{$req}->{git} -b $branch $path";
+        system "git clone $deps{$req}->{git} -b $branch '$path'";
         resolve_deps("$path/meta.yml");
       }
     }
@@ -344,20 +344,20 @@ sub resolve_deps {
         }
 
         Rex::Logger::info("Cloning $perl_deps{$req}->{git}#$branch to $path");
-        system "git clone $perl_deps{$req}->{git} -b $branch $path";
+        system "git clone $perl_deps{$req}->{git} -b $branch '$path'";
 
         chdir $path;
-        system "cpanm -l $lib_path -L $lib_path .";
+        system "cpanm -l '$lib_path' -L '$lib_path' .";
         chdir $curdir;
 
-        system "rm -rf $path";
+        system "rm -rf '$path'";
       }
     }
     else {
       # we need relative directories, because auf a cpanm bug on windows.
       my $lib_path = File::Spec->catdir( File::Spec->curdir(), "lib", "perl" );
 
-      system "cpanm -l $lib_path -L $lib_path $req";
+      system "cpanm -l '$lib_path' -L '$lib_path' $req";
     }
   }
 

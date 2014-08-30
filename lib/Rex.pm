@@ -75,8 +75,6 @@ our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
 
 $WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
 
-$VERSION = "0.51.99.2";
-
 my $cur_dir;
 
 BEGIN {
@@ -750,6 +748,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item eduardoj
 
+=item Erik Huelsmann
+
 =item fanyeren
 
 =item Ferenc Erki
@@ -791,6 +791,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Nathan Abu
 
 =item Naveed Massjouni
+
+=item Nicolas Leclercq
 
 =item Niklas Larsson
 

@@ -21,6 +21,7 @@ use Rex::Group;
 use Rex::Batch;
 use Rex::TaskList;
 use Rex::Logger;
+use YAML;
 
 use Data::Dumper;
 
@@ -72,6 +73,7 @@ sub __run__ {
     d => {},
     s => {},
     m => {},
+    y => {},
     w => {},
     S => { type => "string" },
     E => { type => "string" },
@@ -466,6 +468,27 @@ CHECK_OVERWRITE: {
       $desc =~ s/'/\\'/gms;
       print "'$task'" . " = '$desc'\n";
     }
+  }
+  elsif ( $opts{'T'} && $opts{'y'} ) {
+    my @tasks  = Rex::TaskList->create()->get_tasks;
+    my @envs   = Rex::Commands->get_environments();
+    my %groups = Rex::Group->get_groups;
+
+    my %real_groups;
+
+    for my $group ( keys %groups ) {
+      my @servers = map { $_->get_servers }
+        Rex::Group->get_group_object($group)->get_servers;
+      $real_groups{$group} = \@servers;
+    }
+
+    print YAML::Dump(
+      {
+        tasks  => \@tasks,
+        envs   => \@envs,
+        groups => \%real_groups,
+      }
+    );
   }
   elsif ( $opts{'T'} ) {
     Rex::Logger::debug("Listing Tasks and Batches");

@@ -15,6 +15,7 @@ use Rex::Helper::Path;
 use Rex::Helper::Encode;
 use JSON::XS;
 use base qw(Rex::Interface::Fs::Base);
+use Data::Dumper;
 
 sub new {
   my $that  = shift;
@@ -215,7 +216,8 @@ sub glob {
 
   my $rnd_file = $self->_write_to_rnd_file($script);
   my $content  = $self->_exec("perl $rnd_file");
-  my $tmp      = decode_json($content);
+
+  my $tmp = decode_json($content);
 
   return @{$tmp};
 }

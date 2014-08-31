@@ -1,7 +1,26 @@
 use strict;
 use warnings;
+use Test::More;
 
-use Test::More tests => 31;
+
+my %have_mods = (
+  'String::Escape' => 1,
+);
+
+for my $m (keys %have_mods) {
+  my $have_mod = 1;
+  eval "use $m;";
+  if($@) {
+    $have_mods{$m} = 0;
+  }
+}
+
+unless($have_mods{'Net::SSH2'}) {
+  plan skip_all => 'Net::SSH2 Module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
+}
+else {
+  plan tests => 31;
+}
 
 use_ok 'Rex::Task';
 use_ok 'Rex::Commands';

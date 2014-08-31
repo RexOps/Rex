@@ -4,7 +4,7 @@ use Test::More;
 
 
 my %have_mods = (
-  'String::Escape' => 1,
+  'Net::SSH2' => 1,
 );
 
 for my $m (keys %have_mods) {

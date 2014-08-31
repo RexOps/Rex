@@ -8,7 +8,11 @@ package Rex::Helper::DBI;
 
 use strict;
 use warnings;
-use DBI;
+
+BEGIN {
+  use Rex::Require;
+  DBI->require;
+}
 
 my %db_connections;
 

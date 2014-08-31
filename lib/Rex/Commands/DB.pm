@@ -61,7 +61,12 @@ package Rex::Commands::DB;
 use strict;
 use warnings;
 
-use DBI;
+
+BEGIN {
+  use Rex::Require;
+  DBI->require;
+}
+
 use Rex::Logger;
 use Data::Dumper;
 

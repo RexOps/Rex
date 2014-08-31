@@ -1,6 +1,27 @@
 use Test::More;
 use FindBin qw($Bin);
 
+my %have_mods = (
+  'XML::LibXML' => 1,
+);
+
+for my $m (keys %have_mods) {
+  my $have_mod = 1;
+  eval "use $m;";
+  if($@) {
+    $have_mods{$m} = 0;
+  }
+}
+
+unless($have_mods{'XML::LibXML'}) {
+  plan skip_all => 'Not XML::LibXML library available. XML Group support won\'t be available.';
+}
+else {
+  plan tests => 12;
+}
+
+
+
 use_ok 'Rex::Group::Lookup::XML';
 use_ok 'Rex::Group';
 use_ok 'Rex::Task';
@@ -41,4 +62,3 @@ Rex::Commands::do_task("xml_task2");
 Rex::TaskList->create()->set_in_transaction(0);
 
 
-done_testing();

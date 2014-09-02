@@ -25,19 +25,24 @@ use URI;
 use URI::QueryParam;
 use File::Spec;
 use File::Basename;
+use Rex::Helper::Misc;
+use HTTP::Request;
+use HTTP::Request::Common;
+
 require Rex;
 
 $Rex::Logger::silent = 1;
 
-my ($major_minor) = ($Rex::VERSION =~ m/^(\d*\.\d*)/);
+my ($major_minor) = ( $Rex::VERSION =~ m/^(\d*\.\d*)/ );
 my $opts = {};
 
 ######
 # default server
-my $SEARCH_SERVER      = "http://modules.rexify.org/api/$major_minor/get/recipes";
-my $RECIPE_SERVER      = "http://modules.rexify.org/api/$major_minor/get/mod/%s";
-my $DEPEND_SERVER      = "http://modules.rexify.org/api/$major_minor/get/dep/%s";
-my $PERL_DEPEND_SERVER = "http://modules.rexify.org/api/$major_minor/get/perldep/%s";
+my $SEARCH_SERVER = "http://modules.rexify.org/api/$major_minor/get/recipes";
+my $RECIPE_SERVER = "http://modules.rexify.org/api/$major_minor/get/mod/%s";
+my $DEPEND_SERVER = "http://modules.rexify.org/api/$major_minor/get/dep/%s";
+my $PERL_DEPEND_SERVER =
+  "http://modules.rexify.org/api/$major_minor/get/perldep/%s";
 
 my $AUTH_USER;
 my $AUTH_PASSWORD;
@@ -182,6 +187,59 @@ sub download_recipe_git {
 
   chdir $path;
   resolve_deps("meta.yml");
+}
+
+sub download_recipe_local_tar_gz {
+  my ($url) = @_;
+  $Rex::Logger::silent = 0;
+
+  system "tar xzf $url";
+
+  my $path = basename($url);
+  $path =~ s/\.tar\.gz$//;
+
+  chdir $path;
+  resolve_deps("meta.yml");
+}
+
+# upload rexfile to rex-jobcontrol (the complete directory)
+sub upload_rexfile {
+  my (%option) = @_;
+
+  my $tmp_dir = File::Spec->tmpdir;
+  my $tmp_file = File::Spec->catfile( $tmp_dir, basename(getcwd) . ".tar.gz" );
+
+  my $login_url  = $option{server} . "/login";
+  my $upload_url = $option{server} . "/project/" . $option{project} . "/rexfile/new";
+
+  Rex::Logger::info("Creating tar.gz file out of this directory.");
+  my $dir = basename(getcwd());
+  system "cd .. ; tar czf $tmp_file $dir";
+
+  # upload the file
+  my $ua = LWP::UserAgent->new( cookie_jar => {} );
+
+#my $request = HTTP::Request->new(POST 'http://example.com', Content_Type => 'multipart/form-data', Content => [file_0 => ['options2.txt']]);
+# first login
+  my $res = $ua->post( $login_url,
+    { username => $option{username}, password => $option{password} } );
+
+  if ( $res->code != 302 ) {
+    print "Server not found or authentication wrong.\n";
+    exit 1;
+  }
+
+  my $up_request = POST($upload_url,
+    Content_Type => 'form-data',
+    Content      => [
+      rexfile_archive     => [$tmp_file],
+      rexfile_name        => $option{name},
+      rexfile_description => $option{description}
+    ]);
+
+  my $up_res = $ua->request($up_request);
+
+  unlink $tmp_file;
 }
 
 sub download_recipe {
@@ -411,6 +469,19 @@ sub install_perl_module {
   }
 }
 
+if ( exists $opts->{upload}
+  && exists $opts->{server}
+  && exists $opts->{username}
+  && exists $opts->{password}
+  && exists $opts->{project}
+  && exists $opts->{name}
+  && exists $opts->{description} )
+{
+  upload_rexfile( %{$opts} );
+
+  exit 0;
+}
+
 if ( exists $opts->{search} ) {
   my $search_string = $opts->{search};
 
@@ -442,7 +513,12 @@ if ( exists $opts->{"update-from-git"} ) {
 }
 
 if ( exists $opts->{init} ) {
-  download_recipe_git( $opts->{init} );
+  if ( -f $opts->{init} ) {
+    download_recipe_local_tar_gz( $opts->{init} );
+  }
+  else {
+    download_recipe_git( $opts->{init} );
+  }
   exit 0;
 }
 

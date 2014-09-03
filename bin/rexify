@@ -23,6 +23,7 @@ use Cwd qw(getcwd);
 use Carp;
 use URI;
 use URI::QueryParam;
+use URI::Encode 'uri_encode';
 use File::Spec;
 use File::Basename;
 use Rex::Helper::Misc;
@@ -117,8 +118,8 @@ for ( my $i = 0 ; $i < @ARGV ; $i++ ) {
 
 }
 
-if ( !$ARGV[0] || join( "", @ARGV ) =~ m/\-h|\-\-help/ ) {
-  print STDERR "Usage: rexify <project-name> [<directory>] [<options>]\n";
+if ( !$ARGV[0] || join( ",", @ARGV ) =~ m/\-h,|\-\-help,/ ) {
+  print STDERR "Usage: rexify [<project-name> [<directory>]] [<options>]\n";
   print STDERR "\n";
   print STDERR "Options:";
   print STDERR "\n";
@@ -141,6 +142,32 @@ if ( !$ARGV[0] || join( "", @ARGV ) =~ m/\-h|\-\-help/ ) {
   print STDERR "\n";
   print STDERR "Custom Templates:\n";
   print STDERR "   box - Template to use for Rex::Commands::Box projects.\n";
+
+  print STDERR "\n";
+  print STDERR "Rex-JobControl Commands:\n";
+  print STDERR "\n";
+  print STDERR "\t--upload\tUpload Rexfile to JobControl server.\n";
+  print STDERR
+    "\t\t--project=<project>\t\tProject where the Rexfile should be registered.\n";
+  print STDERR "\t\t--name=<name>\t\t\tThe name for the Rexfile.\n";
+  print STDERR
+    "\t\t--description='<description>'\tA small description for the Rexfile.\n";
+  print STDERR "\n";
+  print STDERR "\t--execute\tExecute Job on JobControl server.\n";
+  print STDERR
+    "\t\t--project=<project>\t\tProject where the Rexfile should be registered.\n";
+  print STDERR "\t\t--job=<job>\t\t\tThe name of the job to execute.\n";
+  print STDERR
+    "\t\t--hosts='<server list>'\tA comma seperated list of servers.\n";
+  print STDERR "\n";
+
+  print STDERR "General options:";
+  print STDERR "\n";
+  print STDERR "\t--server=<server>\t\tThe URL to JobControl server.\n";
+  print STDERR
+    "\t--username=<username>\t\tThe username to use for login to JobControl server.\n";
+  print STDERR "\t--password=<password>\t\tThe password for the user.\n";
+  print STDERR "\n";
   exit 1;
 }
 
@@ -209,11 +236,12 @@ sub upload_rexfile {
   my $tmp_dir = File::Spec->tmpdir;
   my $tmp_file = File::Spec->catfile( $tmp_dir, basename(getcwd) . ".tar.gz" );
 
-  my $login_url  = $option{server} . "/login";
-  my $upload_url = $option{server} . "/project/" . $option{project} . "/rexfile/new";
+  my $login_url = $option{server} . "/login";
+  my $upload_url =
+    $option{server} . "/project/" . uri_encode($option{project}) . "/rexfile/new";
 
   Rex::Logger::info("Creating tar.gz file out of this directory.");
-  my $dir = basename(getcwd());
+  my $dir = basename( getcwd() );
   system "cd .. ; tar czf $tmp_file $dir";
 
   # upload the file
@@ -229,17 +257,61 @@ sub upload_rexfile {
     exit 1;
   }
 
-  my $up_request = POST($upload_url,
+  my $up_request = POST(
+    $upload_url,
     Content_Type => 'form-data',
     Content      => [
       rexfile_archive     => [$tmp_file],
       rexfile_name        => $option{name},
       rexfile_description => $option{description}
-    ]);
+    ]
+  );
 
   my $up_res = $ua->request($up_request);
 
+  if ( $up_res->code != 302 ) {
+    print "Upload of Rexfile failed.\n";
+    exit 1;
+  }
+
   unlink $tmp_file;
+}
+
+# execute job on Job-Control server
+sub dispatch_execute_job {
+  my (%option) = @_;
+
+  my $login_url = $option{server} . "/login";
+  my $execute_url =
+    $option{server} . "/project/" . uri_encode($option{project}) . "/job/" . uri_encode($option{job}) . "/execute";
+
+  # execute a job
+  my $ua = LWP::UserAgent->new( cookie_jar => {} );
+
+# first login
+  my $res = $ua->post( $login_url,
+    { username => $option{username}, password => $option{password} } );
+
+  if ( $res->code != 302 ) {
+    print "Server not found or authentication wrong.\n";
+    exit 1;
+  }
+
+# then send the execute command
+  my $ex_request = POST(
+    $execute_url,
+    Content      => [
+      sel_server => [split(/[ ,]/, $option{hosts})],
+    ]
+  );
+
+  my $ex_res = $ua->request($ex_request);
+
+  if ( $ex_res->code != 302 ) {
+    print "Execute of job failed.\n";
+    exit 1;
+  }
+
 }
 
 sub download_recipe {
@@ -474,10 +546,24 @@ if ( exists $opts->{upload}
   && exists $opts->{username}
   && exists $opts->{password}
   && exists $opts->{project}
-  && exists $opts->{name}
-  && exists $opts->{description} )
+  && exists $opts->{name} )
 {
+  $opts->{description} ||= "";
+
   upload_rexfile( %{$opts} );
+
+  exit 0;
+}
+
+if ( exists $opts->{execute}
+  && exists $opts->{server}
+  && exists $opts->{username}
+  && exists $opts->{password}
+  && exists $opts->{project}
+  && exists $opts->{hosts}
+  && exists $opts->{job} )
+{
+  dispatch_execute_job( %{$opts} );
 
   exit 0;
 }

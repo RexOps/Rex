@@ -44,6 +44,18 @@ my $CMDB_PROVIDER;
 Rex::Config->register_set_handler(
   "cmdb" => sub {
     my ($option) = @_;
+
+    my %args = Rex::Args->getopts;
+
+    if ( exists $args{O} ) {
+      for my $itm ( split( /;/, $args{O} ) ) {
+        my ( $key, $val ) = split( /=/, $itm );
+        if ( $key eq "cmdb_path" ) {
+          $option->{path} = [$val];
+        }
+      }
+    }
+
     $CMDB_PROVIDER = $option;
   }
 );

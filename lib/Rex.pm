@@ -77,8 +77,6 @@ $WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
 
 my $cur_dir;
 
-$VERSION = '0.52.99.0';
-
 BEGIN {
 
   sub _home_dir {

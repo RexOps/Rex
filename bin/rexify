@@ -118,7 +118,7 @@ for ( my $i = 0 ; $i < @ARGV ; $i++ ) {
 
 }
 
-if ( !$ARGV[0] || join( ",", @ARGV ) =~ m/\-h,|\-\-help,/ ) {
+if ( !$ARGV[0] || join( ",", @ARGV ) =~ m/\-h,|\-\-help,/ || $ARGV[0] eq "--help" ) {
   print STDERR "Usage: rexify [<project-name> [<directory>]] [<options>]\n";
   print STDERR "\n";
   print STDERR "Options:";

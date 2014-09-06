@@ -122,7 +122,7 @@ BEGIN {
 
 }
 
-my $home = $ENV{'HOME'};
+my $home = $ENV{'HOME'} || "/tmp";
 if ( $^O =~ m/^MSWin/ ) {
   $home = $ENV{'USERPROFILE'};
 }

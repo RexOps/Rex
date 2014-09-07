@@ -100,6 +100,7 @@ use Rex::Config;
 use Rex::Profiler;
 use Rex::Report;
 use Rex;
+use Rex::Helper::Misc;
 
 use vars
   qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler);
@@ -591,16 +592,7 @@ Returns a random string of $count characters on the basis of @chars.
 =cut
 
 sub get_random {
-  my $count = shift;
-  my @chars = @_;
-
-  srand();
-  my $ret = "";
-  for ( 1 .. $count ) {
-    $ret .= $chars[ int( rand( scalar(@chars) - 1 ) ) ];
-  }
-
-  return $ret;
+  return Rex::Helper::Misc::get_random(@_);
 }
 
 =item do_task($task)

@@ -23,3 +23,14 @@ screencasts
 .perltidyrc
 misc
 README.md
+vars\..*
+.*\.data
+.*\.lock
+passwd
+.*\.md
+upload
+.*\.conf
+.*\.log
+images
+projects
+Rex\-\d+.*

@@ -29,7 +29,7 @@ sub new {
     reload       => '/etc/rc.d/%s reload >/dev/null',
     status       => '/etc/rc.d/%s status >/dev/null',
     ensure_stop  => 'chkconfig %s off',
-    ensure_start => 'chkconfig %s off',
+    ensure_start => 'chkconfig %s on',
     action       => '/etc/rc.d/%s %s >/dev/null',
   };
 

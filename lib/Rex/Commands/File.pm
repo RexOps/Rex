@@ -81,6 +81,7 @@ use Carp;
 use Rex::Interface::Exec;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
+require Rex::CMDB;
 
 use File::Basename qw(dirname basename);
 
@@ -190,12 +191,22 @@ sub template {
     %template_vars = %{$param};
   }
 
+  # configuration variables
   my $config_values = Rex::Config->get_all;
   for my $key ( keys %{$config_values} ) {
     if ( !exists $template_vars{$key} ) {
       $template_vars{$key} = $config_values->{$key};
     }
   }
+
+  if(Rex::CMDB::cmdb_active()) {
+    my $data = Rex::CMDB::cmdb();
+    for my $key ( keys %{$data->{value}} ) {
+      if ( !exists $template_vars{$key} ) {
+        $template_vars{$key} = $data->{value}->{$key};
+      }
+    }
+  } 
 
   return Rex::Config->get_template_function()->( $content, \%template_vars );
 }

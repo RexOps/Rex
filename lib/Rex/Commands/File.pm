@@ -199,14 +199,14 @@ sub template {
     }
   }
 
-  if(Rex::CMDB::cmdb_active()) {
+  if ( Rex::CMDB::cmdb_active() ) {
     my $data = Rex::CMDB::cmdb();
-    for my $key ( keys %{$data->{value}} ) {
+    for my $key ( keys %{ $data->{value} } ) {
       if ( !exists $template_vars{$key} ) {
         $template_vars{$key} = $data->{value}->{$key};
       }
     }
-  } 
+  }
 
   return Rex::Config->get_template_function()->( $content, \%template_vars );
 }

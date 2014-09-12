@@ -77,7 +77,8 @@ sub cmdb {
 
   my $klass = $CMDB_PROVIDER->{type};
 
-  if(!$klass) {
+  if ( !$klass ) {
+
     # no cmdb set
     return undef;
   }
@@ -96,7 +97,7 @@ sub cmdb {
 }
 
 sub cmdb_active {
-  return ($CMDB_PROVIDER ? 1 : 0);
+  return ( $CMDB_PROVIDER ? 1 : 0 );
 }
 
 =back

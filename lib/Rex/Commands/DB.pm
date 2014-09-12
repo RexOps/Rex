@@ -61,7 +61,6 @@ package Rex::Commands::DB;
 use strict;
 use warnings;
 
-
 BEGIN {
   use Rex::Require;
   DBI->require;

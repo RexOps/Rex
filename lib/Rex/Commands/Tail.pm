@@ -70,7 +70,7 @@ sub tail {
   my $file     = shift;
   my $callback = shift;
 
-  if ( Rex::is_sudo() and ref(Rex::get_sftp()) ne 'Net::SFTP::Foreign' ) {
+  if ( Rex::is_sudo() and ref( Rex::get_sftp() ) ne 'Net::SFTP::Foreign' ) {
     die("Can't use tail within sudo environment.");
   }
 

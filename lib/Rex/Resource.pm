@@ -9,6 +9,8 @@ package Rex::Resource;
 use strict;
 use warnings;
 
+use Rex::Constants;
+
 our $INSIDE_RES = 0;
 our @CURRENT_RES;
 
@@ -31,6 +33,7 @@ sub call {
   push @CURRENT_RES, $self;
 
   $self->{res_name} = $name;
+  $self->{res_ensure} = $params{ensure} ||= present;
 
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => $self->type, name => $name );

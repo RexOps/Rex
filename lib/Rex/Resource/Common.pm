@@ -10,6 +10,7 @@ use strict;
 use warnings;
    
 require Exporter;
+require Rex::Config;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     
@@ -77,7 +78,13 @@ sub resource {
 }
 
 sub resource_name {
+  Rex::Config::set(resource_name => current_resource()->{res_name});
   return current_resource()->{res_name};
+}
+
+sub resource_ensure {
+  my ($option) = @_;
+  $option->{current_resource()->{res_ensure}}->();
 }
 
 sub current_resource {

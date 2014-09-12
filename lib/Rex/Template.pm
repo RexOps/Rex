@@ -69,13 +69,6 @@ sub parse {
   my $new_data;
   my $___r = "";
 
-  my $config_values = Rex::Config->get_all;
-  for my $key ( keys %{$config_values} ) {
-    if ( !exists $vars->{$key} ) {
-      $vars->{$key} = $config_values->{$key};
-    }
-  }
-
   my $do_chomp = 0;
   $new_data = join(
     "\n",

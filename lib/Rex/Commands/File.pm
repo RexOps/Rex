@@ -190,6 +190,13 @@ sub template {
     %template_vars = %{$param};
   }
 
+  my $config_values = Rex::Config->get_all;
+  for my $key ( keys %{$config_values} ) {
+    if ( !exists $template_vars{$key} ) {
+      $template_vars{$key} = $config_values->{$key};
+    }
+  }
+
   return Rex::Config->get_template_function()->( $content, \%template_vars );
 }
 

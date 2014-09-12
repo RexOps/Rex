@@ -78,7 +78,7 @@ sub resource {
 }
 
 sub resource_name {
-  Rex::Config::set(resource_name => current_resource()->{res_name});
+  Rex::Config->set(resource_name => current_resource()->{res_name});
   return current_resource()->{res_name};
 }
 

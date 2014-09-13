@@ -1,3 +1,12 @@
+2014-09-13 Jan Gehring <jan.gehring, rexify.org> (0.53.1)
+  * added Rex::JobControl functions
+  * fixed hanging VBox with CentOS 7 and delayed dhcp ip lease
+  * fixed on_change hook for file() resource when file was removed
+  * added cmdb variables to template with feature flag - #420
+  * export Rex::Config variables to all template variants - #419
+  * fixed chkconfig bug for Mageia, Redhat and SuSE - chenryn
+  * added resource() function, to define own resources.
+
 2014-08-30 Jan Gehring <jan.gehring, rexify.org> (0.52.0)
   * fixed #381 - file NAME, ensure => 'absent' for a directory
   * fixed #392 - run conditional options with exec_autodie

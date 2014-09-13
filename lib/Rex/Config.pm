@@ -70,7 +70,7 @@ our (
 
 sub set_register_cmdb_template {
   my $class = shift;
-  $register_cmdb_top_scope = shift;
+  $register_cmdb_template = shift;
 }
 
 sub get_register_cmdb_template {
@@ -371,6 +371,11 @@ sub has_user {
 
 sub get_user {
   my $class = shift;
+
+  if ( exists $ENV{REX_USER} ) {
+    return $ENV{REX_USER};
+  }
+
   if ($user) {
     return $user;
   }
@@ -380,6 +385,11 @@ sub get_user {
 
 sub get_password {
   my $class = shift;
+
+  if ( exists $ENV{REX_PASSWORD} ) {
+    return $ENV{REX_PASSWORD};
+  }
+
   return $password;
 }
 
@@ -418,6 +428,11 @@ sub get_proxy_command {
 
 sub get_sudo_password {
   my $class = shift;
+
+  if ( exists $ENV{REX_SUDO_PASSWORD} ) {
+    return $ENV{REX_SUDO_PASSWORD};
+  }
+
   if ($sudo_password) {
     return $sudo_password;
   }
@@ -472,14 +487,23 @@ sub set_krb5_auth {
 }
 
 sub get_password_auth {
+  if ( exists $ENV{REX_AUTH_TYPE} && $ENV{REX_AUTH_TYPE} eq "pass" ) {
+    return 1;
+  }
   return $password_auth;
 }
 
 sub get_key_auth {
+  if ( exists $ENV{REX_AUTH_TYPE} && $ENV{REX_AUTH_TYPE} eq "key" ) {
+    return 1;
+  }
   return $key_auth;
 }
 
 sub get_krb5_auth {
+  if ( exists $ENV{REX_AUTH_TYPE} && $ENV{REX_AUTH_TYPE} eq "krb5" ) {
+    return 1;
+  }
   return $krb5_auth;
 }
 
@@ -489,10 +513,11 @@ sub set_public_key {
 }
 
 sub has_public_key {
-  return $public_key;
+  return get_public_key();
 }
 
 sub get_public_key {
+  if ( exists $ENV{REX_PUBLIC_KEY} ) { return $ENV{REX_PUBLIC_KEY}; }
   if ($public_key) {
     return $public_key;
   }
@@ -506,10 +531,11 @@ sub set_private_key {
 }
 
 sub has_private_key {
-  return $private_key;
+  return get_private_key();
 }
 
 sub get_private_key {
+  if ( exists $ENV{REX_PRIVATE_KEY} ) { return $ENV{REX_PRIVATE_KEY}; }
   if ($private_key) {
     return $private_key;
   }

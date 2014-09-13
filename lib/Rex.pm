@@ -590,7 +590,7 @@ sub import {
         $found_feature = 1;
       }
 
-      if($add eq "register_cmdb_top_scope") {
+      if ( $add eq "register_cmdb_top_scope" ) {
         Rex::Logger::debug("Registering CMDB as template variables.");
         Rex::Config->set_register_cmdb_template(1);
         $found_feature = 1;
@@ -716,6 +716,10 @@ sub import {
   if ( exists $ENV{REX_REPORT_TYPE} ) {
     Rex::Logger::debug("Enabling reporting");
     Rex::Config->set_do_reporting(1);
+  }
+
+  if ( exists $ENV{REX_SUDO} && $ENV{REX_SUDO} ) {
+    Rex::global_sudo(1);
   }
 
   # we are always strict

@@ -51,7 +51,12 @@ Rex::Config->register_set_handler(
       for my $itm ( split( /;/, $args{O} ) ) {
         my ( $key, $val ) = split( /=/, $itm );
         if ( $key eq "cmdb_path" ) {
-          $option->{path} = [$val];
+          if ( ref $option->{path} eq "ARRAY" ) {
+            unshift @{ $option->{path} }, $val;
+          }
+          else {
+            $option->{path} = [$val];
+          }
         }
       }
     }

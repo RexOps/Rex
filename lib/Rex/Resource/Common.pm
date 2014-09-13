@@ -11,6 +11,7 @@ use warnings;
    
 require Exporter;
 require Rex::Config;
+use Rex::Resource;
 use base qw(Exporter);
 use vars qw(@EXPORT);
     

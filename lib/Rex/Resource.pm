@@ -29,6 +29,16 @@ sub type { (shift)->{type}; }
 
 sub call {
   my ( $self, $name, %params ) = @_;
+
+  if(ref $name eq "HASH") {
+    # multiple resource call
+    for my $n (keys %{ $name }) {
+      $self->call($n, %{ $name->{$n} });
+    }
+
+    return;
+  }
+
   $INSIDE_RES = 1;
   push @CURRENT_RES, $self;
 

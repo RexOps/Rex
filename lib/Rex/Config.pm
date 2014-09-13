@@ -56,6 +56,8 @@ our (
   $exec_autodie,             $verbose_run,
   $disable_taskname_warning, $proxy_command,
   $task_call_by_method,      $fallback_auth,
+  $register_cmdb_template,
+
 );
 
 # some defaults
@@ -65,6 +67,15 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_register_cmdb_template {
+  my $class = shift;
+  $register_cmdb_top_scope = shift;
+}
+
+sub get_register_cmdb_template {
+  return $register_cmdb_template;
+}
 
 sub set_fallback_auth {
   my $class = shift;

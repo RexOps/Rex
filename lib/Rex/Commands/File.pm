@@ -199,7 +199,7 @@ sub template {
     }
   }
 
-  if ( Rex::CMDB::cmdb_active() ) {
+  if ( Rex::CMDB::cmdb_active() && Rex::Config->get_register_cmdb_template ) {
     my $data = Rex::CMDB::cmdb();
     for my $key ( keys %{ $data->{value} } ) {
       if ( !exists $template_vars{$key} ) {

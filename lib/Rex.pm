@@ -584,6 +584,18 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.53 ) {
+        Rex::Logger::debug("Registering CMDB as template variables.");
+        Rex::Config->set_register_cmdb_template(1);
+        $found_feature = 1;
+      }
+
+      if($add eq "register_cmdb_top_scope") {
+        Rex::Logger::debug("Registering CMDB as template variables.");
+        Rex::Config->set_register_cmdb_template(1);
+        $found_feature = 1;
+      }
+
       if ( $add eq "no_local_template_vars" ) {
         Rex::Logger::debug("activating featureset no_local_template_vars");
         $Rex::Template::BE_LOCAL = 0;

@@ -170,6 +170,8 @@ sub box(&) {
   $self->import_vm();
 
   $self->provision_vm();
+
+  return $self->ip;
 }
 
 =item list_boxes

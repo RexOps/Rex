@@ -587,6 +587,8 @@ sub file {
     );
   }
 
+  my $on_change_done = 0;
+
   if ($need_md5) {
     unless ( $old_md5 && $new_md5 && $old_md5 eq $new_md5 ) {
       $old_md5 ||= "";
@@ -598,6 +600,8 @@ sub file {
 
       &$on_change($file);
 
+      $on_change_done = 1;
+
       Rex::get_current_connection()->{reporter}->report(
         changed => 1,
         message => "Content changed.",
@@ -605,6 +609,10 @@ sub file {
 
       $__ret = { changed => 1 };
     }
+  }
+
+  if ( $__ret->{changed} == 1 && $on_change_done == 0 ) {
+    &$on_change($file);
   }
 
   #### check and run before hook

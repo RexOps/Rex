@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 15;
 use Data::Dumper;
 
 use_ok 'Rex::CMDB';
 use_ok 'Rex::Commands';
+use_ok 'Rex::Commands::File';
 
 Rex::Commands->import;
 Rex::CMDB->import;
@@ -50,4 +51,13 @@ ok(
   "got vhost name from cmdb - all request"
 );
 ok( $all->{name} eq "foo", "got name from cmdb - all request" );
+
+Rex::Config->set_register_cmdb_template(1);
+my $content = 'Hello this is <%= $::name %>';
+ok( template(\$content, __no_sys_info__ => 1 ) eq "Hello this is defaultname", "get keys from CMDB" );
+
+ok( template( \$content, { name => "baz", __no_sys_info__ => 1 } ) eq "Hello this is baz",
+  "overwrite keys from CMDB" );
+
+
 

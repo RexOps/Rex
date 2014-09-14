@@ -35,6 +35,7 @@ use Rex::Interface::Exec;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Helper::Path;
+use Rex::Helper::Run;
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
@@ -89,7 +90,7 @@ sub md5 {
         $md5 = $exec->exec("perl $rnd_file \"$file\"");
       }
       else {
-        $md5 = $exec->exec("perl $rnd_file '$file'");
+        $md5 = i_run "perl $rnd_file '$file'";
       }
 
       unless ( $? == 0 ) {

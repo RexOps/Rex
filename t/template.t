@@ -1,13 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 24;
+use Test::More tests => 20;
 use_ok 'Rex::Template';
 use_ok 'Rex::Config';
 
 my $t = Rex::Template->new;
-
-Rex::Config->set( foo => "bar" );
 
 my $content = 'one two three';
 
@@ -38,12 +36,6 @@ ok(
 
 ok( $t->parse( $content, name => "bar" ) eq "Hello this is bar",
   "simple variable without hashRef" );
-
-$content = 'Hello this is <%= $::foo %>';
-ok( $t->parse($content) eq "Hello this is bar", "get keys from Rex::Config" );
-
-ok( $t->parse( $content, { foo => "baz" } ) eq "Hello this is baz",
-  "overwrite keys from Rex::Config" );
 
 $Rex::Template::BE_LOCAL = 1;
 $Rex::Template::BE_LOCAL = 1;
@@ -89,12 +81,6 @@ ok(
 
 ok( $t->parse( $content, name => "bar" ) eq "Hello this is bar",
   "simple variable without hashRef" );
-
-$content = 'Hello this is <%= $::foo %>';
-ok( $t->parse($content) eq "Hello this is bar", "get keys from Rex::Config" );
-
-ok( $t->parse( $content, { foo => "baz" } ) eq "Hello this is baz",
-  "overwrite keys from Rex::Config" );
 
 $content = 'Hello this is <%= $::foo %> <%= $::veth1_0_ip %>';
 ok(

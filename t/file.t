@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-  use Test::More tests => 45;
+  use Test::More tests => 47;
   use Data::Dumper;
 
   use_ok 'Rex';
@@ -17,6 +17,8 @@ BEGIN {
   Rex::Commands::Fs->import;
   Rex::Commands::Gather->import;
 }
+
+Rex::Config->set( foo => "bar" );
 
 if ( $ENV{rex_LOCALTEST} ) {
   Rex::Config->set_executor_for(
@@ -256,3 +258,11 @@ file "$tmp_dir/test.d-$$", ensure => "directory";
 
 ok( -d "$tmp_dir/test.d-$$", "created directory with file()" );
 rmdir "$tmp_dir/test.d-$$";
+
+$content = 'Hello this is <%= $::foo %>';
+ok( template(\$content, __no_sys_info__ => 1 ) eq "Hello this is bar", "get keys from Rex::Config" );
+
+ok( template( \$content, { foo => "baz", __no_sys_info__ => 1 } ) eq "Hello this is baz",
+  "overwrite keys from Rex::Config" );
+
+

@@ -51,7 +51,12 @@ Rex::Config->register_set_handler(
       for my $itm ( split( /;/, $args{O} ) ) {
         my ( $key, $val ) = split( /=/, $itm );
         if ( $key eq "cmdb_path" ) {
-          $option->{path} = [$val];
+          if ( ref $option->{path} eq "ARRAY" ) {
+            unshift @{ $option->{path} }, $val;
+          }
+          else {
+            $option->{path} = [$val];
+          }
         }
       }
     }
@@ -76,6 +81,13 @@ sub cmdb {
   $server ||= connection->server;
 
   my $klass = $CMDB_PROVIDER->{type};
+
+  if ( !$klass ) {
+
+    # no cmdb set
+    return undef;
+  }
+
   if ( $klass !~ m/::/ ) {
     $klass = "Rex::CMDB::$klass";
   }
@@ -87,6 +99,10 @@ sub cmdb {
 
   my $cmdb = $klass->new( %{$CMDB_PROVIDER} );
   return Rex::Value->new( value => $cmdb->get( $item, $server ) );
+}
+
+sub cmdb_active {
+  return ( $CMDB_PROVIDER ? 1 : 0 );
 }
 
 =back

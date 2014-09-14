@@ -23,10 +23,10 @@ use Cwd qw(getcwd);
 use Carp;
 use URI;
 use URI::QueryParam;
-use URI::Encode 'uri_encode';
 use File::Spec;
 use File::Basename;
 use Rex::Helper::Misc;
+use Rex::Helper::URI;
 use HTTP::Request;
 use HTTP::Request::Common;
 
@@ -238,7 +238,7 @@ sub upload_rexfile {
 
   my $login_url = $option{server} . "/login";
   my $upload_url =
-    $option{server} . "/project/" . uri_encode($option{project}) . "/rexfile/new";
+    $option{server} . "/project/" . Rex::Helper::URI::encode($option{project}) . "/rexfile/new";
 
   Rex::Logger::info("Creating tar.gz file out of this directory.");
   my $dir = basename( getcwd() );
@@ -283,7 +283,7 @@ sub dispatch_execute_job {
 
   my $login_url = $option{server} . "/login";
   my $execute_url =
-    $option{server} . "/project/" . uri_encode($option{project}) . "/job/" . uri_encode($option{job}) . "/execute";
+    $option{server} . "/project/" . Rex::Helper::URI::encode($option{project}) . "/job/" . Rex::Helper::URI::encode($option{job}) . "/execute";
 
   # execute a job
   my $ua = LWP::UserAgent->new( cookie_jar => {} );

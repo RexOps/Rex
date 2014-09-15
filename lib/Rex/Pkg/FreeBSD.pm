@@ -21,24 +21,13 @@ sub new {
   my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
-
-  i_run("which pkg_add");
-  if ( $? == 0 ) {
-    $self->{commands} = {
-      install         => 'pkg_add -r %s',
-      install_version => 'pkg_add -r %s',
-      remove          => 'pkg_delete %s',
-      query           => 'pkg_info',
-    };
-  }
-  else {
-    $self->{commands} = {
+  
+  $self->{commands} = {
       install         => 'pkg install -q -y %s',
       install_version => 'pkg install -q -y %s',
       remove          => 'pkg remove -q -y %s',
       query           => 'pkg info',
-    };
-  }
+  };
 
   return $self;
 }

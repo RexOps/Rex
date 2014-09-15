@@ -35,7 +35,7 @@ sub new {
     $self->{commands} = {
       install         => 'pkg install -q -y %s',
       install_version => 'pkg install -q -y %s',
-      remove          => 'pkg remove -y %s',
+      remove          => 'pkg remove -q -y %s',
       query           => 'pkg info',
     };
   }

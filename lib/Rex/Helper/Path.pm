@@ -17,13 +17,15 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 use Cwd 'realpath';
 
-require Rex::Commands;
-require Rex::Config;
 require Rex;
+use Rex::Commands;
+require Rex::Config;
 
 use Rex::Interface::Exec;
 
-@EXPORT = qw(get_file_path get_tmp_file resolv_path);
+@EXPORT = qw(get_file_path get_tmp_file resolv_path parse_path);
+
+set "path_map", {};
 
 #
 # CALL: get_file_path("foo.txt", caller());
@@ -53,6 +55,32 @@ sub get_file_path {
   pop @path_parts;
 
   my $real_path = join( '/', @path_parts );
+
+  my $map_setting = get("path_map");
+
+  my %path_map = (
+    map { ( ( substr( $_, -1 ) eq '/' ) ? $_ : "$_/" ) => $map_setting->{$_} }
+      keys %$map_setting
+  );
+
+  foreach my $prefix (
+    sort { length($b) <=> length($a) }
+    grep { $file_name =~ m/^$_/ } keys %path_map
+    )
+  {
+    foreach my $pattern ( @{ $path_map{$prefix} } ) {
+      my $expansion =
+        parse_path($pattern) . substr( $file_name, length($prefix) );
+
+      if ( -e $expansion ) {
+        return $expansion;
+      }
+
+      if ( -e $real_path . '/' . $expansion ) {
+        return $real_path . '/' . $expansion;
+      }
+    }
+  }
 
   if ( -e $file_name ) {
     return $file_name;
@@ -137,6 +165,28 @@ sub resolv_path {
       $home_path = $remote_home;
       $path =~ s/^~/$home_path/;
     }
+  }
+
+  return $path;
+}
+
+sub parse_path {
+  my ($path) = @_;
+  my %hw;
+
+  require Rex::Commands::Gather;
+
+  $hw{server}      = Rex::Commands::connection()->server;
+  $hw{environment} = Rex::Commands::environment();
+
+  $path =~ s/\{(server|environment)\}/$hw{$1}/gms;
+
+  if ( $path =~ m/\{([^\}]+)\}/ ) {
+
+    # if there are still some variables to replace, we need some information of
+    # the system.
+    %hw = Rex::Commands::Gather::get_system_information();
+    $path =~ s/\{([^\}]+)\}/$hw{$1}/gms;
   }
 
   return $path;

@@ -9,8 +9,7 @@ package Rex::CMDB::Base;
 use strict;
 use warnings;
 
-require Rex::Commands;
-require Rex::Commands::Gather;
+use Rex::Helper::Path;
 
 sub new {
   my $that  = shift;
@@ -24,21 +23,8 @@ sub new {
 
 sub _parse_path {
   my ( $self, $path ) = @_;
-  my %hw;
-  $hw{server}      = Rex::Commands::connection()->server;
-  $hw{environment} = Rex::Commands::environment();
 
-  $path =~ s/\{(server|environment)\}/$hw{$1}/gms;
-
-  if ( $path =~ m/\{([^\}]+)\}/ ) {
-
-    # if there are still some variables to replace, we need some information of
-    # the system.
-    %hw = Rex::Commands::Gather::get_system_information();
-    $path =~ s/\{([^\}]+)\}/$hw{$1}/gms;
-  }
-
-  return $path;
+  return parse_path($path);
 }
 
 1;

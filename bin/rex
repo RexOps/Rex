@@ -1,4 +1,4 @@
-#!perl -w
+#!/usr/bin/perl -w
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>

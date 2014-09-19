@@ -70,14 +70,16 @@ sub get_file_path {
   {
     foreach my $pattern ( @{ $path_map{$prefix} } ) {
       my $expansion =
-        parse_path($pattern) . substr( $file_name, length($prefix) );
+        File::Spec->catfile( parse_path($pattern),
+        substr( $file_name, length($prefix) ) );
 
       if ( -e $expansion ) {
         return $expansion;
       }
 
-      if ( -e $real_path . '/' . $expansion ) {
-        return $real_path . '/' . $expansion;
+      $expansion = File::Spec->catfile( $real_path, $expansion );
+      if ( -e $expansion ) {
+        return $expansion;
       }
     }
   }
@@ -86,8 +88,9 @@ sub get_file_path {
     return $file_name;
   }
 
-  if ( -e $real_path . '/' . $file_name ) {
-    return $real_path . '/' . $file_name;
+  my $cat_file_name = File::Spec->catfile( $real_path, $file_name );
+  if ( -e $cat_file_name ) {
+    return $cat_file_name;
   }
 
   # walk down the wire to find the file...
@@ -100,15 +103,15 @@ sub get_file_path {
     }
 
     my $module_path = Rex::get_module_path($caller_package);
-    if ( -e "$module_path/$file_name" ) {
-      $file_name = "$module_path/$file_name";
-      return $file_name;
+    $cat_file_name = File::Spec->catfile( $module_path, $file_name );
+    if ( -e $cat_file_name ) {
+      return $cat_file_name;
     }
 
     $i++;
   }
 
-  $file_name = dirname($old_caller_file) . "/" . $file_name;
+  $file_name = File::Spec->catfile( dirname($old_caller_file), $file_name );
 
   return $file_name;
 }

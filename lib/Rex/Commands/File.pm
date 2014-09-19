@@ -104,6 +104,30 @@ Parse a template and return the content.
               name => "test.lan",
               webmaster => 'webmaster@test.lan');
 
+The file name specified is subject to "path_map" processing as documented
+under the file() function to resolve to a physical file name.
+
+In addition to the "path_map" processing, if the B<-E> command line switch
+is used to specify an environment name, existence of a file ending with
+'.<env>' is checked and has precedence over the file without one, if it
+exists. E.g. if rex is started as:
+
+ $ rex -E prod task1
+
+then in task1 defined as:
+
+ task "task1", sub {
+
+    say template("files/etc/ntpd.conf");
+
+ };
+
+will print the content of 'files/etc/ntpd.conf.prod' if it exists.
+
+Note: the appended environment mechanism is always applied, after
+the 'path_map' mechanism, if that is configured.
+
+
 =cut
 
 sub template {
@@ -266,7 +290,36 @@ This function is the successor of I<install file>. Please use this function to u
  
  };
 
-If I<source> is relative it will search from the location of your I<Rexfile> or the I<.pm> file if you use Perl packages.
+The I<source> is subject to a path resolution algorithm. This algorithm
+can be configured using the I<set> function to set the value of the
+I<path_map> variable to a hash containing path prefixes as its keys.
+The associated values are arrays listing the prefix replacements in order
+of (decreasing) priority.
+
+  set "path_map", {
+    "files/" => [ "files/{environment}/{hostname}/_root_/",
+                  "files/{environment}/_root_/" ]
+  };
+
+With this configuration, the file "files/etc/ntpd.conf" will be probed for
+in the following locations:
+
+ - files/{environment}/{hostname}/_root_/etc/ntpd.conf
+ - files/{environment}/_root_/etc/ntpd.conf
+ - files/etc/ntpd.conf
+
+Further more, if a path prefix matches multiple prefix entries in 'path_map',
+e.g. "files/etc/ntpd.conf" matching both "files/" and "files/etc/", the
+longer matching prefix(es) have precedence over shorter ones. Note that
+keys without a trailing slash (i.e. "files/etc") will be treated as having
+a trailing slash when matching the prefix ("files/etc/"). 
+
+If no file is found using the above procedure and I<source> is relative,
+it will search from the location of your I<Rexfile> or the I<.pm> file if
+you use Perl packages.
+
+All the possible variables ('{environment}', '{hostname}', ...) are documented
+in the CMDB YAML documentation.
 
 This function supports the following hooks:
 

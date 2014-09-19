@@ -25,7 +25,6 @@ use Rex::Interface::Exec;
 
 @EXPORT = qw(get_file_path get_tmp_file resolv_path parse_path);
 
-
 set "path_map", {};
 
 #
@@ -59,29 +58,32 @@ sub get_file_path {
 
   my $map_setting = get("path_map");
 
+  my %path_map = (
+    map { ( ( substr( $_, -1 ) eq '/' ) ? $_ : "$_/" ) => $map_setting->{$_} }
+      keys %$map_setting
+  );
 
-  my %path_map =
-      (map { ((substr($_,-1) eq '/') ? $_ : "$_/") => $map_setting->{$_} }
-       keys %$map_setting);
+  foreach my $prefix (
+    sort { length($b) <=> length($a) }
+    grep { $file_name =~ m/^$_/ } keys %path_map
+    )
+  {
+    foreach my $pattern ( @{ $path_map{$prefix} } ) {
+      my $expansion =
+        parse_path($pattern) . substr( $file_name, length($prefix) );
 
-  foreach my $prefix (sort { length($b) <=> length($a) }
-                      grep { $file_name =~ m/^$_/ } keys %path_map) {
-      foreach my $pattern (@{$path_map{$prefix}}) {
-          my $expansion = parse_path($pattern)
-              . substr($file_name, length($prefix));
-
-          if ( -e $expansion ) {
-              return $expansion;
-          }
-
-          if ( -e $real_path . '/' . $expansion ) {
-              return $real_path . '/' . $expansion;
-          }
+      if ( -e $expansion ) {
+        return $expansion;
       }
+
+      if ( -e $real_path . '/' . $expansion ) {
+        return $real_path . '/' . $expansion;
+      }
+    }
   }
 
   if ( -e $file_name ) {
-      return $file_name;
+    return $file_name;
   }
 
   if ( -e $real_path . '/' . $file_name ) {
@@ -169,7 +171,7 @@ sub resolv_path {
 }
 
 sub parse_path {
-  my ( $path ) = @_;
+  my ($path) = @_;
   my %hw;
 
   require Rex::Commands::Gather;
@@ -189,7 +191,5 @@ sub parse_path {
 
   return $path;
 }
-
-
 
 1;

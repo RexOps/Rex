@@ -26,6 +26,8 @@ use Rex::Interface::Exec;
 @EXPORT = qw(get_file_path get_tmp_file resolv_path parse_path);
 
 
+set "path_map", {};
+
 #
 # CALL: get_file_path("foo.txt", caller());
 # RETURNS: module file
@@ -55,7 +57,9 @@ sub get_file_path {
 
   my $real_path = join( '/', @path_parts );
 
-  my $map_setting = get("path_map") || \{};
+  my $map_setting = get("path_map");
+
+
   my %path_map =
       (map { ((substr($_,-1) eq '/') ? $_ : "$_/") => $map_setting->{$_} }
        keys %$map_setting);

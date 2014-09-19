@@ -60,7 +60,7 @@ sub get_file_path {
       (map { ((substr($_,-1) eq '/') ? $_ : "$_/") => $map_setting->{$_} }
        keys %$map_setting);
 
-  foreach my $prefix (sort { length($a) <=> length($b) }
+  foreach my $prefix (sort { length($b) <=> length($a) }
                       grep { $file_name =~ m/^$_/ } keys %path_map) {
       foreach my $pattern (@{$path_map{$prefix}}) {
           my $expansion = parse_path($pattern)

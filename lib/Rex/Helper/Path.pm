@@ -69,7 +69,6 @@ sub get_file_path {
       foreach my $pattern (@{$path_map{$prefix}}) {
           my $expansion = parse_path($pattern)
               . substr($file_name, length($prefix));
-          print "pat: $pattern\npref: $prefix\nexp: $expansion\n";
 
           if ( -e $expansion ) {
               return $expansion;

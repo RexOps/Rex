@@ -290,10 +290,11 @@ This function is the successor of I<install file>. Please use this function to u
  
  };
 
-The I<source> is subject to a path resolution algorithm which can be
-configured using the I<set> function by setting the I<path_map> variable
-to a hash containing path prefixes to be matched, enumerating expansions
-in order of priority.
+The I<source> is subject to a path resolution algorithm. This algorithm
+can be configured using the I<set> function to set the value of the
+I<path_map> variable to a hash containing path prefixes as its keys.
+The associated values are arrays listing the prefix replacements in order
+of (decreasing) priority.
 
   set "path_map", {
     "files/" => [ "files/{environment}/{hostname}/_root_/",
@@ -309,7 +310,9 @@ in the following locations:
 
 Further more, if a path prefix matches multiple prefix entries in 'path_map',
 e.g. "files/etc/ntpd.conf" matching both "files/" and "files/etc/", the
-longer matching prefix(es) have precedence over shorter ones.
+longer matching prefix(es) have precedence over shorter ones. Note that
+keys without a trailing slash (i.e. "files/etc") will be treated as having
+a trailing slash when matching the prefix ("files/etc/"). 
 
 If no file is found using the above procedure and I<source> is relative,
 it will search from the location of your I<Rexfile> or the I<.pm> file if

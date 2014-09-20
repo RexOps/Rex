@@ -107,6 +107,27 @@ Parse a template and return the content.
 The file name specified is subject to "path_map" processing as documented
 under the file() function to resolve to a physical file name.
 
+In addition to the "path_map" processing, if the B<-E> command line switch
+is used to specify an environment name, existence of a file ending with
+'.<env>' is checked and has precedence over the file without one, if it
+exists. E.g. if rex is started as:
+
+ $ rex -E prod task1
+
+then in task1 defined as:
+
+ task "task1", sub {
+
+    say template("files/etc/ntpd.conf");
+
+ };
+
+will print the content of 'files/etc/ntpd.conf.prod' if it exists.
+
+Note: the appended environment mechanism is always applied, after
+the 'path_map' mechanism, if that is configured.
+
+
 =cut
 
 sub template {

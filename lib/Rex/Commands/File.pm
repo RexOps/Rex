@@ -308,7 +308,7 @@ in the following locations:
  - files/{environment}/_root_/etc/ntpd.conf
  - files/etc/ntpd.conf
 
-Further more, if a path prefix matches multiple prefix entries in 'path_map',
+Furthermore, if a path prefix matches multiple prefix entries in 'path_map',
 e.g. "files/etc/ntpd.conf" matching both "files/" and "files/etc/", the
 longer matching prefix(es) have precedence over shorter ones. Note that
 keys without a trailing slash (i.e. "files/etc") will be treated as having

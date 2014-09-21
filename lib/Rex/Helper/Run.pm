@@ -60,7 +60,7 @@ sub i_run {
   }
 
   if ( exists $option->{nohup} && $option->{nohup} ) {
-    $cmd = "nohup $cmd";
+    $cmd = "nohup $cmd >/dev/null";
     delete $option->{nohup};
   }
 

@@ -28,7 +28,15 @@ sub new {
 }
 
 sub get_output            { shift->{__cmd_output__}; }
-sub _prepare_service_name { return $_[1]; }
+sub _prepare_service_name {
+  my ($self, $service_name) = @_;
+
+  if(!$self->service_exists($service_name) && Rex::Config->get_check_service_exists) {
+    die "Service $service_name not found.";
+  }
+
+  return $service_name;
+}
 
 sub _filter_options {
   my ( $self, $service, $options ) = @_;
@@ -156,6 +164,18 @@ sub action {
   $service = $self->_prepare_service_name($service);
 
   my $cmd = sprintf $self->{commands}->{action}, $service, $action;
+  return $self->_execute($cmd);
+}
+
+sub service_exists {
+  my ( $self, $service ) = @_;
+
+  # always return true if we can't verify if a service exists
+  if ( !exists $self->{commands}->{service_exists} ) {
+    return 1;
+  }
+
+  my $cmd = sprintf $self->{commands}->{service_exists}, $service;
   return $self->_execute($cmd);
 }
 

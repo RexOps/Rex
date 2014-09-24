@@ -590,6 +590,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.54 ) {
+        Rex::Logger::debug("Add service check.");
+        Rex::Config->set_check_service_exists(1);
+        $found_feature = 1;
+      }
+
       if ( $add eq "register_cmdb_top_scope" ) {
         Rex::Logger::debug("Registering CMDB as template variables.");
         Rex::Config->set_register_cmdb_template(1);

@@ -56,7 +56,7 @@ our (
   $exec_autodie,             $verbose_run,
   $disable_taskname_warning, $proxy_command,
   $task_call_by_method,      $fallback_auth,
-  $register_cmdb_template,
+  $register_cmdb_template,   $check_service_exists,
 
 );
 
@@ -67,6 +67,15 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_check_service_exists {
+  my $class = shift;
+  $check_service_exists = shift;
+}
+
+sub get_check_service_exists {
+  return $check_service_exists;
+}
 
 sub set_register_cmdb_template {
   my $class = shift;

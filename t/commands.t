@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 25;
+use Test::More tests => 26;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
@@ -74,4 +74,11 @@ ok(
 @ret = Rex::Commands::evaluate_hostname("10.5.9.[8..11]");
 ok( join( ",", @ret ) eq "10.5.9.8,10.5.9.9,10.5.9.10,10.5.9.11",
   "evaluate ip" );
+
+@ret = Rex::Commands::evaluate_hostname("[1..3].host.domain");
+is(
+  join( ",", @ret ),
+  "1.host.domain,2.host.domain,3.host.domain",
+  "evaluate leading range"
+);
 

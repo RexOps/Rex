@@ -1598,9 +1598,9 @@ sub evaluate_hostname {
   return unless $str;
 
   my ( $start, $from, $to, $dummy, $step, $end ) =
-    $str =~ m/^([0-9\.\w\-:]+)\[(\d+)..(\d+)(\/(\d+))?\]([0-9\w\.\-:]+)?$/;
+    $str =~ m/^([0-9\.\w\-:]*)\[(\d+)..(\d+)(\/(\d+))?\]([0-9\w\.\-:]+)?$/;
 
-  unless ($start) {
+  if (! defined $start) {
     return $str;
   }
 

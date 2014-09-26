@@ -47,8 +47,8 @@ SKIP: {
 }
 
 SKIP: {
-  diag "You need Paralle::ForkManager to use Parallel_ForkManager distribution method." unless $have_mods{'Parallel::ForkManager'};
-  skip "You need Paralle::ForkManager to use Parallel_ForkManager distribution method.", 1 unless $have_mods{'Parallel::ForkManager'};
+  diag "You need Parallel::ForkManager to use Parallel_ForkManager distribution method." unless $have_mods{'Parallel::ForkManager'};
+  skip "You need Parallel::ForkManager to use Parallel_ForkManager distribution method.", 1 unless $have_mods{'Parallel::ForkManager'};
   use_ok 'Rex::TaskList::Parallel_ForkManager';
 }
 

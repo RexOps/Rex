@@ -36,6 +36,22 @@ sub get_file_path {
 
   $file_name = resolv_path($file_name);
 
+  my $ends_with_slash = 0;
+  if($file_name =~ m/\/$/) {
+    $ends_with_slash = 1;
+  }
+
+  my $fix_path = sub {
+    my ($path) = @_;
+    if($ends_with_slash) {
+      if($path !~ m/\/$/) {
+        return "$path/";
+      }
+    }
+
+    return $path;
+  };
+
   if ( !$caller_package ) {
     ( $caller_package, $caller_file ) = caller();
   }
@@ -74,23 +90,23 @@ sub get_file_path {
         substr( $file_name, length($prefix) ) );
 
       if ( -e $expansion ) {
-        return $expansion;
+        return $fix_path->($expansion);
       }
 
       $expansion = File::Spec->catfile( $real_path, $expansion );
       if ( -e $expansion ) {
-        return $expansion;
+        return $fix_path->($expansion);
       }
     }
   }
 
   if ( -e $file_name ) {
-    return $file_name;
+    return $fix_path->($file_name);
   }
 
   my $cat_file_name = File::Spec->catfile( $real_path, $file_name );
   if ( -e $cat_file_name ) {
-    return $cat_file_name;
+    return $fix_path->($cat_file_name);
   }
 
   # walk down the wire to find the file...
@@ -105,7 +121,7 @@ sub get_file_path {
     my $module_path = Rex::get_module_path($caller_package);
     $cat_file_name = File::Spec->catfile( $module_path, $file_name );
     if ( -e $cat_file_name ) {
-      return $cat_file_name;
+      return $fix_path->($cat_file_name);
     }
 
     $i++;
@@ -113,7 +129,7 @@ sub get_file_path {
 
   $file_name = File::Spec->catfile( dirname($old_caller_file), $file_name );
 
-  return $file_name;
+  return $fix_path->($file_name);
 }
 
 sub get_tmp_file {

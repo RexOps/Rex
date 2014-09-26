@@ -76,7 +76,11 @@ sub download {
     else {
       $ssh->scp_get( $rnd_file, $target );
     }
-    $self->unlink($rnd_file);
+    Rex::get_current_connection_object()->run_sudo_unmodified(
+      sub {
+        $self->unlink($rnd_file);
+      }
+    );
   }
   else {
     $self->cp( $source, $target );
@@ -151,6 +155,12 @@ sub stat {
   my $rnd_file = $self->_write_to_rnd_file($script);
   my $out      = $self->_exec("perl $rnd_file '$file'");
 
+  Rex::get_current_connection_object()->run_sudo_unmodified(
+    sub {
+      $self->unlink($rnd_file);
+    }
+  );
+
   if ( !$out ) {
     return ();
   }
@@ -167,6 +177,12 @@ sub is_readable {
   my $rnd_file = $self->_write_to_rnd_file($script);
   $self->_exec("perl $rnd_file '$file'");
   my $ret = $?;
+  Rex::get_current_connection_object()->run_sudo_unmodified(
+    sub {
+      $self->unlink($rnd_file);
+    }
+  );
+  $? = $ret;
 
   if ( $ret == 0 ) { return 1; }
 }
@@ -179,6 +195,12 @@ sub is_writable {
   my $rnd_file = $self->_write_to_rnd_file($script);
   $self->_exec("perl $rnd_file '$file'");
   my $ret = $?;
+  Rex::get_current_connection_object()->run_sudo_unmodified(
+    sub {
+      $self->unlink($rnd_file);
+    }
+  );
+  $? = $ret;
 
   if ( $ret == 0 ) { return 1; }
 }
@@ -189,7 +211,14 @@ sub readlink {
 
   my $rnd_file = $self->_write_to_rnd_file($script);
   my $out      = $self->_exec("perl $rnd_file '$file'");
+  my $ret      = $?;
   chomp $out;
+  Rex::get_current_connection_object()->run_sudo_unmodified(
+    sub {
+      $self->unlink($rnd_file);
+    }
+  );
+  $? = $ret;
 
   return $out;
 }
@@ -216,6 +245,13 @@ sub glob {
 
   my $rnd_file = $self->_write_to_rnd_file($script);
   my $content  = $self->_exec("perl $rnd_file");
+  my $ret      = $?;
+  Rex::get_current_connection_object()->run_sudo_unmodified(
+    sub {
+      $self->unlink($rnd_file);
+    }
+  );
+  $? = $ret;
 
   my $tmp = decode_json($content);
 

@@ -461,7 +461,20 @@ sub file {
       Rex::Hook::run_hook( file => "before_change", @_ );
       ##############################
 
+      if (Rex::is_sudo) {
+        my $current_options =
+          Rex::get_current_connection_object()->get_current_sudo_options;
+        Rex::get_current_connection_object()->push_sudo_options( {} );
+
+        if ( exists $current_options->{user} ) {
+          $fs->chown( "$current_options->{user}:", $tmp_file_name );
+        }
+      }
+
       $fs->rename( $tmp_file_name, $file );
+      Rex::get_current_connection_object()->pop_sudo_options()
+        if (Rex::is_sudo);
+
       $__ret = { changed => 1 };
 
       Rex::get_current_connection()->{reporter}->report(

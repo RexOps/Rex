@@ -19,6 +19,8 @@ sub new {
 
   bless( $self, $proto );
 
+  $self->{__sudo_options__} = [];
+
   return $self;
 }
 
@@ -67,6 +69,48 @@ sub get_auth {
   if ( exists $self->{__auth_info__} ) {
     return $self->{__auth_info__};
   }
+}
+
+sub push_sudo_options {
+  my ( $self, @option ) = @_;
+  if(ref $option[0] eq "HASH") {
+    push @{ $self->{__sudo_options__} }, $option[0];
+  }
+  else {
+    push @{ $self->{__sudo_options__} }, { @option };
+  }
+}
+
+sub get_current_sudo_options {
+  my ($self) = @_;
+  return $self->{__sudo_options__}->[-1];
+}
+
+sub push_use_sudo {
+  my ( $self, $use ) = @_;
+  push @{ $self->{__use_sudo__} }, $use;
+}
+
+sub get_current_use_sudo {
+  my ($self) = @_;
+  return $self->{__use_sudo__}->[-1];
+}
+
+sub pop_sudo_options {
+  my ($self) = @_;
+  pop @{ $self->{__sudo_options__} };
+}
+
+sub pop_use_sudo {
+  my ($self) = @_;
+  pop @{ $self->{__use_sudo__} };
+}
+
+sub run_sudo_unmodified {
+  my ($self, $code) = @_;
+  $self->push_sudo_options({});
+  $code->();
+  $self->pop_sudo_options();
 }
 
 1;

@@ -256,6 +256,11 @@ sub get_current_connection {
   $CONNECTION_STACK[-1];
 }
 
+
+sub get_current_connection_object {
+  return Rex::get_current_connection()->{conn};
+}
+
 =item is_ssh
 
 Returns 1 if the current connection is a ssh connection. 0 if not.
@@ -306,7 +311,7 @@ sub is_sudo {
   }
 
   if ( $CONNECTION_STACK[-1] ) {
-    return $CONNECTION_STACK[-1]->{"use_sudo"};
+    return $CONNECTION_STACK[-1]->{conn}->get_current_use_sudo;
   }
 
   return 0;

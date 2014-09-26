@@ -368,10 +368,12 @@ sub sudo {
     return;
   }
 
-  my $old_sudo    = Rex::get_current_connection()->{use_sudo}     || 0;
-  my $old_options = Rex::get_current_connection()->{sudo_options} || {};
-  Rex::get_current_connection()->{use_sudo}     = 1;
-  Rex::get_current_connection()->{sudo_options} = $options;
+  #my $old_sudo    = Rex::get_current_connection()->{use_sudo}     || 0;
+  #my $old_options = Rex::get_current_connection()->{sudo_options} || {};
+  #Rex::get_current_connection()->{use_sudo}     = 1;
+  #Rex::get_current_connection()->{sudo_options} = $options;
+  Rex::get_current_connection_object()->push_use_sudo(1);
+  Rex::get_current_connection_object()->push_sudo_options( %{$options} );
 
   my $ret;
 
@@ -383,8 +385,11 @@ sub sudo {
     $ret = i_run($cmd);
   }
 
-  Rex::get_current_connection()->{use_sudo}     = $old_sudo;
-  Rex::get_current_connection()->{sudo_options} = $old_options;
+  Rex::get_current_connection_object()->pop_use_sudo();
+  Rex::get_current_connection_object()->pop_sudo_options();
+
+  #Rex::get_current_connection()->{use_sudo}     = $old_sudo;
+  #Rex::get_current_connection()->{sudo_options} = $old_options;
 
   return $ret;
 }

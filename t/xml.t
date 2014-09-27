@@ -13,7 +13,7 @@ for my $m ( keys %have_mods ) {
 
 unless ( $have_mods{'XML::LibXML'} ) {
   plan skip_all =>
-    'Not XML::LibXML library available. XML Group support won\'t be available.';
+    'XML::LibXML module not available. XML group support won\'t be available.';
 }
 else {
   plan tests => 12;

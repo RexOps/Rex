@@ -16,7 +16,7 @@ for my $m ( keys %have_mods ) {
 
 unless ( $have_mods{'String::Escape'} ) {
   plan skip_all =>
-    'Not String::Escape module found. No ini file support available.';
+    'String::Escape module not found. INI file support won\'t be available.';
 }
 else {
   plan tests => 36;
@@ -42,7 +42,7 @@ groups_file("t/test.ini");
 my %groups = Rex::Group->get_groups;
 
 ok( scalar( @{ $groups{frontends} } ) == 5, "frontends 5 servers" );
-ok( scalar( @{ $groups{backends} } ) == 3,  "frontends 3 servers" );
+ok( scalar( @{ $groups{backends} } ) == 3,  "backends 3 servers" );
 ok( grep { $_ eq "fe01" } @{ $groups{frontends} }, "got fe01" );
 ok( grep { $_ eq "fe02" } @{ $groups{frontends} }, "got fe02" );
 ok( grep { $_ eq "fe03" } @{ $groups{frontends} }, "got fe03" );

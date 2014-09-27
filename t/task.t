@@ -14,7 +14,7 @@ for my $m ( keys %have_mods ) {
 
 unless ( $have_mods{'Net::SSH2'} ) {
   plan skip_all =>
-    'Net::SSH2 Module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
+    'SSH module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
 }
 else {
   plan tests => 31;

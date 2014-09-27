@@ -26,9 +26,9 @@ use_ok 'Rex::Commands::Cloud';
 use_ok 'Rex::Commands::Cron';
 
 SKIP: {
-  diag "DBI module not installed. Database Access won't be available."
+  diag "DBI module not installed. Database access won't be available."
     unless $have_mods{'DBI'};
-  skip "DBI module not installed. Database Access won't be available.", 3
+  skip "DBI module not installed. Database access won't be available.", 3
     unless $have_mods{'DBI'};
   use_ok 'Rex::Commands::DB';
   use_ok 'Rex::Group::Lookup::DBI';
@@ -37,19 +37,19 @@ SKIP: {
 
 SKIP: {
   diag
-    "Net::SSH2 module not installed. You need Net::SSH2 or Net::OpenSSH Module to make ssh connection."
+    "SSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH."
     unless $have_mods{'Net::SSH2'};
   skip
-    "Net::SSH2 module not installed. You need Net::SSH2 or Net::OpenSSH Module to make ssh connection.",
+    "SSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH.",
     1
     unless $have_mods{'Net::SSH2'};
   use_ok 'Rex::Interface::Connection::SSH';
 }
 
 SKIP: {
-  diag "You need IPC::Shareable module to use Rex::Ouput modules."
+  diag "You need IPC::Shareable module to use Rex::Output modules."
     unless $have_mods{'IPC::Shareable'};
-  skip "You need IPC::Shareable module to use Rex::Ouput modules.", 2
+  skip "You need IPC::Shareable module to use Rex::Output modules.", 2
     unless $have_mods{'IPC::Shareable'};
   use_ok 'Rex::Output::JUnit';
   use_ok 'Rex::Output';

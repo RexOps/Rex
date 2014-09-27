@@ -4,25 +4,23 @@ use warnings;
 use Test::More;
 use Data::Dumper;
 
-my %have_mods = (
-  'String::Escape' => 1,
-);
+my %have_mods = ( 'String::Escape' => 1, );
 
-for my $m (keys %have_mods) {
+for my $m ( keys %have_mods ) {
   my $have_mod = 1;
   eval "use $m;";
-  if($@) {
+  if ($@) {
     $have_mods{$m} = 0;
   }
 }
 
-unless($have_mods{'String::Escape'}) {
-  plan skip_all => 'Not String::Escape module found. No ini file support available.';
+unless ( $have_mods{'String::Escape'} ) {
+  plan skip_all =>
+    'Not String::Escape module found. No ini file support available.';
 }
 else {
   plan tests => 36;
 }
-
 
 use_ok 'Rex::Group::Lookup::INI';
 use_ok 'Rex::Group';

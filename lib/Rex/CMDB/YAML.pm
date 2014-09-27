@@ -54,7 +54,7 @@ sub get {
   @files = map { $self->_parse_path($_) } @files;
 
   my $all = {};
-  Rex::Logger::debug(Dumper(\@files));
+  Rex::Logger::debug( Dumper( \@files ) );
 
   for my $file (@files) {
     Rex::Logger::debug("CMDB - Opening $file");

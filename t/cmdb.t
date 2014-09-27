@@ -54,10 +54,12 @@ ok( $all->{name} eq "foo", "got name from cmdb - all request" );
 
 Rex::Config->set_register_cmdb_template(1);
 my $content = 'Hello this is <%= $::name %>';
-ok( template(\$content, __no_sys_info__ => 1 ) eq "Hello this is defaultname", "get keys from CMDB" );
+ok( template( \$content, __no_sys_info__ => 1 ) eq "Hello this is defaultname",
+  "get keys from CMDB" );
 
-ok( template( \$content, { name => "baz", __no_sys_info__ => 1 } ) eq "Hello this is baz",
-  "overwrite keys from CMDB" );
-
-
+ok(
+  template( \$content, { name => "baz", __no_sys_info__ => 1 } ) eq
+    "Hello this is baz",
+  "overwrite keys from CMDB"
+);
 

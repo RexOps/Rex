@@ -322,7 +322,7 @@ sub ip {
 
   $self->{info} = vm guestinfo => $self->{name};
 
-  if(scalar keys %{ $self->{info} } == 0) { return; }
+  if ( scalar keys %{ $self->{info} } == 0 ) { return; }
 
   my $server = $self->{info}->{net}->[0]->{ip};
   if ( $self->{__forward_port}
@@ -340,16 +340,16 @@ sub ip {
 
   $self->{info}->{ip} = $server;
 
-  if( ! $server ) {
+  if ( !$server ) {
     sleep 1;
     $self->{get_ip_count}++;
 
-    if($self->{get_ip_count} >= 30) {
+    if ( $self->{get_ip_count} >= 30 ) {
       die "Can't get ip of VM.";
     }
 
     my $ip = $self->ip;
-    if($ip) {
+    if ($ip) {
       $self->{get_ip_count} = 0;
       return $ip;
     }

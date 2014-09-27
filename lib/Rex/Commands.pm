@@ -311,7 +311,8 @@ sub task {
       Rex::Logger::info("Running task $task_name_save on current connection");
 
       if ( Rex::Config->get_task_call_by_method
-        && $_[0] && $_[0] =~ m/^[A-Za-z0-9_:]+$/
+        && $_[0]
+        && $_[0] =~ m/^[A-Za-z0-9_:]+$/
         && ref $_[1] eq "HASH" )
       {
         shift;
@@ -1600,7 +1601,7 @@ sub evaluate_hostname {
   my ( $start, $from, $to, $dummy, $step, $end ) =
     $str =~ m/^([0-9\.\w\-:]*)\[(\d+)..(\d+)(\/(\d+))?\]([0-9\w\.\-:]+)?$/;
 
-  if (! defined $start) {
+  if ( !defined $start ) {
     return $str;
   }
 

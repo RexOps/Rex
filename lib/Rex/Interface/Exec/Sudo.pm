@@ -103,7 +103,8 @@ EOF
   }
 
   #my $sudo_options     = Rex::get_current_connection()->{sudo_options};
-  my $sudo_options     = Rex::get_current_connection_object()->get_current_sudo_options;
+  my $sudo_options =
+    Rex::get_current_connection_object()->get_current_sudo_options;
   my $sudo_options_str = "";
   if ( exists $sudo_options->{user} ) {
     $sudo_options_str .= " -u " . $sudo_options->{user};

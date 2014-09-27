@@ -21,21 +21,22 @@ sub new {
   my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
- 
+
   # Check if pkg is actually bootstraped (installed and activated)
   i_run "pkg -N";
   if ( $? != 0 ) {
-      i_run "pkg bootstrap", env => { 'ASSUME_ALWAYS_YES' => 'true' };
+    i_run "pkg bootstrap", env => { 'ASSUME_ALWAYS_YES' => 'true' };
   }
 
   $self->{commands} = {
-      install            => 'pkg install -q -y %s',
-      install_version    => 'pkg install -q -y %s',
-      remove             => 'pkg remove -q -y %s',
-      query              => 'pkg info',
-      update_package_db  => 'pkg update -q',
-      # pkg can't update system yet, only packages
-      update_system      => 'pkg upgrade -q -y',
+    install           => 'pkg install -q -y %s',
+    install_version   => 'pkg install -q -y %s',
+    remove            => 'pkg remove -q -y %s',
+    query             => 'pkg info',
+    update_package_db => 'pkg update -q',
+
+    # pkg can't update system yet, only packages
+    update_system => 'pkg upgrade -q -y',
   };
 
   return $self;
@@ -66,10 +67,10 @@ sub is_installed {
   Rex::Logger::debug("Checking if $pkg is installed");
 
   # pkg info -e allow get quick answer about is pkg installed or not.
-  my $command = sprintf($self->{commands}->{query}. " %s %s", '-e', $pkg);
-  i_run $command; 
+  my $command = sprintf( $self->{commands}->{query} . " %s %s", '-e', $pkg );
+  i_run $command;
 
-  if ($? != 0 ) {
+  if ( $? != 0 ) {
     Rex::Logger::debug("$pkg is NOT installed.");
     return 0;
   }

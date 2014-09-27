@@ -751,7 +751,7 @@ sub set {
     return &{ $SET_HANDLER->{$var} }(@_);
   }
 
-  if($set_no_append) {
+  if ($set_no_append) {
     $set_param->{$var} = $data;
   }
   else {

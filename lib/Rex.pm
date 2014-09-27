@@ -73,8 +73,8 @@ use File::Basename;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$VERSION = "0.54.0";
-$WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
+$VERSION          = "0.54.0";
+$WITH_EXIT_STATUS = 1;          # since 0.50 activated by default
 
 my $cur_dir;
 
@@ -256,7 +256,6 @@ sub get_current_connection {
 
   $CONNECTION_STACK[-1];
 }
-
 
 sub get_current_connection_object {
   return Rex::get_current_connection()->{conn};

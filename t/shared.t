@@ -24,7 +24,7 @@ ok( $array[-1] eq "five", "array push" );
   surename => "doe",
   multi    => {
     key1 => "foo",
-    arr1 => [ qw/bar baz/ ],
+    arr1 => [qw/bar baz/],
   }
 );
 

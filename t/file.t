@@ -260,9 +260,12 @@ ok( -d "$tmp_dir/test.d-$$", "created directory with file()" );
 rmdir "$tmp_dir/test.d-$$";
 
 $content = 'Hello this is <%= $::foo %>';
-ok( template(\$content, __no_sys_info__ => 1 ) eq "Hello this is bar", "get keys from Rex::Config" );
+ok( template( \$content, __no_sys_info__ => 1 ) eq "Hello this is bar",
+  "get keys from Rex::Config" );
 
-ok( template( \$content, { foo => "baz", __no_sys_info__ => 1 } ) eq "Hello this is baz",
-  "overwrite keys from Rex::Config" );
-
+ok(
+  template( \$content, { foo => "baz", __no_sys_info__ => 1 } ) eq
+    "Hello this is baz",
+  "overwrite keys from Rex::Config"
+);
 

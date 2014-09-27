@@ -43,7 +43,7 @@ sub open {
   }
 
   # always use current logged in user for sudo fs operations
-  Rex::get_current_connection_object()->push_sudo_options({});
+  Rex::get_current_connection_object()->push_sudo_options( {} );
 
   $self->{mode}    = $mode;
   $self->{file}    = $file;
@@ -97,7 +97,7 @@ sub close {
   return unless $self->{fh};
 
   # always use current logged in user for sudo fs operations
-  Rex::get_current_connection_object()->push_sudo_options({});
+  Rex::get_current_connection_object()->push_sudo_options( {} );
 
   if ( exists $self->{mode}
     && ( $self->{mode} eq ">" || $self->{mode} eq ">>" ) )

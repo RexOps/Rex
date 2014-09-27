@@ -29,9 +29,10 @@ sub new {
       'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install %s',
     install_version =>
       'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install %s=%s',
-    update_system => 'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
-    remove        => 'apt-get -y remove %s',
-    purge         => 'dpkg --purge %s',
+    update_system =>
+      'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
+    remove            => 'apt-get -y remove %s',
+    purge             => 'dpkg --purge %s',
     update_package_db => 'apt-get -y update',
   };
 

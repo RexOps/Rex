@@ -57,6 +57,7 @@ our (
   $disable_taskname_warning, $proxy_command,
   $task_call_by_method,      $fallback_auth,
   $register_cmdb_template,   $check_service_exists,
+  $set_no_append,
 
 );
 
@@ -67,6 +68,15 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_set_no_append {
+  my $class = shift;
+  $set_no_append = shift;
+}
+
+sub get_set_no_append {
+  return $set_no_append;
+}
 
 sub set_check_service_exists {
   my $class = shift;
@@ -741,19 +751,24 @@ sub set {
     return &{ $SET_HANDLER->{$var} }(@_);
   }
 
-  if ( ref($data) eq "HASH" ) {
-    if ( !ref( $set_param->{$var} ) ) {
-      $set_param->{$var} = {};
-    }
-    for my $key ( keys %{$data} ) {
-      $set_param->{$var}->{$key} = $data->{$key};
-    }
-  }
-  elsif ( ref($data) eq "ARRAY" ) {
-    push( @{ $set_param->{$var} }, @{$data} );
+  if($set_no_append) {
+    $set_param->{$var} = $data;
   }
   else {
-    $set_param->{$var} = $data;
+    if ( ref($data) eq "HASH" ) {
+      if ( !ref( $set_param->{$var} ) ) {
+        $set_param->{$var} = {};
+      }
+      for my $key ( keys %{$data} ) {
+        $set_param->{$var}->{$key} = $data->{$key};
+      }
+    }
+    elsif ( ref($data) eq "ARRAY" ) {
+      push( @{ $set_param->{$var} }, @{$data} );
+    }
+    else {
+      $set_param->{$var} = $data;
+    }
   }
 }
 

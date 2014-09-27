@@ -73,6 +73,7 @@ use File::Basename;
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
+$VERSION = "0.54.0";
 $WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
 
 my $cur_dir;
@@ -598,6 +599,10 @@ sub import {
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.54 ) {
         Rex::Logger::debug("Add service check.");
         Rex::Config->set_check_service_exists(1);
+
+        Rex::Logger::debug("Setting set() to not append data.");
+        Rex::Config->set_set_no_append(1);
+
         $found_feature = 1;
       }
 

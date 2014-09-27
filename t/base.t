@@ -5,6 +5,7 @@ use Test::More tests => 167;
 
 my %have_mods = (
   'Net::SSH2'      => 1,
+  'Net::OpenSSH'   => 1,
   'DBI'            => 1,
   'IPC::Shareable' => 1,
 );
@@ -38,11 +39,11 @@ SKIP: {
 SKIP: {
   diag
     "SSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH."
-    unless $have_mods{'Net::SSH2'};
+    unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} );
   skip
     "SSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH.",
     1
-    unless $have_mods{'Net::SSH2'};
+    unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} );
   use_ok 'Rex::Interface::Connection::SSH';
 }
 

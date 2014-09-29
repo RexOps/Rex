@@ -16,7 +16,7 @@ This module is the core commands module.
 
  desc "Task description";
 
- task "taskname", sub { ... };
+ task "taskname", sub { ... };
  task "taskname", "server1", ..., "server20", sub { ... };
 
  group "group" => "server1", "server2", ...;

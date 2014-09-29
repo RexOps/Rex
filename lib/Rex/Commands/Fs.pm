@@ -81,7 +81,7 @@ use vars qw(%file_handles);
 This function list all entries (files, directories, ...) in a given directory and returns a array.
 
  task "ls-etc", "server01", sub {
-   my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
+   my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
  };
 
 This command will not be reported.

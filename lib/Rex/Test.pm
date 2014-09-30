@@ -15,7 +15,7 @@ task run => make {
 
   my @files;
   LOCAL {
-    @files = list_files "t";
+    @files = grep { $_ =~ /\.t$/ } list_files 't';
   };
 
   for my $file (@files) {

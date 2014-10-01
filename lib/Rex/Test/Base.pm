@@ -190,6 +190,7 @@ sub ok {
 
 sub finish {
   Test::More::done_testing();
+  Rex::pop_connection();
 }
 
 =back

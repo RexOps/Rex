@@ -27,11 +27,14 @@ sub new {
   return $self;
 }
 
-sub get_output            { shift->{__cmd_output__}; }
-sub _prepare_service_name {
-  my ($self, $service_name) = @_;
+sub get_output { shift->{__cmd_output__}; }
 
-  if(!$self->service_exists($service_name) && Rex::Config->get_check_service_exists) {
+sub _prepare_service_name {
+  my ( $self, $service_name ) = @_;
+
+  if ( !$self->service_exists($service_name)
+    && Rex::Config->get_check_service_exists )
+  {
     die "Service $service_name not found.";
   }
 

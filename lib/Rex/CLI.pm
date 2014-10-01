@@ -559,6 +559,12 @@ CHECK_OVERWRITE: {
           Rex::Logger::debug("Running task: $task");
           Rex::TaskList->run($task);
         }
+        else {
+          Rex::Logger::info(
+            "No task named '$task' found. Task names are case sensitive and the module delimiter is a single colon.",
+            "error"
+          );
+        }
       }
     }
   };

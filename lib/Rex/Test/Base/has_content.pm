@@ -26,6 +26,9 @@ sub new {
 
 sub run_test {
   my ( $self, $file, $test ) = @_;
+
+  return $self->ok(0, "has_content: $file not found") unless is_file($file);
+
   my $content = cat $file;
   $self->ok( ( $content =~ $test ) >= 1, "Content of $file contain $test." );
 }

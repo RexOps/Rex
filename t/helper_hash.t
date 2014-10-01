@@ -31,7 +31,7 @@ my %h = (
       [ 'eins', 'zwei', 'drei', ],
     ],
   },
-  blub => [ qw/eins zwei drei/ ],
+  blub => [qw/eins zwei drei/],
 
 );
 

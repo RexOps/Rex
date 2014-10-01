@@ -2,21 +2,22 @@ use strict;
 use warnings;
 use Test::More;
 
-
 my %have_mods = (
-  'Net::SSH2' => 1,
+  'Net::SSH2'    => 1,
+  'Net::OpenSSH' => 1,
 );
 
-for my $m (keys %have_mods) {
+for my $m ( keys %have_mods ) {
   my $have_mod = 1;
   eval "use $m;";
-  if($@) {
+  if ($@) {
     $have_mods{$m} = 0;
   }
 }
 
-unless($have_mods{'Net::SSH2'}) {
-  plan skip_all => 'Net::SSH2 Module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
+unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} ) {
+  plan skip_all =>
+    'SSH module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
 }
 else {
   plan tests => 31;

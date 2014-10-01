@@ -73,11 +73,11 @@ sub get_auth {
 
 sub push_sudo_options {
   my ( $self, @option ) = @_;
-  if(ref $option[0] eq "HASH") {
+  if ( ref $option[0] eq "HASH" ) {
     push @{ $self->{__sudo_options__} }, $option[0];
   }
   else {
-    push @{ $self->{__sudo_options__} }, { @option };
+    push @{ $self->{__sudo_options__} }, {@option};
   }
 }
 
@@ -107,8 +107,8 @@ sub pop_use_sudo {
 }
 
 sub run_sudo_unmodified {
-  my ($self, $code) = @_;
-  $self->push_sudo_options({});
+  my ( $self, $code ) = @_;
+  $self->push_sudo_options( {} );
   $code->();
   $self->pop_sudo_options();
 }

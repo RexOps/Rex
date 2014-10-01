@@ -37,14 +37,14 @@ sub get_file_path {
   $file_name = resolv_path($file_name);
 
   my $ends_with_slash = 0;
-  if($file_name =~ m/\/$/) {
+  if ( $file_name =~ m/\/$/ ) {
     $ends_with_slash = 1;
   }
 
   my $fix_path = sub {
     my ($path) = @_;
-    if($ends_with_slash) {
-      if($path !~ m/\/$/) {
+    if ($ends_with_slash) {
+      if ( $path !~ m/\/$/ ) {
         return "$path/";
       }
     }

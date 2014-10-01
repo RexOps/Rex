@@ -1,3 +1,23 @@
+2014-10-03 Jan Gehring <jan.gehring, rexify.org> (0.54.0)
+  * added possibility to clone an jiffybox image - #439 - Peter Manthey
+  * only execute testfiles which end on .t - #434 - Robert Abraham
+  * close last used ssh connection after test - #433 - Robert Abraham
+  * Add error message when attempting to run a non-existing task - FErki
+  * Check if file exists before checking contents - fix #432 - FErki
+  * refactored the behaviour of set() function to do what it is saying.
+    So with feature 0.54 enabled set is always overwriting the existing values. (#425)
+  * Add service_exists for Gentoo - FErki
+  * fixing nested sudo operations. - #423
+  * added check if service exists - #407
+  * Handle hostgroup members with leading numeric ranges - FErki
+  * redirect nohup output to /dev/null
+  * fixed return value for flavors function - #406 - exzz
+  * make apt-listchanges non-interactive - #417 - aowi
+  * added path_map function - Erik Huelsmann
+  * don't try to run dmidecode if it is not in PATH - Andrej Zverev
+  * enhanced support for pkgng (FreeBSD) - Andrej Zverev
+  * fixed Rex::Commands::MD5::md5() to obey path settings
+
 2014-09-13 Jan Gehring <jan.gehring, rexify.org> (0.53.1)
   * added Rex::JobControl functions
   * fixed hanging VBox with CentOS 7 and delayed dhcp ip lease

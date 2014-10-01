@@ -832,6 +832,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Peter H. Ezetta
 
+=item Peter Manthey
+
 =item Piotr Karbowski
 
 =item Rao Chenlin (Chenryn)
@@ -839,6 +841,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item RenatoCRON
 
 =item Renee Bäcker
+
+=item Robert Abraham
 
 =item Samuele Tognini
 

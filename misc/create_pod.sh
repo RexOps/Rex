@@ -87,11 +87,11 @@ for x in lib/Rex/Commands/Box.pm \
                   | sed -e "s/<\/code>//g" \
                   | sed -e "s/<pre>/<div class=\"btn btn-default copy-button pull-right\" data-clipboard-target=\"clipboardCOUNTER\">Copy to clipboard<\/div>\n<pre><code class=\"perl\" id=\"clipboardCOUNTER\">/" \
                   | perl -pe's:(?<=clipboard)(COUNTER):int($count++/2):e' \
-                  | sed -e "s/<dl>/<ul>/g" \
+                  | sed -e "s/<dl/<ul/g" \
                   | sed -e "s/<\/dl>/<\/ul>/g" \
                   | sed -e "s/<dd>//g" \
                   | sed -e "s/<\/dd>//g" \
-                  | sed -e "s/<dt>/<li>/g" \
+                  | sed -e "s/<dt/<li/g" \
                   | sed -e "s/<\/dt>/<\/li>/g" \
                   | sed -e "s/<\/pre>/<\/code><\/pre>/" \
                   | sed -e "s/<p><a name=\"__index__\"><\/a><\/p>/<h1>TABLE OF CONTENTS<\/h1>/" \

@@ -58,6 +58,7 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(run can_run sudo);
 
 =item run($command [, $callback])
+=item run($command_description, command => $command, %options)
 
 This function will execute the given command and returns the output. In
 scalar context it returns the raw output as is, and in list context it
@@ -73,6 +74,22 @@ in the $? variable.
      say "[$server] $stdout\n";
    };
  };
+
+Supported options are:
+
+  cwd           => $path
+    sets the working directory of the executed command to $path
+  only_if       => $condition_command
+    executes the command only if $condition_command completes successfully
+  unless        => $condition_command
+    executes the command unless $condition_command completes successfully
+  only_notified => TRUE
+    queues the command, to be executed upon notification (see below)
+  env           => { var1 => $value1, ..., varN => $valueN }
+    sets environment variables in the environment of the command
+
+
+Examples:
 
 If you only want to run a command in special cases, you can queue the command
 and notify it when you want to run it.
@@ -99,7 +116,8 @@ I<only_if> or I<unless> option.
 If you want to set custom environment variables you can do this like this:
 
  run "my_command",
-   env => {
+
+    env => {
      env_var_1 => "the value for 1",
      env_var_2 => "the value for 2",
    };
@@ -368,12 +386,10 @@ sub sudo {
     return;
   }
 
-  #my $old_sudo    = Rex::get_current_connection()->{use_sudo}     || 0;
-  #my $old_options = Rex::get_current_connection()->{sudo_options} || {};
-  #Rex::get_current_connection()->{use_sudo}     = 1;
-  #Rex::get_current_connection()->{sudo_options} = $options;
-  Rex::get_current_connection_object()->push_use_sudo(1);
-  Rex::get_current_connection_object()->push_sudo_options( %{$options} );
+  my $old_sudo    = Rex::get_current_connection()->{use_sudo}     || 0;
+  my $old_options = Rex::get_current_connection()->{sudo_options} || {};
+  Rex::get_current_connection()->{use_sudo}     = 1;
+  Rex::get_current_connection()->{sudo_options} = $options;
 
   my $ret;
 
@@ -385,11 +401,8 @@ sub sudo {
     $ret = i_run($cmd);
   }
 
-  Rex::get_current_connection_object()->pop_use_sudo();
-  Rex::get_current_connection_object()->pop_sudo_options();
-
-  #Rex::get_current_connection()->{use_sudo}     = $old_sudo;
-  #Rex::get_current_connection()->{sudo_options} = $old_options;
+  Rex::get_current_connection()->{use_sudo}     = $old_sudo;
+  Rex::get_current_connection()->{sudo_options} = $old_options;
 
   return $ret;
 }

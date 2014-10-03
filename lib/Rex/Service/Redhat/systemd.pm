@@ -31,7 +31,7 @@ sub new {
     status         => 'systemctl status %s >/dev/null',
     ensure_stop    => 'systemctl disable %s',
     ensure_start   => 'systemctl enable %s',
-    service_exists => 'systemctl | grep %s',
+    service_exists => 'systemctl show %s | grep LoadState=loaded',
   };
 
   return $self;

@@ -559,6 +559,9 @@ CHECK_OVERWRITE: {
           Rex::Logger::debug("Running task: $task");
           Rex::TaskList->run($task);
         }
+        elsif($task =~ m/^\-\-/ || $task =~ m/=/) {
+          # skip, is parameter
+        }
         else {
           Rex::Logger::info(
             "No task named '$task' found. Task names are case sensitive and the module delimiter is a single colon.",

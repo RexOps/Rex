@@ -381,7 +381,7 @@ sub resolve_deps {
   $file ||= "meta.yml";
 
   if ( !-f $file ) {
-    confess "No $file file found.";
+    return;
   }
 
   my $ref = YAML::LoadFile($file);

@@ -212,14 +212,19 @@ FORCE_SERVER: {
 
     Rex::Logger::debug("Checking Rexfile Syntax...");
 
-    my $out =
-      qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $::rexfile 2>&1};
-    if ( $? > 0 ) {
-      print $out;
-    }
+    if ( !exists $ENV{PAR_TEMP} ) {
+    # don't check syntax under PAR
 
-    if ( $? != 0 ) {
-      exit 1;
+      my $out =
+        qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $::rexfile 2>&1};
+      if ( $? > 0 ) {
+        print $out;
+      }
+
+      if ( $? != 0 ) {
+        exit 1;
+      }
+
     }
 
     if ( $^O !~ m/^MSWin/ ) {
@@ -290,7 +295,6 @@ FORCE_SERVER: {
       if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
         Rex::Group::Lookup::INI::groups_file($server_ini_file);
       }
-
       my $ok = do($::rexfile);
 
       Rex::Logger::debug("eval your Rexfile.");
@@ -298,34 +302,40 @@ FORCE_SERVER: {
         Rex::Logger::info(
           "There seems to be an error on some of your required files. $@",
           "error" );
-        my @dir = ( dirname($::rexfile) );
-        for my $d (@dir) {
-          opendir( my $dh, $d ) or die($!);
-          while ( my $entry = readdir($dh) ) {
-            if ( $entry =~ m/^\./ ) {
-              next;
-            }
 
-            if ( -d "$d/$entry" ) {
-              push( @dir, "$d/$entry" );
-              next;
-            }
 
-            if ( $entry =~ m/Rexfile/ || $entry =~ m/\.pm$/ ) {
+        if ( !exists $ENV{PAR_TEMP} ) {
 
-              # check files for syntax errors
-              my $check_out =
-                qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
-              if ( $? > 0 ) {
-                print "$d/$entry\n";
-                print
-                  "--------------------------------------------------------------------------------\n";
-                print $check_out;
-                print "\n";
+          my @dir = ( dirname($::rexfile) );
+          for my $d (@dir) {
+            opendir( my $dh, $d ) or die($!);
+            while ( my $entry = readdir($dh) ) {
+              if ( $entry =~ m/^\./ ) {
+                next;
+              }
+
+              if ( -d "$d/$entry" ) {
+                push( @dir, "$d/$entry" );
+                next;
+              }
+
+              if ( $entry =~ m/Rexfile/ || $entry =~ m/\.pm$/ ) {
+
+                # check files for syntax errors
+                my $check_out =
+                  qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
+                if ( $? > 0 ) {
+                  print "$d/$entry\n";
+                  print
+                    "--------------------------------------------------------------------------------\n";
+                  print $check_out;
+                  print "\n";
+                }
               }
             }
+            closedir($dh);
           }
-          closedir($dh);
+
         }
 
         exit 1;
@@ -559,7 +569,8 @@ CHECK_OVERWRITE: {
           Rex::Logger::debug("Running task: $task");
           Rex::TaskList->run($task);
         }
-        elsif($task =~ m/^\-\-/ || $task =~ m/=/) {
+        elsif ( $task =~ m/^\-\-/ || $task =~ m/=/ ) {
+
           # skip, is parameter
         }
         else {

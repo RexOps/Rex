@@ -1,5 +1,8 @@
+-M Net::OpenSSH::ShellQuoter::POSIX 
+-M Net::SFTP::Foreign::Backend::Unix
 -M Sys::Syslog
--M Net::SSH2
+-M Net::OpenSSH
+-M Net::SFTP::Foreign
 -M UNIVERSAL
 -M lib/Rex/Virtualization.pm
 -M lib/Rex/User/Linux.pm

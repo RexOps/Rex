@@ -588,6 +588,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.55 ) {
+        Rex::Logger::debug("Using Net::OpenSSH if present.");
+        Rex::Config->set_use_net_openssh_if_present(1);
+        $found_feature = 1;
+      }
+
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.53 ) {
         Rex::Logger::debug("Registering CMDB as template variables.");
         Rex::Config->set_register_cmdb_template(1);

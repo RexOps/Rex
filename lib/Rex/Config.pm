@@ -57,7 +57,7 @@ our (
   $disable_taskname_warning, $proxy_command,
   $task_call_by_method,      $fallback_auth,
   $register_cmdb_template,   $check_service_exists,
-  $set_no_append,
+  $set_no_append,            $use_net_openssh_if_present,
 
 );
 
@@ -68,6 +68,15 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_use_net_openssh_if_present {
+  my $class = shift;
+  $use_net_openssh_if_present = shift;
+}
+
+sub get_use_net_openssh_if_present {
+  return $use_net_openssh_if_present;
+}
 
 sub set_set_no_append {
   my $class = shift;
@@ -667,6 +676,23 @@ sub get_ssh_config_public_key {
 
 sub get_connection_type {
   my $class = shift;
+
+  if ( $^O !~ m/^MSWin/ && !$connection_type && $use_net_openssh_if_present ) {
+    my $has_net_openssh = 0;
+    eval {
+      Net::OpenSSH->require;
+      Net::SFTP::Foreign->require;
+      $has_net_openssh = 1;
+      1;
+    };
+
+    if ($has_net_openssh) {
+      Rex::Logger::debug(
+        "Found Net::OpenSSH and Net::SFTP::Foreign - using it as default");
+      $connection_type = "OpenSSH";
+    }
+  }
+
   return $connection_type || "SSH";
 }
 

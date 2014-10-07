@@ -1,4 +1,4 @@
-2014-10-03 Jan Gehring <jan.gehring, rexify.org> (0.54.0)
+2014-10-03 Jan Gehring <jan.gehring, rexify.org> (0.54.3)
   * added possibility to clone an jiffybox image - #439 - Peter Manthey
   * only execute testfiles which end on .t - #434 - Robert Abraham
   * close last used ssh connection after test - #433 - Robert Abraham
@@ -17,6 +17,7 @@
   * don't try to run dmidecode if it is not in PATH - Andrej Zverev
   * enhanced support for pkgng (FreeBSD) - Andrej Zverev
   * fixed Rex::Commands::MD5::md5() to obey path settings
+  * Add documentation for run() function. - #440 - Erik Huelsmann
 
 2014-09-13 Jan Gehring <jan.gehring, rexify.org> (0.53.1)
   * added Rex::JobControl functions

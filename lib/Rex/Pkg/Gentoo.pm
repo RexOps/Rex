@@ -44,8 +44,37 @@ sub bulk_install {
   return 1;
 }
 
+sub is_installed {
+
+  my ( $self, $pkg ) = @_;
+  $self->{short} = 0;
+  Rex::Logger::debug("Checking if $pkg is installed");
+
+  my @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
+  unless (@pkg_info) {
+    $self->{short} = 1;
+    @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
+  }
+
+  unless (@pkg_info) {
+    Rex::Logger::debug("$pkg is NOT installed.");
+    return 0;
+  }
+
+  Rex::Logger::debug("$pkg is installed.");
+  return 1;
+
+}
+
 sub get_installed {
   my ($self) = @_;
+  my $cut_cmd;
+  if ( $self->{short} ) {
+    $cut_cmd = "cut -d '/' -f6-";
+  }
+  else {
+    $cut_cmd = "cut -d '/' -f5-";
+  }
 
   # ,,stolen'' from epm
   my $pkgregex = '(.+?)' .                     # name
@@ -55,7 +84,7 @@ sub get_installed {
 
   my @ret;
 
-  for my $line ( i_run("ls -d /var/db/pkg/*/* | cut -d '/' -f6-") ) {
+  for my $line ( i_run("ls -d /var/db/pkg/*/* | $cut_cmd") ) {
     my $r = qr{$pkgregex};
     my ( $name, $version, $suffix, $revision ) = ( $line =~ $r );
     push(

@@ -27,20 +27,21 @@ sub new {
 
 sub run_test {
   my ( $self, $pkg, $version ) = @_;
-  my @packages = installed_packages;
-
-  for my $p (@packages) {
-    if ( $p->{name} eq $pkg ) {
-      if ($version) {
+  if ($version) {
+    my @packages = installed_packages;
+    for my $p (@packages) {
+      if ( $p->{name} eq $pkg ) {
         if ( $p->{version} eq $version ) {
           $self->ok( 1, "Found package $pkg in version $version." );
           return 1;
         }
       }
-      else {
-        $self->ok( 1, "Found package $pkg" );
-        return 1;
-      }
+    }
+  }
+  else {
+    if ( is_installed($pkg) ) {
+      $self->ok( 1, "Found package $pkg" );
+      return 1;
     }
   }
 

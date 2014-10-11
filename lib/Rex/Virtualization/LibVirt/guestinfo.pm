@@ -50,7 +50,7 @@ sub execute {
         use strict;
         use warnings;
 
-        #unlink $0;
+        unlink $0;
 
         use IO::Socket::INET;
 

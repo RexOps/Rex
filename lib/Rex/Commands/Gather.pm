@@ -243,7 +243,8 @@ sub is_redhat {
     "Fedora",                      "Redhat",
     "CentOS",                      "Scientific",
     "RedHatEnterpriseServer",      "RedHatEnterpriseES",
-    "RedHatEnterpriseWorkstation", "Amazon"
+    "RedHatEnterpriseWorkstation", "Amazon",
+    "ROSAEnterpriseServer"
   );
 
   if ( grep { /$os/i } @redhat_clones ) {
@@ -295,7 +296,7 @@ sub is_suse {
 
  task "foo", "server1", sub {
    if(is_mageia) {
-     # do something on a mageia system
+     # do something on a mageia system (or other Mandriva followers)
    }
  };
 
@@ -304,7 +305,9 @@ sub is_suse {
 sub is_mageia {
   my $os = @_ ? shift : get_operating_system();
 
-  if ( $os =~ m/mageia/i ) {
+  my @mdv_clones = ("Mageia", "ROSADesktopFresh");
+
+  if ( grep { /$os/i } @mdv_clones ) {
     return 1;
   }
 }

@@ -468,6 +468,17 @@ __DATA__
    <serial type="pty">
     <target port="0"/>
    </serial>
+   <% my $serial_i = 1; %>
+   <% for my $serial (@{ $serial_devices }) { %>
+   <% if($serial->{type} eq "tcp") { %>
+   <serial type='<%= $serial->{type} %>'>
+     <source mode='bind' host='<%= $serial->{host} %>' service='<%= $serial->{port} %>'/>
+     <protocol type='raw'/>
+     <target port='<%= $serial_i %>'/>
+   </serial>
+   <% } %>
+   <% $serial_i++; %>
+   <% } %>
    <console type="pty">
     <target port="0"/>
    </console>

@@ -13,6 +13,7 @@ use Rex::Logger;
 use Rex::Helper::Run;
 
 use XML::Simple;
+use Rex::Virtualization::LibVirt::dumpxml;
 
 use Data::Dumper;
 
@@ -42,6 +43,17 @@ sub execute {
   for my $line (@dominfo) {
     ( $k, $v ) = split( /:\s+/, $line );
     $ret{$k} = $v;
+  }
+
+  my $xml_ref = Rex::Virtualization::LibVirt::dumpxml->execute($vmname);
+  if ( $xml_ref && exists $xml_ref->{devices}->{serial} ) {
+    my ($agent_serial) = grep {
+           exists $_->{type}
+        && $_->{type} eq "tcp"
+        && $_->{target}->{port} == 1
+    } @{ $xml_ref->{devices}->{serial} };
+
+    $ret{has_kvm_agent_on_port} = $agent_serial->{source}->{service};
   }
 
   return \%ret;

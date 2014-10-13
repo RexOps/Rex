@@ -17,7 +17,7 @@ use List::Util qw(max);
 
 use Rex;
 use Rex::Config;
-#use Rex::Group;
+use Rex::Group;
 use Rex::Batch;
 use Rex::TaskList;
 use Rex::Logger;

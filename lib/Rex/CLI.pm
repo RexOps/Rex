@@ -17,7 +17,7 @@ use List::Util qw(max);
 
 use Rex;
 use Rex::Config;
-use Rex::Group;
+#use Rex::Group;
 use Rex::Batch;
 use Rex::TaskList;
 use Rex::Logger;
@@ -522,7 +522,7 @@ CHECK_OVERWRITE: {
         _print_color(
           "    Servers: "
             . join( ", ",
-            @{ Rex::TaskList->create()->get_task($task)->{'server'} } )
+            @{ Rex::TaskList->create()->get_task($task)->server } )
             . "\n"
         );
       }

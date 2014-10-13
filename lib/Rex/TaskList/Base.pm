@@ -16,6 +16,7 @@ use Rex::Config;
 use Rex::Interface::Executor;
 use Rex::Fork::Manager;
 use Rex::Report;
+use Rex::Group;
 use Time::HiRes qw(time);
 
 sub new {
@@ -62,13 +63,24 @@ sub create_task {
       my $group_name = substr( $::FORCE_SERVER, 1 );
 
       if ( !Rex::Group->is_group($group_name) ) {
-        Rex::Logger::info( "No group $group_name defined.", "error" );
-        exit 1;
+        Rex::Logger::debug("Using late group-lookup");
+
+        push @server, sub {
+          if(!Rex::Group->is_group($group_name)) {
+            Rex::Logger::info("No group $group_name defined.", "error");
+            exit 1;
+          }
+
+          return Rex::Group->get_group($group_name);
+        };
       }
+      else {
 
       push( @server,
         map { Rex::Group::Entry::Server->new( name => $_ ); }
           Rex::Group->get_group($group_name) );
+
+      }
     }
     else {
       my @servers = split( /\s+/, $::FORCE_SERVER );
@@ -111,6 +123,19 @@ sub create_task {
               CORE::exit(1);
             }
             push( @server, @group_server );
+          }
+          else {
+            Rex::Logger::debug("Using late group-lookup");
+
+            push @server, sub {
+              if(!Rex::Group->is_group($group)) {
+                Rex::Logger::info("No group $group defined.", "error");
+                exit 1;
+              }
+
+              return Rex::Group->get_group($group);
+            };
+
           }
         }
       }

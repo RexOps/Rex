@@ -213,7 +213,8 @@ FORCE_SERVER: {
     Rex::Logger::debug("Checking Rexfile Syntax...");
 
     if ( !exists $ENV{PAR_TEMP} ) {
-    # don't check syntax under PAR
+
+      # don't check syntax under PAR
 
       my $out =
         qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $::rexfile 2>&1};
@@ -302,7 +303,6 @@ FORCE_SERVER: {
         Rex::Logger::info(
           "There seems to be an error on some of your required files. $@",
           "error" );
-
 
         if ( !exists $ENV{PAR_TEMP} ) {
 
@@ -519,12 +519,10 @@ CHECK_OVERWRITE: {
         . ' ' x $padding . " "
         . Rex::TaskList->create()->get_desc($task) . "\n";
       if ( $opts{'v'} ) {
-        _print_color(
-          "    Servers: "
+        _print_color( "    Servers: "
             . join( ", ",
             @{ Rex::TaskList->create()->get_task($task)->server } )
-            . "\n"
-        );
+            . "\n" );
       }
     }
     _print_color( "Batches\n", 'yellow' ) if ( Rex::Batch->get_batchs );

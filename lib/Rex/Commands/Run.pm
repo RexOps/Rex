@@ -330,11 +330,11 @@ sub can_run {
 
 Run a command with I<sudo>. Define the password for sudo with I<sudo_password>.
 
-You can use this function to run one command with sudo privileges or to turn on sudo globaly.
+You can use this function to run one command with sudo privileges or to turn on sudo globally.
 
  user "unprivuser";
  sudo_password "f00b4r";
- sudo -on;  # turn sudo globaly on
+ sudo -on;  # turn sudo globally on
 
  task prepare => sub {
    install "apache2";
@@ -344,7 +344,7 @@ You can use this function to run one command with sudo privileges or to turn on 
      mode  => 640;
  };
 
-Or, if you don't turning sudo globaly on.
+Or, if you don't turning sudo globally on.
 
  task prepare => sub {
    file "/tmp/foo.txt",
@@ -376,12 +376,12 @@ sub sudo {
   }
 
   if ( $cmd eq "on" || $cmd eq "-on" || $cmd eq "1" ) {
-    Rex::Logger::debug("Turning sudo globaly on");
+    Rex::Logger::debug("Turning sudo globally on");
     Rex::global_sudo(1);
     return;
   }
   elsif ( $cmd eq "0" ) {
-    Rex::Logger::debug("Turning sudo globaly off");
+    Rex::Logger::debug("Turning sudo globally off");
     Rex::global_sudo(0);
     return;
   }

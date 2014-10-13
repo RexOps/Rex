@@ -54,6 +54,7 @@ Then you can create your test files inside this directory.
 =cut
 
 package Rex::Test::Base;
+
 use base 'Test::Builder::Module';
 
 use strict;

@@ -5,6 +5,9 @@
 # vim: set expandtab:
 
 package Rex::Hardware::Swap;
+{
+  $Rex::Hardware::Swap::VERSION = '0.54.3';
+}
 
 use strict;
 use warnings;
@@ -107,18 +110,18 @@ sub get {
         ( $swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])/i );
     }
 
-    &$convert( $total, $t_ent );
-    &$convert( $used,  $u_ent ) if ($used);
-    &$convert( $free,  $f_ent );
+    &$convert( $total, $t_ent ) if ($total);
+    &$convert( $used,  $u_ent ) if ($used) ;
+    &$convert( $free,  $f_ent ) if ($free) ;
 
-    if ( !$used ) {
+    if ( !$used && $total && $free ) {
       $used = $total - $free;
     }
 
     $data = {
-      total => $total,
-      used  => $used,
-      free  => $free,
+      total => $total || 0,
+      used  => $used  || 0,
+      free  => $free  || 0,
     };
   }
   else {

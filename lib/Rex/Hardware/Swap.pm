@@ -31,6 +31,10 @@ sub get {
 
   my $convert = sub {
 
+    if ( !defined $_[0] ) {
+      return 0;
+    }
+
     if ( $_[1] eq "G" ) {
       $_[0] = $_[0] * 1024 * 1024 * 1024;
     }
@@ -111,8 +115,8 @@ sub get {
     }
 
     &$convert( $total, $t_ent ) if ($total);
-    &$convert( $used,  $u_ent ) if ($used) ;
-    &$convert( $free,  $f_ent ) if ($free) ;
+    &$convert( $used,  $u_ent ) if ($used);
+    &$convert( $free,  $f_ent ) if ($free);
 
     if ( !$used && $total && $free ) {
       $used = $total - $free;

@@ -58,22 +58,25 @@ package Rex;
 use strict;
 use warnings;
 
-use Rex::Logger;
-use Rex::Interface::Cache;
-use Data::Dumper;
-use Rex::Interface::Connection;
-use Cwd qw(getcwd);
-use Rex::Config;
-use Rex::Helper::Array;
-use Rex::Report;
-use Rex::Notify;
-use Rex::Require;
-use File::Basename;
+BEGIN {
+  use Rex::Logger;
+  use Rex::Interface::Cache;
+  use Data::Dumper;
+  use Rex::Interface::Connection;
+  use Cwd qw(getcwd);
+  use Rex::Config;
+  use Rex::Helper::Array;
+  use Rex::Report;
+  use Rex::Notify;
+  use Rex::Require;
+  use File::Basename;
+  eval { Net::SSH2->require; };
+}
 
 our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$WITH_EXIT_STATUS = 1;          # since 0.50 activated by default
+$WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
 
 my $cur_dir;
 

@@ -316,7 +316,8 @@ sub _download {
       my $current_size   = 0;
       my $current_modulo = 0;
       my $start_time     = [ gettimeofday() ];
-      open( my $fh, ">", "./tmp/$filename" ) or die($!);
+      open( my $fh, ">", "./tmp/$filename" )
+        or die("Failed to open ./tmp/$filename for writing: $!");
       binmode $fh;
       my $resp = $ua->get(
         $self->{url},

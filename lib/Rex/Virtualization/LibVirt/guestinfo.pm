@@ -35,18 +35,14 @@ sub execute {
   }
 
   my @ifaces;
+  my $got_ip = 0;
 
   if ( exists $info->{has_kvm_agent_on_port} && $info->{has_kvm_agent_on_port} )
   {
+    my $fh       = Rex::Interface::File->create();
+    my $rnd_file = get_tmp_file;
 
-    my $got_ip = 0;
-
-    while ( $got_ip == 0 ) {
-
-      my $fh       = Rex::Interface::File->create();
-      my $rnd_file = get_tmp_file;
-
-      my $content = q|
+    my $content = q|
         use strict;
         use warnings;
 
@@ -55,23 +51,28 @@ sub execute {
         use IO::Socket::INET;
 
         my $sock;
+        $SIG{ALRM} = sub { exit; };
 
-        while(! $sock) {
-          $sock = IO::Socket::INET->new(PeerHost => '127.0.0.1', PeerPort => $ARGV[0], Proto => 'tcp');
+        alarm 15;
+        while ( !$sock ) {
+          $sock = IO::Socket::INET->new(
+            PeerHost => '127.0.0.1',
+            PeerPort => $ARGV[0],
+            Proto    => 'tcp'
+          );
           sleep 1;
         }
 
         my $got_info = 0;
-        while($got_info == 0) {
+        while ( $got_info == 0 ) {
           eval {
-            local $SIG{ALRM} = sub { die; };
             alarm 3;
             print $sock "GET /network/devices\n";
 
             my $line = <$sock>;
             $line = <$sock>;
             $line =~ s/[\r\n]//gms;
-            if($line =~ m/^\{"networkdevices/) {
+            if ( $line =~ m/^\{"networkdevices/ ) {
               print "$line\n";
               $got_info++;
             }
@@ -80,13 +81,16 @@ sub execute {
         }
       |;
 
-      $fh->open( ">", $rnd_file );
-      $fh->write($content);
-      $fh->close;
+    $fh->open( ">", $rnd_file );
+    $fh->write($content);
+    $fh->close;
 
-      my $exec = Rex::Interface::Exec->create();
-      my ($data) = $exec->exec("perl $rnd_file $info->{has_kvm_agent_on_port}");
+    my $exec = Rex::Interface::Exec->create();
 
+    Rex::Logger::debug("Trying to get information from rex-kvm-agent...");
+    my ($data) = $exec->exec("perl $rnd_file $info->{has_kvm_agent_on_port}");
+
+    if ($data) {
       my $ref = decode_json($data);
       delete $ref->{networkconfiguration}->{lo};
 
@@ -106,17 +110,18 @@ sub execute {
         sleep 1;
       }
     }
-
   }
-  else {
 
-    my $ifs = Rex::Virtualization::LibVirt::iflist->execute($vmname);
+  unless ($got_ip) {
 
-    my $got_ip = 0;
+    Rex::Logger::debug(
+      "Couldn't get VM IP via rex-kvm-agent, falling back to arp method...");
 
+    my $ifs     = Rex::Virtualization::LibVirt::iflist->execute($vmname);
     my $command = operating_system_is("Gentoo") ? '/sbin/arp' : '/usr/sbin/arp';
+    my $tries   = 0;
 
-    while ( $got_ip < scalar( keys %{$ifs} ) ) {
+    while ( $got_ip < scalar( keys %{$ifs} ) && $tries < 15 ) {
       my %arp =
         map {
         my @x = ( $_ =~ m/\(([^\)]+)\) at ([^\s]+)\s/ );
@@ -137,7 +142,6 @@ sub execute {
 
       sleep 1;
     }
-
   }
 
   return { network => \@ifaces, };

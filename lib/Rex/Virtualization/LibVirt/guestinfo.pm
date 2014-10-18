@@ -62,10 +62,16 @@ sub execute {
         }
 
         my $got_info = 0;
+        my $try = 0;
         while($got_info == 0) {
           eval {
             local $SIG{ALRM} = sub { die; };
             alarm 3;
+            if($try >= 10) {
+              exit 1;
+            }
+
+            $try++;
             print $sock "GET /network/devices\n";
 
             my $line = <$sock>;
@@ -86,6 +92,13 @@ sub execute {
 
       my $exec = Rex::Interface::Exec->create();
       my ($data) = $exec->exec("perl $rnd_file $info->{has_kvm_agent_on_port}");
+
+      if ( $? == 1 ) {
+
+        # can't connect to agent
+        $info->{has_kvm_agent_on_port} = 0;
+        last;
+      }
 
       my $ref = decode_json($data);
       delete $ref->{networkconfiguration}->{lo};
@@ -108,7 +121,8 @@ sub execute {
     }
 
   }
-  else {
+
+  if ( !$info->{has_kvm_agent_on_port} ) {
 
     my $ifs = Rex::Virtualization::LibVirt::iflist->execute($vmname);
 

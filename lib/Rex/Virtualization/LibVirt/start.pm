@@ -32,7 +32,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  my $output = i_run "virsh -c $uri start $dom 2>&1";
+  my $output = i_run "virsh -c $uri start '$dom' 2>&1";
   if ( $? != 0 ) {
     die("Error starting vm $dom\nError: $output");
   }

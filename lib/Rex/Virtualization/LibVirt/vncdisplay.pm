@@ -30,10 +30,10 @@ sub execute {
 
   my $xml;
 
-  my @vncdisplay = i_run "virsh -c $uri vncdisplay $vmname";
+  my @vncdisplay = i_run "virsh -c $uri vncdisplay '$vmname'";
 
   if ( $? != 0 ) {
-    die("Error running virsh vncdisplay $vmname");
+    die("Error running virsh vncdisplay '$vmname'");
   }
 
   return shift @vncdisplay;

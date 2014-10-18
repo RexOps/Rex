@@ -29,7 +29,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "virsh -c $uri shutdown $dom";
+  i_run "virsh -c $uri shutdown '$dom'";
   if ( $? != 0 ) {
     die("Error shutdown vm $dom");
   }

@@ -29,10 +29,10 @@ sub execute {
 
   Rex::Logger::debug("Getting block list of domain: $vmname");
 
-  my @blklist = i_run "virsh -c $uri domblklist $vmname --details";
+  my @blklist = i_run "virsh -c $uri domblklist '$vmname' --details";
 
   if ( $? != 0 ) {
-    die("Error running virsh domblklist $vmname");
+    die("Error running virsh domblklist '$vmname'");
   }
 
   my %ret = ();
@@ -54,7 +54,7 @@ sub execute {
       my $unit = $options{unit} || 1;
       for my $target ( keys %ret ) {
         my @infos =
-          i_run "virsh -c $uri domblkinfo $vmname $target 2>/dev/null";
+          i_run "virsh -c $uri domblkinfo '$vmname' '$target' 2>/dev/null";
         if ( $? == 0 ) {
           for my $line (@infos) {
             my ( $k, $v ) = split( /:\s+/, $line );

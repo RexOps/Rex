@@ -31,10 +31,10 @@ sub execute {
 
   my $xml;
 
-  my @dominfo = i_run "virsh -c $uri dominfo $vmname";
+  my @dominfo = i_run "virsh -c $uri dominfo '$vmname'";
 
   if ( $? != 0 ) {
-    die("Error running virsh dominfo $vmname");
+    die("Error running virsh dominfo '$vmname'");
   }
 
   my %ret = ();

@@ -30,10 +30,10 @@ sub execute {
 
   my $xml;
 
-  my $dumpxml = i_run "virsh -c $uri dumpxml $vmname";
+  my $dumpxml = i_run "virsh -c $uri dumpxml '$vmname'";
 
   if ( $? != 0 ) {
-    die("Error running virsh dumpxml $vmname");
+    die("Error running virsh dumpxml '$vmname'");
   }
   return XMLin($dumpxml);
 }

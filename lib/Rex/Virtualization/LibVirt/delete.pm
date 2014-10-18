@@ -29,7 +29,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "virsh -c $uri undefine $dom";
+  i_run "virsh -c $uri undefine '$dom'";
   if ( $? != 0 ) {
     die("Error destroying vm $dom");
   }

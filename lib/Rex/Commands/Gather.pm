@@ -305,7 +305,7 @@ sub is_suse {
 sub is_mageia {
   my $os = @_ ? shift : get_operating_system();
 
-  my @mdv_clones = ("Mageia", "ROSADesktopFresh");
+  my @mdv_clones = ( "Mageia", "ROSADesktopFresh" );
 
   if ( grep { /$os/i } @mdv_clones ) {
     return 1;

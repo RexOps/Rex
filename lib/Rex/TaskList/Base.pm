@@ -66,8 +66,8 @@ sub create_task {
         Rex::Logger::debug("Using late group-lookup");
 
         push @server, sub {
-          if(!Rex::Group->is_group($group_name)) {
-            Rex::Logger::info("No group $group_name defined.", "error");
+          if ( !Rex::Group->is_group($group_name) ) {
+            Rex::Logger::info( "No group $group_name defined.", "error" );
             exit 1;
           }
 
@@ -76,9 +76,9 @@ sub create_task {
       }
       else {
 
-      push( @server,
-        map { Rex::Group::Entry::Server->new( name => $_ ); }
-          Rex::Group->get_group($group_name) );
+        push( @server,
+          map { Rex::Group::Entry::Server->new( name => $_ ); }
+            Rex::Group->get_group($group_name) );
 
       }
     }
@@ -128,8 +128,8 @@ sub create_task {
             Rex::Logger::debug("Using late group-lookup");
 
             push @server, sub {
-              if(!Rex::Group->is_group($group)) {
-                Rex::Logger::info("No group $group defined.", "error");
+              if ( !Rex::Group->is_group($group) ) {
+                Rex::Logger::info( "No group $group defined.", "error" );
                 exit 1;
               }
 

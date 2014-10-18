@@ -40,7 +40,8 @@ sub execute {
 
   my @ret = ();
   for my $name (@domains) {
-    my %data = map { my ($key, $val) = split(/:\s*/, $_); ($key, $val); } i_run "virsh -c $uri dominfo '$name'";
+    my %data = map { my ( $key, $val ) = split( /:\s*/, $_ ); ( $key, $val ); }
+      i_run "virsh -c $uri dominfo '$name'";
 
     push(
       @ret,

@@ -158,7 +158,9 @@ sub run_instance {
 
   my $data;
   if ( exists $data{"clone_id"} ) {
-    $data = $self->_do_request( "POST", "jiffyBoxes/".$data{"clone_id"}, @jiffy_data );
+    $data =
+      $self->_do_request( "POST", "jiffyBoxes/" . $data{"clone_id"},
+      @jiffy_data );
   }
   else {
     $data = $self->_do_request( "POST", "jiffyBoxes", @jiffy_data );

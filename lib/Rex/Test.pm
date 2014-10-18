@@ -20,7 +20,8 @@ task run => make {
 
   for my $file (@files) {
     Rex::Logger::info("Running test: t/$file.");
-    eval { do "t/$file"; 1; } or do { print "Error: $@"; };
+    do "t/$file";
+    Rex::Logger::info( "Error running t/$file: $@", "error" ) if $@;
   }
 };
 

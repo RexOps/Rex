@@ -56,13 +56,17 @@ sub execute {
 
         my $sock;
 
-        while(! $sock) {
-          $sock = IO::Socket::INET->new(PeerHost => '127.0.0.1', PeerPort => $ARGV[0], Proto => 'tcp');
+        while ( !$sock ) {
+          $sock = IO::Socket::INET->new(
+            PeerHost => '127.0.0.1',
+            PeerPort => $ARGV[0],
+            Proto    => 'tcp'
+          );
           sleep 1;
         }
 
         my $got_info = 0;
-        while($got_info == 0) {
+        while ( $got_info == 0 ) {
           eval {
             local $SIG{ALRM} = sub { die; };
             alarm 3;
@@ -71,7 +75,7 @@ sub execute {
             my $line = <$sock>;
             $line = <$sock>;
             $line =~ s/[\r\n]//gms;
-            if($line =~ m/^\{"networkdevices/) {
+            if ( $line =~ m/^\{"networkdevices/ ) {
               print "$line\n";
               $got_info++;
             }

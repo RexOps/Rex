@@ -1,3 +1,28 @@
+2014-10-19 Ferenc Erki <ferki, rexify.org> (0.55.0)
+  * vm names in quote. so they can contain spaces - Jan
+  * fallback to arp query if no answer from rex-kvm-agent - #454 - Jan
+  * Print out error messages during Test:run (fix #450) - Ferenc Erki
+  * Clarify error message during image download - Ferenc Erki
+  * Remove explicit setting of VERSION - Ferenc Erki
+  * return 0 if no swap given - #452 - Jan
+  * fixed windows crashing on multiple connects - #448 - Jan
+  * Work when swap in not enabled and values are undefined. FreeBSD only for now. - Graham Todd
+  * possibility to modify Net::OpenSSH constructor - Jan
+  * Revert use Rex::Group (#447) - Ferenc Erki
+  * added late-group lookup, if group is not defined yet. fixed #447 - Jan
+  * Make PkgVersion happy - Ferenc Erki
+  * Fix typo - Ferenc Erki
+  * removed unlink - Jan
+  * Added possibility to query rex-kvm-agent. fixed #436 - Jan
+  * dont throw error with multiple test files - Robert Abraham
+  * Add ROSA systems support - Denis Silakov
+  * fixed get_installed and is_installed functions Rex::Pkg::Gentoo - Robert Abraham
+  * create binary installers from Rexfiles - Jan
+  * Correct ChangeLog - Ferenc Erki
+  * use Net::OpenSSH as default when available - #435 - Jan
+  * removed executable bit - Jan
+  * Added possibility to pack rex with PAR - Jan
+
 2014-10-03 Jan Gehring <jan.gehring, rexify.org> (0.54.3)
   * added possibility to clone an jiffybox image - #439 - Peter Manthey
   * only execute testfiles which end on .t - #434 - Robert Abraham

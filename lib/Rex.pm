@@ -781,6 +781,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item David Golovan
 
+=item Denis Silakov
+
 =item Dominik Danter
 
 =item Dominik Schulz
@@ -798,6 +800,8 @@ Many thanks to the contributors for their work (alphabetical order).
 =item Franky Van Liedekerke
 
 =item Gilles Gaudin, for writing a french howto
+
+=item Graham Todd
 
 =item Hiroaki Nakamura
 

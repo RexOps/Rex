@@ -259,18 +259,6 @@ FORCE_SERVER: {
 
     Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
 
-    # turn sudo on with cli option s is used
-    if ( exists $opts{'s'} ) {
-      sudo("on");
-    }
-    if ( exists $opts{'S'} ) {
-      sudo_password( $opts{'S'} );
-    }
-
-    if ( exists $opts{'t'} ) {
-      parallelism( $opts{'t'} );
-    }
-
     if ( $opts{'G'} ) {
       $::FORCE_SERVER = "\0" . $opts{'G'};
     }
@@ -351,71 +339,6 @@ FORCE_SERVER: {
       "Please create a file named 'Rexfile' inside this directory,", "warn" );
     Rex::Logger::info( "or specify the file you want to use with:", "warn" );
     Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
-  }
-
-  if ( $opts{'e'} ) {
-    Rex::Logger::debug("Executing command line code");
-    Rex::Logger::debug( "\t" . $opts{'e'} );
-
-    # execute the given code
-    my $code = "sub { \n";
-    $code .= $opts{'e'} . "\n";
-    $code .= "}";
-
-    $code = eval($code);
-
-    if ($@) {
-      Rex::Logger::info( "Error in eval line: $@\n", "warn" );
-      exit 1;
-    }
-
-    if ( exists $opts{'t'} ) {
-      parallelism( $opts{'t'} );
-    }
-
-    my $pass_auth = 0;
-
-    if ( $opts{'u'} ) {
-      Rex::Commands::user( $opts{'u'} );
-    }
-
-    if ( $opts{'p'} ) {
-      Rex::Commands::password( $opts{'p'} );
-
-      unless ( $opts{'P'} ) {
-        $pass_auth = 1;
-      }
-    }
-
-    if ( $opts{'P'} ) {
-      Rex::Commands::private_key( $opts{'P'} );
-    }
-
-    if ( $opts{'K'} ) {
-      Rex::Commands::public_key( $opts{'K'} );
-    }
-
-    if ($pass_auth) {
-      pass_auth;
-    }
-
-    my @params = ();
-    if ( $opts{'H'} ) {
-      push @params, split( /\s+/, $opts{'H'} );
-    }
-    push @params, $code;
-    push @params, "eval-line-desc";
-    push @params, {};
-
-    Rex::TaskList->create()->create_task( "eval-line", @params );
-    Rex::Commands::do_task("eval-line");
-    CORE::exit(0);
-  }
-  elsif ( $opts{'M'} ) {
-    Rex::Logger::debug( "Loading Rex-Module: " . $opts{'M'} );
-    my $mod = $opts{'M'};
-    $mod =~ s{::}{/}g;
-    require "$mod.pm";
   }
 
   #### check if some parameters should be overwritten from the command line
@@ -550,6 +473,83 @@ CHECK_OVERWRITE: {
     Rex::Logger::debug("Removing lockfile") if ( !exists $opts{'F'} );
     CORE::unlink("$::rexfile.lock") if ( !exists $opts{'F'} );
     CORE::exit 0;
+  }
+
+  # turn sudo on with cli option s is used
+  if ( exists $opts{'s'} ) {
+    sudo("on");
+  }
+  if ( exists $opts{'S'} ) {
+    sudo_password( $opts{'S'} );
+  }
+
+  if ( exists $opts{'t'} ) {
+    parallelism( $opts{'t'} );
+  }
+
+  if ( $opts{'e'} ) {
+    Rex::Logger::debug("Executing command line code");
+    Rex::Logger::debug( "\t" . $opts{'e'} );
+
+    # execute the given code
+    my $code = "sub { \n";
+    $code .= $opts{'e'} . "\n";
+    $code .= "}";
+
+    $code = eval($code);
+
+    if ($@) {
+      Rex::Logger::info( "Error in eval line: $@\n", "warn" );
+      exit 1;
+    }
+
+    if ( exists $opts{'t'} ) {
+      parallelism( $opts{'t'} );
+    }
+
+    my $pass_auth = 0;
+
+    if ( $opts{'u'} ) {
+      Rex::Commands::user( $opts{'u'} );
+    }
+
+    if ( $opts{'p'} ) {
+      Rex::Commands::password( $opts{'p'} );
+
+      unless ( $opts{'P'} ) {
+        $pass_auth = 1;
+      }
+    }
+
+    if ( $opts{'P'} ) {
+      Rex::Commands::private_key( $opts{'P'} );
+    }
+
+    if ( $opts{'K'} ) {
+      Rex::Commands::public_key( $opts{'K'} );
+    }
+
+    if ($pass_auth) {
+      pass_auth;
+    }
+
+    my @params = ();
+    if ( $opts{'H'} ) {
+      push @params, split( /\s+/, $opts{'H'} );
+    }
+    push @params, $code;
+    push @params, "eval-line-desc";
+    push @params, {};
+
+    Rex::TaskList->create()->create_task( "eval-line", @params );
+    Rex::Commands::do_task("eval-line");
+    CORE::exit(0);
+  }
+  elsif ( $opts{'M'} ) {
+    Rex::Logger::debug( "Loading Rex-Module: " . $opts{'M'} );
+    my $mod = $opts{'M'};
+    $mod =~ s{::}{/}g;
+    require "$mod.pm";
   }
 
   eval {

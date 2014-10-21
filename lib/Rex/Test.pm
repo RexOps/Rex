@@ -10,6 +10,7 @@ use Rex -base;
 use Data::Dumper;
 use Rex::Commands::Box;
 
+desc 'Run tests specified in t/*.t';
 task run => make {
   Rex::Logger::info("Running integration tests...");
 

@@ -16,13 +16,13 @@ task run => make {
 
   my @files;
   LOCAL {
-    @files = grep { $_ =~ /\.t$/ } list_files 't';
+    @files = glob('t/*.t');
   };
 
   for my $file (@files) {
-    Rex::Logger::info("Running test: t/$file.");
-    do "t/$file";
-    Rex::Logger::info( "Error running t/$file: $@", "error" ) if $@;
+    Rex::Logger::info("Running test: $file.");
+    do "$file";
+    Rex::Logger::info( "Error running $file: $@", "error" ) if $@;
   }
 };
 

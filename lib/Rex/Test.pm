@@ -10,13 +10,16 @@ use Rex -base;
 use Data::Dumper;
 use Rex::Commands::Box;
 
-desc 'Run tests specified in t/*.t';
+desc 'Run tests specified with --test=testfile (default: t/*.t)';
 task run => make {
   Rex::Logger::info("Running integration tests...");
 
+  my $parameters = shift;
   my @files;
+
   LOCAL {
-    @files = glob('t/*.t');
+    @files =
+      defined $parameters->{test} ? glob( $parameters->{test} ) : glob('t/*.t');
   };
 
   for my $file (@files) {

@@ -114,7 +114,7 @@ sub import {
 
     $key =~ s/^--//;
 
-    if (defined $val) { $task_opts{$key} = $val; next; }
+    if ( defined $val ) { $task_opts{$key} = $val; next; }
     $task_opts{$key} = $KEY_VAL;
 
     $counter++;

@@ -59,7 +59,7 @@ sub i_run {
     $option = {@_};
   }
 
-  my $is_no_hup = 0;
+  my $is_no_hup       = 0;
   my $tmp_output_file = get_tmp_file();
   if ( exists $option->{nohup} && $option->{nohup} ) {
     $cmd = "nohup $cmd >$tmp_output_file";
@@ -89,7 +89,7 @@ sub i_run {
     return split( /\r?\n/, $out );
   }
 
-  if($is_no_hup) {
+  if ($is_no_hup) {
     $out = $exec->exec("cat $tmp_output_file ; rm -f $tmp_output_file");
   }
 

@@ -91,6 +91,7 @@ sub i_run {
 
   if ($is_no_hup) {
     $out = $exec->exec("cat $tmp_output_file ; rm -f $tmp_output_file");
+    $? = $ret_val;
   }
 
   return $out;

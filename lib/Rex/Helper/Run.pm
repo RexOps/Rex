@@ -59,9 +59,12 @@ sub i_run {
     $option = {@_};
   }
 
+  my $is_no_hup = 0;
+  my $tmp_output_file = get_tmp_file();
   if ( exists $option->{nohup} && $option->{nohup} ) {
-    $cmd = "nohup $cmd >/dev/null";
+    $cmd = "nohup $cmd >$tmp_output_file";
     delete $option->{nohup};
+    $is_no_hup = 1;
   }
 
   my $path = join( ":", Rex::Config->get_path() );
@@ -70,6 +73,8 @@ sub i_run {
   my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
   chomp $out if $out;
   chomp $err if $err;
+
+  my $ret_val = $?;
 
   $Rex::Commands::Run::LAST_OUTPUT = [ $out, $err ];
 
@@ -82,6 +87,10 @@ sub i_run {
 
   if (wantarray) {
     return split( /\r?\n/, $out );
+  }
+
+  if($is_no_hup) {
+    $out = $exec->exec("cat $tmp_output_file ; rm -f $tmp_output_file");
   }
 
   return $out;

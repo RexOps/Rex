@@ -3,6 +3,7 @@
   * sudo with -e cli flag doesn't work - #461 - Jan
   * Cannot pass an argument with the value zero to a task - #463 - Jan
   * Issue tracker not in META.yml - #464 - Ferenc Erki
+  * Allow specifying which tests to run as a parameter for Test:run #462 - Ferenc Erki
 
 2014-10-19 Ferenc Erki <ferki, rexify.org> (0.55.0)
   * vm names in quote. so they can contain spaces - Jan

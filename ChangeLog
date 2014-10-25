@@ -1,3 +1,9 @@
+2014-10-25 Jan Gehring <jan.gehring, rexify.org> (0.55.1)
+  * status call for services with upstart and systemd may not work properly - #460 - Jan
+  * sudo with -e cli flag doesn't work - #461 - Jan
+  * Cannot pass an argument with the value zero to a task - #463 - Jan
+  * Issue tracker not in META.yml - #464 - Ferenc Erki
+
 2014-10-19 Ferenc Erki <ferki, rexify.org> (0.55.0)
   * vm names in quote. so they can contain spaces - Jan
   * fallback to arp query if no answer from rex-kvm-agent - #454 - Jan

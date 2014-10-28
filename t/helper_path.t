@@ -15,9 +15,8 @@ my $path =
 ok( $path eq "./files/foo.txt", "got file path if called from Rexfile" );
 
 my $cwd = getcwd;
-$path =
-  Rex::Helper::Path::get_file_path( "$cwd/Makefile.PL", "main", "Rexfile" );
-ok( $path eq "$cwd/Makefile.PL",
+$path = Rex::Helper::Path::get_file_path( "$cwd/ChangeLog", "main", "Rexfile" );
+ok( $path eq "$cwd/ChangeLog",
   "got file path if called from Rexfile - absolute path" );
 
 $path = Rex::Helper::Path::get_file_path( "files/foo.txt", "main",

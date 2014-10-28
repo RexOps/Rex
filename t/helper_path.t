@@ -7,9 +7,6 @@ use Cwd 'getcwd';
 
 use_ok 'Rex::Helper::Path';
 
-$::rexfile = "Rexfile";
-$::rexfile = "Rexfile";
-
 my $path =
   Rex::Helper::Path::get_file_path( "files/foo.txt", "main", "Rexfile" );
 ok( $path eq "./files/foo.txt", "got file path if called from Rexfile" );

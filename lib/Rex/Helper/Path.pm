@@ -57,7 +57,7 @@ sub get_file_path {
   }
 
   # check if a file in $BASE overwrites the module file
-  # first get the absoltue path to the rexfile
+  # first get the absolute path to the rexfile
 
   $::rexfile ||= $0;
 

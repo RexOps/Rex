@@ -1,7 +1,4 @@
-Install (R)?ex with 4 easy steps:
+Install (R)?ex with 2 easy steps:
 
- perl Makefile.PL
- make
- make test
- make install
-
+ dzil listdeps --missing | cpanm
+ dzil install

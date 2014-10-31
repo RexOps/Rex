@@ -615,6 +615,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "template_ng" ) {
+        Rex::Logger::debug("Activating experimental new template engine.");
+        Rex::Config->set_use_template_ng(1);
+        $found_feature = 1;
+      }
+
       if ( $add eq "register_cmdb_top_scope" ) {
         Rex::Logger::debug("Registering CMDB as template variables.");
         Rex::Config->set_register_cmdb_template(1);

@@ -44,11 +44,13 @@ sub exec {
 
   my %opts = Rex::Args->getopts;
   if ($@) {
+    my $error = $@;
     if ( exists $opts{o} ) {
       Rex::Output->get->add( $task->name, error => 1, msg => $@ );
     }
     else {
-      Rex::Logger::info( "Error executing task: $@", "error" );
+      Rex::Logger::info( "Error executing task:", "error");
+      Rex::Logger::info("$error", "error" );
       die($@);
     }
   }

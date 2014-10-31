@@ -43,6 +43,7 @@ sub get_file_path {
 
   my $fix_path = sub {
     my ($path) = @_;
+    $path =~ s:^\./::;
     if ($ends_with_slash) {
       if ( $path !~ m/\/$/ ) {
         return "$path/";

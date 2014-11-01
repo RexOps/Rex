@@ -1,3 +1,12 @@
+2014-11-01 Ferenc Erki <ferki, rexify.org> (0.55.2)
+  * Don't return leading ./ on pathes - Ferenc Erki
+  * Make helper_path tests OS-agnostic - Ferenc Erki
+  * Convert ok() tests to is() - Ferenc Erki
+  * Remove unnecessary variable assignment - Ferenc Erki
+  * Update installation instructions - Ferenc Erki
+  * Use ChangeLog file in tests - Ferenc Erki
+  * Fix typo - Ferenc Erki
+
 2014-10-25 Jan Gehring <jan.gehring, rexify.org> (0.55.1)
   * status call for services with upstart and systemd may not work properly - #460 - Jan
   * sudo with -e cli flag doesn't work - #461 - Jan

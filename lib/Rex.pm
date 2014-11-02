@@ -105,8 +105,10 @@ BEGIN {
     push( @INC, "$cur_dir/lib/perl/lib/perl5" );
     if ( $^O =~ m/^MSWin/ ) {
       my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
-      my $mswin32_path = basename $special_win_path;
-      push( @INC, "$cur_dir/lib/perl/lib/perl5/$mswin32_path" );
+      if ( defined $special_win_path ) {
+        my $mswin32_path = basename $special_win_path;
+        push( @INC, "$cur_dir/lib/perl/lib/perl5/$mswin32_path" );
+      }
     }
   }
 

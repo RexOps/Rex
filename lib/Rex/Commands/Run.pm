@@ -87,7 +87,17 @@ Supported options are:
     queues the command, to be executed upon notification (see below)
   env           => { var1 => $value1, ..., varN => $valueN }
     sets environment variables in the environment of the command
-
+  timeout       => value
+    sets the timeout for the command to be run
+  auto_die      => TRUE
+    die if the command returns with a non-zero exit code
+    it can be set globally via the exec_autodie feature flag
+  command       => $command_to_run
+    if set, run tries to execute the specified command and the first argument
+    becomes an identifier for the run block (e.g. to be triggered with notify)
+  creates       => $file_to_create
+    tries to create $file_to_create upon execution
+    skips execution if the file already exists
 
 Examples:
 

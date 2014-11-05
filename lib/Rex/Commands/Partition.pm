@@ -166,11 +166,8 @@ sub partition {
 
   Rex::Logger::info("Last parition ending at $last_partition_end");
   my $next_partition_start = $last_partition_end;
-  my $next_partition_end   = $option{size} + $last_partition_end;
-
-  if ( $option{grow} ) {
-    $next_partition_end = "-- -1";
-  }
+  my $next_partition_end =
+    $option{grow} ? "-- -1" : $last_partition_end + $option{size};
 
   run
     "parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";

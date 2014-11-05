@@ -1130,9 +1130,9 @@ sub umount {
   }
 
   if ($already_mounted) {
-    $changed = 1;
     $exec->exec("umount $mount_point");
     if ( $? != 0 ) { die("Umount failed of $mount_point"); }
+    $changed = 1;
   }
 
   if ($changed) {

@@ -152,8 +152,13 @@ sub partition {
   my $last_partition_end = 1;
   my $unit;
   if (@output_lines) {
-    ( $last_partition_end, $unit ) = ( $output_lines[-1] =~
-        m/\s+[\d\.]+[a-z]+\s+[\d\.]+[a-z]+\s+([\d\.]+)(kB|MB|GB)/i );
+    ( $last_partition_end, $unit ) = (
+      $output_lines[-1] =~ m/
+        ^\s*[\d]               # partition number
+        \s+[\d\.]+[a-z]+       # partition start
+        \s+([\d\.]+)(kB|MB|GB) # partition end
+      /ix
+    );
     if ( $unit eq "GB" ) {
       $last_partition_end =
         sprintf( "%i", ( ( $last_partition_end * 1000 ) + 1 ) );

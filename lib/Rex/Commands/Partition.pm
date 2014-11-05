@@ -164,7 +164,7 @@ sub partition {
     }    # / 1000 because of parted, +1 to round up
   }
 
-  Rex::Logger::info("Last parition ending at $last_partition_end");
+  Rex::Logger::info("Last partition ends at $last_partition_end");
   my $next_partition_start = $last_partition_end;
   my $next_partition_end =
     $option{grow} ? "-- -1" : $last_partition_end + $option{size};
@@ -207,7 +207,7 @@ sub partition {
 
   my $found_part = 0;
   while ( $found_part == 0 ) {
-    Rex::Logger::debug("Waiting on /dev/$disk$part_num to appear...");
+    Rex::Logger::debug("Waiting for /dev/$disk$part_num to appear...");
 
     run "ls -l /dev/$disk$part_num";
     if ( $? == 0 ) { $found_part = 1; last; }

@@ -49,8 +49,8 @@ sub exec {
       Rex::Output->get->add( $task->name, error => 1, msg => $@ );
     }
     else {
-      Rex::Logger::info( "Error executing task:", "error");
-      Rex::Logger::info("$error", "error" );
+      Rex::Logger::info( "Error executing task:", "error" );
+      Rex::Logger::info( "$error",                "error" );
       die($@);
     }
   }

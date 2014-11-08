@@ -6,6 +6,8 @@
 
 package Rex::Interface::Shell::Tcsh;
 
+use strict;
+use warnings;
 use Rex::Interface::Shell::Csh;
 
 use base qw(Rex::Interface::Shell::Csh);

@@ -6,6 +6,9 @@
 
 package Rex::Output::Base;
 
+use strict;
+use warnings;
+
 sub write { die "Must be implemented by inheriting class" }
 sub add   { die "Must be implemented by inheriting class" }
 sub error { die "Must be implemented by inheriting class" }

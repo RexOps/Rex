@@ -65,6 +65,8 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 package Rex::Box::KVM;
 
+use strict;
+use warnings;
 use Data::Dumper;
 use Rex::Box::Base;
 use Rex::Commands -no => [qw/auth/];

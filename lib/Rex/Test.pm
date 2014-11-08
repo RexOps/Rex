@@ -6,6 +6,8 @@
 
 package Rex::Test;
 
+use strict;
+use warnings;
 use Rex -base;
 use Data::Dumper;
 use Rex::Commands::Box;

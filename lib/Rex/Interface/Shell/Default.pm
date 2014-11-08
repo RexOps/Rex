@@ -6,6 +6,8 @@
 
 package Rex::Interface::Shell::Default;
 
+use strict;
+use warnings;
 use Rex::Interface::Shell::Bash;
 
 use base qw(Rex::Interface::Shell::Bash);

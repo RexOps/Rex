@@ -7,7 +7,7 @@
 package Rex::Shared::Var;
 
 use strict qw(vars subs);
-use warnings::register;
+use warnings;
 
 require Exporter;
 use base qw(Exporter);

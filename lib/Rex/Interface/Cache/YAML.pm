@@ -6,6 +6,8 @@
 
 package Rex::Interface::Cache::YAML;
 
+use strict;
+use warnings;
 use Rex::Interface::Cache::Base;
 use base qw(Rex::Interface::Cache::Base);
 

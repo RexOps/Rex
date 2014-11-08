@@ -6,6 +6,8 @@
 
 package Rex::Interface::Connection::HTTPS;
 
+use strict;
+use warnings;
 use Rex::Interface::Connection::HTTP;
 use base qw(Rex::Interface::Connection::HTTP);
 

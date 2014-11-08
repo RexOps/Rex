@@ -147,26 +147,21 @@ sub partition {
 
   my $disk = $option{ondisk};
 
-  my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk print";
+  my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk unit kB print";
 
   my $last_partition_end = 1;
   my $unit;
   if (@output_lines) {
-    ( $last_partition_end, $unit ) = (
-      $output_lines[-1] =~ m/
-        ^\s*[\d]               # partition number
-        \s+[\d\.]+[a-z]+       # partition start
-        \s+([\d\.]+)(kB|MB|GB) # partition end
-      /ix
-    );
-    if ( $unit eq "GB" ) {
-      $last_partition_end =
-        sprintf( "%i", ( ( $last_partition_end * 1000 ) + 1 ) );
-    }    # * 1000 because of parted, +1 to round up
-    if ( $unit eq "kB" ) {
-      $last_partition_end =
-        sprintf( "%i", ( ( $last_partition_end / 1000 ) + 1 ) );
-    }    # / 1000 because of parted, +1 to round up
+    $last_partition_end = $output_lines[-1] =~ m/
+        ^\s*[\d]       # partition number
+        \s+[\d\.]+kB   # partition start
+        \s+([\d\.]+)kB # partition end
+      /ix;
+
+    # convert kB to MB
+    # / 1000 because of parted, + 1 to round up
+    $last_partition_end =
+      sprintf( "%i", ( ( $last_partition_end / 1000 ) + 1 ) );
   }
 
   Rex::Logger::info("Last partition ends at $last_partition_end");

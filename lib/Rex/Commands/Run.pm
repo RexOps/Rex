@@ -255,7 +255,8 @@ sub run {
       $err = "";
     }
 
-    if ( $? == 127 ) {
+    my $command_not_found_code = is_freebsd ? 1 : 127;
+    if ( $? == $command_not_found_code ) {
       Rex::Logger::info( "$cmd: Command not found.", "error" )
         if ( Rex::Config->get_verbose_run );
     }

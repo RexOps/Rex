@@ -61,7 +61,6 @@ sub __lock(&) {
 
 sub __store {
   my $ref = shift;
-  print Dumper($ref);
   store( $ref, "vars.db" );
 }
 

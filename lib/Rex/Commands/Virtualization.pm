@@ -179,6 +179,13 @@ This is the same as above, but with all options in use.
           function => "0x0",
         },
       },
+    ],
+    serial_devices => [
+      {
+        type => 'tcp',
+        host => '127.0.0.1',
+        port => 12345,
+      },
     ];
 
 Create a (Xen/HVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, cloned from an existing one.

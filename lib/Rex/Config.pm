@@ -60,7 +60,7 @@ our (
   $task_call_by_method,      $fallback_auth,
   $register_cmdb_template,   $check_service_exists,
   $set_no_append,            $use_net_openssh_if_present,
-  $use_template_ng,
+  $use_template_ng,          $use_rex_kvm_agent,
 
 );
 
@@ -79,6 +79,15 @@ sub set_use_net_openssh_if_present {
 
 sub get_use_net_openssh_if_present {
   return $use_net_openssh_if_present;
+}
+
+sub set_use_rex_kvm_agent {
+  my $class = shift;
+  $use_rex_kvm_agent = shift;
+}
+
+sub get_use_rex_kvm_agent {
+  return $use_rex_kvm_agent;
 }
 
 sub set_use_template_ng {

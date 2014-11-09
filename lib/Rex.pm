@@ -616,6 +616,13 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "rex_kvm_agent" ) {
+        Rex::Logger::debug(
+          "Activating experimental support for rex-kvm-agent.");
+        Rex::Config->set_use_rex_kvm_agent(1);
+        $found_feature = 1;
+      }
+
       if ( $add eq "template_ng" ) {
         Rex::Logger::debug("Activating experimental new template engine.");
         Rex::Config->set_use_template_ng(1);

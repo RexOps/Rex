@@ -4,10 +4,11 @@ use warnings;
 use Test::More tests => 167;
 
 my %have_mods = (
-  'Net::SSH2'      => 1,
-  'Net::OpenSSH'   => 1,
-  'DBI'            => 1,
-  'IPC::Shareable' => 1,
+  'Net::SSH2'             => 1,
+  'Net::OpenSSH'          => 1,
+  'DBI'                   => 1,
+  'IPC::Shareable'        => 1,
+  'Parallel::ForkManager' => 1,
 );
 
 for my $m ( keys %have_mods ) {

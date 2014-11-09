@@ -46,9 +46,10 @@ With this module you can do file system tasks like creating a directory, removin
 
 =cut
 
+use strict;
+
 package Rex::Commands::Fs;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

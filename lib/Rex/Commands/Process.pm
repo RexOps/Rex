@@ -28,9 +28,10 @@ All these functions are not idempotent.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Process;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

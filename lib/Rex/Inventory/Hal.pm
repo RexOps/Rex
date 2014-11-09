@@ -4,6 +4,8 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+use strict;
+
 package Rex::Inventory::Hal;
 
 use Rex::Inventory::Hal::Object;
@@ -14,7 +16,6 @@ use Rex::Logger;
 
 use Data::Dumper;
 
-use strict;
 use warnings;
 
 sub new {

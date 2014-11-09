@@ -4,6 +4,8 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+use strict;
+
 package Rex::Fork::Task;
 
 BEGIN {
@@ -13,7 +15,6 @@ BEGIN {
 
 }
 
-use strict;
 use warnings;
 use POSIX ":sys_wait_h";
 

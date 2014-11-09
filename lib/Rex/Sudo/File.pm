@@ -6,9 +6,10 @@
 
 ###### DEPRECATED
 
+use strict;
+
 package Rex::Sudo::File;
 
-use strict;
 use warnings;
 
 use Rex;

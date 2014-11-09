@@ -24,9 +24,10 @@ With this module you can run a command.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Run;
 
-use strict;
 use warnings;
 
 #require Exporter;

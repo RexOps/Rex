@@ -53,9 +53,10 @@ See L<Rex::Commands> for a list of all commands you can use.
 
 =cut
 
+use strict;
+
 package Rex;
 
-use strict;
 use warnings;
 
 BEGIN {

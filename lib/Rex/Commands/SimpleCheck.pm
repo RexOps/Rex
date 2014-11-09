@@ -28,9 +28,10 @@ All these functions are not idempotent.
 
 =cut
 
+use strict;
+
 package Rex::Commands::SimpleCheck;
 
-use strict;
 use warnings;
 
 use IO::Socket;

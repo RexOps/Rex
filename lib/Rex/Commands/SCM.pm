@@ -49,9 +49,10 @@ All these functions are not idempotent.
 
 =cut
 
+use strict;
+
 package Rex::Commands::SCM;
 
-use strict;
 use warnings;
 
 use Rex::Logger;

@@ -25,9 +25,10 @@ All these functions will not be reported. These functions don't change things.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Gather;
 
-use strict;
 use warnings;
 
 use Data::Dumper;

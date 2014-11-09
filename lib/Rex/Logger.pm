@@ -28,9 +28,10 @@ This module if the logging module. You can define custom logformats.
 
 =cut
 
+use strict;
+
 package Rex::Logger;
 
-use strict;
 use warnings;
 
 #use Rex;

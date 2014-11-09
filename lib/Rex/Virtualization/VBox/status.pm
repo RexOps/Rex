@@ -4,9 +4,10 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+use strict;
+
 package Rex::Virtualization::VBox::status;
 
-use strict;
 use warnings;
 
 use Rex::Virtualization::VBox::list;

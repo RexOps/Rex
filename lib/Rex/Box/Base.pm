@@ -20,9 +20,10 @@ These methods are shared across all other Rex::Box modules.
 
 =cut
 
+use strict;
+
 package Rex::Box::Base;
 
-use strict;
 use warnings;
 
 use Rex::Commands -no => [qw/auth/];

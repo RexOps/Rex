@@ -36,9 +36,10 @@ With this module you can manage Linux services.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Service;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

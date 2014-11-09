@@ -31,9 +31,10 @@ With this module you can get information of the routing table, current network c
 
 =cut
 
+use strict;
+
 package Rex::Commands::Network;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

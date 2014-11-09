@@ -24,9 +24,10 @@ With this module you can define hostgroups out of an DBI source.
 
 =cut
 
+use strict;
+
 package Rex::Group::Lookup::DBI;
 
-use strict;
 use warnings;
 
 use Rex -base;

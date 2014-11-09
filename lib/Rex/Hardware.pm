@@ -25,9 +25,10 @@ This module is the base class for hardware/information gathering.
 
 =cut
 
+use strict;
+
 package Rex::Hardware;
 
-use strict;
 use warnings;
 
 use Rex::Logger;

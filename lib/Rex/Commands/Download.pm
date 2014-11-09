@@ -33,9 +33,10 @@ Version <= 1.0: All these functions will not be reported.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Download;
 
-use strict;
 use warnings;
 use Rex::Helper::UserAgent;
 use Carp;

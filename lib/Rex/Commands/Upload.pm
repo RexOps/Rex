@@ -24,9 +24,10 @@ With this module you can upload a local file via sftp to a remote host.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Upload;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

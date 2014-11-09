@@ -4,9 +4,10 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+use strict;
+
 package Rex::Inventory::DMIDecode::Memory;
 
-use strict;
 use warnings;
 
 use Rex::Inventory::DMIDecode::Section;

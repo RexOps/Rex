@@ -20,9 +20,10 @@ With this module you can specify own configuration parameters for your modules.
 
 =cut
 
+use strict;
+
 package Rex::Config;
 
-use strict;
 use warnings;
 
 use File::Spec;

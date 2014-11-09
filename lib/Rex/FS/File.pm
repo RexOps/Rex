@@ -26,9 +26,10 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 =cut
 
+use strict;
+
 package Rex::FS::File;
 
-use strict;
 use warnings;
 
 use constant DEFAULT_READ_LEN => 64;

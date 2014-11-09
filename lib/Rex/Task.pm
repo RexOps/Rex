@@ -27,9 +27,10 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 
 =cut
 
+use strict;
+
 package Rex::Task;
 
-use strict;
 use warnings;
 use Data::Dumper;
 use Time::HiRes qw(time);

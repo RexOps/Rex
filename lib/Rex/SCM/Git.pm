@@ -1,6 +1,7 @@
+use strict;
+
 package Rex::SCM::Git;
 
-use strict;
 use warnings;
 
 use Cwd qw(getcwd);

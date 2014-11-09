@@ -32,9 +32,10 @@ All these functions are not idempotent.
 
 =cut
 
+use strict;
+
 package Rex::Commands::LVM;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

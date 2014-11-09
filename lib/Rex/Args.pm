@@ -4,9 +4,10 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+use strict;
+
 package Rex::Args;
 
-use strict;
 use warnings;
 
 use vars qw(%task_opts %rex_opts);

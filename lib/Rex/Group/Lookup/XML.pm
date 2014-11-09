@@ -24,9 +24,10 @@ With this module you can define hostgroups out of an xml file.
 
 =cut
 
+use strict;
+
 package Rex::Group::Lookup::XML;
 
-use strict;
 use warnings;
 use Rex -base;
 

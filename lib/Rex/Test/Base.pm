@@ -53,11 +53,12 @@ Then you can create your test files inside this directory.
 
 =cut
 
+use strict;
+
 package Rex::Test::Base;
 
 use base 'Test::Builder::Module';
 
-use strict;
 use warnings;
 
 require Rex::Commands;

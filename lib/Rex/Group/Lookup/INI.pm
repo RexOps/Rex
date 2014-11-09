@@ -24,9 +24,10 @@ With this module you can define hostgroups out of an ini style file.
 
 =cut
 
+use strict;
+
 package Rex::Group::Lookup::INI;
 
-use strict;
 use warnings;
 
 use Rex -base;

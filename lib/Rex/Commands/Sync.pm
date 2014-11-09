@@ -45,9 +45,10 @@ This module can sync directories between your Rex system and your servers withou
 
 =cut
 
+use strict;
+
 package Rex::Commands::Sync;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

@@ -26,9 +26,10 @@ This module exports a function to access a CMDB via a common interface.
 
 =cut
 
+use strict;
+
 package Rex::CMDB;
 
-use strict;
 use warnings;
 
 use Rex::Commands;

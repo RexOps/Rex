@@ -35,9 +35,10 @@ With this module you can manage user and groups.
 
 =cut
 
+use strict;
+
 package Rex::Commands::User;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

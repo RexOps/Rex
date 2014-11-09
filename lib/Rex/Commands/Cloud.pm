@@ -52,9 +52,10 @@ Version <= 1.0: All these functions will not be reported.
 
 =cut
 
+use strict;
+
 package Rex::Commands::Cloud;
 
-use strict;
 use warnings;
 
 require Rex::Exporter;

@@ -1,9 +1,10 @@
 #
 # ALT sevice control support
 #
+use strict;
+
 package Rex::Service::ALT;
 
-use strict;
 use warnings;
 
 use base qw(Rex::Service::Base);

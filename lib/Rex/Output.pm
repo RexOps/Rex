@@ -4,9 +4,10 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+use strict;
+
 package Rex::Output;
 
-use strict;
 use warnings;
 BEGIN { IPC::Shareable->use }
 use base 'Rex::Output::Base';

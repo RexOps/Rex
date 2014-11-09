@@ -5,9 +5,10 @@
 #  OpenWrt package management module for (R)?ex
 #  based on Rex::Pkg::Debian
 
+use strict;
+
 package Rex::Pkg::OpenWrt;
 
-use strict;
 use warnings;
 
 use Rex::Commands::Run;

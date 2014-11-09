@@ -30,10 +30,6 @@ sub emit {
   }
 }
 
-=item resource($name, $function)
-
-=cut
-
 sub resource {
   my ( $name, $function ) = @_;
   my $name_save = $name;

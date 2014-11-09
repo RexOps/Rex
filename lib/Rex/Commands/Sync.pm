@@ -280,7 +280,7 @@ sub sync_down {
   }
 
   #
-  # fifth, upload the different files
+  # fifth, download the different files
   #
 
   for my $file (@diff) {

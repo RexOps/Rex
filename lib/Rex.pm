@@ -883,6 +883,11 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =back
 
+=head1 LICENSE
+
+Rex is a free software, licensed under:
+The Apache License, Version 2.0, January 2004
+
 =cut
 
 1;

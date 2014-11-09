@@ -12,9 +12,9 @@ for my $m ( keys %have_mods ) {
 
 SKIP: {
   diag "You need Digest::HMAC_SHA1 module to use the Amazon Cloud module."
-    unless $have_mod{'Digest::HMAC_SHA1'};
+    unless $have_mods{'Digest::HMAC_SHA1'};
   skip "You need Digest::HMAC_SHA1 module to use the Amazon Cloud module.", 1
-    unless $have_mod{'Digest::HMAC_SHA1'};
+    unless $have_mods{'Digest::HMAC_SHA1'};
   use_ok 'Rex::Cloud::Amazon';
 }
 

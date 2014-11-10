@@ -146,7 +146,7 @@ sub redirect_port {
 
 =item run_task($task)
 
-The task to run on the test vm.
+The task to run on the test vm. You can run multiple tasks by passing an array reference.
 
 =cut
 
@@ -168,7 +168,13 @@ sub run_task {
     $box->forward_port( ssh => [ $self->{redirect_port}, 22 ] );
 
     $box->auth( %{ $self->{auth} } );
-    $box->setup($task);
+
+    if ( ref $task eq 'ARRAY' ) {
+      $box->setup(@$task);
+    }
+    else {
+      $box->setup($task);
+    }
   };
 
   $self->{box} = $box;

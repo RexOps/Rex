@@ -168,7 +168,14 @@ sub run_task {
     $box->forward_port( ssh => [ $self->{redirect_port}, 22 ] );
 
     $box->auth( %{ $self->{auth} } );
-    $box->setup($task);
+    if ( ref $task eq 'SCALAR' ) {
+      $box->setup($task);
+    }
+    elsif ( ref $task eq 'ARRAY' ) {
+      for my $_task (@$task) {
+        $box->setup($_task);
+      }
+    }
   };
 
   $self->{box} = $box;

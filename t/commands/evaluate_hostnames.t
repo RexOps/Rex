@@ -22,6 +22,25 @@ my %tests = (
         server8.domain.com
         server10.domain.com
     /],
+    'server[4..6,8,10..12].domain.com' => [qw/
+        server4.domain.com
+        server5.domain.com
+        server6.domain.com
+        server8.domain.com
+        server10.domain.com
+        server11.domain.com
+        server12.domain.com
+    /],
+    'server[4..6,8,10..16/2].domain.com' => [qw/
+        server4.domain.com
+        server5.domain.com
+        server6.domain.com
+        server8.domain.com
+        server10.domain.com
+        server12.domain.com
+        server14.domain.com
+        server16.domain.com
+    /],
 );
 
 for my $test ( sort keys %tests ) {

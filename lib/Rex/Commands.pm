@@ -1608,7 +1608,15 @@ sub evaluate_hostname {
           (?: \d+ \.\. \d+                # range-rule e.g.  0..4
             (?:\/ \d+ )?              #   step for range-rule
           ) |
-          (?: \d+ (?:,\s*)? )+        # list
+          (?:
+            (?:
+              \d+ (?:,\s*)?
+            ) |
+            (?: \d+ \.\. \d+
+              (?: \/ \d+ )?
+              (?:,\s*)?
+            )
+          )+        # list
         )
       \]                              # end of rule
       ([0-9\w\.\-:]+)?                # suffix (e.g. .domain.com)
@@ -1620,11 +1628,11 @@ sub evaluate_hostname {
   }
 
   my @ret;
-  if ( $rule =~ m/\.\./ ) {
-    @ret = _evaluate_hostname_range( $start, $rule, $end );
+  if ( $rule =~ m/,/ ) {
+    @ret = _evaluate_hostname_list( $start, $rule, $end );
   }
   else {
-    @ret = _evaluate_hostname_list( $start, $rule, $end );
+    @ret = _evaluate_hostname_range( $start, $rule, $end );
   }
 
   return @ret;
@@ -1659,7 +1667,16 @@ sub _evaluate_hostname_list {
 
   $end  ||= '';
 
-  my @ret = map{ "$start$_$end"}@values;
+  my @ret;
+  for my $value ( @values ) {
+    if ( $value =~ m{\d+\.\.\d+(?:/\d+)?} ) {
+        push @ret, _evaluate_hostname_range( $start, $value, $end );
+    }
+    else {
+        push @ret, "$start$value$end";
+    }
+  }
+
   return @ret;
 }
 

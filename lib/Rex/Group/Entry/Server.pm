@@ -39,7 +39,6 @@ sub new {
   bless( $self, $proto );
 
   # be save check if name is already a server ref
-
   if ( ref $self->{name} eq __PACKAGE__ ) {
     return $self->{name};
   }

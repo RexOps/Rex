@@ -9,12 +9,12 @@ use Rex::Commands;
 my %tests = (
     'server1.domain.com'       => [ qw/server1.domain.com/ ],
     'server[9..10].domain.com' => [qw/
-        server09.domain.com
+        server9.domain.com
         server10.domain.com
     /],
     'server[6..10/2].domain.com' => [qw/
-        server06.domain.com
-        server08.domain.com
+        server6.domain.com
+        server8.domain.com
         server10.domain.com
     /],
     'server[6,8,10].domain.com' => [qw/
@@ -40,6 +40,14 @@ my %tests = (
         server12.domain.com
         server14.domain.com
         server16.domain.com
+    /],
+    'server[1..3,2..4].domain.com' => [qw/
+        server1.domain.com
+        server2.domain.com
+        server3.domain.com
+        server2.domain.com
+        server3.domain.com
+        server4.domain.com
     /],
 );
 

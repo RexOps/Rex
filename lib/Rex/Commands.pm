@@ -1647,7 +1647,7 @@ sub _evaluate_hostname_range {
   $step ||= 1;
 
   my $strict_length = 0;
-  if ( length $from != length $to ) {
+  if ( length $from == length $to ) {
     $strict_length = length $to;
   }
 

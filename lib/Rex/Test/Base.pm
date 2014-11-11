@@ -169,11 +169,11 @@ sub run_task {
 
     $box->auth( %{ $self->{auth} } );
 
-    if ( ref $task eq 'SCALAR' ) {
-      $box->setup($task);
-    }
-    elsif ( ref $task eq 'ARRAY' ) {
+    if ( ref $task eq 'ARRAY' ) {
       $box->setup(@$task);
+    }
+    else {
+      $box->setup($task);
     }
   };
 

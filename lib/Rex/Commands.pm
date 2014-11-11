@@ -1599,18 +1599,47 @@ sub evaluate_hostname {
   my $str = shift;
   return unless $str;
 
-  my ( $start, $from, $to, $dummy, $step, $end ) =
-    $str =~ m/^([0-9\.\w\-:]*)\[(\d+)..(\d+)(\/(\d+))?\]([0-9\w\.\-:]+)?$/;
+  # e.g. server[0..4/2].domain.com
+  my ( $start, $rule, $end ) = $str =~ m{
+    ^
+      ([0-9\.\w\-:]*)                 # prefix (e.g. server)
+      \[                              # rule -> 0..4 | 0..4/2 | 0,2,4
+        (
+          (?: \d+ \.\. \d+                # range-rule e.g.  0..4
+            (?:\/ \d+ )?              #   step for range-rule
+          ) |
+          (?: \d+ (?:,\s*)? )+        # list
+        )
+      \]                              # end of rule
+      ([0-9\w\.\-:]+)?                # suffix (e.g. .domain.com)
+    $
+  }xms;
 
-  if ( !defined $start ) {
+  if ( !defined $rule ) {
     return $str;
   }
+
+  my @ret;
+  if ( $rule =~ m/\.\./ ) {
+    @ret = _evaluate_hostname_range( $start, $rule, $end );
+  }
+  else {
+    @ret = _evaluate_hostname_list( $start, $rule, $end );
+  }
+
+  return @ret;
+}
+
+sub _evaluate_hostname_range {
+  my ($start, $rule, $end) = @_;
+
+  my ($from,$to,$step) = $rule =~ m{(\d+) \.\. (\d+) (?:/(\d+))?}xms;
 
   $end  ||= '';
   $step ||= 1;
 
   my $strict_length = 0;
-  if ( length $from == length $to ) {
+  if ( length $from != length $to ) {
     $strict_length = length $to;
   }
 
@@ -1620,6 +1649,17 @@ sub evaluate_hostname {
     push @ret, $start . sprintf( $format, $from ) . $end;
   }
 
+  return @ret;
+}
+
+sub _evaluate_hostname_list {
+  my ($start, $rule, $end) = @_;
+
+  my @values = split /,\s*/, $rule;
+
+  $end  ||= '';
+
+  my @ret = map{ "$start$_$end"}@values;
   return @ret;
 }
 

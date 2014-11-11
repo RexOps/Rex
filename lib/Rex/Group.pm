@@ -32,7 +32,7 @@ sub new {
 sub get_servers {
   my ($self) = @_;
 
-  my @servers = map { my $sub = $_->can('get_servers'); ref $sub eq "CODE" ? $_->$sub : $_ }
+  my @servers = map { ref( $_->to_s ) eq "CODE" ? &{ $_->to_s } : $_ }
     @{ $self->{servers} };
 
   return uniq @servers;

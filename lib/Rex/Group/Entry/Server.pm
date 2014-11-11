@@ -16,6 +16,8 @@ use Rex::Config;
 use Rex::Interface::Exec;
 use Data::Dumper;
 
+use List::MoreUtils qw(uniq);
+
 use overload
   'eq' => sub { shift->is_eq(@_); },
   'ne' => sub { shift->is_ne(@_); },
@@ -89,7 +91,7 @@ sub new {
 
 sub get_servers {
   my ($self) = @_;
-  return map {
+  return uniq map {
     if ( ref($_) ne "Rex::Group::Entry::Server" ) {
       $_ = Rex::Group::Entry::Server->new( name => $_, auth => $self->{auth} );
     }

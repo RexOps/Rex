@@ -59,6 +59,6 @@ for my $server (@all_server) {
 
 group( "duplicated_by_list", "s[1..3,2..4]" );
 my @cleaned_servers = Rex::Group->get_group("duplicated_by_list");
-is_deeply \@cleaned_servers, [qw/
+is_deeply [ $cleaned_servers[0]->get_servers ], [qw/
     s1 s2 s3 s4
 /], "duplicated_by_list";

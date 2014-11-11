@@ -35,7 +35,7 @@ sub get_servers {
   my @servers = map { ref( $_->to_s ) eq "CODE" ? &{ $_->to_s } : $_ }
     @{ $self->{servers} };
 
-  return @servers;
+  return uniq @servers;
 }
 
 sub set_auth {

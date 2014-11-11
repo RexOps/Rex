@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 101;
+use Test::More tests => 102;
 use Data::Dumper;
 
 use_ok 'Rex';
@@ -57,3 +57,9 @@ for my $server (@all_server) {
   ok( $auth->{private_key} eq "priv.key3", "merge_auth - priv" );
 }
 
+TODO: {
+  local $TODO = 'get_group should return the unique list of servers';
+  group( "rangetest1", "www[01..03]" );
+  my @range_servers = Rex::Group->get_group("rangetest1");
+  is_deeply \@range_servers, [qw/www01 www02 www03/], "rangetest1";
+};

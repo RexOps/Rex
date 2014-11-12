@@ -81,38 +81,38 @@ task(
 );
 
 my $auth = Rex::TaskList->create()->get_task("testa1")->{auth};
-ok( $auth->{user} eq "root1" );
-ok( $auth->{password} eq "pass1" );
-ok( $auth->{private_key} eq "priv.key1" );
-ok( $auth->{public_key} eq "pub.key1" );
+is( $auth->{user}, "root1" );
+is( $auth->{password}, "pass1" );
+is( $auth->{private_key}, "priv.key1" );
+is( $auth->{public_key}, "pub.key1" );
 
 $auth = Rex::TaskList->create()->get_task("testa2")->{auth};
-ok( $auth->{user} eq "root2" );
-ok( $auth->{password} eq "pass2" );
-ok( $auth->{private_key} eq "priv.key2" );
-ok( $auth->{public_key} eq "pub.key2" );
+is( $auth->{user}, "root2" );
+is( $auth->{password}, "pass2" );
+is( $auth->{private_key}, "priv.key2" );
+is( $auth->{public_key}, "pub.key2" );
 
 $auth = Rex::TaskList->create()->get_task("testa3")->{auth};
-ok( $auth->{user} eq "root3" );
-ok( $auth->{password} eq "pass3" );
-ok( $auth->{private_key} eq "priv.key3" );
-ok( $auth->{public_key} eq "pub.key3" );
+is( $auth->{user}, "root3" );
+is( $auth->{password}, "pass3" );
+is( $auth->{private_key}, "priv.key3" );
+is( $auth->{public_key}, "pub.key3" );
 
 my $task_b1 = Rex::TaskList->create()->get_task("testb1");
 $auth = $task_b1->{auth};
-ok( $auth->{user} eq "root2" );
-ok( $auth->{password} eq "pass2" );
-ok( $auth->{private_key} eq "priv.key2" );
-ok( $auth->{public_key} eq "pub.key2" );
+is( $auth->{user}, "root2" );
+is( $auth->{password}, "pass2" );
+is( $auth->{private_key}, "priv.key2" );
+is( $auth->{public_key}, "pub.key2" );
 
 my $servers = $task_b1->server;
 for my $server ( @{$servers} ) {
   $auth = $task_b1->merge_auth($server);
 
-  ok( $auth->{user} eq "root2" );
-  ok( $auth->{password} eq "pass2" );
-  ok( $auth->{private_key} eq "priv.key2" );
-  ok( $auth->{public_key} eq "pub.key2" );
+  is( $auth->{user}, "root2" );
+  is( $auth->{password}, "pass2" );
+  is( $auth->{private_key}, "priv.key2" );
+  is( $auth->{public_key}, "pub.key2" );
 }
 
 my $task_b2 = Rex::TaskList->create()->get_task("testb2");
@@ -120,10 +120,10 @@ $servers = $task_b2->server;
 for my $server ( @{$servers} ) {
   $auth = $task_b2->merge_auth($server);
 
-  ok( $auth->{user} eq "root2" );
-  ok( $auth->{password} eq "pass2" );
-  ok( $auth->{private_key} eq "priv.key2" );
-  ok( $auth->{public_key} eq "pub.key2" );
+  is( $auth->{user}, "root2" );
+  is( $auth->{password}, "pass2" );
+  is( $auth->{private_key}, "priv.key2" );
+  is( $auth->{public_key}, "pub.key2" );
 }
 
 my $task_b3 = Rex::TaskList->create()->get_task("testb3");
@@ -131,9 +131,9 @@ $servers = $task_b3->server;
 for my $server ( @{$servers} ) {
   $auth = $task_b3->merge_auth($server);
 
-  ok( $auth->{user} eq "root2" );
-  ok( $auth->{password} eq "pass2" );
-  ok( $auth->{private_key} eq "priv.key2" );
-  ok( $auth->{public_key} eq "pub.key2" );
+  is( $auth->{user}, "root2" );
+  is( $auth->{password}, "pass2" );
+  is( $auth->{private_key}, "priv.key2" );
+  is( $auth->{public_key}, "pub.key2" );
 }
 

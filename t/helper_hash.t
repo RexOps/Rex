@@ -38,13 +38,11 @@ my %h = (
 my $nh = {};
 hash_flatten( \%h, $nh, "_" );
 
-ok( $nh->{"age"} == 99,                     "testing flattened hash" );
-ok( $nh->{"data_more_d_france"} eq "Paris", "testing flattened hash - nested" );
-ok( $nh->{"blub_0"} eq "eins",              "testing flattened array" );
-ok( $nh->{"data_emails_0"} eq 'm@m.m', "testing flattened array - nested" );
-ok( $nh->{"data_emails_1"} eq 'a@a.a', "testing flattened array - nested (2)" );
-ok(
-  $nh->{"data_emails_2_n1"} eq 'nested_1',
-  "testing flattened hash nested in array"
-);
+is( $nh->{"age"},                99,      "testing flattened hash" );
+is( $nh->{"data_more_d_france"}, "Paris", "testing flattened hash - nested" );
+is( $nh->{"blub_0"},             "eins",  "testing flattened array" );
+is( $nh->{"data_emails_0"},      'm@m.m', "testing flattened array - nested" );
+is( $nh->{"data_emails_1"}, 'a@a.a', "testing flattened array - nested (2)" );
+is( $nh->{"data_emails_2_n1"},
+  'nested_1', "testing flattened hash nested in array" );
 

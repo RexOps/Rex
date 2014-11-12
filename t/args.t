@@ -51,12 +51,12 @@ ok(
 );
 ok( exists $opts{t} && $opts{t} == 5, "parameter with option (3) / integer" );
 
-ok( $ARGV[0] eq "foo", "got the taskname" );
+is( $ARGV[0], "foo", "got the taskname" );
 
 my %params = Rex::Args->get;
 
-ok( $ARGV[1] eq "--name=thename", "got the whole parameter (1)" );
-ok( $ARGV[2] eq "--num=5",        "got the whole parameter (2)" );
+is( $ARGV[1], "--name=thename", "got the whole parameter (1)" );
+is( $ARGV[2], "--num=5",        "got the whole parameter (2)" );
 
 ok( exists $params{name} && $params{name} eq "thename",
   "got task parameter (1)" );

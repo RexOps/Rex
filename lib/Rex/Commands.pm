@@ -387,6 +387,64 @@ You can also specify server options after a server name with a hash reference:
 
  group "servergroup", "www1" => { user => "other" }, "www2";
 
+These expressions are allowed:
+
+=over 4
+
+=item * \d+..\d+ (range)
+
+E.g. 1..3 or 111..222. The first number is the start and the second number is the
+end for numbering the servers.
+
+  group "name", "www[1..3]"
+
+Will create these servernames
+
+  www1, www2, www3
+
+=item * \d+..\d+/\d+ (range with step)
+
+Is similar to the variant above. But here a "step" is defined. When you omit the
+step (like in the variant above), the step is 1.
+
+E.g. 1..5/2 or 111..133/11.
+
+  group "name", "www[1..5/2]"
+
+Will create these servernames
+
+  www1, www3, www5
+
+Whereas 
+
+  group "name", "www[111..133/11]"
+
+will create these servernames
+
+  www111, www122, www133
+
+=item * \d+,\d+,\d+ (list)
+
+With this variant you can define fixed values.
+
+  group "name", "www[1,3,7,01]"
+
+Will create these servernames
+
+  www1, www3, www7, www01
+
+=item * Mixed list, range and range with step
+
+You can mix the three variants above
+
+  www[1..3,5,9..21/3]
+
+=>
+
+  www1, www2, www3, www5, www9, www12, www15, www18, www21
+
+=back
+
 =cut
 
 sub group {

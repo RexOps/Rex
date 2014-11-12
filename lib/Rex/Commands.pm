@@ -1639,9 +1639,9 @@ sub evaluate_hostname {
 }
 
 sub _evaluate_hostname_range {
-  my ($start, $rule, $end) = @_;
+  my ( $start, $rule, $end ) = @_;
 
-  my ($from,$to,$step) = $rule =~ m{(\d+) \.\. (\d+) (?:/(\d+))?}xms;
+  my ( $from, $to, $step ) = $rule =~ m{(\d+) \.\. (\d+) (?:/(\d+))?}xms;
 
   $end  ||= '';
   $step ||= 1;
@@ -1661,19 +1661,19 @@ sub _evaluate_hostname_range {
 }
 
 sub _evaluate_hostname_list {
-  my ($start, $rule, $end) = @_;
+  my ( $start, $rule, $end ) = @_;
 
   my @values = split /,\s*/, $rule;
 
-  $end  ||= '';
+  $end ||= '';
 
   my @ret;
-  for my $value ( @values ) {
+  for my $value (@values) {
     if ( $value =~ m{\d+\.\.\d+(?:/\d+)?} ) {
-        push @ret, _evaluate_hostname_range( $start, $value, $end );
+      push @ret, _evaluate_hostname_range( $start, $value, $end );
     }
     else {
-        push @ret, "$start$value$end";
+      push @ret, "$start$value$end";
     }
   }
 

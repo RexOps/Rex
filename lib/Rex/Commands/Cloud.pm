@@ -245,15 +245,16 @@ sub cloud_image_list {
 
 Upload public SSH key to cloud provider
 
-private_key '~/.ssh/mykey
-public_key  '~/.ssh/mykey.pub';
+ private_key '~/.ssh/mykey
+ public_key  '~/.ssh/mykey.pub';
+ 
+ task "cloudprovider", sub {
+   cloud_upload_key;
 
-task cloudprovider => sub {
-    cloud_upload_key;
-
-    cloud_instance create => {
-      ...
-    }
+   cloud_instance create => {
+     ...
+   };
+ };
 
 =cut
 
@@ -289,7 +290,7 @@ sub get_cloud_instances_as_group {
 
 =item cloud_instance($action, $data)
 
-This function controlls all aspects of a cloud instance.
+This function controls all aspects of a cloud instance.
 
 =cut
 

@@ -115,7 +115,7 @@ and notify it when you want to run it.
    notify "run", "extract-something";  # now the command gets executed
  };
 
-If you only want to run a command if an other command succeed or fail, you can use
+If you only want to run a command if another command succeeds or fails, you can use
 I<only_if> or I<unless> option.
 
  run "some-command",
@@ -124,7 +124,7 @@ I<only_if> or I<unless> option.
  run "some-other-command",
    unless => "ps -ef | grep -q httpd";    # only run if httpd is not running
 
-If you want to set custom environment variables you can do this like this:
+If you want to set custom environment variables you can do it like this:
 
  run "my_command",
 
@@ -355,7 +355,7 @@ You can use this function to run one command with sudo privileges or to turn on 
      mode  => 640;
  };
 
-Or, if you don't turning sudo globally on.
+Or, if you didn't enable sudo globally:
 
  task prepare => sub {
    file "/tmp/foo.txt",

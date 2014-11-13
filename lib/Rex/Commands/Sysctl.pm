@@ -16,7 +16,7 @@ Version <= 1.0: All these functions will not be reported.
 
 All these functions are not idempotent.
 
-This function don't persists the entries in /etc/sysctl.conf.
+This function doesn't persist the entries in /etc/sysctl.conf.
 
 =head1 SYNOPSIS
 

@@ -83,7 +83,7 @@ All these functions are not idempotent.
 
 =item vm($action => $name, %option)
 
-This module exports only the I<vm> function. You can manage everything with this function.
+This module only exports the I<vm> function. You can manage everything with this function.
 
 =back
 

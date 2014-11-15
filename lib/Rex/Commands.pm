@@ -108,7 +108,7 @@ use vars
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group
-  user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh fallback_authentication
+  user password port sudo_password public_key private_key pass_auth key_auth krb5_auth no_ssh
   get_random batch timeout max_connect_retries parallelism proxy_command
   do_task run_task run_batch needs
   exit

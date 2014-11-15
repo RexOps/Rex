@@ -153,7 +153,7 @@ sub partition {
   my $last_partition_end = 1;
   my $unit;
   if (@output_lines) {
-    $last_partition_end = $output_lines[-1] =~ m/
+    ($last_partition_end) = $output_lines[-1] =~ m/
         ^\s*[\d]       # partition number
         \s+[\d\.]+kB   # partition start
         \s+([\d\.]+)kB # partition end

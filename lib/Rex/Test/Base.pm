@@ -226,6 +226,18 @@ Test if the service $service is running.
 
 Test if the service $service is stopped.
 
+=item has_stat($file, $stat)
+
+Test if the file $file has properties described in hash reference $stat. List of supported checks:
+
+=over 4
+
+=item - group
+
+=item - owner
+
+=back
+
 =back
 
 =cut

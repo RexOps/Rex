@@ -61,6 +61,19 @@ my %tests = (
       server4.domain.com
       /
   ],
+  'server[01..03].domain.com' => [
+    qw/
+      server01.domain.com
+      server02.domain.com
+      server03.domain.com
+      /
+  ],
+  'server[09..11/2].domain.com' => [
+    qw/
+      server09.domain.com
+      server11.domain.com
+      /
+  ],
 );
 
 for my $test ( sort keys %tests ) {

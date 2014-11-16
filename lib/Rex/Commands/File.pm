@@ -382,7 +382,7 @@ sub file {
     }
     1;
   } or do {
-    die("Before-Hook failed. Canceling file() action: $@");
+    die("Before hook failed. Cancelling file() action: $@");
   };
   ##############################
 
@@ -682,7 +682,7 @@ sub file {
     &$on_change($file);
   }
 
-  #### check and run before hook
+  #### check and run after hook
   Rex::Hook::run_hook( file => "after", @_, $__ret );
   ##############################
 

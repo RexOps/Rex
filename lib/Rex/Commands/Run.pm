@@ -261,7 +261,7 @@ sub run {
         if ( Rex::Config->get_verbose_run );
     }
     elsif ( $? != 0 && $? != 300 ) {
-      Rex::Logger::info( "Error executing $cmd: Return-Code: $?", "warn" )
+      Rex::Logger::info( "Error executing $cmd: Return code: $?", "warn" )
         if ( Rex::Config->get_verbose_run );
     }
     elsif ( $? == 0 ) {
@@ -279,7 +279,7 @@ sub run {
 
     Rex::get_current_connection()->{reporter}->report(
       changed => 1,
-      message => "Command ($cmd) executed. Return-Code: $?"
+      message => "Command ($cmd) executed. Return code: $?"
     );
   }
   else {

@@ -59,6 +59,7 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(run can_run sudo);
 
 =item run($command [, $callback])
+
 =item run($command_description, command => $command, %options)
 
 This function will execute the given command and returns the output. In

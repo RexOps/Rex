@@ -785,6 +785,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Boris Däppen
 
+=item Brian Manning
+
 =item Cameron Daniel
 
 =item Chris Steigmeier

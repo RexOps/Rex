@@ -43,7 +43,8 @@ sub execute {
 
   my $options = _format_opts($opts);
 
-  my $id = i_run "docker run -d $options $opts->{'image'} $opts->{'command'}";
+  my @out = i_run "docker run -d $options $opts->{'image'} $opts->{'command'}";
+  my $id = pop @out;
 
   return $id;
 }

@@ -15,6 +15,7 @@ use Rex::Helper::System;
 use Rex::Config;
 use Rex::Interface::Exec;
 use Data::Dumper;
+require Rex::Helper::Run;
 
 use List::MoreUtils qw(uniq);
 
@@ -337,8 +338,7 @@ sub evaluate_hostname {
 sub test_perl {
   my ($self) = @_;
 
-  my $exec = Rex::Interface::Exec->create;
-  $exec->exec("which perl");
+  Rex::Helper::Run::i_run("which perl");
 
   if ( $? != 0 ) {
     return 0;

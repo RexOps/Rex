@@ -14,7 +14,7 @@ my @files = $fs->ls(".");
 ok( grep { /^ChangeLog$/ } @files, "found ChangeLog" );
 
 ok( $fs->is_file("ChangeLog"), "ChangeLog is a file" );
-ok( $fs->is_dir("."),            ". is a directory" );
+ok( $fs->is_dir("."),          ". is a directory" );
 
 $fs->mkdir("foo");
 ok( $fs->is_dir("foo"), "mkdir" );

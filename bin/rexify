@@ -118,7 +118,10 @@ for ( my $i = 0 ; $i < @ARGV ; $i++ ) {
 
 }
 
-if ( !$ARGV[0] || join( ",", @ARGV ) =~ m/\-h,|\-\-help,/ || $ARGV[0] eq "--help" ) {
+if ( !$ARGV[0]
+  || join( ",", @ARGV ) =~ m/\-h,|\-\-help,/
+  || $ARGV[0] eq "--help" )
+{
   print STDERR "Usage: rexify [<project-name> [<directory>]] [<options>]\n";
   print STDERR "\n";
   print STDERR "Options:";
@@ -146,8 +149,10 @@ if ( !$ARGV[0] || join( ",", @ARGV ) =~ m/\-h,|\-\-help,/ || $ARGV[0] eq "--help
   print STDERR "\n";
   print STDERR "Application Bundle Commands:\n";
   print STDERR "\n";
-  print STDERR "\t--bundle\tCreate an all-containing redistributable binary application.\n";
-  print STDERR "\t--task=taskname\tWhich task should be executed. default: setup\n";
+  print STDERR
+    "\t--bundle\tCreate an all-containing redistributable binary application.\n";
+  print STDERR
+    "\t--task=taskname\tWhich task should be executed. default: setup\n";
   print STDERR "\n";
   print STDERR "Rex-JobControl Commands:\n";
   print STDERR "\n";
@@ -243,7 +248,10 @@ sub upload_rexfile {
 
   my $login_url = $option{server} . "/login";
   my $upload_url =
-    $option{server} . "/project/" . Rex::Helper::URI::encode($option{project}) . "/rexfile/new";
+      $option{server}
+    . "/project/"
+    . Rex::Helper::URI::encode( $option{project} )
+    . "/rexfile/new";
 
   Rex::Logger::info("Creating tar.gz file out of this directory.");
   my $dir = basename( getcwd() );
@@ -288,12 +296,16 @@ sub dispatch_execute_job {
 
   my $login_url = $option{server} . "/login";
   my $execute_url =
-    $option{server} . "/project/" . Rex::Helper::URI::encode($option{project}) . "/job/" . Rex::Helper::URI::encode($option{job}) . "/execute";
+      $option{server}
+    . "/project/"
+    . Rex::Helper::URI::encode( $option{project} ) . "/job/"
+    . Rex::Helper::URI::encode( $option{job} )
+    . "/execute";
 
   # execute a job
   my $ua = LWP::UserAgent->new( cookie_jar => {} );
 
-# first login
+  # first login
   my $res = $ua->post( $login_url,
     { username => $option{username}, password => $option{password} } );
 
@@ -302,11 +314,11 @@ sub dispatch_execute_job {
     exit 1;
   }
 
-# then send the execute command
+  # then send the execute command
   my $ex_request = POST(
     $execute_url,
-    Content      => [
-      sel_server => [split(/[ ,]/, $option{hosts})],
+    Content => [
+      sel_server => [ split( /[ ,]/, $option{hosts} ) ],
     ]
   );
 
@@ -546,16 +558,18 @@ sub install_perl_module {
   }
 }
 
-if(exists $opts->{bundle}) {
+if ( exists $opts->{bundle} ) {
+
   # bundle everything to an application
 
   CORE::mkdir("rex.payload");
   system "cp -vR * rex.payload/ 2>/dev/null";
   system "rm -rf rex.payload/rex.payload";
 
-  my $rex = File::Spec->catfile(dirname($0), "rex");
-  my $tmp_args_file = File::Spec->catfile(File::Spec->tmpdir(), "pp.args.$$.tmp");
-  open(my $fh, ">", $tmp_args_file) or die($!);
+  my $rex = File::Spec->catfile( dirname($0), "rex" );
+  my $tmp_args_file =
+    File::Spec->catfile( File::Spec->tmpdir(), "pp.args.$$.tmp" );
+  open( my $fh, ">", $tmp_args_file ) or die($!);
   print $fh template('@pp.args.tpl');
   close($fh);
 
@@ -567,35 +581,43 @@ if(exists $opts->{bundle}) {
   chomp $arch;
 
   my $elf = "ELF32";
-  if($arch eq "x86_64") {
+  if ( $arch eq "x86_64" ) {
     $elf = "ELF64";
   }
 
-  CORE::mkdir(File::Spec->catdir("rex.payload", "lib.bin"));
-  my @libexpat = qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libexpat.so*' -type f 2>/dev/null};
-  my @libssh2  = qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libssh2.so*' -type f 2>/dev/null};
+  CORE::mkdir( File::Spec->catdir( "rex.payload", "lib.bin" ) );
+  my @libexpat =
+    qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libexpat.so*' -type f 2>/dev/null};
+  my @libssh2 =
+    qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libssh2.so*' -type f 2>/dev/null};
   chomp @libexpat;
   chomp @libssh2;
 
-  for my $f (@libexpat, @libssh2) {
+  for my $f ( @libexpat, @libssh2 ) {
     my $elf_class = qx{readelf -h $f | grep Class:};
+
     # only copy architecture specific files
     # currently no multi arch support
-    if($elf_class =~ m/$elf/) {
-      system "cp -va $f " . File::Spec->catdir("rex.payload", "lib.bin");
+    if ( $elf_class =~ m/$elf/ ) {
+      system "cp -va $f " . File::Spec->catdir( "rex.payload", "lib.bin" );
     }
   }
 
-  system "cd rex.payload/lib.bin ; ln -s " . basename($libssh2[0]) . " libssh2.so.1";
-  system "cd rex.payload/lib.bin ; ln -s " . basename($libexpat[0]) . " libexpat.so.1";
+  system "cd rex.payload/lib.bin ; ln -s "
+    . basename( $libssh2[0] )
+    . " libssh2.so.1";
+  system "cd rex.payload/lib.bin ; ln -s "
+    . basename( $libexpat[0] )
+    . " libexpat.so.1";
 
   # create wrapper script.
-  open(my $fh2, ">", "rex.sh") or die($!);
-  print $fh2 template('@bundle.sh.tpl', task => 'setup');
+  open( my $fh2, ">", "rex.sh" ) or die($!);
+  print $fh2 template( '@bundle.sh.tpl', task => 'setup' );
   close($fh2);
 
   system "cd rex.payload ; tar czf ../rex.payload.tar.gz *";
-  system "cat rex.sh rex.payload.tar.gz >rex.selfextract.sbx ; chmod 755 rex.selfextract.sbx";
+  system
+    "cat rex.sh rex.payload.tar.gz >rex.selfextract.sbx ; chmod 755 rex.selfextract.sbx";
 
   CORE::unlink($tmp_args_file);
   CORE::unlink("rex.sh");

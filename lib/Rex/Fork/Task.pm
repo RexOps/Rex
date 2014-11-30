@@ -8,15 +8,15 @@ use strict;
 
 package Rex::Fork::Task;
 
+use warnings;
+use POSIX ":sys_wait_h";
+
 BEGIN {
 
   use Rex::Shared::Var;
   share qw(@PROCESS_LIST);
 
 }
-
-use warnings;
-use POSIX ":sys_wait_h";
 
 sub new {
   my $that  = shift;

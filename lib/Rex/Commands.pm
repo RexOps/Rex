@@ -311,6 +311,8 @@ sub task {
     *{"${class}::$task_name_save"} = sub {
       Rex::Logger::info("Running task $task_name_save on current connection");
 
+      Rex::Hook::run_hook( task => "before_execute", $task_name_save, @_ );
+
       if ( Rex::Config->get_task_call_by_method
         && $_[0]
         && $_[0] =~ m/^[A-Za-z0-9_:]+$/
@@ -330,6 +332,8 @@ sub task {
           $code->(@_);
         }
       }
+
+      Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
     };
     use strict;
   }
@@ -343,12 +347,18 @@ sub task {
       "Registering task (not main namespace): ${class}::$task_name_save");
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
+      Rex::Logger::info("Running task $task_name_save on current connection");
+
+      Rex::Hook::run_hook( task => "before_execute", $task_name_save, @_ );
+
       if ( ref( $_[0] ) eq "HASH" ) {
         $code->(@_);
       }
       else {
         $code->( {@_} );
       }
+
+      Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
     };
 
     use strict;
@@ -1014,7 +1024,7 @@ sub needs {
 # register needs in main namespace
 {
   my ($caller_pkg) = caller(1);
-  if ( $caller_pkg eq "Rex::CLI" ) {
+  if ( $caller_pkg eq "Rex::CLI" || $caller_pkg eq "main" ) {
     no strict 'refs';
     *{"main::needs"} = \&needs;
     use strict;

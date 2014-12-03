@@ -40,7 +40,12 @@ sub exec {
   my $ret;
   eval {
     my $code = $task->code;
+
+    Rex::Hook::run_hook( task => "before_execute", $task->name, @_ );
+
     $ret = &$code($opts);
+
+    Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );
   };
 
   my %opts = Rex::Args->getopts;

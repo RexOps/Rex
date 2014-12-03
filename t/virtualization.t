@@ -9,7 +9,7 @@ use_ok 'Rex::Config';
 use_ok 'Rex::Commands::Virtualization';
 
 Rex::Commands::set( virtualization => "LibVirt" );
-ok( Rex::Config->get("virtualization") eq "LibVirt",
+is( Rex::Config->get("virtualization"), "LibVirt",
   "set virtualization handler" );
 
 Rex::Commands::set(

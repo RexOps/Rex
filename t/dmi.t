@@ -1,4 +1,4 @@
-use Test::More tests => 29;
+use Test::More;
 use Data::Dumper;
 
 use_ok 'Rex::Inventory::DMIDecode';
@@ -141,3 +141,4 @@ is( $sysinfo->get_manufacturer, "Parallels Software International Inc.",
 is( $sysinfo->get_product_name, "Parallels Virtual Platform",
   "system information product name" );
 
+done_testing();

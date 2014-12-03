@@ -55,7 +55,7 @@ is( $stats{mode}, "0777" || is_windows(), "fs chmod ok" );
 
 my $changed = 0;
 my $content = cat($filename);
-unlike( $content, qr/change/gms, "found change" );
+unlike( $content, qr/change/ms, "found change" );
 
 append_if_no_such_line(
   $filename,
@@ -67,7 +67,7 @@ append_if_no_such_line(
 );
 
 $content = cat($filename);
-like( $content, qr/change/gms, "found change" );
+like( $content, qr/change/ms, "found change" );
 
 is( $changed, 1, "something was changed in the file" );
 
@@ -78,7 +78,7 @@ append_if_no_such_line(
 );
 
 $content = cat($filename);
-like( $content, qr/dream\-breaker/gms, "found dream-breaker" );
+like( $content, qr/dream\-breaker/ms, "found dream-breaker" );
 
 append_if_no_such_line(
   $filename,
@@ -87,13 +87,13 @@ append_if_no_such_line(
 );
 
 $content = cat($filename);
-like( $content, qr{#include /etc/sudoers\.d/\*\.conf}gms,
+like( $content, qr{#include /etc/sudoers\.d/\*\.conf}ms,
   "found sudoers entry" );
 
 append_if_no_such_line( $filename, line => 'silly with "quotes"' );
 
 $content = cat($filename);
-like( $content, qr/silly with "quotes"/gms, "found entry with quotes" );
+like( $content, qr/silly with "quotes"/ms, "found entry with quotes" );
 
 append_if_no_such_line( $filename, line => "#include /etc/sudoers.d/*.conf" );
 
@@ -103,7 +103,7 @@ isnt( $content[-1], "#include /etc/sudoers.d/*.conf",
 
 append_if_no_such_line( $filename, 'KEY="VAL"' );
 $content = cat($filename);
-like( $content, qr/KEY="VAL"/gms, "found KEY=VAL" );
+like( $content, qr/KEY="VAL"/ms, "found KEY=VAL" );
 
 append_if_no_such_line(
   $filename,
@@ -127,11 +127,11 @@ append_if_no_such_line(
 is( $changed, 1, "nothing was changed in the file without regexp" );
 
 $content = cat($filename);
-unlike( $content, qr/foobar/gms, "not found foobar" );
+unlike( $content, qr/foobar/ms, "not found foobar" );
 
 append_if_no_such_line( $filename, line => "foobar", );
 $content = cat($filename);
-like( $content, qr/foobar/gms, "found foobar" );
+like( $content, qr/foobar/ms, "found foobar" );
 
 append_if_no_such_line(
   $filename,
@@ -140,7 +140,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-unlike( $content, qr/bazzada/gms, "not found bazzada" );
+unlike( $content, qr/bazzada/ms, "not found bazzada" );
 
 append_if_no_such_line(
   $filename,
@@ -149,7 +149,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-unlike( $content, qr/tacktack/gms, "not found tacktack" );
+unlike( $content, qr/tacktack/ms, "not found tacktack" );
 
 append_if_no_such_line(
   $filename,
@@ -158,7 +158,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-unlike( $content, qr/nothing there/gms, "not found nothing there" );
+unlike( $content, qr/nothing there/ms, "not found nothing there" );
 
 append_if_no_such_line(
   $filename,
@@ -167,7 +167,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-like( $content, qr/this is there/gms, "found this is there" );
+like( $content, qr/this is there/ms, "found this is there" );
 
 append_if_no_such_line(
   $filename,
@@ -175,7 +175,7 @@ append_if_no_such_line(
   regexp => qr{^bazzada},
 );
 $content = cat($filename);
-like( $content, qr/bazzada/gms, "found bazzada (2)" );
+like( $content, qr/bazzada/ms, "found bazzada (2)" );
 
 file "file with space-$$.txt", content => "file with space\n";
 

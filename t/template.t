@@ -9,10 +9,10 @@ my $t = Rex::Template->new;
 
 my $content = 'one two three';
 
-ok( $t->parse( $content, {} ) eq "one two three", "just text" );
+is( $t->parse( $content, {} ), "one two three", "just text" );
 
 $content = 'Hello this is <%= $::name %>';
-ok( $t->parse( $content, { name => "foo" } ) eq "Hello this is foo",
+is( $t->parse( $content, { name => "foo" } ), "Hello this is foo",
   "simple variable" );
 
 $content = '<% if($::logged_in) { %>
@@ -25,27 +25,27 @@ my $content_ok = "
 Logged in!
 ";
 
-ok( $t->parse( $content, { logged_in => 1 } ) eq $content_ok, "if condition" );
+is( $t->parse( $content, { logged_in => 1 } ), $content_ok, "if condition" );
 
 $content = 'Hello this is <%= $::name %>';
-ok(
-  Rex::Config->get_template_function()->( $content, { name => "baz" } ) eq
+is(
+  Rex::Config->get_template_function()->( $content, { name => "baz" } ),
     "Hello this is baz",
   "get template function"
 );
 
-ok( $t->parse( $content, name => "bar" ) eq "Hello this is bar",
+is( $t->parse( $content, name => "bar" ), "Hello this is bar",
   "simple variable without hashRef" );
 
 $Rex::Template::BE_LOCAL = 1;
 $Rex::Template::BE_LOCAL = 1;
 
 $content = 'Hello this is <%= $foo %>';
-ok( $t->parse( $content, { foo => "baz" } ) eq "Hello this is baz",
+is( $t->parse( $content, { foo => "baz" } ), "Hello this is baz",
   "local vars" );
 
 $content = '<%= join(",", @{ $arr }) %>';
-ok( $t->parse( $content, { arr => [qw/one two three/] } ) eq "one,two,three",
+is( $t->parse( $content, { arr => [qw/one two three/] } ), "one,two,three",
   "local var with array" );
 
 #
@@ -54,10 +54,10 @@ ok( $t->parse( $content, { arr => [qw/one two three/] } ) eq "one,two,three",
 
 $content = 'one two three';
 
-ok( $t->parse( $content, {} ) eq "one two three", "just text" );
+is( $t->parse( $content, {} ), "one two three", "just text" );
 
 $content = 'Hello this is <%= $::name %>';
-ok( $t->parse( $content, { name => "foo" } ) eq "Hello this is foo",
+is( $t->parse( $content, { name => "foo" } ), "Hello this is foo",
   "simple variable" );
 
 $content = '<% if($::logged_in) { %>
@@ -70,21 +70,21 @@ $content_ok = "
 Logged in!
 ";
 
-ok( $t->parse( $content, { logged_in => 1 } ) eq $content_ok, "if condition" );
+is( $t->parse( $content, { logged_in => 1 } ), $content_ok, "if condition" );
 
 $content = 'Hello this is <%= $::name %>';
-ok(
-  Rex::Config->get_template_function()->( $content, { name => "baz" } ) eq
+is(
+  Rex::Config->get_template_function()->( $content, { name => "baz" } ),
     "Hello this is baz",
   "get template function"
 );
 
-ok( $t->parse( $content, name => "bar" ) eq "Hello this is bar",
+is( $t->parse( $content, name => "bar" ), "Hello this is bar",
   "simple variable without hashRef" );
 
 $content = 'Hello this is <%= $::foo %> <%= $::veth1_0_ip %>';
-ok(
-  $t->parse( $content, { foo => "baz", "veth1.0_ip" => "10.1.2.3" } ) eq
+is(
+  $t->parse( $content, { foo => "baz", "veth1.0_ip" => "10.1.2.3" } ),
     "Hello this is baz 10.1.2.3",
   "template with invalid key name"
 );
@@ -99,7 +99,7 @@ my $v = {
 
 for my $key ( keys %{$v} ) {
   my $var_name = Rex::Template::_normalize_var_name($key);
-  ok( $var_name eq $v->{$key}->{name},
+  is( $var_name, $v->{$key}->{name},
     "$var_name is equal to " . $v->{$key}->{name} );
 }
 

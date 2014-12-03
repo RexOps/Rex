@@ -41,8 +41,8 @@ groups_file("t/test.ini");
 
 my %groups = Rex::Group->get_groups;
 
-ok( scalar( @{ $groups{frontends} } ) == 5, "frontends 5 servers" );
-ok( scalar( @{ $groups{backends} } ) == 3,  "backends 3 servers" );
+is( scalar( @{ $groups{frontends} } ), 5, "frontends 5 servers" );
+is( scalar( @{ $groups{backends} } ), 3,  "backends 3 servers" );
 ok( grep { $_ eq "fe01" } @{ $groups{frontends} }, "got fe01" );
 ok( grep { $_ eq "fe02" } @{ $groups{frontends} }, "got fe02" );
 ok( grep { $_ eq "fe03" } @{ $groups{frontends} }, "got fe03" );
@@ -84,7 +84,7 @@ no_ssh(
   task(
     "mytask", $server,
     sub {
-      ok( connection()->server->option("services") eq "apache,memcache",
+      is( connection()->server->option("services"), "apache,memcache",
         "got services inside task" );
     }
   )
@@ -93,17 +93,17 @@ no_ssh(
 my $task = Rex::TaskList->create()->get_task("mytask");
 
 my $auth = $task->merge_auth($server);
-ok( $auth->{user} eq "krimdomu", "got krimdomu user for memcache02" );
-ok( $auth->{password} eq "foo",  "got foo password for memcache02" );
+is( $auth->{user}, "krimdomu", "got krimdomu user for memcache02" );
+is( $auth->{password}, "foo",  "got foo password for memcache02" );
 
 Rex::Config->set_use_server_auth(1);
 
 $auth = $task->merge_auth($server);
-ok( $auth->{user} eq "root",       "got root user for memcache02" );
-ok( $auth->{password} eq "foob4r", "got foob4r password for memcache02" );
-ok( $auth->{sudo},                 "got sudo for memcache02" );
+is( $auth->{user}, "root",       "got root user for memcache02" );
+is( $auth->{password}, "foob4r", "got foob4r password for memcache02" );
+ok( $auth->{sudo},               "got sudo for memcache02" );
 
-ok( $server->option("services") eq "apache,memcache",
+is( $server->option("services"), "apache,memcache",
   "got services of server" );
 
 # don't fork the task

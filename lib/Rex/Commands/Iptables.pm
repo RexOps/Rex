@@ -294,7 +294,7 @@ sub iptables {
 
 =item is_nat_gateway
 
-This function create a nat gateway for the device the default route points to.
+This function creates a nat gateway for the device the default route points to.
 
  task "make-gateway", sub {
    is_nat_gateway;

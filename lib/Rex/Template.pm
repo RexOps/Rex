@@ -223,7 +223,7 @@ sub _normalize_var_name {
 
 =item is_defined($variable, $default_value)
 
-This function will check if $variable is defined. If it is defined it will return the value of $variable. If not, it will return $default_value.
+This function will check if $variable is defined. If it is defined, it will return the value of $variable. If not, it will return $default_value.
 
 You can use this function inside your templates.
 

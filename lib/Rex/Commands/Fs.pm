@@ -10,7 +10,7 @@ Rex::Commands::Fs - Filesystem commands
 
 =head1 DESCRIPTION
 
-With this module you can do file system tasks like creating a directory, removing files, move files, and more.
+With this module you can do file system tasks like creating a directory, deleting files, moving files, and more.
 
 =head1 SYNOPSIS
 

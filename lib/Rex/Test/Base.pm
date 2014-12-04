@@ -209,9 +209,9 @@ sub finish {
 
 Test if the content of $file matches against $regexp.
 
-=item has_package($package)
+=item has_package($package, $version)
 
-Test if the package $package is installed.
+Test if the package $package is installed, optionally at $version.
 
 =item has_file($file)
 

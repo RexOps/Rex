@@ -110,7 +110,7 @@ sub pkg {
   elsif ( $option{ensure} =~ m/^\d/ ) {
 
     # looks like a version
-    &update( package => $package, { version => $option{ensure} } );
+    &install( package => $package, { version => $option{ensure} } );
   }
   else {
     die("Unknown ensure parameter: $option{ensure}.");
@@ -402,7 +402,7 @@ sub install {
     # if we're being asked to install a single package
     if ( @{$package} == 1 ) {
       my $pkg_to_install = shift @{$package};
-      unless ( $pkg->is_installed($pkg_to_install) ) {
+      unless ( $pkg->is_installed( $pkg_to_install, $option ) ) {
         Rex::Logger::info("Installing $pkg_to_install.");
 
         #### check and run before_change hook
@@ -423,7 +423,7 @@ sub install {
     else {
       my @pkgCandidates;
       for my $pkg_to_install ( @{$package} ) {
-        unless ( $pkg->is_installed($pkg_to_install) ) {
+        unless ( $pkg->is_installed( $pkg_to_install, $option ) ) {
           push @pkgCandidates, $pkg_to_install;
         }
       }

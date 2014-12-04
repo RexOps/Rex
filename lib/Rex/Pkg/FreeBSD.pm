@@ -63,20 +63,25 @@ sub remove {
 }
 
 sub is_installed {
-  my ( $self, $pkg ) = @_;
+  my ( $self, $pkg, $option ) = @_;
+  my $version = $option->{version};
 
-  Rex::Logger::debug("Checking if $pkg is installed");
+  Rex::Logger::debug(
+    "Checking if $pkg" . ( $version ? "-$version" : "" ) . " is installed" );
 
   # pkg info -e allow get quick answer about is pkg installed or not.
-  my $command = sprintf( $self->{commands}->{query} . " %s %s", '-e', $pkg );
+  my $command =
+    $self->{commands}->{query} . " -e $pkg" . ( $version ? "-$version" : "" );
   i_run $command;
 
   if ( $? != 0 ) {
-    Rex::Logger::debug("$pkg is NOT installed.");
+    Rex::Logger::debug(
+      "$pkg" . ( $version ? "-$version" : "" ) . " is NOT installed." );
     return 0;
   }
 
-  Rex::Logger::debug("$pkg is installed.");
+  Rex::Logger::debug(
+    "$pkg" . ( $version ? "-$version" : "" ) . " is installed." );
   return 1;
 
 }

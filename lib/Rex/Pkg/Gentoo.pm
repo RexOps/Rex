@@ -47,22 +47,34 @@ sub bulk_install {
 
 sub is_installed {
 
-  my ( $self, $pkg ) = @_;
+  my ( $self, $pkg, $option ) = @_;
+  my $version = $option->{version};
+
   $self->{short} = 0;
-  Rex::Logger::debug("Checking if $pkg is installed");
+  Rex::Logger::debug(
+    "Checking if $pkg" . ( $version ? "-$version" : "" ) . " is installed" );
 
   my @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
+  @pkg_info = grep { $_->{version} eq $version } @pkg_info if defined $version;
+
   unless (@pkg_info) {
+    Rex::Logger::debug(
+      "Couldn't find package by category/packagename, trying with packagename only"
+    );
     $self->{short} = 1;
     @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
+    @pkg_info = grep { $_->{version} eq $version } @pkg_info
+      if defined $version;
   }
 
   unless (@pkg_info) {
-    Rex::Logger::debug("$pkg is NOT installed.");
+    Rex::Logger::debug(
+      "$pkg" . ( $version ? "-$version" : "" ) . " is NOT installed." );
     return 0;
   }
 
-  Rex::Logger::debug("$pkg is installed.");
+  Rex::Logger::debug(
+    "$pkg" . ( $version ? "-$version" : "" ) . " is installed." );
   return 1;
 
 }

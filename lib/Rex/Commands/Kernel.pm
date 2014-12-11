@@ -49,7 +49,7 @@ use vars qw(@EXPORT);
 
 =item kmod($action => $module)
 
-This function load or unload a kernel module.
+This function loads or unloads a kernel module.
 
  task "load", sub {
    kmod load => "ipmi_si";

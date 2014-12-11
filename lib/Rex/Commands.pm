@@ -1177,7 +1177,7 @@ sub path {
 
 =item set($key, $value)
 
-Set a configuration parameter. These Variables can be used in templates as well.
+Set a configuration parameter. These variables can be used in templates as well.
 
  set database => "db01";
 

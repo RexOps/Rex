@@ -182,7 +182,7 @@ This example will add a cronjob running on minute 1, 5, 19 and 40. Every hour an
     };
  };
 
-This example will add a cronjob only running on the 1st, 3rd and 5th day of a month. But only when these days are monday or wednesday. And only in January and May. To the 11th and 23th hour. And to the 1st and 5th minute.
+This example will add a cronjob running on the 1st, 3rd and 5th day of January and May, but only when it's a Monday or Wednesday. On those days, the job will run when the hour is 11 or 23, and the minute is 1 or 5 (in other words at 11:01, 11:05, 23:01 and 23:05).
 
  task "addcron", "server1", sub {
     cron add => "root", {
@@ -197,7 +197,7 @@ This example will add a cronjob only running on the 1st, 3rd and 5th day of a mo
 
 Delete a cronjob.
 
-This example will delete the 4th cronjob. It starts counting by zero (0).
+This example will delete the 4th cronjob. Counting starts with zero (0).
 
  task "delcron", "server1", sub {
     cron delete => "root", 3;

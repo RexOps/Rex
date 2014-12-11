@@ -12,7 +12,7 @@ Rex::Commands::Gather - Hardware and Information gathering
 
 With this module you can gather hardware and software information.
 
-All these functions will not be reported. These functions don't change things.
+All these functions will not be reported. These functions don't modify anything.
 
 =head1 SYNOPSIS
 

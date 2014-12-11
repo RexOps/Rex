@@ -10,6 +10,7 @@ package Rex::Interface::Executor::Default;
 
 use warnings;
 
+use Rex::Hook;
 use Rex::Logger;
 use Data::Dumper;
 

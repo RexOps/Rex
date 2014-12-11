@@ -12,7 +12,7 @@ Rex::Commands::Inventory - Get an inventory of your systems
 
 With this module you can get an inventory of your system.
 
-All these functions will not be reported. These functions don't change things.
+All these functions will not be reported. These functions don't modify anything.
 
 =head1 SYNOPSIS
 

@@ -4,10 +4,9 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Cache::YAML;
 
+use strict;
 use warnings;
 use Rex::Interface::Cache::Base;
 use base qw(Rex::Interface::Cache::Base);

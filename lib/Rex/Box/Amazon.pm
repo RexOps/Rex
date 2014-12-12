@@ -77,10 +77,9 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 =cut
 
-use strict;
-
 package Rex::Box::Amazon;
 
+use strict;
 use warnings;
 use Data::Dumper;
 use Rex::Box::Base;

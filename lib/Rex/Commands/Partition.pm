@@ -29,10 +29,9 @@ All these functions are not idempotent.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Partition;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

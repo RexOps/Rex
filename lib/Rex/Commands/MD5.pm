@@ -24,10 +24,9 @@ This is just a helper function and will not be reported.
 
 =cut
 
-use strict;
-
 package Rex::Commands::MD5;
 
+use strict;
 use warnings;
 
 use Rex::Logger;

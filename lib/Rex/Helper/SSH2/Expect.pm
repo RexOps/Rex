@@ -51,10 +51,9 @@ L<Net::SSH2>
 
 =cut
 
-use strict;
-
 package Rex::Helper::SSH2::Expect;
 
+use strict;
 use warnings;
 
 =over 4

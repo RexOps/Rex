@@ -50,10 +50,9 @@ With this module you can manage LibVirt.
 
 =cut
 
-use strict;
-
 package Rex::Virtualization::LibVirt;
 
+use strict;
 use warnings;
 
 use Rex::Virtualization::Base;

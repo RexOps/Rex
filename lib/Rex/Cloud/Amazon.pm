@@ -8,10 +8,9 @@
 # Some of the code is based on Net::Amazon::EC2
 #
 
-use strict;
-
 package Rex::Cloud::Amazon;
 
+use strict;
 use warnings;
 
 use Rex::Logger;

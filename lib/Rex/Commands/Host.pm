@@ -27,10 +27,9 @@ With this module you can manage the host entries in /etc/hosts.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Host;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

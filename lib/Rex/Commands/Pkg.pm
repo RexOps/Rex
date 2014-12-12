@@ -26,10 +26,9 @@ With this module you can install packages and files.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Pkg;
 
+use strict;
 use warnings;
 
 use Rex::Pkg;

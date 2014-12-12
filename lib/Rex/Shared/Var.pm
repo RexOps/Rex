@@ -4,10 +4,9 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict qw(vars subs);
-
 package Rex::Shared::Var;
 
+use strict qw(vars subs);
 use warnings;
 
 require Exporter;

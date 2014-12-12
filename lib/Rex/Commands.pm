@@ -88,10 +88,9 @@ This module is the core commands module.
 
 =cut
 
-use strict;
-
 package Rex::Commands;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

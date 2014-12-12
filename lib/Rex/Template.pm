@@ -23,10 +23,9 @@ This is a simple template engine for configuration files.
 
 =cut
 
-use strict;
-
 package Rex::Template;
 
+use strict;
 use warnings;
 
 use Rex::Config;

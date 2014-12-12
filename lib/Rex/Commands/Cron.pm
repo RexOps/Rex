@@ -35,10 +35,9 @@ With this Module you can manage your cronjobs.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Cron;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

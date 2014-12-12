@@ -23,10 +23,9 @@ This module exports the notify() function.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Notify;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

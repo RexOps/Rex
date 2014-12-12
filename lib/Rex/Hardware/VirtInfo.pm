@@ -1,7 +1,6 @@
-use strict;
-
 package Rex::Hardware::VirtInfo;
 
+use strict;
 use warnings;
 
 use Rex;

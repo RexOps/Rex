@@ -68,10 +68,9 @@ For VirtualBox memory declaration is always in megabyte.
 
 =cut
 
-use strict;
-
 package Rex::Virtualization::VBox;
 
+use strict;
 use warnings;
 
 use Rex::Virtualization::Base;

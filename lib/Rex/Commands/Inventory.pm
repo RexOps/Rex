@@ -28,10 +28,9 @@ All these functions will not be reported. These functions don't modify anything.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Inventory;
 
+use strict;
 use warnings;
 
 use Rex::Inventory;

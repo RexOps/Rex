@@ -33,10 +33,9 @@ With this module you can define transactions and rollback scenarios on failure.
 
 =cut
 
-use strict;
-
 package Rex::Transaction;
 
+use strict;
 use warnings;
 
 require Exporter;

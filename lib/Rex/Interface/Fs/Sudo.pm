@@ -4,10 +4,9 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Fs::Sudo;
 
+use strict;
 use warnings;
 
 require Rex::Commands;

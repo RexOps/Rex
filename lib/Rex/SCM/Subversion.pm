@@ -1,7 +1,6 @@
-use strict;
-
 package Rex::SCM::Subversion;
 
+use strict;
 use warnings;
 
 use Cwd qw(getcwd);

@@ -56,10 +56,9 @@ Version <= 1.0: All these functions will not be reported.
 
 =cut
 
-use strict;
-
 package Rex::Commands::DB;
 
+use strict;
 use warnings;
 
 BEGIN {

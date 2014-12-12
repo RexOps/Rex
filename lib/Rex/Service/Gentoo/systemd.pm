@@ -2,10 +2,9 @@
 # Gentoo systemd support
 #
 
-use strict;
-
 package Rex::Service::Gentoo::systemd;
 
+use strict;
 use warnings;
 
 use Rex::Commands::Run;

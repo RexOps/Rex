@@ -58,10 +58,9 @@ With this module you can manipulate files.
 
 =cut
 
-use strict;
-
 package Rex::Commands::File;
 
+use strict;
 use warnings;
 use Fcntl;
 

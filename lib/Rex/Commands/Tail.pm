@@ -27,10 +27,9 @@ With this module you can tail a file
 
 =cut
 
-use strict;
-
 package Rex::Commands::Tail;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

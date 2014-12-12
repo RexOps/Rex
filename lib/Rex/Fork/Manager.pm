@@ -4,10 +4,9 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Fork::Manager;
 
+use strict;
 use warnings;
 
 use Rex::Fork::Task;

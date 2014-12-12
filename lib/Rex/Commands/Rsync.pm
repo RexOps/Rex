@@ -44,10 +44,9 @@ the execution of the rsync task.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Rsync;
 
+use strict;
 use warnings;
 
 BEGIN {

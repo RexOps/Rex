@@ -31,10 +31,9 @@ This function doesn't persist the entries in /etc/sysctl.conf.
 
 =cut
 
-use strict;
-
 package Rex::Commands::Sysctl;
 
+use strict;
 use warnings;
 
 use Rex::Logger;

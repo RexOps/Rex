@@ -26,10 +26,9 @@ With this module you can define hostgroups out of a command.
 
 =cut
 
-use strict;
-
 package Rex::Group::Lookup::Command;
 
+use strict;
 use warnings;
 
 require Rex::Exporter;

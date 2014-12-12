@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Rex::Commands;
 
+# VERSION
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;

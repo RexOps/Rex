@@ -9,6 +9,8 @@ package Rex::Virtualization::Docker::destroy;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Helper::Run;
 

@@ -49,6 +49,8 @@ package Rex::Commands::Rsync;
 use strict;
 use warnings;
 
+# VERSION
+
 BEGIN {
   use Rex::Require;
   Expect->use;

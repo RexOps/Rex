@@ -9,6 +9,8 @@ package Rex::Inventory::DMIDecode::SystemInformation;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory::DMIDecode::Section;
 use base qw(Rex::Inventory::DMIDecode::Section);
 

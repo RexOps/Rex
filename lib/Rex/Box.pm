@@ -9,6 +9,8 @@ package Rex::Box;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Config;
 use Rex::Logger;
 

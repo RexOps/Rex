@@ -9,6 +9,8 @@ package Rex::Hardware::Network::NetBSD;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Helper::Array;

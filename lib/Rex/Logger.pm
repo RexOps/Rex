@@ -33,6 +33,8 @@ package Rex::Logger;
 use strict;
 use warnings;
 
+# VERSION
+
 #use Rex;
 
 our $no_color = 0;

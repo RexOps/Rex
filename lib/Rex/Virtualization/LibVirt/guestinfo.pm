@@ -9,6 +9,8 @@ package Rex::Virtualization::LibVirt::guestinfo;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Logger;
 use Rex::Helper::Run;

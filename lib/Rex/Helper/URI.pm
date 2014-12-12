@@ -9,6 +9,8 @@ package Rex::Helper::URI;
 use strict;
 use warnings;
 
+# VERSION
+
 sub encode {
   my ($part) = @_;
   $part =~ s/([^\w\-\.\@])/_encode_char($1)/eg;

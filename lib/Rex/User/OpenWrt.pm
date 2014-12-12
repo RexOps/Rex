@@ -9,6 +9,8 @@ package Rex::User::OpenWrt;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 require Rex::Commands;
 use Rex::Commands::Run;

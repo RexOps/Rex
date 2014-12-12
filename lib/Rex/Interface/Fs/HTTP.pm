@@ -9,6 +9,8 @@ package Rex::Interface::Fs::HTTP;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::Base;

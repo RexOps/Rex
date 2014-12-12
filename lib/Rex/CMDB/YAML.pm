@@ -9,6 +9,8 @@ package Rex::CMDB::YAML;
 use strict;
 use warnings;
 
+# VERSION
+
 use base qw(Rex::CMDB::Base);
 
 use Rex::Commands -no => [qw/get/];

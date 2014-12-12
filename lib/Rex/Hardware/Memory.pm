@@ -9,6 +9,8 @@ package Rex::Hardware::Memory;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Hardware::Host;
 use Rex::Commands::Run;
 use Rex::Helper::Run;

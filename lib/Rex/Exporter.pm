@@ -9,6 +9,8 @@ package Rex::Exporter;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 our @EXPORT;

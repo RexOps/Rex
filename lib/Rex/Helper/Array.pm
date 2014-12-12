@@ -9,6 +9,8 @@ package Rex::Helper::Array;
 use strict;
 use warnings;
 
+# VERSION
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);

@@ -9,6 +9,8 @@ package Rex::Virtualization::LibVirt::create;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Commands::Gather;
 use Rex::Hardware;

@@ -9,6 +9,8 @@ package Rex::Hardware::Network;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 use Rex::Commands::Gather;

@@ -9,6 +9,8 @@
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::CLI;
 
 my $rex = Rex::CLI->new;

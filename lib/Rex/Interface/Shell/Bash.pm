@@ -9,6 +9,8 @@ package Rex::Interface::Shell::Bash;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Shell::Base;
 use base qw(Rex::Interface::Shell::Base);
 use Data::Dumper;

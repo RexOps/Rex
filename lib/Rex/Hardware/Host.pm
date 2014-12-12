@@ -9,6 +9,8 @@ package Rex::Hardware::Host;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex;
 use Rex::Commands::Run;
 use Rex::Helper::Run;

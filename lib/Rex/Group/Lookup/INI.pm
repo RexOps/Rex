@@ -29,6 +29,8 @@ package Rex::Group::Lookup::INI;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex -base;
 
 require Exporter;

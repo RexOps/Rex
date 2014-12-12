@@ -9,6 +9,8 @@ package Rex::TaskList;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Config;
 use Rex::Logger;

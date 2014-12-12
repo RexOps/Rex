@@ -9,6 +9,8 @@ package Rex::Cron::SunOS;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Cron::Base;
 use base qw(Rex::Cron::Base);
 

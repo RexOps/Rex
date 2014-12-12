@@ -9,6 +9,8 @@ package Rex::Resource;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Constants;
 
 our $INSIDE_RES = 0;

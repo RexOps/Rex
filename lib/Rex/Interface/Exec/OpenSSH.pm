@@ -9,6 +9,8 @@ package Rex::Interface::Exec::OpenSSH;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Helper::SSH2;
 require Rex::Commands;
 use Rex::Interface::Exec::SSH;

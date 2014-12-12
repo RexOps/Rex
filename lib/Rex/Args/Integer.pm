@@ -9,6 +9,8 @@ package Rex::Args::Integer;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 
 sub get {

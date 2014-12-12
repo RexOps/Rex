@@ -29,6 +29,8 @@ package Rex::Commands::Upload;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use File::Basename qw(basename);
 use Rex::Config;

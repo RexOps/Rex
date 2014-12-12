@@ -40,6 +40,8 @@ use warnings;
 use Rex::Helper::UserAgent;
 use Carp;
 
+# VERSION
+
 use vars qw($has_wget $has_curl $has_lwp);
 
 # check which download type we should use

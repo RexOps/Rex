@@ -9,6 +9,8 @@ package Rex::Interface::Exec::SSH;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Helper::SSH2;
 use File::Basename 'basename';
 use Rex::Interface::Shell;

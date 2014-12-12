@@ -9,6 +9,8 @@ package Rex::Virtualization::VBox::status;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Virtualization::VBox::list;
 
 sub execute {

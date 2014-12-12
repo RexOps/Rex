@@ -9,6 +9,8 @@ package Rex::Shared::Var::Scalar;
 use strict;
 use warnings;
 
+# VERSION
+
 use Fcntl qw(:DEFAULT :flock);
 use Data::Dumper;
 

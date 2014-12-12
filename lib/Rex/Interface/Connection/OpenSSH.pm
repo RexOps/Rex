@@ -9,6 +9,8 @@ package Rex::Interface::Connection::OpenSSH;
 use strict;
 use warnings;
 
+# VERSION
+
 BEGIN {
   use Rex::Require;
   Net::OpenSSH->require;

@@ -9,6 +9,8 @@ package Rex::Virtualization::LibVirt::status;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Virtualization::LibVirt::info;
 
 sub execute {

@@ -33,6 +33,8 @@ package Rex::Commands::SimpleCheck;
 use strict;
 use warnings;
 
+# VERSION
+
 use IO::Socket;
 
 require Rex::Exporter;

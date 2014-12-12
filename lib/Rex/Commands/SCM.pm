@@ -54,6 +54,8 @@ package Rex::Commands::SCM;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Config;
 

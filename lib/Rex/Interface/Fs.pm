@@ -9,6 +9,8 @@ package Rex::Interface::Fs;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex;
 use Data::Dumper;
 

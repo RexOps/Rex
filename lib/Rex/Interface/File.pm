@@ -9,6 +9,8 @@ package Rex::Interface::File;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex;
 
 sub create {

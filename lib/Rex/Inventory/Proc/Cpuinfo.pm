@@ -9,6 +9,8 @@ package Rex::Inventory::Proc::Cpuinfo;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Commands::File;
 

@@ -9,6 +9,8 @@ package Rex::Helper::SSH2;
 use strict;
 use warnings;
 
+# VERSION
+
 require Exporter;
 use Data::Dumper;
 require Rex::Commands;

@@ -9,6 +9,8 @@
 use strict;
 use warnings;
 
+# VERSION
+
 $|++;
 
 use LWP::UserAgent;

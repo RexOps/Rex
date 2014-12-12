@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use POSIX ":sys_wait_h";
 
+# VERSION
+
 BEGIN {
 
   use Rex::Shared::Var;

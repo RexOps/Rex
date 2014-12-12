@@ -9,6 +9,8 @@ package Rex::Pkg::Redhat;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::File;

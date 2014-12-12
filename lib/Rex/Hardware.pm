@@ -30,6 +30,8 @@ package Rex::Hardware;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 
 require Rex::Args;

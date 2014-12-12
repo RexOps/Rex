@@ -9,6 +9,8 @@ package Rex::Helper::DBI;
 use strict;
 use warnings;
 
+# VERSION
+
 BEGIN {
   use Rex::Require;
   DBI->require;

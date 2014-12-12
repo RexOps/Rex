@@ -9,6 +9,8 @@ package Rex::User;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Gather;
 use Rex::Logger;
 

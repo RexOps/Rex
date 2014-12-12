@@ -28,6 +28,8 @@ package Rex::Commands::Notify;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 
 use vars qw(@EXPORT);

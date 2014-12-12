@@ -9,6 +9,8 @@ package Rex::TaskList::Parallel_ForkManager;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Logger;
 use Rex::Task;

@@ -29,6 +29,8 @@ package Rex::Group::Lookup::File;
 use strict;
 use warnings;
 
+# VERSION
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);

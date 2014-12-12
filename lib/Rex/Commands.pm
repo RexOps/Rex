@@ -93,6 +93,8 @@ package Rex::Commands;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Rex::TaskList;
 use Rex::Logger;

@@ -37,6 +37,8 @@ package Rex::Commands::LVM;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);

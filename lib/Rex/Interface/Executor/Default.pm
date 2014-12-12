@@ -9,6 +9,8 @@ package Rex::Interface::Executor::Default;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Hook;
 use Rex::Logger;
 use Data::Dumper;

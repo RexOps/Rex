@@ -11,6 +11,8 @@ use warnings;
 use Rex::Interface::Cache::Base;
 use base qw(Rex::Interface::Cache::Base);
 
+# VERSION
+
 require Rex::Commands;
 require Rex::Commands::Fs;
 require YAML;

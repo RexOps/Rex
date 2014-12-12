@@ -9,6 +9,8 @@ package Rex::Interface::Fs::SSH;
 use strict;
 use warnings;
 
+# VERSION
+
 use Fcntl qw(:DEFAULT :mode);
 use Rex::Helper::Encode;
 use Rex::Interface::Exec;

@@ -9,6 +9,8 @@ package Rex::Interface::Exec::Sudo;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Config;
 use Rex::Interface::Exec::Local;
 use Rex::Interface::Exec::SSH;

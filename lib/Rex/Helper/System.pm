@@ -9,6 +9,8 @@ package Rex::Helper::System;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Helper::Hash;
 
 sub info {

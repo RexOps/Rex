@@ -9,6 +9,8 @@ package Rex::Interface::File::HTTP;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 BEGIN {

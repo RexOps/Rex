@@ -88,6 +88,8 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Cloud;
 
+# VERSION
+
 BEGIN {
   LWP::UserAgent->use;
 }

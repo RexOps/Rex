@@ -9,6 +9,8 @@ package Rex::Report::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Logger;
 use Time::HiRes qw(time);

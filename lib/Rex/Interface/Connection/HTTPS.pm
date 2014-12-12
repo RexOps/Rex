@@ -11,6 +11,8 @@ use warnings;
 use Rex::Interface::Connection::HTTP;
 use base qw(Rex::Interface::Connection::HTTP);
 
+# VERSION
+
 use Rex::Logger;
 
 sub new {

@@ -9,6 +9,8 @@ package Rex::Virtualization::VBox::guestinfo;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Helper::Run;
 use Rex::Virtualization::VBox::status;

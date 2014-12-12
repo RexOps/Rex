@@ -30,6 +30,8 @@ package Rex::Commands::Gather;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Hardware;
 use Rex::Hardware::Host;

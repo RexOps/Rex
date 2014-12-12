@@ -9,6 +9,8 @@ package Rex::Args::String;
 use strict;
 use warnings;
 
+# VERSION
+
 sub get {
   my ( $class, $name ) = @_;
 

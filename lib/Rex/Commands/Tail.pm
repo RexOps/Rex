@@ -32,6 +32,8 @@ package Rex::Commands::Tail;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Data::Dumper;
 use Rex::Commands::Fs;

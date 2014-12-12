@@ -29,6 +29,8 @@ package Rex::Group::Lookup::YAML;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex -base;
 
 require Exporter;

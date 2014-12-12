@@ -9,6 +9,8 @@ package Rex::Args;
 use strict;
 use warnings;
 
+# VERSION
+
 use vars qw(%task_opts %rex_opts);
 use Rex::Logger;
 use Data::Dumper;

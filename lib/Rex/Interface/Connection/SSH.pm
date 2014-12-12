@@ -9,6 +9,8 @@ package Rex::Interface::Connection::SSH;
 use strict;
 use warnings;
 
+# VERSION
+
 BEGIN {
   use Rex::Require;
   Net::SSH2->require;

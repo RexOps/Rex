@@ -75,6 +75,8 @@ use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
 
+# VERSION
+
 BEGIN {
   LWP::UserAgent->use;
 }

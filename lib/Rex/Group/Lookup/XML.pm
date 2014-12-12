@@ -30,6 +30,8 @@ use strict;
 use warnings;
 use Rex -base;
 
+# VERSION
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);

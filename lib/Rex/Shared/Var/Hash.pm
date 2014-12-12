@@ -9,6 +9,8 @@ package Rex::Shared::Var::Hash;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 use Fcntl qw(:DEFAULT :flock);

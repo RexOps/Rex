@@ -9,6 +9,8 @@ package Rex::Interface::File::OpenSSH;
 use strict;
 use warnings;
 
+# VERSION
+
 use Fcntl;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;

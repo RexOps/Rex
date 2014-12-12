@@ -9,6 +9,8 @@ package Rex::Hardware::Kernel;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Run;
 use Rex::Helper::Run;
 

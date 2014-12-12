@@ -33,6 +33,8 @@ package Rex::Commands::Kernel;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;

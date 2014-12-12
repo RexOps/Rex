@@ -9,6 +9,8 @@ package Rex::Pkg::Ubuntu;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Pkg::Debian;
 use Rex::Commands::Run;
 use Rex::Commands::File;

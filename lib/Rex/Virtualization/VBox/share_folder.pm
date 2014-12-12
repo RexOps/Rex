@@ -9,6 +9,8 @@ package Rex::Virtualization::VBox::share_folder;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Helper::Run;
 use Rex::Virtualization::VBox::info;

@@ -64,6 +64,8 @@ package Rex::Commands::Box;
 use strict;
 use warnings;
 
+# VERSION
+
 use YAML;
 use Data::Dumper;
 

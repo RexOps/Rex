@@ -9,6 +9,8 @@ package Rex::Inventory::Bios;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Hardware::Host;
 use Rex::Logger;
 

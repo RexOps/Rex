@@ -9,6 +9,8 @@ package Rex::Cloud::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 
 sub new {

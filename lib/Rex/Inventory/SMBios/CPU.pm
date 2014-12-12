@@ -9,6 +9,8 @@ package Rex::Inventory::SMBios::CPU;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory::SMBios::Section;
 use Rex::Logger;
 use base qw(Rex::Inventory::SMBios::Section);

@@ -9,6 +9,8 @@ package Rex::Batch;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::TaskList;
 

@@ -3,6 +3,8 @@ package Rex::SCM::Git;
 use strict;
 use warnings;
 
+# VERSION
+
 use Cwd qw(getcwd);
 use Rex::Commands::Fs;
 use Rex::Commands::Run;

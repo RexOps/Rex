@@ -9,6 +9,8 @@ package Rex::Shared::Var::Array;
 use strict;
 use warnings;
 
+# VERSION
+
 use Fcntl qw(:DEFAULT :flock);
 use Data::Dumper;
 

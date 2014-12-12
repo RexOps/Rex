@@ -9,6 +9,8 @@ package Rex::Output::JUnit;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Template;
 use base 'Rex::Output::Base';

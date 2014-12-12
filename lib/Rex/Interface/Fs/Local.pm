@@ -9,6 +9,8 @@ package Rex::Interface::Fs::Local;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Fs::Base;
 use base qw(Rex::Interface::Fs::Base);
 

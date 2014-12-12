@@ -12,6 +12,8 @@ use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Rex::Logger;
 
+# VERSION
+
 use Data::Dumper;
 
 use strict;

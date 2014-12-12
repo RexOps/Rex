@@ -9,6 +9,8 @@ package Rex::Fork::Manager;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Fork::Task;
 
 sub new {

@@ -9,6 +9,8 @@ package Rex::Args::Single;
 use strict;
 use warnings;
 
+# VERSION
+
 sub get { return 1; }
 
 1;

@@ -9,6 +9,8 @@ package Rex::Commands::JobControl;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands;
 use YAML;
 

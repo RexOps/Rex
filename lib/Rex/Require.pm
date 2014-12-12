@@ -9,6 +9,8 @@ package Rex::Require;
 use strict;
 use warnings;
 
+# VERSION
+
 use Carp;
 require Rex::Logger;
 

@@ -25,6 +25,8 @@ package Rex::Box::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands -no => [qw/auth/];
 use Rex::Commands::Run;
 use Rex::Commands::Fs;

@@ -9,6 +9,8 @@ package Rex::Cron::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Commands;
 use Rex::Commands::File;

@@ -13,6 +13,8 @@ package Rex::Cloud::Amazon;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Cloud::Base;
 

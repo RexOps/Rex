@@ -9,6 +9,8 @@ package Rex::Cloud::Jiffybox;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 
 BEGIN {

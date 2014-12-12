@@ -9,6 +9,8 @@ package Rex::Interface::Connection::Fake;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Connection::Base;
 
 use base qw(Rex::Interface::Connection::Base);

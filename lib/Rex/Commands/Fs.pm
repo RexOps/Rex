@@ -51,6 +51,8 @@ package Rex::Commands::Fs;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Data::Dumper;
 use Fcntl;

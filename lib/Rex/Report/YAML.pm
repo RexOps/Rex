@@ -9,6 +9,8 @@ package Rex::Report::YAML;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex;
 use Data::Dumper;
 use Rex::Report::Base;

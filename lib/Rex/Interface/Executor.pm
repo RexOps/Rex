@@ -9,6 +9,8 @@ package Rex::Interface::Executor;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 sub create {

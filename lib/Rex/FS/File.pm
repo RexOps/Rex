@@ -31,6 +31,8 @@ package Rex::FS::File;
 use strict;
 use warnings;
 
+# VERSION
+
 use constant DEFAULT_READ_LEN => 64;
 
 =item new

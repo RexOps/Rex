@@ -9,6 +9,8 @@ package Rex::Profiler;
 use strict;
 use warnings;
 
+# VERSION
+
 use Time::HiRes qw(gettimeofday tv_interval);
 
 sub new {

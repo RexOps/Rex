@@ -41,6 +41,8 @@ package Rex::Commands::Service;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 
 use vars qw(@EXPORT);

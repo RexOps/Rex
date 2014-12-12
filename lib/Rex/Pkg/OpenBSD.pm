@@ -9,6 +9,8 @@ package Rex::Pkg::OpenBSD;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Run;
 use Rex::Commands::File;
 

@@ -9,6 +9,8 @@ package Rex::Virtualization::LibVirt::destroy;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Helper::Run;
 

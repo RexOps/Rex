@@ -9,6 +9,8 @@ package Rex::Resource::Common;
 use strict;
 use warnings;
 
+# VERSION
+
 require Exporter;
 require Rex::Config;
 use Rex::Resource;

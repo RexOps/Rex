@@ -9,6 +9,8 @@ package Rex::User::FreeBSD;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Commands::Run;
 use Rex::Commands::MD5;

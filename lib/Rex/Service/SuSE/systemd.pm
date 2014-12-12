@@ -9,6 +9,8 @@ package Rex::Service::SuSE::systemd;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Run;
 use Rex::Logger;
 use Rex::Commands::Fs;

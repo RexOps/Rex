@@ -29,6 +29,8 @@ package Rex::Commands::MD5;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 require Rex::Commands;
 use Rex::Interface::Exec;

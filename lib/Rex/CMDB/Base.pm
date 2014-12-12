@@ -9,6 +9,8 @@ package Rex::CMDB::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Helper::Path;
 
 sub new {

@@ -12,6 +12,8 @@ use Rex -base;
 use Data::Dumper;
 use Rex::Commands::Box;
 
+# VERSION
+
 desc 'Run tests specified with --test=testfile (default: t/*.t)';
 task run => make {
   Rex::Logger::info("Running integration tests...");

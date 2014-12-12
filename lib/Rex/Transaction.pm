@@ -38,6 +38,8 @@ package Rex::Transaction;
 use strict;
 use warnings;
 
+# VERSION
+
 require Exporter;
 
 use vars qw(@EXPORT @ROLLBACKS);

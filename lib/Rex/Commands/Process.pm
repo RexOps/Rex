@@ -33,6 +33,8 @@ package Rex::Commands::Process;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Data::Dumper;
 use Rex::Commands::Run;

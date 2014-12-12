@@ -9,6 +9,8 @@ package Rex::Helper::Path;
 use strict;
 use warnings;
 
+# VERSION
+
 use File::Spec;
 use File::Basename qw(dirname);
 require Exporter;

@@ -36,6 +36,8 @@ package Rex::Commands::Network;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;

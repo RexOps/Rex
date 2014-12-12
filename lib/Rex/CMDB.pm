@@ -31,6 +31,8 @@ package Rex::CMDB;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands;
 use Rex::Value;
 

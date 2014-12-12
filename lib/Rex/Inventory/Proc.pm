@@ -9,6 +9,8 @@ package Rex::Inventory::Proc;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory::Proc::Cpuinfo;
 
 sub new {

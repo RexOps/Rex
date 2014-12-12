@@ -9,6 +9,8 @@ package Rex::Inventory::SMBios::SystemInformation;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory::SMBios::Section;
 use base qw(Rex::Inventory::SMBios::Section);
 

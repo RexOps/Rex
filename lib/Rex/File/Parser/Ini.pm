@@ -9,6 +9,8 @@ package Rex::File::Parser::Ini;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 sub new {

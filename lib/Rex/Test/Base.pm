@@ -57,6 +57,8 @@ package Rex::Test::Base;
 
 use base 'Test::Builder::Module';
 
+# VERSION
+
 use strict;
 use warnings;
 

@@ -9,6 +9,8 @@ package Rex::CLI;
 use strict;
 use warnings;
 
+# VERSION
+
 use FindBin;
 use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);

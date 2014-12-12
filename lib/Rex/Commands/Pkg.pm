@@ -31,6 +31,8 @@ package Rex::Commands::Pkg;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Pkg;
 use Rex::Logger;
 use Rex::Template;

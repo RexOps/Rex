@@ -9,6 +9,8 @@ package Rex::Interface::Fs::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Exec;
 
 sub new {

@@ -9,6 +9,8 @@ package Rex::Service;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Config;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;

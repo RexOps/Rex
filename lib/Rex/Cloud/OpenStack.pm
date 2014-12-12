@@ -9,6 +9,8 @@ package Rex::Cloud::OpenStack;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 
 use base 'Rex::Cloud::Base';

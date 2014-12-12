@@ -9,6 +9,8 @@ package Rex::Interface::Shell::Ksh;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Shell::Bash;
 
 use base qw(Rex::Interface::Shell::Bash);

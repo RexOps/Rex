@@ -9,6 +9,8 @@ package Rex::Inventory::Hal::Object;
 use strict;
 use warnings;
 
+# VERSION
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;

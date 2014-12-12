@@ -9,6 +9,8 @@ package Rex::Test::Base::has_package;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex -base;
 use base qw(Rex::Test::Base);
 use Data::Dumper;

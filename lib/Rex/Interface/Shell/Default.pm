@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Rex::Interface::Shell::Bash;
 
+# VERSION
+
 use base qw(Rex::Interface::Shell::Bash);
 
 sub new {

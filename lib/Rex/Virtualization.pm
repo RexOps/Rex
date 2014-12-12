@@ -9,6 +9,8 @@ package Rex::Virtualization;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Config;
 

@@ -9,6 +9,8 @@ package Rex::Inventory;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory::DMIDecode;
 use Rex::Inventory::Hal;
 use Rex::Inventory::Proc;

@@ -9,6 +9,8 @@ package Rex::Hardware::Network::Linux;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Helper::Run;
 use Rex::Commands::Run;

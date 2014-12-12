@@ -9,6 +9,8 @@ package Rex::Interface::Connection::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 

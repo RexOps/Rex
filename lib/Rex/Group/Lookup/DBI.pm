@@ -29,6 +29,8 @@ package Rex::Group::Lookup::DBI;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex -base;
 use Carp;
 

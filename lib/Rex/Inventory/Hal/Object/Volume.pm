@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+# VERSION
+
 use Rex::Inventory::Hal::Object;
 use base qw(Rex::Inventory::Hal::Object);
 

@@ -9,6 +9,8 @@ package Rex::Interface::Fs::OpenSSH;
 use strict;
 use warnings;
 
+# VERSION
+
 use Fcntl qw(:DEFAULT :mode);
 use Rex::Interface::Exec;
 use Rex::Interface::Fs::SSH;

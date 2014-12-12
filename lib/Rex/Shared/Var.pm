@@ -9,6 +9,8 @@ package Rex::Shared::Var;
 use strict qw(vars subs);
 use warnings;
 
+# VERSION
+
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);

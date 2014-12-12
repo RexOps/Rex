@@ -9,6 +9,8 @@ package Rex::Interface::Cache::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex;
 

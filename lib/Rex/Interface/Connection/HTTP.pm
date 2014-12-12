@@ -9,6 +9,8 @@ package Rex::Interface::Connection::HTTP;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Connection::Base;
 
 BEGIN {

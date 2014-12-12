@@ -11,6 +11,8 @@ use warnings;
 use Rex::Helper::Run;
 use Rex::Interface::Exec;
 
+# VERSION
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;

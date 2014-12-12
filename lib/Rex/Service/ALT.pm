@@ -6,6 +6,8 @@ package Rex::Service::ALT;
 use strict;
 use warnings;
 
+# VERSION
+
 use base qw(Rex::Service::Base);
 
 sub new {

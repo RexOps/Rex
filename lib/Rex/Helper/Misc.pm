@@ -9,6 +9,8 @@ package Rex::Helper::Misc;
 use strict;
 use warnings;
 
+# VERSION
+
 sub get_random {
   my $count = shift;
   my @chars = @_;

@@ -34,6 +34,8 @@ use warnings;
 use Data::Dumper;
 use Time::HiRes qw(time);
 
+# VERSION
+
 use Rex::Logger;
 use Rex::TaskList;
 use Rex::Interface::Connection;

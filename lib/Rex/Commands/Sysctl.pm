@@ -36,6 +36,8 @@ package Rex::Commands::Sysctl;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Commands::Run;
 

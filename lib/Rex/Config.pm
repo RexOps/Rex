@@ -25,6 +25,8 @@ package Rex::Config;
 use strict;
 use warnings;
 
+# VERSION
+
 use File::Spec;
 use Rex::Logger;
 use YAML;

@@ -64,6 +64,8 @@ use strict;
 use warnings;
 use Fcntl;
 
+# VERSION
+
 require Rex::Exporter;
 use Data::Dumper;
 use Rex::Config;

@@ -9,6 +9,8 @@ package Rex::Test::Base::has_file;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex -base;
 use base qw(Rex::Test::Base);
 

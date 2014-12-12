@@ -62,6 +62,8 @@ package Rex::Commands::Iptables;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Data::Dumper;
 

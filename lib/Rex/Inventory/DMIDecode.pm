@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+# VERSION
+
 use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;
 use Rex::Inventory::DMIDecode::CPU;

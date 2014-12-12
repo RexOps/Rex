@@ -9,6 +9,8 @@ package Rex::Helper::UserAgent;
 use strict;
 use warnings;
 
+# VERSION
+
 use base 'LWP::UserAgent';
 
 sub new {

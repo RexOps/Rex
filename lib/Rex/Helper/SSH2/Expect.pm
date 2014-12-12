@@ -56,6 +56,8 @@ package Rex::Helper::SSH2::Expect;
 use strict;
 use warnings;
 
+# VERSION
+
 =over 4
 
 =item new($ssh2)

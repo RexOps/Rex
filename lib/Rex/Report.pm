@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+# VERSION
+
 my $report;
 
 sub create {

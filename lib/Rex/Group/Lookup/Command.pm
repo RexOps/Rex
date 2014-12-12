@@ -31,6 +31,8 @@ package Rex::Group::Lookup::Command;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Rex -base;
 

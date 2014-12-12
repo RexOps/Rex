@@ -40,6 +40,8 @@ package Rex::Commands::User;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;

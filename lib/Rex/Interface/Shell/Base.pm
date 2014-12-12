@@ -9,6 +9,8 @@ package Rex::Interface::Shell::Base;
 use strict;
 use warnings;
 
+# VERSION
+
 sub new {
   my $class = shift;
   my $self  = {};

@@ -29,6 +29,8 @@ package Rex::Commands::Run;
 use strict;
 use warnings;
 
+# VERSION
+
 #require Exporter;
 require Rex::Exporter;
 use Data::Dumper;

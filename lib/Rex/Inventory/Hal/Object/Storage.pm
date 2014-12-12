@@ -10,6 +10,8 @@ use strict;
 use warnings;
 use Data::Dumper;
 
+# VERSION
+
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Gather;
 use Rex::Commands::Run;

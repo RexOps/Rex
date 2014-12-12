@@ -9,6 +9,8 @@ package Rex::Inventory::Hal::Object::Net;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory::Hal::Object;
 use base qw(Rex::Inventory::Hal::Object);
 

@@ -9,6 +9,8 @@ package Rex::Interface::Shell;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 
 sub create {

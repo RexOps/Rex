@@ -9,6 +9,8 @@ package Rex::Interface::Connection::Local;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Connection::Base;
 use Rex::Group::Entry::Server;
 

@@ -9,6 +9,8 @@ package Rex::Interface::File::Sudo;
 use strict;
 use warnings;
 
+# VERSION
+
 use Fcntl;
 use File::Basename;
 require Rex::Commands;

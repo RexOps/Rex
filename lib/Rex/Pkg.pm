@@ -9,6 +9,8 @@ package Rex::Pkg;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Config;
 use Rex::Commands::Gather;
 use Rex::Hardware;

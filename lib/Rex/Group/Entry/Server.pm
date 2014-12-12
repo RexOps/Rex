@@ -9,6 +9,8 @@ package Rex::Group::Entry::Server;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Logger;
 use Rex::Helper::System;
 use Rex::Config;

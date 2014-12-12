@@ -9,6 +9,8 @@ package Rex::Inventory::SMBios;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Logger;
 use Rex::Commands::Run;

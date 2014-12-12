@@ -33,6 +33,8 @@ package Rex::Commands::Inventory;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Inventory;
 
 require Rex::Exporter;

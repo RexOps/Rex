@@ -73,6 +73,8 @@ package Rex::Virtualization::VBox;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Virtualization::Base;
 use base qw(Rex::Virtualization::Base);
 

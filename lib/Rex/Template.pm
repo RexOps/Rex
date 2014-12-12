@@ -28,6 +28,8 @@ package Rex::Template;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Config;
 use Rex::Logger;
 require Rex::Args;

@@ -9,6 +9,8 @@ package Rex::Helper::INI;
 use strict;
 use warnings;
 
+# VERSION
+
 BEGIN { String::Escape->use('string2hash'); }
 
 sub parse {

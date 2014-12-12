@@ -9,6 +9,8 @@ package Rex::Interface::Fs::Sudo;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Commands;
 use Rex::Interface::Fs::Base;
 use Rex::Helper::Path;

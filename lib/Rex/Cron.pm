@@ -9,6 +9,8 @@ package Rex::Cron;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Gather;
 
 sub create {

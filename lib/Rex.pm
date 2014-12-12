@@ -400,7 +400,7 @@ sub connect {
     );
 
     unless ( $conn->is_connected ) {
-      die("Connetion error or refused.");
+      die("Connection error or refused.");
     }
 
     # push a remote connection

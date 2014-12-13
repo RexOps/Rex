@@ -1,5 +1,3 @@
 severity = 5
 [BuiltinFunctions::ProhibitStringyEval]
 allow_includes = 1
-[CodeLayout::RequireTidyCode]
-severity = 5

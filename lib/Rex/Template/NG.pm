@@ -188,8 +188,7 @@ sub _parse {
       $curr_char         = "";
     }
 
-    if ( $curr_char eq "\n" && $prev_char ne "\n" )
-    { # count lines, for error messages
+    if ( $curr_char eq "\n" && $prev_char ne "\n" ) { # count lines, for error messages
       $line_count++;
       $parsed .= $curr_char;
 

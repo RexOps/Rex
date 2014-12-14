@@ -53,8 +53,7 @@ sub import {
           $type = $args{$name_param}->{type};
 
           Rex::Logger::debug("  is a $type");
-          shift
-            @params; # remove the next parameter, because it must be an option
+          shift @params; # remove the next parameter, because it must be an option
 
           if (
             !exists $ARGV[0]

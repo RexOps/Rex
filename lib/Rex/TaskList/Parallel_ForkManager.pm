@@ -93,7 +93,7 @@ sub run {
       } or do {
 
         # exit with error
-        $? = 255 if !$?;    # unknown error
+        $? = 255 if !$?; # unknown error
         exit $?;
       };
       $fm->finish;

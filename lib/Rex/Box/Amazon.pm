@@ -242,7 +242,7 @@ sub list_boxes {
          $_->{name}
       && $_->{state} ne "terminated"
       && $_->{state} ne "shutting-down"
-  } @vms;    # only vms with names...
+  } @vms; # only vms with names...
 
   return @ret;
 }

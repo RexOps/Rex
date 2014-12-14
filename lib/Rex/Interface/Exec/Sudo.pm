@@ -57,7 +57,7 @@ sub exec {
     $exec = Rex::Interface::Exec->create("Local");
     $file = Rex::Interface::File->create("Local");
   }
-  $shell = Rex::Interface::Shell->create("Sh");    # we're using sh for sudo
+  $shell = Rex::Interface::Shell->create("Sh"); # we're using sh for sudo
 
 ######## envs setzen. aber erst nachdem wir wissen ob wir sh forcen duerfen
   # if(exists $option->{env}) {

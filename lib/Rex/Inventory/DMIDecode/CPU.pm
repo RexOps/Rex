@@ -22,7 +22,7 @@ __PACKAGE__->has(
     'Version',   'Status',        'Upgrade', 'Thread Count',
   ],
   1
-);    # is_array 1
+); # is_array 1
 
 sub new {
   my $that  = shift;

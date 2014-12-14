@@ -118,7 +118,7 @@ sub _get_shell {
   my ($self) = @_;
 
   my ($shell_path) = $self->_exec("echo \$SHELL");
-  $shell_path ||= '/bin/sh';    # fallback to /bin/sh
+  $shell_path ||= '/bin/sh'; # fallback to /bin/sh
   chomp $shell_path;
 
   my $used_shell = basename($shell_path);

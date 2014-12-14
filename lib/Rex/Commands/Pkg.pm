@@ -432,7 +432,7 @@ sub install {
       if (@pkgCandidates) {
         Rex::Logger::info("Installing @pkgCandidates");
         $pkg->bulk_install( \@pkgCandidates, $option )
-          ;    # here, i think $option is useless in its current form.
+          ; # here, i think $option is useless in its current form.
         $changed = 1;
       }
     }

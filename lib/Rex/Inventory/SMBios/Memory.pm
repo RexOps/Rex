@@ -23,7 +23,7 @@ __PACKAGE__->has(
     { key => 'Locator', from => "Device Locator" },
   ],
   1
-);    # is_array 1
+); # is_array 1
 
 sub new {
   my $that  = shift;

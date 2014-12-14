@@ -18,7 +18,7 @@ sub create {
 
   unless ($type) {
     $type = Rex::get_current_connection()->{conn}
-      ->get_connection_type;    #Rex::Commands::task()->get_connection_type;
+      ->get_connection_type; #Rex::Commands::task()->get_connection_type;
   }
 
   my $class_name = "Rex::Interface::Exec::$type";

@@ -224,7 +224,7 @@ sub cron {
   my ( $action, $user, $config, @more ) = @_;
 
   my $c = Rex::Cron->create();
-  $c->read_user_cron($user);    # this must always be the first action
+  $c->read_user_cron($user); # this must always be the first action
 
   if ( $action eq "list" ) {
     return $c->list_jobs;
@@ -234,9 +234,9 @@ sub cron {
     if ( $c->add( %{$config} ) ) {
       my $rnd_file = $c->write_cron;
       $c->activate_user_cron( $rnd_file, $user );
-      return 1;                 # something changed
+      return 1;              # something changed
     }
-    return 0;                   # nothing changed
+    return 0;                # nothing changed
   }
 
   elsif ( $action eq "delete" ) {

@@ -961,7 +961,7 @@ sub mount {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "mount", name => "$mount_point" );
 
-  $option->{ensure} ||= "present";    # default
+  $option->{ensure} ||= "present"; # default
 
   if ( $option->{ensure} eq "absent" ) {
     &umount(
@@ -989,7 +989,7 @@ sub mount {
 
     my $cmd = sprintf(
       "mount %s %s %s %s",
-      $option->{"fs"} ? "-t " . $option->{"fs"} : "",    # file system
+      $option->{"fs"} ? "-t " . $option->{"fs"} : "", # file system
       $option->{"options"}
       ? " -o " . join( ",", @{ $option->{"options"} } )
       : "",

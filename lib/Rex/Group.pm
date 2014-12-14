@@ -67,7 +67,7 @@ sub create_group {
 
   my @server_obj;
   for ( my $i = 0 ; $i <= $#server ; $i++ ) {
-    next if ref $server[$i] eq 'HASH';    # already processed by previous loop
+    next if ref $server[$i] eq 'HASH'; # already processed by previous loop
 
     # if argument is already a Rex::Group::Entry::Server
     if ( ref( $server[$i] ) eq "Rex::Group::Entry::Server" ) {

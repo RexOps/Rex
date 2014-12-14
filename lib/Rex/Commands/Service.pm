@@ -317,7 +317,7 @@ sub old_service {
 
   elsif ( $action eq "stop" ) {
 
-    if ( $srvc->status($service) ) {    # it runs
+    if ( $srvc->status($service) ) { # it runs
       $changed = 1;
       if ( $srvc->stop($service) ) {
         Rex::Logger::info("Service $service stopped.");

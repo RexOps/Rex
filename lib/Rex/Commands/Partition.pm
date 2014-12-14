@@ -134,7 +134,7 @@ Create a partition with mountpoint $mountpoint.
 sub partition {
   my ( $mountpoint, %option ) = @_;
 
-  $option{type} ||= "primary";    # primary is default
+  $option{type} ||= "primary"; # primary is default
 
   # info:
   # disk size, partition start, partition end is in MB

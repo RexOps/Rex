@@ -97,7 +97,7 @@ sub connect {
 
     # do nothing here
   }
-  else {    # for key auth, and others
+  else { # for key auth, and others
     Rex::Logger::debug(
       "OpenSSH: key_auth or not defined: $server:$port - $user");
     push @connection_props, key_path => $private_key;

@@ -445,7 +445,7 @@ sub file {
 
       # md5 sums are the same, delete tmp.
       $fs->unlink($tmp_file_name);
-      $need_md5 = 0;    # we don't need to execute on_change hook
+      $need_md5 = 0; # we don't need to execute on_change hook
 
       Rex::get_current_connection()->{reporter}->report(
         changed => 0,

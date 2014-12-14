@@ -141,9 +141,9 @@ If you want to end the command upon receiving a certain output:
    
 =cut
 
-our $LAST_OUTPUT;    # this variable stores the last output of a run.
-    # so that it is possible to get for example the output of an apt-get update
-    # that is called through >> install "foo" <<
+our $LAST_OUTPUT; # this variable stores the last output of a run.
+ # so that it is possible to get for example the output of an apt-get update
+ # that is called through >> install "foo" <<
 
 sub run {
   my $cmd = shift;
@@ -187,7 +187,7 @@ sub run {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "run", name => $res_cmd );
 
-  my $changed = 1;    # default for run() is 1
+  my $changed = 1; # default for run() is 1
 
   if ( exists $option->{creates} ) {
     my $fs = Rex::Interface::Fs->create();
@@ -204,7 +204,7 @@ sub run {
       Rex::Logger::debug(
         "Don't executing $cmd because $option->{only_if} return $?.");
       $changed = 0;
-      $?       = 0;    # reset $?
+      $?       = 0; # reset $?
     }
   }
 

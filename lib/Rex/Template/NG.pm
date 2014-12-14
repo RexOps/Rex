@@ -189,7 +189,7 @@ sub _parse {
     }
 
     if ( $curr_char eq "\n" && $prev_char ne "\n" )
-    {    # count lines, for error messages
+    { # count lines, for error messages
       $line_count++;
       $parsed .= $curr_char;
 
@@ -225,9 +225,9 @@ sub _parse {
     if (
       !$code_block
       && ( $prev_char eq "\n"
-        || $current_char_idx == 0 )    # first line or new line
+        || $current_char_idx == 0 ) # first line or new line
       && $curr_char eq "%"
-      && $next_char eq " "    # code block, and no % char escape sequence
+      && $next_char eq " "          # code block, and no % char escape sequence
       )
     {
       $code_line = 1;

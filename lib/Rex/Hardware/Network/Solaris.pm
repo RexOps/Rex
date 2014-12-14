@@ -61,9 +61,9 @@ sub route {
   }
 
   shift @route;
-  shift @route;    # remove first 2 lines
+  shift @route; # remove first 2 lines
   shift @route;
-  shift @route;    # remove first 2 lines
+  shift @route; # remove first 2 lines
 
   for my $route_entry (@route) {
 

@@ -171,7 +171,7 @@ sub run_instance {
   my $instance_id = $data->{"result"}->{"id"};
 
   my $sleep_countdown = 10;
-  sleep $sleep_countdown;    # wait 10 seconds
+  sleep $sleep_countdown; # wait 10 seconds
 
   ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
   while ( $data->{"state"} ne "STOPPED" && $data->{"state"} ne "RUNNING" ) {
@@ -234,7 +234,7 @@ sub stop_instance {
   $self->_do_request( "PUT", "jiffyBoxes/$instance_id", status => "SHUTDOWN" );
 
   my $sleep_countdown = 10;
-  sleep $sleep_countdown;    # wait 10 seconds
+  sleep $sleep_countdown; # wait 10 seconds
 
   my ($data) = grep { $_->{"id"} eq $instance_id } $self->list_instances();
 

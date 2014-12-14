@@ -481,7 +481,7 @@ sub run_hook {
   my ( $self, $server, $hook ) = @_;
 
   for my $code ( @{ $self->{$hook} } ) {
-    if ( $hook eq "after" ) {    # special case for after hooks
+    if ( $hook eq "after" ) { # special case for after hooks
       &$code(
         $$server,
         ( $self->{"__was_authenticated"} ? undef : 1 ),

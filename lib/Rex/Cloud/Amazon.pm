@@ -139,7 +139,7 @@ sub run_instance {
     $self->attach_volume(
       volume_id   => $data{"volume"},
       instance_id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
-      name => "/dev/sdh",    # default for new instances
+      name => "/dev/sdh", # default for new instances
     );
   }
 

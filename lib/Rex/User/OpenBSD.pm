@@ -78,7 +78,7 @@ sub create_user {
     $cmd .= " -d " . $data->{home};
   }
 
-  if ( $should_create_home && !defined $uid ) {    #useradd mode
+  if ( $should_create_home && !defined $uid ) { #useradd mode
     $cmd .= " -m ";
   }
 

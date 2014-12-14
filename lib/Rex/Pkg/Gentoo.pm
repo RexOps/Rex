@@ -39,7 +39,7 @@ sub bulk_install {
   my ( $self, $packages_aref, $option ) = @_;
 
   delete $option->{version}
-    ;    # makes no sense to specify the same version for several packages
+    ; # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
 
@@ -91,10 +91,10 @@ sub get_installed {
   }
 
   # ,,stolen'' from epm
-  my $pkgregex = '(.+?)' .                     # name
-    '-(\d+(?:\.\d+)*\w*)' .                    # version, eg 1.23.4a
-    '((?:(?:_alpha|_beta|_pre|_rc)\d*)?)' .    # special suffix
-    '((?:-r\d+)?)$';                           # revision, eg r12
+  my $pkgregex = '(.+?)' .                  # name
+    '-(\d+(?:\.\d+)*\w*)' .                 # version, eg 1.23.4a
+    '((?:(?:_alpha|_beta|_pre|_rc)\d*)?)' . # special suffix
+    '((?:-r\d+)?)$';                        # revision, eg r12
 
   my @ret;
 

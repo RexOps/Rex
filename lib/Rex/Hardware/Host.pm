@@ -174,7 +174,7 @@ sub get_operating_system {
   }
 
   my $os_string = i_run("uname -s");
-  return $os_string;    # return the plain os
+  return $os_string; # return the plain os
 
 }
 

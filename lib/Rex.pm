@@ -78,7 +78,7 @@ BEGIN {
 our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
+$WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
 

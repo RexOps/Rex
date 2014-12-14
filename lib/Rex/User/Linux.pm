@@ -116,7 +116,7 @@ sub create_user {
   }
 
   if ( !$use_default_home_policy ) {
-    if ( !defined $uid ) {    #useradd mode
+    if ( !defined $uid ) { #useradd mode
       if ($should_create_home) {
         $cmd .= " -m ";
       }
@@ -124,7 +124,7 @@ sub create_user {
         $cmd .= " -M ";
       }
     }
-    else {                    #usermod mode
+    else {                 #usermod mode
       $cmd .= " -m " if ( exists $data->{home} );
     }
   }

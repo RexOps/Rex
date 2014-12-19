@@ -72,7 +72,7 @@ sub download {
 
   if ( my $ssh = Rex::is_ssh() ) {
     $self->_exec("cp '$source' $rnd_file");
-    $self->chmod(444, $rnd_file);
+    $self->chmod( 444, $rnd_file );
     if ( ref $ssh eq "Net::OpenSSH" ) {
       $ssh->sftp->get( $rnd_file, $target );
     }

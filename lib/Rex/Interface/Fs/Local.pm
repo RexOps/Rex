@@ -50,7 +50,8 @@ sub ls {
 
   # failed open directory, return undef
 
-  die "Error listing directory content ($path)" if($@ && Rex::Config->get_autodie);
+  die "Error listing directory content ($path)"
+    if ( $@ && Rex::Config->get_autodie );
   if ($@) { return; }
 
   # return directory content
@@ -74,7 +75,8 @@ sub rmdir {
 
   if ( $? == 0 ) { return 1; }
 
-  die ("Error removing directory: " . join(", ", @dirs)) if(Rex::Config->get_autodie);
+  die( "Error removing directory: " . join( ", ", @dirs ) )
+    if ( Rex::Config->get_autodie );
 }
 
 sub is_dir {
@@ -94,8 +96,8 @@ sub unlink {
 
 sub mkdir {
   my ( $self, $dir ) = @_;
-  if(CORE::mkdir($dir) == 0) {
-    die "Error creating directory: $dir" if(Rex::Config->get_autodie);
+  if ( CORE::mkdir($dir) == 0 ) {
+    die "Error creating directory: $dir" if ( Rex::Config->get_autodie );
   }
 }
 
@@ -156,7 +158,8 @@ sub rename {
 
   if ( $? == 0 ) { return 1; }
 
-  die "Error renaming file or directory: $old -> $new" if(Rex::Config->get_autodie);
+  die "Error renaming file or directory: $old -> $new"
+    if ( Rex::Config->get_autodie );
 }
 
 sub glob {

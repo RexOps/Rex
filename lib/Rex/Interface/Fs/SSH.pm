@@ -97,7 +97,7 @@ sub unlink {
       $sftp->unlink($file);
       1;
     } or do {
-      die "Error unlinking file: $file." if(Rex::Config->get_autodie);
+      die "Error unlinking file: $file." if ( Rex::Config->get_autodie );
     };
     Rex::Commands::profiler()->end("unlink: $file");
   }
@@ -116,7 +116,7 @@ sub mkdir {
     $ret = 1;
   }
   else {
-    die "Error creating directory: $dir." if(Rex::Config->get_autodie);
+    die "Error creating directory: $dir." if ( Rex::Config->get_autodie );
   }
 
   Rex::Commands::profiler()->end("mkdir: $dir");
@@ -199,7 +199,8 @@ sub rename {
     $ret = 1;
   }
   else {
-    die "Error renaming file or directory ($old -> $new)." if(Rex::Config->get_autodie);
+    die "Error renaming file or directory ($old -> $new)."
+      if ( Rex::Config->get_autodie );
   }
 
   Rex::Commands::profiler()->end("rename: $old -> $new");

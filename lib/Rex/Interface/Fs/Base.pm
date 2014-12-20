@@ -44,6 +44,8 @@ sub is_symlink {
   my $ret = $?;
 
   if ( $ret == 0 ) { return 1; }
+
+  die "Error testing for symlink. ($path)" if(Rex::Config->get_autodie);
 }
 
 sub ln {
@@ -54,6 +56,8 @@ sub ln {
   $exec->exec("ln -snf '$from' '$to'");
 
   if ( $? == 0 ) { return 1; }
+
+  die "Error creating symlink. ($from -> $to)" if(Rex::Config->get_autodie);
 }
 
 sub rmdir {
@@ -66,6 +70,8 @@ sub rmdir {
   $exec->exec( "/bin/rm -rf " . join( " ", @dirs ) );
 
   if ( $? == 0 ) { return 1; }
+
+  die ("Error removing directory: " . join(", ", @dirs)) if(Rex::Config->get_autodie);
 }
 
 sub chown {
@@ -82,6 +88,8 @@ sub chown {
   $exec->exec("chown $recursive $user $file");
 
   if ( $? == 0 ) { return 1; }
+
+  die ("Error running chown $recursive $user $file") if(Rex::Config->get_autodie);
 }
 
 sub chgrp {
@@ -98,6 +106,8 @@ sub chgrp {
   $exec->exec("chgrp $recursive $group $file");
 
   if ( $? == 0 ) { return 1; }
+
+  die ("Error running chgrp $recursive $group $file") if(Rex::Config->get_autodie);
 }
 
 sub chmod {
@@ -114,6 +124,8 @@ sub chmod {
   $exec->exec("chmod $recursive $mode $file");
 
   if ( $? == 0 ) { return 1; }
+
+  die ("Error running chmod $recursive $mode $file") if(Rex::Config->get_autodie);
 }
 
 sub cp {
@@ -125,6 +137,8 @@ sub cp {
   $exec->exec("cp -R $source $dest");
 
   if ( $? == 0 ) { return 1; }
+
+  die ("Error copying $source -> $dest") if(Rex::Config->get_autodie);
 }
 
 sub _normalize_path {

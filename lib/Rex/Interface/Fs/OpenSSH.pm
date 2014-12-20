@@ -52,6 +52,7 @@ sub ls {
   Rex::Commands::profiler()->end("ls: $path");
 
   # failed open directory, return undef
+  die "Error listing directory content ($path)" if($@ && Rex::Config->get_autodie);
   if ($@) { return; }
 
   # return directory content
@@ -94,7 +95,12 @@ sub unlink {
   my $sftp = Rex::get_sftp();
   for my $file (@files) {
     Rex::Commands::profiler()->start("unlink: $file");
-    eval { $sftp->remove($file); };
+    eval {
+      $sftp->remove($file);
+      1;
+    } or do {
+      die "Error unlinking file: $file." if(Rex::Config->get_autodie);
+    };
     Rex::Commands::profiler()->end("unlink: $file");
   }
 }

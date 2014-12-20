@@ -595,6 +595,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.56 ) {
+        Rex::Logger::debug("Activating autodie.");
+        Rex::Config->set_autodie(1);
+        $found_feature = 1;
+      }
+
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.55 ) {
         Rex::Logger::debug("Using Net::OpenSSH if present.");
         Rex::Config->set_use_net_openssh_if_present(1);

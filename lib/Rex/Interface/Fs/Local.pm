@@ -98,7 +98,10 @@ sub mkdir {
   my ( $self, $dir ) = @_;
   if ( CORE::mkdir($dir) == 0 ) {
     die "Error creating directory: $dir" if ( Rex::Config->get_autodie );
+    return 0;
   }
+
+  return 1;
 }
 
 sub stat {

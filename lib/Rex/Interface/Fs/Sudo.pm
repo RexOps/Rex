@@ -94,7 +94,9 @@ sub download {
 sub is_dir {
   my ( $self, $path ) = @_;
 
-  $self->_exec("/bin/sh -c '[ -d \"$path\" ]'");
+  ($path) = $self->_normalize_path($path);
+
+  $self->_exec("test -d $path");
   my $ret = $?;
 
   if ( $ret == 0 ) { return 1; }
@@ -103,10 +105,12 @@ sub is_dir {
 sub is_file {
   my ( $self, $file ) = @_;
 
-  $self->_exec("/bin/sh -c '[ -e \"$file\" ]'");
+  ($file) = $self->_normalize_path($file);
+
+  $self->_exec("test -e $file");
   my $is_file = $?;
 
-  $self->_exec("/bin/sh -c '[ -d \"$file\" ]'");
+  $self->_exec("test -d $file");
   my $is_dir = $?;
 
   if ( $is_file == 0 && $is_dir != 0 ) {
@@ -126,7 +130,8 @@ sub unlink {
 
 sub mkdir {
   my ( $self, $dir ) = @_;
-  $self->_exec("mkdir '$dir' >/dev/null 2>&1");
+  ($dir) = $self->_normalize_path($dir);
+  $self->_exec("mkdir $dir >/dev/null 2>&1");
   if ( $? == 0 ) { return 1; }
 }
 
@@ -156,7 +161,8 @@ sub stat {
   $script .= func_to_json();
 
   my $rnd_file = $self->_write_to_rnd_file($script);
-  my $out      = $self->_exec("perl $rnd_file '$file'");
+  ($file) = $self->_normalize_path($file);
+  my $out      = $self->_exec("perl $rnd_file $file");
 
   Rex::get_current_connection_object()->run_sudo_unmodified(
     sub {
@@ -175,45 +181,29 @@ sub stat {
 
 sub is_readable {
   my ( $self, $file ) = @_;
-  my $script = q|unlink $0; if(-r $ARGV[0]) { exit 0; } exit 1; |;
 
-  my $rnd_file = $self->_write_to_rnd_file($script);
-  $self->_exec("perl $rnd_file '$file'");
-  my $ret = $?;
-  Rex::get_current_connection_object()->run_sudo_unmodified(
-    sub {
-      $self->unlink($rnd_file);
-    }
-  );
-  $? = $ret;
+  ($file) = $self->_normalize_path($file);
+  $self->_exec("test -r $file");
 
-  if ( $ret == 0 ) { return 1; }
+  if ( $? == 0 ) { return 1; }
 }
 
 sub is_writable {
   my ( $self, $file ) = @_;
 
-  my $script = q|unlink $0; if(-w $ARGV[0]) { exit 0; } exit 1; |;
+  ($file) = $self->_normalize_path($file);
+  $self->_exec("test -w $file");
 
-  my $rnd_file = $self->_write_to_rnd_file($script);
-  $self->_exec("perl $rnd_file '$file'");
-  my $ret = $?;
-  Rex::get_current_connection_object()->run_sudo_unmodified(
-    sub {
-      $self->unlink($rnd_file);
-    }
-  );
-  $? = $ret;
-
-  if ( $ret == 0 ) { return 1; }
+  if ( $? == 0 ) { return 1; }
 }
 
 sub readlink {
   my ( $self, $file ) = @_;
   my $script = q|unlink $0; print readlink($ARGV[0]) . "\n"; |;
+  ($file) = $self->_normalize_path($file);
 
   my $rnd_file = $self->_write_to_rnd_file($script);
-  my $out      = $self->_exec("perl $rnd_file '$file'");
+  my $out      = $self->_exec("perl $rnd_file $file");
   my $ret      = $?;
   chomp $out;
   Rex::get_current_connection_object()->run_sudo_unmodified(

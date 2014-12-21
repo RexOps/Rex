@@ -345,7 +345,7 @@ sub _get_remote_files {
 use strict;
 use warnings;
 
-#unlink $0;
+unlink $0;
 
 my $dest = $ARGV[0];
 my @dirs = ($dest);

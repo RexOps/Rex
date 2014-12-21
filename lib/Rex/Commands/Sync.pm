@@ -64,6 +64,7 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
+use Rex::Helper::Glob 'glob_to_regex';
 use Rex::Helper::Encode;
 use JSON::XS;
 
@@ -119,30 +120,14 @@ sub sync_up {
   my $excludes = $options->{exclude} ||= [];
   $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
 
-  my @excluded_files;
-  foreach my $ex (@$excludes) {
-    LOCAL {
-      if ( is_dir $ex) {
-        map {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath("$ex/$_->{name}") ) )
-        } _get_local_files($ex);
-      }
-      else {
-        foreach my $path ( glob $ex ) {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath($path) ) );
-        }
-      }
-    };
-  }
+  my @excluded_files = map { glob_to_regex($_) } @{$excludes};
 
   #
   # fifth, upload the different files
   #
 
   for my $file (@diff) {
-    next if grep { $_ eq $file->{name} } @excluded_files;
+    next if grep { $file->{name} =~ $_ } @excluded_files;
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
@@ -263,30 +248,14 @@ sub sync_down {
   my $excludes = $options->{exclude} ||= [];
   $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
 
-  my @excluded_files;
-  foreach my $ex (@$excludes) {
-    LOCAL {
-      if ( is_dir $ex) {
-        map {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath("$ex/$_->{name}") ) )
-        } _get_local_files($ex);
-      }
-      else {
-        foreach my $path ( glob $ex ) {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath($path) ) );
-        }
-      }
-    };
-  }
+  my @excluded_files = map { glob_to_regex($_); } @{$excludes};
 
   #
   # fifth, download the different files
   #
 
   for my $file (@diff) {
-    next if grep { $_ eq $file->{name} } @excluded_files;
+    next if grep { $file->{name} =~ $_ } @excluded_files;
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
@@ -376,7 +345,7 @@ sub _get_remote_files {
 use strict;
 use warnings;
 
-unlink $0;
+#unlink $0;
 
 my $dest = $ARGV[0];
 my @dirs = ($dest);
@@ -384,7 +353,7 @@ my @tree = ();
 
 for my $dir (@dirs) {
   opendir(my $dh, $dir) or die($!);
-  $dir = join("/", map { quotemeta($_) } split(/\//, $dir));
+  $dir = join("/", map { $_ =~ s/([\@\$\% ])/\\\$1/g; $_; } split(/\//, $dir));
   while(my $entry = readdir($dh)) {
     next if($entry eq ".");
     next if($entry eq "..");

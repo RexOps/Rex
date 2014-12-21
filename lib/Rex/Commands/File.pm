@@ -613,46 +613,49 @@ sub file {
     }
   }
 
-  if ($need_md5) {
-    eval { $new_md5 = md5($file); };
-  }
+  if ( $option->{ensure} ne "absent" ) {
 
-  my %stat_old = $fs->stat($file);
+    if ($need_md5) {
+      eval { $new_md5 = md5($file); };
+    }
+    my %stat_old = $fs->stat($file);
 
-  if ( exists $option->{"mode"} ) {
-    $fs->chmod( $option->{"mode"}, $file );
-  }
+    if ( exists $option->{"mode"} ) {
+      $fs->chmod( $option->{"mode"}, $file );
+    }
 
-  if ( exists $option->{"group"} ) {
-    $fs->chgrp( $option->{"group"}, $file );
-  }
+    if ( exists $option->{"group"} ) {
+      $fs->chgrp( $option->{"group"}, $file );
+    }
 
-  if ( exists $option->{"owner"} ) {
-    $fs->chown( $option->{"owner"}, $file );
-  }
+    if ( exists $option->{"owner"} ) {
+      $fs->chown( $option->{"owner"}, $file );
+    }
 
-  my %stat_new = $fs->stat($file);
+    my %stat_new = $fs->stat($file);
 
-  if ( %stat_old && %stat_new && $stat_old{mode} ne $stat_new{mode} ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message =>
-        "File-System permissions changed from $stat_old{mode} to $stat_new{mode}.",
-    );
-  }
+    if ( %stat_old && %stat_new && $stat_old{mode} ne $stat_new{mode} ) {
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message =>
+          "File-System permissions changed from $stat_old{mode} to $stat_new{mode}.",
+      );
+    }
 
-  if ( %stat_old && %stat_new && $stat_old{uid} ne $stat_new{uid} ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message => "Owner changed from $stat_old{uid} to $stat_new{uid}.",
-    );
-  }
+    if ( %stat_old && %stat_new && $stat_old{uid} ne $stat_new{uid} ) {
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message => "Owner changed from $stat_old{uid} to $stat_new{uid}.",
+      );
+    }
 
-  if ( %stat_old && %stat_new && $stat_old{gid} ne $stat_new{gid} ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message => "Group changed from $stat_old{gid} to $stat_new{gid}.",
-    );
+    if ( %stat_old && %stat_new && $stat_old{gid} ne $stat_new{gid} ) {
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message => "Group changed from $stat_old{gid} to $stat_new{gid}.",
+      );
+    }
+
   }
 
   my $on_change_done = 0;

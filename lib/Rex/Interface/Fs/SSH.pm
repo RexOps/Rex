@@ -145,6 +145,7 @@ sub is_readable {
   my ( $self, $file ) = @_;
 
   Rex::Commands::profiler()->start("is_readable: $file");
+  ($file) = $self->_normalize_path($file);
 
   my $exec = Rex::Interface::Exec->create;
   $exec->exec("perl -le 'if(-r \"$file\") { exit 0; } exit 1'");
@@ -158,6 +159,7 @@ sub is_writable {
   my ( $self, $file ) = @_;
 
   Rex::Commands::profiler()->start("is_writable: $file");
+  ($file) = $self->_normalize_path($file);
 
   my $exec = Rex::Interface::Exec->create;
   $exec->exec("perl -le 'if(-w \"$file\") { exit 0; } exit 1'");
@@ -188,6 +190,8 @@ sub rename {
   my $ret;
 
   Rex::Commands::profiler()->start("rename: $old -> $new");
+  ($old) = $self->_normalize_path($old);
+  ($new) = $self->_normalize_path($new);
 
   # don't use rename() doesn't work with different file systems / partitions
   my $exec = Rex::Interface::Exec->create;

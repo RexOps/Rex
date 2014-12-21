@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Rex::Interface::Exec;
+require File::Spec::Unix;
 
 sub new {
   my $that  = shift;
@@ -39,6 +40,7 @@ sub download    { die("Must be implemented by Interface Class"); }
 
 sub is_symlink {
   my ( $self, $path ) = @_;
+  ($path) = $self->_normalize_path($path);
 
   $self->_exec("/bin/sh -c '[ -L \"$path\" ]'");
   my $ret = $?;
@@ -52,6 +54,9 @@ sub ln {
   my ( $self, $from, $to ) = @_;
 
   Rex::Logger::debug("Symlinking files: $to -> $from");
+  ($from) = $self->_normalize_path($from);
+  ($to)   = $self->_normalize_path($to);
+
   my $exec = Rex::Interface::Exec->create;
   $exec->exec("ln -snf '$from' '$to'");
 
@@ -148,11 +153,30 @@ sub cp {
 sub _normalize_path {
   my ( $self, @dirs ) = @_;
 
-  for (@dirs) {
-    s/ /\\ /g;
+  my @ret;
+  for my $d (@dirs) {
+    my @t;
+    if (Rex::is_ssh) {
+      @t = File::Spec::Unix->splitdir($d);
+    }
+    else {
+      @t = File::Spec->splitdir($d);
+    }
+    push( @ret, File::Spec::Unix->catfile( map { $self->_quotepath($_) } @t ) );
   }
 
-  return @dirs;
+  #  for (@dirs) {
+  #    s/ /\\ /g;
+  #  }
+
+  return @ret;
+}
+
+sub _quotepath {
+  my ( $self, $p ) = @_;
+  $p =~ s/([\@\$\% ])/\\$1/g;
+
+  return $p;
 }
 
 sub _exec {

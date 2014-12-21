@@ -64,6 +64,7 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
+use Rex::Helper::Encode;
 use JSON::XS;
 
 @EXPORT = qw(sync_up sync_down);
@@ -383,6 +384,7 @@ my @tree = ();
 
 for my $dir (@dirs) {
   opendir(my $dh, $dir) or die($!);
+  $dir = join("/", map { quotemeta($_) } split(/\//, $dir));
   while(my $entry = readdir($dh)) {
     next if($entry eq ".");
     next if($entry eq "..");
@@ -395,7 +397,8 @@ for my $dir (@dirs) {
     my $name = "$dir/$entry";
     $name =~ s/^\Q$dest\E//;
 
-    my $md5 = qx{md5sum $dir/$entry \| awk ' { print \$1 } '};
+    my $t_entry = quotemeta($entry);
+    my $md5 = qx{md5sum $dir/$t_entry \| awk ' { print \$1 } '};
 
     chomp $md5;
 
@@ -410,42 +413,9 @@ for my $dir (@dirs) {
 
 print to_json(\@tree);
 
-sub to_json {
-  my ($ref) = @_;
-
-  my $s = "";
-
-  if(ref $ref eq "ARRAY") {
-    $s .= "[";
-    for my $itm (@{ $ref }) {
-      if(substr($s, -1) ne "[") {
-        $s .= ",";
-      }
-      $s .= to_json($itm);
-    }
-    return $s . "]";
-  }
-  elsif(ref $ref eq "HASH") {
-    $s .= "{";
-    for my $key (keys %{ $ref }) {
-      if(substr($s, -1) ne "{") {
-        $s .= ",";
-      }
-      $s .= "\"$key\": " . to_json($ref->{$key});
-    }
-    return $s . "}";
-  }
-  else {
-    if($ref =~ /^\d+$/) {
-      return $ref;
-    }
-    else {
-      $ref =~ s/'/\\\'/g;
-      return "\"$ref\"";
-    }
-  }
-}
     |;
+
+    $script .= func_to_json();
 
     my $rnd_file = get_tmp_file;
     file $rnd_file, content => $script;

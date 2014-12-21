@@ -159,7 +159,7 @@ sub rename {
   else {
     ($old) = $self->_normalize_path($old);
     ($new) = $self->_normalize_path($new);
-    $exec->exec("/bin/mv '$old' '$new'");
+    $exec->exec("/bin/mv $old $new");
   }
 
   if ( $? == 0 ) { return 1; }

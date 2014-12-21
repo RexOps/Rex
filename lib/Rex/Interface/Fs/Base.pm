@@ -58,7 +58,7 @@ sub ln {
   ($to)   = $self->_normalize_path($to);
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("ln -snf '$from' '$to'");
+  $exec->exec("ln -snf $from $to");
 
   if ( $? == 0 ) { return 1; }
 

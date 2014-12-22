@@ -117,7 +117,7 @@ sub is_file {
     return 1;
   }
 
-  return 0;
+  return undef;
 }
 
 sub unlink {
@@ -162,7 +162,7 @@ sub stat {
 
   my $rnd_file = $self->_write_to_rnd_file($script);
   ($file) = $self->_normalize_path($file);
-  my $out      = $self->_exec("perl $rnd_file $file");
+  my $out = $self->_exec("perl $rnd_file $file");
 
   Rex::get_current_connection_object()->run_sudo_unmodified(
     sub {

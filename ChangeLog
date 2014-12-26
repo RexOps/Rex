@@ -13,13 +13,13 @@
   * Fix test for Amazon Cloud Module - Ferenc Erki
   * Add rex_kvm_agent feature flag - Ferenc Erki
   * Allow multiple tasks to run with Rex::Test::Base (fix #476) - Robert Abraham
-  * Improve evaluation of hostnames (fix #479, close #480) - Renee Baeker
+  * Improve evaluation of hostnames (fix #479, close #480) - Renee Bäcker
   * Fix POD (close #488) - Brian Manning
   * Fixed some deprecated docker calls - Jan
   * Fix mode option for mkdir command - Ferenc Erki
   * Fixed needs function - Jan
   * Added before_execute and after_execute task hooks - Jan
-  * Add basic tests for Rex::Logger (close #484) - Renee Baecker
+  * Add basic tests for Rex::Logger (close #484) - Renee Bäcker
   * Clarify/correct documentation (close #486) - Sascha Askani
   * Check versions of installed packages - Ferenc Erki
   * Refactor has_package test for simpler version matching - Ferenc Erki

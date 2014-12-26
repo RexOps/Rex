@@ -884,6 +884,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Samuele Tognini
 
+=item Sascha Askani
+
 =item Sascha Guenther
 
 =item Simon Bertrang

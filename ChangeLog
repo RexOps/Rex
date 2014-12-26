@@ -1,3 +1,38 @@
+2014-12-26 Jan Gehring <jan.gehring, rexify.org> (0.56.0)
+  * Extend documentation of run() options (#466) - Ferenc Erki
+  * New template engine with better error reporting. - Jan
+  * Only try to run umount if mount point is already mounted - Ferenc Erki
+  * Set changed flag for umount after the command has been run - Ferenc Erki
+  * Fix error when only grow option was given to partition() - Ferenc Erki
+  * Fix regex to find end of partition instead of size - Ferenc Erki
+  * Use kB as unit when determining partition boundaries - Ferenc Erki
+  * Fix missing `strict` and `warnings` pragmas - Ferenc Erki
+  * Add LICENSE section to POD - Ferenc Erki
+  * Replace defined-or operator to restore perl-5.8.0 compatibility - Ferenc Erki
+  * Fix test for Parallel::ForkManager - Ferenc Erki
+  * Fix test for Amazon Cloud Module - Ferenc Erki
+  * Add rex_kvm_agent feature flag - Ferenc Erki
+  * Allow multiple tasks to run with Rex::Test::Base (fix #476) - Robert Abraham
+  * Improve evaluation of hostnames (fix #479, close #480) - Renee Baeker
+  * Fix POD (close #488) - Brian Manning
+  * Fixed some deprecated docker calls - Jan
+  * Fix mode option for mkdir command - Ferenc Erki
+  * Fixed needs function - Jan
+  * Added before_execute and after_execute task hooks - Jan
+  * Add basic tests for Rex::Logger (close #484) - Renee Baecker
+  * Clarify/correct documentation (close #486) - Sascha Askani
+  * Check versions of installed packages - Ferenc Erki
+  * Refactor has_package test for simpler version matching - Ferenc Erki
+  * Use OurPkgVersion for automatic module versioning - Ferenc Erki
+  * Add has_stat to Rex::Test - Robert Abraham
+  * Add documentation for has_stat (close #474) - Ferenc Erki
+  * fix for #473 - download root restricted files in sudo mode - Jan
+  * fix for #498 - added autodie feature flag - Jan
+  * fixed local mkdir return code - Jan
+  * fixed path quoting for #512 - Jan
+  * added glob_to_regex function (Text::Glob) - fix for #495 - Jan
+  * use test binary instead of '[ ... ]' for file tests - Jan
+
 2014-11-02 Ferenc Erki <ferki, rexify.org> (0.55.3)
   * Fix @INC compilation for Windows - Ferenc Erki
 

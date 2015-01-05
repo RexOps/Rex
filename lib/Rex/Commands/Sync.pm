@@ -34,6 +34,7 @@ This module can sync directories between your Rex system and your servers withou
        mode  => 700,
      },
      exclude => [ '*.tmp' ],
+     parse_templates => TRUE|FALSE,
      on_change => sub {
       my (@files_changed) = @_;
      },
@@ -81,6 +82,9 @@ sub sync_up {
   else {
     $options = {@option};
   }
+
+  # default is, parsing templates (*.tpl) files
+  $options->{parse_templates} = TRUE;
 
   $source = resolv_path($source);
   $dest   = resolv_path($dest);
@@ -178,7 +182,7 @@ sub sync_up {
 
     Rex::Logger::debug(
       "(sync_up) Uploading $file->{path} to $dest/$file->{name}");
-    if ( $file->{path} =~ m/\.tpl$/ ) {
+    if ( $file->{path} =~ m/\.tpl$/ && $options->{parse_templates} ) {
       my $file_name = $file->{name};
       $file_name =~ s/\.tpl$//;
 

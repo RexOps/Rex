@@ -33,7 +33,14 @@ sub new {
 sub get_servers {
   my ($self) = @_;
 
-  my @servers = map { ref( $_->to_s ) eq "CODE" ? &{ $_->to_s } : $_ }
+  my @servers = map {
+    if ( ref $_ eq "Rex::Group::Entry::Server" ) {
+      $_->get_servers;
+    }
+    else {
+      $_;
+    }
+    } map { ref( $_->to_s ) eq "CODE" ? &{ $_->to_s } : $_ }
     @{ $self->{servers} };
 
   return uniq @servers;

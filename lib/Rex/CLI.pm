@@ -288,9 +288,10 @@ FORCE_SERVER: {
       }
       my $ok = do($::rexfile);
 
-      if( !$ok ) {
+      if ( !$ok ) {
+
         # read rexfile
-        my $content = eval {local(@ARGV, $/) = ($::rexfile); <>;};
+        my $content = eval { local ( @ARGV, $/ ) = ($::rexfile); <>; };
 
         # and try to evaluate it
         my @rex_code = ("package Rex::Test::Rexfile::Syntax;");
@@ -300,15 +301,18 @@ FORCE_SERVER: {
         push @rex_code, "\$Rex::Commands::dont_register_tasks = \$b;";
         push @rex_code, "1;";
 
-        eval join("\n", @rex_code);
+        eval join( "\n", @rex_code );
 
-        if($@) {
+        if ($@) {
           $ok = 0;
         }
         else {
-          Rex::Logger::debug("We can't load your Rexfile but the syntax seems to be correct.");
-          Rex::Logger::debug("This happens if the Rexfile doesn't return a true value.");
-          Rex::Logger::debug("Please append a '1;' at the very end of your Rexfile.");
+          Rex::Logger::debug(
+            "We can't load your Rexfile but the syntax seems to be correct.");
+          Rex::Logger::debug(
+            "This happens if the Rexfile doesn't return a true value.");
+          Rex::Logger::debug(
+            "Please append a '1;' at the very end of your Rexfile.");
           $ok = 1;
         }
       }

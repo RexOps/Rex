@@ -106,13 +106,13 @@ sub sync {
   my $server             = $current_connection->{server};
   my $cmd;
 
-  my $port = 22;
+  my $port       = 22;
   my $servername = $server->to_s;
 
   # there is a :1234 port in the server  string
-  if($servername =~ m/:\d+$/) {
+  if ( $servername =~ m/:\d+$/ ) {
     my $_t;
-    ($servername, $port) = split(/:/, $servername);
+    ( $servername, $port ) = split( /:/, $servername );
   }
 
   my $auth = $current_connection->{conn}->get_auth;
@@ -227,9 +227,8 @@ sub sync {
   else {
     if ( $auth_type eq "key" ) {
       $cmd = sprintf( $cmd,
-            'ssh -i '
-          . $server->get_private_key
-          . " -o StrictHostKeyChecking=no ", $port );
+        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no ",
+        $port );
     }
     else {
       $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );

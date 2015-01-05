@@ -46,6 +46,7 @@ use Rex::Hardware;
 use Rex::Interface::Cache;
 use Rex::Report;
 use Rex::Helper::Run;
+use Rex::Helper::Path;
 use Rex::Notify;
 use Carp;
 
@@ -594,6 +595,11 @@ sub connect {
   my $rex_int_conf = Rex::Commands::get("rex_internals");
   Rex::Logger::debug( Dumper($rex_int_conf) );
   Rex::Logger::debug( Dumper($auth) );
+
+  $auth->{public_key} = resolv_path( $auth->{public_key}, 1 )
+    if ( $auth->{public_key} );
+  $auth->{private_key} = resolv_path( $auth->{private_key}, 1 )
+    if ( $auth->{private_key} );
 
   my $profiler = Rex::Profiler->new;
 

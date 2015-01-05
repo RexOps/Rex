@@ -106,6 +106,15 @@ sub sync {
   my $server             = $current_connection->{server};
   my $cmd;
 
+  my $port = 22;
+  my $servername = $server->to_s;
+
+  # there is a :1234 port in the server  string
+  if($servername =~ m/:\d+$/) {
+    my $_t;
+    ($servername, $port) = split(/:/, $servername);
+  }
+
   my $auth = $current_connection->{conn}->get_auth;
 
   if ( !exists $opt->{download} && $source !~ m/^\// ) {
@@ -135,18 +144,18 @@ sub sync {
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     Rex::Logger::debug("Downloading $source -> $dest");
     $cmd =
-        "rsync -a -e '\%s' --verbose --stats $params "
+        "rsync -a -e '\%s -p \%i' --verbose --stats $params "
       . $auth->{user} . "\@"
-      . $server . ":"
+      . $servername . ":"
       . $source . " "
       . $dest;
   }
   else {
     Rex::Logger::debug("Uploading $source -> $dest");
     $cmd =
-        "rsync -a -e '\%s' --verbose --stats $params $source "
+        "rsync -a -e '\%s -p \%i' --verbose --stats $params $source "
       . $auth->{user} . "\@"
-      . $server . ":"
+      . $servername . ":"
       . $dest;
   }
 
@@ -165,7 +174,7 @@ sub sync {
 
   if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
-      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ' );
+      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ', $port );
     push(
       @expect_options,
       [
@@ -220,7 +229,7 @@ sub sync {
       $cmd = sprintf( $cmd,
             'ssh -i '
           . $server->get_private_key
-          . " -o StrictHostKeyChecking=no " );
+          . " -o StrictHostKeyChecking=no ", $port );
     }
     else {
       $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );

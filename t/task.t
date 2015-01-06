@@ -20,7 +20,7 @@ unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} ) {
     'SSH module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
 }
 else {
-  plan tests => 31;
+  plan tests => 33;
 }
 
 use_ok 'Rex::Task';
@@ -117,4 +117,18 @@ $t1->run_hook( \$server, "before" );
 ok( $before_hook == 2,   "run before hook - right direction" );
 ok( $t1->is_remote == 0, "task is no not remote" );
 ok( $t1->is_local == 1,  "task is now local" );
+
+task("ret_test1", sub {
+  return "string";
+});
+
+task("ret_test2", sub {
+  return ("e1", "e2");
+});
+
+my $s = ret_test1();
+ok( $s eq "string", "task successfully returned a string");
+
+my @l = ret_test2();
+ok($l[0] eq "e1" && $l[1] eq "e2", "task successfully returned a list");
 

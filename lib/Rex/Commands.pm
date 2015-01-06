@@ -322,19 +322,45 @@ sub task {
         shift;
       }
 
+      my @ret;
       if ( ref( $_[0] ) eq "HASH" ) {
-        $code->(@_);
+        if (wantarray) {
+          @ret = $code->(@_);
+        }
+        else {
+          my $t = $code->(@_);
+          @ret = ($t);
+        }
       }
       else {
         if ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
-          $code->( {@_} );
+          if (wantarray) {
+            @ret = $code->( {@_} );
+          }
+          else {
+            my $t = $code->( {@_} );
+            @ret = ($t);
+          }
         }
         else {
-          $code->(@_);
+          if (wantarray) {
+            @ret = $code->(@_);
+          }
+          else {
+            my $t = $code->(@_);
+            @ret = ($t);
+          }
         }
       }
 
       Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
+
+      if (wantarray) {
+        return @ret;
+      }
+      else {
+        return $ret[0];
+      }
     };
     use strict;
   }
@@ -352,14 +378,29 @@ sub task {
 
       Rex::Hook::run_hook( task => "before_execute", $task_name_save, @_ );
 
+      my @ret;
       if ( ref( $_[0] ) eq "HASH" ) {
-        $code->(@_);
+        if (wantarray) {
+          @ret = $code->(@_);
+        }
+        else {
+          my $t = $code->(@_);
+          @ret = ($t);
+        }
       }
       else {
-        $code->( {@_} );
+        if (wantarray) {
+          @ret = $code->( {@_} );
+        }
+        else {
+          my $t = $code->( {@_} );
+          @ret = ($t);
+        }
       }
 
       Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
+
+      return @ret;
     };
 
     use strict;

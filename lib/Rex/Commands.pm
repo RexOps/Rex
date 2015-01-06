@@ -355,7 +355,7 @@ sub task {
 
       Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
 
-      if(wantarray) {
+      if (wantarray) {
         return @ret;
       }
       else {

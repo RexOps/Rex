@@ -1,3 +1,6 @@
+2015-01-06 Jan Gehring <jan.gehring, rexify.org> (0.56.1)
+  * tasks doesn't return a value when called as a sub (#523) - Jan
+
 2014-12-26 Jan Gehring <jan.gehring, rexify.org> (0.56.0)
   * Extend documentation of run() options (#466) - Ferenc Erki
   * New template engine with better error reporting. - Jan

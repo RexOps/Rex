@@ -73,7 +73,9 @@ sub create_task {
             exit 1;
           }
 
-          return Rex::Group->get_group($group_name);
+          return
+            map { Rex::Group::Entry::Server->new( name => $_ )->get_servers; }
+            Rex::Group->get_group($group_name);
         };
       }
       else {
@@ -135,7 +137,9 @@ sub create_task {
                 exit 1;
               }
 
-              return Rex::Group->get_group($group);
+              return
+                map { Rex::Group::Entry::Server->new( name => $_ )->get_servers }
+                Rex::Group->get_group($group);
             };
 
           }

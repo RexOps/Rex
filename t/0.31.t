@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 129;
+use Test::More tests => 147;
 use Data::Dumper;
 
 use_ok 'Rex';
@@ -42,6 +42,8 @@ ok( $servers[5] eq "serv06", "get_group with evaluation" );
 task( "authtest1", group => "foo", sub { } );
 task( "authtest2", group => "bar", sub { } );
 task( "authtest3", "srv001", sub { } );
+task( "authtest4", group => "latebar", sub { } );
+group("latebar", "server[01..03]");
 
 my $task       = Rex::TaskList->create()->get_task("authtest3");
 my @all_server = @{ $task->server };
@@ -67,9 +69,9 @@ for my $server (@all_server) {
 }
 
 auth( for => "bar", user => "jan", password => "foo" );
+auth( for => "latebar", user => "jan", password => "foo" );
 
 $task = Rex::TaskList->create()->get_task("authtest1");
-
 @all_server = @{ $task->server };
 
 for my $server (@all_server) {
@@ -91,6 +93,20 @@ for my $server (@all_server) {
   ok( $auth->{private_key} eq "priv.key3", "merge_auth - priv" );
   ok( $auth->{auth_type} eq "try",         "merge_auth - auth_type" );
   ok( !$auth->{sudo},                      "merge_auth - sudo" );
+}
+
+
+$task       = Rex::TaskList->create()->get_task("authtest4");
+@all_server = @{ $task->server };
+
+for my $server (@all_server) {
+  my $auth = $task->merge_auth($server);
+  ok( $auth->{user} eq "jan",              "merge_auth - user - lategroup" );
+  ok( $auth->{password} eq "foo",          "merge_auth - pass - lategroup" );
+  ok( $auth->{public_key} eq "pub.key3",   "merge_auth - pub - lategroup" );
+  ok( $auth->{private_key} eq "priv.key3", "merge_auth - priv - lategroup" );
+  ok( $auth->{auth_type} eq "try",         "merge_auth - auth_type - lategroup" );
+  ok( !$auth->{sudo},                      "merge_auth - sudo - lategroup" );
 }
 
 auth(

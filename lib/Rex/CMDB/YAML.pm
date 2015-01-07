@@ -89,7 +89,7 @@ sub get {
 
   Rex::Logger::debug("CMDB - no item ($item) found");
 
-  return undef;
+  return;
 }
 
 1;

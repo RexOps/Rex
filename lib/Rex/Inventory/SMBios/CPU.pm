@@ -45,7 +45,7 @@ sub num_cores {
 sub get_socket_type {
   my ($self) = @_;
   Rex::Logger::debug("get_socket_type not supported");
-  return undef;
+  return;
 }
 
 1;

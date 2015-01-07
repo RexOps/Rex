@@ -319,7 +319,7 @@ sub AUTOLOAD {
     return $self->{$wanted_data};
   }
 
-  return undef;
+  return;
 }
 
 sub evaluate_hostname {

@@ -16,7 +16,7 @@ use Data::Dumper;
 
 use Storable;
 
-sub __lock(&);
+sub __lock;
 sub __retr;
 sub __store;
 
@@ -29,7 +29,7 @@ sub STORE {
   my $self  = shift;
   my $value = shift;
 
-  return __lock {
+  return __lock sub {
     my $ref = __retr;
     my $ret = $ref->{ $self->{varname} } = $value;
     __store $ref;
@@ -42,14 +42,14 @@ sub STORE {
 sub FETCH {
   my $self = shift;
 
-  return __lock {
+  return __lock sub {
     my $ref = __retr;
     return $ref->{ $self->{varname} };
   };
 
 }
 
-sub __lock(&) {
+sub __lock {
 
   sysopen( my $dblock, "vars.db.lock", O_RDONLY | O_CREAT ) or die($!);
   flock( $dblock, LOCK_SH ) or die($!);

@@ -24,7 +24,7 @@ sub get {
 
   Rex::Logger::debug("Invalid argument for $name");
 
-  return undef;
+  return;
 }
 
 1;

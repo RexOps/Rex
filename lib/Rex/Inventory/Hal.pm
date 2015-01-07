@@ -6,6 +6,9 @@
 
 package Rex::Inventory::Hal;
 
+use strict;
+use warnings;
+
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -15,9 +18,6 @@ use Rex::Logger;
 # VERSION
 
 use Data::Dumper;
-
-use strict;
-use warnings;
 
 sub new {
   my $that  = shift;

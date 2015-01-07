@@ -248,7 +248,7 @@ FORCE_SERVER: {
       }
 
       Rex::Logger::debug("Creating lock-file ($::rexfile.lock)");
-      open( my $f, ">$::rexfile.lock" ) or die($!);
+      open( my $f, ">", "$::rexfile.lock" ) or die($!);
       print $f $$;
       close($f);
     }
@@ -662,19 +662,18 @@ CHECK_OVERWRITE: {
   else {
     exit(0);
   }
+}
 
-  sub _print_color {
-    my ( $msg, $color ) = @_;
-    $color = 'green' if !defined($color);
+sub _print_color {
+  my ( $msg, $color ) = @_;
+  $color = 'green' if !defined($color);
 
-    if ($no_color) {
-      print $msg;
-    }
-    else {
-      print colored( [$color], $msg );
-    }
+  if ($no_color) {
+    print $msg;
   }
-
+  else {
+    print colored( [$color], $msg );
+  }
 }
 
 sub __help__ {

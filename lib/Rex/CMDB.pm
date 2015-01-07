@@ -87,7 +87,7 @@ sub cmdb {
   if ( !$klass ) {
 
     # no cmdb set
-    return undef;
+    return;
   }
 
   if ( $klass !~ m/::/ ) {

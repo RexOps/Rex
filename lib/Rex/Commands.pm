@@ -1810,7 +1810,8 @@ sub get_environment {
 sub get_environments {
   my $class = shift;
 
-  return sort { $a cmp $b } keys %{$environments};
+  my @ret = sort { $a cmp $b } keys %{$environments};
+  return @ret;
 }
 
 =item sayformat($format)

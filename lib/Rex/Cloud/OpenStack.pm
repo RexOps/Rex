@@ -476,9 +476,9 @@ sub upload_key {
 
   # read public key
   my $fh;
-  unless ( open( $fh, glob($public_key) ) ) {
+  unless ( open( $fh, "<", glob($public_key) ) ) {
     Rex::Logger::debug("Cannot read $public_key");
-    return undef;
+    return;
   }
 
   { local $/ = undef; ( $type, $key, $comment ) = split( /\s+/, <$fh> ); }

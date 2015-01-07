@@ -55,12 +55,12 @@ Then you can create your test files inside this directory.
 
 package Rex::Test::Base;
 
+use strict;
+use warnings;
+
 use base 'Test::Builder::Module';
 
 # VERSION
-
-use strict;
-use warnings;
 
 require Rex::Commands;
 use Rex::Commands::Box;
@@ -245,7 +245,7 @@ Test if the file $file has properties described in hash reference $stat. List of
 our $AUTOLOAD;
 
 sub AUTOLOAD {
-  my $self = shift or return undef;
+  my $self = shift or return;
   ( my $method = $AUTOLOAD ) =~ s{.*::}{};
 
   if ( $method eq "DESTROY" ) {

@@ -66,7 +66,7 @@ sub groups_file {
   my $section;
   my %hash;
 
-  open( my $INI, "$file" ) || die "Can't open $file: $!\n";
+  open( my $INI, "<", "$file" ) || die "Can't open $file: $!\n";
   my @lines = <$INI>;
   chomp @lines;
   close($INI);

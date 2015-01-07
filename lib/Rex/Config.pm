@@ -582,7 +582,7 @@ sub get_public_key {
     return $public_key;
   }
 
-  return undef;
+  return;
 }
 
 sub set_private_key {
@@ -600,7 +600,7 @@ sub get_private_key {
     return $private_key;
   }
 
-  return undef;
+  return;
 }
 
 sub set_parallelism {

@@ -170,7 +170,7 @@ sub search_module_path {
         return;
       }
 
-      open( my $fh, $file );
+      open( my $fh, "<", $file );
       return $fh;
     }
   }

@@ -1209,7 +1209,9 @@ sub sed {
   }
   else {
     @content = split( /\n/, cat($file) );
-    map { s/$search/$replace/ } @content;
+    for (@content) {
+      s/$search/$replace/;
+    }
   }
 
   my $fs   = Rex::Interface::Fs->create;

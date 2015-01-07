@@ -18,7 +18,7 @@ use Data::Dumper;
 
 use Storable;
 
-sub __lock(&);
+sub __lock;
 sub __retr;
 sub __store;
 
@@ -33,7 +33,7 @@ sub STORE {
   my $key   = shift;
   my $value = shift;
 
-  return __lock {
+  return __lock sub {
     my $ref = __retr;
     my $ret = $ref->{ $self->{varname} }->{$key} = $value;
     __store $ref;
@@ -47,7 +47,7 @@ sub FETCH {
   my $self = shift;
   my $key  = shift;
 
-  return __lock {
+  return __lock sub {
     my $ref = __retr;
     return $ref->{ $self->{varname} }->{$key};
   };
@@ -58,7 +58,7 @@ sub DELETE {
   my $self = shift;
   my $key  = shift;
 
-  __lock {
+  __lock sub {
     my $ref = __retr;
     delete $ref->{ $self->{varname} }->{$key};
     __store $ref;
@@ -69,7 +69,7 @@ sub DELETE {
 sub CLEAR {
   my $self = shift;
 
-  __lock {
+  __lock sub {
     my $ref = __retr;
     $ref->{ $self->{varname} } = {};
     __store $ref;
@@ -81,7 +81,7 @@ sub EXISTS {
   my $self = shift;
   my $key  = shift;
 
-  return __lock {
+  return __lock sub {
     my $ref = __retr;
     return exists $ref->{ $self->{varname} }->{$key};
   };
@@ -91,7 +91,7 @@ sub EXISTS {
 sub FIRSTKEY {
   my $self = shift;
 
-  return __lock {
+  return __lock sub {
     my $ref = __retr;
     $self->{__iter__} = $ref->{ $self->{varname} };
 
@@ -112,7 +112,7 @@ sub DESTROY {
   my $self = shift;
 }
 
-sub __lock(&) {
+sub __lock {
 
   sysopen( my $dblock, "vars.db.lock", O_RDONLY | O_CREAT ) or die($!);
   flock( $dblock, LOCK_SH ) or die($!);

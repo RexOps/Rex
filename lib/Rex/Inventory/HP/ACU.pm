@@ -215,7 +215,7 @@ sub V {
   return $v;
 }
 
-sub K_V($) {
+sub K_V {
   my ($line) = @_;
 
   if ( $line =~ /(.+):\s+(.+)/ ) {

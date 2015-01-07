@@ -117,7 +117,7 @@ sub is_file {
     return 1;
   }
 
-  return undef;
+  return;
 }
 
 sub unlink {

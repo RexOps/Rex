@@ -137,9 +137,9 @@ sub create_task {
                 exit 1;
               }
 
-              return
-                map { Rex::Group::Entry::Server->new( name => $_ )->get_servers }
-                Rex::Group->get_group($group);
+              return map {
+                Rex::Group::Entry::Server->new( name => $_ )->get_servers
+              } Rex::Group->get_group($group);
             };
 
           }
@@ -223,7 +223,8 @@ sub get_tasks_for {
     }
   }
 
-  return sort { $a cmp $b } @tasks;
+  my @ret = sort { $a cmp $b } @tasks;
+  return @ret;
 }
 
 sub get_task {

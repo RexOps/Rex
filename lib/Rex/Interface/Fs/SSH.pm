@@ -63,7 +63,7 @@ sub is_dir {
 
   my $sftp = Rex::get_sftp();
   my $stat = $sftp->stat($path);
-  defined $stat ? return S_ISDIR( $stat->{mode} ) : return undef;
+  defined $stat ? return S_ISDIR( $stat->{mode} ) : return;
 
   Rex::Commands::profiler()->end("is_dir: $path");
 }
@@ -82,7 +82,7 @@ sub is_file {
       || S_ISBLK( $stat->{mode} )
       || S_ISCHR( $stat->{mode} )
       || S_ISFIFO( $stat->{mode} ) )
-    : return undef;
+    : return;
 
   Rex::Commands::profiler()->end("is_file: $file");
 }

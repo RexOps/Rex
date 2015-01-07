@@ -67,7 +67,7 @@ sub is_dir {
 
   my $sftp = Rex::get_sftp();
   my $attr = $sftp->stat($path);
-  defined $attr ? return S_ISDIR( $attr->perm ) : return undef;
+  defined $attr ? return S_ISDIR( $attr->perm ) : return;
 
   Rex::Commands::profiler()->end("is_dir: $path");
 }
@@ -85,7 +85,7 @@ sub is_file {
       || S_ISBLK( $attr->perm )
       || S_ISCHR( $attr->perm )
       || S_ISFIFO( $attr->perm ) )
-    : return undef;
+    : return;
 
   Rex::Commands::profiler()->end("is_file: $file");
 }

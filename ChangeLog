@@ -1,3 +1,11 @@
+2015-01-11 Jan Gehring <jan.gehring, rexify.org> (0.57.0)
+  * allow definition of gpgkey for redhat/yum repositories - #522 - tekcurmudgeon
+  * fixed Group defined after task definition - #521
+  * fixed rsync will execute failed when use -H 127.0.0.1:2222 - #520
+  * added new sync_up/down option for sync_up function will replace template variable of *.tpl - #519
+  * fixed failed authentication when used ~ symbol - #517
+  * fixed before_task_start() fails with an ambiguous error when your Rexfile does not return a true value - #513
+
 2015-01-06 Jan Gehring <jan.gehring, rexify.org> (0.56.1)
   * tasks doesn't return a value when called as a sub (#523) - Jan
 

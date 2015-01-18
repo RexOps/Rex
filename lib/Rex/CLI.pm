@@ -295,6 +295,9 @@ FORCE_SERVER: {
 
         # and try to evaluate it
         my @rex_code = ("package Rex::Test::Rexfile::Syntax;");
+        if ( $content !~ m/use Rex \-.*;/ ) {
+          push @rex_code, "use Rex -base;";
+        }
         push @rex_code, "my \$b=\$Rex::Commands::dont_register_tasks;";
         push @rex_code, "\$Rex::Commands::dont_register_tasks = 1;";
         push @rex_code, "$content";

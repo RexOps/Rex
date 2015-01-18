@@ -100,7 +100,7 @@ sub cmdb {
   }
 
   my $cmdb = $klass->new( %{$CMDB_PROVIDER} );
-  return Rex::Value->new( value => $cmdb->get( $item, $server ) );
+  return Rex::Value->new( value => ($cmdb->get( $item, $server ) || undef) );
 }
 
 sub cmdb_active {

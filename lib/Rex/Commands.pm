@@ -1276,10 +1276,13 @@ sub get {
 Run code before executing the specified task. The special taskname 'ALL' can be used to run code before all tasks.
 If called repeatedly, each sub will be appended to a list of 'before' functions.
 
+In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
+server object that will be used for the connection.
+
 Note: must come after the definition of the specified task
 
  before mytask => sub {
-  my ($server) = @_;
+  my ($server, $server_ref, $cli_args) = @_;
   run "vzctl start vm$server";
  };
 
@@ -1305,7 +1308,7 @@ If called repeatedly, each sub will be appended to a list of 'after' functions.
 Note: must come after the definition of the specified task
 
  after mytask => sub {
-  my ($server, $failed) = @_;
+  my ($server, $failed, $cli_args) = @_;
   if($failed) { say "Connection to $server failed."; }
 
   run "vzctl stop vm$server";
@@ -1331,10 +1334,13 @@ sub after {
 Run code before and after the task is finished. The special taskname 'ALL' can be used to run code around all tasks.
 If called repeatedly, each sub will be appended to a list of 'around' functions.
 
+In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
+server object that will be used for the connection.
+
 Note: must come after the definition of the specified task
 
  around mytask => sub {
-  my ($server, $position) = @_;
+  my ($server, $server_ref, $cli_args, $position) = @_;
 
   unless($position) {
     say "Before Task\n";

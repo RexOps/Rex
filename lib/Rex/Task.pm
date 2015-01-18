@@ -479,19 +479,19 @@ This method is used internally to execute the specified hooks.
 =cut
 
 sub run_hook {
-  my ( $self, $server, $hook ) = @_;
+  my ( $self, $server, $hook, @more_args ) = @_;
 
   for my $code ( @{ $self->{$hook} } ) {
     if ( $hook eq "after" ) { # special case for after hooks
       &$code(
         $$server,
         ( $self->{"__was_authenticated"} ? undef : 1 ),
-        { Rex::Args->get }
+        { Rex::Args->get }, @more_args
       );
     }
     else {
       my $old_server = $$server if $server;
-      &$code( $$server, $server, { Rex::Args->get } );
+      &$code( $$server, $server, { Rex::Args->get }, @more_args );
       if ( $old_server && $old_server ne $$server ) {
         $self->{current_server} = $$server;
       }
@@ -676,7 +676,7 @@ Disconnect from the current connection.
 sub disconnect {
   my ( $self, $server ) = @_;
 
-  $self->run_hook( \$server, "around" );
+  $self->run_hook( \$server, "around", 1 );
   $self->connection->disconnect;
 
   my %args = Rex::Args->getopts;

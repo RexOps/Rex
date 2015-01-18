@@ -360,7 +360,7 @@ sub list_instances {
     if ( ref $isi eq 'HASH' ) {
       push( @ret, { $self->_make_instance_map($isi) } );
     }
-    elsif ( $isi eq 'ARRAY' ) {
+    elsif ( ref $isi eq 'ARRAY' ) {
       for my $iset (@$isi) {
         push( @ret, { $self->_make_instance_map($iset) } );
       }

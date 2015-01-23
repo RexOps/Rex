@@ -68,6 +68,10 @@ use vars qw(@EXPORT);
 
 This function executes rsync to sync $source and $dest.
 
+If you want to use sudo, you need to disable I<requiretty> option for this user. You can do this with the following snippet in your sudoers configuration.
+
+ Defaults:username !requiretty
+
 =over 4
 
 =item UPLOAD - Will upload all from the local directory I<html> to the remote directory I</var/www/html>.
@@ -141,23 +145,25 @@ sub sync {
     $params .= " " . $opt->{parameters};
   }
 
+  my @rsync_cmd = ();
+
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     Rex::Logger::debug("Downloading $source -> $dest");
-    $cmd =
-        "rsync -a -e '\%s -p \%i' --verbose --stats $params "
-      . $auth->{user} . "\@"
-      . $servername . ":"
-      . $source . " "
-      . $dest;
+    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params ";
+    push @rsync_cmd, $auth->{user} . "\@" . $server . ":" . $source;
+    push @rsync_cmd, $dest;
   }
   else {
     Rex::Logger::debug("Uploading $source -> $dest");
-    $cmd =
-        "rsync -a -e '\%s -p \%i' --verbose --stats $params $source "
-      . $auth->{user} . "\@"
-      . $servername . ":"
-      . $dest;
+    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params $source ";
+    push @rsync_cmd, $auth->{user} . "\@$server:$dest";
   }
+
+  if (Rex::is_sudo) {
+    push @rsync_cmd, "--rsync-path='sudo rsync'";
+  }
+
+  $cmd = join( " ", @rsync_cmd );
 
   my $pass           = $auth->{password};
   my @expect_options = ();

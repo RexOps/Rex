@@ -8,13 +8,16 @@ package Rex::Output;
 
 use strict;
 use warnings;
-BEGIN { IPC::Shareable->use }
+
+my $handle;
+use vars qw($output_object);
+
+BEGIN { IPC::Shareable->use; }
+END   { IPC::Shareable->clean_up_all; }
+
 use base 'Rex::Output::Base';
 
 # VERSION
-
-use vars qw($output_object);
-my $handle = tie $output_object, 'IPC::Shareable', undef, { destroy => 1 };
 
 sub get {
   my ( $class, $output_module ) = @_;
@@ -22,6 +25,9 @@ sub get {
   return $output_object if ($output_object);
 
   return unless ($output_module);
+
+  $handle = tie $output_object, 'IPC::Shareable', undef, { destroy => 1 }
+    unless $handle;
 
   eval "use Rex::Output::$output_module;";
   if ($@) {

@@ -131,7 +131,7 @@ sub set_pkgconf {
   }
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "pkg", name => $package );
+    ->report_resource_end( type => "pkgconf", name => $package );
 }
 
 1;

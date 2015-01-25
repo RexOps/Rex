@@ -465,6 +465,9 @@ sub import {
 
   my ( $register_to, $file, $line ) = caller;
 
+  # use Net::OpenSSH if present (default without feature flag)
+  Rex::Config->set_use_net_openssh_if_present(1);
+
   if ( $what eq "-base" || $what eq "base" || $what eq "-feature" ) {
     require Rex::Commands;
     Rex::Commands->import( register_in => $register_to );

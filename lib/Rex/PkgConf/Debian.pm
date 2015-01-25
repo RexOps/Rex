@@ -36,17 +36,19 @@ sub get_options {
 
   my %config;
   for my $line (@lines) {
+
     # Expecting: * postfix/relayhost: smtp.example.com
     Rex::Logger::debug("Parsing line $line");
     if ( $line =~ m!^(\*?)\h+(.+):\h*(.*)! ) {
-      my ($already_set, $question, $value) = ($1, $2, $3, $4);
-      Rex::Logger::debug("Found configuration question $question with value $value");
+      my ( $already_set, $question, $value ) = ( $1, $2, $3, $4 );
+      Rex::Logger::debug(
+        "Found configuration question $question with value $value");
       next if $option && $option ne $question;
       $already_set = $already_set ? 1 : 0;
       $config{$question} = {
-          question    => $question,
-          value       => $value,
-          already_set => $already_set,
+        question    => $question,
+        value       => $value,
+        already_set => $already_set,
       };
     }
   }
@@ -60,22 +62,26 @@ sub set_options {
     unless $pkg && $values;
 
   # Get existing options first, to see if they need setting
-  my %existing = $self->get_options( $pkg );
+  my %existing = $self->get_options($pkg);
 
   my @updated;
   for my $line (@$values) {
 
-    my ($question, $value, $type)  = ($line->{question}, $line->{value}, $line->{type});
+    my ( $question, $value, $type ) =
+      ( $line->{question}, $line->{value}, $line->{type} );
 
     die "Question and type required for each package configuration option"
       unless $question && $type;
 
-    if ($existing{$question} && $existing{$question}->{value} eq $value) {
+    if ( $existing{$question} && $existing{$question}->{value} eq $value ) {
       Rex::Logger::debug("Option $question already set to $value, ignoring");
       next;
     }
 
-    if ($options{no_update} && $existing{$question} && $existing{$question}->{already_set}) {
+    if ( $options{no_update}
+      && $existing{$question}
+      && $existing{$question}->{already_set} )
+    {
       Rex::Logger::debug("Option $question already set, not updating");
       next;
     }
@@ -85,8 +91,7 @@ sub set_options {
     push @updated, "$pkg $question $type $value";
   }
 
-  if (@updated)
-  {
+  if (@updated) {
     my $settings = join '\n', @updated;
     my $conf_cmd = qq(echo -e "$settings"|debconf-set-selections);
     i_run $conf_cmd;
@@ -96,9 +101,7 @@ sub set_options {
     };
   }
   else {
-    return {
-      changed => 0,
-    };
+    return { changed => 0, };
   }
 }
 

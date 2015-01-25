@@ -97,11 +97,11 @@ sub new {
   );
 
   if ( $self->{filename} ) {
-      $self->{mode} ||= '<';
+    $self->{mode} ||= '<';
 
-      my $mode = $modes{ $self->{mode} } || '<';
-      $self->{fh} = Rex::Interface::File->create( $self->{type} || 'Local' );
-      $self->{fh}->open( $mode, $self->{filename} );
+    my $mode = $modes{ $self->{mode} } || '<';
+    $self->{fh} = Rex::Interface::File->create( $self->{type} || 'Local' );
+    $self->{fh}->open( $mode, $self->{filename} );
   }
 
   bless( $self, $proto );

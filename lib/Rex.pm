@@ -788,6 +788,8 @@ Many thanks to the contributors for their work (alphabetical order).
 
 =item Andrej Zverev
 
+=item Andrew Beverley
+
 =item bollwarm
 
 =item Boris Däppen

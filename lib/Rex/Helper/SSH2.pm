@@ -52,10 +52,10 @@ sub net_ssh2_exec {
   my $last_line;
   my $current_line = "";
   while ( my $len = $chan->read( my $buf, $buffer_size ) ) {
-    $in .= $buf;
+    $in           .= $buf;
     $current_line .= $buf;
 
-    if($buf =~ m/\n/ms) {
+    if ( $buf =~ m/\n/ms ) {
       @lines = split( /\n/, $current_line );
       unshift @lines, $last_line if ($last_line);
       $last_line = pop @lines;

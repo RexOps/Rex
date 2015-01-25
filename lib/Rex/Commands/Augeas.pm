@@ -36,7 +36,7 @@ This is a simple module to manipulate configuration files with the help of augea
 
 =cut
 
-package Rex::Augeas;
+package Rex::Commands::Augeas;
 
 use strict;
 use warnings;
@@ -321,11 +321,19 @@ Check if an item exists.
     my $val = $options[0] || "";
 
     if ($is_ssh) {
-      my @paths = grep { s/\s=[^=]+$// } run "echo 'match $aug_key' | augtool";
+      my @paths;
+      for my $line ( run "echo 'match $aug_key' | augtool" ) {
+        $line =~ s/\s=[^=]+$//;
+        push @paths, $line;
+      }
 
       if ($val) {
         for my $k (@paths) {
-          my @ret = grep { s/^[^=]+=\s// } run "echo 'get $k' | augtool";
+          my @ret;
+          for my $line ( run "echo 'get $k' | augtool" ) {
+            $line =~ s/^[^=]+=\s//;
+            push @ret, $line;
+          }
 
           if ( $ret[0] eq $val ) {
             return $k;
@@ -368,7 +376,11 @@ Returns the value of the given item.
     my $file = shift @options;
 
     if ($is_ssh) {
-      my @lines = grep { s/^[^=]+=\s//; } run "echo 'get $file' | augtool";
+      my @lines;
+      for my $line ( run "echo 'get $file' | augtool" ) {
+        $line =~ s/^[^=]+=\s//;
+        push @lines, $line;
+      }
       return $lines[0];
     }
     else {

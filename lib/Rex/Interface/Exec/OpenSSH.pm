@@ -35,13 +35,13 @@ sub _exec {
   ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( {}, $exec );
   while ( my $line = <$out_fh> ) {
     $out .= $line;
-    $self->execute_line_based_operation( $_, $option )
+    $self->execute_line_based_operation( $line, $option )
       && do { kill( 'KILL', $pid ); goto END_OPEN };
 
   }
   while ( my $line = <$err_fh> ) {
     $err .= $line;
-    $self->execute_line_based_operation( $_, $option )
+    $self->execute_line_based_operation( $line, $option )
       && do { kill( 'KILL', $pid ); goto END_OPEN };
   }
 

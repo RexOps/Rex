@@ -24,10 +24,13 @@ use Rex::Interface::Exec;
 use Rex::Helper::Path;
 use JSON::XS;
 
+use Rex::User::Base;
+use base qw(Rex::User::Base);
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 

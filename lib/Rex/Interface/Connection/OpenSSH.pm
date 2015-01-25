@@ -75,9 +75,9 @@ sub connect {
   }
   Rex::Logger::info( "Connecting to $server:$port (" . $user . ")" );
 
-  my %ssh_opts                        = Rex::Config->get_openssh_opt();
+  my %ssh_opts = Rex::Config->get_openssh_opt();
   Rex::Logger::debug("get_openssh_opt()");
-  Rex::Logger::debug(Dumper(\%ssh_opts));
+  Rex::Logger::debug( Dumper( \%ssh_opts ) );
 
   my %net_openssh_constructor_options = (
     exists $ssh_opts{initialize_options} ? $ssh_opts{initialize_options} : () );
@@ -111,9 +111,9 @@ sub connect {
   }
 
   Rex::Logger::debug("OpenSSH options: ");
-  Rex::Logger::debug(Dumper(\@connection_props));
+  Rex::Logger::debug( Dumper( \@connection_props ) );
   Rex::Logger::debug("OpenSSH constructor options: ");
-  Rex::Logger::debug(Dumper(\%net_openssh_constructor_options));
+  Rex::Logger::debug( Dumper( \%net_openssh_constructor_options ) );
 
   $self->{ssh} =
     Net::OpenSSH->new( @connection_props, %net_openssh_constructor_options );

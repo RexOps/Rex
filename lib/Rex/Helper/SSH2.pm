@@ -48,15 +48,42 @@ sub net_ssh2_exec {
     $buffer_size = $rex_int_conf->{read_buffer_size};
   }
 
+  my @lines;
+  my $last_line;
+  my $current_line = "";
   while ( my $len = $chan->read( my $buf, $buffer_size ) ) {
     $in .= $buf;
-    $base->execute_line_based_operation( $buf, $option ) && goto END_READ;
+    $current_line .= $buf;
+
+    if($buf =~ m/\n/ms) {
+      @lines = split( /\n/, $current_line );
+      unshift @lines, $last_line if ($last_line);
+      $last_line = pop @lines;
+
+      for my $line (@lines) {
+        $line =~ s/[\r\n]//gms;
+        $line .= "\n";
+        $base->execute_line_based_operation( $line, $option ) && goto END_READ;
+      }
+
+      $current_line = "";
+    }
+
   }
 
+  my @lines_err;
+  my $last_line_err = "";
   while ( my $len = $chan->read( my $buf_err, $buffer_size, 1 ) ) {
     $in_err .= $buf_err;
-    $base->execute_line_based_operation( $buf_err, $option )
-      && goto END_READ;
+    @lines_err = split( /\n/, $buf_err );
+    unshift @lines_err, $last_line_err if ($last_line_err);
+    $last_line_err = pop @lines_err;
+
+    for my $line (@lines_err) {
+      $line =~ s/[\r\n]//gms;
+      $line .= "\n";
+      $base->execute_line_based_operation( $line, $option ) && goto END_READ;
+    }
   }
 
   #select undef, undef, undef, 0.002; # wait a little before closing the channel

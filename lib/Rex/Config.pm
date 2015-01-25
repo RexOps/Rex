@@ -271,14 +271,17 @@ sub get_sudo_without_sh {
 }
 
 sub set_openssh_opt {
-  my ( $class, $key, $val ) = @_;
-  if ( !defined $val ) {
-    $openssh_opt{$key} = undef;
-    delete $openssh_opt{$key};
-    return;
-  }
+  my ( $class, %opt ) = @_;
+  
+  for my $key (keys %opt) {
+    if ( !defined $opt{$key} ) {
+      $openssh_opt{$key} = undef;
+      delete $openssh_opt{$key};
+      next;
+    }
 
-  $openssh_opt{$key} = $val;
+    $openssh_opt{$key} = $opt{$key};
+  }
 }
 
 sub get_openssh_opt {

@@ -109,7 +109,7 @@ This modifies the keys given in @options in $file.
         push @commands, "set $key $config_option->{$key}\n";
       }
       my $result = _run_augtool(@commands);
-      $ret = $result->{return};
+      $ret = "@{$result->{return}}";
       $changed = $result->{changed};
     }
     else {
@@ -155,7 +155,7 @@ Remove an entry.
 
     if ($is_ssh) {
       my $result = _run_augtool(@commands);
-      $ret = $result->{return};
+      $ret = "@{$result->{return}}";
       $changed = $result->{changed};
     }
     else {
@@ -213,7 +213,7 @@ Insert an item into the file. Here, the order of the options is important. If th
         push @commands, "set $_key $val\n";
       }
       my $result = _run_augtool(@commands);
-      $ret = $result->{return};
+      $ret = "@{$result->{return}}";
       $changed = $result->{changed};
     }
     else {

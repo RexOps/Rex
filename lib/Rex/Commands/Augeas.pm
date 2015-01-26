@@ -291,7 +291,7 @@ Check if an item exists.
       my @paths;
       my $result = _run_augtool("match $aug_key");
       for my $line ( @{$result->{return}} ) {
-        $line =~ s/\s=[^=]+$//;
+        $line =~ s/\s=[^=]+$// or next;
         push @paths, $line;
       }
 

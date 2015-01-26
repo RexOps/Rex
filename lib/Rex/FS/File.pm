@@ -14,6 +14,10 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 =head1 SYNOPSIS
 
+ use Rex::Interface::File;
+ my $fh = Rex::Interface::File->create('Local');
+ $fh->open( '<', 'filename' );
+
  my $file = Rex::FS::File->new(fh => $fh);
  $file->read($len);
  $file->read_all;
@@ -30,6 +34,7 @@ package Rex::FS::File;
 
 use strict;
 use warnings;
+use Rex::Interface::File;
 
 # VERSION
 
@@ -37,9 +42,43 @@ use constant DEFAULT_READ_LEN => 64;
 
 =item new
 
-This is the constructor. You need to set the filehandle which the object should work on.
+This is the constructor. You need to set the filehandle which the object should work on
+or pass a filename. If you pass a filehandle, it has to be a C<Rex::Interface::File::*>
+object
 
+ my $fh = Rex::Interface::File->create('Local');
+ $fh->open( '<', 'filename' );
+ 
  my $file = Rex::FS::File->new(fh => $fh);
+
+Create a C<Rex::FS::File> object with a filename
+
+ # open a local file in read mode
+ my $file = Rex::FS::File->new(
+   filename => 'filename',
+   mode     => 'r', # or '<'
+   type     => 'Local',
+ );
+ 
+ # or shorter
+ my $file = Rex::FS::File->new( filename => 'filename' );
+ 
+ # open a local file in write mode
+ my $file = Rex::FS::File->new(
+   filename => 'filename',
+   mode     => 'w', # or '>'
+ );
+
+Allowed modes:
+
+ <  read
+ r  read
+ >  write
+ w  write
+ >> append
+ a  append
+
+For allowed C<types> see documentation of L<Rex::Interface::File>.
 
 =cut
 
@@ -48,7 +87,28 @@ sub new {
   my $proto = ref($that) || $that;
   my $self  = {@_};
 
+  my %modes = (
+    'w'  => '>',
+    'r'  => '<',
+    'a'  => '>>',
+    '<'  => '<',
+    '>'  => '>',
+    '>>' => '>>',
+  );
+
+  if ( $self->{filename} ) {
+    $self->{mode} ||= '<';
+
+    my $mode = $modes{ $self->{mode} } || '<';
+    $self->{fh} = Rex::Interface::File->create( $self->{type} || 'Local' );
+    $self->{fh}->open( $mode, $self->{filename} );
+  }
+
   bless( $self, $proto );
+
+  if ( ref $self->{fh} !~ m{Rex::Interface::File} ) {
+    die "Need an Rex::Interface::File object";
+  }
 
   return $self;
 }

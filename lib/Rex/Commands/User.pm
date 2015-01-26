@@ -55,7 +55,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_user delete_user get_uid get_user user_list
   user_groups create_group delete_group get_group get_gid
-  account
+  account lock_password unlock_password
 );
 
 =item account($name, %option)
@@ -269,6 +269,28 @@ sub delete_user {
   }
 
   Rex::User->get()->rm_user( $user, $data );
+}
+
+=item lock_password($user)
+
+Lock the password of a user account. Currently this is only
+available on Linux (see passwd --lock).
+
+=cut
+
+sub lock_password {
+  Rex::User->get()->lock_password(@_);
+}
+
+=item unlock_password($user)
+
+Unlock the password of a user account. Currently this is only
+available on Linux (see passwd --unlock).
+
+=cut
+
+sub unlock_password {
+  Rex::User->get()->unlock_password(@_);
 }
 
 =item create_group($group, {})

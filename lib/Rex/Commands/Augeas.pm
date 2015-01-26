@@ -53,6 +53,7 @@ use Rex::Commands;
 use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
+use Rex::Helper::Path;
 
 use Config::Augeas;
 use IO::String;
@@ -73,10 +74,12 @@ sub augeas {
   my ( $action, @options ) = @_;
   my $ret;
 
-  Rex::Logger::debug("Creating Config::Augeas Object");
-  my $aug = Config::Augeas->new;
-
   my $is_ssh = Rex::is_ssh();
+  my $aug; # Augeas object (non-SSH only)
+  unless ($is_ssh) {
+    Rex::Logger::debug("Creating Config::Augeas Object");
+    $aug = Config::Augeas->new;
+  }
 
   my $on_change; # Any code to run on change
   my $changed;   # Whether any changes have taken place
@@ -99,37 +102,23 @@ This modifies the keys given in @options in $file.
     $on_change = delete $config_option->{on_change}
       if ref $config_option->{on_change} eq 'CODE';
 
-    $ret = 1; # Assume success
-    for my $key ( keys %{$config_option} ) {
-      my $aug_key = $key;
-      Rex::Logger::debug( "modifying $aug_key -> " . $config_option->{$key} );
-
-      my $_r;
-      if ($is_ssh) {
-        my $result =
-            run 'echo "set '
-          . $aug_key . ' '
-          . $config_option->{$key}
-          . '" | augtool -s';
-        $changed = 1 if $result =~ /Saved/;
-        if ( $? == 0 ) {
-          $_r = 1;
-        }
-        else {
-          $_r  = 0;
-          $ret = 0; # Return zero on any failures
-        }
+    if ($is_ssh) {
+      my @commands;
+      for my $key ( keys %{$config_option} ) {
+        Rex::Logger::debug( "modifying $key -> " . $config_option->{$key} );
+        push @commands, "set $key $config_option->{$key}\n";
       }
-      else {
-        $_r = $aug->set( $aug_key, $config_option->{$key} );
-
-        # Final return value obtained during final save
-      }
-      Rex::Logger::debug("Augeas set status: $_r");
+      my $result = _run_augtool(@commands);
+      $ret = $result->{return};
+      $changed = $result->{changed};
     }
-
-    unless ($is_ssh) {
+    else {
+      for my $key ( keys %{$config_option} ) {
+        Rex::Logger::debug( "modifying $key -> " . $config_option->{$key} );
+        $aug->set( $key, $config_option->{$key} );
+      }
       $ret = $aug->save;
+      Rex::Logger::debug("Augeas set status: $ret");
       $changed = 1 if $ret && $aug->get('/augeas/events/saved'); # Any files changed?
     }
   }
@@ -151,32 +140,25 @@ Remove an entry.
       pop @options;
     }
 
-    $ret = 1; # Assume success
-    for my $key (@options) {
-      my $aug_key = $key;
+    my @commands;
+    for my $aug_key (@options) {
       Rex::Logger::debug("deleting $aug_key");
 
-      my $_r;
       if ($is_ssh) {
-        my $result = run "echo 'rm $aug_key' | augtool -s";
-        $changed = 1 if $result =~ /Saved/;
-        if ( $? == 0 ) {
-          $_r = 1;
-        }
-        else {
-          $_r  = 0;
-          $ret = 0; # Return zero on any failures
-        }
+        push @commands, "rm $aug_key\n";
       }
       else {
-        $_r = $aug->remove($aug_key);
-
-        # Final return value obtained during final save
+        my $_r = $aug->remove($aug_key);
+        Rex::Logger::debug("Augeas delete status: $_r");
       }
-      Rex::Logger::debug("Augeas delete status: $_r");
     }
 
-    unless ($is_ssh) {
+    if ($is_ssh) {
+      my $result = _run_augtool(@commands);
+      $ret = $result->{return};
+      $changed = $result->{changed};
+    }
+    else {
       $ret = $aug->save;
       $changed = 1 if $ret && $aug->get('/augeas/events/saved'); # Any files changed?
     }
@@ -217,8 +199,7 @@ Insert an item into the file. Here, the order of the options is important. If th
         return 0;
       }
 
-      my $aug_commands = "ins $label $position " . $opts->{$position} . "\n";
-
+      my @commands = ("ins $label $position " . $opts->{$position} . "\n");
       delete $opts->{$position};
 
       for ( my $i = 0 ; $i < @options ; $i += 2 ) {
@@ -229,25 +210,11 @@ Insert an item into the file. Here, the order of the options is important. If th
         my $_key = "$file/$label/$key";
         Rex::Logger::debug("Setting $_key => $val");
 
-        $aug_commands .= "set $_key $val\n";
+        push @commands, "set $_key $val\n";
       }
-
-      $aug_commands .= "save\n";
-
-      my $tmp_file = "/tmp/" . get_random( 12, 'a' .. 'z', 0 .. 9 ) . '.tmp';
-      my $fh = file_write $tmp_file;
-      $fh->write($aug_commands);
-      $fh->close;
-
-      my $result = run "cat $tmp_file | augtool";
-      $changed = 1 if $result =~ /Saved/;
-
-      $ret = 0;
-      if ( $? == 0 ) {
-        $ret = 1;
-      }
-
-      unlink "$tmp_file";
+      my $result = _run_augtool(@commands);
+      $ret = $result->{return};
+      $changed = $result->{changed};
     }
     else {
       if ( exists $opts->{"before"} ) {
@@ -322,7 +289,8 @@ Check if an item exists.
 
     if ($is_ssh) {
       my @paths;
-      for my $line ( run "echo 'match $aug_key' | augtool" ) {
+      my $result = _run_augtool("match $aug_key");
+      for my $line ( @{$result->{return}} ) {
         $line =~ s/\s=[^=]+$//;
         push @paths, $line;
       }
@@ -330,7 +298,8 @@ Check if an item exists.
       if ($val) {
         for my $k (@paths) {
           my @ret;
-          for my $line ( run "echo 'get $k' | augtool" ) {
+          my $result = _run_augtool("get $k");
+          for my $line ( @{$result->{return}} ) {
             $line =~ s/^[^=]+=\s//;
             push @ret, $line;
           }
@@ -377,7 +346,8 @@ Returns the value of the given item.
 
     if ($is_ssh) {
       my @lines;
-      for my $line ( run "echo 'get $file' | augtool" ) {
+      my $result = _run_augtool("get $file");
+      for my $line ( @{$result->{return}} ) {
         $line =~ s/^[^=]+=\s//;
         push @lines, $line;
       }
@@ -405,6 +375,28 @@ Returns the value of the given item.
 =back
 
 =cut
+
+sub _run_augtool {
+  my ( @commands ) = @_;
+
+  my $rnd_file = get_tmp_file;
+  my $fh       = Rex::Interface::File->create;
+  $fh->open( ">", $rnd_file );
+  $fh->write($_) foreach (@commands);
+  $fh->close;
+  my @return = run "augtool --file $rnd_file --autosave";
+  Rex::Logger::debug("Augeas result: @return");
+  my $ret = $? == 0 ? 1 : 0;
+  Rex::Logger::debug("Augeas command return value: $ret");
+  my $changed = "@return" =~ /Saved/ ? 1 : 0;
+  unlink $rnd_file;
+
+  {
+    result  => $ret,
+    return  => \@return,
+    changed => $changed,
+  }
+}
 
 1;
 

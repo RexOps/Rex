@@ -372,6 +372,7 @@ sub lock_password {
     unless $result =~ /^$user\h+(L|NP|P)\h+/;
 
   if ( $1 eq 'L' ) {
+
     # Already locked
     return { changed => 0 };
   }
@@ -397,6 +398,7 @@ sub unlock_password {
     unless $result =~ /^$user\h+(L|NP|P)\h+/;
 
   if ( $1 eq 'P' ) {
+
     # Already unlocked
     return { changed => 0 };
   }

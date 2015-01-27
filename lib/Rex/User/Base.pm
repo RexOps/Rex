@@ -22,11 +22,13 @@ sub new {
 }
 
 sub lock_password {
+
   # Overridden in those classes that implement it
   die "lock_password is not available on this operating system";
 }
 
 sub unlock_password {
+
   # Overridden in those classes that implement it
   die "unlock_password is not available on this operating system";
 }

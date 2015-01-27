@@ -27,7 +27,7 @@ use base qw(Rex::User::NetBSD);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = $that->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 

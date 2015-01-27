@@ -109,7 +109,7 @@ This modifies the keys given in @options in $file.
         push @commands, "set $key $config_option->{$key}\n";
       }
       my $result = _run_augtool(@commands);
-      $ret = "@{$result->{return}}";
+      $ret     = "@{$result->{return}}";
       $changed = $result->{changed};
     }
     else {
@@ -155,7 +155,7 @@ Remove an entry.
 
     if ($is_ssh) {
       my $result = _run_augtool(@commands);
-      $ret = "@{$result->{return}}";
+      $ret     = "@{$result->{return}}";
       $changed = $result->{changed};
     }
     else {
@@ -213,7 +213,7 @@ Insert an item into the file. Here, the order of the options is important. If th
         push @commands, "set $_key $val\n";
       }
       my $result = _run_augtool(@commands);
-      $ret = "@{$result->{return}}";
+      $ret     = "@{$result->{return}}";
       $changed = $result->{changed};
     }
     else {
@@ -290,7 +290,7 @@ Check if an item exists.
     if ($is_ssh) {
       my @paths;
       my $result = _run_augtool("match $aug_key");
-      for my $line ( @{$result->{return}} ) {
+      for my $line ( @{ $result->{return} } ) {
         $line =~ s/\s=[^=]+$// or next;
         push @paths, $line;
       }
@@ -299,7 +299,7 @@ Check if an item exists.
         for my $k (@paths) {
           my @ret;
           my $result = _run_augtool("get $k");
-          for my $line ( @{$result->{return}} ) {
+          for my $line ( @{ $result->{return} } ) {
             $line =~ s/^[^=]+=\s//;
             push @ret, $line;
           }
@@ -347,7 +347,7 @@ Returns the value of the given item.
     if ($is_ssh) {
       my @lines;
       my $result = _run_augtool("get $file");
-      for my $line ( @{$result->{return}} ) {
+      for my $line ( @{ $result->{return} } ) {
         $line =~ s/^[^=]+=\s//;
         push @lines, $line;
       }
@@ -377,7 +377,7 @@ Returns the value of the given item.
 =cut
 
 sub _run_augtool {
-  my ( @commands ) = @_;
+  my (@commands) = @_;
 
   my $rnd_file = get_tmp_file;
   my $fh       = Rex::Interface::File->create;
@@ -395,7 +395,7 @@ sub _run_augtool {
     result  => $ret,
     return  => \@return,
     changed => $changed,
-  }
+  };
 }
 
 1;

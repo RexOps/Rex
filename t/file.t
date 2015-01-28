@@ -37,8 +37,8 @@ file( $filename, content => "blah blah\nfoo bar" );
 my $c = cat($filename);
 
 ok( $c,            "cat" );
-ok( $c =~ m/blah/, "file with content (1)" );
-ok( $c =~ m/bar/,  "file with content (2)" );
+like( $c, qr/blah/, "file with content (1)" );
+like( $c, qr/bar/,  "file with content (2)" );
 
 Rex::Commands::Fs::unlink($filename);
 
@@ -51,11 +51,11 @@ file(
 );
 
 my %stats = Rex::Commands::Fs::stat($filename);
-ok( $stats{mode} eq "0777" || is_windows(), "fs chmod ok" );
+is( $stats{mode}, "0777" || is_windows(), "fs chmod ok" );
 
 my $changed = 0;
 my $content = cat($filename);
-ok( $content !~ m/change/gms, "found change" );
+unlike( $content, qr/change/ms, "found change" );
 
 append_if_no_such_line(
   $filename,
@@ -67,9 +67,9 @@ append_if_no_such_line(
 );
 
 $content = cat($filename);
-ok( $content =~ m/change/gms, "found change" );
+like( $content, qr/change/ms, "found change" );
 
-ok( $changed == 1, "something was changed in the file" );
+is( $changed, 1, "something was changed in the file" );
 
 append_if_no_such_line(
   $filename,
@@ -78,32 +78,32 @@ append_if_no_such_line(
 );
 
 $content = cat($filename);
-ok( $content =~ m/dream\-breaker/gms, "found dream-breaker" );
+like( $content, qr/dream\-breaker/ms, "found dream-breaker" );
 
 append_if_no_such_line(
   $filename,
   line   => "#include /etc/sudoers.d/*.conf",
-  regexp => qr{^#include /etc/sudoers.d/*.conf$}
+  regexp => qr{^#include /etc/sudoers.d/\*.conf$},
 );
 
 $content = cat($filename);
-ok( $content =~ m/#include \/etc\/sudoers\.d\/\*\.conf/gms,
+like( $content, qr{#include /etc/sudoers\.d/\*\.conf}ms,
   "found sudoers entry" );
 
 append_if_no_such_line( $filename, line => 'silly with "quotes"' );
 
 $content = cat($filename);
-ok( $content =~ m/silly with "quotes"/gms, "found entry with quotes" );
+like( $content, qr/silly with "quotes"/ms, "found entry with quotes" );
 
 append_if_no_such_line( $filename, line => "#include /etc/sudoers.d/*.conf" );
 
 my @content = split( /\n/, cat($filename) );
-ok( $content[-1] ne "#include /etc/sudoers.d/*.conf",
+isnt( $content[-1], "#include /etc/sudoers.d/*.conf",
   "last entry is not #include ..." );
 
 append_if_no_such_line( $filename, 'KEY="VAL"' );
 $content = cat($filename);
-ok( $content =~ m/KEY="VAL"/gms, "found KEY=VAL" );
+like( $content, qr/KEY="VAL"/ms, "found KEY=VAL" );
 
 append_if_no_such_line(
   $filename,
@@ -114,7 +114,7 @@ append_if_no_such_line(
   }
 );
 
-ok( $changed == 1, "nothing was changed in the file" );
+is( $changed, 1, "nothing was changed in the file" );
 
 append_if_no_such_line(
   $filename,
@@ -124,14 +124,14 @@ append_if_no_such_line(
   }
 );
 
-ok( $changed == 1, "nothing was changed in the file without regexp" );
+is( $changed, 1, "nothing was changed in the file without regexp" );
 
 $content = cat($filename);
-ok( $content !~ m/foobar/gms, "not found foobar" );
+unlike( $content, qr/foobar/ms, "not found foobar" );
 
 append_if_no_such_line( $filename, line => "foobar", );
 $content = cat($filename);
-ok( $content =~ m/foobar/gms, "found foobar" );
+like( $content, qr/foobar/ms, "found foobar" );
 
 append_if_no_such_line(
   $filename,
@@ -140,7 +140,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-ok( $content !~ m/bazzada/gms, "found bazzada" );
+unlike( $content, qr/bazzada/ms, "not found bazzada" );
 
 append_if_no_such_line(
   $filename,
@@ -149,7 +149,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-ok( $content !~ m/tacktack/gms, "not found tacktack" );
+unlike( $content, qr/tacktack/ms, "not found tacktack" );
 
 append_if_no_such_line(
   $filename,
@@ -158,7 +158,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-ok( $content !~ m/nothing there/gms, "not found nothing there" );
+unlike( $content, qr/nothing there/ms, "not found nothing there" );
 
 append_if_no_such_line(
   $filename,
@@ -167,7 +167,7 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 
-ok( $content =~ m/this is there/gms, "found this is there" );
+like( $content, qr/this is there/ms, "found this is there" );
 
 append_if_no_such_line(
   $filename,
@@ -175,7 +175,7 @@ append_if_no_such_line(
   regexp => qr{^bazzada},
 );
 $content = cat($filename);
-ok( $content =~ m/bazzada/gms, "found bazzada (2)" );
+like( $content, qr/bazzada/ms, "found bazzada (2)" );
 
 file "file with space-$$.txt", content => "file with space\n";
 
@@ -183,7 +183,7 @@ ok( is_file("file with space-$$.txt"), "file with space exists" );
 
 $c = "";
 $c = cat "file with space-$$.txt";
-ok( $c =~ m/file with space/m, "found content of file with space" );
+like( $c, qr/file with space/m, "found content of file with space" );
 
 Rex::Commands::Fs::unlink($filename);
 Rex::Commands::Fs::unlink("file with space-$$.txt");
@@ -199,50 +199,50 @@ file $filename,
 
 sed qr/fo{2} bar/, "baz bar", $filename;
 $content = cat $filename;
-ok( $content =~ m/baz bar/, "sed replaced foo bar" );
+like( $content, qr/baz bar/, "sed replaced foo bar" );
 
 sed qr/^\\\.\-\~'\[a\-z\]\$ foo \{1\} \/with\/some\/slashes/, "got replaced",
   $filename;
 $content = cat $filename;
-ok( $content =~ m/got replaced/, "sed replaced strange chars" );
+like( $content, qr/got replaced/, "sed replaced strange chars" );
 
 sed qr/^\|\.\-\\\~'\[a\-z\]\$ BAR \{2\} \/with\/more\/slashes/i,
   "got another replace", $filename;
 $content = cat $filename;
-ok( $content =~ m/got another replace/, "sed replaced strange chars" );
+like( $content, qr/got another replace/, "sed replaced strange chars" );
 
 my @lines = split( /\n/, $content );
-ok(
-  $lines[-1] =~ m/^got another replace/,
+like(
+  $lines[-1], qr/^got another replace/,
   "last line was successfully replaced"
 );
-ok( $lines[-2] =~ m/^got replaced/,
+like( $lines[-2], qr/^got replaced/,
   "second last line was successfully replaced" );
-ok( $lines[-4] =~ m/^\{klonk\}/, "fourth last line untouched" );
+like( $lines[-4], qr/^\{klonk\}/, "fourth last line untouched" );
 
 sed qr{0606}, "6666", $filename;
 $content = cat $filename;
-ok( $content =~ m/6666/, "sed replaced 0606" );
+like( $content, qr/6666/, "sed replaced 0606" );
 
 sed qr{'foo'}, "'bar'", $filename;
 $content = cat $filename;
-ok( $content =~ m/'bar'/, "sed replaced 'foo'" );
+like( $content, qr/'bar'/, "sed replaced 'foo'" );
 
 sed qr{/etc/passwd}, "/etc/shadow", $filename;
 $content = cat $filename;
-ok( $content =~ m/\/etc\/shadow/, "sed replaced /etc/passwd" );
+like( $content, qr/\/etc\/shadow/, "sed replaced /etc/passwd" );
 
 sed qr{"baz"}, '"boooooz"', $filename;
 $content = cat $filename;
-ok( $content =~ m/"boooooz"/, "sed replaced baz" );
+like( $content, qr/"boooooz"/, "sed replaced baz" );
 
 sed qr/{klonk}/, '{plonk}', $filename;
 $content = cat $filename;
-ok( $content =~ m/{plonk}/, "sed replaced {klonk}" );
+like( $content, qr/{plonk}/, "sed replaced {klonk}" );
 
 sed qr/{klonk}/, '{plonk}', $filename;
 $content = cat $filename;
-ok( $content =~ m/{plonk}/, "sed replaced {klonk}" );
+like( $content, qr/{plonk}/, "sed replaced {klonk}" );
 
 unlink $filename;
 
@@ -260,11 +260,11 @@ ok( -d "$tmp_dir/test.d-$$", "created directory with file()" );
 rmdir "$tmp_dir/test.d-$$";
 
 $content = 'Hello this is <%= $::foo %>';
-ok( template( \$content, __no_sys_info__ => 1 ) eq "Hello this is bar",
+is( template( \$content, __no_sys_info__ => 1 ), "Hello this is bar",
   "get keys from Rex::Config" );
 
-ok(
-  template( \$content, { foo => "baz", __no_sys_info__ => 1 } ) eq
+is(
+  template( \$content, { foo => "baz", __no_sys_info__ => 1 } ),
     "Hello this is baz",
   "overwrite keys from Rex::Config"
 );

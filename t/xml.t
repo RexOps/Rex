@@ -37,10 +37,13 @@ Rex::Group::Lookup::XML->import;
 groups_xml("$Bin/test.xml");
 my %groups = Rex::Group->get_groups;
 
-ok( scalar( @{ $groups{application} } ) == 2, "2 application servers" );
-ok( join( ',', @{ $groups{application} } ) =~ m/machine0[21],machine0[21]/,
+# stringification needed for is_deeply string comparison
+my @application_server = map{ "$_" }@{ $groups{application} };
+
+is( scalar( @{ $groups{application} } ), 2, "2 application servers" );
+is_deeply( [ sort @application_server ], [qw/machine01 machine02/],
   "got machine02,machine01" );
-ok( scalar( @{ $groups{profiler} } ) == 2, "2 profiler servers 2" );
+is( scalar( @{ $groups{profiler} } ), 2, "2 profiler servers 2" );
 
 my ($server1) = grep { m/\bmachine07\b/ } @{ $groups{profiler} };
 my ($server2) = grep { m/\bmachine01\b/ } @{ $groups{application} };
@@ -51,7 +54,7 @@ no_ssh(
     "xml_task1",
     $server1,
     sub {
-      ok( connection()->server->option("services") eq "nginx,docker",
+      is( connection()->server->option("services"), "nginx,docker",
         "got services inside task" );
     }
   )
@@ -63,9 +66,9 @@ no_ssh(
     "xml_task2",
     $server2,
     sub {
-      ok( connection()->server->get_user() eq 'root',
+      is( connection()->server->get_user(), 'root',
         "$server2 user is 'root'" );
-      ok( connection()->server->get_password() eq 'foob4r',
+      is( connection()->server->get_password(), 'foob4r',
         "$server2 password is 'foob4r'" );
     }
   )

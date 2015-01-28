@@ -22,40 +22,40 @@ my @iptables_list_1 = (
 
 my $rules = Rex::Commands::Iptables::_iptables_list(@iptables_list_1);
 
-ok( exists $rules->{nat},                    "found nat tables" );
-ok( $rules->{nat}->[0]->[0] eq "A",          "first is append" );
-ok( $rules->{nat}->[0]->[1] eq "PREROUTING", "append to prerouting" );
-ok( $rules->{nat}->[0]->[2] eq "d",          "should be destination" );
-ok( $rules->{nat}->[0]->[3] eq "1.2.3.4/32", "to destination 1.2.3.4" );
-ok( $rules->{nat}->[0]->[4] eq "p",          "should be proto" );
-ok( $rules->{nat}->[0]->[5] eq "tcp",        "tcp" );
-ok( $rules->{nat}->[0]->[6] eq "m",          "in module" );
-ok( $rules->{nat}->[0]->[7] eq "tcp",        "tcp" );
-ok( $rules->{nat}->[0]->[8] eq "dport",      "should be destination port" );
-ok( $rules->{nat}->[0]->[9] eq "25",         "dport 25" );
-ok( $rules->{nat}->[0]->[10] eq "j",         "jump to" );
-ok( $rules->{nat}->[0]->[11] eq "DNAT",      "dnating" );
-ok(
-  $rules->{nat}->[0]->[12] eq "to-destination",
+ok( exists $rules->{nat},                  "found nat tables" );
+is( $rules->{nat}->[0]->[0], "A",          "first is append" );
+is( $rules->{nat}->[0]->[1], "PREROUTING", "append to prerouting" );
+is( $rules->{nat}->[0]->[2], "d",          "should be destination" );
+is( $rules->{nat}->[0]->[3], "1.2.3.4/32", "to destination 1.2.3.4" );
+is( $rules->{nat}->[0]->[4], "p",          "should be proto" );
+is( $rules->{nat}->[0]->[5], "tcp",        "tcp" );
+is( $rules->{nat}->[0]->[6], "m",          "in module" );
+is( $rules->{nat}->[0]->[7], "tcp",        "tcp" );
+is( $rules->{nat}->[0]->[8], "dport",      "should be destination port" );
+is( $rules->{nat}->[0]->[9], "25",         "dport 25" );
+is( $rules->{nat}->[0]->[10], "j",         "jump to" );
+is( $rules->{nat}->[0]->[11], "DNAT",      "dnating" );
+is(
+  $rules->{nat}->[0]->[12], "to-destination",
   "should be forwarded to destination"
 );
-ok( $rules->{nat}->[0]->[13] eq "4.3.2.1:25", "4.3.2.1:25" );
+is( $rules->{nat}->[0]->[13], "4.3.2.1:25", "4.3.2.1:25" );
 
-ok( exists $rules->{foo},                   "found foo table" );
-ok( $rules->{foo}->[0]->[0] eq "A",         "frist is append" );
-ok( $rules->{foo}->[0]->[1] eq "syn_flood", "append to sys_flood" );
-ok( $rules->{foo}->[0]->[2] eq "p",         "should use protocol" );
-ok( $rules->{foo}->[0]->[3] eq "tcp",       "proto tcp" );
-ok( $rules->{foo}->[0]->[4] eq "m",         "in module" );
-ok( $rules->{foo}->[0]->[5] eq "tcp",       "tcp module" );
-ok( $rules->{foo}->[0]->[6] eq "tcp-flags", "should match tcp flags" );
-ok( $rules->{foo}->[0]->[7] eq "FIN,SYN,RST,ACK SYN", "only these flags" );
-ok( $rules->{foo}->[0]->[8] eq "m",                   "should use module" );
-ok( $rules->{foo}->[0]->[9] eq "limit",               "limit module" );
-ok( $rules->{foo}->[0]->[10] eq "limit",              "limit the bandwidth" );
-ok( $rules->{foo}->[0]->[11] eq "25/sec",             "to 25 req per second" );
-ok( $rules->{foo}->[0]->[12] eq "limit-burst",        "use burst" );
-ok( $rules->{foo}->[0]->[13] eq "50",                 "up to 50" );
-ok( $rules->{foo}->[0]->[14] eq "j",                  "jump to" );
-ok( $rules->{foo}->[0]->[15] eq "RETURN",             "RETURN" );
+ok( exists $rules->{foo},                 "found foo table" );
+is( $rules->{foo}->[0]->[0], "A",         "frist is append" );
+is( $rules->{foo}->[0]->[1], "syn_flood", "append to sys_flood" );
+is( $rules->{foo}->[0]->[2], "p",         "should use protocol" );
+is( $rules->{foo}->[0]->[3], "tcp",       "proto tcp" );
+is( $rules->{foo}->[0]->[4], "m",         "in module" );
+is( $rules->{foo}->[0]->[5], "tcp",       "tcp module" );
+is( $rules->{foo}->[0]->[6], "tcp-flags", "should match tcp flags" );
+is( $rules->{foo}->[0]->[7], "FIN,SYN,RST,ACK SYN", "only these flags" );
+is( $rules->{foo}->[0]->[8], "m",                   "should use module" );
+is( $rules->{foo}->[0]->[9], "limit",               "limit module" );
+is( $rules->{foo}->[0]->[10], "limit",              "limit the bandwidth" );
+is( $rules->{foo}->[0]->[11], "25/sec",             "to 25 req per second" );
+is( $rules->{foo}->[0]->[12], "limit-burst",        "use burst" );
+is( $rules->{foo}->[0]->[13], "50",                 "up to 50" );
+is( $rules->{foo}->[0]->[14], "j",                  "jump to" );
+is( $rules->{foo}->[0]->[15], "RETURN",             "RETURN" );
 

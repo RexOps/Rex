@@ -1,6 +1,6 @@
 package main;
 
-use Test::More tests => 13;
+use Test::More;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';
@@ -42,13 +42,9 @@ task(
 );
 
 my @tasks = Rex::TaskList->create()->get_tasks_for("server01");
-ok( $tasks[0] eq "test" );
-ok( scalar(@tasks) == 1 );
+is_deeply( \@tasks, ["test"], "tasks has one element: 'test'" );
 
 @tasks = Rex::TaskList->create()->get_tasks_for("fe06");
-ok( $tasks[0] eq "test2" );
-ok( $tasks[1] eq "test3" );
-ok( scalar(@tasks) == 2 );
+is_deeply( \@tasks, ["test2", "test3"], "tasks has two elements: 'test2' and 'test3'" );
 
-1;
-
+done_testing();

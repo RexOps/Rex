@@ -21,7 +21,11 @@ SKIP: {
     my_cnf => {
       'skip-networking' => '', # no TCP socket
     }
-  ) or plan skip_all => $Test::mysqld::errstr;
+    )
+    or do {
+    no warnings 'once';
+    plan skip_all => $Test::mysqld::errstr;
+    };
 
   $dbh = DBI->connect( $mysqld->dsn( dbname => 'test' ), );
   Rex::Commands::DB->import( { dsn => $mysqld->dsn( dbname => 'test' ) } );

@@ -65,9 +65,9 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
-use Rex::Helper::Glob 'glob_to_regex';
 use Rex::Helper::Encode;
 use JSON::XS;
+use Text::Glob 'glob_to_regex';
 
 @EXPORT = qw(sync_up sync_down);
 

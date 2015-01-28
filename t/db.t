@@ -15,7 +15,7 @@ BEGIN {
 };
 my $dbh;
 SKIP: {
-    eval { require Test::mysqld; Test::mysqld->import; };
+    eval "use Test::mysqld";
     skip "Test::mysqld not installed", 38 if $@;
     my $mysqld = Test::mysqld->new(
         my_cnf => {

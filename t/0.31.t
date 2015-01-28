@@ -100,12 +100,12 @@ $task       = Rex::TaskList->create()->get_task("authtest4");
 
 for my $server (@all_server) {
   my $auth = $task->merge_auth($server);
-  ok( $auth->{user} eq "jan",              "merge_auth - user - lategroup" );
-  ok( $auth->{password} eq "foo",          "merge_auth - pass - lategroup" );
-  ok( $auth->{public_key} eq "pub.key3",   "merge_auth - pub - lategroup" );
-  ok( $auth->{private_key} eq "priv.key3", "merge_auth - priv - lategroup" );
-  ok( $auth->{auth_type} eq "try", "merge_auth - auth_type - lategroup" );
-  ok( !$auth->{sudo},              "merge_auth - sudo - lategroup" );
+  is( $auth->{user},        "jan",       "merge_auth - user - lategroup" );
+  is( $auth->{password},    "foo",       "merge_auth - pass - lategroup" );
+  is( $auth->{public_key},  "pub.key3",  "merge_auth - pub - lategroup" );
+  is( $auth->{private_key}, "priv.key3", "merge_auth - priv - lategroup" );
+  is( $auth->{auth_type},   "try",       "merge_auth - auth_type - lategroup" );
+  ok( !$auth->{sudo}, "merge_auth - sudo - lategroup" );
 }
 
 auth(

@@ -133,8 +133,8 @@ task(
 );
 
 my $s = ret_test1();
-ok( $s eq "string", "task successfully returned a string" );
+is( $s, "string", "task successfully returned a string" );
 
 my @l = ret_test2();
-ok( $l[0] eq "e1" && $l[1] eq "e2", "task successfully returned a list" );
+is_deeply( \@l, [ "e1", "e2" ], "task successfully returned a list" );
 

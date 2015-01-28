@@ -374,6 +374,8 @@ Returns the value of the given item.
 
 =back
 
+=back
+
 =cut
 
 sub _run_augtool {

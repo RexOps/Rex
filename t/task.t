@@ -27,6 +27,11 @@ use_ok 'Rex::Task';
 use_ok 'Rex::Commands';
 Rex::Commands->import;
 
+{
+  no warnings 'once';
+  $::QUIET = 1;
+}
+
 my $t1 = Rex::Task->new( name => "foo" );
 
 isa_ok( $t1, "Rex::Task", "create teask object" );

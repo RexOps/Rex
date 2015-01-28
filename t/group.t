@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 102;
+use Test::More;
 use Data::Dumper;
 
 use_ok 'Rex';
@@ -65,3 +65,5 @@ is_deeply [ $cleaned_servers[0]->get_servers ], [
     /
   ],
   "duplicated_by_list";
+
+done_testing();

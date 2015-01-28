@@ -26,7 +26,7 @@ else {
 }
 
 my $report = Rex::Report->create;
-ok( ref($report) eq "Rex::Report::Base", "created report class" );
+isa_ok( $report, "Rex::Report::Base", "created report class" );
 
 mkdir "tmp";
 
@@ -51,8 +51,7 @@ my $content =
 
 my $ref = Load($content);
 
-ok( $ref->{'file[test_report.txt]'}->{changed} == 1,
-  "a new file was created." );
+is( $ref->{'file[test_report.txt]'}->{changed}, 1, "a new file was created." );
 
 # need to wait a bit
 sleep 2;
@@ -65,8 +64,7 @@ $content =
 
 $ref = Load($content);
 
-ok( $ref->{'file[test_report.txt]'}->{changed} == 0,
-  "the file was not changed" );
+is( $ref->{'file[test_report.txt]'}->{changed}, 0, "the file was not changed" );
 
 unlink "test_report.txt";
 

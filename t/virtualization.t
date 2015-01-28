@@ -9,8 +9,8 @@ use_ok 'Rex::Config';
 use_ok 'Rex::Commands::Virtualization';
 
 Rex::Commands::set( virtualization => "LibVirt" );
-ok( Rex::Config->get("virtualization") eq "LibVirt",
-  "set virtualization handler" );
+is( Rex::Config->get("virtualization"),
+  "LibVirt", "set virtualization handler" );
 
 Rex::Commands::set(
   virtualization => { "type" => "LibVirt", "connect" => "qemu:///system", } );

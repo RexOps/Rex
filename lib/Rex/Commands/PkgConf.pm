@@ -108,6 +108,8 @@ question will not be updated if it has already been set.
 
 See the synopsis for examples.
 
+=back
+
 =cut
 
 sub set_pkgconf {

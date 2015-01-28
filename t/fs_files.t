@@ -35,9 +35,10 @@ ok -e $filename, 'file was created';
   $fh->open( '>', $filename );
   my $file_object = Rex::FS::File->new( fh => $fh );
 
-  isa_ok $file_object, 'Rex::FS::File', 'new with fh (write mode) was successful';
+  isa_ok $file_object, 'Rex::FS::File',
+    'new with fh (write mode) was successful';
 
-  $file_object->write( qw/this is a test/ );
+  $file_object->write(qw/this is a test/);
   $file_object->close;
 
   my $read_fh = Rex::Interface::File->create('Local');
@@ -62,9 +63,10 @@ ok -e $filename, 'file was created';
   # new Rex::FS::File usage - write file
   my $file_object = Rex::FS::File->new( filename => $filename, mode => '>' );
 
-  isa_ok $file_object, 'Rex::FS::File', 'new with filename with mode ">" was successful';
+  isa_ok $file_object, 'Rex::FS::File',
+    'new with filename with mode ">" was successful';
 
-  $file_object->write( qw/this is a test/ );
+  $file_object->write(qw/this is a test/);
   $file_object->close;
 
   my $read_fh = Rex::Interface::File->create('Local');
@@ -79,19 +81,22 @@ ok -e $filename, 'file was created';
   file( $filename, content => join "\n", @lines );
   my $file_object = Rex::FS::File->new( filename => $filename, mode => '<' );
 
-  isa_ok $file_object, 'Rex::FS::File', 'new with filename and explicit read mode was successful';
+  isa_ok $file_object, 'Rex::FS::File',
+    'new with filename and explicit read mode was successful';
 
   my @read_lines = $file_object->read_all;
-  is_deeply \@read_lines, \@lines, 'read lines from filename (explicit read mode)';
+  is_deeply \@read_lines, \@lines,
+    'read lines from filename (explicit read mode)';
 }
 
 {
   # new Rex::FS::File usage - write file - mode "w"
   my $file_object = Rex::FS::File->new( filename => $filename, mode => 'w' );
 
-  isa_ok $file_object, 'Rex::FS::File', 'new with filename with mode "w" was successful';
+  isa_ok $file_object, 'Rex::FS::File',
+    'new with filename with mode "w" was successful';
 
-  $file_object->write( qw/this is a test/ );
+  $file_object->write(qw/this is a test/);
   $file_object->close;
 
   my $read_object = Rex::FS::File->new( filename => $filename, mode => 'r' );

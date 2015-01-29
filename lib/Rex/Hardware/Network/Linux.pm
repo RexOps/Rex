@@ -162,10 +162,10 @@ sub _parse_ip {
     }
 
     # loopback
-#    if ( $line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/ ) {
-#      $dev->{$cur_dev}->{ip}      = $1;
-#      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
-#    }
+    #    if ( $line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/ ) {
+    #      $dev->{$cur_dev}->{ip}      = $1;
+    #      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
+    #    }
 
     my $sec_i = 1;
     if ( $line =~

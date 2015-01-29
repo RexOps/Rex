@@ -957,7 +957,7 @@ Since 0.42 you can use named parameters as well
 =cut
 
 sub append_if_no_such_line {
-  _append_or_update('append_if_no_such_line', @_);
+  _append_or_update( 'append_if_no_such_line', @_ );
 }
 
 =item append_or_amend_line($file, $line, @regexp)
@@ -977,7 +977,7 @@ found, it will be updated. Otherwise, it will be appended.
 =cut
 
 sub append_or_amend_line {
-  _append_or_update('append_or_amend_line', @_);
+  _append_or_update( 'append_or_amend_line', @_ );
 }
 
 sub _append_or_update {
@@ -1032,7 +1032,7 @@ sub _append_or_update {
   # slow but secure way
   my $content;
   eval {
-    $content = [split( /\n/, cat($file) )];
+    $content = [ split( /\n/, cat($file) ) ];
     1;
   } or do {
     $ret = 1;

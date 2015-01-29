@@ -93,7 +93,7 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(file_write file_read file_append
   cat sed
   delete_lines_matching append_if_no_such_line delete_lines_according_to
-  file template
+  file template append_or_amend_line
   extract);
 
 use vars qw(%file_handles);
@@ -957,7 +957,33 @@ Since 0.42 you can use named parameters as well
 =cut
 
 sub append_if_no_such_line {
-  my $file = shift;
+  _append_or_update('append_if_no_such_line', @_);
+}
+
+=item append_or_amend_line($file, $line, @regexp)
+
+Similar to L<append_if_no_such_line>, but if the line in the regexp is
+found, it will be updated. Otherwise, it will be appended.
+
+ task "update-group", sub {
+   append_or_amend_line "/etc/groups",
+     line  => "mygroup:*:100:myuser3,myuser4",
+     regexp => qr{^mygroup},
+     on_change => sub {
+                say "file was changed, do something.";
+              };
+ };
+
+=cut
+
+sub append_or_amend_line {
+  _append_or_update('append_or_amend_line', @_);
+}
+
+sub _append_or_update {
+  my $action = shift;
+  my $file   = shift;
+
   $file = resolv_path($file);
   my ( $new_line, @m );
 
@@ -965,7 +991,7 @@ sub append_if_no_such_line {
   my ( $option, $on_change );
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => "append_if_no_such_line", name => $file );
+    ->report_resource_start( type => $action, name => $file );
 
   eval {
     no warnings;
@@ -1004,9 +1030,9 @@ sub append_if_no_such_line {
   $old_md5 = md5($file);
 
   # slow but secure way
-  my @content;
+  my $content;
   eval {
-    @content = split( /\n/, cat($file) );
+    $content = [split( /\n/, cat($file) )];
     1;
   } or do {
     $ret = 1;
@@ -1016,25 +1042,28 @@ sub append_if_no_such_line {
     push @m, qr{\Q$new_line\E};
   }
 
-  for my $line (@content) {
+  my $found;
+  for my $line ( 0 .. $#{$content} ) {
     for my $match (@m) {
       if ( ref($match) ne "Regexp" ) {
         $match = qr{$match};
       }
-      if ( $line =~ $match ) {
-        return 0;
+      if ( $content->[$line] =~ $match ) {
+        return 0 if $action eq 'append_if_no_such_line';
+        $content->[$line] = "$new_line\n";
+        $found = 1;
       }
     }
   }
 
-  push @content, "$new_line\n";
+  push @$content, "$new_line\n" unless $found;
 
   eval {
     my $fh = file_write $file;
     unless ($fh) {
       die("can't open file for writing");
     }
-    $fh->write( join( "\n", @content ) );
+    $fh->write( join( "\n", @$content ) );
     $fh->close;
     $ret = 0;
     1;
@@ -1077,7 +1106,7 @@ sub append_if_no_such_line {
   }
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "append_if_no_such_line", name => $file );
+    ->report_resource_end( type => $action, name => $file );
 }
 
 =item extract($file [, %options])

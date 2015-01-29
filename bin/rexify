@@ -506,7 +506,10 @@ sub resolve_deps {
       # we need relative directories, because auf a cpanm bug on windows.
       my $lib_path = File::Spec->catdir( File::Spec->curdir(), "lib", "perl" );
 
-      system "cpanm -l '$lib_path' $req";
+      eval "use $req";
+      if ($@) {
+        system "cpanm -l '$lib_path' $req";
+      }
     }
   }
 

@@ -162,11 +162,12 @@ sub _parse_ip {
     }
 
     # loopback
-    if ( $line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/ ) {
-      $dev->{$cur_dev}->{ip}      = $1;
-      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
-    }
+#    if ( $line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/ ) {
+#      $dev->{$cur_dev}->{ip}      = $1;
+#      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
+#    }
 
+    my $sec_i = 1;
     if ( $line =~
       m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) (brd (\d+\.\d+\.\d+\.\d+) )?scope ([^\s]+) (\w+\s)?(.+?)$/
       )
@@ -185,6 +186,16 @@ sub _parse_ip {
         $dev->{$dev_name}->{broadcast} = $broadcast;
         $dev->{$dev_name}->{netmask}   = _convert_cidr_prefix($cidr_prefix);
         $dev->{$dev_name}->{mac}       = $dev->{$cur_dev}->{mac};
+      }
+      elsif ( $dev_name eq $cur_dev && $dev->{$cur_dev}->{ip} ) {
+
+        # there is already an ip address, so this must be a secondary
+        $dev->{"${dev_name}_${sec_i}"}->{ip}        = $ip;
+        $dev->{"${dev_name}_${sec_i}"}->{broadcast} = $broadcast;
+        $dev->{"${dev_name}_${sec_i}"}->{netmask} =
+          _convert_cidr_prefix($cidr_prefix);
+        $dev->{"${dev_name}_${sec_i}"}->{mac} = $dev->{$cur_dev}->{mac};
+        $sec_i++;
       }
       else {
         $dev->{$cur_dev}->{ip}        = $ip;

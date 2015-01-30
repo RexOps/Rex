@@ -469,26 +469,30 @@ CHECK_OVERWRITE: {
     if ( defined $ARGV[0] ) {
       @tasks = map { Rex::TaskList->create()->is_task($_) ? $_ : () } @ARGV;
     }
+
     # Warn the user if they pass in arguments to '-T' and no task names
     # were found that match those arguments
     if ( scalar(@tasks) == 0 ) {
-        foreach my $task_warn ( @ARGV ) {
-            Rex::Logger::info("No task matching '$task_warn' found.", "error");
+      foreach my $task_warn (@ARGV) {
+        Rex::Logger::info( "No task matching '$task_warn' found.", "error" );
+      }
+    }
+    else {
+      my $max_task_str = max map { length } @tasks;
+      for my $task (@tasks) {
+        my $padding = $max_task_str - length($task);
+        print " $task  "
+          . ' ' x $padding . " "
+          . Rex::TaskList->create()->get_desc($task) . "\n";
+        if ( $opts{'v'} ) {
+          _print_color(
+            "    Servers: "
+              . join( ", ",
+              @{ Rex::TaskList->create()->get_task($task)->server } )
+              . "\n"
+          );
         }
-    } else {
-        my $max_task_str = max map { length } @tasks;
-        for my $task (@tasks) {
-          my $padding = $max_task_str - length($task);
-          print " $task  "
-            . ' ' x $padding . " "
-            . Rex::TaskList->create()->get_desc($task) . "\n";
-          if ( $opts{'v'} ) {
-            _print_color( "    Servers: "
-                . join( ", ",
-                @{ Rex::TaskList->create()->get_task($task)->server } )
-                . "\n" );
-          }
-        }
+      }
     }
     _print_color( "Batches\n", 'yellow' ) if ( Rex::Batch->get_batchs );
     for my $batch ( Rex::Batch->get_batchs ) {
@@ -704,24 +708,24 @@ sub __help__ {
   printf "  %-15s %s\n", "-T",    "List all known tasks.";
   printf "  %-15s %s\n", "-Tm",
     "List all known tasks, in machine-readable format.";
-  printf "  %-15s %s\n", "-Ty",   "List all known tasks, in YAML format.";
-  printf "  %-15s %s\n", "-Tv",   "List all known tasks with all information.";
-  printf "  %-15s %s\n", "-f",    "Use this file instead of Rexfile";
-  printf "  %-15s %s\n", "-h",    "Display this help";
-  printf "  %-15s %s\n", "-m",    "Monochrome output. No colors";
-  printf "  %-15s %s\n", "-M",    "Load Module instead of Rexfile";
-  printf "  %-15s %s\n", "-v",    "Display (R)?ex Version";
-  printf "  %-15s %s\n", "-F",    "Force. Don't regard lock file";
-  printf "  %-15s %s\n", "-s",    "Use sudo for every command";
-  printf "  %-15s %s\n", "-S",    "Password for sudo";
-  printf "  %-15s %s\n", "-d",    "Debug";
-  printf "  %-15s %s\n", "-dd",   "More Debug (includes Profiling Output)";
-  printf "  %-15s %s\n", "-o",    "Output Format";
-  printf "  %-15s %s\n", "-c",    "Turn cache ON";
-  printf "  %-15s %s\n", "-C",    "Turn cache OFF";
-  printf "  %-15s %s\n", "-q",    "Quiet mode. No Logging output";
-  printf "  %-15s %s\n", "-qw",   "Quiet mode. Only output warnings and errors";
-  printf "  %-15s %s\n", "-Q",    "Really quiet. Output nothing.";
+  printf "  %-15s %s\n", "-Ty", "List all known tasks, in YAML format.";
+  printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
+  printf "  %-15s %s\n", "-f",  "Use this file instead of Rexfile";
+  printf "  %-15s %s\n", "-h",  "Display this help";
+  printf "  %-15s %s\n", "-m",  "Monochrome output. No colors";
+  printf "  %-15s %s\n", "-M",  "Load Module instead of Rexfile";
+  printf "  %-15s %s\n", "-v",  "Display (R)?ex Version";
+  printf "  %-15s %s\n", "-F",  "Force. Don't regard lock file";
+  printf "  %-15s %s\n", "-s",  "Use sudo for every command";
+  printf "  %-15s %s\n", "-S",  "Password for sudo";
+  printf "  %-15s %s\n", "-d",  "Debug";
+  printf "  %-15s %s\n", "-dd", "More Debug (includes Profiling Output)";
+  printf "  %-15s %s\n", "-o",  "Output Format";
+  printf "  %-15s %s\n", "-c",  "Turn cache ON";
+  printf "  %-15s %s\n", "-C",  "Turn cache OFF";
+  printf "  %-15s %s\n", "-q",  "Quiet mode. No Logging output";
+  printf "  %-15s %s\n", "-qw", "Quiet mode. Only output warnings and errors";
+  printf "  %-15s %s\n", "-Q",  "Really quiet. Output nothing.";
   printf "  %-15s %s\n", "-t",
     "Number of threads to use (aka 'parallelism' param)";
   print "\n";

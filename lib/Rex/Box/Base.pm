@@ -56,6 +56,13 @@ sub new {
     public_key  => Rex::Config->get_public_key(),
   };
 
+  # for box this is needed, because we have changing ips
+  Rex::Config->set_openssh_opt(
+    StrictHostKeyChecking => "no",
+    UserKnownHostsFile    => "/dev/null",
+    LogLevel              => "QUIET"
+  );
+
   return $self;
 }
 

@@ -469,18 +469,26 @@ CHECK_OVERWRITE: {
     if ( defined $ARGV[0] ) {
       @tasks = map { Rex::TaskList->create()->is_task($_) ? $_ : () } @ARGV;
     }
-    my $max_task_str = max map { length } @tasks;
-    for my $task (@tasks) {
-      my $padding = $max_task_str - length($task);
-      print " $task  "
-        . ' ' x $padding . " "
-        . Rex::TaskList->create()->get_desc($task) . "\n";
-      if ( $opts{'v'} ) {
-        _print_color( "    Servers: "
-            . join( ", ",
-            @{ Rex::TaskList->create()->get_task($task)->server } )
-            . "\n" );
-      }
+    # Warn the user if they pass in arguments to '-T' and no task names
+    # were found that match those arguments
+    if ( scalar(@tasks) == 0 ) {
+        foreach my $task_warn ( @ARGV ) {
+            Rex::Logger::info("No task matching '$task_warn' found.", "error");
+        }
+    } else {
+        my $max_task_str = max map { length } @tasks;
+        for my $task (@tasks) {
+          my $padding = $max_task_str - length($task);
+          print " $task  "
+            . ' ' x $padding . " "
+            . Rex::TaskList->create()->get_desc($task) . "\n";
+          if ( $opts{'v'} ) {
+            _print_color( "    Servers: "
+                . join( ", ",
+                @{ Rex::TaskList->create()->get_task($task)->server } )
+                . "\n" );
+          }
+        }
     }
     _print_color( "Batches\n", 'yellow' ) if ( Rex::Batch->get_batchs );
     for my $batch ( Rex::Batch->get_batchs ) {

@@ -702,6 +702,9 @@ sub __help__ {
   printf "  %-15s %s\n", "-P",    "Private Keyfile for the ssh connection";
   printf "  %-15s %s\n", "-K",    "Public Keyfile for the ssh connection";
   printf "  %-15s %s\n", "-T",    "List all known tasks.";
+  printf "  %-15s %s\n", "-Tm",
+    "List all known tasks, in machine-readable format.";
+  printf "  %-15s %s\n", "-Ty",   "List all known tasks, in YAML format.";
   printf "  %-15s %s\n", "-Tv",   "List all known tasks with all information.";
   printf "  %-15s %s\n", "-f",    "Use this file instead of Rexfile";
   printf "  %-15s %s\n", "-h",    "Display this help";
@@ -719,7 +722,8 @@ sub __help__ {
   printf "  %-15s %s\n", "-q",    "Quiet mode. No Logging output";
   printf "  %-15s %s\n", "-qw",   "Quiet mode. Only output warnings and errors";
   printf "  %-15s %s\n", "-Q",    "Really quiet. Output nothing.";
-  printf "  %-15s %s\n", "-t",    "Number of threads to use.";
+  printf "  %-15s %s\n", "-t",
+    "Number of threads to use (aka 'parallelism' param)";
   print "\n";
 
   for my $code (@help) {

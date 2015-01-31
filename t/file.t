@@ -5,7 +5,7 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-  use Test::More tests => 47;
+  use Test::More tests => 57;
   use Data::Dumper;
 
   use_ok 'Rex';
@@ -179,6 +179,45 @@ append_if_no_such_line(
 );
 $content = cat($filename);
 like( $content, qr/bazzada/ms, "found bazzada (2)" );
+
+append_or_amend_line(
+  $filename,
+  line   => 'silly more "quotes"',
+  regexp => qr{^silly\hwith\h"quotes"},
+);
+$content = cat($filename);
+like( $content, qr/silly\hmore\h"quotes"/m, "found silly more quotes" );
+unlike( $content, qr/silly\hwith\h"quotes"/m,
+  "silly with quotes no longer exists" );
+
+append_or_amend_line(
+  $filename,
+  line   => "dream-maker",
+  regexp => qr{^dream\-},
+);
+$content = cat($filename);
+like( $content, qr/^dream\-maker$/m, "found dream-maker" );
+unlike( $content, qr/^dream\-breaker$/m, "dream-breaker no longer exists" );
+
+append_or_amend_line(
+  $filename,
+  line   => "dream2-maker",
+  regexp => qr{^dream2\-},
+);
+$content = cat($filename);
+like( $content, qr/^dream2\-maker$/m, "found dream2-maker" );
+like( $content, qr/^dream\-maker$/m,  "dream-maker still exists" );
+
+append_or_amend_line(
+  $filename,
+  line   => "dream3-maker",
+  regexp => qr{^dream2\-},
+);
+$content = cat($filename);
+like( $content, qr/^dream3\-maker$/m, "found dream3-maker" );
+unlike( $content, qr/^dream2\-maker$/m, "dream2-maker no longer exists" );
+like( $content, qr/^dream\-maker$/m, "dream-maker still exists" );
+unlike( $content, qr/^$/m, "no extra blank lines inserted" );
 
 file "file with space-$$.txt", content => "file with space\n";
 

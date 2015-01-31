@@ -1050,13 +1050,13 @@ sub _append_or_update {
       }
       if ( $content->[$line] =~ $match ) {
         return 0 if $action eq 'append_if_no_such_line';
-        $content->[$line] = "$new_line\n";
+        $content->[$line] = "$new_line";
         $found = 1;
       }
     }
   }
 
-  push @$content, "$new_line\n" unless $found;
+  push @$content, "$new_line" unless $found;
 
   eval {
     my $fh = file_write $file;
@@ -1064,6 +1064,7 @@ sub _append_or_update {
       die("can't open file for writing");
     }
     $fh->write( join( "\n", @$content ) );
+    $fh->write( "\n" );
     $fh->close;
     $ret = 0;
     1;

@@ -104,10 +104,11 @@ sub _ufw_disable_enable {
   my $needed = $action eq 'enable' ? 'inactive' : 'active';
   if ( $return =~ /Status: $needed/ ) {
     my $ret = _ufw_exec("--force $action");
-    my $success = $action eq 'enable'
-                ? 'Firewall is active and enabled'
-                : 'Firewall stopped and disabled';
-    if ($ret =~ /$success/) {
+    my $success =
+      $action eq 'enable'
+      ? 'Firewall is active and enabled'
+      : 'Firewall stopped and disabled';
+    if ( $ret =~ /$success/ ) {
       Rex::get_current_connection()->{reporter}->report(
         changed => 1,
         message => "Firewall successfully changed to $action",
@@ -140,22 +141,23 @@ sub ufw_logging {
   my $current = _ufw_exec('status verbose');
 
   my $need_update;
-  if ($param eq 'on') {
+  if ( $param eq 'on' ) {
     $need_update = 1 unless $current =~ /^Logging: on/m;
   }
-  elsif ($param eq 'off') {
-    $need_update = 1 unless $current =~ /^Logging: off$/m
+  elsif ( $param eq 'off' ) {
+    $need_update = 1 unless $current =~ /^Logging: off$/m;
   }
   else {
     $need_update = 1 unless $current =~ /^Logging: on \($param\)$/m;
   }
 
-  if ( $need_update ) {
+  if ($need_update) {
     my $ret = _ufw_exec("logging $param");
-    my $success = $param eq 'off'
-                ? 'Logging disabled'
-                : 'Logging enabled';
-    if ($ret eq $success) {
+    my $success =
+      $param eq 'off'
+      ? 'Logging disabled'
+      : 'Logging enabled';
+    if ( $ret eq $success ) {
       Rex::get_current_connection()->{reporter}->report(
         changed => 1,
         message => "Firewall logging successfully changed to $param",
@@ -231,48 +233,50 @@ with C<log>, C<direction> and C<on>, but not with C<proto> or C<port>
 
 =cut
 
-sub ufw_allow { _ufw_rule ( 'allow', @_ ) }
-sub ufw_deny { _ufw_rule ( 'deny', @_ ) }
-sub ufw_reject { _ufw_rule ( 'reject', @_ ) }
-sub ufw_limit { _ufw_rule ( 'limit', @_ ) }
+sub ufw_allow  { _ufw_rule( 'allow',  @_ ) }
+sub ufw_deny   { _ufw_rule( 'deny',   @_ ) }
+sub ufw_reject { _ufw_rule( 'reject', @_ ) }
+sub ufw_limit  { _ufw_rule( 'limit',  @_ ) }
 
 sub _ufw_rule {
 
-  my ( $action, @params) = @_;
+  my ( $action, @params ) = @_;
 
   my %torun = (
     action   => $action, # allow, deny, limit etc
     commands => [],
   );
 
-  my $has_app; # Has app parameters
-  my $has_port; # Has port parameters
+  my $has_app;           # Has app parameters
+  my $has_port;          # Has port parameters
 
-  while (my $param = shift @params) {
+  while ( my $param = shift @params ) {
     if ( $param eq 'proto' ) {
       my $proto = shift @params;
       die "Invalid protocol $proto"
-        unless ($proto eq 'tcp' || $proto eq 'udp');
+        unless ( $proto eq 'tcp' || $proto eq 'udp' );
       $torun{proto} = "proto $proto";
     }
     elsif ( $param eq 'from' || $param eq 'to' ) {
       my $address = shift @params;
-      push @{$torun{commands}}, ($param => $address);
+      push @{ $torun{commands} }, ( $param => $address );
+
       # See if next rule is a port
       if ( $params[0] && $params[0] eq 'port' ) {
         shift @params;
         my $port = shift @params;
-        push @{$torun{commands}}, (port => $port);
+        push @{ $torun{commands} }, ( port => $port );
         $has_port = 1;
       }
       elsif ( $params[0] && $params[0] eq 'app' ) {
         shift @params;
         my $app = shift @params;
-        push @{$torun{commands}}, (app => $app);
+        push @{ $torun{commands} }, ( app => $app );
         $has_app = 1;
       }
     }
     elsif ( $param eq 'app' ) {
+
       # App can appear on its own, or in combination with from/to above
       my $app = shift @params;
       $torun{app} = $app;
@@ -281,8 +285,9 @@ sub _ufw_rule {
     elsif ( $param eq 'direction' ) {
       my $direction = shift @params;
       die "Invalid direction $direction"
-        unless ($direction eq 'in' || $direction eq 'out');
+        unless ( $direction eq 'in' || $direction eq 'out' );
       $torun{direction} = $direction;
+
       # See if next rule is an interface
       if ( $params[0] && $params[0] eq 'on' ) {
         shift @params;
@@ -292,18 +297,17 @@ sub _ufw_rule {
     }
     elsif ( $param eq 'log' ) {
       my $log = shift @params;
-      if ($log eq 'new') {
+      if ( $log eq 'new' ) {
         $torun{log} = 'log';
       }
-      elsif ($log eq 'all') {
+      elsif ( $log eq 'all' ) {
         $torun{log} = 'log-all';
       }
       else {
         die "Invalid logging option $log";
       }
     }
-    elsif ( $param eq 'delete' )
-    {
+    elsif ( $param eq 'delete' ) {
       $torun{delete} = 'delete' if shift @params;
     }
     else {
@@ -323,7 +327,7 @@ sub _ufw_rule {
   }
   $cmd .= " @{$torun{commands}}";
 
-  _resource_start($torun{action});
+  _resource_start( $torun{action} );
   my $return = _ufw_exec($cmd);
 
   if ( $return =~ /(inserted|updated|deleted|added)/ ) {
@@ -335,7 +339,7 @@ sub _ufw_rule {
   else {
     Rex::get_current_connection()->{reporter}->report( changed => 0, );
   }
-  _resource_end($torun{action});
+  _resource_end( $torun{action} );
 }
 
 sub _resource_start {
@@ -357,7 +361,8 @@ sub _ufw_exec {
     my ( $output, $err ) = i_run $cmd, sub { @_ };
 
     if ( $? != 0 ) {
-      Rex::Logger::info( "Error running ufw command: $cmd, received $err", "warn" );
+      Rex::Logger::info( "Error running ufw command: $cmd, received $err",
+        "warn" );
       die("Error running ufw rule: $cmd");
     }
     Rex::Logger::debug("Output from ufw: $output");

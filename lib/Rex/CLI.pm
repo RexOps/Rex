@@ -261,12 +261,17 @@ FORCE_SERVER: {
 
     Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
 
-    if ( $opts{'G'} ) {
-      $::FORCE_SERVER = "\0" . $opts{'G'};
-    }
+    if ( $opts{'g'} || $opts{'G'} ) {
 
-    if ( $opts{'g'} ) {
-      $::FORCE_SERVER = "\0" . $opts{'g'};
+      #$::FORCE_SERVER = "\0" . $opts{'g'};
+      $opts{'g'} ||= $opts{'G'};
+
+      if ( ref $opts{'g'} ne "ARRAY" ) {
+        $::FORCE_SERVER = [ $opts{'g'} ];
+      }
+      else {
+        $::FORCE_SERVER = $opts{'g'};
+      }
     }
 
     if ( -f "vars.db" ) {

@@ -61,29 +61,31 @@ sub create_task {
 
   if ($::FORCE_SERVER) {
 
-    if ( $::FORCE_SERVER =~ m/^\0/ ) {
-      my $group_name = substr( $::FORCE_SERVER, 1 );
+    if ( ref $::FORCE_SERVER eq "ARRAY" ) {
+      my $group_name_arr = $::FORCE_SERVER;
 
-      if ( !Rex::Group->is_group($group_name) ) {
-        Rex::Logger::debug("Using late group-lookup");
+      for my $group_name ( @{$group_name_arr} ) {
+        if ( !Rex::Group->is_group($group_name) ) {
+          Rex::Logger::debug("Using late group-lookup");
 
-        push @server, sub {
-          if ( !Rex::Group->is_group($group_name) ) {
-            Rex::Logger::info( "No group $group_name defined.", "error" );
-            exit 1;
-          }
+          push @server, sub {
+            if ( !Rex::Group->is_group($group_name) ) {
+              Rex::Logger::info( "No group $group_name defined.", "error" );
+              exit 1;
+            }
 
-          return
-            map { Rex::Group::Entry::Server->new( name => $_ )->get_servers; }
-            Rex::Group->get_group($group_name);
-        };
-      }
-      else {
+            return
+              map { Rex::Group::Entry::Server->new( name => $_ )->get_servers; }
+              Rex::Group->get_group($group_name);
+          };
+        }
+        else {
 
-        push( @server,
-          map { Rex::Group::Entry::Server->new( name => $_ ); }
-            Rex::Group->get_group($group_name) );
+          push( @server,
+            map { Rex::Group::Entry::Server->new( name => $_ ); }
+              Rex::Group->get_group($group_name) );
 
+        }
       }
     }
     else {

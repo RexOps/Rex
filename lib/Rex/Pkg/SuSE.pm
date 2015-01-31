@@ -26,7 +26,7 @@ sub new {
   $self->{commands} = {
     install           => 'zypper -n install %s',
     install_version   => 'zypper -n install $pkg-%s',
-    update_system     => 'zypper -n up',
+    update_system     => 'zypper refresh && zypper -n up',
     remove            => 'zypper -n remove %s',
     update_package_db => 'zypper --no-gpg-checks -n ref -fd',
   };

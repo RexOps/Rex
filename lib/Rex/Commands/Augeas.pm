@@ -389,6 +389,8 @@ Returns the value of the given item.
 sub _run_augtool {
   my (@commands) = @_;
 
+  die "augtool is not installed or not executable in the path"
+    unless can_run "augtool";
   my $rnd_file = get_tmp_file;
   my $fh       = Rex::Interface::File->create;
   $fh->open( ">", $rnd_file );

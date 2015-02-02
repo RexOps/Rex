@@ -39,7 +39,7 @@ sub get_options {
 
     # Expecting: * postfix/relayhost: smtp.example.com
     Rex::Logger::debug("Parsing line $line");
-    if ( $line =~ m!^(\*?)\h+(.+):\h*(.*)! ) {
+    if ( $line =~ m!^(\*?)\s+(.+):\s*(.*)! ) {
       my ( $already_set, $question, $value ) = ( $1, $2, $3, $4 );
       Rex::Logger::debug(
         "Found configuration question $question with value $value");

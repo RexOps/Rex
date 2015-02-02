@@ -183,12 +183,15 @@ like( $content, qr/bazzada/ms, "found bazzada (2)" );
 append_or_amend_line(
   $filename,
   line   => 'silly more "quotes"',
-  regexp => qr{^silly\hwith\h"quotes"},
+  regexp => qr{^silly with "quotes"},
 );
 $content = cat($filename);
-like( $content, qr/silly\hmore\h"quotes"/m, "found silly more quotes" );
-unlike( $content, qr/silly\hwith\h"quotes"/m,
-  "silly with quotes no longer exists" );
+like( $content, qr/silly more "quotes"/m, "found silly more quotes" );
+unlike(
+  $content,
+  qr/silly with "quotes"/m,
+  "silly with quotes no longer exists"
+);
 
 append_or_amend_line(
   $filename,

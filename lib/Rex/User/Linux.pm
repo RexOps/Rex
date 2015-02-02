@@ -369,7 +369,7 @@ sub lock_password {
   my $result = i_run "passwd --status $user";
 
   die "Unexpected result from passwd: $result"
-    unless $result =~ /^$user\h+(L|NP|P)\h+/;
+    unless $result =~ /^$user\s+(L|NP|P)\s+/;
 
   if ( $1 eq 'L' ) {
 
@@ -395,7 +395,7 @@ sub unlock_password {
   my $result = i_run "passwd --status $user";
 
   die "Unexpected result from passwd: $result"
-    unless $result =~ /^$user\h+(L|NP|P)\h+/;
+    unless $result =~ /^$user\s+(L|NP|P)\s+/;
 
   if ( $1 eq 'P' ) {
 

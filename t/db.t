@@ -6,17 +6,18 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-  use Test::More tests => 41;
+  use Test::More tests => 40;
   use Data::Dumper;
 
   use_ok 'Rex';
-  use_ok 'Rex::Commands::DB';
   use_ok 'Rex::Config';
 }
 my $dbh;
 SKIP: {
   eval "use Test::mysqld;";
   skip "Test::mysqld not installed", 38 if $@;
+  eval "use Rex::Commands::DB";
+  plan skip_all => 'Not all Test-Dependencies installed' if $@;
   my $mysqld = Test::mysqld->new(
     my_cnf => {
       'skip-networking' => '', # no TCP socket

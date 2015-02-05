@@ -79,6 +79,8 @@ sub connect {
   Rex::Logger::debug("get_openssh_opt()");
   Rex::Logger::debug( Dumper( \%ssh_opts ) );
 
+  $ssh_opts{LogLevel} ||= "QUIET";
+
   my %net_openssh_constructor_options = (
     exists $ssh_opts{initialize_options} ? $ssh_opts{initialize_options} : () );
   my @ssh_opts_line;

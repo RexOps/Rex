@@ -32,7 +32,9 @@ sub _exec {
   my ( $out, $err, $pid, $out_fh, $err_fh );
   my $ssh = Rex::is_ssh();
 
-  ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( {}, $exec );
+  my $tty = !Rex::Config->get_no_tty;
+
+  ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( { tty => $tty }, $exec );
   while ( my $line = <$out_fh> ) {
     $out .= $line;
     $self->execute_line_based_operation( $line, $option )

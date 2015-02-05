@@ -420,7 +420,7 @@ sub file {
     # first upload file to tmp location, to get md5 sum.
     # than we can decide if we need to replace the current (old) file.
 
-    my @splitted_file = split( /\//, $file );
+    my @splitted_file = split( /[\/\\]/, $file );
     my $file_name     = ".rex.tmp." . pop(@splitted_file);
     my $tmp_file_name = (
       $#splitted_file != -1

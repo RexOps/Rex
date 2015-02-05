@@ -50,8 +50,11 @@ file(
   mode    => 777
 );
 
-my %stats = Rex::Commands::Fs::stat($filename);
-is( $stats{mode}, "0777" || is_windows(), "fs chmod ok" );
+SKIP: {
+  skip "chmod not for windows", 1 unless ! is_windows();
+  my %stats = Rex::Commands::Fs::stat($filename);
+  is( $stats{mode}, "0777" || is_windows(), "fs chmod ok" );
+};
 
 my $changed = 0;
 my $content = cat($filename);

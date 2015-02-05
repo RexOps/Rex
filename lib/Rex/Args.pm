@@ -84,7 +84,16 @@ sub import {
           $rex_opts{$name_param}++;
         }
         else {
-          $rex_opts{$name_param} = $c->get;
+          # multiple params defined, create an array
+          if ( exists $rex_opts{$name_param} ) {
+            if ( !ref $rex_opts{$name_param} ) {
+              $rex_opts{$name_param} = [ $rex_opts{$name_param} ];
+            }
+            push @{ $rex_opts{$name_param} }, $c->get;
+          }
+          else {
+            $rex_opts{$name_param} = $c->get;
+          }
         }
       }
       else {

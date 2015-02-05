@@ -1,12 +1,14 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Data::Dumper;
 
 use_ok 'Rex::Args';
 
-push( @ARGV, qw(-h -T -dv -u user -p pass -t 5 foo --name=thename --num=5) );
+push( @ARGV,
+  qw(-h -g test1 -g test2 -T -dv -u user -p pass -t 5 foo --name=thename --num=5)
+);
 
 Rex::Args->import(
   C => {},
@@ -32,10 +34,14 @@ Rex::Args->import(
   P => { type => "string" },
   K => { type => "string" },
   G => { type => "string" },
+  g => { type => "string" },
   t => { type => "integer" },
 );
 
-my %opts = Rex::Args->getopts;
+my %opts   = Rex::Args->getopts;
+my $groups = $opts{g};
+
+is_deeply( $groups, [qw/test1 test2/], "Got array for groups" );
 
 ok( exists $opts{h} && $opts{h}, "single parameter" );
 ok( exists $opts{T} && $opts{T}, "single parameter (2)" );

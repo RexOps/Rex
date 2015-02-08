@@ -48,6 +48,7 @@ use vars qw(@EXPORT);
 use Carp;
 
 use Rex::Cron;
+use Data::Dumper;
 
 @EXPORT = qw(cron cron_entry);
 

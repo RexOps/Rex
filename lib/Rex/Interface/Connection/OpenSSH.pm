@@ -94,22 +94,21 @@ sub connect {
   push @connection_props, default_ssh_opts => \@ssh_opts_line if @ssh_opts_line;
   push @connection_props, proxy_command    => $proxy_command  if $proxy_command;
 
+  my @auth_types_to_try;
   if ( $auth_type && $auth_type eq "pass" ) {
     Rex::Logger::debug("OpenSSH: pass_auth: $server:$port - $user - ******");
-    push @connection_props, password => $pass;
+    push @auth_types_to_try, "pass";
   }
   elsif ( $auth_type && $auth_type eq "krb5" ) {
     Rex::Logger::debug("OpenSSH: krb5_auth: $server:$port - $user");
+    push @auth_types_to_try, "krb5";
 
     # do nothing here
   }
   else { # for key auth, and others
     Rex::Logger::debug(
       "OpenSSH: key_auth or not defined: $server:$port - $user");
-    push @connection_props, key_path => $private_key;
-    if ($pass) {
-      push @connection_props, passphrase => $pass;
-    }
+    push @auth_types_to_try, "key", "pass";
   }
 
   Rex::Logger::debug("OpenSSH options: ");
@@ -117,14 +116,29 @@ sub connect {
   Rex::Logger::debug("OpenSSH constructor options: ");
   Rex::Logger::debug( Dumper( \%net_openssh_constructor_options ) );
 
-  $self->{ssh} =
-    Net::OpenSSH->new( @connection_props, %net_openssh_constructor_options );
+  for my $_try_auth_type (@auth_types_to_try) {
 
-  if ( !$self->{ssh} ) {
-    Rex::Logger::info( "Can't connect to $server", "warn" );
-    $self->{connected} = 0;
+    my @_internal_con_props = @connection_props;
 
-    return;
+    if ( $_try_auth_type eq "pass" ) {
+      push @_internal_con_props, password => $pass;
+    }
+    elsif ( $_try_auth_type eq "key" ) {
+      push @_internal_con_props, key_path => $private_key;
+      if ($pass) {
+        push @_internal_con_props, passphrase => $pass;
+      }
+    }
+
+    $self->{ssh} =
+      Net::OpenSSH->new( @_internal_con_props,
+      %net_openssh_constructor_options );
+
+    if ( !$self->{ssh} ) {
+      Rex::Logger::info( "Can't connect to $server", "warn" );
+      $self->{connected} = 0;
+      return;
+    }
   }
 
   if ( $self->{ssh} && $self->{ssh}->error ) {

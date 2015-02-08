@@ -500,7 +500,27 @@ You can mix the three variants above
 =cut
 
 sub group {
-  Rex::Group->create_group(@_);
+  my @params = @_;
+
+  if (
+       scalar @params <= 7
+    && ( grep { $params[1] eq $_ } qw/ensure system gid/ )
+    && (
+      defined $params[3] ? ( grep { $params[3] eq $_ } qw/ensure system gid/ )
+      : 1
+    )
+    && (
+      defined $params[5] ? ( grep { $params[5] eq $_ } qw/ensure system gid/ )
+      : 1
+    )
+    )
+  {
+    # call create_group
+    Rex::Commands::User::group_resource(@params);
+  }
+  else {
+    Rex::Group->create_group(@params);
+  }
 }
 
 # Register set-handler for group

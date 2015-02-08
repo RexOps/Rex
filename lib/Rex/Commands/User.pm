@@ -293,6 +293,39 @@ sub unlock_password {
   Rex::User->get()->unlock_password(@_);
 }
 
+# internal wrapper for resource style calling
+# will be called from Rex::Commands::group() function
+sub group_resource {
+  my @params = @_;
+
+  my $name   = shift @params;
+  my %option = @params;
+
+  if ( ref $name ne "ARRAY" ) {
+    $name = [$name];
+  }
+  $option{ensure} ||= "present";
+
+  for my $group_name ( @{$name} ) {
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "group", name => $group_name );
+
+    if ( $option{ensure} eq "present" ) {
+      Rex::Commands::User::create_group( $group_name, %option );
+    }
+    elsif ( $option{ensure} eq "absent" ) {
+      Rex::Commands::User::delete_group($group_name);
+    }
+    else {
+      die "Unknown 'ensure' value. Valid values are 'present' and 'absent'.";
+    }
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_end( type => "group", name => $group_name );
+  }
+}
+
 =item create_group($group, {})
 
 Create or update a group.

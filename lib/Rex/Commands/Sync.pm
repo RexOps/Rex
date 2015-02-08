@@ -68,6 +68,7 @@ use Rex::Helper::Path;
 use Rex::Helper::Encode;
 use JSON::XS;
 use Text::Glob 'glob_to_regex';
+use File::Basename 'basename';
 
 @EXPORT = qw(sync_up sync_down);
 
@@ -131,7 +132,7 @@ sub sync_up {
   #
 
   for my $file (@diff) {
-    next if grep { $file->{name} =~ $_ } @excluded_files;
+    next if grep { basename( $file->{name} ) =~ $_ } @excluded_files;
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
@@ -259,7 +260,7 @@ sub sync_down {
   #
 
   for my $file (@diff) {
-    next if grep { $file->{name} =~ $_ } @excluded_files;
+    next if grep { basename( $file->{name} ) =~ $_ } @excluded_files;
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );

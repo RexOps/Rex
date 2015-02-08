@@ -147,6 +147,14 @@ our $LAST_OUTPUT; # this variable stores the last output of a run.
 
 sub run {
   my $cmd = shift;
+
+  if ( ref $cmd eq "ARRAY" ) {
+    for my $_cmd ( @{$cmd} ) {
+      &run( $_cmd, @_ );
+    }
+    return;
+  }
+
   my ( $code, $option );
   if ( ref $_[0] eq "CODE" ) {
     $code = shift;

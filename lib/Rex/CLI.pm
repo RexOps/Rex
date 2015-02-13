@@ -127,6 +127,7 @@ sub __run__ {
     Rex::Config->set_use_cache(0);
   }
 
+  Rex::Logger::debug("This is Rex version: $Rex::VERSION");
   Rex::Logger::debug("Command Line Parameters");
   for my $param ( keys %opts ) {
     Rex::Logger::debug( "\t$param = " . $opts{$param} );

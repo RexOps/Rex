@@ -115,7 +115,7 @@ This modifies the keys given in @options in $file.
       my @commands;
       for my $key ( keys %{$config_option} ) {
         Rex::Logger::debug( "modifying $key -> " . $config_option->{$key} );
-        push @commands, "set $key $config_option->{$key}\n";
+        push @commands, qq(set $key "$config_option->{$key}"\n);
       }
       my $result = _run_augtool(@commands);
       $ret     = $result->{return};
@@ -219,7 +219,7 @@ Insert an item into the file. Here, the order of the options is important. If th
         my $_key = "$file/$label/$key";
         Rex::Logger::debug("Setting $_key => $val");
 
-        push @commands, "set $_key $val\n";
+        push @commands, qq(set $_key "$val"\n);
       }
       my $result = _run_augtool(@commands);
       $ret     = $result->{return};

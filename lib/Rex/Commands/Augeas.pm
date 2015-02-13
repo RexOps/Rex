@@ -54,6 +54,7 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Helper::Path;
+use Rex::Helper::Run;
 use IO::String;
 
 my $has_config_augeas = 0;
@@ -117,7 +118,7 @@ This modifies the keys given in @options in $file.
         push @commands, "set $key $config_option->{$key}\n";
       }
       my $result = _run_augtool(@commands);
-      $ret     = "@{$result->{return}}";
+      $ret     = $result->{return};
       $changed = $result->{changed};
     }
     else {
@@ -163,7 +164,7 @@ Remove an entry.
 
     if ( $is_ssh || !$has_config_augeas ) {
       my $result = _run_augtool(@commands);
-      $ret     = "@{$result->{return}}";
+      $ret     = $result->{return};
       $changed = $result->{changed};
     }
     else {
@@ -221,7 +222,7 @@ Insert an item into the file. Here, the order of the options is important. If th
         push @commands, "set $_key $val\n";
       }
       my $result = _run_augtool(@commands);
-      $ret     = "@{$result->{return}}";
+      $ret     = $result->{return};
       $changed = $result->{changed};
     }
     else {
@@ -298,7 +299,7 @@ Check if an item exists.
     if ( $is_ssh || !$has_config_augeas ) {
       my @paths;
       my $result = _run_augtool("match $aug_key");
-      for my $line ( @{ $result->{return} } ) {
+      for my $line ( split "\n", $result->{return} ) {
         $line =~ s/\s=[^=]+$// or next;
         push @paths, $line;
       }
@@ -307,7 +308,7 @@ Check if an item exists.
         for my $k (@paths) {
           my @ret;
           my $result = _run_augtool("get $k");
-          for my $line ( @{ $result->{return} } ) {
+          for my $line ( split "\n", $result->{return} ) {
             $line =~ s/^[^=]+=\s//;
             push @ret, $line;
           }
@@ -355,7 +356,7 @@ Returns the value of the given item.
     if ( $is_ssh || !$has_config_augeas ) {
       my @lines;
       my $result = _run_augtool("get $file");
-      for my $line ( @{ $result->{return} } ) {
+      for my $line ( split "\n", $result->{return} ) {
         $line =~ s/^[^=]+=\s//;
         push @lines, $line;
       }
@@ -396,16 +397,23 @@ sub _run_augtool {
   $fh->open( ">", $rnd_file );
   $fh->write($_) foreach (@commands);
   $fh->close;
-  my @return = run "augtool --file $rnd_file --autosave";
-  Rex::Logger::debug("Augeas result: @return");
+  my ( $return, $error ) = i_run "augtool --file $rnd_file --autosave",
+    sub { @_ };
   my $ret = $? == 0 ? 1 : 0;
-  Rex::Logger::debug("Augeas command return value: $ret");
-  my $changed = "@return" =~ /Saved/ ? 1 : 0;
+
+  if ($ret) {
+    Rex::Logger::debug("Augeas command return value: $ret");
+    Rex::Logger::debug("Augeas result: $return");
+  }
+  else {
+    Rex::Logger::info( "Augeas command failed: $error", 'warn' );
+  }
+  my $changed = "$return" =~ /Saved/ ? 1 : 0;
   unlink $rnd_file;
 
   {
     result  => $ret,
-    return  => \@return,
+    return  => $return || $error,
     changed => $changed,
   };
 }

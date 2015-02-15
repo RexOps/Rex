@@ -67,7 +67,7 @@ sub md5 {
     my $md5;
 
     my $os = $exec->exec("uname -s");
-    if ( $os =~ /bsd/i ) {
+    if ( $os =~ /bsd|darwin/i ) {
       $md5 = $exec->exec("/sbin/md5 -q '$file'");
     }
     else {

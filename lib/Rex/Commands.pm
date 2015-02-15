@@ -503,8 +503,11 @@ sub group {
   my @params = @_;
 
   if (
-       scalar @params <= 7
-    && ( grep { $params[1] eq $_ } qw/ensure system gid/ )
+    scalar @params <= 7
+    && (
+      defined $params[1] ? ( grep { $params[1] eq $_ } qw/ensure system gid/ )
+      : 0
+    )
     && (
       defined $params[3] ? ( grep { $params[3] eq $_ } qw/ensure system gid/ )
       : 1

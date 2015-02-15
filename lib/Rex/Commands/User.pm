@@ -219,7 +219,7 @@ sub get_user {
   Rex::User->get()->get_user(@_);
 }
 
-=item user_group($user)
+=item user_groups($user)
 
 Returns group membership about $user.
 

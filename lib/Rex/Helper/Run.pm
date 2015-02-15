@@ -69,7 +69,11 @@ sub i_run {
     $is_no_hup = 1;
   }
 
-  my $path = join( ":", Rex::Config->get_path() );
+  my $path;
+
+  if ( !Rex::Config->get_no_path_cleanup() ) {
+    $path = join( ":", Rex::Config->get_path() );
+  }
 
   my $exec = Rex::Interface::Exec->create;
   my ( $out, $err ) = $exec->exec( $cmd, $path, $option );

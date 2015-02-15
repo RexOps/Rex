@@ -46,8 +46,6 @@ sub is_symlink {
   my $ret = $?;
 
   if ( $ret == 0 ) { return 1; }
-
-  die "Error testing for symlink. ($path)" if ( Rex::Config->get_autodie );
 }
 
 sub ln {

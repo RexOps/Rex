@@ -290,13 +290,6 @@ sub wait_for_ssh {
     sleep 1;
   }
 
-  my $i = 5;
-  while ( $i != 0 ) {
-    sleep 1;
-    print ".";
-    $i--;
-  }
-
   print "\n";
 }
 

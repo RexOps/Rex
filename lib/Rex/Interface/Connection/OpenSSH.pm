@@ -60,7 +60,6 @@ sub connect {
 
   $self->{server} = $server;
 
-  my $fail_connect = 0;
   my $proxy_command = Rex::Config->get_proxy_command( server => $server );
 
   $port ||= Rex::Config->get_port( server => $server ) || 22;
@@ -116,29 +115,38 @@ sub connect {
   Rex::Logger::debug("OpenSSH constructor options: ");
   Rex::Logger::debug( Dumper( \%net_openssh_constructor_options ) );
 
-  for my $_try_auth_type (@auth_types_to_try) {
+  my $fail_connect = 0;
+  while (
+    $fail_connect < Rex::Config->get_max_connect_fails( server => $server ) )
+  {
 
-    my @_internal_con_props = @connection_props;
+    for my $_try_auth_type (@auth_types_to_try) {
 
-    if ( $_try_auth_type eq "pass" ) {
-      push @_internal_con_props, password => $pass;
-    }
-    elsif ( $_try_auth_type eq "key" ) {
-      push @_internal_con_props, key_path => $private_key;
-      if ($pass) {
-        push @_internal_con_props, passphrase => $pass;
+      my @_internal_con_props = @connection_props;
+
+      if ( $_try_auth_type eq "pass" ) {
+        push @_internal_con_props, password => $pass;
       }
+      elsif ( $_try_auth_type eq "key" ) {
+        push @_internal_con_props, key_path => $private_key;
+        if ($pass) {
+          push @_internal_con_props, passphrase => $pass;
+        }
+      }
+
+      $self->{ssh} =
+        Net::OpenSSH->new( @_internal_con_props,
+        %net_openssh_constructor_options );
+
     }
 
-    $self->{ssh} =
-      Net::OpenSSH->new( @_internal_con_props,
-      %net_openssh_constructor_options );
+    $fail_connect++;
+  }
 
-    if ( !$self->{ssh} ) {
-      Rex::Logger::info( "Can't connect to $server", "warn" );
-      $self->{connected} = 0;
-      return;
-    }
+  if ( !$self->{ssh} ) {
+    Rex::Logger::info( "Can't connect to $server", "warn" );
+    $self->{connected} = 0;
+    return;
   }
 
   if ( $self->{ssh} && $self->{ssh}->error ) {

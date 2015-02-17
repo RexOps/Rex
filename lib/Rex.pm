@@ -551,24 +551,38 @@ sub import {
         }
       }
 
-      # remove default task auth
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.31 ) {
-        Rex::Logger::debug("activating featureset >= 0.31");
-        Rex::TaskList->create()->set_default_auth(0);
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.0 ) {
+        Rex::Config::debug("Disabling usage of a tty");
+        Rex::Config->set_no_tty(1);
         $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
-        Rex::Logger::debug("activating featureset >= 0.35");
-        $Rex::Commands::REGISTER_SUB_HASH_PARAMETER = 1;
-        $found_feature                              = 1;
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.56 ) {
+        Rex::Logger::debug("Activating autodie.");
+        Rex::Config->set_autodie(1);
+        $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {
-        Rex::Logger::debug("activating featureset >= 0.40");
-        $Rex::Template::BE_LOCAL = 1;
-        $Rex::WITH_EXIT_STATUS   = 1;
-        $found_feature           = 1;
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.55 ) {
+        Rex::Logger::debug("Using Net::OpenSSH if present.");
+        Rex::Config->set_use_net_openssh_if_present(1);
+        $found_feature = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.54 ) {
+        Rex::Logger::debug("Add service check.");
+        Rex::Config->set_check_service_exists(1);
+
+        Rex::Logger::debug("Setting set() to not append data.");
+        Rex::Config->set_set_no_append(1);
+
+        $found_feature = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.53 ) {
+        Rex::Logger::debug("Registering CMDB as template variables.");
+        Rex::Config->set_register_cmdb_template(1);
+        $found_feature = 1;
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.51 ) {
@@ -598,31 +612,23 @@ sub import {
         $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.56 ) {
-        Rex::Logger::debug("Activating autodie.");
-        Rex::Config->set_autodie(1);
-        $found_feature = 1;
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {
+        Rex::Logger::debug("activating featureset >= 0.40");
+        $Rex::Template::BE_LOCAL = 1;
+        $Rex::WITH_EXIT_STATUS   = 1;
+        $found_feature           = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.55 ) {
-        Rex::Logger::debug("Using Net::OpenSSH if present.");
-        Rex::Config->set_use_net_openssh_if_present(1);
-        $found_feature = 1;
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
+        Rex::Logger::debug("activating featureset >= 0.35");
+        $Rex::Commands::REGISTER_SUB_HASH_PARAMETER = 1;
+        $found_feature                              = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.53 ) {
-        Rex::Logger::debug("Registering CMDB as template variables.");
-        Rex::Config->set_register_cmdb_template(1);
-        $found_feature = 1;
-      }
-
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.54 ) {
-        Rex::Logger::debug("Add service check.");
-        Rex::Config->set_check_service_exists(1);
-
-        Rex::Logger::debug("Setting set() to not append data.");
-        Rex::Config->set_set_no_append(1);
-
+      # remove default task auth
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.31 ) {
+        Rex::Logger::debug("activating featureset >= 0.31");
+        Rex::TaskList->create()->set_default_auth(0);
         $found_feature = 1;
       }
 
@@ -668,6 +674,12 @@ sub import {
         Rex::Logger::debug(
           "Using sudo without locales. this _will_ break things!");
         Rex::Config->set_sudo_without_locales(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "tty" ) {
+        Rex::Logger::debug("Enabling pty usage for ssh");
+        Rex::Config->set_no_tty(0);
         $found_feature = 1;
       }
 

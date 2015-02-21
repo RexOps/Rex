@@ -26,12 +26,12 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start   => '/etc/rc.d/%s start >/dev/null',
-    restart => '/etc/rc.d/%s restart >/dev/null',
-    stop    => '/etc/rc.d/%s stop >/dev/null',
-    reload  => '/etc/rc.d/%s reload >/dev/null',
-    status  => '/etc/rc.d/%s status >/dev/null',
-    action  => '/etc/rc.d/%s %s >/dev/null',
+    start   => '/etc/rc.d/%s start',
+    restart => '/etc/rc.d/%s restart',
+    stop    => '/etc/rc.d/%s stop',
+    reload  => '/etc/rc.d/%s reload',
+    status  => '/etc/rc.d/%s status',
+    action  => '/etc/rc.d/%s %s',
   };
 
   return $self;

@@ -25,14 +25,14 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start          => '/etc/init.d/%s start >/dev/null',
-    restart        => '/etc/init.d/%s restart >/dev/null',
-    stop           => '/etc/init.d/%s stop >/dev/null',
-    reload         => '/etc/init.d/%s reload >/dev/null',
-    status         => '/etc/init.d/%s status >/dev/null',
+    start          => '/etc/init.d/%s start',
+    restart        => '/etc/init.d/%s restart',
+    stop           => '/etc/init.d/%s stop',
+    reload         => '/etc/init.d/%s reload',
+    status         => '/etc/init.d/%s status',
     ensure_stop    => 'rc-update del %s',
     ensure_start   => 'rc-update add %s',
-    action         => '/etc/init.d/%s %s >/dev/null',
+    action         => '/etc/init.d/%s %s',
     service_exists => 'rc-config list | grep "\s%s\s"',
   };
 

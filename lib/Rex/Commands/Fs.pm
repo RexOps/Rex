@@ -947,7 +947,7 @@ Mount devices.
           on_change  => sub { say "device mounted"; };
  
    # to umount a device
-  mount "/dev/sda6", "/mnt/sda6",
+   mount "/dev/sda6", "/mnt/sda6",
           ensure => "absent";
  
  };

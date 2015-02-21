@@ -530,7 +530,6 @@ sub import {
     if ( !ref($addition1) ) {
       $addition1 = [$addition1];
     }
-
     for my $add ( @{$addition1} ) {
 
       my $found_feature = 0;
@@ -552,7 +551,7 @@ sub import {
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.0 ) {
-        Rex::Config::debug("Disabling usage of a tty");
+        Rex::Logger::debug("Disabling usage of a tty");
         Rex::Config->set_no_tty(1);
         $found_feature = 1;
       }
@@ -791,7 +790,7 @@ sub import {
 
 =head1 CONTRIBUTORS
 
-Many thanks to the contributors for their work. Please see <a href="https://github.com/RexOps/Rex/blob/master/CONTRIBUTORS">CONTRIBUTORS</a> file for a complete list.
+Many thanks to the contributors for their work. Please see L<https://github.com/RexOps/Rex/blob/master/CONTRIBUTORS> file for a complete list.
 
 =back
 

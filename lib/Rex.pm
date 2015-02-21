@@ -790,9 +790,7 @@ sub import {
 
 =head1 CONTRIBUTORS
 
-Many thanks to the contributors for their work. Please see L<https://github.com/RexOps/Rex/blob/master/CONTRIBUTORS> file for a complete list.
-
-=back
+Many thanks to the contributors for their work. Please see L<CONTRIBUTORS|https://github.com/RexOps/Rex/blob/master/CONTRIBUTORS> file for a complete list.
 
 =head1 LICENSE
 

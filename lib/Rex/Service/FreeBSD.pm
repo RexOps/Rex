@@ -26,12 +26,12 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start   => '/usr/local/etc/rc.d/%s onestart >/dev/null',
-    restart => '/usr/local/etc/rc.d/%s onerestart >/dev/null',
-    stop    => '/usr/local/etc/rc.d/%s onestop >/dev/null',
-    reload  => '/usr/local/etc/rc.d/%s onereload >/dev/null',
-    status  => '/usr/local/etc/rc.d/%s onestatus >/dev/null',
-    action  => '/usr/local/etc/rc.d/%s %s >/dev/null',
+    start   => '/usr/local/etc/rc.d/%s onestart',
+    restart => '/usr/local/etc/rc.d/%s onerestart',
+    stop    => '/usr/local/etc/rc.d/%s onestop',
+    reload  => '/usr/local/etc/rc.d/%s onereload',
+    status  => '/usr/local/etc/rc.d/%s onestatus',
+    action  => '/usr/local/etc/rc.d/%s %s',
   };
 
   return $self;

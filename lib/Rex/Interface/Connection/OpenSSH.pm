@@ -114,8 +114,11 @@ sub connect {
   Rex::Logger::debug( Dumper( \@connection_props ) );
   Rex::Logger::debug("OpenSSH constructor options: ");
   Rex::Logger::debug( Dumper( \%net_openssh_constructor_options ) );
+  Rex::Logger::debug("Trying following auth types:");
+  Rex::Logger::debug( Dumper( \@auth_types_to_try ) );
 
   my $fail_connect = 0;
+CONNECT_TRY:
   while (
     $fail_connect < Rex::Config->get_max_connect_fails( server => $server ) )
   {
@@ -138,6 +141,9 @@ sub connect {
         Net::OpenSSH->new( @_internal_con_props,
         %net_openssh_constructor_options );
 
+      if ( $self->{ssh} && !$self->{ssh}->error ) {
+        last CONNECT_TRY;
+      }
     }
 
     $fail_connect++;

@@ -345,10 +345,10 @@ sub get_tmp_dir {
       }
       my ($out) =
         $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
-      chomp $out;
-      $out =~ s/[\r\n]//gms;
 
       if ( $? == 0 && $out ) {
+        $out =~ s/[\r\n]//gms;
+
         $cache->set( "tmpdir", $out );
         return $out;
       }

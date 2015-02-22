@@ -286,18 +286,32 @@ sub netstat {
   if ( $? != 0 ) {
     die("Error running netstat");
   }
-  my ( $in_inet, $in_unix ) = ( 0, 0 );
+  my ( $in_inet, $in_unix, $in_unknown ) = ( 0, 0, 0 );
   for my $line (@netstat) {
     if ( $in_inet == 1 ) { ++$in_inet; next; }
     if ( $in_unix == 1 ) { ++$in_unix; next; }
     if ( $line =~ m/^Active Internet/ ) {
-      $in_inet = 1;
+      $in_inet    = 1;
+      $in_unix    = 0;
+      $in_unknown = 0;
       next;
     }
 
     if ( $line =~ m/^Active UNIX/ ) {
-      $in_inet = 0;
-      $in_unix = 1;
+      $in_inet    = 0;
+      $in_unix    = 1;
+      $in_unknown = 0;
+      next;
+    }
+
+    if ( $line =~ m/^Active/ ) {
+      $in_inet    = 0;
+      $in_unix    = 0;
+      $in_unknown = 1;
+      next;
+    }
+
+    if ($in_unknown) {
       next;
     }
 
@@ -367,7 +381,7 @@ sub netstat {
       }
 
       $state =~ s/^\s|\s$//g if ($state);
-      $flags =~ s/\s+$//;
+      $flags =~ s/\s+$//     if ($flags);
       $cmd =~ s/\s+$//;
 
       my $data = {

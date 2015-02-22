@@ -631,6 +631,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "no_autodie" ) {
+        Rex::Logger::debug("disabling autodie");
+        Rex::Config->set_autodie(0);
+        $found_feature = 1;
+      }
+
       if ( $add eq "rex_kvm_agent" ) {
         Rex::Logger::debug(
           "Activating experimental support for rex-kvm-agent.");

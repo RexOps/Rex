@@ -189,6 +189,8 @@ sub rename {
   my ( $self, $old, $new ) = @_;
 
   my $ret;
+  my $orig_path_old = $old;
+  my $orig_path_new = $new;
 
   Rex::Commands::profiler()->start("rename: $old -> $new");
   ($old) = $self->_normalize_path($old);
@@ -198,17 +200,17 @@ sub rename {
   my $exec = Rex::Interface::Exec->create;
   $exec->exec("/bin/mv $old $new");
 
-  if ( ( !$self->is_file($old) && !$self->is_dir($old) )
-    && ( $self->is_file($new) || $self->is_dir($new) ) )
+  if ( ( !$self->is_file($orig_path_old) && !$self->is_dir($orig_path_old) )
+    && ( $self->is_file($orig_path_new) || $self->is_dir($orig_path_new) ) )
   {
     $ret = 1;
   }
   else {
-    die "Error renaming file or directory ($old -> $new)."
+    die "Error renaming file or directory ($orig_path_old -> $orig_path_new)."
       if ( Rex::Config->get_autodie );
   }
 
-  Rex::Commands::profiler()->end("rename: $old -> $new");
+  Rex::Commands::profiler()->end("rename: $orig_path_old -> $orig_path_new");
 
   return $ret;
 }

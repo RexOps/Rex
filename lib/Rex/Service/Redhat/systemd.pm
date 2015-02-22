@@ -26,11 +26,11 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start          => 'systemctl start %s >/dev/null',
-    restart        => 'systemctl restart %s >/dev/null',
-    stop           => 'systemctl stop %s >/dev/null',
-    reload         => 'systemctl reload %s >/dev/null',
-    status         => 'systemctl status %s >/dev/null',
+    start          => 'systemctl start %s',
+    restart        => 'systemctl restart %s',
+    stop           => 'systemctl stop %s',
+    reload         => 'systemctl reload %s',
+    status         => 'systemctl is-active %s',
     ensure_stop    => 'systemctl disable %s',
     ensure_start   => 'systemctl enable %s',
     service_exists => 'systemctl show %s | grep LoadState=loaded',

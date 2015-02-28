@@ -2,13 +2,36 @@
 
 With (R)?ex you can manage all your boxes from a central point through the complete process of configuration management and software deployment.
 
+## Getting started
+
+We have a [Getting started guide](http://www.rexify.org/howtos/start.html) on the website that should help you with the first steps.
+
 ## Installation
 
 There are several methods to install (R)?ex: use your distro's package manager, download it from CPAN or build it from source. Check out the [Get Rex](http://www.rexify.org/get/index.html) page on the website for the different options, and choose the one that fits you best.
 
-## Getting started
+### Build from source
 
-We have a [Getting started guide](http://www.rexify.org/howtos/start.html) on the website that should help you with the first steps.
+To build (R)?ex from source, you need to install [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla):
+```
+cpanm Dist::Zilla
+```
+
+Dist::Zilla provides the *dzil* command, which you can use to install (R)?ex dependencies:
+```
+dzil authordeps --missing | cpanm
+dzil listdeps --missing | cpanm
+```
+
+Then to install (R)?ex:
+```
+dzil install
+```
+
+Or to build a .tar.gz release file:
+```
+dzil build
+```
 
 ## Need help?
 
@@ -30,24 +53,4 @@ We use perltidy to help us to maintain a consequent code style throughout the pr
 
 If you have any questions about how to implement something, join us on irc.freenode.net / #rex.
 
-## Build from source
-
-If you want to build Rex from this source tree, you need to install [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla).
-
-Dist::Zilla comes with the *dzil* command.
-
-To build a .tar.gz release file:
-```
-dzil build
-```
-
-To install rex you can use:
-```
-dzil install
-```
-
-To install the dependencies with *cpanm* you can use:
-```
-dzil listdeps --missing | cpanm
-```
 

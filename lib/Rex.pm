@@ -389,7 +389,8 @@ sub connect {
   my $cached_conn = $param->{"cached_connection"};
 
   if ( !$cached_conn ) {
-    my $conn = Rex::Interface::Connection->create("SSH");
+    my $conn =
+      Rex::Interface::Connection->create(Rex::Config::get_connection_type);
 
     $conn->connect(
       user     => $user,

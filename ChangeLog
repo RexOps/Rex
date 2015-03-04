@@ -1,3 +1,82 @@
+2015-03-08 <jan.gehring, gmail.com> (1.0.0)
+  * fixed systemd status query - Jan
+  * test output of tmpdir gathering before working with it. - Jan
+  * fixed removing some tmp files - Jan
+  * fixed some warnings for netstat listing if reading an unknown transport layer - Jan
+  * added no_autodie feature flag - Jan
+  * fixed is_file() for files with spaces - Jan
+  * Fix POD - Ferenc Erki
+  * don't redirect stdout 2 times. freebsd don't like it - Jan
+  * added tty feature flag and sorted the flags - Jan
+  * added some defaults for kvm boxes (network) - Jan
+  * fixed autodie bug for is_symlink function - Jan
+  * added reconnect tries to Net::OpenSSH connections - Jan
+  * Allow spaces in Augeas values - Andrew Beverley
+  * Warn if Augeas command fails - Andrew Beverley
+  * fixed a problem if a server group was empty - Jan
+  * dist.ini: Add Twitter and IRC links to metaresources block - Brian Manning
+  * Rex::Commands::MD5: Make Rex use the /sbin/md5 binary on OS X - Brian Manning
+  * Rex::Commands::User: fix typo in POD (user_group -> user_groups) - Brian Manning
+  * Rex::Helper:Run->i_run: check no_path_cleanup before calling get_path - Brian Manning
+  * stop 'profile' before returning from a subroutine. - Andrej Zverev
+  * Speed up connecting to Boxes - Ferenc Erki
+  * allow call of run() command with arrayRef - Jan
+  * fixed sync_up/sync_down with Text::Glob - Jan
+  * fixed authentication, failing if try password auth without mentioning pass_auth directly - Jan
+  * fixed line endings with openssh and pty - Jan
+  * Added possibility to use group() also as a resource function - Jan
+  * added possibility to define task parameters multiple times from cli. - #516 - Jan
+  * fixed windows tests - #514 - Jan
+  * fixed #555 - default for Net::OpenSSH now also spawn a pty. Can be disabled with feature no_tty - Jan
+  * Die if trying to run augeas without augtool installed (close #547) - Andrew Beverley
+  * Skip db tests if there are missing dependencies (fix #548, close #549) - Volker Kroll (vkroll)
+  * Restore perl-5.8.9 compatibility - Ferenc Erki
+  * Add test for minimum perl version required - Ferenc Erki
+  * Be more explicit about required perl version - Ferenc Erki
+  * Stop append_or_amend_line inserting extra blank lines - Andrew Beverley
+  * Add tests for append_or_amend_line - Andrew Beverley
+  * fixed Rex::Box with Net::OpenSSH - Jan
+  * rex/CLI.pm: update docs for Rex options - Brian Manning
+  * CLI.pm: throw error if -T used with task arg, but no matching task found - Brian Manning
+  * fixed #539 - detect primary network address - Jan
+  * Add append_or_amend_line function to File command - Andrew Beverley
+  * Drop Rex::Helper::Glob - Ferenc Erki
+  * Suppress noisy test output - Ferenc Erki
+  * Suppress warning about a variable being used only once - Ferenc Erki
+  * Tidy up all the tests - Ferenc Erki
+  * Use more helpful test functions - Ferenc Erki
+  * use more appropriate functions from Test::More in tests - reneeb
+  * some class inherit cleanup - Jan
+  * Use correct path when using augeas insert - Andrew Beverley
+  * Return correct output from augtool - Andrew Beverley
+  * Fix false positive when using "augeas exists" - Andrew Beverley
+  * Optimise Rex::Commands::Augeas - Andrew Beverley
+  * Add user base class for those calls not supported in all OS - Andrew Beverley
+  * Add password lock/unlock functions (Linux only) - Andrew Beverley
+  * fixed resource end - Jan
+  * Add PkgConf command to configure packages - Andrew Beverley
+  * fixed set_openssh_opt() function to allow multiple options - Jan
+  * fixed #527 - Rex::Output leaks semaphores and shared memory - Jan
+  * improved continous_read option for Net::SSH2 connection mode - Jan
+  * tail now also works with sudo also fixed #530 - Jan
+  * use Net::OpenSSH is now default. don't need feature flag 0.55 - Jan
+  * fixed line based operation with OpenSSH connection mode - Jan
+  * migrated augeas module into Rex core - #532 - Jan
+  * added partial sudo support for rsync command - Jan
+  * fixed #529 - odd number of elements - Jan
+  * fixed #528 -Amazon list_services, doesn't get all ec2 instances - thanks to David Golovan - Jan
+  * fixed an issue that causes the parser to think the rexfile has an error - Jan
+  * start of unit-test for Rex::Commands::DB - Volker Kroll (vkroll)
+  * better fix for #521, don't print all servers by rex -T. Also fixed group authentication. - Jan
+  * patch from twitter/@tekcurmudgeon to allow setting of gpgkey for a repository - Jan
+  * fixed late group lookup - #521 - Jan
+  * if the evaluation of the Rexfile was without syntax errors, but don't return a true value, try to evaluate it manually. so is is not needed to return a true value at the end. - fix for #513 - Jan
+  * fixed path resolution for private_key and public_key when used a ~ (tilde) sign. #517 - Jan
+  * fix rsync with port definition - #520 - Jan
+  * added parse_templates option to sync_up function, so that template parsing can be prevented - #519 - Jan
+  * Rex::FS::File accepts filenames now - reneeb
+  * Add initial version of changelog generator - Ferenc Erki
+
 2015-01-11 Jan Gehring <jan.gehring, rexify.org> (0.57.0)
   * allow definition of gpgkey for redhat/yum repositories - #522 - tekcurmudgeon
   * fixed Group defined after task definition - #521

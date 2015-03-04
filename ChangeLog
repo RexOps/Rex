@@ -1,4 +1,5 @@
 2015-03-08 <jan.gehring, gmail.com> (1.0.0)
+  * Remove hardcoded connection type (fix #579) - Ferenc Erki
   * fixed systemd status query - Jan
   * test output of tmpdir gathering before working with it. - Jan
   * fixed removing some tmp files - Jan

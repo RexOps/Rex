@@ -20,6 +20,7 @@ EOF
 )
 
 for x in lib/Rex/Commands/Box.pm \
+   lib/Rex/Commands/Augeas.pm \
    lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/Cron.pm \
    lib/Rex/Commands/DB.pm \

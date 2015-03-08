@@ -66,7 +66,7 @@ sub is_dir {
 
   Rex::Commands::profiler()->end("is_dir: $path");
 
-  defined $stat ? return S_ISDIR( $stat->{mode} ) : return;
+  defined $stat ? return S_ISDIR( $stat->{mode} ) : return 0;
 }
 
 sub is_file {
@@ -84,8 +84,9 @@ sub is_file {
       || S_ISLNK( $stat->{mode} )
       || S_ISBLK( $stat->{mode} )
       || S_ISCHR( $stat->{mode} )
-      || S_ISFIFO( $stat->{mode} ) )
-    : return;
+      || S_ISFIFO( $attr->perm )
+      || S_ISSOCK( $attr->perm ) )
+    : return 0;
 }
 
 sub unlink {

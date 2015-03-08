@@ -29,23 +29,25 @@ sub new {
 }
 
 sub run_test {
-  my ( $self, $file, $stats ) = @_;
+  my ( $self, $path, $stats ) = @_;
 
-  if ( !is_file($file) ) {
-    $self->ok( 0, "Stat: file $file not found" );
+  my %stat;
+  eval { %stat = stat $path; };
+
+  if ($@) {
+    $self->ok( 0, "has_stat: cannot stat $path." );
+    $self->diag($@);
     return;
   }
 
-  my %stat = stat $file;
-
   if ( defined( $stats->{'owner'} ) ) {
     my $uid = get_uid( $stats->{'owner'} );
-    $self->ok( $uid == $stat{'uid'}, "Owner is $stats->{'owner'}" );
+    $self->ok( $uid == $stat{'uid'}, "Owner of $path is $stats->{'owner'}" );
   }
 
   if ( defined( $stats->{'group'} ) ) {
     my $gid = get_gid( $stats->{'group'} );
-    $self->ok( $gid == $stat{'gid'}, "Group is $stats->{'group'}" );
+    $self->ok( $gid == $stat{'gid'}, "Group of $path is $stats->{'group'}" );
   }
 }
 

@@ -82,12 +82,12 @@ sub rmdir {
 
 sub is_dir {
   my ( $self, $path ) = @_;
-  if ( -d $path ) { return 1; }
+  ( -d $path ) ? return 1 : return 0;
 }
 
 sub is_file {
   my ( $self, $file ) = @_;
-  if ( -f $file ) { return 1; }
+  ( -f $file || -l _ || -b _ || -c _ || -p _ || -S _ ) ? return 1 : return 0;
 }
 
 sub unlink {

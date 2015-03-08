@@ -99,7 +99,7 @@ sub is_dir {
   $self->_exec("test -d $path");
   my $ret = $?;
 
-  if ( $ret == 0 ) { return 1; }
+  $ret == 0 ? return 1 : return 0;
 }
 
 sub is_file {
@@ -113,11 +113,7 @@ sub is_file {
   $self->_exec("test -d $file");
   my $is_dir = $?;
 
-  if ( $is_file == 0 && $is_dir != 0 ) {
-    return 1;
-  }
-
-  return;
+  ( $is_file == 0 && $is_dir != 0 ) ? return 1 : return 0;
 }
 
 sub unlink {

@@ -62,6 +62,7 @@ for x in \
    lib/Rex/Logger.pm \
    lib/Rex/Task.pm \
    lib/Rex/Template.pm \
+   lib/Rex/Test/Base.pm \
    lib/Rex/Transaction.pm \
    lib/Rex/Virtualization/Docker.pm \
    lib/Rex/Virtualization/LibVirt.pm \

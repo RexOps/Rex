@@ -19,8 +19,15 @@ EOF
 
 )
 
-for x in lib/Rex/Commands/Box.pm \
+for x in \
+   lib/Rex.pm \
+   lib/Rex/Box/Amazon.pm \
+   lib/Rex/Box/Base.pm \
+   lib/Rex/Box/KVM.pm \
+   lib/Rex/Box/VBox.pm \
+   lib/Rex/Commands.pm \
    lib/Rex/Commands/Augeas.pm \
+   lib/Rex/Commands/Box.pm \
    lib/Rex/Commands/Cloud.pm \
    lib/Rex/Commands/Cron.pm \
    lib/Rex/Commands/DB.pm \
@@ -50,21 +57,15 @@ for x in lib/Rex/Commands/Box.pm \
    lib/Rex/Commands/Upload.pm \
    lib/Rex/Commands/User.pm \
    lib/Rex/Commands/Virtualization.pm \
-   lib/Rex/Box/Base.pm \
-   lib/Rex/Box/Amazon.pm \
-   lib/Rex/Box/KVM.pm \
-   lib/Rex/Box/VBox.pm \
-   lib/Rex/Virtualization/VBox.pm \
-   lib/Rex/Virtualization/LibVirt.pm \
-   lib/Rex/Virtualization/Docker.pm \
    lib/Rex/FS/File.pm \
-   lib/Rex/Commands.pm \
    lib/Rex/Hardware.pm \
+   lib/Rex/Logger.pm \
    lib/Rex/Task.pm \
    lib/Rex/Template.pm \
-   lib/Rex/Logger.pm \
    lib/Rex/Transaction.pm \
-   lib/Rex.pm \
+   lib/Rex/Virtualization/Docker.pm \
+   lib/Rex/Virtualization/LibVirt.pm \
+   lib/Rex/Virtualization/VBox.pm \
 
    do
 

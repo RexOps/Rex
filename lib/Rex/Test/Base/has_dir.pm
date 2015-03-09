@@ -28,7 +28,7 @@ sub new {
 
 sub run_test {
   my ( $self, $path ) = @_;
-  $self->ok( is_dir($path), "Directory $path found." );
+  $self->ok( is_dir($path), "Found $path directory." );
 }
 
 1;

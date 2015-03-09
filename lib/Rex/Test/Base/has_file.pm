@@ -28,7 +28,7 @@ sub new {
 
 sub run_test {
   my ( $self, $file ) = @_;
-  $self->ok( is_file($file), "File $file found." );
+  $self->ok( is_file($file), "Found $file file." );
 }
 
 1;

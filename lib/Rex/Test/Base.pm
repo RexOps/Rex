@@ -218,6 +218,10 @@ sub finish {
 
 Test if the content of $file matches against $regexp.
 
+=item has_dir($path)
+
+Test if $path is present and is a directory.
+
 =item has_file($file)
 
 Test if $file is present.

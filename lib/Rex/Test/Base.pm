@@ -10,8 +10,7 @@ Rex::Test::Base - Basic Test Module
 
 =head1 DESCRIPTION
 
-This module is a basic Test module to test your Code with the help of local VMs. To create a test you first have to create the "t" directory.
-Then you can create your test files inside this directory.
+This is a basic test module to test your code with the help of local VMs. You can place your tests in the "t" directory.
 
 =head1 EXAMPLE
 
@@ -97,7 +96,7 @@ sub new {
 
 =item name($name)
 
-The name of the test. For each test a new vm will be created named after $name.
+The name of the test. A VM called $name will be created for each test. If the VM already exists, Rex will try to reuse it.
 
 =cut
 
@@ -108,7 +107,7 @@ sub name {
 
 =item vm_auth(%auth)
 
-Authentication option for the VM.
+Authentication options for the VM. It accepts the same parameters as C<Rex::Box::Base-E<gt>auth()>.
 
 =cut
 
@@ -119,7 +118,7 @@ sub vm_auth {
 
 =item base_vm($vm)
 
-The url to a vm that should be used as base VM.
+The URL to a base image to be used for the test VM.
 
 =cut
 
@@ -136,7 +135,7 @@ sub test(&) {
 
 =item redirect_port($port)
 
-The redirected SSH port. Default 2222.
+Redirect local $port to the VM's SSH port (default: 2222).
 
 =cut
 
@@ -147,7 +146,7 @@ sub redirect_port {
 
 =item run_task($task)
 
-The task to run on the test vm. You can run multiple tasks by passing an array reference.
+The task to run on the test VM. You can run multiple tasks by passing an array reference.
 
 =cut
 
@@ -210,31 +209,31 @@ sub finish {
 
 Test if the content of $file matches against $regexp.
 
-=item has_package($package, $version)
-
-Test if the package $package is installed, optionally at $version.
-
 =item has_file($file)
 
-Test if the file $file is present.
+Test if $file is present.
+
+=item has_package($package, $version)
+
+Test if $package is installed, optionally at $version.
 
 =item has_service_running($service)
 
-Test if the service $service is running.
+Test if $service is running.
 
 =item has_service_stopped($service)
 
-Test if the service $service is stopped.
+Test if $service is stopped.
 
 =item has_stat($file, $stat)
 
-Test if the file $file has properties described in hash reference $stat. List of supported checks:
+Test if $file has properties described in hash reference $stat. List of supported checks:
 
 =over 4
 
-=item - group
+=item group
 
-=item - owner
+=item owner
 
 =back
 

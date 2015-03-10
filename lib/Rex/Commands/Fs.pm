@@ -129,7 +129,7 @@ sub symlink {
     ->report_resource_start( type => "symlink", name => $to );
 
   my $fs = Rex::Interface::Fs->create;
-  if ( $fs->is_symlink($to) ) {
+  if ( $fs->is_symlink($to) && $fs->readlink($to) eq $from ) {
     Rex::get_current_connection()->{reporter}->report( changed => 0, );
   }
   else {
@@ -182,12 +182,9 @@ sub unlink {
     Rex::get_current_connection()->{reporter}
       ->report_resource_start( type => "unlink", name => $file );
 
-    if ( !$fs->is_file($file) ) {
-      Rex::get_current_connection()->{reporter}->report( changed => 0, );
-    }
-    else {
+    if ( $fs->is_file($file) || $fs->is_symlink($file) ) {
       $fs->unlink($file);
-      if ( $fs->is_file($file) ) {
+      if ( $fs->is_file($file) || $fs->is_symlink($file) ) {
         die "Can't remove $file.";
       }
 
@@ -196,6 +193,9 @@ sub unlink {
         Rex::get_current_connection()->{reporter}
           ->report( changed => 1, message => "File $file removed." );
       }
+    }
+    else {
+      Rex::get_current_connection()->{reporter}->report( changed => 0, );
     }
 
     Rex::get_current_connection()->{reporter}

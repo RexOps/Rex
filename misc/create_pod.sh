@@ -106,8 +106,8 @@ for x in \
                   | perl -lpe "s/<a href=\"\/api\/Rex\/Commands\/([^\.]+)\.html\">/<a href=\"\/api\/Rex\/Commands\/\$1.pm.html\">/g" \
                   | perl -lpe "s/the (Rex::Commands::[a-zA-Z0-9]+) manpage/\$1/g" \
                   | perl -lpe "s/<strong><a name=\"[^\"]+\" class=\"item\">(.*?)<\/a><\/strong>/<strong>\$1<\/strong>/g" \
-                  | perl -le '$/= undef; $content = <>; my ($title) = ($content =~ m/<h2>NAME<\/h2>\n<p>([^>]+)<\/p>/msi); $content =~ s/\{\{TITLE\}\}/$title/; print $content;' \
-                  | perl -le '$/ = undef; $content = <>; my ($desc) = ($content =~ m/<h2>DESCRIPTION<\/h2>\s*<p>([^>]+)<\/p>/msi); $content =~ s/\{\{DESC\}\}/$desc/; print $content;' \
+                  | perl -le '$/= undef; $content = <>; my ($title) = ($content =~ m/<h1[^>]+>NAME<\/h1>\s*<p>([^>]+)<\/p>/msi); $content =~ s/\{\{TITLE\}\}/$title/; print $content;' \
+                  | perl -le '$/ = undef; $content = <>; my ($desc) = ($content =~ m/<h1[^>]+>DESCRIPTION<\/h1>\s*<p>([^>]+)<\/p>/msi); $content =~ s/\{\{DESC\}\}/$desc/; print $content;' \
                   | perl -lpe "s|\{PATH\}|$RELPATH|g" \
                   | perl -lpe 's|<a href=".+?&quot">(.+?)&quot</a>;|$1&quot;|g' \
                   | perl -lpe 's|&quot;|"|g'

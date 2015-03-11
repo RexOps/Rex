@@ -192,6 +192,12 @@ sub ok {
   $tb->ok( $test, $msg );
 }
 
+sub diag {
+  my ( $self, $msg ) = @_;
+  my $tb = Rex::Test::Base->builder;
+  $tb->diag($msg);
+}
+
 sub finish {
   my $tb = Rex::Test::Base->builder;
   $tb->done_testing();

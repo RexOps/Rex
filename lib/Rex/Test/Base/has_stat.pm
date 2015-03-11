@@ -42,12 +42,20 @@ sub run_test {
 
   if ( defined( $stats->{'owner'} ) ) {
     my $uid = get_uid( $stats->{'owner'} );
-    $self->ok( $uid == $stat{'uid'}, "Owner of $path is $stats->{'owner'}" );
+    my $result = defined $uid ? $uid == $stat{'uid'} : 0;
+
+    $self->ok( $result, "Owner of $path is $stats->{'owner'}" );
+    $self->diag("has_stat: get_uid failed for $stats->{'owner'}.")
+      unless defined $uid;
   }
 
   if ( defined( $stats->{'group'} ) ) {
     my $gid = get_gid( $stats->{'group'} );
-    $self->ok( $gid == $stat{'gid'}, "Group of $path is $stats->{'group'}" );
+    my $result = defined $gid ? $gid == $stat{'gid'} : 0;
+
+    $self->ok( $result, "Group of $path is $stats->{'group'}" );
+    $self->diag("has_stat: get_gid failed for $stats->{'group'}.")
+      unless defined $gid;
   }
 }
 

@@ -201,6 +201,9 @@ sub diag {
 sub finish {
   my $tb = Rex::Test::Base->builder;
   $tb->done_testing();
+  $tb->is_passing()
+    ? print "PASS\n"
+    : print "FAIL\n";
   $tb->reset();
   Rex::pop_connection();
 }

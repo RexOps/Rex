@@ -45,6 +45,7 @@ for x in \
    lib/Rex/Commands/Notify.pm \
    lib/Rex/Commands/Partition.pm \
    lib/Rex/Commands/Pkg.pm \
+   lib/Rex/Commands/PkgConf.pm \
    lib/Rex/Commands/Process.pm \
    lib/Rex/Commands/Rsync.pm \
    lib/Rex/Commands/Run.pm \

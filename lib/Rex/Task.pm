@@ -724,7 +724,6 @@ Run the task on $server.
 sub run {
 
   # someone used this function directly... bail out
-
   if ( ref( $_[0] ) ) {
     my ( $self, $server, %options ) = @_;
 

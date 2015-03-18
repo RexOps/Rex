@@ -194,6 +194,10 @@ sub create_task {
     };
   }
 
+  if ( exists $Rex::Commands::auth_late{$task_name} ) {
+    $task_hash{auth} = $Rex::Commands::auth_late{$task_name};
+  }
+
   $self->{tasks}->{$task_name} = Rex::Task->new(%task_hash);
 
 }

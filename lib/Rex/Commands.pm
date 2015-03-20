@@ -105,7 +105,7 @@ use Rex;
 use Rex::Helper::Misc;
 
 use vars
-  qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler);
+  qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler %auth_late);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(task desc group
@@ -648,7 +648,9 @@ sub auth {
   }
 
   if ( !$group ) {
-    Rex::Logger::info("Group or Task $entity not found.");
+    Rex::Logger::info(
+      "Group or Task $entity not found. Assuming late-binding for task.");
+    $auth_late{$entity} = \%data;
     return;
   }
 

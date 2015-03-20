@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 48;
+use Test::More tests => 52;
 use Data::Dumper;
 
 use_ok 'Rex';
@@ -136,4 +136,24 @@ for my $server ( @{$servers} ) {
   is( $auth->{private_key}, "priv.key2" );
   is( $auth->{public_key},  "pub.key2" );
 }
+
+auth(
+  for         => "testa4",
+  user        => "baruser",
+  password    => "barpass",
+  private_key => "testa4.priv",
+  public_key  => "testa4.pub"
+);
+
+task(
+  "testa4",
+  sub {
+  }
+);
+
+$auth = Rex::TaskList->create()->get_task("testa4")->{auth};
+is( $auth->{user},        "baruser" );
+is( $auth->{password},    "barpass" );
+is( $auth->{private_key}, "testa4.priv" );
+is( $auth->{public_key},  "testa4.pub" );
 

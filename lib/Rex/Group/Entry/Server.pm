@@ -88,6 +88,10 @@ sub new {
     delete $self->{auth_type};
   }
 
+  if ( !ref $self->{__group__} ) {
+    $self->{__group__} = [];
+  }
+
   return $self;
 }
 
@@ -284,6 +288,21 @@ sub merge_auth {
   }
 
   return %new_auth;
+}
+
+sub append_to_group {
+  my ( $self, $group ) = @_;
+  push @{ $self->{__group__} }, $group;
+}
+
+sub group {
+  my ($self) = @_;
+  return $self->groups;
+}
+
+sub groups {
+  my ($self) = @_;
+  return @{ $self->{__group__} };
 }
 
 sub option {

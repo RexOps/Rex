@@ -75,7 +75,7 @@ sub exec {
     $complete_cmd = "cd $option->{cwd} && $complete_cmd";
   }
 
-  if ( $self->{path} ) {
+  if ( $self->{path} && !exists $self->{__env__}->{PATH} ) {
     $complete_cmd = "PATH=$self->{path}; export PATH; $complete_cmd ";
   }
 

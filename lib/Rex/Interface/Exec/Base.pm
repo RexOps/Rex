@@ -51,13 +51,10 @@ sub execute_line_based_operation {
 
 sub can_run {
   my ( $self, @cmds ) = @_;
-
-  if ( !Rex::is_ssh() && $^O =~ m/^MSWin/ ) {
-    return 1;
-  }
+  my $check_with_command = $^O =~ /^MSWin/ ? 'where' : 'which';
 
   for my $cmd (@cmds) {
-    my @ret = Rex::Helper::Run::i_run "which $cmd";
+    my @ret = Rex::Helper::Run::i_run "$check_with_command $cmd";
     next if ( $? != 0 );
 
     if ( grep { /^no.*in/ } @ret ) {

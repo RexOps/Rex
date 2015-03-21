@@ -89,12 +89,18 @@ sub chown {
   }
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("chown $recursive $user $file");
 
-  if ( $? == 0 ) { return 1; }
+  if ( $exec->can_run('chown') ) {
+    $exec->exec("chown $recursive $user $file");
 
-  die("Error running chown $recursive $user $file")
-    if ( Rex::Config->get_autodie );
+    if ( $? == 0 ) { return 1; }
+
+    die("Error running chown $recursive $user $file")
+      if ( Rex::Config->get_autodie );
+  }
+  else {
+    Rex::Logger::debug("Can't find `chown`.");
+  }
 }
 
 sub chgrp {
@@ -108,12 +114,18 @@ sub chgrp {
   }
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("chgrp $recursive $group $file");
 
-  if ( $? == 0 ) { return 1; }
+  if ( $exec->can_run('chgrp') ) {
+    $exec->exec("chgrp $recursive $group $file");
 
-  die("Error running chgrp $recursive $group $file")
-    if ( Rex::Config->get_autodie );
+    if ( $? == 0 ) { return 1; }
+
+    die("Error running chgrp $recursive $group $file")
+      if ( Rex::Config->get_autodie );
+  }
+  else {
+    Rex::Logger::debug("Can't find `chgrp`.");
+  }
 }
 
 sub chmod {
@@ -127,12 +139,18 @@ sub chmod {
   }
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("chmod $recursive $mode $file");
 
-  if ( $? == 0 ) { return 1; }
+  if ( $exec->can_run('chmod') ) {
+    $exec->exec("chmod $recursive $mode $file");
 
-  die("Error running chmod $recursive $mode $file")
-    if ( Rex::Config->get_autodie );
+    if ( $? == 0 ) { return 1; }
+
+    die("Error running chmod $recursive $mode $file")
+      if ( Rex::Config->get_autodie );
+  }
+  else {
+    Rex::Logger::debug("Can't find `chmod`.");
+  }
 }
 
 sub cp {

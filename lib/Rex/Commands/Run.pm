@@ -327,24 +327,8 @@ specify multiple commands, the first command found will be returned.
 
 sub can_run {
   my @cmds = @_;
-
-  if ( !Rex::is_ssh() && $^O =~ m/^MSWin/ ) {
-    return 1;
-  }
-
-  for my $cmd (@cmds) {
-    my @ret = i_run "which $cmd";
-    next if ( $? != 0 );
-
-    if ( grep { /^no.*in/ } @ret ) {
-      next;
-    }
-    else {
-      return $ret[0];
-    }
-  }
-
-  return 0;
+  my $exec = Rex::Interface::Exec->create;
+  $exec->can_run(@cmds);
 }
 
 =item sudo

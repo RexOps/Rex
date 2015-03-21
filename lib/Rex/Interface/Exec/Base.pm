@@ -48,4 +48,27 @@ sub execute_line_based_operation {
   $self->_continuous_read( $line, $option );
   return $self->_end_if_matched( $line, $option );
 }
+
+sub can_run {
+  my ( $self, @cmds ) = @_;
+
+  if ( !Rex::is_ssh() && $^O =~ m/^MSWin/ ) {
+    return 1;
+  }
+
+  for my $cmd (@cmds) {
+    my @ret = Rex::Helper::Run::i_run "which $cmd";
+    next if ( $? != 0 );
+
+    if ( grep { /^no.*in/ } @ret ) {
+      next;
+    }
+    else {
+      return $ret[0];
+    }
+  }
+
+  return 0;
+}
+
 1;

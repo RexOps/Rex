@@ -56,7 +56,7 @@ sub connect {
 
   Rex::Logger::debug( "Using user: " . $user );
   Rex::Logger::debug(
-    "Using password: " . ( $pass ? "***********" : "<no password>" ) );
+    Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
 
   $self->{server} = $server;
 
@@ -88,14 +88,19 @@ sub connect {
     push @ssh_opts_line, "-o" => $key . "=" . $ssh_opts{$key};
   }
 
-  my @connection_props = ( $server, user => $user, port => $port );
+  my @connection_props = ( "" . $server ); # stringify server object, so that a dumper don't print out passwords.
+  push @connection_props, ( user => $user, port => $port );
   push @connection_props, master_opts      => \@ssh_opts_line if @ssh_opts_line;
   push @connection_props, default_ssh_opts => \@ssh_opts_line if @ssh_opts_line;
   push @connection_props, proxy_command    => $proxy_command  if $proxy_command;
 
   my @auth_types_to_try;
   if ( $auth_type && $auth_type eq "pass" ) {
-    Rex::Logger::debug("OpenSSH: pass_auth: $server:$port - $user - ******");
+    Rex::Logger::debug(
+      Rex::Logger::masq(
+        "OpenSSH: pass_auth: $server:$port - $user - %s", $pass
+      )
+    );
     push @auth_types_to_try, "pass";
   }
   elsif ( $auth_type && $auth_type eq "krb5" ) {

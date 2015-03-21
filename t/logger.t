@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests => 12;
 
 use_ok 'Rex';
 use_ok 'Rex::Logger';
@@ -84,7 +84,8 @@ ok( -e $logfile, 'Logfile still available' );
 unlink $logfile;
 ok( !-e $logfile, 'Logfile unlinked' );
 
-done_testing();
+my $masq_s = Rex::Logger::masq( "This is a password: %s", "pass" );
+is( $masq_s, "This is a password: **********", "Log-Masquerading" );
 
 sub _get_log {
   local $/;

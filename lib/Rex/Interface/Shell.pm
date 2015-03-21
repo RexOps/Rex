@@ -13,6 +13,26 @@ use warnings;
 
 use Rex::Logger;
 
+my %SHELL_PROVIDER = (
+  ash  => "Rex::Interface::Shell::Ash",
+  bash => "Rex::Interface::Shell::Bash",
+  csh  => "Rex::Interface::Shell::Csh",
+  ksh  => "Rex::Interface::Shell::Ksh",
+  sh   => "Rex::Interface::Shell::Sh",
+  tcsh => "Rex::Interface::Shell::Tcsh",
+  zsh  => "Rex::Interface::Shell::Zsh",
+);
+
+sub register_shell_provider {
+  my ( $class, $shell_name, $shell_class ) = @_;
+  $SHELL_PROVIDER{"\L$shell_name"} = $shell_class;
+  return 1;
+}
+
+sub get_shell_provider {
+  return %SHELL_PROVIDER;
+}
+
 sub create {
   my ( $class, $shell ) = @_;
 

@@ -326,9 +326,9 @@ specify multiple commands, the first command found will be returned.
 =cut
 
 sub can_run {
-  my @cmds = @_;
-  my $exec = Rex::Interface::Exec->create;
-  $exec->can_run(@cmds);
+  my @commands = @_;
+  my $exec     = Rex::Interface::Exec->create;
+  $exec->can_run(@commands);
 }
 
 =item sudo

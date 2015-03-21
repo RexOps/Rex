@@ -50,22 +50,19 @@ sub execute_line_based_operation {
 }
 
 sub can_run {
-  my ( $self, @cmds ) = @_;
+  my ( $self, @commands_to_check ) = @_;
   my $check_with_command = $^O =~ /^MSWin/ ? 'where' : 'which';
 
-  for my $cmd (@cmds) {
-    my @ret = Rex::Helper::Run::i_run "$check_with_command $cmd";
-    next if ( $? != 0 );
+  for my $command (@commands_to_check) {
+    my @output = Rex::Helper::Run::i_run "$check_with_command $command";
 
-    if ( grep { /^no.*in/ } @ret ) {
-      next;
-    }
-    else {
-      return $ret[0];
-    }
+    next if ( $? != 0 );
+    next if ( grep { /^no $command in/ } @output ); # for solaris
+
+    return $output[0];
   }
 
-  return 0;
+  return undef;
 }
 
 1;

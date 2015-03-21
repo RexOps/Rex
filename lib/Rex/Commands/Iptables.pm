@@ -164,7 +164,7 @@ sub close_port {
 
 =item redirect_port($in_port, $option)
 
-Redirect $in_port to an other local port.
+Redirect $in_port to another local port.
 
  task "redirects", sub {
    redirect_port 80 => 10080;

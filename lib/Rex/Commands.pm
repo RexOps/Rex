@@ -734,7 +734,7 @@ sub get_random {
 
 =item do_task($task)
 
-Call $task from an other task. It will establish a new connection to the server defined in $task and then execute $task there.
+Call $task from another task. It will establish a new connection to the server defined in $task and then execute $task there.
 
  task "task1", "server1", sub {
    say "Running on server1";
@@ -1861,7 +1861,7 @@ You can also define the following values:
 
 default - the default behaviour.
 
-asis - will print every single parameter in its own line. This is usefull if you want to print the output of a command.
+asis - will print every single parameter in its own line. This is useful if you want to print the output of a command.
 
 =cut
 

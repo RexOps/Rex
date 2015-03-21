@@ -20,7 +20,11 @@ __END__
 
 =pod
 
-=head1 (R)?ex - (Remote)? Execution
+=head1 NAME
+
+(R)?ex - (Remote)? Execution
+
+=head1 DESCRIPTION
 
 Rex is a tool to ease the execution of commands on multiple remote servers. You can define small tasks, chain tasks to batches, link them with servers or server groups, and execute them easily in your terminal.
 
@@ -95,11 +99,11 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =head2 Rexfile
 
-If you run I<rex> it will read the file I<Rexfile> in the current working directory. A Rexfile consists 3 major parts.
+If you run I<rex> it will read the file I<Rexfile> in the current working directory. A Rexfile consists of 3 major parts.
 
 =head3 Authentication and Configuration
 
-In that part you define the user and password you want to use to log into your servers. You can even define timeouts or the paralellism of task exexecution.
+In that part you define the user and password you want to use to log into your servers. You can even define timeouts or the paralellism of task execution.
 
 =head4 Simple Authentication
 

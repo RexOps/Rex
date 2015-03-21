@@ -392,7 +392,7 @@ sub old_service {
 
 =item service_provider_for $os => $type;
 
-To set an other service provider as the default, use this function.
+To set another service provider as the default, use this function.
 
  user "root";
 

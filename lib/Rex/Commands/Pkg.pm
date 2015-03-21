@@ -744,7 +744,7 @@ sub repository {
 
 =item package_provider_for $os => $type;
 
-To set an other package provider as the default, use this function.
+To set another package provider as the default, use this function.
 
  user "root";
 

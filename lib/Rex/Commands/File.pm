@@ -21,7 +21,7 @@ With this module you can manipulate files.
    }
    $fh->close;
  };
-
+ 
  task "read-passwd2", "server01", sub {
    say cat "/etc/passwd";
  };
@@ -32,18 +32,18 @@ With this module you can manipulate files.
    $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
    $fh->close;
  };
-
+ 
  delete_lines_matching "/var/log/auth.log", matching => "root";
  delete_lines_matching "/var/log/auth.log", matching => qr{Failed};
  delete_lines_matching "/var/log/auth.log",
                 matching => "root", qr{Failed}, "nobody";
-
+ 
  file "/path/on/the/remote/machine",
    source => "/path/on/local/machine";
-
+ 
  file "/path/on/the/remote/machine",
    content => "foo bar";
-
+ 
  file "/path/on/the/remote/machine",
    source => "/path/on/local/machine",
    owner  => "root",
@@ -263,33 +263,33 @@ This function is the successor of I<install file>. Please use this function to u
  task "prepare", "server1", "server2", sub {
    file "/file/on/remote/machine",
      source => "/file/on/local/machine";
-
+ 
    file "/etc/hosts",
      content => template("templates/etc/hosts.tpl"),
      owner  => "user",
      group  => "group",
      mode   => 700,
      on_change => sub { say "Something was changed." };
-
+ 
    file "/etc/motd",
      content => `fortune`;
-
+ 
    file "/etc/named.conf",
      content    => template("templates/etc/named.conf.tpl"),
      no_overwrite => TRUE;  # this file will not be overwritten if already exists.
-
+ 
    file "/etc/httpd/conf/httpd.conf",
      source => "/files/etc/httpd/conf/httpd.conf",
      on_change => sub { service httpd => "restart"; };
-
+ 
    file "/etc/named.d",
      ensure => "directory",  # this will create a directory
      owner  => "root",
      group  => "root";
-
+ 
    file "/etc/motd",
      ensure => "absent";   # this will remove the file or directory
-
+ 
  };
 
 The I<source> is subject to a path resolution algorithm. This algorithm
@@ -314,7 +314,7 @@ Furthermore, if a path prefix matches multiple prefix entries in 'path_map',
 e.g. "files/etc/ntpd.conf" matching both "files/" and "files/etc/", the
 longer matching prefix(es) have precedence over shorter ones. Note that
 keys without a trailing slash (i.e. "files/etc") will be treated as having
-a trailing slash when matching the prefix ("files/etc/").
+a trailing slash when matching the prefix ("files/etc/"). 
 
 If no file is found using the above procedure and I<source> is relative,
 it will search from the location of your I<Rexfile> or the I<.pm> file if
@@ -706,12 +706,12 @@ On failure it will die.
  eval {
    $fh = file_write("/etc/groups");
  };
-
+ 
  # catch an error
  if($@) {
    print "An error occured. $@.\n";
  }
-
+ 
  # work with the filehandle
  $fh->write("...");
  $fh->close;
@@ -763,12 +763,12 @@ On failure it will die.
  eval {
    $fh = read("/etc/groups");
  };
-
+ 
  # catch an error
  if($@) {
    print "An error occured. $@.\n";
  }
-
+ 
  # work with the filehandle
  my $content = $fh->read_all;
  $fh->close;
@@ -948,7 +948,7 @@ Since 0.42 you can use named parameters as well
      on_change => sub {
                 say "file was changed, do something.";
               };
-
+ 
    append_if_no_such_line "/etc/groups",
      line  => "mygroup:*:100:myuser1,myuser2",
      regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
@@ -1112,8 +1112,7 @@ sub _append_or_update {
 
 =item extract($file [, %options])
 
-This function extracts a file. The target directory $to (if specified) will be created automatically
-if doesn't exist yet.
+This function extracts a file. The target directory $to (if specified) will be created automatically if doesn't exist yet.
 
 Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
@@ -1122,7 +1121,7 @@ Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, 
     owner => "root",
     group => "root",
     to   => "/etc";
-
+ 
    extract "/tmp/foo.tgz",
     type => "tgz",
     mode => "g+rwX";
@@ -1210,7 +1209,7 @@ Search some string in a file and replace it.
  task sar => sub {
    # this will work line by line
    sed qr{search}, "replace", "/var/log/auth.log";
-
+ 
    # to use it in a multiline way
    sed qr{search}, "replace", "/var/log/auth.log",
     multiline => TRUE;

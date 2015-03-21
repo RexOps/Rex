@@ -49,6 +49,8 @@ sub emit {
   }
 }
 
+=over 4
+
 =item resource($name, $function)
 
 =cut
@@ -134,5 +136,9 @@ sub resource_ensure {
 sub current_resource {
   return $Rex::Resource::CURRENT_RES[-1];
 }
+
+=back
+
+=cut
 
 1;

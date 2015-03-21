@@ -56,7 +56,7 @@ sub connect {
 
   Rex::Logger::debug( "Using user: " . $user );
   Rex::Logger::debug(
-    "Using password: " . ( $pass ? "***********" : "<no password>" ) );
+    Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
 
   $self->{server} = $server;
 

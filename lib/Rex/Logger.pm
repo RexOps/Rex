@@ -264,6 +264,19 @@ sub format_string {
   return $line;
 }
 
+sub masq {
+  my ( $format, @params ) = @_;
+
+  return $format if scalar @params == 0;
+  return $format if scalar( grep { defined } @params ) == 0;
+
+  if ( exists $ENV{REX_DEBUG_INSECURE} && $ENV{REX_DEBUG_INSECURE} eq "1" ) {
+    return sprintf( $format, @params );
+  }
+
+  return sprintf( $format, ("**********") x @params );
+}
+
 =back
 
 =cut

@@ -594,7 +594,17 @@ sub connect {
 
   my $rex_int_conf = Rex::Commands::get("rex_internals");
   Rex::Logger::debug( Dumper($rex_int_conf) );
-  Rex::Logger::debug( Dumper($auth) );
+  Rex::Logger::debug("Auth-Information inside Task:");
+  for my $key ( keys %{$auth} ) {
+    my $data = $auth->{$key};
+    if ( $key eq "password" ) {
+      $data = Rex::Logger::masq( "%s", $data );
+    }
+
+    $data ||= "";
+
+    Rex::Logger::debug("$key => [[$data]]");
+  }
 
   $auth->{public_key} = resolv_path( $auth->{public_key}, 1 )
     if ( $auth->{public_key} );

@@ -1112,7 +1112,9 @@ sub _append_or_update {
 
 =item extract($file [, %options])
 
-This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
+This function extracts a file. The target directory $to (if specified) will be created automatically if doesn't exist yet.
+
+Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
  task prepare => sub {
    extract "/tmp/myfile.tar.gz",
@@ -1150,6 +1152,7 @@ sub extract {
     $type = $option{type};
   }
 
+  Rex::Commands::Fs::mkdir( $to );
   $pre_cmd = "cd $to; ";
 
   my $exec = Rex::Interface::Exec->create;

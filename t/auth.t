@@ -15,6 +15,11 @@ use_ok 'Rex::Commands::Upload';
 
 Rex::Commands->import();
 
+{
+  no warnings 'once';
+  $::QUIET = 1;
+}
+
 group( "srvgr1", "srv1" );
 group( "srvgr2", "srv2", "srv3" );
 

@@ -67,6 +67,7 @@ sub call {
     $self->{cb}->( \%params );
     1;
   } or do {
+    Rex::Logger::info( $@,                                 "error" );
     Rex::Logger::info( "Resource execution failed: $name", "error" );
     $failed = 1;
   };

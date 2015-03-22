@@ -5,13 +5,14 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-  use Test::More tests => 57;
+  use Test::More tests => 58;
   use Data::Dumper;
 
   use_ok 'Rex';
   use_ok 'Rex::Commands::File';
   use_ok 'Rex::Commands::Fs';
   use_ok 'Rex::Commands::Gather';
+  use_ok 'Rex::Commands::Run';
   use_ok 'Rex::Config';
   Rex::Commands::File->import;
   Rex::Commands::Fs->import;
@@ -50,11 +51,13 @@ file(
   mode    => 777
 );
 
-SKIP: {
-  skip "chmod not for windows", 1 unless ! is_windows();
-  my %stats = Rex::Commands::Fs::stat($filename);
-  is( $stats{mode}, "0777" || is_windows(), "fs chmod ok" );
-};
+my %stats = Rex::Commands::Fs::stat($filename);
+if ( is_windows() && !can_run('chmod') ) {
+  is( $stats{mode}, "0666", "windows without chmod" );
+}
+else {
+  is( $stats{mode}, "0777", "fs chmod ok" );
+}
 
 my $changed = 0;
 my $content = cat($filename);

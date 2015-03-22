@@ -135,4 +135,12 @@ sub exec {
   return $out;
 }
 
+sub can_run {
+  my ( $self, $commands_to_check, $check_with_command ) = @_;
+
+  $check_with_command ||= $^O =~ /^MSWin/i ? 'where' : 'which';
+
+  return $self->SUPER::can_run($commands_to_check, $check_with_command);
+}
+
 1;

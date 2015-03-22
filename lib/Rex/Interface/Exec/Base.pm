@@ -8,6 +8,7 @@ package Rex::Interface::Exec::Base;
 
 use strict;
 use warnings;
+use Carp;
 
 # VERSION
 
@@ -48,4 +49,22 @@ sub execute_line_based_operation {
   $self->_continuous_read( $line, $option );
   return $self->_end_if_matched( $line, $option );
 }
+
+sub can_run {
+  my ( $self, $commands_to_check, $check_with_command ) = @_;
+
+  $check_with_command ||= "which";
+
+  for my $command ( @{$commands_to_check} ) {
+    my @output = Rex::Helper::Run::i_run "$check_with_command $command";
+
+    next if ( $? != 0 );
+    next if ( grep { /^no $command in/ } @output ); # for solaris
+
+    return $output[0];
+  }
+
+  return undef;
+}
+
 1;

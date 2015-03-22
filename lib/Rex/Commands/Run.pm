@@ -328,7 +328,7 @@ specify multiple commands, the first command found will be returned.
 sub can_run {
   my @commands = @_;
   my $exec     = Rex::Interface::Exec->create;
-  $exec->can_run(@commands);
+  $exec->can_run( [@commands] ); # use a new anon ref, so that we don't have drawbacks if some lower layers will manipulate things.
 }
 
 =item sudo

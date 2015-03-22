@@ -90,7 +90,7 @@ sub chown {
 
   my $exec = Rex::Interface::Exec->create;
 
-  if ( $exec->can_run('chown') ) {
+  if ( $exec->can_run( ['chown'] ) ) {
     $exec->exec("chown $recursive $user $file");
 
     if ( $? == 0 ) { return 1; }
@@ -100,6 +100,7 @@ sub chown {
   }
   else {
     Rex::Logger::debug("Can't find `chown`.");
+    return 1; # fake success for windows
   }
 }
 
@@ -115,7 +116,7 @@ sub chgrp {
 
   my $exec = Rex::Interface::Exec->create;
 
-  if ( $exec->can_run('chgrp') ) {
+  if ( $exec->can_run( ['chgrp'] ) ) {
     $exec->exec("chgrp $recursive $group $file");
 
     if ( $? == 0 ) { return 1; }
@@ -125,6 +126,7 @@ sub chgrp {
   }
   else {
     Rex::Logger::debug("Can't find `chgrp`.");
+    return 1; # fake success for windows
   }
 }
 
@@ -140,7 +142,7 @@ sub chmod {
 
   my $exec = Rex::Interface::Exec->create;
 
-  if ( $exec->can_run('chmod') ) {
+  if ( $exec->can_run( ['chmod'] ) ) {
     $exec->exec("chmod $recursive $mode $file");
 
     if ( $? == 0 ) { return 1; }
@@ -150,6 +152,7 @@ sub chmod {
   }
   else {
     Rex::Logger::debug("Can't find `chmod`.");
+    return 1; # fake success for windows
   }
 }
 

@@ -8,6 +8,7 @@ package Rex::Interface::Exec::Base;
 
 use strict;
 use warnings;
+use Carp;
 
 # VERSION
 
@@ -50,10 +51,11 @@ sub execute_line_based_operation {
 }
 
 sub can_run {
-  my ( $self, @commands_to_check ) = @_;
-  my $check_with_command = $^O =~ /^MSWin/ ? 'where' : 'which';
+  my ( $self, $commands_to_check, $check_with_command ) = @_;
 
-  for my $command (@commands_to_check) {
+  $check_with_command ||= "which";
+
+  for my $command ( @{$commands_to_check} ) {
     my @output = Rex::Helper::Run::i_run "$check_with_command $command";
 
     next if ( $? != 0 );

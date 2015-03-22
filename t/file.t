@@ -43,7 +43,7 @@ like( $c, qr/bar/,  "file with content (2)" );
 
 Rex::Commands::Fs::unlink($filename);
 
-ok( !is_file($filename), "file removed" );
+is( is_file($filename), undef, "file removed" );
 
 file(
   $filename,
@@ -51,11 +51,9 @@ file(
   mode    => 777
 );
 
-my %stats = Rex::Commands::Fs::stat($filename);
-if ( is_windows() && !can_run('chmod') ) {
-  is( $stats{mode}, "0666", "windows without chmod" );
-}
-else {
+SKIP: {
+  skip "chmod not for windows", 1 unless !is_windows();
+  my %stats = Rex::Commands::Fs::stat($filename);
   is( $stats{mode}, "0777", "fs chmod ok" );
 }
 
@@ -230,7 +228,7 @@ unlike( $content, qr/^$/m, "no extra blank lines inserted" );
 
 file "file with space-$$.txt", content => "file with space\n";
 
-ok( is_file("file with space-$$.txt"), "file with space exists" );
+is( is_file("file with space-$$.txt"), 1, "file with space exists" );
 
 $c = "";
 $c = cat "file with space-$$.txt";
@@ -239,8 +237,8 @@ like( $c, qr/file with space/m, "found content of file with space" );
 Rex::Commands::Fs::unlink($filename);
 Rex::Commands::Fs::unlink("file with space-$$.txt");
 
-ok( !is_file($filename),                "test.txt removed" );
-ok( !is_file("file with space-$$.txt"), "file with space removed" );
+is( is_file($filename),                undef, "test.txt removed" );
+is( is_file("file with space-$$.txt"), undef, "file with space removed" );
 
 $filename = "$tmp_dir/test-sed-$$.txt";
 

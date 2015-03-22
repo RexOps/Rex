@@ -51,9 +51,11 @@ file(
   mode    => 777
 );
 
-SKIP: {
-  skip "chmod not for windows", 1 unless !is_windows();
-  my %stats = Rex::Commands::Fs::stat($filename);
+my %stats = Rex::Commands::Fs::stat($filename);
+if ( is_windows() && !can_run('chmod') ) {
+  is( $stats{mode}, "0666", "windows without chmod" );
+}
+else {
   is( $stats{mode}, "0777", "fs chmod ok" );
 }
 

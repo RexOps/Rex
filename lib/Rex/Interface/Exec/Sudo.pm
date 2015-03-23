@@ -21,6 +21,8 @@ use Rex::Interface::File::SSH;
 use Rex::Commands;
 use Rex::Helper::Path;
 
+use base 'Rex::Interface::Exec::Base';
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;

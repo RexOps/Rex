@@ -1,3 +1,38 @@
+2015-03-25 <jan.gehring,gmail.com> (1.1.0)
+  * Describe platform-specific dependencies - Ferenc Erki
+  * Only check for iDrac signature if there was an output - Ferenc Erki
+  * added a prototype, this will prevent failures like RexOps/Rex#584 - references: RexOps/Rex#608 - Jan
+  * we need to do an explicit return undef. if we only use 'return' and the return of is_file/is_dir is passed to an array, this will not appear in the array. reference: RexOps/Rex#608 - Jan
+  * updated tests to use is() instead of ok(). reference: RexOps/Rex#608 - Jan
+  * changed return code to undef if file/dir not found. fix for RexOps/Rex#608 - Jan
+  * Add initial iDrac shell support - Ferenc Erki
+  * Allow can_run method to accept command to do the check with - Jan
+  * Check if a command can be run before its execution (fix #514) - Ferenc Erki
+  * Refactor can_run - Ferenc Erki
+  * Support can_run command on Windows - Ferenc Erki
+  * Move can_run to Rex::Interface::Exec - Ferenc Erki
+  * Add can_run tests - Ferenc Erki
+  * Create target directory before extracting an archive (fix #600, close #604) - Arnold Bechtoldt
+  * Update POD (close #598) - Ferenc Erki
+  * added a Rex::Logger::masq() function that can masq sensitiv data for logging output. (fix for RexOps/Rex#554) - Jan
+  * added code to make shells pluggable. - RexOps/Rex#602 - Jan
+  * Avoid noisy test output - Ferenc Erki
+  * added support to export resources to main namespace and added more events - Jan
+  * added possibility to use auth(for => task) before a task is created - fixed #402 - Jan
+  * Fix handling of symbolic links (fix #591, close #592) - Jan
+  * this adds a new method to the server objects called group() - Jan
+  * fixed setting of path environment variable - #583 - Jan
+  * Add preferred type option for mount command (fix #469) - Ferenc Erki
+  * Reword has_{dir,file} test outputs - Ferenc Erki
+  * Add has_dir test - Ferenc Erki
+  * Print explicit PASS or FAIL output upon finishing a test suite - Ferenc Erki
+  * Fix has_stat test for non-existing UIDs and GIDs - Ferenc Erki
+  * Allow has_stat test to handle directories (fix #582) - Ferenc Erki
+  * Add diag method for Rex::Test::Base - Ferenc Erki
+  * Ensure proper return values for is_{dir,file} functions (fix #584) - Ferenc Erki
+  * Drop potentially dangerous --force-yes option (fix #559) - Ferenc Erki
+  * Generate docs for Rex::Test (fix #483) - Ferenc Erki
+
 2015-03-08 <jan.gehring, gmail.com> (1.0.0)
   * Remove hardcoded connection type (fix #579) - Ferenc Erki
   * fixed systemd status query - Jan

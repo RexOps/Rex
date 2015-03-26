@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 167;
+use Test::More tests => 168;
 
 my %have_mods = (
   'Net::SSH2'             => 1,
@@ -38,14 +38,19 @@ SKIP: {
 }
 
 SKIP: {
-  diag
-    "SSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH."
-    unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} );
   skip
-    "SSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH.",
+    "Net::SSH2 module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH.",
     1
-    unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} );
+    unless $have_mods{'Net::SSH2'};
   use_ok 'Rex::Interface::Connection::SSH';
+}
+
+SKIP: {
+  skip
+    "Net::OpenSSH module not found. You need Net::SSH2 or Net::OpenSSH module to connect to servers via SSH.",
+    1
+    unless $have_mods{'Net::OpenSSH'};
+  use_ok 'Rex::Interface::Connection::OpenSSH';
 }
 
 SKIP: {

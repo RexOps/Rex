@@ -1,4 +1,6 @@
-2015-03-25 <jan.gehring,gmail.com> (1.1.0)
+2015-03-29 <jan.gehring, gmail.com> (1.1.0)
+  * Update task tests (fix #614) - Jan
+  * Recognize usable SSH modules separately - Ferenc Erki
   * Describe platform-specific dependencies - Ferenc Erki
   * Only check for iDrac signature if there was an output - Ferenc Erki
   * added a prototype, this will prevent failures like RexOps/Rex#584 - references: RexOps/Rex#608 - Jan

@@ -725,6 +725,21 @@ sub get_connection_type {
       Rex::Logger::debug(
         "Found Net::OpenSSH and Net::SFTP::Foreign - using it as default");
       $connection_type = "OpenSSH";
+      return "OpenSSH";
+    }
+  }
+
+  if ( !$connection_type ) {
+    my $has_net_ssh2 = 0;
+    eval {
+      Net::SSH2->require;
+      $has_net_ssh2 = 1;
+      1;
+    };
+
+    if ($has_net_ssh2) {
+      $connection_type = "SSH";
+      return "SSH";
     }
   }
 

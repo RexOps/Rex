@@ -15,7 +15,7 @@ sub create {
   my ( $class, $type ) = @_;
 
   unless ($type) {
-    $type = "SSH";
+    $type = Rex::Config->get_connection_type();
   }
 
   my $class_name = "Rex::Interface::Connection::$type";

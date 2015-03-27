@@ -115,7 +115,6 @@ Returns the current connection object.
 
 sub connection {
   my ($self) = @_;
-
   if ( !exists $self->{connection} || !$self->{connection} ) {
     $self->{connection} =
       Rex::Interface::Connection->create( $self->get_connection_type );
@@ -356,7 +355,7 @@ sub get_connection_type {
     return "OpenSSH";
   }
   elsif ( $self->is_remote && $self->want_connect ) {
-    return "SSH";
+    return Rex::Config->get_connection_type();
   }
   elsif ( $self->is_remote ) {
     return "Fake";

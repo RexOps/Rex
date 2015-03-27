@@ -20,7 +20,7 @@ unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} ) {
     'SSH module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
 }
 else {
-  plan tests => 33;
+  plan tests => 35;
 }
 
 use_ok 'Rex::Task';
@@ -48,14 +48,28 @@ is( $t1->is_local, 0, "is task not local" );
 $t1->set_desc("Description");
 is( $t1->desc, "Description", "get/set description" );
 
-is( $t1->get_connection_type, "SSH", "get connection type for ssh" );
-is( $t1->want_connect,        1,     "want a connection?" );
+is(
+  $t1->get_connection_type,
+  ( $have_mods{"Net::OpenSSH"} ? "OpenSSH" : "SSH" ),
+  "get connection type for ssh"
+);
+is( $t1->want_connect, 1, "want a connection?" );
 $t1->modify( "no_ssh", 1 );
 is( $t1->want_connect,        0,      "want no connection?" );
 is( $t1->get_connection_type, "Fake", "get connection type for fake" );
 $t1->modify( "no_ssh", 0 );
-is( $t1->want_connect,        1,     "want a connection?" );
+is( $t1->want_connect, 1, "want a connection?" );
+is(
+  $t1->get_connection_type,
+  ( $have_mods{"Net::OpenSSH"} ? "OpenSSH" : "SSH" ),
+  "get connection type for ssh"
+);
+
+Rex::Config->set( "connection" => "SSH" );
 is( $t1->get_connection_type, "SSH", "get connection type for ssh" );
+
+Rex::Config->set( "connection" => "OpenSSH" );
+is( $t1->get_connection_type, "OpenSSH", "get connection type for ssh" );
 
 $t1->set_user("root");
 is( $t1->user, "root", "get/set the user" );

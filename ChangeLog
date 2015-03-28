@@ -1,4 +1,7 @@
 2015-03-29 <jan.gehring, gmail.com> (1.1.0)
+  * Fix dependencies for openssh + pass_auth - Ferenc Erki
+  * prevent faulty debug message - Jan
+  * fixed merge_auth() method for #615 -Jan
   * Update task tests (fix #614) - Jan
   * Recognize usable SSH modules separately - Ferenc Erki
   * Describe platform-specific dependencies - Ferenc Erki

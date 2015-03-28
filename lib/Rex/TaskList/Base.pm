@@ -186,11 +186,11 @@ sub create_task {
 
   if ( $self->{DEFAULT_AUTH} ) {
     $task_hash{auth} = {
-      user          => Rex::Config->get_user,
-      password      => Rex::Config->get_password,
-      private_key   => Rex::Config->get_private_key,
-      public_key    => Rex::Config->get_public_key,
-      sudo_password => Rex::Config->get_sudo_password,
+      user          => Rex::Config->get_user          || undef,
+      password      => Rex::Config->get_password      || undef,
+      private_key   => Rex::Config->get_private_key   || undef,
+      public_key    => Rex::Config->get_public_key    || undef,
+      sudo_password => Rex::Config->get_sudo_password || undef,
     };
   }
 

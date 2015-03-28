@@ -182,6 +182,9 @@ sub get_public_key {
   my ($self) = @_;
 
   if ( exists $self->{auth}->{public_key} && -f $self->{auth}->{public_key} ) {
+    Rex::Logger::debug(
+      "Rex::Group::Entry::Server (public_key): returning $self->{auth}->{public_key}"
+    );
     return $self->{auth}->{public_key};
   }
 
@@ -189,9 +192,14 @@ sub get_public_key {
     && Rex::Config->get_ssh_config_public_key( server => $self->to_s ) )
   {
     Rex::Logger::debug("Checking for a public key in .ssh/config");
-    return Rex::Config->get_ssh_config_public_key( server => $self->to_s );
+    my $key = Rex::Config->get_ssh_config_public_key( server => $self->to_s );
+    Rex::Logger::debug(
+      "Rex::Group::Entry::Server (public_key): returning $key");
+    return $key;
   }
 
+  Rex::Logger::debug( "Rex::Group::Entry::Server (public_key): returning "
+      . Rex::Config->get_public_key );
   return Rex::Config->get_public_key;
 }
 
@@ -199,6 +207,8 @@ sub get_private_key {
   my ($self) = @_;
 
   if ( exists $self->{auth}->{private_key} && -f $self->{auth}->{public_key} ) {
+    Rex::Logger::debug( "Rex::Group::Entry::Server (private_key): returning "
+        . $self->{auth}->{private_key} );
     return $self->{auth}->{private_key};
   }
 
@@ -206,9 +216,14 @@ sub get_private_key {
     && Rex::Config->get_ssh_config_private_key( server => $self->to_s ) )
   {
     Rex::Logger::debug("Checking for a private key in .ssh/config");
-    return Rex::Config->get_ssh_config_private_key( server => $self->to_s );
+    my $key = Rex::Config->get_ssh_config_private_key( server => $self->to_s );
+    Rex::Logger::debug(
+      "Rex::Group::Entry::Server (private_key): returning " . $key );
+    return $key;
   }
 
+  Rex::Logger::debug( "Rex::Group::Entry::Server (private_key): returning "
+      . Rex::Config->get_private_key );
   return Rex::Config->get_private_key;
 }
 
@@ -281,7 +296,9 @@ sub merge_auth {
     }
 
     # other_auth has presedence
-    if ( exists $other_auth->{$key} && Rex::Config->get_use_server_auth() == 0 )
+    if ( exists $other_auth->{$key}
+      && defined $other_auth->{$key}
+      && Rex::Config->get_use_server_auth() == 0 )
     {
       $new_auth{$key} = $other_auth->{$key};
     }

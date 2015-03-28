@@ -199,7 +199,7 @@ sub get_public_key {
   }
 
   Rex::Logger::debug( "Rex::Group::Entry::Server (public_key): returning "
-      . Rex::Config->get_public_key );
+      . ( Rex::Config->get_public_key || "" ) );
   return Rex::Config->get_public_key;
 }
 
@@ -223,7 +223,7 @@ sub get_private_key {
   }
 
   Rex::Logger::debug( "Rex::Group::Entry::Server (private_key): returning "
-      . Rex::Config->get_private_key );
+      . ( Rex::Config->get_private_key || "" ) );
   return Rex::Config->get_private_key;
 }
 

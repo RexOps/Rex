@@ -522,7 +522,11 @@ sub stat {
   Rex::Logger::debug("Getting fs stat from $file");
 
   my $fs = Rex::Interface::Fs->create;
-  %ret = $fs->stat($file) or die("Can't stat $file");
+
+  # may return undef, so capture into a list first.
+  my @stat = $fs->stat($file);
+  die("Can't stat $file") if !defined $stat[0];
+  %ret = @stat;
 
   return %ret;
 }

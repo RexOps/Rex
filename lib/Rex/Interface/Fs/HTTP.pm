@@ -77,6 +77,8 @@ sub stat {
   if ( $resp->{ok} ) {
     return %{ $resp->{stat} };
   }
+
+  return undef;
 }
 
 sub is_readable {

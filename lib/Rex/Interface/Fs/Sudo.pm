@@ -167,7 +167,7 @@ sub stat {
   );
 
   if ( !$out ) {
-    return ();
+    return undef;
   }
 
   my $tmp = decode_json($out);

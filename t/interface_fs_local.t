@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Data::Dumper;
 
 use_ok 'Rex::Interface::Fs';
@@ -22,3 +22,5 @@ is( $fs->is_dir("foo"), 1, "mkdir" );
 $fs->rmdir("foo");
 is( $fs->is_dir("foo"), undef, "rmdir" );
 
+is( $fs->stat("some_file_that_does_not_exist"),
+  undef, "stat should return undef for non-existent files" );

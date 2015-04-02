@@ -131,6 +131,7 @@ sub stat {
     return %ret;
   }
 
+  return undef;
 }
 
 sub is_readable {

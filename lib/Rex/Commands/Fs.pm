@@ -1164,7 +1164,7 @@ sub umount {
       $option{on_change}->( $mount_point, %option );
     }
     Rex::get_current_connection()->{reporter}
-      ->report( chaned => 1, "Unmounted $mount_point." );
+      ->report( changed => 1, message => "Unmounted $mount_point." );
   }
 
   Rex::get_current_connection()->{reporter}

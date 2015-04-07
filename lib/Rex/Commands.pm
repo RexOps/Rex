@@ -258,7 +258,7 @@ sub task {
   my $task_name      = shift;
   my $task_name_save = $task_name;
 
-  if ( $task_name !~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/
+  if ( $task_name !~ m/^[a-zA-Z_][a-zA-Z0-9_]*$/
     && !Rex::Config->get_disable_taskname_warning() )
   {
     Rex::Logger::info(

@@ -525,7 +525,13 @@ sub stat {
 
   # may return undef, so capture into a list first.
   my @stat = $fs->stat($file);
-  die("Can't stat $file") if !defined $stat[0];
+  die("Can't stat $file") if ( !defined $stat[0] && scalar @stat == 1 );
+
+  if ( scalar @stat % 2 ) {
+    Rex::Logger::debug( 'stat output: ' . join ', ', @stat );
+    die('stat returned odd number of elements');
+  }
+
   %ret = @stat;
 
   return %ret;

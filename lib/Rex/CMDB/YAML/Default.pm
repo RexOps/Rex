@@ -4,7 +4,7 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::CMDB::YAML;
+package Rex::CMDB::YAML::Default;
 
 use strict;
 use warnings;
@@ -23,8 +23,18 @@ sub new {
   my $proto = ref($that) || $that;
   my $self  = {@_};
 
-  bless( $self, $proto );
+  if ( !$self->{path} ) {
+    $self->{path} = [
+      "cmdb/{operatingsystem}/{hostname}.yml",
+      "cmdb/{operatingsystem}/default.yml",
+      "cmdb/{environment}/{hostname}.yml",
+      "cmdb/{environment}/default.yml",
+      "cmdb/{hostname}.yml",
+      "cmdb/default.yml",
+    ];
+  }
 
+  bless( $self, $proto );
   return $self;
 }
 
@@ -65,7 +75,13 @@ sub get {
       #my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
       #$content .= "\n";    # for safety
 
-      my $ref = YAML::LoadFile($file);
+      my $ref;
+      eval {
+        $ref = YAML::LoadFile($file);
+        1;
+      } or do {
+        die "Error parsing YAML file: $file";
+      };
 
       if ( !$item ) {
         for my $key ( keys %{$ref} ) {

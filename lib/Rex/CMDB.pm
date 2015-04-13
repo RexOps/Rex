@@ -94,6 +94,10 @@ sub cmdb {
     $klass = "Rex::CMDB::$klass";
   }
 
+  if ( $klass eq "Rex::CMDB::YAML" ) {
+    $klass = "Rex::CMDB::YAML::Default";
+  }
+
   eval "use $klass";
   if ($@) {
     die("CMDB provider ($klass) not found: $@");

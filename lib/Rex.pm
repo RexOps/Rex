@@ -597,15 +597,7 @@ sub import {
 
         Rex::Commands::set(
           cmdb => {
-            type => "YAML",
-            path => [
-              "cmdb/{operatingsystem}/{hostname}.yml",
-              "cmdb/{operatingsystem}/default.yml",
-              "cmdb/{environment}/{hostname}.yml",
-              "cmdb/{environment}/default.yml",
-              "cmdb/{hostname}.yml",
-              "cmdb/default.yml",
-            ],
+            type => "Rex::CMDB::YAML::Default",
           }
         );
 

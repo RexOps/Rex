@@ -17,11 +17,49 @@ use Rex::Commands -no => [qw/get/];
 use Rex::Logger;
 use YAML;
 use Data::Dumper;
+use Hash::Merge qw/merge/;
 
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
   my $self  = {@_};
+
+  $self->{merger} = Hash::Merge->new();
+
+  if ( !defined $self->{merge_behavior} ) {
+    $self->{merger}->specify_behavior(
+      {
+        SCALAR => {
+          SCALAR => sub { $_[0] },
+          ARRAY  => sub { $_[0] },
+          HASH   => sub { $_[0] },
+        },
+        ARRAY => {
+          SCALAR => sub { $_[0] },
+          ARRAY  => sub { $_[0] },
+          HASH   => sub { $_[0] },
+        },
+        HASH => {
+          SCALAR => sub { $_[0] },
+          ARRAY  => sub { $_[0] },
+          HASH   => sub { Hash::Merge::_merge_hashes( $_[0], $_[1] ) },
+        },
+      },
+      'REX_DEFAULT',
+    ); # first found value always wins
+
+    $self->{merger}->set_behavior('REX_DEFAULT');
+  }
+  else {
+    if ( ref $self->{merge_behavior} eq 'HASH' ) {
+      $self->{merger}
+        ->specify_behavior( $self->{merge_behavior}, 'USER_DEFINED' );
+      $self->{merger}->set_behavior('USER_DEFINED');
+    }
+    else {
+      $self->{merger}->set_behavior( $self->{merge_behavior} );
+    }
+  }
 
   bless( $self, $proto );
 
@@ -67,24 +105,15 @@ sub get {
 
       my $ref = YAML::LoadFile($file);
 
-      if ( !$item ) {
-        for my $key ( keys %{$ref} ) {
-          if ( exists $all->{$key} ) {
-            next;
-          }
-          $all->{$key} = $ref->{$key};
-        }
-      }
-
-      if ( defined $item && exists $ref->{$item} ) {
-        Rex::Logger::debug("CMDB - Found $item in $file");
-        return $ref->{$item};
-      }
+      $all = $self->{merger}->merge( $all, $ref );
     }
   }
 
   if ( !$item ) {
     return $all;
+  }
+  else {
+    return $all->{$item};
   }
 
   Rex::Logger::debug("CMDB - no item ($item) found");

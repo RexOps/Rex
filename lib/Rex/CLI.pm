@@ -494,8 +494,7 @@ CHECK_OVERWRITE: {
           _print_color(
             "    Servers: "
               . join( ", ",
-              sort { $a->to_s cmp $b->to_s }
-                @{ Rex::TaskList->create()->get_task($task)->server } )
+              sort @{ Rex::TaskList->create()->get_task($task)->server } )
               . "\n"
           );
         }
@@ -519,8 +518,7 @@ CHECK_OVERWRITE: {
     my %groups = Rex::Group->get_groups;
     _print_color( "Server Groups\n", "yellow" ) if ( keys %groups );
     for my $group ( sort keys %groups ) {
-      printf "  %-30s %s\n", $group,
-        join( ", ", sort { $a->to_s cmp $b->to_s } @{ $groups{$group} } );
+      printf "  %-30s %s\n", $group, join( ", ", sort @{ $groups{$group} } );
     }
 
     Rex::global_sudo(0);

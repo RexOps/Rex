@@ -485,7 +485,7 @@ CHECK_OVERWRITE: {
     }
     else {
       my $max_task_str = max map { length } @tasks;
-      for my $task (@tasks) {
+      for my $task ( sort @tasks ) {
         my $padding = $max_task_str - length($task);
         print " $task  "
           . ' ' x $padding . " "
@@ -494,14 +494,15 @@ CHECK_OVERWRITE: {
           _print_color(
             "    Servers: "
               . join( ", ",
-              @{ Rex::TaskList->create()->get_task($task)->server } )
+              sort { $a->to_s cmp $b->to_s }
+                @{ Rex::TaskList->create()->get_task($task)->server } )
               . "\n"
           );
         }
       }
     }
     _print_color( "Batches\n", 'yellow' ) if ( Rex::Batch->get_batchs );
-    for my $batch ( Rex::Batch->get_batchs ) {
+    for my $batch ( sort Rex::Batch->get_batchs ) {
       printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
       if ( $opts{'v'} ) {
         _print_color(
@@ -509,7 +510,7 @@ CHECK_OVERWRITE: {
       }
     }
     my @envs = map { Rex::Commands->get_environment($_) }
-      Rex::Commands->get_environments();
+      sort Rex::Commands->get_environments();
     _print_color( "Environments\n", "yellow" ) if scalar @envs;
     for my $e (@envs) {
       printf "  %-30s %s\n", $e->{name}, $e->{description};
@@ -517,8 +518,9 @@ CHECK_OVERWRITE: {
 
     my %groups = Rex::Group->get_groups;
     _print_color( "Server Groups\n", "yellow" ) if ( keys %groups );
-    for my $group ( keys %groups ) {
-      printf "  %-30s %s\n", $group, join( ", ", @{ $groups{$group} } );
+    for my $group ( sort keys %groups ) {
+      printf "  %-30s %s\n", $group,
+        join( ", ", sort { $a->to_s cmp $b->to_s } @{ $groups{$group} } );
     }
 
     Rex::global_sudo(0);

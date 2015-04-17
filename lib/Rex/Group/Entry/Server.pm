@@ -16,14 +16,16 @@ use Rex::Helper::System;
 use Rex::Config;
 use Rex::Interface::Exec;
 use Data::Dumper;
+use Sort::Naturally;
 require Rex::Helper::Run;
 
 use List::MoreUtils qw(uniq);
 
 use overload
-  'eq' => sub { shift->is_eq(@_); },
-  'ne' => sub { shift->is_ne(@_); },
-  '""' => sub { shift->to_s(@_); };
+  'eq'  => sub { shift->is_eq(@_); },
+  'ne'  => sub { shift->is_ne(@_); },
+  '""'  => sub { shift->to_s(@_); },
+  'cmp' => sub { shift->compare(@_); };
 
 use attributes;
 
@@ -124,6 +126,11 @@ sub is_ne {
   if ( $comp ne $self->to_s ) {
     return 1;
   }
+}
+
+sub compare {
+  my ( $self, $comp ) = @_;
+  return ncmp( $self->to_s, $comp->to_s );
 }
 
 sub has_auth {

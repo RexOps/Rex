@@ -1,3 +1,10 @@
 vhost:
-   name: foohost
-   doc_root: /var/www
+  name: foohost
+  doc_root: /var/www
+
+vhost2:
+  name: vhost2foo
+
+newntp:
+  - ntpdefaultfoo01
+  - ntpdefaultfoo02

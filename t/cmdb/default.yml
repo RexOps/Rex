@@ -1,4 +1,13 @@
 ntp:
-   - ntp1
-   - ntp2
+  - ntp1
+  - ntp2
 name: defaultname
+
+newntp:
+  - ntp1
+  - ntp2
+
+users:
+  root:
+    id: 0
+    password: proot

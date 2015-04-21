@@ -21,7 +21,7 @@ All these functions are not idempotent.
  use Rex::Commands::SCM;
  
  set repository => "myrepo",
-    url => "git@foo.bar:myrepo.git";
+    url => 'git@foo.bar:myrepo.git';
  
  set repository => "myrepo2",
     url => "https://foo.bar/myrepo",

@@ -159,7 +159,9 @@ sub write_cron {
 
 sub activate_user_cron {
   my ( $self, $file, $user ) = @_;
-  i_run "crontab -u $user $file";
+  my $command = 'crontab';
+  $command .= " -u $user" if defined $user;
+  i_run "$command $file";
   unlink $file;
 }
 

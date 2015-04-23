@@ -165,7 +165,9 @@ sub activate_user_cron {
 
 sub read_user_cron {
   my ( $self, $user ) = @_;
-  my @lines = i_run "crontab -u $user -l";
+  my $command = 'crontab -l';
+  $command .= " -u $user" if defined $user;
+  my @lines = i_run $command;
   $self->parse_cron(@lines);
 }
 

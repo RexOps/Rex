@@ -413,13 +413,9 @@ sub boxes {
 
 }
 
-Rex::TaskList->create()->create_task(
-  "get_sys_info",
-  sub {
-    return { get_system_information() };
-  },
-  { dont_register => 1, exit_on_connect_fail => 0 }
-);
+task 'get_sys_info', sub {
+  return { get_system_information() };
+}, { dont_register => 1, exit_on_connect_fail => 0 };
 
 sub import {
   my ( $class, %option ) = @_;

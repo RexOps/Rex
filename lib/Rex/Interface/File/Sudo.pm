@@ -101,6 +101,8 @@ sub close {
   # always use current logged in user for sudo fs operations
   Rex::get_current_connection_object()->push_sudo_options( {} );
 
+  $self->{fh}->close;
+
   if ( exists $self->{mode}
     && ( $self->{mode} eq ">" || $self->{mode} eq ">>" ) )
   {
@@ -117,7 +119,6 @@ sub close {
     #$exec->exec("cat " . $self->{rndfile} . " >'" . $self->{file} . "'");
   }
 
-  $self->{fh}->close;
   $self->{fh} = undef;
 
   $self->_fs->unlink( $self->{rndfile} );

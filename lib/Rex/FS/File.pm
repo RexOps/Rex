@@ -115,7 +115,12 @@ sub new {
 
 sub DESTROY {
   my ($self) = @_;
-  $self->close if ( $self->{'fh'} );
+  if ( ref $self->{'fh'} =~ m/^Rex::Interface::File/ ) {
+    $self->close if ( $self->{'fh'}->{'fh'} );
+  }
+  else {
+    $self->close if ( $self->{'fh'} );
+  }
 }
 
 =item write($buf)

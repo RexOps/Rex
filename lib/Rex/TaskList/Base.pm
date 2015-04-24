@@ -57,6 +57,18 @@ sub create_task {
     $func = pop;
   }
 
+  my $requested_env = Rex::Config->get_environment;
+  my @environments  = Rex::Commands->get_environments;
+
+  if ( $task_name ne 'Commands:Box:get_sys_info'
+    && $task_name ne 'Test:run'
+    && $requested_env ne ''
+    && !grep { $_ eq $requested_env } @environments )
+  {
+    Rex::Logger::info( "Environment '$requested_env' not defined.", 'error' );
+    exit(1);
+  }
+
   my @server = ();
 
   if ($::FORCE_SERVER) {

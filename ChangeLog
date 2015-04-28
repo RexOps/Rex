@@ -1,3 +1,17 @@
+2015-04-28 <jfried@rexify.org> (1.2.0)
+  * Check if requested environment is defined (fix #639) - Ferenc Erki
+  * Use normal DSL for internal task - Ferenc Erki
+  * Fix SCM documentation - Ferenc Erki
+  * Sort server names naturally - Ferenc Erki
+  * Sort tasklist output (fix #633) - Ferenc Erki
+  * Add YAML CMDB merging support (fix #499) - Ferenc Erki
+  * Add CMDB merge tests - Ferenc Erki
+  * Update list of contributors - Ferenc Erki
+  * Check number of elements returned by stat - Ferenc Erki
+  * Rex::Commands::Fs::stat() should return a hash or throw an exception. - Mitch Broadhead
+  * Allow single-character tasknames (fix #621) - Ferenc Erki
+  * Fix reporting for umount - Ferenc Erki
+
 2015-03-29 <jan.gehring, gmail.com> (1.1.0)
   * Fix dependencies for openssh + pass_auth - Ferenc Erki
   * prevent faulty debug message - Jan

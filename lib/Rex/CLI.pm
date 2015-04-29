@@ -452,9 +452,9 @@ CHECK_OVERWRITE: {
 
     for my $group ( keys %groups ) {
       my @servers = 
-        map { $_->name }
         map { $_->get_servers }
         Rex::Group->get_group_object($group)->get_servers;
+      @servers = map { $_->name } @servers if $opts{'y'} >= 2;
       $real_groups{$group} = \@servers;
     }
 

@@ -517,8 +517,10 @@ CHECK_OVERWRITE: {
 
     my %groups = Rex::Group->get_groups;
     _print_color( "Server Groups\n", "yellow" ) if ( keys %groups );
+    my $max_group_str = max map { length } keys %groups;
+    my $fmt = " %-s" . $max_group-str . "s %s\n";
     for my $group ( sort keys %groups ) {
-      printf "  %-30s %s\n", $group, join( ", ", sort @{ $groups{$group} } );
+      printf $fmt, $group, join( ", ", sort @{ $groups{$group} } );
     }
 
     Rex::global_sudo(0);

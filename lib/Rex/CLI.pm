@@ -16,6 +16,8 @@ use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Cwd qw(getcwd);
 use List::Util qw(max);
+use Text::Wrap;
+use Term::ReadKey;
 
 use Rex;
 use Rex::Config;
@@ -517,10 +519,15 @@ CHECK_OVERWRITE: {
 
     my %groups = Rex::Group->get_groups;
     _print_color( "Server Groups\n", "yellow" ) if ( keys %groups );
+    my ($cols) = Term::ReadKey::GetTerminalSize(*STDOUT);
+    $Text::Wrap::columns = $cols || 80;
     my $max_group_str = max map { length } keys %groups;
-    my $fmt = " %-s" . $max_group-str . "s %s\n";
+    my $fmt = " %-" . $max_group_str .  "s  %s\n";
     for my $group ( sort keys %groups ) {
-      printf $fmt, $group, join( ", ", sort @{ $groups{$group} } );
+      my $hosts  = join( ", ", sort @{ $groups{$group} } );
+      my $output = sprintf $fmt, $group, $hosts;
+      my $indent = " "x$max_group_str . "   ";
+      print wrap("", $indent, $output);
     }
 
     Rex::global_sudo(0);

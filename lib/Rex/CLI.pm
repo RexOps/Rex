@@ -451,7 +451,9 @@ CHECK_OVERWRITE: {
     my %real_groups;
 
     for my $group ( keys %groups ) {
-      my @servers = map { $_->get_servers }
+      my @servers = 
+        map { $_->name }
+        map { $_->get_servers }
         Rex::Group->get_group_object($group)->get_servers;
       $real_groups{$group} = \@servers;
     }

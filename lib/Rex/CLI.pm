@@ -16,6 +16,8 @@ use File::Basename;
 use Time::HiRes qw(gettimeofday tv_interval);
 use Cwd qw(getcwd);
 use List::Util qw(max);
+use Text::Wrap;
+use Term::ReadKey;
 
 use Rex;
 use Rex::Config;
@@ -465,61 +467,7 @@ CHECK_OVERWRITE: {
     );
   }
   elsif ( $opts{'T'} ) {
-    Rex::Logger::debug("Listing Tasks and Batches");
-    _print_color( "Tasks\n", "yellow" );
-    my @tasks = Rex::TaskList->create()->get_tasks;
-    unless (@tasks) {
-      print "  no tasks defined.\n";
-      exit;
-    }
-    if ( defined $ARGV[0] ) {
-      @tasks = map { Rex::TaskList->create()->is_task($_) ? $_ : () } @ARGV;
-    }
-
-    # Warn the user if they pass in arguments to '-T' and no task names
-    # were found that match those arguments
-    if ( scalar(@tasks) == 0 ) {
-      foreach my $task_warn (@ARGV) {
-        Rex::Logger::info( "No task matching '$task_warn' found.", "error" );
-      }
-    }
-    else {
-      my $max_task_str = max map { length } @tasks;
-      for my $task ( sort @tasks ) {
-        my $padding = $max_task_str - length($task);
-        print " $task  "
-          . ' ' x $padding . " "
-          . Rex::TaskList->create()->get_desc($task) . "\n";
-        if ( $opts{'v'} ) {
-          _print_color(
-            "    Servers: "
-              . join( ", ",
-              sort @{ Rex::TaskList->create()->get_task($task)->server } )
-              . "\n"
-          );
-        }
-      }
-    }
-    _print_color( "Batches\n", 'yellow' ) if ( Rex::Batch->get_batchs );
-    for my $batch ( sort Rex::Batch->get_batchs ) {
-      printf "  %-30s %s\n", $batch, Rex::Batch->get_desc($batch);
-      if ( $opts{'v'} ) {
-        _print_color(
-          "    " . join( " ", Rex::Batch->get_batch($batch) ) . "\n" );
-      }
-    }
-    my @envs = map { Rex::Commands->get_environment($_) }
-      sort Rex::Commands->get_environments();
-    _print_color( "Environments\n", "yellow" ) if scalar @envs;
-    for my $e (@envs) {
-      printf "  %-30s %s\n", $e->{name}, $e->{description};
-    }
-
-    my %groups = Rex::Group->get_groups;
-    _print_color( "Server Groups\n", "yellow" ) if ( keys %groups );
-    for my $group ( sort keys %groups ) {
-      printf "  %-30s %s\n", $group, join( ", ", sort @{ $groups{$group} } );
-    }
+    _handle_T(%opts);
 
     Rex::global_sudo(0);
     Rex::Logger::debug("Removing lockfile") if ( !exists $opts{'F'} );
@@ -757,6 +705,127 @@ sub add_exit {
 sub __version__ {
   print "(R)?ex " . $Rex::VERSION . "\n";
   CORE::exit 0;
+}
+
+sub _handle_T{
+  my %opts = @_;
+
+  my ($cols) = Term::ReadKey::GetTerminalSize(*STDOUT);
+  $Text::Wrap::columns = $cols || 80;
+
+  _list_tasks();
+  _list_batches();
+  _list_envs();
+  _list_groups();
+}
+
+sub _list_tasks {
+  Rex::Logger::debug("Listing Tasks");
+
+  my @tasks = Rex::TaskList->create()->get_tasks;
+  @tasks    = grep { $_ =~ /^$ARGV[0]/ } @tasks if defined $ARGV[0];
+
+  # Warn if the user passed args to '-T' and no matching task names were found
+  Rex::Logger::info( "No tasks matching '$ARGV[0]' found.", "error" )
+    unless @tasks;
+
+  return unless @tasks;
+
+  # fancy sorting of tasks -- put tasks from Rexfile first
+  my @root_tasks  = grep { !/:/ } @tasks;
+  my @other_tasks = grep { /:/ } @tasks;
+  @tasks = (sort(@root_tasks), sort(@other_tasks));
+
+  _print_color( "Tasks\n", "yellow" );
+  my $max_task_len = max map { length } @tasks;
+  my $fmt = " %-" . $max_task_len . "s  %s\n";
+  my $last_namespace = _namespace($tasks[0]);
+
+  for my $task ( @tasks ) {
+    print "\n" if $last_namespace ne _namespace($task);
+    $last_namespace = _namespace($task);
+
+    my $description = Rex::TaskList->create()->get_desc($task);
+    my $output      = sprintf $fmt, $task, $description;
+    my $indent      = " " x $max_task_len . "   ";
+
+    print wrap("", $indent, $output);
+
+    if ( $opts{'v'} ) {
+      my @servers = sort @{ Rex::TaskList->create()->get_task($task)->server };
+      _print_color("    Servers: ". join(", ", @servers) . "\n");
+    }
+  }
+}
+
+sub _namespace {
+  my ($full_task_name) = @_;
+  return "" unless $full_task_name =~ /:/;
+  my ($namespace) = split /:/, $full_task_name;
+  return $namespace;
+}
+
+sub _list_batches {
+  Rex::Logger::debug("Listing Batches");
+
+  my @batchs = sort Rex::Batch->get_batchs;
+  return unless Rex::Batch->get_batchs;
+
+  _print_color( "Batches\n", 'yellow' );
+  my $max_batch_len = max map { length } @batchs;
+  my $fmt = " %-" . $max_batch_len . "s  %s\n";
+
+  for my $batch ( sort @batchs ) {
+    my $description = Rex::Batch->get_desc($batch);
+    my $output      = sprintf $fmt, $batch, $description;
+    my $indent      = " " x $max_batch_len . "   ";
+
+    print wrap("", $indent, $output);
+
+    if ( $opts{'v'} ) {
+      my @tasks = Rex::Batch->get_batch($batch);
+      _print_color("    " . join(" ", @tasks) . "\n");
+    }
+  }
+}
+
+sub _list_envs {
+  Rex::Logger::debug("Listing Envs");
+
+  my @envs = 
+    map { Rex::Commands->get_environment($_) }
+    sort Rex::Commands->get_environments();
+  return unless @envs;
+
+  _print_color( "Environments\n", "yellow" ) if scalar @envs;
+  my $max_env_len = max map { length $_->{name} } @envs;
+  my $fmt = " %-" . $max_env_len . "s  %s\n";
+
+  for my $e (sort @envs) {
+    my $output = sprintf $fmt, $e->{name}, $e->{description};
+    my $indent = " " x $max_env_len . "   ";
+    print wrap("", $indent, $output);
+  }
+}
+
+sub _list_groups {
+  Rex::Logger::debug("Listing Groups");
+
+  my %groups = Rex::Group->get_groups;
+  my @group_names = sort keys %groups;
+
+  return unless @group_names;
+
+  _print_color( "Server Groups\n", "yellow" );
+  my $max_group_len = max map { length } @group_names;
+  my $fmt = " %-" . $max_group_len .  "s  %s\n";
+
+  for my $group_name ( @group_names ) {
+    my $hosts  = join(", ", sort @{ $groups{$group_name} });
+    my $output = sprintf $fmt, $group_name, $hosts;
+    my $indent = " " x $max_group_len . "   ";
+    print wrap("", $indent, $output);
+  }
 }
 
 1;

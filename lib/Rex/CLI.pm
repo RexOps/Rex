@@ -473,7 +473,7 @@ CHECK_OVERWRITE: {
       exit;
     }
     if ( defined $ARGV[0] ) {
-      @tasks = map { Rex::TaskList->create()->is_task($_) ? $_ : () } @ARGV;
+      @tasks = grep { $_ =~ /^$ARGV[0]/ } @tasks;
     }
 
     # Warn the user if they pass in arguments to '-T' and no task names

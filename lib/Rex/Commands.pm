@@ -38,6 +38,8 @@ This module is the core commands module.
 
 =over 4
 
+=item * Augeas config file management library L<Rex::Commands::Augeas>
+
 =item * Cloud Management L<Rex::Commands::Cloud>
 
 =item * Cron Management L<Rex::Commands::Cron>
@@ -62,7 +64,17 @@ This module is the core commands module.
 
 =item * LVM Commands L<Rex::Commands::LVM>
 
+=item * MD5 checksums L<Rex::Commands::MD5>
+
+=item * Network commands L<Rex::Commands::Network>
+
+=item * Notify resources to execute L<Rex::Commands::Notify>
+
 =item * Package Commands L<Rex::Commands::Pkg>
+
+=item * Partition your storage device(s) L<Rex::Commands::Partition>
+
+=item * Configure packages (via debconf) L<Rex::Commands::PkgConf>
 
 =item * Process Management L<Rex::Commands::Process>
 
@@ -70,11 +82,19 @@ This module is the core commands module.
 
 =item * Run Remote Commands L<Rex::Commands::Run>
 
+=item * Source control via Subversion/Git L<Rex::Commands::SCM>
+
 =item * Manage System Services (sysvinit) L<Rex::Commands::Service>
+
+=item * Simple TCP/alive checks L<Rex::Commands::SimpleCheck>
+
+=item * Sync directories L<Rex::Commands::Sync>
 
 =item * Sysctl Commands L<Rex::Commands::Sysctl>
 
 =item * Live Tail files L<Rex::Commands::Tail>
+
+=item * Upload local file to remote server L<Rex::Commands::Upload>
 
 =item * Manage user and group accounts L<Rex::Commands::User>
 

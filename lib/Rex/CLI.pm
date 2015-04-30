@@ -731,11 +731,20 @@ sub _list_tasks {
 
   return unless @tasks;
 
+  # fancy sorting of tasks -- put tasks from Rexfile first
+  my @root_tasks  = grep { !/:/ } @tasks;
+  my @other_tasks = grep { /:/ } @tasks;
+  @tasks = (sort(@root_tasks), sort(@other_tasks));
+
   _print_color( "Tasks\n", "yellow" );
   my $max_task_len = max map { length } @tasks;
   my $fmt = " %-" . $max_task_len . "s  %s\n";
+  my $last_namespace = _namespace($tasks[0]);
 
-  for my $task ( sort @tasks ) {
+  for my $task ( @tasks ) {
+    print "\n" if $last_namespace ne _namespace($task);
+    $last_namespace = _namespace($task);
+
     my $description = Rex::TaskList->create()->get_desc($task);
     my $output      = sprintf $fmt, $task, $description;
     my $indent      = " " x $max_task_len . "   ";
@@ -747,6 +756,13 @@ sub _list_tasks {
       _print_color("    Servers: ". join(", ", @servers) . "\n");
     }
   }
+}
+
+sub _namespace {
+  my ($full_task_name) = @_;
+  return "" unless $full_task_name =~ /:/;
+  my ($namespace) = split /:/, $full_task_name;
+  return $namespace;
 }
 
 sub _list_batches {

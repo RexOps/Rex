@@ -329,6 +329,8 @@ sub run {
 sub modify {
   my ( $self, $type, $task, $code, $package, $file, $line ) = @_;
 
+  return if $Rex::Commands::dont_register_tasks;
+
   if ( $package ne "main" && $package ne "Rex::CLI" ) {
     if ( $task !~ m/:/ ) {
 

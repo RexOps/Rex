@@ -707,7 +707,7 @@ sub __version__ {
   CORE::exit 0;
 }
 
-sub _handle_T{
+sub _handle_T {
   my %opts = @_;
 
   my ($cols) = Term::ReadKey::GetTerminalSize(*STDOUT);
@@ -723,7 +723,7 @@ sub _list_tasks {
   Rex::Logger::debug("Listing Tasks");
 
   my @tasks = Rex::TaskList->create()->get_tasks;
-  @tasks    = grep { $_ =~ /^$ARGV[0]/ } @tasks if defined $ARGV[0];
+  @tasks = grep { $_ =~ /^$ARGV[0]/ } @tasks if defined $ARGV[0];
 
   # Warn if the user passed args to '-T' and no matching task names were found
   Rex::Logger::info( "No tasks matching '$ARGV[0]' found.", "error" )
@@ -734,14 +734,14 @@ sub _list_tasks {
   # fancy sorting of tasks -- put tasks from Rexfile first
   my @root_tasks  = grep { !/:/ } @tasks;
   my @other_tasks = grep { /:/ } @tasks;
-  @tasks = (sort(@root_tasks), sort(@other_tasks));
+  @tasks = ( sort(@root_tasks), sort(@other_tasks) );
 
   _print_color( "Tasks\n", "yellow" );
-  my $max_task_len = max map { length } @tasks;
-  my $fmt = " %-" . $max_task_len . "s  %s\n";
-  my $last_namespace = _namespace($tasks[0]);
+  my $max_task_len   = max map { length } @tasks;
+  my $fmt            = " %-" . $max_task_len . "s  %s\n";
+  my $last_namespace = _namespace( $tasks[0] );
 
-  for my $task ( @tasks ) {
+  for my $task (@tasks) {
     print "\n" if $last_namespace ne _namespace($task);
     $last_namespace = _namespace($task);
 
@@ -749,11 +749,11 @@ sub _list_tasks {
     my $output      = sprintf $fmt, $task, $description;
     my $indent      = " " x $max_task_len . "   ";
 
-    print wrap("", $indent, $output);
+    print wrap( "", $indent, $output );
 
     if ( $opts{'v'} ) {
       my @servers = sort @{ Rex::TaskList->create()->get_task($task)->server };
-      _print_color("    Servers: ". join(", ", @servers) . "\n");
+      _print_color( "    Servers: " . join( ", ", @servers ) . "\n" );
     }
   }
 }
@@ -780,11 +780,11 @@ sub _list_batches {
     my $output      = sprintf $fmt, $batch, $description;
     my $indent      = " " x $max_batch_len . "   ";
 
-    print wrap("", $indent, $output);
+    print wrap( "", $indent, $output );
 
     if ( $opts{'v'} ) {
       my @tasks = Rex::Batch->get_batch($batch);
-      _print_color("    " . join(" ", @tasks) . "\n");
+      _print_color( "    " . join( " ", @tasks ) . "\n" );
     }
   }
 }
@@ -792,7 +792,7 @@ sub _list_batches {
 sub _list_envs {
   Rex::Logger::debug("Listing Envs");
 
-  my @envs = 
+  my @envs =
     map { Rex::Commands->get_environment($_) }
     sort Rex::Commands->get_environments();
   return unless @envs;
@@ -801,30 +801,30 @@ sub _list_envs {
   my $max_env_len = max map { length $_->{name} } @envs;
   my $fmt = " %-" . $max_env_len . "s  %s\n";
 
-  for my $e (sort @envs) {
+  for my $e ( sort @envs ) {
     my $output = sprintf $fmt, $e->{name}, $e->{description};
     my $indent = " " x $max_env_len . "   ";
-    print wrap("", $indent, $output);
+    print wrap( "", $indent, $output );
   }
 }
 
 sub _list_groups {
   Rex::Logger::debug("Listing Groups");
 
-  my %groups = Rex::Group->get_groups;
+  my %groups      = Rex::Group->get_groups;
   my @group_names = sort keys %groups;
 
   return unless @group_names;
 
   _print_color( "Server Groups\n", "yellow" );
   my $max_group_len = max map { length } @group_names;
-  my $fmt = " %-" . $max_group_len .  "s  %s\n";
+  my $fmt = " %-" . $max_group_len . "s  %s\n";
 
-  for my $group_name ( @group_names ) {
-    my $hosts  = join(", ", sort @{ $groups{$group_name} });
+  for my $group_name (@group_names) {
+    my $hosts = join( ", ", sort @{ $groups{$group_name} } );
     my $output = sprintf $fmt, $group_name, $hosts;
     my $indent = " " x $max_group_len . "   ";
-    print wrap("", $indent, $output);
+    print wrap( "", $indent, $output );
   }
 }
 

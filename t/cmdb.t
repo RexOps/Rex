@@ -66,8 +66,8 @@ is(
 
 set(
   cmdb => {
-    type => "YAML",
-    path => "t/cmdb",
+    type           => "YAML",
+    path           => "t/cmdb",
     merge_behavior => 'LEFT_PRECEDENT',
   }
 );

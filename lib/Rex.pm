@@ -60,6 +60,11 @@ use warnings;
 
 # VERSION
 
+# development version if this variable is not set
+if ( !$Rex::VERSION ) {
+  $Rex::VERSION = "9999.99.99";
+}
+
 BEGIN {
   use Rex::Logger;
   use Rex::Interface::Cache;
@@ -536,8 +541,9 @@ sub import {
       my $found_feature = 0;
 
       if ( $add =~ m/^(\d+\.\d+)$/ ) {
+        my $_ver = $Rex::VERSION;
         my $vers = $1;
-        my ( $major, $minor, $patch ) = split( /\./, $VERSION );
+        my ( $major, $minor, $patch ) = split( /\./, $_ver );
         my ( $c_major, $c_minor ) = split( /\./, $vers );
 
         if ( ( $c_major > $major )

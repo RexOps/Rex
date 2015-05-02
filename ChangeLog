@@ -1,4 +1,12 @@
-2015-04-28 <jfried@rexify.org> (1.2.0)
+2015-05-02 <jfried@rexify.org> (1.2.0)
+  * Set version to 9999.99.99 if version is not present (e.g. during development) - Jan
+  * Fix Rexfile parsing (fix #629) - Jan
+  * Refactor tasklist output (fix #631, #653) - Eric Johnson
+  * Remove -w from shebang (fix #650) - Eric Johnson
+  * Add tab completion (fix #636, #652) - Eric Johnson
+  * Update modules listed in POD - Brian Manning
+  * Add another Red Hat synonym for RHWS version 3 - Brian Manning
+  * Fix file manipulation when using Net::OpenSSH and sudo (fix #640) - Jan
   * Check if requested environment is defined (fix #639) - Ferenc Erki
   * Use normal DSL for internal task - Ferenc Erki
   * Fix SCM documentation - Ferenc Erki

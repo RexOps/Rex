@@ -25,6 +25,7 @@ for x in \
    lib/Rex/Box/Base.pm \
    lib/Rex/Box/KVM.pm \
    lib/Rex/Box/VBox.pm \
+   lib/Rex/CMDB.pm \
    lib/Rex/Commands.pm \
    lib/Rex/Commands/Augeas.pm \
    lib/Rex/Commands/Box.pm \

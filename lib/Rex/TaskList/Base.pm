@@ -20,6 +20,7 @@ use Rex::Fork::Manager;
 use Rex::Report;
 use Rex::Group;
 use Time::HiRes qw(time);
+use POSIX qw(floor);
 
 sub new {
   my $that  = shift;
@@ -278,8 +279,7 @@ sub run {
 
   my @all_server = @{ $task->server };
 
-  my $fm = Rex::Fork::Manager->new( max => $task->parallelism
-      || Rex::Config->get_parallelism );
+  my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
 
   for my $server (@all_server) {
 
@@ -383,6 +383,23 @@ sub is_transaction {
 sub get_exit_codes {
   my ($self) = @_;
   return @Rex::Fork::Task::PROCESS_LIST;
+}
+
+sub get_thread_count {
+  my ( $self, $task ) = @_;
+  my $threads = $task->parallelism || Rex::Config->get_parallelism;
+  my $server_count = scalar @{ $task->server };
+
+  return $1                                if $threads =~ /^(\d+)$/;
+  return floor( $server_count / $1 )       if $threads =~ /^max\s?\/(\d+)$/;
+  return floor( $server_count * $1 / 100 ) if $threads =~ /^max (\d+)%$/;
+  return $server_count                     if $threads eq 'max';
+
+  Rex::Logger::info(
+    "Unrecognized thread count requested: '$threads'. Falling back to a single thread.",
+    'warn'
+  );
+  return 1;
 }
 
 1;

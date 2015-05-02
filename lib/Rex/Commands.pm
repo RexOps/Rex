@@ -942,7 +942,13 @@ sub krb5_auth {
 
 =item parallelism($count)
 
-Will execute the tasks in parallel on the given servers. $count is the thread count to be used.
+Will execute the tasks in parallel on the given servers. $count is the thread count to be used. Alternatively, the following notation can be used:
+
+parallelism 'max'     : set parallelism to the number of servers a task is asked to run on
+parallelism 'max/3'   : set parallelism to 1/3 of the number of servers
+parallelism 'max 10%' : set parallelism to 10% of the number of servers
+
+If an unrecognized value is passed, or the calculated thread count would be less than 1, Rex falls back to use a single thread.
 
 =cut
 

@@ -41,7 +41,7 @@ sub start {
 
     # only allow this if no parallelism is given.
     # with parallelism active it doesn't make sense.
-    if ( $Rex::WITH_EXIT_STATUS && Rex::Config->get_parallelism == 1 ) {
+    if ($Rex::WITH_EXIT_STATUS) {
       eval {
         &$func($self);
         1;

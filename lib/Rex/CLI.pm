@@ -95,7 +95,7 @@ sub __run__ {
     g => { type => "string" },
     z => { type => "string" },
     O => { type => "string" },
-    t => { type => "integer" },
+    t => { type => "string" },
     %more_args,
   );
 

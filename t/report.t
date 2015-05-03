@@ -34,6 +34,12 @@ Rex::Report->destroy;
 
 report( -on => "YAML" );
 set( report_path => "tmp/report" );
+my $report_num = 1;
+Rex::Report::YAML->set_report_name(
+  sub {
+    return $report_num;
+  }
+);
 
 task(
   "test",
@@ -53,8 +59,7 @@ my $ref = Load($content);
 
 is( $ref->{'file[test_report.txt]'}->{changed}, 1, "a new file was created." );
 
-# need to wait a bit
-sleep 2;
+$report_num += 1;
 
 Rex::TaskList->create()->get_task("test")->run("<local>");
 @files = sort { $a =~ s/\.yml//; $b =~ s/\.yml//; $a <=> $b }

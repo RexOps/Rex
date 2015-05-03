@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use Data::Dumper;
 
 use_ok 'Rex';
 use_ok 'Rex::Commands';

@@ -1,4 +1,3 @@
-use Data::Dumper;
 use Test::More tests => 46;
 use_ok 'Rex::Hardware::Network::Linux';
 use_ok 'Rex::Helper::Hash';

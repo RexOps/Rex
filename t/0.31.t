@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More tests => 147;
-use Data::Dumper;
 
 use_ok 'Rex';
 use_ok 'Rex::Config';

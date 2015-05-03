@@ -1,5 +1,4 @@
 use Test::More;
-use Data::Dumper;
 
 use_ok 'Rex::Inventory::DMIDecode';
 

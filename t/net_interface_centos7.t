@@ -1,4 +1,3 @@
-use Data::Dumper;
 use Test::More tests => 7;
 use_ok 'Rex::Hardware::Network::Linux';
 

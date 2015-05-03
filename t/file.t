@@ -6,7 +6,6 @@ my $cwd = getcwd;
 
 BEGIN {
   use Test::More tests => 58;
-  use Data::Dumper;
 
   use_ok 'Rex';
   use_ok 'Rex::Commands::File';

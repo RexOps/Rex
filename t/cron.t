@@ -9,7 +9,6 @@ BEGIN {
   }
 }
 
-use Data::Dumper;
 
 use_ok 'Rex::Cron';
 use_ok 'Rex::Cron::Base';

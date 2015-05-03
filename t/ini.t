@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use Data::Dumper;
 
 my %have_mods = ( 'String::Escape' => 1, );
 

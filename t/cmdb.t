@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More tests => 16;
-use Data::Dumper;
 
 use_ok 'Rex::CMDB';
 use_ok 'Rex::Commands';

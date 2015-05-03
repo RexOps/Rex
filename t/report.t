@@ -50,7 +50,6 @@ task(
 
 Rex::TaskList->create()->get_task("test")->run("<local>");
 
-use Data::Dumper;
 my @files = list_files("tmp/report/_local_");
 my $content =
   eval { local ( @ARGV, $/ ) = ("tmp/report/_local_/$files[0]"); <>; };

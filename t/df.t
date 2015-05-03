@@ -2,7 +2,6 @@ use strict;
 use warnings;
 
 use Test::More tests => 37;
-use Data::Dumper;
 
 use_ok 'Rex::Commands::Fs';
 

@@ -229,7 +229,6 @@ use_ok 'Rex::Test::Base::has_package';
 use_ok 'Rex::Test::Base::has_service_running';
 use_ok 'Rex::Test::Base::has_service_stopped';
 
-use Data::Dumper;
 my @hosts = Rex::Commands::evaluate_hostname("web[01..10]");
 ok(
   join( ",", @hosts ) eq

@@ -16,4 +16,4 @@ run($command);
 
 $s = last_command_output();
 unlike( $s, qr/ChangeLog/ms );
-like( $s, qr/base\.t/ms );
+like( $s, qr/auth\.t/ms );

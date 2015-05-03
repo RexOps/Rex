@@ -4,8 +4,8 @@ use strict;
 use warnings;
 
 use Test::More;
+
 use File::Basename;
-use File::Spec;
 
 use Rex::Commands::File;
 

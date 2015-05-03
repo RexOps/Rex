@@ -3,12 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12;
+use Test::More tests => 8;
 
-use_ok 'Rex';
-use_ok 'Rex::Logger';
-use_ok 'Rex::Config';
-use_ok 'Rex::Helper::Path';
+use Rex::Helper::Path;
 
 no warnings 'once';
 $::QUIET = 1;

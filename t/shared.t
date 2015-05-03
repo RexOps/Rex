@@ -2,10 +2,9 @@ use strict;
 use warnings;
 
 BEGIN {
-  use Test::More tests => 9;
+  use Test::More tests => 8;
 
-  use_ok 'Rex::Shared::Var';
-  Rex::Shared::Var->import;
+  use Rex::Shared::Var;
 
   share(qw($scalar @array %hash));
 }
@@ -36,4 +35,3 @@ is( $hash{multi}->{arr1}->[1], "baz", "multidimension, arr1 - key1" );
 
 unlink("vars.db");
 unlink("vars.db.lock");
-

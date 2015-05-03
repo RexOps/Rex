@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More tests => 7;
 
-use_ok 'Rex::Interface::Fs';
+use Rex::Interface::Fs;
 
 my $fs = Rex::Interface::Fs->create("Local");
 

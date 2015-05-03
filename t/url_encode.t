@@ -1,6 +1,6 @@
-use Test::More tests => 2;
+use Test::More tests => 1;
 
-use_ok 'Rex::Helper::Encode';
+use Rex::Helper::Encode;
 
 my $input =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#+~*`´!\"§\$%&/()=?\\|<>,.-_'^°";

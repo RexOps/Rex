@@ -1,12 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
-use File::Spec;
+use Test::More tests => 8;
+
 use File::Basename;
 use Cwd 'getcwd';
-
-use_ok 'Rex::Helper::Path';
+use Rex::Helper::Path;
 
 my $rexfile  = "Rexfile";
 my $file     = File::Spec->join( "files", "foo.txt" );

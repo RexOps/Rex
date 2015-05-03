@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 37;
+use Test::More tests => 36;
 
-use_ok 'Rex::Commands::Fs';
+use Rex::Commands::Fs;
 
 my @lines = eval { local (@ARGV) = ("t/df.out2"); <>; };
 

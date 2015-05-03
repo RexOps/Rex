@@ -1,5 +1,5 @@
-use Test::More tests => 7;
-use_ok 'Rex::Hardware::Network::Linux';
+use Test::More tests => 6;
+use Rex::Hardware::Network::Linux;
 
 my @in = eval { local (@ARGV) = ("t/ip.out_centos7"); <>; };
 my $info = Rex::Hardware::Network::Linux::_parse_ip(@in);

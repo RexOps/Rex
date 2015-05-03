@@ -1,13 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 15;
+use Test::More tests => 13;
 
-use_ok 'Rex';
-use_ok 'Rex::Commands';
-
-Rex->import( -feature => 0.54 );
-Rex::Commands->import;
+use Rex -feature => '0.54';
 
 set( "key1", "val1" );
 is( get("key1"), "val1", "got value of key1" );

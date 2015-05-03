@@ -3,16 +3,7 @@ use warnings;
 
 use Test::More;
 
-use_ok 'Rex';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'List::MoreUtils';
-
-Rex->import( -feature => 0.31 );
-Rex::Commands->import();
+use Rex -feature => '0.31';
 
 user("root3");
 password("pass3");

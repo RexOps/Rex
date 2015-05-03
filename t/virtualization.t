@@ -1,12 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 3;
 
-use_ok 'Rex';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Config';
-use_ok 'Rex::Commands::Virtualization';
+use Rex::Commands;
 
 Rex::Commands::set( virtualization => "LibVirt" );
 is( Rex::Config->get("virtualization"),

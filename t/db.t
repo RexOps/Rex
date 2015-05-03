@@ -6,12 +6,10 @@ use Cwd 'getcwd';
 my $cwd = getcwd;
 
 BEGIN {
-  use Test::More tests => 40;
+  use Test::More tests => 38;
   use Data::Dumper;
-
-  use_ok 'Rex';
-  use_ok 'Rex::Config';
 }
+
 my $dbh;
 SKIP: {
   eval "use Test::mysqld;";

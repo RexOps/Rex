@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More tests => 1;
 
-use_ok 'Rex::Commands::Fs';
+use Rex::Commands::Fs;
 
 my $fake_file = "file_that_does_not_exist";
 eval { Rex::Commands::Fs::stat($fake_file); };

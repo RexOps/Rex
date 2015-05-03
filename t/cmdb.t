@@ -1,14 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16;
+use Test::More tests => 13;
 
-use_ok 'Rex::CMDB';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::File';
-
-Rex::Commands->import;
-Rex::CMDB->import;
+use Rex::CMDB;
+use Rex::Commands;
+use Rex::Commands::File;
 
 set(
   cmdb => {

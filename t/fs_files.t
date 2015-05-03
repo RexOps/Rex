@@ -5,10 +5,8 @@ use warnings;
 
 use Test::More;
 
-use_ok 'Rex::Helper::Path';
-use_ok 'Rex::Commands::File';
-use_ok 'Rex::Interface::File';
-use_ok 'Rex::FS::File';
+use Rex::Helper::Path;
+use Rex::Commands::File;
 
 my @lines = ( "first line", "second line", "test" );
 

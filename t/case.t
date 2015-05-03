@@ -1,8 +1,5 @@
-BEGIN {
-  use Test::More tests => 8;
-  use_ok 'Rex::Commands';
-  Rex::Commands->import;
-}
+use Test::More tests => 7;
+use Rex::Commands;
 
 my $test = "Debian";
 
@@ -57,4 +54,3 @@ $var = case $test, {
 };
 
 is( $var, "default", "use a sub - return default" );
-

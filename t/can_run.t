@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 4;
 
-use_ok 'Rex::Commands::Run';
+use Rex::Commands::Run;
 
 {
   my $command_to_check = $^O =~ /^MSWin/ ? 'where' : 'which';

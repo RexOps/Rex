@@ -20,12 +20,11 @@ unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} ) {
     'SSH module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
 }
 else {
-  plan tests => 35;
+  plan tests => 33;
 }
 
-use_ok 'Rex::Task';
-use_ok 'Rex::Commands';
-Rex::Commands->import;
+use Rex::Task;
+use Rex::Commands;
 
 {
   no warnings 'once';

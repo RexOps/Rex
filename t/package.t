@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 4;
 
-use_ok 'Rex::Pkg::Base';
+use Rex::Pkg::Base;
 
 my $pkg = Rex::Pkg::Base->new;
 

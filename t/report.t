@@ -1,17 +1,13 @@
 use strict;
 use warnings;
 
-use Test::More tests => 10;
+use Test::More tests => 3;
 use YAML;
 
-use_ok 'Rex';
-use_ok 'Rex::Report';
-use_ok 'Rex::Report::Base';
-use_ok 'Rex::Report::YAML';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::File';
-use_ok 'Rex::Commands::Fs';
-Rex::Commands->import;
+use Rex::Commands;
+use Rex::Commands::File;
+use Rex::Commands::Fs;
+use Rex::Report::YAML;
 
 {
   no warnings 'once';

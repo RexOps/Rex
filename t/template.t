@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
-use_ok 'Rex::Template';
-use_ok 'Rex::Config';
+use Test::More tests => 18;
+
+use Rex::Template;
 
 my $t = Rex::Template->new;
 

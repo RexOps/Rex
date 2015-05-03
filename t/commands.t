@@ -1,18 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 18;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Commands::Upload';
-
-Rex::Commands->import();
+use Rex::Commands;
 
 user("test");
 is( Rex::Config->get_user, "test", "setting user" );

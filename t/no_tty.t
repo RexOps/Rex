@@ -1,11 +1,9 @@
-use Test::More tests => 5;
+use Test::More tests => 3;
 
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Config';
+use Rex::Commands::Run;
+use Rex::Config;
 
 $::QUIET = 1;
-
-Rex::Commands::Run->import;
 
 SKIP: {
   skip 'don\'t know how to test this right on windows', 3 if $^O =~ m/^MSWin/;

@@ -1,6 +1,6 @@
 use Test::More;
 
-use_ok 'Rex::Helper::Path';
+use Rex::Helper::Path;
 
 my $path = Rex::Helper::Path::resolv_path( "/home/foo/bar/baz", 1 );
 is( $path, "/home/foo/bar/baz", "local test absolute path" );

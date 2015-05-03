@@ -1,6 +1,6 @@
-use Test::More tests => 46;
-use_ok 'Rex::Hardware::Network::Linux';
-use_ok 'Rex::Helper::Hash';
+use Test::More tests => 44;
+use Rex::Hardware::Network::Linux;
+use Rex::Helper::Hash;
 
 my @in = eval { local (@ARGV) = ("t/ifconfig.out1"); <>; };
 my $info = Rex::Hardware::Network::Linux::_parse_ifconfig(@in);

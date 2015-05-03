@@ -1,6 +1,6 @@
-use Test::More tests => 18;
-use_ok 'Rex::Hardware::Network::Linux';
-use_ok 'Rex::Helper::Hash';
+use Test::More tests => 16;
+use Rex::Hardware::Network::Linux;
+use Rex::Helper::Hash;
 
 my @in = eval { local (@ARGV) = ("t/ip.out_issue_539"); <>; };
 my $info = Rex::Hardware::Network::Linux::_parse_ip(@in);

@@ -16,23 +16,16 @@ unless ( $have_mods{'XML::LibXML'} ) {
     'XML::LibXML module not available. XML group support won\'t be available.';
 }
 else {
-  plan tests => 12;
+  plan tests => 7;
+  use_ok 'Rex::Group::Lookup::XML';
 }
 
-use_ok 'Rex::Group::Lookup::XML';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Transaction';
+use Rex::Group;
+use Rex::Commands;
 
 no warnings 'once';
 
 $::QUIET = 1;
-
-Rex::Commands->import;
-
-Rex::Group::Lookup::XML->import;
 
 groups_xml("$Bin/test.xml");
 my %groups = Rex::Group->get_groups;

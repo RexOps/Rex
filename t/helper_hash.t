@@ -1,11 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7;
+use Test::More tests => 6;
 
-use_ok 'Rex::Helper::Hash';
-
-Rex::Helper::Hash->import;
+use Rex::Helper::Hash;
 
 my %h = (
   name => "FooBar",

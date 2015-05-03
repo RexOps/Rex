@@ -3,12 +3,7 @@ use warnings;
 
 use Test::More;
 
-use_ok 'Rex';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Host';
-
-Rex::Commands->import();
-Rex::Commands::Host->import();
+use Rex::Commands::Host;
 
 my @content = eval { local (@ARGV) = ("t/hosts.ex"); <>; };
 my @ret = Rex::Commands::Host::_parse_hosts(@content);

@@ -1,10 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More tests => 9;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
+use Rex::Config;
 
 Rex::Config->set( "test", "foobar" );
 is( Rex::Config->get("test"), "foobar", "setting scalars" );

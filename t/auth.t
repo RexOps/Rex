@@ -1,18 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 52;
+use Test::More tests => 44;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Commands::Upload';
-
-Rex::Commands->import();
+use Rex::Commands;
+use Rex::Group;
 
 {
   no warnings 'once';

@@ -1,20 +1,8 @@
-BEGIN {
-  if ( $^O =~ m/^MSWin/ ) {
-    require Test::More;
-    Test::More->import( tests => 88 );
-  }
-  else {
-    require Test::More;
-    Test::More->import( tests => 291 );
-  }
-}
+use Test::More;
 
+$^O =~ m/^MSWin/ ? plan tests => 83 : plan tests => 286;
 
-use_ok 'Rex::Cron';
-use_ok 'Rex::Cron::Base';
-use_ok 'Rex::Cron::Linux';
-use_ok 'Rex::Cron::SunOS';
-use_ok 'Rex::Commands::Cron';
+use Rex::Cron::Base;
 
 my @lines = eval { local (@ARGV) = ("t/cron.ex"); <>; };
 chomp @lines;

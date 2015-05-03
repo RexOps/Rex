@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 13;
 
-use_ok 'Rex::Args';
+use Rex::Args;
 
 push( @ARGV,
   qw(-h -g test1 -g test2 -T -dv -u user -p pass -t 5 foo --name=thename --num=5)

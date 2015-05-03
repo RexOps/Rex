@@ -5,14 +5,7 @@ use warnings;
 
 $::QUIET = 1;
 
-use Rex;
-use Rex::Config;
-use Rex::Group;
-use Rex::Task;
-use Rex::TaskList;
 use Rex::Commands;
-use Rex::Commands::Run;
-use Rex::Commands::Upload;
 
 desc("MyTest - Test1");
 task(
@@ -36,18 +29,9 @@ task(
 
 package main;
 
-use Test::More tests => 11;
+use Test::More tests => 3;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Commands::Upload';
-
-Rex::Commands->import();
+use Rex::Commands;
 
 desc("Test");
 task(

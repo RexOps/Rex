@@ -4,19 +4,12 @@ use warnings;
 use Cwd 'getcwd';
 my $cwd = getcwd;
 
-BEGIN {
-  use Test::More tests => 58;
+use Test::More tests => 52;
 
-  use_ok 'Rex';
-  use_ok 'Rex::Commands::File';
-  use_ok 'Rex::Commands::Fs';
-  use_ok 'Rex::Commands::Gather';
-  use_ok 'Rex::Commands::Run';
-  use_ok 'Rex::Config';
-  Rex::Commands::File->import;
-  Rex::Commands::Fs->import;
-  Rex::Commands::Gather->import;
-}
+use Rex::Commands::File;
+use Rex::Commands::Fs;
+use Rex::Commands::Gather;
+use Rex::Commands::Run;
 
 Rex::Config->set( foo => "bar" );
 

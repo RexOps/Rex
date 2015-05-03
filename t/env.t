@@ -1,10 +1,8 @@
 use Test::More;
 
-use_ok 'Rex::Commands::Run';
+use Rex::Commands::Run;
 
 $::QUIET = 1;
-
-Rex::Commands::Run->import;
 
 SKIP: {
   skip 'Do not run tests on Windows', 1 if $^O =~ m/^MSWin/;

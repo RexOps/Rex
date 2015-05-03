@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests => 4;
 
 use File::Basename;
 
@@ -44,8 +44,6 @@ my $basename = basename __FILE__;
 
   is $content, $basename, "passing template content";
 }
-
-done_testing();
 
 __DATA__
 @first.tpl

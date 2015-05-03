@@ -1,4 +1,4 @@
-use Test::More;
+use Test::More tests => 30;
 
 use Rex::Inventory::DMIDecode;
 
@@ -175,5 +175,3 @@ is(
   "Parallels Virtual Platform",
   "system information product name"
 );
-
-done_testing();

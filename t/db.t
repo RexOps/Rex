@@ -33,7 +33,6 @@ SKIP: {
   _test_delete();
   _test_update();
   _test_batch();
-  done_testing();
 }
 
 sub _test_select {

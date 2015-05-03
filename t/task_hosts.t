@@ -1,6 +1,6 @@
 package main;
 
-use Test::More;
+use Test::More tests => 2;
 
 use Rex::Commands;
 
@@ -41,5 +41,3 @@ is_deeply(
   [ "test2", "test3" ],
   "tasks has two elements: 'test2' and 'test3'"
 );
-
-done_testing();

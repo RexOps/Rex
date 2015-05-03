@@ -1,4 +1,4 @@
-use Test::More;
+use Test::More tests => 1;
 
 use Rex::Commands::Run;
 
@@ -10,5 +10,3 @@ SKIP: {
   my $s = run( "printenv REX", env => { 'REX' => 'XER' } );
   like( $s, qr/XER/, "run with env" );
 }
-
-done_testing();

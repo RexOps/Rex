@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests => 13;
 
 use Rex::Helper::Path;
 use Rex::Commands::File;
@@ -101,5 +101,3 @@ ok -e $filename, 'file was created';
   my @read_lines = $read_object->read_all;
   is_deeply \@read_lines, [qw/this is a test/], 'read lines from fh';
 }
-
-done_testing();

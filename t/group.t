@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More;
+use Test::More tests => 95;
 
 use Rex -feature => '0.31';
 
@@ -55,5 +55,3 @@ is_deeply [ $cleaned_servers[0]->get_servers ], [
     /
   ],
   "duplicated_by_list";
-
-done_testing();

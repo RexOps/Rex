@@ -53,6 +53,11 @@ sub get {
   elsif ( is_mageia($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Mageia::systemd";
   }
+  elsif ( is_debian($operatingsystem) && $can_run_systemctl ) {
+
+    # this also counts for Ubuntu
+    $class = "Rex::Service::Debian::systemd";
+  }
 
   my $provider_for = Rex::Config->get("service_provider") || {};
   my $provider;

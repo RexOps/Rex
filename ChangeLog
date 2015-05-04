@@ -1,3 +1,6 @@
+2015-05-04 <jfried@rexify.org> (1.2.1)
+  * first detect if uname and md5sum can be run, then use it. fixed #665 - Jan
+
 2015-05-02 <jfried@rexify.org> (1.2.0)
   * Set version to 9999.99.99 if version is not present (e.g. during development) - Jan
   * Fix Rexfile parsing (fix #629) - Jan

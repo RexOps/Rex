@@ -724,11 +724,13 @@ sub _list_tasks {
   Rex::Logger::debug("Listing Tasks");
 
   my @tasks = Rex::TaskList->create()->get_tasks;
-  @tasks = grep { $_ =~ /^$ARGV[0]/ } @tasks if defined $ARGV[0];
+  if ( defined $ARGV[0] ) {
+    @tasks = grep { $_ =~ /^$ARGV[0]/ } @tasks;
 
-  # Warn if the user passed args to '-T' and no matching task names were found
-  Rex::Logger::info( "No tasks matching '$ARGV[0]' found.", "error" )
-    unless @tasks;
+    # Warn if the user passed args to '-T' and no matching task names were found
+    Rex::Logger::info( "No tasks matching '$ARGV[0]' found.", "error" )
+      unless @tasks;
+  }
 
   return unless @tasks;
 

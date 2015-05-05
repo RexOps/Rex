@@ -308,6 +308,7 @@ FORCE_SERVER: {
         }
         push @rex_code, "my \$b=\$Rex::Commands::dont_register_tasks;";
         push @rex_code, "\$Rex::Commands::dont_register_tasks = 1;";
+        push @rex_code, "our \$syntax_check = 1;";
         push @rex_code, "$content";
         push @rex_code, "\$Rex::Commands::dont_register_tasks = \$b;";
         push @rex_code, "1;";

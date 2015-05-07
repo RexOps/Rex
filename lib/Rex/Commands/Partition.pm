@@ -46,6 +46,7 @@ use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::LVM;
 use Rex::Commands::Fs;
+use Rex::Commands qw(TRUE FALSE);
 
 @EXPORT = qw(clearpart partition);
 
@@ -58,10 +59,16 @@ Clear partitions on $drive.
  clearpart "sda",
   initialize => "gpt";
 
+ clearpart "sda",
+  initialize => "gpt",
+  bios_boot => FALSE;
+
 =cut
 
 sub clearpart {
   my ( $disk, %option ) = @_;
+
+  $option{bios_boot} = defined $option{bios_boot} ? $option{bios_boot} : TRUE;
 
   if ( $option{initialize} ) {
 
@@ -71,8 +78,8 @@ sub clearpart {
       die("Error setting disklabel from $disk to $option{initialize}");
     }
 
-    if ( $option{initialize} eq "gpt" ) {
-      Rex::Logger::info("Creating bios boot partition");
+    if ( $option{initialize} eq "gpt" && $option{bios_boot} ) {
+      Rex::Logger::info("Creating BIOS boot partition");
       partition(
         "none",
         fstype => "non-fs",
@@ -81,7 +88,6 @@ sub clearpart {
       );
 
       run "parted /dev/$disk set 1 bios_grub on";
-
     }
   }
   else {

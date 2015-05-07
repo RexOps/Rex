@@ -52,12 +52,16 @@ use Rex::Commands qw(TRUE FALSE);
 
 =item clearpart($drive)
 
-Clear partitions on $drive.
+Clear partitions on drive `sda`:
 
  clearpart "sda";
+
+Create a new GPT disk label (partition table) on drive `sda`:
  
  clearpart "sda",
   initialize => "gpt";
+
+If GPT initialization is requested, the `bios_boot` option (default: TRUE) can also be set to TRUE or FALSE to control creation of a BIOS boot partition:
 
  clearpart "sda",
   initialize => "gpt",

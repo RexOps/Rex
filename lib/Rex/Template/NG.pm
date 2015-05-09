@@ -18,15 +18,40 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{__output__}   = "";
-  $self->{__code__}     = "";
-  $self->{__raw_data__} = "";
+  $self->_init();
 
   return $self;
 }
 
+sub _init {
+  my ($self) = @_;
+
+  $self->{__output__}   = "";
+  $self->{__code__}     = "";
+  $self->{__raw_data__} = "";
+}
+
 sub parse {
-  my ( $self, $c, %vars ) = @_;
+  my $self = shift;
+  my $c    = shift;
+  my %in_vars;
+
+  $self->_init();
+
+  if ( ref $_[0] eq "HASH" ) {
+    %in_vars = %{ +shift };
+  }
+  else {
+    %in_vars = @_;
+  }
+
+  my %vars;
+
+  for my $key ( keys %in_vars ) {
+    my $new_key = $key;
+    $new_key =~ s/[^a-zA-Z0-9_]/_/gms;
+    $vars{$new_key} = $in_vars{$key};
+  }
 
   # some backward compat. to old template module.
   $c =~ s/\$::([a-zA-Z0-9_]+)/_replace_var($1, \%vars)/egms;

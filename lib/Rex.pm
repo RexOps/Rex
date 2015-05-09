@@ -557,6 +557,12 @@ sub import {
         }
       }
 
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.3 ) {
+        Rex::Logger::debug("Activating new template engine.");
+        Rex::Config->set_use_template_ng(1);
+        $found_feature = 1;
+      }
+
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.0 ) {
         Rex::Logger::debug("Disabling usage of a tty");
         Rex::Config->set_no_tty(1);
@@ -652,8 +658,14 @@ sub import {
       }
 
       if ( $add eq "template_ng" ) {
-        Rex::Logger::debug("Activating experimental new template engine.");
+        Rex::Logger::debug("Activating new template engine.");
         Rex::Config->set_use_template_ng(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "no_template_ng" ) {
+        Rex::Logger::debug("Deactivating new template engine.");
+        Rex::Config->set_use_template_ng(0);
         $found_feature = 1;
       }
 

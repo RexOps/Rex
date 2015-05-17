@@ -48,6 +48,13 @@ Only I<open_port> and I<close_port> are idempotent.
          A => "POSTROUTING",
          o => "eth0",
          j => "MASQUERADE";
+
+   # The 'iptables' function also accepts long options,
+   # however, options with dashes need to be quoted
+   iptables table => "nat",
+         accept          => "POSTROUTING",
+         "out-interface" => "eth0",
+         jump            => "MASQUERADE";
  
  };
 
@@ -235,14 +242,36 @@ sub redirect_port {
 
 Write standard iptable comands.
 
+Note that there is a short form for the IPTables C<--flush> option; when you
+pass the option of C<-F|"flush"> as the only argument, the command
+C<iptables -F> is run on the connected host.  With the two argument form of
+C<flush> shown in the examples below, the second argument is table you want to
+flush.
+
  task "firewall", sub {
    iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
    iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
  
+   # automatically flushes all tables; equivalent to 'iptables -F'
    iptables "flush";
    iptables -F;
+
+   # flush only the "filter" table
    iptables flush => "filter";
    iptables -F => "filter";
+ };
+
+ # Note: options with dashes "-" need to be quoted to escape them from Perl
+ task "long_form_firewall", sub {
+   iptables table => "nat",
+        append          => "POSTROUTING",
+        "out-interface" => "eth0",
+        jump            => "MASQUERADE";
+   iptables table => "filter",
+        "in-interface" => "eth0",
+        match          => "state",
+        state          => "RELATED,ESTABLISHED",
+        jump           => "ACCEPT";
  };
 
 =cut

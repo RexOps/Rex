@@ -280,11 +280,11 @@ sub iptables {
   }
 
   if ( can_run("iptables") ) {
-    run "iptables $cmd";
+    my $output = run "iptables $cmd";
 
     if ( $? != 0 ) {
       Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
-      die("Error setting iptable rule: $cmd");
+      die("Error setting iptable rule: $cmd; command output: $output");
     }
   }
   else {

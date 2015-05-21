@@ -435,12 +435,12 @@ sub has_user {
 sub get_user {
   my $class = shift;
 
-  if ( exists $ENV{REX_USER} ) {
-    return $ENV{REX_USER};
-  }
-
   if ($user) {
     return $user;
+  }
+
+  if ( exists $ENV{REX_USER} ) {
+    return $ENV{REX_USER};
   }
 
   return getlogin || getpwuid($<) || "Kilroy";

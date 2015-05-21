@@ -246,7 +246,8 @@ sub is_redhat {
     "CentOS",                      "Scientific",
     "RedHatEnterpriseServer",      "RedHatEnterpriseES",
     "RedHatEnterpriseWorkstation", "RedHatEnterpriseWS",
-    "Amazon",                      "ROSAEnterpriseServer"
+    "Amazon",                      "ROSAEnterpriseServer",
+    "CloudLinuxServer",
   );
 
   if ( grep { /$os/i } @redhat_clones ) {

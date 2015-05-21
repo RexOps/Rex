@@ -647,41 +647,49 @@ sub _print_color {
 
 sub __help__ {
 
-  print "(R)?ex - (Remote)? Execution\n";
-  printf "  %-15s %s\n", "-b", "Run batch";
-  printf "  %-15s %s\n", "-e", "Run the given code fragment";
-  printf "  %-15s %s\n", "-E", "Execute task on the given environment";
-  printf "  %-15s %s\n", "-H", "Execute task on these hosts";
-  printf "  %-15s %s\n", "-z",
-    "Execute task on hosts from this command's output";
-  printf "  %-15s %s\n", "-G|-g", "Execute task on these group";
-  printf "  %-15s %s\n", "-u",    "Username for the ssh connection";
-  printf "  %-15s %s\n", "-p",    "Password for the ssh connection";
-  printf "  %-15s %s\n", "-P",    "Private Keyfile for the ssh connection";
-  printf "  %-15s %s\n", "-K",    "Public Keyfile for the ssh connection";
-  printf "  %-15s %s\n", "-T",    "List all known tasks.";
-  printf "  %-15s %s\n", "-Tm",
-    "List all known tasks, in machine-readable format.";
-  printf "  %-15s %s\n", "-Ty", "List all known tasks, in YAML format.";
-  printf "  %-15s %s\n", "-Tv", "List all known tasks with all information.";
-  printf "  %-15s %s\n", "-f",  "Use this file instead of Rexfile";
-  printf "  %-15s %s\n", "-h",  "Display this help";
-  printf "  %-15s %s\n", "-m",  "Monochrome output. No colors";
-  printf "  %-15s %s\n", "-M",  "Load Module instead of Rexfile";
-  printf "  %-15s %s\n", "-v",  "Display (R)?ex Version";
-  printf "  %-15s %s\n", "-F",  "Force. Don't regard lock file";
-  printf "  %-15s %s\n", "-s",  "Use sudo for every command";
-  printf "  %-15s %s\n", "-S",  "Password for sudo";
-  printf "  %-15s %s\n", "-d",  "Debug";
-  printf "  %-15s %s\n", "-dd", "More Debug (includes Profiling Output)";
-  printf "  %-15s %s\n", "-o",  "Output Format";
-  printf "  %-15s %s\n", "-c",  "Turn cache ON";
-  printf "  %-15s %s\n", "-C",  "Turn cache OFF";
-  printf "  %-15s %s\n", "-q",  "Quiet mode. No Logging output";
-  printf "  %-15s %s\n", "-qw", "Quiet mode. Only output warnings and errors";
-  printf "  %-15s %s\n", "-Q",  "Really quiet. Output nothing.";
-  printf "  %-15s %s\n", "-t",
-    "Number of threads to use (aka 'parallelism' param)";
+  my $fmt = "  %-6s %s\n";
+
+  print "usage: \n";
+  print "  rex [<options>] [-H <host>] [-G <group>] <task> [<task-options>]\n";
+  print "  rex -T[m|y|v] [<string>]\n";
+  print "\nExecute tasks on a host or group of hosts\n";
+  print "\nHost and group options\n";
+  printf $fmt, "-G|-g", "Execute a task on the given server groups";
+  printf $fmt, "-H",    "Execute a task on the given hosts (space delimited)";
+  printf $fmt, "-z",    "Execute a task on hosts from this command's output";
+  print "\nListing tasks\n";
+  printf $fmt, "-T",    "List tasks";
+  printf $fmt, "-Tm",   "List tasks in machine-readable format";
+  printf $fmt, "-Ty",   "List tasks in YAML format";
+  printf $fmt, "-Tv",   "List tasks verbosely";
+  print "\nLog options\n";
+  printf $fmt, "-d",    "Show debug output";
+  printf $fmt, "-dd",   "Show more debug output (includes profiling output)";
+  printf $fmt, "-o",    "Output format";
+  printf $fmt, "-q",    "Quiet mode: no log output";
+  printf $fmt, "-qw",   "Quiet mode: only output warnings and errors";
+  printf $fmt, "-Q",    "Really quiet: output nothing";
+  print "\nMisc options\n";
+  printf $fmt, "-c",    "Turn cache ON";
+  printf $fmt, "-C",    "Turn cache OFF";
+  printf $fmt, "-f",    "Use this file instead of Rexfile";
+  printf $fmt, "-F",    "Force: disregard lock file";
+  printf $fmt, "-h",    "Display this help message";
+  printf $fmt, "-m",    "Monochrome output: no colors";
+  printf $fmt, "-M",    "Load this module instead of Rexfile";
+  printf $fmt, "-v",    "Display (R)?ex version";
+  print "\nRun options\n";
+  printf $fmt, "-b",    "Run batch";
+  printf $fmt, "-e",    "Run the given code fragment";
+  printf $fmt, "-E",    "Execute a task on the given environment";
+  printf $fmt, "-s",    "Use sudo for every command";
+  printf $fmt, "-S",    "Password for sudo";
+  printf $fmt, "-t",    "Number of threads to use (aka 'parallelism' param)";
+  print "\nSSH options\n";
+  printf $fmt, "-u",    "Username for the ssh connection";
+  printf $fmt, "-p",    "Password for the ssh connection";
+  printf $fmt, "-P",    "Private key file for the ssh connection";
+  printf $fmt, "-K",    "Public key file for the ssh connection";
   print "\n";
 
   for my $code (@help) {

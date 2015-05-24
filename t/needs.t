@@ -59,6 +59,7 @@ task(
     needs MyTest "test2";
 
     if ( -f "test2.txt" ) {
+      unlink("test2.txt");
       return 1;
     }
 

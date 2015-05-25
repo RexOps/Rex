@@ -24,8 +24,6 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Process;
@@ -47,7 +45,7 @@ use base qw(Rex::Exporter);
   ps
   nice);
 
-=item kill($pid, $sig)
+=head2 kill($pid, $sig)
 
 Will kill the given process id. If $sig is specified it will kill with the given signal.
 
@@ -68,7 +66,7 @@ sub kill {
   }
 }
 
-=item killall($name, $sig)
+=head2 killall($name, $sig)
 
 Will kill the given process. If $sig is specified it will kill with the given signal.
 
@@ -94,7 +92,7 @@ sub killall {
   }
 }
 
-=item ps
+=head2 ps
 
 List all processes on a system. Will return all fields of a I<ps aux>.
 
@@ -225,7 +223,7 @@ sub ps {
 #  run "nohup $cmd &";
 #}
 
-=item nice($pid, $level)
+=head2 nice($pid, $level)
 
 Renice a process identified by $pid with the priority $level.
 
@@ -242,9 +240,5 @@ sub nice {
     die("Error renicing $pid");
   }
 }
-
-=back
-
-=cut
 
 1;

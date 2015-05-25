@@ -58,9 +58,7 @@ use warnings;
 
 # VERSION
 
-=over 4
-
-=item new($ssh2)
+=head2 new($ssh2)
 
 Constructor: You need to parse an connected Net::SSH2 Object. 
 
@@ -85,7 +83,7 @@ sub new {
   return $self;
 }
 
-=item log_stdout(0|1)
+=head2 log_stdout(0|1)
 
 Log on STDOUT.
 
@@ -96,7 +94,7 @@ sub log_stdout {
   $self->{"__log_stdout"} = $log;
 }
 
-=item log_file($file)
+=head2 log_file($file)
 
 Log everything to a file. $file can be a filename, a filehandle or a subRef.
 
@@ -112,7 +110,7 @@ sub shell {
   return $self->{"__shell"};
 }
 
-=item spawn($command, @parameters)
+=head2 spawn($command, @parameters)
 
 Spawn $command with @parameters as parameters.
 
@@ -125,7 +123,7 @@ sub spawn {
   $self->shell->write("$cmd\n");
 }
 
-=item soft_close()
+=head2 soft_close()
 
 Currently only an alias to hard_close();
 
@@ -136,7 +134,7 @@ sub soft_close {
   $self->hard_close;
 }
 
-=item hard_close();
+=head2 hard_close();
 
 Stops the execution of the process.
 
@@ -147,7 +145,7 @@ sub hard_close {
   die;
 }
 
-=item expect($timeout, @match_patters)
+=head2 expect($timeout, @match_patters)
 
 This method controls the execution of your process.
 
@@ -179,7 +177,7 @@ sub expect {
   };
 }
 
-=item send($string)
+=head2 send($string)
 
 Send a string to the running command.
 
@@ -222,9 +220,4 @@ sub _log {
 
 }
 
-=back
-
-=cut
-
 1;
-

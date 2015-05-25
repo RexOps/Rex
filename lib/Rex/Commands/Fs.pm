@@ -42,8 +42,6 @@ With this module you can do file system tasks like creating a directory, deletin
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Fs;
@@ -78,7 +76,7 @@ use base qw(Rex::Exporter);
 
 use vars qw(%file_handles);
 
-=item list_files("/path");
+=head2 list_files("/path");
 
 This function list all entries (files, directories, ...) in a given directory and returns a array.
 
@@ -100,7 +98,7 @@ sub list_files {
   return @ret;
 }
 
-=item ls($path)
+=head2 ls($path)
 
 Just an alias for I<list_files>
 
@@ -110,7 +108,7 @@ sub ls {
   return list_files(@_);
 }
 
-=item symlink($from, $to)
+=head2 symlink($from, $to)
 
 This function will create a symlink from $from to $to.
 
@@ -144,7 +142,7 @@ sub symlink {
   return 1;
 }
 
-=item ln($from, $to)
+=head2 ln($from, $to)
 
 ln is an alias for I<symlink>
 
@@ -154,7 +152,7 @@ sub ln {
   &symlink(@_);
 }
 
-=item unlink($file)
+=head2 unlink($file)
 
 This function will remove the given file.
 
@@ -207,7 +205,7 @@ sub unlink {
 
 }
 
-=item rm($file)
+=head2 rm($file)
 
 This is an alias for unlink.
 
@@ -217,7 +215,7 @@ sub rm {
   &unlink(@_);
 }
 
-=item rmdir($dir)
+=head2 rmdir($dir)
 
 This function will remove the given directory.
 
@@ -274,7 +272,7 @@ sub rmdir {
   }
 }
 
-=item mkdir($newdir)
+=head2 mkdir($newdir)
 
 This function will create a new directory.
 
@@ -413,7 +411,7 @@ sub mkdir {
   return 1;
 }
 
-=item chown($owner, $file)
+=head2 chown($owner, $file)
 
 Change the owner of a file or a directory.
 
@@ -437,7 +435,7 @@ sub chown {
   $fs->chown( $user, $file, @opts ) or die("Can't chown $file");
 }
 
-=item chgrp($group, $file)
+=head2 chgrp($group, $file)
 
 Change the group of a file or a directory.
 
@@ -461,7 +459,7 @@ sub chgrp {
   $fs->chgrp( $group, $file, @opts ) or die("Can't chgrp $file");
 }
 
-=item chmod($mode, $file)
+=head2 chmod($mode, $file)
 
 Change the permissions of a file or a directory.
 
@@ -485,7 +483,7 @@ sub chmod {
   $fs->chmod( $mode, $file, @opts ) or die("Can't chmod $file");
 }
 
-=item stat($file)
+=head2 stat($file)
 
 This function will return a hash with the following information about a file or directory.
 
@@ -537,7 +535,7 @@ sub stat {
   return %ret;
 }
 
-=item is_file($file)
+=head2 is_file($file)
 
 This function tests if $file is a file. Returns 1 if true. 0 if false.
 
@@ -562,7 +560,7 @@ sub is_file {
   return $fs->is_file($file);
 }
 
-=item is_dir($dir)
+=head2 is_dir($dir)
 
 This function tests if $dir is a directory. Returns 1 if true. 0 if false.
 
@@ -588,7 +586,7 @@ sub is_dir {
 
 }
 
-=item is_symlink($file)
+=head2 is_symlink($file)
 
 This function tests if $file is a symlink. Returns 1 if true. 0 if false.
 
@@ -613,7 +611,7 @@ sub is_symlink {
   return $fs->is_symlink($path);
 }
 
-=item is_readable($file)
+=head2 is_readable($file)
 
 This function tests if $file is readable. It returns 1 if true. 0 if false.
 
@@ -639,7 +637,7 @@ sub is_readable {
   return $fs->is_readable($file);
 }
 
-=item is_writable($file)
+=head2 is_writable($file)
 
 This function tests if $file is writable. It returns 1 if true. 0 if false.
 
@@ -665,7 +663,7 @@ sub is_writable {
   return $fs->is_writable($file);
 }
 
-=item is_writeable($file)
+=head2 is_writeable($file)
 
 This is only an alias for I<is_writable>.
 
@@ -677,7 +675,7 @@ sub is_writeable {
   is_writable(@_);
 }
 
-=item readlink($link)
+=head2 readlink($link)
 
 This function returns the link endpoint if $link is a symlink. If $link is not a symlink it will die.
 
@@ -711,7 +709,7 @@ sub readlink {
   return $link;
 }
 
-=item rename($old, $new)
+=head2 rename($old, $new)
 
 This function will rename $old to $new. Will return 1 on success and 0 on failure.
 
@@ -764,7 +762,7 @@ sub rename {
     ->report_resource_end( type => "rename", name => "$old -> $new" );
 }
 
-=item mv($old, $new)
+=head2 mv($old, $new)
 
 mv is an alias for I<rename>.
 
@@ -774,7 +772,7 @@ sub mv {
   return &rename(@_);
 }
 
-=item chdir($newdir)
+=head2 chdir($newdir)
 
 This function will change the current workdirectory to $newdir. This function currently only works local.
 
@@ -791,7 +789,7 @@ sub chdir {
   CORE::chdir( $_[0] );
 }
 
-=item cd($newdir)
+=head2 cd($newdir)
 
 This is an alias of I<chdir>.
 
@@ -801,7 +799,7 @@ sub cd {
   &chdir( $_[0] );
 }
 
-=item df([$device])
+=head2 df([$device])
 
 This function returns a hashRef reflecting the output of I<df>
 
@@ -868,7 +866,7 @@ sub _parse_df {
   return $ret;
 }
 
-=item du($path)
+=head2 du($path)
 
 Returns the disk usage of $path.
 
@@ -891,7 +889,7 @@ sub du {
   return $du;
 }
 
-=item cp($source, $destination)
+=head2 cp($source, $destination)
 
 cp will copy $source to $destination (it is recursive)
 
@@ -936,7 +934,7 @@ sub cp {
     ->report_resource_end( type => "cp", name => "$source -> $dest" );
 }
 
-=item mount($device, $mount_point, @options)
+=head2 mount($device, $mount_point, @options)
 
 Mount devices.
 
@@ -1127,7 +1125,7 @@ sub mount {
     ->report_resource_end( type => "mount", name => "$mount_point" );
 }
 
-=item umount($mount_point)
+=head2 umount($mount_point)
 
 Unmount device.
 
@@ -1181,7 +1179,7 @@ sub umount {
     ->report_resource_end( type => "umount", name => "$mount_point" );
 }
 
-=item glob($glob)
+=head2 glob($glob)
 
  task "glob", "server1", sub {
    my @files_with_p = grep { is_file($_) } glob("/etc/p*");
@@ -1198,9 +1196,5 @@ sub glob {
   my $fs = Rex::Interface::Fs->create;
   return $fs->glob($glob);
 }
-
-=back
-
-=cut
 
 1;

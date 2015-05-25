@@ -20,8 +20,6 @@ This is just a helper function and will not be reported.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::MD5;
@@ -45,7 +43,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(md5);
 
-=item md5($file)
+=head2 md5($file)
 
 This function will return the md5 sum (hexadecimal) for the given file.
 
@@ -131,9 +129,5 @@ sub md5 {
 
   }
 }
-
-=back
-
-=cut
 
 1;

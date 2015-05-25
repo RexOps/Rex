@@ -24,8 +24,6 @@ All these functions will not be reported. These functions don't modify anything.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Inventory;
@@ -44,7 +42,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(inventor inventory);
 
-=item inventory
+=head2 inventory
 
 This function returns a hashRef of all gathered hardware. Use the Data::Dumper module to see its structure.
 
@@ -64,9 +62,5 @@ sub inventory {
 sub inventor {
   return inventory();
 }
-
-=back
-
-=cut
 
 1;

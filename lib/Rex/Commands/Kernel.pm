@@ -24,8 +24,6 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Kernel;
@@ -48,7 +46,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(kmod);
 
-=item kmod($action => $module)
+=head2 kmod($action => $module)
 
 This function loads or unloads a kernel module.
 
@@ -148,9 +146,5 @@ sub kmod {
     die("Unknown action $action");
   }
 }
-
-=back
-
-=cut
 
 1;

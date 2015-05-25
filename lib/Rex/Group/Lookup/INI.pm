@@ -20,8 +20,6 @@ With this module you can define hostgroups out of an ini style file.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Group::Lookup::INI;
@@ -41,7 +39,7 @@ use Rex::Helper::INI;
 
 @EXPORT = qw(groups_file);
 
-=item groups_file($file)
+=head2 groups_file($file)
 
 With this function you can read groups from ini style files.
 
@@ -90,9 +88,5 @@ sub groups_file {
     group( "$k" => @servers );
   }
 }
-
-=back
-
-=cut
 
 1;

@@ -45,8 +45,6 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::SCM;
@@ -71,7 +69,7 @@ Rex::Config->register_set_handler(
   }
 );
 
-=item checkout($name, %data);
+=head2 checkout($name, %data);
 
 With this function you can checkout a repository defined with I<set repository>. See Synopsis.
 
@@ -102,9 +100,5 @@ sub checkout {
   Rex::Logger::debug("Checking out $repo -> $co_to");
   $scm->checkout( $REPOS{$name}, $co_to, \%data );
 }
-
-=back
-
-=cut
 
 1;

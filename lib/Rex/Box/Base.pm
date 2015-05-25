@@ -16,8 +16,6 @@ This is a Rex/Boxes base module.
 
 These methods are shared across all other Rex::Box modules.
 
-=over 4
-
 =cut
 
 package Rex::Box::Base;
@@ -66,7 +64,7 @@ sub new {
   return $self;
 }
 
-=item info
+=head2 info
 
 Returns a hashRef of vm information.
 
@@ -77,7 +75,7 @@ sub info {
   return $self->{info};
 }
 
-=item name($vmname)
+=head2 name($vmname)
 
 Sets the name of the virtual machine.
 
@@ -88,7 +86,7 @@ sub name {
   $self->{name} = $name;
 }
 
-=item setup(@tasks)
+=head2 setup(@tasks)
 
 Sets the tasks that should be executed as soon as the VM is available through SSH.
 
@@ -99,7 +97,7 @@ sub setup {
   $self->{__tasks} = \@tasks;
 }
 
-=item import_vm()
+=head2 import_vm()
 
 This method must be overwritten by the implementing class.
 
@@ -110,7 +108,7 @@ sub import_vm {
   die("This method must be overwritten.");
 }
 
-=item stop()
+=head2 stop()
 
 Stops the VM.
 
@@ -122,7 +120,7 @@ sub stop {
   vm shutdown => $self->{name};
 }
 
-=item start()
+=head2 start()
 
 Starts the VM.
 
@@ -135,7 +133,7 @@ sub start {
 
 }
 
-=item ip()
+=head2 ip()
 
 Return the ip:port to which rex will connect to.
 
@@ -143,7 +141,7 @@ Return the ip:port to which rex will connect to.
 
 sub ip { die("Must be implemented by box class.") }
 
-=item status()
+=head2 status()
 
 Returns the status of a VM.
 
@@ -156,7 +154,7 @@ sub status {
   return vm status => $self->{name};
 }
 
-=item provision_vm([@tasks])
+=head2 provision_vm([@tasks])
 
 Executes the given tasks on the VM.
 
@@ -167,7 +165,7 @@ sub provision_vm {
   die("This method must be overwritten.");
 }
 
-=item cpus($count)
+=head2 cpus($count)
 
 Set the amount of CPUs for the VM.
 
@@ -178,7 +176,7 @@ sub cpus {
   $self->{cpus} = $cpus;
 }
 
-=item memory($memory_size)
+=head2 memory($memory_size)
 
 Sets the memory of a VM in megabyte.
 
@@ -189,7 +187,7 @@ sub memory {
   $self->{memory} = $mem;
 }
 
-=item network(%option)
+=head2 network(%option)
 
 Configure the network for a VM.
 
@@ -215,7 +213,7 @@ sub network {
   $self->{__network} = \%option;
 }
 
-=item forward_port(%option)
+=head2 forward_port(%option)
 
 Set ports to be forwarded to the VM. This is not supported by all Box providers.
 
@@ -232,7 +230,7 @@ sub forward_port {
   $self->{__forward_port} = \%option;
 }
 
-=item list_boxes
+=head2 list_boxes
 
 List all available boxes.
 
@@ -246,7 +244,7 @@ sub list_boxes {
   return @{$vms};
 }
 
-=item url($url)
+=head2 url($url)
 
 The URL where to download the Base VM Image. You can use self-made images or prebuild images from http://box.rexify.org/.
 
@@ -258,7 +256,7 @@ sub url {
   $self->{force} = $force;
 }
 
-=item auth(%option)
+=head2 auth(%option)
 
 Configure the authentication to the VM.
 
@@ -388,9 +386,5 @@ sub _download {
     }
   }
 }
-
-=back
-
-=cut
 
 1;

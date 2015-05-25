@@ -20,8 +20,6 @@ With this module you can define hostgroups out of an xml file.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Group::Lookup::XML;
@@ -39,7 +37,7 @@ XML::LibXML->require;
 
 @EXPORT = qw(groups_xml);
 
-=item groups_xml($file)
+=head2 groups_xml($file)
 
 With this function you can read groups from xml files.
 
@@ -66,7 +64,7 @@ File Example:
  
 =cut
 
-=item $schema_file
+=head2 $schema_file
 
 A global that defines the XSD schema for which the XML is check against.
 
@@ -133,9 +131,5 @@ sub groups_xml {
   }
   group( $_ => @{ $groups{$_} } ) foreach ( keys(%groups) );
 }
-
-=back
-
-=cut
 
 1;

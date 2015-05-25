@@ -27,8 +27,6 @@ With this module you can get information of the routing table, current network c
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Network;
@@ -49,7 +47,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(route default_gateway netstat);
 
-=item route
+=head2 route
 
 Get routing information
 
@@ -59,7 +57,7 @@ sub route {
   return Rex::Hardware::Network::route();
 }
 
-=item default_gateway([$default_gw])
+=head2 default_gateway([$default_gw])
 
 Get or set the default gateway.
 
@@ -90,7 +88,7 @@ sub default_gateway {
   return Rex::Hardware::Network::default_gateway();
 }
 
-=item netstat
+=head2 netstat
 
 Get network connection information
 
@@ -99,9 +97,5 @@ Get network connection information
 sub netstat {
   return Rex::Hardware::Network::netstat();
 }
-
-=back
-
-=cut
 
 1;

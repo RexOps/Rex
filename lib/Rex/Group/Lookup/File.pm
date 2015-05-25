@@ -20,8 +20,6 @@ With this module you can define hostgroups out of a file.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Group::Lookup::File;
@@ -37,7 +35,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(lookup_file);
 
-=item lookup_file($file)
+=head2 lookup_file($file)
 
 With this function you can read hostnames from a file. Every hostname in one line.
 
@@ -57,9 +55,5 @@ sub lookup_file {
 
   return @content;
 }
-
-=back
-
-=cut
 
 1;

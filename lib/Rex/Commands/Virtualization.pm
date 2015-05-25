@@ -80,13 +80,9 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
-=item vm($action => $name, %option)
+=head2 vm($action => $name, %option)
 
 This module only exports the I<vm> function. You can manage everything with this function.
-
-=back
 
 =head1 EXAMPLES
 

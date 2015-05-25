@@ -23,8 +23,6 @@ With this module you can tail a file.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Tail;
@@ -47,7 +45,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(tail);
 
-=item tail($file)
+=head2 tail($file)
 
 This function will tail the given file.
 
@@ -102,9 +100,5 @@ sub tail {
   Rex::Commands::set( "rex_internals", $int );
 
 }
-
-=back
-
-=cut
 
 1;

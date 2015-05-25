@@ -22,8 +22,6 @@ With this module you can install packages and files.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Pkg;
@@ -57,7 +55,7 @@ use vars qw(@EXPORT);
 @EXPORT =
   qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for pkg);
 
-=item pkg($package, %options)
+=head2 pkg($package, %options)
 
 Since: 0.45
 
@@ -158,7 +156,7 @@ sub pkg {
     ->report_resource_end( type => "pkg", name => $res_package );
 }
 
-=item install($type, $data, $options)
+=head2 install($type, $data, $options)
 
 The install function can install packages (for CentOS, OpenSuSE and Debian) and files.
 
@@ -483,7 +481,7 @@ sub update {
 
 }
 
-=item remove($type, $package, $options)
+=head2 remove($type, $package, $options)
 
 This function will remove the given package from a system.
 
@@ -528,7 +526,7 @@ sub remove {
 
 }
 
-=item update_system
+=head2 update_system
 
 This function does a complete system update.
 
@@ -582,7 +580,7 @@ sub update_system {
   }
 }
 
-=item installed_packages
+=head2 installed_packages
 
 This function returns all installed packages and their version.
 
@@ -602,7 +600,7 @@ sub installed_packages {
   return $pkg->get_installed;
 }
 
-=item is_installed
+=head2 is_installed
 
 This function tests if $package is installed. Returns 1 if true. 0 if false.
 
@@ -623,7 +621,7 @@ sub is_installed {
   return $pkg->is_installed($package);
 }
 
-=item update_package_db
+=head2 update_package_db
 
 This function updates the local package database. For example, on CentOS it will execute I<yum makecache>.
 
@@ -639,7 +637,7 @@ sub update_package_db {
   $pkg->update_pkg_db();
 }
 
-=item repository($action, %data)
+=head2 repository($action, %data)
 
 Add or remove a repository from the package manager.
 
@@ -742,7 +740,7 @@ sub repository {
   return $ret;
 }
 
-=item package_provider_for $os => $type;
+=head2 package_provider_for $os => $type;
 
 To set another package provider as the default, use this function.
 
@@ -763,9 +761,5 @@ sub package_provider_for {
   my ( $os, $provider ) = @_;
   Rex::Config->set( "package_provider", { $os => $provider } );
 }
-
-=back
-
-=cut
 
 1;

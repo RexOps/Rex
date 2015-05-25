@@ -25,8 +25,6 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Partition;
@@ -50,7 +48,7 @@ use Rex::Commands qw(TRUE FALSE);
 
 @EXPORT = qw(clearpart partition);
 
-=item clearpart($drive)
+=head2 clearpart($drive)
 
 Clear partitions on drive `sda`:
 
@@ -105,7 +103,7 @@ sub clearpart {
   }
 }
 
-=item partition($mountpoint, %option)
+=head2 partition($mountpoint, %option)
 
 Create a partition with mountpoint $mountpoint.
 
@@ -276,9 +274,5 @@ sub partition {
 
   return "$disk$part_num";
 }
-
-=back
-
-=cut
 
 1;

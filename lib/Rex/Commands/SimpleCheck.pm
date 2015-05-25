@@ -24,8 +24,6 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::SimpleCheck;
@@ -43,7 +41,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(is_port_open);
 
-=item is_port_open($ip, $port)
+=head2 is_port_open($ip, $port)
 
 Check if something is listening on port $port of $ip.
 
@@ -71,9 +69,5 @@ sub is_port_open {
   return 0;
 
 }
-
-=back
-
-=cut
 
 1;

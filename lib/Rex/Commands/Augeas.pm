@@ -32,8 +32,6 @@ This is a simple module to manipulate configuration files with the help of augea
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Augeas;
@@ -69,7 +67,7 @@ BEGIN {
 
 @EXPORT = qw(augeas);
 
-=item augeas($action, @options)
+=head2 augeas($action, @options)
 
 It returns 1 on success and 0 on failure.
 
@@ -380,8 +378,6 @@ Returns the value of the given item.
 
   return $ret;
 }
-
-=back
 
 =back
 

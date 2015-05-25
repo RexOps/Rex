@@ -60,8 +60,6 @@ Only I<open_port> and I<close_port> are idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Iptables;
@@ -90,7 +88,7 @@ use Rex::Logger;
 
 sub iptables;
 
-=item open_port($port, $option)
+=head2 open_port($port, $option)
 
 Open a port for inbound connections.
 
@@ -132,7 +130,7 @@ sub open_port {
 
 }
 
-=item close_port($port, $option)
+=head2 close_port($port, $option)
 
 Close a port for inbound connections.
 
@@ -169,7 +167,7 @@ sub close_port {
 
 }
 
-=item redirect_port($in_port, $option)
+=head2 redirect_port($in_port, $option)
 
 Redirect $in_port to another local port.
 
@@ -238,7 +236,7 @@ sub redirect_port {
   iptables @opts;
 }
 
-=item iptables(@params)
+=head2 iptables(@params)
 
 Write standard iptable comands.
 
@@ -322,7 +320,7 @@ sub iptables {
   }
 }
 
-=item is_nat_gateway
+=head2 is_nat_gateway
 
 This function creates a NAT gateway for the device the default route points to.
 
@@ -356,7 +354,7 @@ sub is_nat_gateway {
 
 }
 
-=item default_state_rule(%option)
+=head2 default_state_rule(%option)
 
 Set the default state rules for the given device.
 
@@ -389,7 +387,7 @@ sub default_state_rule {
     j     => "ACCEPT";
 }
 
-=item iptables_list
+=head2 iptables_list
 
 List all iptables rules.
 
@@ -440,7 +438,7 @@ sub _iptables_list {
   return $ret;
 }
 
-=item iptables_clear
+=head2 iptables_clear
 
 Remove all iptables rules.
 
@@ -549,9 +547,5 @@ sub _rule_exists {
 
   return 0;
 }
-
-=back
-
-=cut
 
 1;

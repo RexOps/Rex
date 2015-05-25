@@ -20,8 +20,6 @@ With this module you can run a command.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Run;
@@ -59,9 +57,9 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(run can_run sudo);
 
-=item run($command [, $callback])
+=head2 run($command [, $callback])
 
-=item run($command_description, command => $command, %options)
+=head2 run($command_description, command => $command, %options)
 
 This function will execute the given command and returns the output. In
 scalar context it returns the raw output as is, and in list context it
@@ -312,7 +310,7 @@ sub run {
   return $out_ret;
 }
 
-=item can_run($command)
+=head2 can_run($command)
 
 This function checks if a command is in the path or is available. You can
 specify multiple commands, the first command found will be returned.
@@ -331,7 +329,7 @@ sub can_run {
   $exec->can_run( [@commands] ); # use a new anon ref, so that we don't have drawbacks if some lower layers will manipulate things.
 }
 
-=item sudo
+=head2 sudo
 
 Run a command with I<sudo>. Define the password for sudo with I<sudo_password>.
 
@@ -409,9 +407,5 @@ sub sudo {
 
   return $ret;
 }
-
-=back
-
-=cut
 
 1;

@@ -48,8 +48,6 @@ This is a basic test module to test your code with the help of local VMs. You ca
 
 =head1 METHODS
 
-=over 4
-
 =cut
 
 package Rex::Test::Base;
@@ -71,7 +69,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 @EXPORT = qw(test);
 
-=item new(name => $test_name)
+=head2 new(name => $test_name)
 
 Constructor if used in OO mode.
 
@@ -94,7 +92,7 @@ sub new {
   return $self;
 }
 
-=item name($name)
+=head2 name($name)
 
 The name of the test. A VM called $name will be created for each test. If the VM already exists, Rex will try to reuse it.
 
@@ -105,7 +103,7 @@ sub name {
   $self->{name} = $name;
 }
 
-=item vm_auth(%auth)
+=head2 vm_auth(%auth)
 
 Authentication options for the VM. It accepts the same parameters as C<Rex::Box::Base-E<gt>auth()>.
 
@@ -116,7 +114,7 @@ sub vm_auth {
   $self->{auth} = \%auth;
 }
 
-=item base_vm($vm)
+=head2 base_vm($vm)
 
 The URL to a base image to be used for the test VM.
 
@@ -133,7 +131,7 @@ sub test(&) {
   $code->($test);
 }
 
-=item redirect_port($port)
+=head2 redirect_port($port)
 
 Redirect local $port to the VM's SSH port (default: 2222).
 
@@ -144,7 +142,7 @@ sub redirect_port {
   $self->{redirect_port} = $port;
 }
 
-=item run_task($task)
+=head2 run_task($task)
 
 The task to run on the test VM. You can run multiple tasks by passing an array reference.
 
@@ -208,37 +206,33 @@ sub finish {
   Rex::pop_connection();
 }
 
-=back
-
 =head1 TEST METHODS
 
-=over 4
-
-=item has_content($file, $regexp)
+=head2 has_content($file, $regexp)
 
 Test if the content of $file matches against $regexp.
 
-=item has_dir($path)
+=head2 has_dir($path)
 
 Test if $path is present and is a directory.
 
-=item has_file($file)
+=head2 has_file($file)
 
 Test if $file is present.
 
-=item has_package($package, $version)
+=head2 has_package($package, $version)
 
 Test if $package is installed, optionally at $version.
 
-=item has_service_running($service)
+=head2 has_service_running($service)
 
 Test if $service is running.
 
-=item has_service_stopped($service)
+=head2 has_service_stopped($service)
 
 Test if $service is stopped.
 
-=item has_stat($file, $stat)
+=head2 has_stat($file, $stat)
 
 Test if $file has properties described in hash reference $stat. List of supported checks:
 
@@ -247,8 +241,6 @@ Test if $file has properties described in hash reference $stat. List of supporte
 =item group
 
 =item owner
-
-=back
 
 =back
 

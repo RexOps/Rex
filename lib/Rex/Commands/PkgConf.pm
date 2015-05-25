@@ -36,8 +36,6 @@ With this module you can configure packages. Currently it only supports Debian
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::PkgConf;
@@ -57,7 +55,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(get_pkgconf set_pkgconf);
 
-=item get_pkgconf($package, [$question])
+=head2 get_pkgconf($package, [$question])
 
 Use this to query existing package configurations.
 
@@ -90,7 +88,7 @@ sub get_pkgconf {
   $pkgconf->get_options($package);
 }
 
-=item set_pkgconf($package, $values, [%options])
+=head2 set_pkgconf($package, $values, [%options])
 
 Use this to set package configurations.
 
@@ -107,8 +105,6 @@ Optionally the option "no_update" may be true, in which case the
 question will not be updated if it has already been set.
 
 See the synopsis for examples.
-
-=back
 
 =cut
 

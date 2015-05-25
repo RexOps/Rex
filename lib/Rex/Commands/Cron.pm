@@ -31,8 +31,6 @@ With this Module you can manage your cronjobs.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Cron;
@@ -52,7 +50,7 @@ use Data::Dumper;
 
 @EXPORT = qw(cron cron_entry);
 
-=item cron_entry($name, %option)
+=head2 cron_entry($name, %option)
 
 Manage cron entries.
 
@@ -156,7 +154,7 @@ sub cron_entry {
     ->report_resource_end( type => "cron_entry", name => $name );
 }
 
-=item cron($action => $user, ...)
+=head2 cron($action => $user, ...)
 
 With this function you can manage cronjobs.
 
@@ -276,9 +274,5 @@ sub cron {
   }
 
 }
-
-=back
-
-=cut
 
 1;

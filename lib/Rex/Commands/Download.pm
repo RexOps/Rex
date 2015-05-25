@@ -29,8 +29,6 @@ Version <= 1.0: All these functions will not be reported.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Download;
@@ -78,7 +76,7 @@ use File::Basename qw(basename);
 
 @EXPORT = qw(download);
 
-=item download($remote, [$local])
+=head2 download($remote, [$local])
 
 Perform a download. If no local file is specified it will download the file to the current directory.
 
@@ -189,9 +187,5 @@ sub _get_http {
 
   return $html;
 }
-
-=back
-
-=cut
 
 1;

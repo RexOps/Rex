@@ -23,8 +23,6 @@ With this module you can manage the host entries in /etc/hosts.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Host;
@@ -47,7 +45,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_host get_host delete_host host_entry);
 
-=item host_entry($name, %option)
+=head2 host_entry($name, %option)
 
 Manages the entries in /etc/hosts.
 
@@ -106,7 +104,7 @@ sub host_entry {
     ->report_resource_end( type => "host_entry", name => $res_name );
 }
 
-=item create_host($)
+=head2 create_host($)
 
 Update or create a /etc/hosts entry.
 
@@ -157,7 +155,7 @@ sub create_host {
   }
 }
 
-=item delete_host($host)
+=head2 delete_host($host)
 
 Delete a host from /etc/hosts.
 
@@ -187,7 +185,7 @@ sub delete_host {
   }
 }
 
-=item get_host($host)
+=head2 get_host($host)
 
 Returns the information of $host in /etc/hosts.
 
@@ -254,9 +252,5 @@ sub _parse_hosts {
 
   return @ret;
 }
-
-=back
-
-=cut
 
 1;

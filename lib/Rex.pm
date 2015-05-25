@@ -49,8 +49,6 @@ See L<Rex::Commands> for a list of all commands you can use.
 
 =head1 CLASS METHODS
 
-=over 4
-
 =cut
 
 package Rex;
@@ -228,7 +226,7 @@ sub modified_caller {
   }
 }
 
-=item get_current_connection
+=head2 get_current_connection
 
 This function is deprecated since 0.28! See Rex::Commands::connection.
 
@@ -272,7 +270,7 @@ sub get_current_connection_object {
   return Rex::get_current_connection()->{conn};
 }
 
-=item is_ssh
+=head2 is_ssh
 
 Returns 1 if the current connection is a ssh connection. 0 if not.
 
@@ -289,7 +287,7 @@ sub is_ssh {
   return 0;
 }
 
-=item is_local
+=head2 is_local
 
 Returns 1 if the current connection is local. Otherwise 0.
 
@@ -306,7 +304,7 @@ sub is_local {
   return 0;
 }
 
-=item is_sudo
+=head2 is_sudo
 
 Returns 1 if the current operation is executed within sudo.
 
@@ -336,7 +334,7 @@ sub global_sudo {
   Rex::Config->set_use_cache(1);
 }
 
-=item get_sftp
+=head2 get_sftp
 
 Returns the sftp object for the current ssh connection.
 
@@ -358,7 +356,7 @@ sub get_cache {
   return Rex::Interface::Cache->create();
 }
 
-=item connect
+=head2 connect
 
 Use this function to create a connection if you use Rex as a library.
 
@@ -810,8 +808,6 @@ sub import {
   # we are always strict
   strict->import;
 }
-
-=back
 
 =head1 CONTRIBUTORS
 

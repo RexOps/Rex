@@ -26,8 +26,6 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 =head1 CLASS METHODS
 
-=over 4
-
 =cut
 
 package Rex::FS::File;
@@ -40,7 +38,7 @@ use Rex::Interface::File;
 
 use constant DEFAULT_READ_LEN => 64;
 
-=item new
+=head2 new
 
 This is the constructor. You need to set the filehandle which the object should work on
 or pass a filename. If you pass a filehandle, it has to be a C<Rex::Interface::File::*>
@@ -123,7 +121,7 @@ sub DESTROY {
   }
 }
 
-=item write($buf)
+=head2 write($buf)
 
 Write $buf into the filehandle.
 
@@ -147,7 +145,7 @@ sub write {
   }
 }
 
-=item seek($offset)
+=head2 seek($offset)
 
 Seek to the file position $offset.
 
@@ -164,7 +162,7 @@ sub seek {
   $fh->seek($offset);
 }
 
-=item read($len)
+=head2 read($len)
 
 Read $len bytes out of the filehandle.
 
@@ -180,7 +178,7 @@ sub read {
   return $fh->read($len);
 }
 
-=item read_all
+=head2 read_all
 
 Read everything out of the filehandle.
 
@@ -201,7 +199,7 @@ sub read_all {
   return $all;
 }
 
-=item close
+=head2 close
 
 Close the file.
 
@@ -214,9 +212,5 @@ sub close {
   my $fh = $self->{'fh'};
   $fh->close;
 }
-
-=back
-
-=cut
 
 1;

@@ -19,8 +19,6 @@ This module exports the notify() function.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Notify;
@@ -37,7 +35,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(notify);
 
-=item notify($resource_type, $resource_name)
+=head2 notify($resource_type, $resource_name)
 
 This function will notify the given $resource_name of the given $resource_type to execute.
 
@@ -51,9 +49,5 @@ sub notify {
     name => $resource_name,
   );
 }
-
-=back
-
-=cut
 
 1;

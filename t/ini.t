@@ -56,6 +56,8 @@ SKIP: {
   ok( grep { $_ eq "memcache01" } @{ $groups{memcache} }, "got memcache01" );
   ok( grep { $_ eq "memcache02" } @{ $groups{memcache} }, "got memcache02" );
 
+  delete $ENV{REX_USER};
+
   user("krimdomu");
   password("foo");
   pass_auth();

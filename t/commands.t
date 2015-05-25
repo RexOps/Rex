@@ -5,6 +5,8 @@ use Test::More tests => 18;
 
 use Rex::Commands;
 
+delete $ENV{REX_USER};
+
 user("test");
 is( Rex::Config->get_user, "test", "setting user" );
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 44;
+use Test::More tests => 48;
 
 use Rex::Commands;
 use Rex::Group;
@@ -13,6 +13,8 @@ use Rex::Group;
 
 group( "srvgr1", "srv1" );
 group( "srvgr2", "srv2", "srv3" );
+
+delete $ENV{REX_USER};
 
 user("root1");
 password("pass1");
@@ -152,4 +154,23 @@ is( $auth->{user},        "baruser" );
 is( $auth->{password},    "barpass" );
 is( $auth->{private_key}, "testa4.priv" );
 is( $auth->{public_key},  "testa4.pub" );
+
+$ENV{REX_USER} = "root5";
+
+user("toor5");
+password("pass5");
+private_key("testa5.priv");
+public_key("testa5.pub");
+
+task(
+  "testa5",
+  sub {
+  }
+);
+
+$auth = Rex::TaskList->create()->get_task("testa5")->{auth};
+is( $auth->{user},        "root5" );
+is( $auth->{password},    "pass5" );
+is( $auth->{private_key}, "testa5.priv" );
+is( $auth->{public_key},  "testa5.pub" );
 

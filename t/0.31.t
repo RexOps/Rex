@@ -5,6 +5,8 @@ use Test::More tests => 139;
 
 use Rex -feature => '0.31';
 
+delete $ENV{REX_USER};
+
 user("root3");
 password("pass3");
 private_key("priv.key3");

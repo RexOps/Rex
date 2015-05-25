@@ -16,8 +16,6 @@ With this module you can specify own configuration parameters for your modules.
 
 =head1 EXPORTED METHODS
 
-=over 4
-
 =cut
 
 package Rex::Config;
@@ -809,7 +807,7 @@ sub get_no_tty {
   return $no_tty;
 }
 
-=item register_set_handler($handler_name, $code)
+=head2 register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
 
@@ -877,7 +875,7 @@ sub get_all {
   return $set_param;
 }
 
-=item register_config_handler($topic, $code)
+=head2 register_config_handler($topic, $code)
 
 With this function it is possible to register own sections in the users config file ($HOME/.rex/config.yml).
 
@@ -1084,9 +1082,5 @@ sub _home_dir {
 
   return $ENV{'HOME'} || "";
 }
-
-=back
-
-=cut
 
 1;

@@ -32,8 +32,6 @@ With this module you can manage Linux services.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Service;
@@ -56,7 +54,7 @@ use Carp;
 
 @EXPORT = qw(service service_provider_for);
 
-=item service($service, $action, [$option])
+=head2 service($service, $action, [$option])
 
 The service function accepts 2 parameters. The first is the service name and the second the action you want to perform.
 
@@ -390,7 +388,7 @@ sub old_service {
   return $return;
 }
 
-=item service_provider_for $os => $type;
+=head2 service_provider_for $os => $type;
 
 To set another service provider as the default, use this function.
 
@@ -412,9 +410,5 @@ sub service_provider_for {
   Rex::Logger::debug("setting service provider for $os to $provider");
   Rex::Config->set( "service_provider", { $os => $provider } );
 }
-
-=back
-
-=cut
 
 1;

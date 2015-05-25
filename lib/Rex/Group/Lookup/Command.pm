@@ -22,8 +22,6 @@ With this module you can define hostgroups out of a command.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Group::Lookup::Command;
@@ -67,9 +65,5 @@ sub lookup_command {
   Rex::Logger::info("You must give a valid command.") unless $#content;
   return @content;
 }
-
-=back
-
-=cut
 
 1;

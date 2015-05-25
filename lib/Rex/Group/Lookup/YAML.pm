@@ -20,8 +20,6 @@ With this module you can define hostgroups out of an yaml file.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Group::Lookup::YAML;
@@ -41,7 +39,7 @@ use YAML qw/LoadFile/;
 
 @EXPORT = qw(groups_yaml);
 
-=item groups_yaml($file)
+=head2 groups_yaml($file)
 
 With this function you can read groups from yaml files.
 
@@ -88,9 +86,5 @@ sub groups_yaml {
     group( "all", values %all_hosts );
   }
 }
-
-=back
-
-=cut
 
 1;

@@ -59,8 +59,6 @@ And then you can use it the following way in your Rexfile.
 
 See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
-=over 4
-
 =cut
 
 package Rex::Box::KVM;
@@ -94,7 +92,7 @@ $|++;
 # BEGIN of class methods
 ################################################################################
 
-=item new(name => $vmname)
+=head2 new(name => $vmname)
 
 Constructor if used in OO mode.
 
@@ -194,7 +192,7 @@ sub list_boxes {
   return @{$vms};
 }
 
-=item info
+=head2 info
 
 Returns a hashRef of vm information.
 
@@ -206,7 +204,7 @@ sub info {
   return $self->{info};
 }
 
-=item ip
+=head2 ip
 
 This method return the ip of a vm on which the ssh daemon is listening.
 
@@ -217,9 +215,5 @@ sub ip {
   $self->{info} = vm guestinfo => $self->{name};
   return $self->{info}->{network}->[0]->{ip};
 }
-
-=back
-
-=cut
 
 1;

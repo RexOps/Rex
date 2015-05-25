@@ -104,8 +104,6 @@ This module is the core commands module.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands;
@@ -163,7 +161,7 @@ use base qw(Rex::Exporter);
 
 our $REGISTER_SUB_HASH_PARAMETER = 0;
 
-=item no_ssh([$task])
+=head2 no_ssh([$task])
 
 Disable ssh for all tasks or a specified task.
 
@@ -188,7 +186,7 @@ sub no_ssh {
   }
 }
 
-=item task($name [, @servers], $funcref)
+=head2 task($name [, @servers], $funcref)
 
 This function will create a new task.
 
@@ -430,7 +428,7 @@ sub task {
   Rex::TaskList->create()->create_task( $task_name, @_, $options );
 }
 
-=item desc($description)
+=head2 desc($description)
 
 Set the description of a task.
 
@@ -445,7 +443,7 @@ sub desc {
   $current_desc = shift;
 }
 
-=item group($name, @servers)
+=head2 group($name, @servers)
 
 With this function you can group servers, so that you don't need to write too much ;-)
 
@@ -553,7 +551,7 @@ Rex::Config->register_set_handler(
   }
 );
 
-=item batch($name, @tasks)
+=head2 batch($name, @tasks)
 
 With the batch function you can call tasks in a batch.
 
@@ -575,7 +573,7 @@ sub batch {
   Rex::Batch->create_batch(@_);
 }
 
-=item user($user)
+=head2 user($user)
 
 Set the user for the ssh connection.
 
@@ -585,7 +583,7 @@ sub user {
   Rex::Config->set_user(@_);
 }
 
-=item password($password)
+=head2 password($password)
 
 Set the password for the ssh connection (or for the private key file).
 
@@ -595,7 +593,7 @@ sub password {
   Rex::Config->set_password(@_);
 }
 
-=item auth(for => $entity, %data)
+=head2 auth(for => $entity, %data)
 
 With this function you can modify/set special authentication parameters for tasks and groups. If you want to modify a task's or group's authentication you first have to create it.
 
@@ -700,7 +698,7 @@ sub auth {
   $group->set_auth(%data);
 }
 
-=item port($port)
+=head2 port($port)
 
 Set the port where the ssh server is listening.
 
@@ -710,7 +708,7 @@ sub port {
   Rex::Config->set_port(@_);
 }
 
-=item sudo_password($password)
+=head2 sudo_password($password)
 
 Set the password for the sudo command.
 
@@ -720,7 +718,7 @@ sub sudo_password {
   Rex::Config->set_sudo_password(@_);
 }
 
-=item timeout($seconds)
+=head2 timeout($seconds)
 
 Set the timeout for the ssh connection and other network related stuff.
 
@@ -730,7 +728,7 @@ sub timeout {
   Rex::Config->set_timeout(@_);
 }
 
-=item max_connect_retries($count)
+=head2 max_connect_retries($count)
 
 Set the maximum number of connection retries.
 
@@ -740,7 +738,7 @@ sub max_connect_retries {
   Rex::Config->set_max_connect_fails(@_);
 }
 
-=item get_random($count, @chars)
+=head2 get_random($count, @chars)
 
 Returns a random string of $count characters on the basis of @chars.
 
@@ -752,7 +750,7 @@ sub get_random {
   return Rex::Helper::Misc::get_random(@_);
 }
 
-=item do_task($task)
+=head2 do_task($task)
 
 Call $task from another task. It will establish a new connection to the server defined in $task and then execute $task there.
 
@@ -784,7 +782,7 @@ sub do_task {
   }
 }
 
-=item run_task($task_name, %option)
+=head2 run_task($task_name, %option)
 
 Run a task on a given host.
 
@@ -848,7 +846,7 @@ sub run_task {
 
 }
 
-=item run_batch($batch_name, %option)
+=head2 run_batch($batch_name, %option)
 
 Run a batch on a given host.
 
@@ -871,7 +869,7 @@ sub run_batch {
   return @results;
 }
 
-=item public_key($key)
+=head2 public_key($key)
 
 Set the public key.
 
@@ -881,7 +879,7 @@ sub public_key {
   Rex::Config->set_public_key(@_);
 }
 
-=item private_key($key)
+=head2 private_key($key)
 
 Set the private key.
 
@@ -891,7 +889,7 @@ sub private_key {
   Rex::Config->set_private_key(@_);
 }
 
-=item pass_auth
+=head2 pass_auth
 
 If you want to use password authentication, then you need to call I<pass_auth>.
 
@@ -907,7 +905,7 @@ sub pass_auth {
   Rex::Config->set_password_auth(1);
 }
 
-=item key_auth
+=head2 key_auth
 
 If you want to use pubkey authentication, then you need to call I<key_auth>.
 
@@ -924,7 +922,7 @@ sub key_auth {
   Rex::Config->set_key_auth(1);
 }
 
-=item krb5_auth
+=head2 krb5_auth
 
 If you want to use kerberos authentication, then you need to call I<krb5_auth>.
 This authentication mechanism is only available if you use Net::OpenSSH.
@@ -940,7 +938,7 @@ sub krb5_auth {
   Rex::Config->set_krb5_auth(1);
 }
 
-=item parallelism($count)
+=head2 parallelism($count)
 
 Will execute the tasks in parallel on the given servers. $count is the thread count to be used. Alternatively, the following notation can be used:
 
@@ -956,7 +954,7 @@ sub parallelism {
   Rex::Config->set_parallelism( $_[0] );
 }
 
-=item proxy_command($cmd)
+=head2 proxy_command($cmd)
 
 Set a proxy command to use for the connection. This is only possible with OpenSSH connection method.
 
@@ -969,7 +967,7 @@ sub proxy_command {
   Rex::Config->set_proxy_command( $_[0] );
 }
 
-=item set_distributor($distributor)
+=head2 set_distributor($distributor)
 
 This sets the task distribution module. Default is "Base".
 
@@ -981,7 +979,7 @@ sub set_distributor {
   Rex::Config->set_distributor( $_[0] );
 }
 
-=item template_function(sub { ... })
+=head2 template_function(sub { ... })
 
 This function sets the template processing function. So it is possible to change the template engine. For example to Template::Toolkit.
 
@@ -991,7 +989,7 @@ sub template_function {
   Rex::Config->set_template_function( $_[0] );
 }
 
-=item logging
+=head2 logging
 
 With this function you can define the logging behaviour of (R)?ex.
 
@@ -1031,7 +1029,7 @@ sub logging {
   }
 }
 
-=item needs($package [, @tasks])
+=head2 needs($package [, @tasks])
 
 With I<needs> you can define dependencies between tasks. The "needed" tasks will be called with the same server configuration as the calling task.
 
@@ -1124,7 +1122,7 @@ sub needs {
   }
 };
 
-=item include Module::Name
+=head2 include Module::Name
 
 Include a module without registering its tasks.
 
@@ -1147,7 +1145,7 @@ sub include {
   $dont_register_tasks = $old_val;
 }
 
-=item environment($name => $code)
+=head2 environment($name => $code)
 
 Define an environment. With environments one can use the same task for different hosts. For example if you want to use the same task on your integration-, test- and production servers.
 
@@ -1217,7 +1215,7 @@ sub environment {
   }
 }
 
-=item LOCAL(&)
+=head2 LOCAL(&)
 
 With the LOCAL function you can do local commands within a task that is defined to work on remote servers.
 
@@ -1256,7 +1254,7 @@ sub LOCAL (&) {
   return $ret;
 }
 
-=item path(@path)
+=head2 path(@path)
 
 Set the execution path for all commands.
 
@@ -1268,7 +1266,7 @@ sub path {
   Rex::Config->set_path( [@_] );
 }
 
-=item set($key, $value)
+=head2 set($key, $value)
 
 Set a configuration parameter. These variables can be used in templates as well.
 
@@ -1296,7 +1294,7 @@ sub set {
   Rex::Config->set( $key, @value );
 }
 
-=item get($key, $value)
+=head2 get($key, $value)
 
 Get a configuration parameter.
 
@@ -1322,7 +1320,7 @@ sub get {
   return Rex::Config->get($key);
 }
 
-=item before($task => sub {})
+=head2 before($task => sub {})
 
 Run code before executing the specified task. The special taskname 'ALL' can be used to run code before all tasks.
 If called repeatedly, each sub will be appended to a list of 'before' functions.
@@ -1351,7 +1349,7 @@ sub before {
     ->modify( 'before', $task, $code, $package, $file, $line );
 }
 
-=item after($task => sub {})
+=head2 after($task => sub {})
 
 Run code after the task is finished. The special taskname 'ALL' can be used to run code after all tasks.
 If called repeatedly, each sub will be appended to a list of 'after' functions.
@@ -1380,7 +1378,7 @@ sub after {
     ->modify( 'after', $task, $code, $package, $file, $line );
 }
 
-=item around($task => sub {})
+=head2 around($task => sub {})
 
 Run code before and after the task is finished. The special taskname 'ALL' can be used to run code around all tasks.
 If called repeatedly, each sub will be appended to a list of 'around' functions.
@@ -1416,7 +1414,7 @@ sub around {
     ->modify( 'around', $task, $code, $package, $file, $line );
 }
 
-=item before_task_start($task => sub {})
+=head2 before_task_start($task => sub {})
 
 Run code before executing the specified task. This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
 If called repeatedly, each sub will be appended to a list of 'before' functions.
@@ -1441,7 +1439,7 @@ sub before_task_start {
     ->modify( 'before_task_start', $task, $code, $package, $file, $line );
 }
 
-=item after_task_finished($task => sub {})
+=head2 after_task_finished($task => sub {})
 
 Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
 If called repeatedly, each sub will be appended to a list of 'before' functions.
@@ -1466,7 +1464,7 @@ sub after_task_finished {
     ->modify( 'after_task_finished', $task, $code, $package, $file, $line );
 }
 
-=item logformat($format)
+=head2 logformat($format)
 
 You can define the logging format with the following parameters.
 
@@ -1491,7 +1489,7 @@ sub logformat {
 
 sub log_format { logformat(@_); }
 
-=item connection
+=head2 connection
 
 This function returns the current connection object.
 
@@ -1505,7 +1503,7 @@ sub connection {
   return Rex::get_current_connection()->{conn};
 }
 
-=item cache
+=head2 cache
 
 This function returns the current cache object.
 
@@ -1521,7 +1519,7 @@ sub cache {
   Rex::Config->set_cache_type($type);
 }
 
-=item profiler
+=head2 profiler
 
 Returns the profiler object for the current connection.
 
@@ -1537,7 +1535,7 @@ sub profiler {
   return $c_profiler;
 }
 
-=item report($switch, $type)
+=head2 report($switch, $type)
 
 This function will initialize the reporting.
 
@@ -1563,7 +1561,7 @@ sub report {
   return Rex::get_current_connection()->{reporter};
 }
 
-=item source_global_profile(0|1)
+=head2 source_global_profile(0|1)
 
 If this option is set, every run() command will first source /etc/profile before getting executed.
 
@@ -1574,7 +1572,7 @@ sub source_global_profile {
   Rex::Config->set_source_global_profile($source);
 }
 
-=item last_command_output
+=head2 last_command_output
 
 This function returns the output of the last "run" command.
 
@@ -1591,7 +1589,7 @@ sub last_command_output {
   return $Rex::Commands::Run::LAST_OUTPUT->[0];
 }
 
-=item case($compare, $option)
+=head2 case($compare, $option)
 
 This is a function to compare a string with some given options.
 
@@ -1642,7 +1640,7 @@ sub case {
   return $to_return;
 }
 
-=item set_executor_for($type, $executor)
+=head2 set_executor_for($type, $executor)
 
 Set the executor for a special type. This is primary used for the upload_and_run helper function.
 
@@ -1654,7 +1652,7 @@ sub set_executor_for {
   Rex::Config->set_executor_for(@_);
 }
 
-=item tmp_dir($tmp_dir)
+=head2 tmp_dir($tmp_dir)
 
 Set the tmp directory on the remote host to store temporary files.
 
@@ -1664,7 +1662,7 @@ sub tmp_dir {
   Rex::Config->set_tmp_dir(@_);
 }
 
-=item inspect($varRef)
+=head2 inspect($varRef)
 
 This function dumps the contents of a variable to STDOUT.
 
@@ -1871,7 +1869,7 @@ sub get_environments {
   return @ret;
 }
 
-=item sayformat($format)
+=head2 sayformat($format)
 
 You can define the format of the say() function.
 
@@ -1967,9 +1965,5 @@ sub FALSE {
 sub make(&) {
   return $_[0];
 }
-
-=back
-
-=cut
 
 1;

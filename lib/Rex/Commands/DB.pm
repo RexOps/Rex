@@ -52,8 +52,6 @@ Version <= 1.0: All these functions will not be reported.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::DB;
@@ -75,7 +73,7 @@ use vars qw(@EXPORT $dbh);
 
 @EXPORT = qw(db);
 
-=item db
+=head2 db
 
 Do a database action.
 
@@ -198,10 +196,6 @@ sub db {
   }
 
 }
-
-=back
-
-=cut
 
 sub import {
 

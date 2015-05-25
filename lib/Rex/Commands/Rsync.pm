@@ -40,8 +40,6 @@ the execution of the rsync task.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Commands::Rsync;
@@ -64,7 +62,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(sync);
 
-=item sync($source, $dest, $opts)
+=head2 sync($source, $dest, $opts)
 
 This function executes rsync to sync $source and $dest.
 
@@ -337,9 +335,5 @@ sub sync {
   }
 
 }
-
-=back
-
-=cut
 
 1;

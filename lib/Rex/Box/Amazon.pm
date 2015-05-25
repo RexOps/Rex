@@ -73,8 +73,6 @@ And then you can use it the following way in your Rexfile.
 
 See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
-=over 4
-
 =cut
 
 package Rex::Box::Amazon;
@@ -105,7 +103,7 @@ $|++;
 # BEGIN of class methods
 ################################################################################
 
-=item new(name => $vmname)
+=head2 new(name => $vmname)
 
 Constructor if used in OO mode.
 
@@ -169,7 +167,7 @@ sub import_vm {
   $self->{info} = $vminfo;
 }
 
-=item ami($ami_id)
+=head2 ami($ami_id)
 
 Set the AMI ID for the box.
 
@@ -180,7 +178,7 @@ sub ami {
   $self->{ami} = $ami;
 }
 
-=item type($type)
+=head2 type($type)
 
 Set the type of the Instance. For example "m1.large".
 
@@ -191,7 +189,7 @@ sub type {
   $self->{type} = $type;
 }
 
-=item security_group($sec_group)
+=head2 security_group($sec_group)
 
 Set the Amazon security group for this Instance.
 
@@ -217,7 +215,7 @@ sub provision_vm {
   }
 }
 
-=item forward_port(%option)
+=head2 forward_port(%option)
 
 Not available for Amazon Boxes.
 
@@ -225,7 +223,7 @@ Not available for Amazon Boxes.
 
 sub forward_port { Rex::Logger::debug("Not available for Amazon Boxes."); }
 
-=item share_folder(%option)
+=head2 share_folder(%option)
 
 Not available for Amazon Boxes.
 
@@ -280,7 +278,7 @@ sub stop {
   cloud_instance stop => $self->{info}->{id};
 }
 
-=item info
+=head2 info
 
 Returns a hashRef of vm information.
 
@@ -300,9 +298,5 @@ sub ip {
 
   return $self->{info}->{ip};
 }
-
-=back
-
-=cut
 
 1;

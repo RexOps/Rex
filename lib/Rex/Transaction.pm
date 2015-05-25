@@ -29,8 +29,6 @@ With this module you can define transactions and rollback scenarios on failure.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
 
 package Rex::Transaction;
@@ -51,7 +49,7 @@ use Data::Dumper;
 
 @EXPORT = qw(transaction on_rollback);
 
-=item transaction($codeRef)
+=head2 transaction($codeRef)
 
 Start a transaction for $codeRef. If $codeRef dies it will rollback the transaction.
 
@@ -110,7 +108,7 @@ sub transaction(&) {
 
 }
 
-=item on_rollback($codeRef)
+=head2 on_rollback($codeRef)
 
 This code will be executed if one step in the transaction fails.
 
@@ -129,9 +127,5 @@ sub on_rollback(&) {
     }
   );
 }
-
-=back
-
-=cut
 
 1;

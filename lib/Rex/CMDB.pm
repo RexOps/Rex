@@ -51,7 +51,7 @@ use vars qw(@EXPORT);
 
 my $CMDB_PROVIDER;
 
-=item set cmdb
+=head2 set cmdb
 
 CMDB is enabled by default, with Rex::CMDB::YAML as default provider.
 

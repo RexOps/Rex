@@ -197,8 +197,6 @@ sub db {
 
 }
 
-=cut
-
 sub import {
 
   my ( $class, $opt ) = @_;

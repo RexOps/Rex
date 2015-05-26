@@ -411,6 +411,4 @@ sub service_provider_for {
   Rex::Config->set( "service_provider", { $os => $provider } );
 }
 
-=cut
-
 1;

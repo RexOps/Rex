@@ -14,7 +14,13 @@ firstline="$date $release_manager <$email> ($version)"
 git checkout $changelog
 
 echo $firstline > $tmp_file
-git log --format='  * %s - %an' $lasttag..HEAD >> $tmp_file
+git log --format='  * %s - %an' $lasttag..HEAD \
+    | grep -Piv 'Merge pull request' \
+    | grep -Piv 'perltidy' \
+    | grep -Piv 'Update list of contributors' \
+    | grep -Piv 'version bump' \
+    | grep -Piv 'updated? (changelog|version)' \
+    >> $tmp_file
 echo >> $tmp_file
 cat $changelog >> $tmp_file
 mv $tmp_file $changelog

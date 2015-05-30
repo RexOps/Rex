@@ -85,9 +85,6 @@ sub push_sudo_options {
 
 sub get_current_sudo_options {
   my ($self) = @_;
-  if ( $self->{is_sudo} ) {
-    return 1;
-  }
   return $self->{__sudo_options__}->[-1];
 }
 
@@ -98,6 +95,10 @@ sub push_use_sudo {
 
 sub get_current_use_sudo {
   my ($self) = @_;
+
+  if ( $self->{is_sudo} ) {
+    return 1;
+  }
   return $self->{__use_sudo__}->[-1];
 }
 

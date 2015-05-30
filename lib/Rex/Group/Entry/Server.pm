@@ -100,11 +100,11 @@ sub new {
 sub get_servers {
   my ($self) = @_;
   return uniq map {
-    if ( ref($_) ne "Rex::Group::Entry::Server" ) {
-      $_ = Rex::Group::Entry::Server->new( name => $_, auth => $self->{auth} );
+    if ( ref $_ && $_->isa("Rex::Group::Entry::Server") ) {
+      $_;
     }
     else {
-      $_;
+      $_ = Rex::Group::Entry::Server->new( name => $_, auth => $self->{auth} );
     }
   } $self->evaluate_hostname;
 }

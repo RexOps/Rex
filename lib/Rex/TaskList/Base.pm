@@ -153,7 +153,12 @@ sub create_task {
               }
 
               return map {
-                Rex::Group::Entry::Server->new( name => $_ )->get_servers
+                if ( ref $_ && $_->isa("Rex::Group::Entry::Server") ) {
+                  $_->get_servers;
+                }
+                else {
+                  Rex::Group::Entry::Server->new( name => $_ )->get_servers;
+                }
               } Rex::Group->get_group($group);
             };
 
@@ -165,7 +170,7 @@ sub create_task {
           push(
             @server,
             (
-              ref($entry) eq "Rex::Group::Entry"
+              ref $entry && $entry->isa("Rex::Group::Entry::Server")
               ? $entry
               : Rex::Group::Entry::Server->new( name => $entry )
             )

@@ -183,7 +183,7 @@ sub server {
         push( @ret, &$srv() );
       }
       else {
-        if ( ref($srv) eq "Rex::Group::Entry::Server" ) {
+        if ( ref $srv && $srv->isa("Rex::Group::Entry::Server") ) {
           push( @ret, $srv->get_servers );
         }
         else {
@@ -576,7 +576,7 @@ Initiate the connection to $server.
 sub connect {
   my ( $self, $server, %override ) = @_;
 
-  if ( ref($server) ne "Rex::Group::Entry::Server" ) {
+  if ( !ref $server ) {
     $server = Rex::Group::Entry::Server->new( name => $server );
   }
   $self->{current_server} = $server;
@@ -736,7 +736,7 @@ sub run {
   if ( ref( $_[0] ) ) {
     my ( $self, $server, %options ) = @_;
 
-    if ( ref($server) ne "Rex::Group::Entry::Server" ) {
+    if ( !ref $server ) {
       $server = Rex::Group::Entry::Server->new( name => $server );
     }
 

@@ -224,6 +224,7 @@ sub run {
   }
 
   my $out_ret;
+  my ( $out, $err );
 
   if ($changed) {
     my $path;
@@ -232,7 +233,6 @@ sub run {
       $path = join( ":", Rex::Config->get_path() );
     }
 
-    my ( $out, $err );
     my $exec = Rex::Interface::Exec->create;
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
       eval {
@@ -299,7 +299,7 @@ sub run {
 
   if ( exists $option->{auto_die} && $option->{auto_die} ) {
     if ( $? != 0 ) {
-      die("Error executing: $cmd.\nOutput:\n$out_ret");
+      die("Error executing: $cmd.\nSTDOUT:\n$out\nSTDERR:\n$err");
     }
   }
 

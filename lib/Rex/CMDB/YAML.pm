@@ -85,7 +85,7 @@ sub get {
     );
   }
   elsif ( ref $self->{path} eq "CODE" ) {
-    @files = $self->{path}->();
+    @files = $self->{path}->( $self, $item, $server );
   }
   elsif ( ref $self->{path} eq "ARRAY" ) {
     @files = @{ $self->{path} };

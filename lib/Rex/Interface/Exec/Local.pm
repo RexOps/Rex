@@ -61,7 +61,7 @@ sub exec {
   }
 
   if ( exists $option->{format_cmd} ) {
-    $option->{format_cmd} =~ s/{{CMD}}/$cmd/;
+    $option->{format_cmd} =~ s/\{\{CMD\}\}/$cmd/;
     $cmd = $option->{format_cmd};
   }
 

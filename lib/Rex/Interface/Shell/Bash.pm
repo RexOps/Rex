@@ -123,7 +123,7 @@ sub exec {
 
   # rewrite the command again
   if ( exists $option->{format_cmd} ) {
-    $complete_cmd =~ s/{{CMD}}/$cmd/;
+    $complete_cmd =~ s/\{\{CMD\}\}/$cmd/;
   }
 
   if ( $self->{__inner_shell__} ) {

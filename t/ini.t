@@ -1,13 +1,13 @@
 use strict;
 use warnings;
 
-use Test::More tests => 30;
+use Test::More tests => 31;
 
 SKIP: {
 
   eval { require String::Escape };
 
-  skip 'Missing String::Escape for INI file support.', 30 if $@;
+  skip 'Missing String::Escape for INI file support.', 31 if $@;
 
   require Rex::Group::Lookup::INI;
   Rex::Group::Lookup::INI->import;
@@ -36,6 +36,8 @@ SKIP: {
   ok( grep { $_ eq "be04" } @{ $groups{backends} }, "got be04" );
 
   ok( grep { $_ eq "db[01..02]" } @{ $groups{db} }, "got db[01..02]" );
+
+  ok( grep { $_ eq "[01..02]-cassandra" } @{ $groups{cassandra} }, "got [01..02]-cassandra]" );
 
   ok( grep { $_ eq "redis01" } @{ $groups{redis} }, "got redis01" );
   ok( grep { $_ eq "redis02" } @{ $groups{redis} }, "got redis02" );

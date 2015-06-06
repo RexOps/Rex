@@ -24,7 +24,7 @@ sub parse {
 
     (/^#|^;|^\s*$/) && (next);
 
-    if (/^\[(.*)\]/) {
+    if (/^\[(.*)\]/ && !/^\[\d+(?:\.\.)\d+\]/) {
 
       # check for inheritance
       $section = $1;
@@ -49,8 +49,6 @@ sub parse {
     my ( $key, $val ) = split( /[= ]/, $_, 2 );
     $key =~ s/^\s*|\s*$//g if $key;
     $val =~ s/^\s*|\s*$//g if $val;
-
-    $key =~ s/^\^\[/[/ if $key;
 
     my @splitted;
     if ( !$val ) {

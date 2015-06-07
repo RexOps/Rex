@@ -1,31 +1,29 @@
-
 use strict;
 use warnings;
 
-use Cwd 'getcwd';
-my $cwd = getcwd;
-
 BEGIN {
-  use Test::More tests => 38;
+  use Test::More;
   use Data::Dumper;
+  use Rex::Commands::DB;
+
+  eval "use Test::mysqld;";
+  plan skip_all => "Test::mysqld not installed" if $@;
 }
 
 my $dbh;
-SKIP: {
-  eval "use Test::mysqld;";
-  skip "Test::mysqld not installed", 38 if $@;
-  eval "use Rex::Commands::DB";
-  plan skip_all => 'Not all Test-Dependencies installed' if $@;
-  my $mysqld = Test::mysqld->new(
-    my_cnf => {
-      'skip-networking' => '', # no TCP socket
-    }
-    )
-    or do {
-    no warnings 'once';
-    plan skip_all => $Test::mysqld::errstr;
-    };
+my $mysqld = Test::mysqld->new(
+  my_cnf => {
+    'skip-networking' => '', # no TCP socket
+  }
+  )
+  or do {
+  no warnings 'once';
+  plan skip_all => $Test::mysqld::errstr;
+  };
 
+plan tests => 38;
+
+SKIP: {
   $dbh = DBI->connect( $mysqld->dsn( dbname => 'test' ), );
   Rex::Commands::DB->import( { dsn => $mysqld->dsn( dbname => 'test' ) } );
   _test_select();
@@ -108,12 +106,10 @@ sub _cleanup_db {
 }
 
 sub _initalize_db {
-
   ok( $dbh->do('CREATE TABLE mytest (id INT  primary key, mykey varchar(64))'),
     "table mytest created" );
   ok( $dbh->do('INSERT INTO mytest VALUES(1, "first")') );
   ok( $dbh->do('INSERT INTO mytest VALUES(2, "second")') );
   ok( $dbh->do('INSERT INTO mytest VALUES(3, "third")') );
   ok( $dbh->do('INSERT INTO mytest VALUES(4, "fourth")') );
-
 }

@@ -10,10 +10,11 @@ use Rex::Commands::Fs;
 use Rex::Commands::Run;
 use File::Basename;
 
-use vars qw($CHECKOUT_COMMAND $CLONE_COMMAND);
+use vars qw($CHECKOUT_BRANCH_COMMAND $CHECKOUT_TAG_COMMAND $CLONE_COMMAND);
 
 $CLONE_COMMAND    = "git clone %s %s";
-$CHECKOUT_COMMAND = "git checkout -b %s origin/%s";
+$CHECKOUT_BRANCH_COMMAND = "git checkout -b %s origin/%s";
+$CHECKOUT_TAG_COMMAND = "git checkout -b %s %s";
 
 sub new {
   my $that  = shift;
@@ -51,9 +52,9 @@ sub checkout {
         $checkout_to =~ s/\.git$//;
       }
 
-      my $checkout_cmd = sprintf( $CHECKOUT_COMMAND,
-        $checkout_opt->{"branch"},
-        $checkout_opt->{"branch"} );
+      my $checkout_cmd = sprintf( $CHECKOUT_BRANCH_COMMAND,
+          $checkout_opt->{"branch"},
+          $checkout_opt->{"branch"} );
       Rex::Logger::debug("checkout_cmd: $checkout_cmd");
 
       Rex::Logger::info( "Switching to branch " . $checkout_opt->{"branch"} );
@@ -61,10 +62,30 @@ sub checkout {
       $out = run "$checkout_cmd", cwd => $checkout_to;
       Rex::Logger::debug($out);
     }
+
+    if ( exists $checkout_opt->{"tag"} ) {
+      my $checkout_cmd = sprintf( $CHECKOUT_TAG_COMMAND,
+          $checkout_opt->{"tag"},
+          $checkout_opt->{"tag"}
+          );
+
+      Rex::Logger::info( "Switching to tag " . $checkout_opt->{"tag"} );
+      $out = run "$checkout_cmd", cwd => $checkout_to;
+      Rex::Logger::debug($out);
+    }
   }
   elsif ( is_dir("$checkout_to/.git") ) {
     my $branch = $checkout_opt->{"branch"} || "master";
     run "git pull origin $branch", cwd => $checkout_to;
+
+    if ( exists $checkout_opt->{"tag"} ) {
+      my $tag = $checkout_opt->{tag};
+      Rex::Logger::info( "Switching to tag " . $tag );
+      my $out = run "git fetch origin", cwd => $checkout_to;
+      Rex::Logger::debug($out);
+      $out = run "git checkout -b $tag $tag", cwd => $checkout_to;
+      Rex::Logger::debug($out);
+    }
   }
   else {
     Rex::Logger::info( "Error checking out repository.", "warn" );

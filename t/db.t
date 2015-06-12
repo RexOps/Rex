@@ -44,9 +44,7 @@ sub _test_select {
   is( $data[0]->{mykey}, "second", "correct value for id 2" );
   @data =
     db( 'select' => { fields => '*', from => 'mytest', where => 'id=5' } );
-  is( $data[0], undef, "no data" );
-
-  diag Dumper \@data;
+  is( $data[0], undef, "no data" ) or diag Dumper \@data;
   _cleanup_db();
 }
 

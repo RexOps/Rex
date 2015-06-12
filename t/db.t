@@ -50,7 +50,7 @@ sub _test_select {
 
 sub _test_insert {
   _initalize_db();
-  ok( db( insert => 'mytest', { id => 5, mykey => 'fifth' } ) );
+  ok( db( insert => 'mytest', { id => 5, mykey => 'fifth' } ), "INSERT" );
   my @data =
     db( 'select' => { fields => '*', from => 'mytest', where => 'id=5' } );
   is( $data[0]->{mykey}, "fifth", "inserted fifths value" );
@@ -110,8 +110,8 @@ sub _cleanup_db {
 sub _initalize_db {
   ok( $dbh->do('CREATE TABLE mytest (id INT  primary key, mykey varchar(64))'),
     "table mytest created" );
-  ok( $dbh->do('INSERT INTO mytest VALUES(1, "first")') );
-  ok( $dbh->do('INSERT INTO mytest VALUES(2, "second")') );
-  ok( $dbh->do('INSERT INTO mytest VALUES(3, "third")') );
-  ok( $dbh->do('INSERT INTO mytest VALUES(4, "fourth")') );
+  ok( $dbh->do('INSERT INTO mytest VALUES(1, "first")'),  "First INSERT" );
+  ok( $dbh->do('INSERT INTO mytest VALUES(2, "second")'), "Second INSERT" );
+  ok( $dbh->do('INSERT INTO mytest VALUES(3, "third")'),  "Third INSERT" );
+  ok( $dbh->do('INSERT INTO mytest VALUES(4, "fourth")'), "Fourth INSERT" );
 }

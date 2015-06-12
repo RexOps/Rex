@@ -4,10 +4,14 @@ use warnings;
 BEGIN {
   use Test::More;
   use Data::Dumper;
-  use Rex::Commands::DB;
 
-  eval "use Test::mysqld;";
-  plan skip_all => "Test::mysqld not installed" if $@;
+  eval "use DBI; 1" or plan skip_all => "Could not load DBI module";
+
+  eval "use Rex::Commands::DB; 1"
+    or plan skip_all => "Could not load Rex::Commands::DB module: $@";
+
+  eval "use Test::mysqld; 1"
+    or plan skip_all => "Could not load Test::mysqld module";
 }
 
 my $dbh;

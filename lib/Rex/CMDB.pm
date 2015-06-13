@@ -72,7 +72,7 @@ The CMDB module looks up the specified files in order and then returns the reque
 
 Rex uses Hash::Merge internally to merge the data found on different levels of the CMDB hierarchy. Any merge strategy supported by that module can be specified to override the default one. For example one of the built-in strategies:
 
- merge_behavior => 'LEFT_PRECEDENCE'
+ merge_behavior => 'LEFT_PRECEDENT'
 
 Or even custom ones:
 

@@ -539,10 +539,10 @@ sub import {
       my $found_feature = 0;
 
       if ( $add =~ m/^(\d+\.\d+)$/ ) {
+        my $vers = $1;
         my $_ver = $Rex::VERSION;
         $_ver =~ s/_\d+$//; # remove rc info
 
-        my $vers = $1;
         my ( $major, $minor, $patch ) = split( /\./, $_ver );
         my ( $c_major, $c_minor ) = split( /\./, $vers );
 

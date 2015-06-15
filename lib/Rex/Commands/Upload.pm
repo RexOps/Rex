@@ -117,7 +117,9 @@ sub upload {
 
   my $old_local = $local; # for the upload location use the given name
 
-  if ( -f "$local." . Rex::Config->get_environment ) {
+  if ( Rex::Config->get_environment
+    && -f "$local." . Rex::Config->get_environment )
+  {
     $local = "$local." . Rex::Config->get_environment;
   }
 

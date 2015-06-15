@@ -17,7 +17,7 @@ use Rex::Config;
 use Rex::Interface::Exec;
 use Data::Dumper;
 use Sort::Naturally;
-require Rex::Helper::Run;
+require Rex::Commands::Run;
 
 use List::MoreUtils qw(uniq);
 
@@ -381,14 +381,7 @@ sub evaluate_hostname {
 
 sub test_perl {
   my ($self) = @_;
-
-  Rex::Helper::Run::i_run("which perl");
-
-  if ( $? != 0 ) {
-    return 0;
-  }
-
-  return 1;
+  return Rex::Commands::Run::can_run("perl");
 }
 
 1;

@@ -63,8 +63,8 @@ sub md5 {
 
     my $command =
       ( $^O =~ m/^MSWin/i && Rex::is_local() )
-      ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', '$file' or die 'Cannot open $file'; \$fh->binmode; print Digest::MD5->new->addfile(\$fh)->hexdigest;")
-      : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", "$file" or die "Cannot open $file"; \$fh->binmode; print Digest::MD5->new->addfile(\$fh)->hexdigest;');
+      ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; \$fh->binmode; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
+      : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; \$fh->binmode; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
 
     my $md5 = i_run($command);
 

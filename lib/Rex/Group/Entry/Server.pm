@@ -17,7 +17,6 @@ use Rex::Config;
 use Rex::Interface::Exec;
 use Data::Dumper;
 use Sort::Naturally;
-require Rex::Commands::Run;
 
 use List::MoreUtils qw(uniq);
 
@@ -381,7 +380,8 @@ sub evaluate_hostname {
 
 sub test_perl {
   my ($self) = @_;
-  return Rex::Commands::Run::can_run("perl");
+  my $exec = Rex::Interface::Exec->create;
+  return $exec->can_run( ["perl"] ); # use a new anon ref, so that we don't have drawbacks if some lower layers will manipulate things.
 }
 
 1;

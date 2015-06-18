@@ -4,10 +4,14 @@ use warnings;
 BEGIN {
   use Test::More;
   use Data::Dumper;
-  use Rex::Commands::DB;
 
-  eval "use Test::mysqld;";
-  plan skip_all => "Test::mysqld not installed" if $@;
+  eval "use DBI; 1" or plan skip_all => "Could not load DBI module";
+
+  eval "use Rex::Commands::DB; 1"
+    or plan skip_all => "Could not load Rex::Commands::DB module: $@";
+
+  eval "use Test::mysqld; 1"
+    or plan skip_all => "Could not load Test::mysqld module";
 }
 
 my $dbh;
@@ -40,15 +44,13 @@ sub _test_select {
   is( $data[0]->{mykey}, "second", "correct value for id 2" );
   @data =
     db( 'select' => { fields => '*', from => 'mytest', where => 'id=5' } );
-  is( $data[0], undef, "no data" );
-
-  diag Dumper \@data;
+  is( $data[0], undef, "no data" ) or diag Dumper \@data;
   _cleanup_db();
 }
 
 sub _test_insert {
   _initalize_db();
-  ok( db( insert => 'mytest', { id => 5, mykey => 'fifth' } ) );
+  ok( db( insert => 'mytest', { id => 5, mykey => 'fifth' } ), "INSERT" );
   my @data =
     db( 'select' => { fields => '*', from => 'mytest', where => 'id=5' } );
   is( $data[0]->{mykey}, "fifth", "inserted fifths value" );
@@ -108,8 +110,8 @@ sub _cleanup_db {
 sub _initalize_db {
   ok( $dbh->do('CREATE TABLE mytest (id INT  primary key, mykey varchar(64))'),
     "table mytest created" );
-  ok( $dbh->do('INSERT INTO mytest VALUES(1, "first")') );
-  ok( $dbh->do('INSERT INTO mytest VALUES(2, "second")') );
-  ok( $dbh->do('INSERT INTO mytest VALUES(3, "third")') );
-  ok( $dbh->do('INSERT INTO mytest VALUES(4, "fourth")') );
+  ok( $dbh->do('INSERT INTO mytest VALUES(1, "first")'),  "First INSERT" );
+  ok( $dbh->do('INSERT INTO mytest VALUES(2, "second")'), "Second INSERT" );
+  ok( $dbh->do('INSERT INTO mytest VALUES(3, "third")'),  "Third INSERT" );
+  ok( $dbh->do('INSERT INTO mytest VALUES(4, "fourth")'), "Fourth INSERT" );
 }

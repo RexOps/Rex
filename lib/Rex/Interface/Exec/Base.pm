@@ -9,6 +9,7 @@ package Rex::Interface::Exec::Base;
 use strict;
 use warnings;
 use Carp;
+use Rex::Helper::Run;
 
 # VERSION
 

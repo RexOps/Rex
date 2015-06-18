@@ -1,3 +1,19 @@
+2015-06-17 Ferenc Erki <ferki@rexify.org> (1.3.2)
+  * Use binmode as a function - Jan
+  * Use raw Rex::Interface::Exec to call can_run - Jan
+  * Remove md5sum usage - Ferenc Erki
+  * Fix for filenames with at sign in them - Ferenc Erki
+  * Add test case for filenames with at sign - Ferenc Erki
+  * Add initial MD5 test - Ferenc Erki
+  * Fix check for environment-specific filenames - Ferenc Erki
+  * Use OS-agnostic perl executable detection - Ferenc Erki
+  * Fix RC version handling - Ferenc Erki
+  * Refactor MD5 checksum calculation (fix #719) - Ferenc Erki
+  * Add missing test names - Ferenc Erki
+  * Only display diagnostic message if something went wrong - Ferenc Erki
+  * Explicitly test for optional dependencies - Ferenc Erki
+  * Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
+
 2015-06-08 <ferki, rexify.org> (1.3.1)
   * Cleanup db tests (fix #714) - Ferenc Erki
   * Update parallelism docs - Ferenc Erki

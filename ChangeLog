@@ -1,3 +1,65 @@
+2015-06-17 Ferenc Erki <ferki@rexify.org> (1.3.2)
+  * Use binmode as a function - Jan
+  * Use raw Rex::Interface::Exec to call can_run - Jan
+  * Remove md5sum usage - Ferenc Erki
+  * Fix for filenames with at sign in them - Ferenc Erki
+  * Add test case for filenames with at sign - Ferenc Erki
+  * Add initial MD5 test - Ferenc Erki
+  * Fix check for environment-specific filenames - Ferenc Erki
+  * Use OS-agnostic perl executable detection - Ferenc Erki
+  * Fix RC version handling - Ferenc Erki
+  * Refactor MD5 checksum calculation (fix #719) - Ferenc Erki
+  * Add missing test names - Ferenc Erki
+  * Only display diagnostic message if something went wrong - Ferenc Erki
+  * Explicitly test for optional dependencies - Ferenc Erki
+  * Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
+
+2015-06-08 <ferki, rexify.org> (1.3.1)
+  * Cleanup db tests (fix #714) - Ferenc Erki
+  * Update parallelism docs - Ferenc Erki
+
+2015-06-03 <jfried, rexify.org> (1.3.0)
+  * Fix regex pattern for perl-5.22.0 - Ferenc Erki
+  * Filter changelogger output - Ferenc Erki
+  * Cleanup group command POD - Ferenc Erki
+  * Convert POD directives of methods and DSL functions (fix #685, close #705) - Brian Manning
+  * pass cmdb() arguments to callback - fixed #709 - Jan
+  * allow creation of inherited Rex::Group::Entry::Server objects - fixed #708 - Jan
+  * Reuse VM name as image filename when importing - Ferenc Erki
+  * Recognize CloudLinux as Red Hat clone (close #699) - Dmitry Kopytov
+  * Fix auth test when REX_USER env is present - Dmitry Kopytov
+  * Remove unused CLI option - Ferenc Erki
+  * More helpful/verbose help message (close #698) - Eric Johnson
+  * Cleanup a file used during testing - Ferenc Erki
+  * Cleanup tests with optional dependencies - Ferenc Erki
+  * Use explicit test plans everywhere - Ferenc Erki
+  * Cleanup test imports - Ferenc Erki
+  * Remove tests doing nothing else than use_ok() - Ferenc Erki
+  * Automatically use all modules during testing - Ferenc Erki
+  * Remove redundant hostname evaluation tests - Ferenc Erki
+  * Remove unused Data::Dumper from tests - Ferenc Erki
+  * Add CMDB docs - Ferenc Erki
+  * Don't run into an endless loop: fix for #692 - Jan Gehring
+  * Iptables.pm: add long-form iptables examples to POD - Brian Manning
+  * Iptables.pm: show error from iptables on non-zero exit status - Brian Manning
+  * ignore backfiles from editors - Jan
+  * Log STDERR on errors where auto_die is enabled - Dmitry Kopytov
+  * Set parallelism automatically (fix #491) - Ferenc Erki
+  * added template_ng tests - Jan
+  * fixed a problem when one template object was used twice - Jan
+  * new template engine for 1.3 - Jan
+  * Fix checking of virsh command result upon VM creation - Ferenc Erki
+  * Update clearpart command documentation - Ferenc Erki
+  * Add bios_boot option to GPT initialization - Ferenc Erki
+  * make report filename configurable. don't sleep in test - Jan
+  * Check for CLI argument definedness (fix #668) - Ferenc Erki
+  * this commit fixes #667. this bug was introduced with the fix for #629 - Jan
+  * first detect if uname and md5sum can be run, then use it. fixed #665 - Jan
+  * fix warning if local file is not given. fixed #647 - Jan
+  * Include provided modules in META.yml - Ferenc Erki
+  * added systemd support for debian. fixes #659 - Jan
+  * this prevents the stderr output of perl to get send over the wire. fixes #658 - Jan
+
 2015-05-04 <jfried@rexify.org> (1.2.1)
   * first detect if uname and md5sum can be run, then use it. fixed #665 - Jan
 

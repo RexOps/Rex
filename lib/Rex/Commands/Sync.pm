@@ -340,85 +340,25 @@ sub _get_remote_files {
   my @remote_dirs = ($dest);
   my @remote_files;
 
-  if ( can_run("md5sum") ) {
-
-    # if md5sum executable is available
-    # copy a script to the remote host so it is fast to scan
-    # the directory.
-
-    my $script = q|
-use strict;
-use warnings;
-
-unlink $0;
-
-my $dest = $ARGV[0];
-my @dirs = ($dest);
-my @tree = ();
-
-for my $dir (@dirs) {
-  opendir(my $dh, $dir) or die($!);
-  $dir = join("/", map { $_ =~ s/([\@\$\% ])/\\\$1/g; $_; } split(/\//, $dir));
-  while(my $entry = readdir($dh)) {
-    next if($entry eq ".");
-    next if($entry eq "..");
-
-    if(-d "$dir/$entry") {
-      push(@dirs, "$dir/$entry");
-      next;
-    }
-
-    my $name = "$dir/$entry";
-    $name =~ s/^\Q$dest\E//;
-
-    my $t_entry = quotemeta($entry);
-    my $md5 = qx{md5sum $dir/$t_entry \| awk ' { print \$1 } '};
-
-    chomp $md5;
-
-    push(@tree, {
-      path => "$dir/$entry",
-      name => $name,
-      md5  => $md5,
-    });
-  }
-  closedir($dh);
-}
-
-print to_json(\@tree);
-
-    |;
-
-    $script .= func_to_json();
-
-    my $rnd_file = get_tmp_file;
-    file $rnd_file, content => $script;
-    my $content = run "perl $rnd_file $dest";
-    my $ref     = decode_json($content);
-    @remote_files = @{$ref};
-  }
-  else {
-    # fallback if no md5sum executable is available
-    for my $dir (@remote_dirs) {
-      for my $entry ( list_files($dir) ) {
-        next if ( $entry eq "." );
-        next if ( $entry eq ".." );
-        if ( is_dir("$dir/$entry") ) {
-          push( @remote_dirs, "$dir/$entry" );
-          next;
-        }
-
-        my $name = "$dir/$entry";
-        $name =~ s/^\Q$dest\E//;
-        push(
-          @remote_files,
-          {
-            name => $name,
-            path => "$dir/$entry",
-            md5  => md5("$dir/$entry"),
-          }
-        );
+  for my $dir (@remote_dirs) {
+    for my $entry ( list_files($dir) ) {
+      next if ( $entry eq "." );
+      next if ( $entry eq ".." );
+      if ( is_dir("$dir/$entry") ) {
+        push( @remote_dirs, "$dir/$entry" );
+        next;
       }
+
+      my $name = "$dir/$entry";
+      $name =~ s/^\Q$dest\E//;
+      push(
+        @remote_files,
+        {
+          name => $name,
+          path => "$dir/$entry",
+          md5  => md5("$dir/$entry"),
+        }
+      );
     }
   }
 

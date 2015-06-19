@@ -385,7 +385,6 @@ sub modify {
 sub rethink_connection {
   my ($self) = @_;
   delete $self->{connection};
-  $self->connection;
 }
 
 =head2 user

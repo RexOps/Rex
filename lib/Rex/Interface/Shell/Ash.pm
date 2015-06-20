@@ -30,6 +30,8 @@ sub detect {
 
   my ($shell_path) = $con->_exec("echo \$SHELL");
   if ( $shell_path =~ m/\/ash$/ ) {
+    Rex::Logger::debug("ash shell detected - enabling no_tty feature flag");
+    Rex::Config->set_no_tty(1);
     return 1;
   }
 

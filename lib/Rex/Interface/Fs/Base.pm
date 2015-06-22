@@ -12,7 +12,7 @@ use warnings;
 # VERSION
 
 use Rex::Interface::Exec;
-require File::Spec::Unix;
+use Rex::Helper::File::Spec;
 
 sub new {
   my $that  = shift;
@@ -176,12 +176,13 @@ sub _normalize_path {
   for my $d (@dirs) {
     my @t;
     if (Rex::is_ssh) {
-      @t = File::Spec::Unix->splitdir($d);
+      @t = Rex::Helper::File::Spec->splitdir($d);
     }
     else {
-      @t = File::Spec->splitdir($d);
+      @t = Rex::Helper::File::Spec->splitdir($d);
     }
-    push( @ret, File::Spec::Unix->catfile( map { $self->_quotepath($_) } @t ) );
+    push( @ret,
+      Rex::Helper::File::Spec->catfile( map { $self->_quotepath($_) } @t ) );
   }
 
   #  for (@dirs) {

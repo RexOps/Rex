@@ -84,6 +84,7 @@ sub transaction(&) {
   eval { &$code(); };
 
   if ($@) {
+    my $err = $@;
     Rex::Logger::info("Transaction failed. Rolling back.");
 
     $ret = 0;
@@ -93,7 +94,7 @@ sub transaction(&) {
       Rex::push_connection( $rollback_code->{"connection"} );
 
       # run the rollback code
-      &{ $rollback_code->{"code"} }();
+      &{ $rollback_code->{"code"} }($err);
 
       # and pop it away
       Rex::pop_connection();

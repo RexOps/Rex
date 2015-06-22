@@ -109,7 +109,7 @@ sub exec {
     waitpid( $pid, 0 ) or die($!);
   }
   else {
-    $pid = open( my $fh, "$cmd 2>&1 |" ) or die($!);
+    $pid = open( my $fh, "-|", "$cmd 2>&1" ) or die($!);
     while (<$fh>) {
       $out .= $_;
       $self->execute_line_based_operation( $_, $option )

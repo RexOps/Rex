@@ -685,6 +685,7 @@ sub __help__ {
   printf $fmt, "-F", "Force: disregard lock file";
   printf $fmt, "-h", "Display this help message";
   printf $fmt, "-M", "Load this module instead of Rexfile";
+  printf $fmt, "-O", "Pass additional options, like CMDB path";
   printf $fmt, "-s", "Use sudo for every command";
   printf $fmt, "-S", "Password for sudo";
   printf $fmt, "-t", "Number of threads to use (aka 'parallelism' param)";

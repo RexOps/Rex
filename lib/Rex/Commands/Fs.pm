@@ -339,7 +339,7 @@ sub mkdir {
     if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
 
       # special case for local windows runs
-      @splitted_dir = map { $_ = "\\$_"; } split( /[\\\/]/, $dir );
+      @splitted_dir = map { "\\$_"; } split( /[\\\/]/, $dir );
       if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
         $splitted_dir[0] = "$1:\\";
       }
@@ -348,7 +348,7 @@ sub mkdir {
       }
     }
     else {
-      @splitted_dir = map { $_ = "/$_"; } split( /\//, $dir );
+      @splitted_dir = map { "/$_"; } split( /\//, $dir );
 
       unless ( $splitted_dir[0] eq "/" ) {
         $splitted_dir[0] = "." . $splitted_dir[0];

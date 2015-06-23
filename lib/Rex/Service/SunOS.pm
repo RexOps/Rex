@@ -48,7 +48,7 @@ sub ensure {
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    my ($runlevel) = grep { $_ = $1 if m/run\-level (\d)/ } i_run "who -r";
+    my ($runlevel) = map { /run-level (\d)/ } i_run "who -r";
     ln "/etc/init.d/$service", "/etc/rc${runlevel}.d/S99$service";
   }
 

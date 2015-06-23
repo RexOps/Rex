@@ -39,7 +39,7 @@ sub list_jobs {
   my ($self) = @_;
   my @jobs = @{ $self->{cron} };
   my @ret =
-    map { $_ = { line => $_->{line}, %{ $_->{cron} } } }
+    map { { line => $_->{line}, %{ $_->{cron} } } }
     grep { $_->{type} eq "job" } @jobs;
 }
 
@@ -148,7 +148,7 @@ sub write_cron {
 
   my $rnd_file = get_tmp_file;
 
-  my @lines = map { $_ = $_->{line} } @{ $self->{cron} };
+  my @lines = map { $_->{line} } @{ $self->{cron} };
 
   my $fh = file_write $rnd_file;
   $fh->write( join( "\n", @lines ) . "\n" );

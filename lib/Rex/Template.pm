@@ -95,20 +95,21 @@ sub parse {
         }
 
         if ( $type && $type =~ m/^[+=]$/ ) {
-          $_ = "\$___r .= $text;";
+          "\$___r .= $text;";
         }
         else {
-          $_ = $text;
+          $text;
         }
 
       }
 
       else {
+        my $chomped = $_;
         if ( $DO_CHOMP || $do_chomp ) {
-          chomp $_;
+          chomp $chomped;
           $do_chomp = 0;
         }
-        $_ = '$___r .= "' . _quote($_) . '";';
+        '$___r .= "' . _quote($chomped) . '";';
 
       }
 

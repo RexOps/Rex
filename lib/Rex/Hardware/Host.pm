@@ -41,15 +41,15 @@ sub get {
     if ( $os eq "Windows" ) {
       my @env = i_run("env");
       ($hostname) =
-        grep { $_ = $1 if /^COMPUTERNAME=(.*)$/ } split( /\r?\n/, @env );
+        map { /^COMPUTERNAME=(.*)$/ } split( /\r?\n/, @env );
       ($domain) =
-        grep { $_ = $1 if /^USERDOMAIN=(.*)$/ } split( /\r?\n/, @env );
+        map { /^USERDOMAIN=(.*)$/ } split( /\r?\n/, @env );
     }
     elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
       ( $hostname, $domain ) = split( /\./, i_run("hostname"), 2 );
     }
     elsif ( $os eq "SunOS" ) {
-      ($hostname) = grep { $_ = $1 if /^([^\.]+)$/ } i_run("hostname");
+      ($hostname) = map { /^([^\.]+)$/ } i_run("hostname");
       ($domain) = i_run("domainname");
     }
     elsif ( $os eq "OpenWrt" ) {
@@ -291,7 +291,7 @@ sub get_operating_system_version {
 
   }
   elsif ( $op =~ /BSD/ ) {
-    my ($version) = grep { $_ = $1 if /(\d+\.\d+)/ } i_run "uname -r";
+    my ($version) = map { /(\d+\.\d+)/ } i_run "uname -r";
     return $version;
   }
   elsif ( $op eq "OpenWrt" ) {

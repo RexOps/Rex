@@ -38,7 +38,7 @@ sub new {
 sub status {
   my ( $self, $service, $options ) = @_;
 
-  my ($state) = grep { $_ = $1 if /state\s+([a-z]+)/ } i_run "svcs -l $service";
+  my ($state) = map { /state\s+([a-z]+)/ } i_run "svcs -l $service";
 
   if ( $state eq "online" ) {
     return 1;

@@ -646,10 +646,15 @@ For Debian: If you have no source repository, or if you don't want to add it, ju
  task "add-repo", "server1", "server2", sub {
    repository "add" => "repository-name",
       url      => "http://rex.linux-files.org/debian/squeeze",
+      key_url  => "http://rex.linux-files.org/DPKG-GPG-KEY-REXIFY-REPO"
       distro    => "squeeze",
       repository => "rex",
       source    => 1;
  };
+
+To specify a key from a file use key_file => '/tmp/mykeyfile'.
+
+To use a keyserver use key_server and key_id.
 
 For ALT Linux: If repository is unsigned, just remove the I<sign_key> parameter.
 

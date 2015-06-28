@@ -112,6 +112,10 @@ sub add_repository {
     i_run "wget -O - " . $data{"key_url"} . " | apt-key add -";
   }
 
+  if ( exists $data{"key_file"} ) {
+    i_run "apt-key add $data{'key_file'}";
+  }
+
   if ( exists $data{"key_id"} && $data{"key_server"} ) {
     i_run "apt-key adv --keyserver "
       . $data{"key_server"}

@@ -1,19 +1,20 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use Rex::Commands::Run;
 
 SKIP: {
 
   my @Win_ver = Win32::GetOSVersion() if $^O =~ /^MSWin/;
-  skip "This windows version didn't implement where",4 if @Win_ver and '2:5:1' ge join ':', @Win_ver[4,2,1];
+  ok( not ( @Win_ver and '2:5:1' ge join ':', @Win_ver[4,2,1] ), "Suported OS versions" );
 
   {
     my $command_to_check = @Win_ver ? 'where' : 'which';
     my $result = can_run($command_to_check);
     ok( $result, 'Found checker command' );
+    skip "We don't have a checker command",3 unless $result
   }  
 
   {

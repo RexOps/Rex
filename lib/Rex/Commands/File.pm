@@ -290,6 +290,19 @@ This function is the successor of I<install file>. Please use this function to u
  
  };
 
+The first parameter is either a string or an array reference. In the latter case the
+function is called for all strings in the array. Therefore, the following constructs 
+are equivalent:
+
+  file '/tmp/test1', ensure => 'directory';
+  file '/tmp/test2', ensure => 'directory';
+
+  file [ qw( /tmp/test1 /tmp/test2 ) ], ensure => 'directory'; # use array ref
+
+  file [ glob('/tmp/test{1,2}') ], ensure => 'directory'; # explicit glob call for array contents
+
+Use the glob carefully as B<it can leak local filesystem information> (e.g. when using wildcards).
+
 The I<source> is subject to a path resolution algorithm. This algorithm
 can be configured using the I<set> function to set the value of the
 I<path_map> variable to a hash containing path prefixes as its keys.

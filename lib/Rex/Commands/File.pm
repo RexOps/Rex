@@ -357,6 +357,16 @@ sub file {
     }
 
     return \@ret;
+  } 
+  elsif ( $file =~ m/^([^\{]*)({.+})([^\}]*)$/ ) {
+    
+    my @ret;
+
+    for my $f ( glob $2 ) {
+        push ( @ret,file( "$1$f$3", @options) );
+    }
+
+    return \@ret;
   }
 
   my $option = {@options};

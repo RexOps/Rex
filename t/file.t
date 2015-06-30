@@ -4,7 +4,7 @@ use warnings;
 use Cwd 'getcwd';
 my $cwd = getcwd;
 
-use Test::More tests => 55;
+use Test::More tests => 59;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -23,20 +23,21 @@ if ( $^O =~ m/^MSWin/ ) {
   $tmp_dir = $ENV{TMP};
 }
 
-my $filename = "$cwd/test-$$.txt";
+my $filename = "$cwd/test-{a,b}-$$.txt";
 
 file( $filename, content => "blah blah\nfoo bar" );
+my $c;
+for my $f ( glob $filename ){
+  $c = cat($f);
+  ok( $c, "cat" );
+  like( $c, qr/blah/, "file with content (1)" );
+  like( $c, qr/bar/,  "file with content (2)" );
 
-my $c = cat($filename);
+  Rex::Commands::Fs::unlink($f);
 
-ok( $c, "cat" );
-like( $c, qr/blah/, "file with content (1)" );
-like( $c, qr/bar/,  "file with content (2)" );
-
-Rex::Commands::Fs::unlink($filename);
-
-is( is_file($filename), undef, "file removed" );
-
+  is( is_file($f), undef, "file removed" );
+}
+$filename = "$cwd/test-$$.txt";
 file(
   $filename,
   content => "blah blah\nbaaazzzz",

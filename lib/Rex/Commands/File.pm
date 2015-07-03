@@ -290,6 +290,21 @@ This function is the successor of I<install file>. Please use this function to u
  
  };
 
+The I<source> is a string or an array reference in the later case the
+function is called for all strings in the array. When I<source> is an 
+string that locks like a wildcardless glob expression I<source> then 
+the function is called for the glob result. the following constructs 
+are equivalent:
+
+  file '/tmp/test1', ensure => 'directory';
+  file '/tmp/test2', ensure => 'directory';
+
+  file [ qw( /tmp/test1 /tmp/test2 ) ], ensure => 'directory'; #use array ref
+
+  file [ glob('/tmp/test{1,2}') ], ensure => 'directory'; #explicit glob call for array contents
+
+  file '/tmp/test{1,2}', ensure => 'directory';
+
 The I<source> is subject to a path resolution algorithm. This algorithm
 can be configured using the I<set> function to set the value of the
 I<path_map> variable to a hash containing path prefixes as its keys.
@@ -358,15 +373,18 @@ sub file {
 
     return \@ret;
   } 
-  elsif ( $file =~ m/^([^\{]*)({.+})([^\}]*)$/ ) {
-    
-    my @ret;
+  elsif ( my @exp = $file =~ m/^((?:\\.|[^\\\{])*)({(?:\\.|[^\\\*?\[])*})((?:\\.|[^\\\}])*)$/ ) {
+    if ( $exp[1] =~ /{[^},]*,[^}]*}/ ) {
+      my @ret;
+      # quote braces to keep macros
+      $exp[1] =~ s/({[^,}]*)}/\\$1\\}/g;
+  
+      for my $f ( glob $exp[1] ) {
+          push ( @ret, file( "$exp[0]$f$exp[2]", @options) );
+      }
 
-    for my $f ( glob $2 ) {
-        push ( @ret,file( "$1$f$3", @options) );
+      return \@ret;
     }
-
-    return \@ret;
   }
 
   my $option = {@options};

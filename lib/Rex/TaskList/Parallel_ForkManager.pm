@@ -47,7 +47,7 @@ sub run {
 
   my @all_server = @{ $task->server };
 
-  my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
+  my $fm = Parallel::ForkManager->new( $self->get_thread_count($task) );
 
   $fm->run_on_finish(
     sub {

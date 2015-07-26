@@ -334,7 +334,7 @@ sub is_mageia {
 sub is_debian {
   my $os = @_ ? shift : get_operating_system();
 
-  my @debian_clones = ( "Debian", "Ubuntu" );
+  my @debian_clones = ( "Debian", "Ubuntu", "LinuxMint" );
 
   if ( grep { /$os/i } @debian_clones ) {
     return 1;

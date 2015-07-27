@@ -276,38 +276,51 @@ sub is_task {
   return 0;
 }
 
+sub zget_tasks {
+  my ($self, @task_names) = @_;
+  my @tasks;
+  push @tasks, $self->get_task($_) for @task_names;
+  return @tasks;
+}
+
 sub run {
-  my ( $self, $task_name, %option ) = @_;
-  my $task = $self->get_task($task_name);
+  my ( $self, $task_names, %option ) = @_;
 
   $option{params} ||= { Rex::Args->get };
 
-  my @all_server = @{ $task->server };
+  my @tasks   = $self->zget_tasks(@$task_names);
+  my @servers = @{ $tasks[0]->server };
+  my $fm      = Rex::Fork::Manager->new(
+    max => $self->get_thread_count($tasks[0])
+  );
 
-  my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
-
-  for my $server (@all_server) {
+  for my $server (@servers) {
 
     my $forked_sub = sub {
-
       Rex::Logger::init();
 
-      # create a single task object for the run on $server
+      my $connected = 0;
 
-      Rex::Logger::info("Running task $task_name on $server");
-      my $run_task = Rex::Task->new( %{ $task->get_data } );
+      for my $task (@tasks) {
+        my $task_name = $task->name;
 
-      $run_task->run(
-        $server,
-        in_transaction => $self->{IN_TRANSACTION},
-        params         => $option{params}
-      );
+        Rex::Logger::info("Running task $task_name on $server");
 
-      # destroy cached os info
+        my $run_task = Rex::Task->new( %{ $task->get_data } );
+
+        $run_task->connect($server) if !$connected;
+        $connected = 1;
+
+        $run_task->run(
+          $server,
+          in_transaction    => $self->{IN_TRANSACTION},
+          params            => $option{params},
+          cached_connection => 1,
+        );
+      }
+
       Rex::Logger::debug("Destroying all cached os information");
-
       Rex::Logger::shutdown();
-
     };
 
     # add the worker (forked_sub) to the fork queue

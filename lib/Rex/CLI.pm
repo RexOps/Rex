@@ -562,10 +562,11 @@ CHECK_OVERWRITE: {
     }
 
     if ( defined $ARGV[0] ) {
+      my @tasks;
+
       for my $task (@ARGV) {
         if ( Rex::TaskList->create()->is_task($task) ) {
-          Rex::Logger::debug("Running task: $task");
-          Rex::TaskList->run($task);
+          push @tasks, $task;
         }
         elsif ( $task =~ m/^\-\-/ || $task =~ m/=/ ) {
 
@@ -578,6 +579,9 @@ CHECK_OVERWRITE: {
           );
         }
       }
+
+     #Rex::Logger::debug("Running task: $task");
+      Rex::TaskList->run(\@tasks);
     }
   };
 

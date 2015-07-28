@@ -33,7 +33,7 @@ sub new {
     ensure_stop    => 'rc-update del %s',
     ensure_start   => 'rc-update add %s',
     action         => '/etc/init.d/%s %s',
-    service_exists => 'rc-config list | grep "\s%s\s"',
+    service_exists => 'rc-config list | awk \'!/^(Available i|I)nit scripts/ && $1 ~ /^%s$/{print$1}\'',
   };
 
   return $self;

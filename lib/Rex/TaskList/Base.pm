@@ -311,12 +311,15 @@ sub run {
         $run_task->connect($server) if !$connected;
         $connected = 1;
 
-        $run_task->run(
-          $server,
-          in_transaction    => $self->{IN_TRANSACTION},
-          params            => $option{params},
-          cached_connection => 1,
-        );
+        my $success = eval {
+          $run_task->run(
+            $server,
+            in_transaction    => $self->{IN_TRANSACTION},
+            params            => $option{params},
+            cached_connection => 1,
+          );
+        };
+        last if $@ || !$success;
       }
 
       Rex::Logger::debug("Destroying all cached os information");

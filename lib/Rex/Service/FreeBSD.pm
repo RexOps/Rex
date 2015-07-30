@@ -49,7 +49,8 @@ sub ensure {
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    append_if_no_such_line "/etc/rc.conf", "${service}_enable=\"YES\"\n";
+    append_if_no_such_line "/etc/rc.conf",
+      line => "${service}_enable=\"YES\"";
   }
 
   return 1;

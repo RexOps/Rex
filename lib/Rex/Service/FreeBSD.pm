@@ -45,11 +45,13 @@ sub ensure {
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
     delete_lines_matching "/etc/rc.conf",
-      matching => qr/${service}_enable="YES"/;
+      matching => qr/${service}_enable="?[Yy][Ee][Ss]"?/;
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    append_if_no_such_line "/etc/rc.conf", "${service}_enable=\"YES\"\n";
+    append_if_no_such_line "/etc/rc.conf",
+      line => "${service}_enable=\"YES\"",
+      regexp => qr/^\s*${service}_enable="?[Yy][Ee][Ss]"?/;
   }
 
   return 1;

@@ -4,7 +4,7 @@ use warnings;
 use Cwd 'getcwd';
 my $cwd = getcwd;
 
-use Test::More tests => 52;
+use Test::More tests => 55;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -228,11 +228,22 @@ $c = "";
 $c = cat "file with space-$$.txt";
 like( $c, qr/file with space/m, "found content of file with space" );
 
-Rex::Commands::Fs::unlink($filename);
 Rex::Commands::Fs::unlink("file with space-$$.txt");
-
-is( is_file($filename),                undef, "test.txt removed" );
 is( is_file("file with space-$$.txt"), undef, "file with space removed" );
+
+file "file_with_\@-$$.txt", content => "file with at sign\n";
+
+is( is_file("file_with_\@-$$.txt"), 1, "file with at sign exists" );
+
+$c = "";
+$c = cat "file_with_\@-$$.txt";
+like( $c, qr/file with at sign/m, "found content of file with at sign" );
+
+Rex::Commands::Fs::unlink("file_with_\@-$$.txt");
+is( is_file("file_with_\@-$$.txt"), undef, "file with at sign removed" );
+
+Rex::Commands::Fs::unlink($filename);
+is( is_file($filename), undef, "test.txt removed" );
 
 $filename = "$tmp_dir/test-sed-$$.txt";
 

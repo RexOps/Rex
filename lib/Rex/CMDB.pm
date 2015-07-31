@@ -68,11 +68,17 @@ The path option specifies an ordered list of places to look for CMDB information
 
 Please note that the default environment is, well, "default".
 
+You can define additional CMDB paths via the `-O` command line option by using a semicolon-separated list of `cmdb_path=path` key-value pairs:
+
+ rex -O 'cmdb_path=cmdb/{domain}.yml;cmdb_path=cmdb/{domain}/{hostname}.yml;' taskname
+
+Those additional paths will be prepended to the current list of CMDB paths (so the last one specified will get on top, and thus checked first).
+
 The CMDB module looks up the specified files in order and then returns the requested data. If multiple files specify the same data for a given case, then the first instance of the data will be returned by default.
 
 Rex uses Hash::Merge internally to merge the data found on different levels of the CMDB hierarchy. Any merge strategy supported by that module can be specified to override the default one. For example one of the built-in strategies:
 
- merge_behavior => 'LEFT_PRECEDENCE'
+ merge_behavior => 'LEFT_PRECEDENT'
 
 Or even custom ones:
 

@@ -49,9 +49,9 @@ sub ensure {
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    append_if_no_such_line "/etc/rc.conf",
+    append_or_amend_line "/etc/rc.conf",
       line => "${service}_enable=\"YES\"",
-      regexp => qr/^\s*${service}_enable="?[Yy][Ee][Ss]"?/;
+      regexp => qr/^\s*${service}_enable="?([Yy][Ee][Ss]|[Nn][Oo])"?/;
   }
 
   return 1;

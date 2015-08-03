@@ -99,6 +99,11 @@ Supported options are:
   creates       => $file_to_create
     tries to create $file_to_create upon execution
     skips execution if the file already exists
+  print           => TRUE
+    Automatically prints using Rex::Logger::info. Used for printing lines from
+    long running processes that has output during the run. The external script
+    must not buffer output if continuous printing is wanted. In a Perl script
+    this can be achieved by setting $|=1.
 
 Examples:
 
@@ -136,7 +141,12 @@ If you want to set custom environment variables you can do it like this:
 If you want to end the command upon receiving a certain output:
  run "my_command",
    end_if_matched => qr/PATTERN/;
-   
+
+If you want to run an external script and print output continuously:
+ run "description",
+   command  => "perl myscript.pl",
+   print    => TRUE;
+
 =cut
 
 our $LAST_OUTPUT; # this variable stores the last output of a run.

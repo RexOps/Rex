@@ -55,7 +55,7 @@ sub get_installed {
   my ( $self, $pkg ) = @_;
   my @pkgs;
   my $dpkg_cmd =
-    'dpkg-query -W --showformat "\${Status} \${Package}|\${Version}\n"';
+    'dpkg-query -W --showformat "\${Status} \${Package}|\${Version}|\${Architecture}\n"';
   if ($pkg) {
     $dpkg_cmd .= " " . $pkg;
   }
@@ -63,18 +63,62 @@ sub get_installed {
   my @lines = i_run $dpkg_cmd;
 
   for my $line (@lines) {
-    if ( $line =~ m/^install ok installed ([^\|]+)\|(.*)$/ ) {
+    if ( $line =~ m/^install ok installed ([^\|]+)\|([^\|]+)\|(.*)$/ ) {
       push(
         @pkgs,
         {
-          name    => $1,
-          version => $2,
+          name         => $1,
+          version      => $2,
+          architecture => $3,
         }
       );
     }
   }
 
   return @pkgs;
+}
+
+sub diff_package_list {
+  my ( $self, $list1, $list2 ) = @_;
+
+  my @old_installed = @{$list1};
+  my @new_installed = @{$list2};
+
+  my @modifications;
+
+  # getting modifications of old packages
+OLD_PKG:
+  for my $old_pkg (@old_installed) {
+  NEW_PKG:
+    for my $new_pkg (@new_installed) {
+      if ( $old_pkg->{name} eq $new_pkg->{name}
+        && $old_pkg->{architecture} eq $new_pkg->{architecture} )
+      {
+
+        # flag the package as found in new package list,
+        # to find removed and new ones.
+        $old_pkg->{found} = 1;
+        $new_pkg->{found} = 1;
+
+        if ( $old_pkg->{version} ne $new_pkg->{version} ) {
+          push @modifications, { %{$new_pkg}, action => 'updated' };
+        }
+        next OLD_PKG;
+      }
+    }
+  }
+
+  # getting removed old packages
+  push @modifications, map { $_->{action} = 'removed'; $_ }
+    grep { !exists $_->{found} } @old_installed;
+
+  # getting new packages
+  push @modifications, map { $_->{action} = 'installed'; $_ }
+    grep { !exists $_->{found} } @new_installed;
+
+  map { delete $_->{found} } @modifications;
+
+  return @modifications;
 }
 
 sub add_repository {

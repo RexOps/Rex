@@ -40,14 +40,14 @@ sub new {
 }
 
 sub run {
-  my ( $self, $task_name, %option ) = @_;
-  my $task = $self->get_task($task_name);
+  my ( $self, $task_names, %option ) = @_;
 
   $option{params} ||= { Rex::Args->get };
 
-  my @all_server = @{ $task->server };
-
-  my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
+  my @tasks = $self->get_tasks(@$task_names);
+  my $fm    = Rex::Fork::Manager->new(
+    max => $self->get_thread_count($tasks[0])
+  );
 
   $fm->run_on_finish(
     sub {
@@ -57,28 +57,28 @@ sub run {
     }
   );
 
-  for my $server (@all_server) {
+  my @servers = @{ $task->server };
+
+  for my $server (@servers) {
 
     my $forked_sub = sub {
-
       Rex::Logger::init();
 
-      # create a single task object for the run on $server
+      for my $task (@tasks) {
+        my $task_name = $task->name;
+        Rex::Logger::info("Running task $task_name on $server");
 
-      Rex::Logger::info("Running task $task_name on $server");
-      my $run_task = Rex::Task->new( %{ $task->get_data } );
+        my $run_task = Rex::Task->new( %{ $task->get_data } );
 
-      $run_task->run(
-        $server,
-        in_transaction => $self->{IN_TRANSACTION},
-        params         => $option{params}
-      );
+        $run_task->run(
+          $server,
+          in_transaction => $self->{IN_TRANSACTION},
+          params         => $option{params}
+        );
+      }
 
-      # destroy cached os info
       Rex::Logger::debug("Destroying all cached os information");
-
       Rex::Logger::shutdown();
-
     };
 
     # add the worker (forked_sub) to the fork queue

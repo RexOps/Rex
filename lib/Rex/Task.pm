@@ -747,10 +747,11 @@ sub run {
     # this is a method call
     # so run the task
 
-    my $in_transaction = $options{in_transaction};
+    my $in_transaction    = $options{in_transaction};
+    my $cached_connection = $options{cached_connection};
 
     $self->run_hook( \$server, "before" );
-    $self->connect($server);
+    $self->connect($server) unless $cached_connection;
 
     my $start_time = time;
 
@@ -812,7 +813,7 @@ sub run {
 
     Rex::get_current_connection()->{reporter}->write_report();
 
-    $self->disconnect($server) unless ($in_transaction);
+    $self->disconnect($server) unless $in_transaction || $cached_connection;
     $self->run_hook( \$server, "after" );
 
     return $ret;

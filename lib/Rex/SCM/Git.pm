@@ -92,23 +92,32 @@ sub checkout {
     Rex::Logger::info( "Pulling "
         . $repo_info->{"url"} . " to "
         . ( $checkout_to ? $checkout_to : "." ) );
-    my $out = run "git pull origin $branch", cwd => $checkout_to;
+
+    my $rebase = $checkout_opt->{"rebase"} ? '--rebase' : '';
+    my $out = run "git pull $rebase origin $branch", cwd => $checkout_to;
+
     unless ( $? == 0 ) {
       Rex::Logger::info( "Error pulling.", "warn" );
       Rex::Logger::info($out);
       die("Error pulling.");
+    }
+    else {
+      Rex::Logger::debug($out);
     }
 
     if ( exists $checkout_opt->{"tag"} ) {
       my $tag = $checkout_opt->{tag};
       Rex::Logger::info( "Switching to tag " . $tag );
       $out = run "git fetch origin", cwd => $checkout_to;
+
       unless ( $? == 0 ) {
         Rex::Logger::info( "Error switching to tag.", "warn" );
         Rex::Logger::info($out);
         die("Error switching to tag.");
       }
-      Rex::Logger::debug($out);
+      else {
+        Rex::Logger::debug($out);
+      }
       $out = run "git checkout -b $tag $tag", cwd => $checkout_to;
       unless ( $? == 0 ) {
         Rex::Logger::info( "Error switching to tag.", "warn" );

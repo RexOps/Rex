@@ -24,8 +24,8 @@ All these functions are not idempotent.
     url => 'git@foo.bar:myrepo.git';
  
  set repository => "myrepo2",
-    url => "https://foo.bar/myrepo",
-    type => "subversion",
+    url      => "https://foo.bar/myrepo",
+    type     => "subversion",
     username => "myuser",
     password => "mypass";
  
@@ -36,8 +36,13 @@ All these functions are not idempotent.
      path => "webapp";
  
    checkout "myrepo",
-     path => "webapp",
+     path   => "webapp",
      branch => 1.6;    # branch only for git
+ 
+   # For Git only, will replay any local commits on top of pulled commits
+   checkout "myrepo",
+     path   => "script_dir",
+     rebase => TRUE;
  
    checkout "myrepo2";
  };

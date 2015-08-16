@@ -28,18 +28,21 @@ $expected = Rex::Helper::File::Spec->join( "this", "is", "files", "foo.txt" );
 
 is( $path, $expected, "got file path if called Rexfile from other directory" );
 
-$rexfile = Rex::Helper::File::Spec->join( Rex::Helper::File::Spec->rootdir(), "this", "is", "Rexfile" );
+$rexfile = Rex::Helper::File::Spec->join( Rex::Helper::File::Spec->rootdir(),
+  "this", "is", "Rexfile" );
 $file = Rex::Helper::File::Spec->join( "files", "foo.txt" );
 $path = Rex::Helper::Path::get_file_path( $file, "main", $rexfile );
-$expected =
-  Rex::Helper::File::Spec->join( Rex::Helper::File::Spec->rootdir(), "this", "is", "files", "foo.txt" );
+$expected = Rex::Helper::File::Spec->join( Rex::Helper::File::Spec->rootdir(),
+  "this", "is", "files", "foo.txt" );
 
 is( $path, $expected,
   "got file path if called Rexfile from other directory (absolute)" );
 
-my $module_path = Rex::Helper::File::Spec->join( "lib", "File", "Foo", "__module__.pm" );
+my $module_path =
+  Rex::Helper::File::Spec->join( "lib", "File", "Foo", "__module__.pm" );
 $path = Rex::Helper::Path::get_file_path( $file, "File::Foo", $module_path );
-$expected = Rex::Helper::File::Spec->join( "lib", "File", "Foo", "files", "foo.txt" );
+$expected =
+  Rex::Helper::File::Spec->join( "lib", "File", "Foo", "files", "foo.txt" );
 
 is( $path, $expected, "got file path for File::Foo module" );
 

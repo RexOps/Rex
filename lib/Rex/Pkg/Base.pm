@@ -94,7 +94,17 @@ sub update_system {
   }
 
   my $cmd = $self->{commands}->{update_system};
-  i_run $cmd;
+  my $f   = i_run $cmd;
+
+  unless ( $? == 0 ) {
+    Rex::Logger::info( "Error updating system.", "warn" );
+    Rex::Logger::debug($f);
+    die("Error updating system");
+  }
+
+  Rex::Logger::debug("System successfully updated.");
+
+  return 1;
 }
 
 sub remove {

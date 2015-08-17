@@ -15,18 +15,20 @@ With this module you can manage user and groups.
 =head1 SYNOPSIS
 
  use Rex::Commands::User;
- 
+
  task "create-user", "remoteserver", sub {
    create_user "root",
-     uid         => 0,
-     home        => '/root',
-     comment     => 'Root Account',
-     expire      => '2011-05-30',
-     groups      => [ 'root', '...' ],
-     password    => 'blahblah',
-     system      => 1,
-     create_home => TRUE,
-     ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+     uid              => 0,
+     home             => '/root',
+     comment          => 'Root Account',
+     expire           => '2011-05-30',
+     groups           => [ 'root', '...' ],
+     password         => 'blahblah',
+     system           => 1,
+     create_home      => TRUE,
+     ssh_keys_append  => TRUE, # overwrite is default
+     ssh_key          => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...",
+     ssh_keys         => [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...", "..." ];
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -52,8 +54,8 @@ use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_user delete_user get_uid get_user user_list
-  user_groups create_group delete_group get_group get_gid
-  account lock_password unlock_password
+user_groups create_group delete_group get_group get_gid
+account lock_password unlock_password
 );
 
 =head2 account($name, %option)
@@ -61,17 +63,19 @@ use base qw(Rex::Exporter);
 Manage user account.
 
  account "krimdomu",
-   ensure         => "present",  # default
-   uid            => 509,
-   home           => '/root',
-   comment        => 'User Account',
-   expire         => '2011-05-30',
-   groups         => [ 'root', '...' ],
-   password       => 'blahblah',
-   crypt_password => '*', # on Linux, OpenBSD and NetBSD
-   system         => 1,
-   create_home    => TRUE,
-   ssh_key        => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
+   ensure           => "present",  # default
+   uid              => 509,
+   home             => '/root',
+   comment          => 'User Account',
+   expire           => '2011-05-30',
+   groups           => [ 'root', '...' ],
+   password         => 'blahblah',
+   crypt_password   => '*', # on Linux, OpenBSD and NetBSD
+   system           => 1,
+   create_home      => TRUE,
+   ssh_keys_append  => TRUE, # overwrite is default
+   ssh_key          => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...",
+   ssh_keys         => [ "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...", "..." ];
 
 There is also a no_create_home option similar to create_home but doing the
 opposite. If both used, create_home takes precedence as it the preferred option
@@ -97,7 +101,7 @@ sub account {
 
   for my $n ( @{$name} ) {
     Rex::get_current_connection()->{reporter}
-      ->report_resource_start( type => "account", name => $n );
+    ->report_resource_start( type => "account", name => $n );
 
     my $real_name = $n;
     if ( exists $option{name} ) {
@@ -108,7 +112,7 @@ sub account {
       delete $option{ensure};
       my $data = &create_user( $real_name, %option, __ret_changed => 1 );
       Rex::get_current_connection()->{reporter}
-        ->report( changed => $data->{changed}, );
+      ->report( changed => $data->{changed}, );
     }
     elsif ( exists $option{ensure} && $option{ensure} eq "absent" ) {
       &delete_user($real_name);
@@ -116,7 +120,7 @@ sub account {
     }
 
     Rex::get_current_connection()->{reporter}
-      ->report_resource_end( type => "account", name => $n );
+    ->report_resource_end( type => "account", name => $n );
   }
 }
 
@@ -152,21 +156,24 @@ sub create_user {
 
   my $uid = Rex::User->get()->create_user( $user, $data );
 
-  if ( defined $data->{"ssh_key"} && !defined $data->{"home"} ) {
+  my $defined_ssh_key = defined $data->{"ssh_key"};
+  my $defined_ssh_keys = defined $data->{"ssh_keys"};
+
+  if ( ( $defined_ssh_key || $defined_ssh_keys )  && !defined $data->{"home"} ) {
     Rex::Logger::debug(
       "If ssh_key option is used you have to specify home, too.");
     die("If ssh_key option is used you have to specify home, too.");
   }
 
-  if ( defined $data->{"ssh_key"} ) {
+  if ( $defined_ssh_key || $defined_ssh_keys ) {
 
     if ( !is_dir( $data->{"home"} . "/.ssh" ) ) {
 
       eval {
         mkdir $data->{"home"} . "/.ssh",
-          owner         => $user,
-          mode          => 700,
-          not_recursive => 1;
+        owner         => $user,
+        mode          => 700,
+        not_recursive => 1;
       } or do {
 
         # error creating .ssh directory
@@ -177,13 +184,37 @@ sub create_user {
 
     if ( is_dir( $data->{"home"} . "/.ssh" ) ) {
 
-      file $data->{"home"} . "/.ssh/authorized_keys",
-        content => $data->{"ssh_key"},
-        owner   => $user,
-        mode    => 600;
+      my $auth_keys = $data->{"home"} . "/.ssh/authorized_keys";
 
+      file $auth_keys,
+      ensure  => "present",
+      owner   => $user,
+      mode    => 600;
+
+      if ( $data->{"ssh_keys_append"} ) {
+        if ( $defined_ssh_key ) {
+          append_if_no_such_line "$auth_keys", "$data->{ssh_key}";
+        }
+        if ( $defined_ssh_keys ) {
+          for my $key ( @{$data->{ssh_keys}} ) {
+            append_if_no_such_line "$auth_keys", "$key";
+          }
+        }
+      } else {
+        my $keys;
+        if ( $defined_ssh_key ) {
+          $keys .= "$data->{ssh_key}";
+        }
+        if ( $defined_ssh_keys ) {
+          for my $key ( @{$data->{ssh_keys}} ) {
+            $keys .= "$key";
+          }
+        }
+
+        file $auth_keys,
+        content => $keys,
+      }
     }
-
   }
 
   #### check and run before hook
@@ -214,7 +245,7 @@ Returns all information about $user.
 =cut
 
 sub get_user {
-  Rex::User->get()->get_user(@_);
+Rex::User->get()->get_user(@_);
 }
 
 =head2 user_groups($user)
@@ -307,7 +338,7 @@ sub group_resource {
   for my $group_name ( @{$name} ) {
 
     Rex::get_current_connection()->{reporter}
-      ->report_resource_start( type => "group", name => $group_name );
+    ->report_resource_start( type => "group", name => $group_name );
 
     if ( $option{ensure} eq "present" ) {
       Rex::Commands::User::create_group( $group_name, %option );
@@ -320,7 +351,7 @@ sub group_resource {
     }
 
     Rex::get_current_connection()->{reporter}
-      ->report_resource_end( type => "group", name => $group_name );
+    ->report_resource_end( type => "group", name => $group_name );
   }
 }
 

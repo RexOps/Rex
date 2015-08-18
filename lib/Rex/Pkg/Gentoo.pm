@@ -27,7 +27,7 @@ sub new {
   $self->{commands} = {
     install           => 'emerge %s',
     install_version   => 'emerge =%s-%s',
-    update_system     => 'emerge --update --deep --with-bdeps=y --newuse world',
+    update_system     => 'emerge --sync && emerge --update --deep --with-bdeps=y --newuse world',
     remove            => 'emerge -C %s',
     update_package_db => 'emerge --sync',
   };

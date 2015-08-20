@@ -44,18 +44,18 @@ sub ensure {
 
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
-    delete_lines_matching "/etc/rc.conf",
-      matching => qr/^\s*${service}="?((?i)YES)"?/;
     file "/etc/rc.conf.d/${service}",
       ensure => "absent";
+    delete_lines_matching "/etc/rc.conf",
+      matching => qr/^\s*${service}="?((?i)YES)"?/;
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
+    file "/etc/rc.conf.d/${service}",
+      ensure => "absent";
     append_or_amend_line "/etc/rc.conf",
       line => "${service}=YES",
       regexp => qr/^\s*${service}="?((?i)YES|NO)"?/;
-    file "/etc/rc.conf.d/${service}",
-      ensure => "absent";
   }
 
   return 1;

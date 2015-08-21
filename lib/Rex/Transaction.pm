@@ -15,16 +15,16 @@ With this module you can define transactions and rollback scenarios on failure.
 =head1 SYNOPSIS
 
  task "do-something", "server01", sub {
-  on_rollback {
-    rmdir "/tmp/mydata";
-  };
+   transaction {
+     on_rollback {
+       rmdir "/tmp/mydata";
+     };
  
-  transaction {
-    mkdir "/tmp/mydata";
-    upload "files/myapp.tar.gz", "/tmp/mydata";
-    run "cd /tmp/mydata; tar xzf myapp.tar.gz";
-    if($? != 0) { die("Error extracting myapp.tar.gz"); }
-  };
+     mkdir "/tmp/mydata";
+     upload "files/myapp.tar.gz", "/tmp/mydata";
+     run "cd /tmp/mydata; tar xzf myapp.tar.gz";
+     if($? != 0) { die("Error extracting myapp.tar.gz"); }
+   };
  };
 
 =head1 EXPORTED FUNCTIONS

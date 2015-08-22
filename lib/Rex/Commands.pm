@@ -570,7 +570,9 @@ sub password {
 
 =head2 auth(for => $entity, %data)
 
-With this function you can modify/set special authentication parameters for tasks and groups. If you want to modify a task's or group's authentication you first have to create it.
+With this function you can modify/set special authentication parameters for tasks and groups.
+If you want to modify a task's or group's authentication you first have to create it.
+(Place the auth command after the task.)
 
 If you want to set special login information for a group you have to activate that feature first.
 
@@ -595,6 +597,19 @@ If you want to set special login information for a group you have to activate th
 
  auth for => "prepare" =>
             user => "root";
+
+ task "step_1", sub {
+  # do something
+ };
+
+ task "step_2", sub {
+  # do something
+ };
+
+ # Set auth for several tasks using regexp
+ auth for => qr/step/ =>
+   user     => $user,
+   password => $password;
 
  auth fallback => {
    user        => "fallback_user1",

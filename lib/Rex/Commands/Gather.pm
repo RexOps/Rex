@@ -56,6 +56,8 @@ Will return the current operating system name.
    say get_operating_system();
  };
 
+Aliased by operating_system().
+
 =cut
 
 sub get_operating_system {
@@ -65,6 +67,12 @@ sub get_operating_system {
   return $operatingsystem || "unknown";
 
 }
+
+=head2 operating_system
+
+Alias for get_operating_system()
+
+=cut
 
 sub operating_system {
   return get_operating_system();

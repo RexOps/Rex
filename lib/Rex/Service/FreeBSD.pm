@@ -26,12 +26,12 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start   => '/usr/local/etc/rc.d/%s onestart',
-    restart => '/usr/local/etc/rc.d/%s onerestart',
-    stop    => '/usr/local/etc/rc.d/%s onestop',
-    reload  => '/usr/local/etc/rc.d/%s onereload',
-    status  => '/usr/local/etc/rc.d/%s onestatus',
-    action  => '/usr/local/etc/rc.d/%s %s',
+    start   => '/usr/sbin/service %s onestart',
+    restart => '/usr/sbin/service %s onerestart',
+    stop    => '/usr/sbin/service %s onestop',
+    reload  => '/usr/sbin/service %s onereload',
+    status  => '/usr/sbin/service %s onestatus',
+    action  => '/usr/sbin/service %s %s',
   };
 
   return $self;
@@ -44,12 +44,22 @@ sub ensure {
 
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
+    file "/etc/rc.conf.d/${service}",
+      ensure => "absent";
+    delete_lines_matching "/etc/rc.conf.local",
+      matching => qr/^\s*${service}_enable="?((?i)YES)"?/;
     delete_lines_matching "/etc/rc.conf",
-      matching => qr/${service}_enable="YES"/;
+      matching => qr/^\s*${service}_enable="?((?i)YES)"?/;
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    append_if_no_such_line "/etc/rc.conf", "${service}_enable=\"YES\"\n";
+    file "/etc/rc.conf.d/${service}",
+      ensure => "absent";
+    delete_lines_matching "/etc/rc.conf.local",
+      matching => qr/^\s*${service}_enable="?((?i)YES|NO)"?/;
+    append_or_amend_line "/etc/rc.conf",
+      line => "${service}_enable=\"YES\"",
+      regexp => qr/^\s*${service}_enable="?((?i)YES|NO)"?/;
   }
 
   return 1;

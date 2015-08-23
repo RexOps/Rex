@@ -58,16 +58,25 @@ sub create_task {
     $func = pop;
   }
 
-  my $requested_env = Rex::Config->get_environment;
-  my @environments  = Rex::Commands->get_environments;
+# matching against a task count of 2 because of the two internal tasks (filtered below)
+  if ( ( scalar( keys %{ $self->{tasks} } ) ) == 2 ) {
+    my $requested_env = Rex::Config->get_environment;
+    my @environments  = Rex::Commands->get_environments;
 
-  if ( $task_name ne 'Commands:Box:get_sys_info'
-    && $task_name ne 'Test:run'
-    && $requested_env ne ''
-    && !grep { $_ eq $requested_env } @environments )
-  {
-    Rex::Logger::info( "Environment '$requested_env' not defined.", 'error' );
-    exit(1);
+    if ( $task_name ne 'Commands:Box:get_sys_info'
+      && $task_name ne 'Test:run'
+      && $requested_env ne ''
+      && !grep { $_ eq $requested_env } @environments )
+    {
+      Rex::Logger::info(
+        "Environment '$requested_env' has been requested, but it could not be found in the Rexfile. This is most likely only by mistake.",
+        'warn'
+      );
+      Rex::Logger::info(
+        "If it is intentional, you can suppress this warning by specifying an empty environment: environment '$requested_env' => sub {};",
+        'warn'
+      );
+    }
   }
 
   my @server = ();

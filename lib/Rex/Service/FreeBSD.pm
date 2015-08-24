@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
+use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
 
@@ -42,22 +43,45 @@ sub ensure {
 
   my $what = $options->{ensure};
 
+  my $rccom = "/usr/sbin/service $service rcvar";
+  my $rcout = i_run $rccom;
+  if ( $? != 0 ) {
+    Rex::Logger::info( "Running `$rccom` failed", "error" );
+    return 0;
+  }
+
+  my ( $rcvar, $rcvalue ) = $rcout =~ m/^\$?(\w+)="?(\w+)"?$/m;
+  unless ($rcvar) {
+    Rex::Logger::info( "Error getting service name.", "error" );
+    return 0;
+  }
+
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
-    file "/etc/rc.conf.d/${service}", ensure => "absent";
-    delete_lines_matching "/etc/rc.conf.local",
-      matching => qr/^\s*${service}_enable="?((?i)YES)"?/;
-    delete_lines_matching "/etc/rc.conf",
-      matching => qr/^\s*${service}_enable="?((?i)YES)"?/;
+    my $stop_regexp = qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
+    if ( $rcvalue =~ m/^YES$/i ) {
+      file "/etc/rc.conf.d/${service}", ensure => "absent";
+      if ( is_file("/etc/rc.conf.local") ) {
+        delete_lines_matching "/etc/rc.conf.local",
+          matching => $stop_regexp;
+      }
+      delete_lines_matching "/etc/rc.conf",
+        matching => $stop_regexp;
+    }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    file "/etc/rc.conf.d/${service}", ensure => "absent";
-    delete_lines_matching "/etc/rc.conf.local",
-      matching => qr/^\s*${service}_enable="?((?i)YES|NO)"?/;
-    append_or_amend_line "/etc/rc.conf",
-      line   => "${service}_enable=\"YES\"",
-      regexp => qr/^\s*${service}_enable="?((?i)YES|NO)"?/;
+    my $start_regexp = qr/^\s*${rcvar}=/;
+    unless ( $rcvalue =~ m/^YES$/i ) {
+      file "/etc/rc.conf.d/${service}", ensure => "absent";
+      if ( is_file("/etc/rc.conf.local") ) {
+        delete_lines_matching "/etc/rc.conf.local",
+          matching => $start_regexp;
+      }
+      append_or_amend_line "/etc/rc.conf",
+        line   => "${rcvar}=\"YES\"",
+        regexp => $start_regexp;
+    }
   }
 
   return 1;

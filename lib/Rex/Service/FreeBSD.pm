@@ -43,35 +43,34 @@ sub ensure {
 
   my $what = $options->{ensure};
 
-  my $rcout = i_run "/usr/sbin/service $service rcvar";
-
-  my ( $rcvar, $rcvalue );
-  unless ( ( $rcvar, $rcvalue ) = $rcout =~ m/^(\S+)=(\S+)$/m ) {
-    Rex::Logger::info(
-      "Service $service can't be started: not installed or no such rc scipt.",
-      "error" );
+  my $rccom = "/usr/sbin/service $service rcvar";
+  my $rcout = i_run $rccom;
+  if ( $? != 0 ) {
+    Rex::Logger::info( "Running `$rccom` failed", "error" );
     return 0;
   }
-  $rcvar = $rcvar =~ s/^\$//r;
 
-  my $status = i_run "/usr/sbin/service $service onestatus";
+  my ( $rcvar, $rcvalue ) = $rcout =~ m/^\$?(\w+)="?(\w+)"?$/m;
+  unless ($rcvar) {
+    Rex::Logger::info( "Error getting service name.", "error" );
+    return 0;
+  }
 
   if ( $what =~ /^stop/ ) {
-    if ( $rcvalue =~ m/^"?YES"?$/i ) {
+    $self->stop( $service, $options );
+    if ( $rcvalue =~ m/^YES$/i ) {
       file "/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
         delete_lines_matching "/etc/rc.conf.local",
-          matching => qr/^\s*${rcvar}=((?i)YES|"YES"|'YES')/;
+          matching => qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
       }
       delete_lines_matching "/etc/rc.conf",
-        matching => qr/^\s*${rcvar}=((?i)YES|"YES"|'YES')/;
-    }
-    if ( $status =~ m/is running/ ) {
-      $self->stop( $service, $options );
+        matching => qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
     }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    unless ( $rcvalue =~ m/^"?YES"?$/i ) {
+    $self->start( $service, $options );
+    unless ( $rcvalue =~ m/^YES$/i ) {
       file "/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
         delete_lines_matching "/etc/rc.conf.local",
@@ -80,9 +79,6 @@ sub ensure {
       append_or_amend_line "/etc/rc.conf",
         line   => "${rcvar}=\"YES\"",
         regexp => qr/^\s*${rcvar}=/;
-    }
-    unless ( $status =~ m/is running/ ) {
-      $self->start( $service, $options );
     }
   }
 

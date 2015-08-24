@@ -81,7 +81,7 @@ sub ensure {
         line   => "${rcvar}=\"YES\"",
         regexp => qr/^\s*${rcvar}=/;
     }
-    if ( $status =~ m/is not running/ ) {
+    unless ( $status =~ m/is running/ ) {
       $self->start( $service, $options );
     }
   }

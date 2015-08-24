@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
+use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
 
@@ -42,22 +43,46 @@ sub ensure {
 
   my $what = $options->{ensure};
 
+  my $rcout = i_run "/usr/sbin/service $service rcvar";
+  my ( $rcvar, $rcvalue );
+
+  unless ( ( $rcvar, $rcvalue ) = $rcout =~ m/^(\S+)=(\S+)$/m ) {
+    Rex::Logger::info(
+      "Service $service can't be started: not installed or no such rc scipt.",
+      "error" );
+    return 0;
+  }
+
+  my $status = i_run "/usr/sbin/service $service onestatus";
+
   if ( $what =~ /^stop/ ) {
-    $self->stop( $service, $options );
-    file "/etc/rc.conf.d/${service}", ensure => "absent";
-    delete_lines_matching "/etc/rc.conf.local",
-      matching => qr/^\s*${service}_enable="?((?i)YES)"?/;
-    delete_lines_matching "/etc/rc.conf",
-      matching => qr/^\s*${service}_enable="?((?i)YES)"?/;
+    if ( $rcvalue =~ m/^"?YES"?$/i ) {
+      file "/etc/rc.conf.d/${service}", ensure => "absent";
+      if ( is_file("/etc/rc.conf.local") ) {
+        delete_lines_matching "/etc/rc.conf.local",
+          matching => qr/^\s*${rcvar}="?((?i)YES)"?/;
+      }
+      delete_lines_matching "/etc/rc.conf",
+        matching => qr/^\s*${rcvar}="?((?i)YES)"?/;
+    }
+    if ( $status =~ m/is running/ ) {
+      $self->stop( $service, $options );
+    }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
-    $self->start( $service, $options );
-    file "/etc/rc.conf.d/${service}", ensure => "absent";
-    delete_lines_matching "/etc/rc.conf.local",
-      matching => qr/^\s*${service}_enable="?((?i)YES|NO)"?/;
-    append_or_amend_line "/etc/rc.conf",
-      line   => "${service}_enable=\"YES\"",
-      regexp => qr/^\s*${service}_enable="?((?i)YES|NO)"?/;
+    unless ( $rcvalue =~ m/^"?YES"?$/i ) {
+      file "/etc/rc.conf.d/${service}", ensure => "absent";
+      if ( is_file("/etc/rc.conf.local") ) {
+        delete_lines_matching "/etc/rc.conf.local",
+          matching => qr/^\s*${rcvar}="?\S"?/;
+      }
+      append_or_amend_line "/etc/rc.conf",
+        line   => "${rcvar}=\"YES\"",
+        regexp => qr/^\s*${rcvar}="?\S"?/;
+    }
+    if ( $status =~ m/is not running/ ) {
+      $self->start( $service, $options );
+    }
   }
 
   return 1;

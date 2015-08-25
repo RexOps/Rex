@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 19;
+use Test::More tests => 20;
 use Rex::Template::NG;
 use Rex::Config;
 
@@ -26,6 +26,13 @@ is(
   $t->parse( $content, { name => "foo" } ),
   "Hello this is foo",
   "simple variable"
+);
+
+$content = 'Hello this is <%=$::name%>';
+is(
+  $t->parse( $content, { name => "bar" } ),
+  "Hello this is bar",
+  "simple variable - no spaces around tag"
 );
 
 $content = '<% if($::logged_in) { %>

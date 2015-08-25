@@ -335,7 +335,7 @@ sub _parse {
       next;
     }
 
-    $parsed .= $curr_char;
+    $parsed .= $curr_char =~ m/[{}]/ ? "\\$curr_char" : $curr_char;
 
   }
 

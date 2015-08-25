@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Rex::Template::NG;
 use Rex::Config;
 
@@ -10,6 +10,16 @@ my $t = Rex::Template::NG->new;
 my $content = 'one two three';
 
 is( $t->parse( $content, {} ), "one two three", "just text" );
+
+$content = '{
+1
+}';
+
+my $content_ok = '{
+1
+}';
+
+is( $t->parse( $content, {} ), $content_ok, "curly braces" );
 
 $content = 'Hello this is <%= $::name %>';
 is(
@@ -24,7 +34,7 @@ Logged in!
 Logged out!
 <% } %>';
 
-my $content_ok = "
+$content_ok = "
 Logged in!
 ";
 

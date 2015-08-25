@@ -35,7 +35,7 @@ sub new {
     install_version   => 'pkg install -q -y %s',
     remove            => 'pkg remove -q -y %s',
     query             => 'pkg info',
-    update_package_db => 'pkg update -q',
+    update_package_db => 'pkg update -q -f',
 
     # pkg can't update system yet, only packages
     update_system => 'pkg upgrade -q -y',

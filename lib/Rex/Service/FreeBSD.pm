@@ -58,27 +58,29 @@ sub ensure {
 
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
+    my $stop_regexp = qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
     if ( $rcvalue =~ m/^YES$/i ) {
       file "/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
         delete_lines_matching "/etc/rc.conf.local",
-          matching => qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
+          matching => $stop_regexp;
       }
       delete_lines_matching "/etc/rc.conf",
-        matching => qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
+        matching => $stop_regexp;
     }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
+    my $start_regexp = qr/^\s*${rcvar}=/;
     unless ( $rcvalue =~ m/^YES$/i ) {
       file "/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
         delete_lines_matching "/etc/rc.conf.local",
-          matching => qr/^\s*${rcvar}=/;
+          matching => $start_regexp;
       }
       append_or_amend_line "/etc/rc.conf",
         line   => "${rcvar}=\"YES\"",
-        regexp => qr/^\s*${rcvar}=/;
+        regexp => $start_regexp;
     }
   }
 

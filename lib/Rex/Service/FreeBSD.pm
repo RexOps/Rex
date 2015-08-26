@@ -62,11 +62,9 @@ sub ensure {
     if ( $rcvalue =~ m/^YES$/i ) {
       file "/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
-        delete_lines_matching "/etc/rc.conf.local",
-          matching => $stop_regexp;
+        delete_lines_matching "/etc/rc.conf.local", matching => $stop_regexp;
       }
-      delete_lines_matching "/etc/rc.conf",
-        matching => $stop_regexp;
+      delete_lines_matching "/etc/rc.conf", matching => $stop_regexp;
     }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
@@ -75,8 +73,7 @@ sub ensure {
     unless ( $rcvalue =~ m/^YES$/i ) {
       file "/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
-        delete_lines_matching "/etc/rc.conf.local",
-          matching => $start_regexp;
+        delete_lines_matching "/etc/rc.conf.local", matching => $start_regexp;
       }
       append_or_amend_line "/etc/rc.conf",
         line   => "${rcvar}=\"YES\"",

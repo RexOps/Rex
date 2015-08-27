@@ -18,9 +18,12 @@ our @EXPORT_OK = qw/__lock __store __retrieve/;
 use Fcntl qw(:DEFAULT :flock);
 use Storable;
 
-our $FILE      = "vars.db.$$";
-our $LOCK_FILE = "vars.db.lock.$$";
-our $PID       = $$;
+# $PARENT_PID gets set when Rex starts.  This value remains the same after the
+# process forks.  So $PARENT_PID is always the pid of the parent process.  $$
+# however is always the pid of the current process.  
+our $PARENT_PID = $$;
+our $FILE       = "vars.db.$PARENT_PID";
+our $LOCK_FILE  = "vars.db.lock.$PARENT_PID";
 
 sub __lock {
   sysopen( my $dblock, $LOCK_FILE, O_RDONLY | O_CREAT ) or die($!);
@@ -45,14 +48,8 @@ sub __retrieve {
 }
 
 sub END {
-    # $PID gets set when Rex starts.  This value remains the same after the
-    # process forks.  So $PID is always the pid of the master process.  $$
-    # however is always the pid of the current process.  This checks if we are
-    # in the master process or not and only removes the $FILE and $LOCK_FILE if
-    # we are in the master process.
-
     # return if we exiting a child process
-    return unless $$ eq $Rex::Shared::Var::Common::PID;
+    return unless $$ eq $PARENT_PID;
 
     # we are exiting the master process
     unlink $FILE      if -f $FILE;

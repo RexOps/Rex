@@ -60,7 +60,8 @@ sub ensure {
     $self->stop( $service, $options );
     my $stop_regexp = qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
     if ( $rcvalue =~ m/^YES$/i ) {
-      file "/etc/rc.conf.d/${service}", ensure => "absent";
+      file "/etc/rc.conf.d/${service}",           ensure => "absent";
+      file "/usr/local/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
         delete_lines_matching "/etc/rc.conf.local", matching => $stop_regexp;
       }
@@ -71,7 +72,8 @@ sub ensure {
     $self->start( $service, $options );
     my $start_regexp = qr/^\s*${rcvar}=/;
     unless ( $rcvalue =~ m/^YES$/i ) {
-      file "/etc/rc.conf.d/${service}", ensure => "absent";
+      file "/etc/rc.conf.d/${service}",           ensure => "absent";
+      file "/usr/local/etc/rc.conf.d/${service}", ensure => "absent";
       if ( is_file("/etc/rc.conf.local") ) {
         delete_lines_matching "/etc/rc.conf.local", matching => $start_regexp;
       }

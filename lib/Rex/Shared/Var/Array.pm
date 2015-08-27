@@ -9,22 +9,13 @@ package Rex::Shared::Var::Array;
 use strict;
 use warnings;
 
+use Rex::Shared::Var::Common qw/__lock __store __retrieve/;
+
 # VERSION
-
-use Fcntl qw(:DEFAULT :flock);
-use Data::Dumper;
-
-use Storable;
-
-sub __lock;
-sub __retr;
-sub __store;
 
 sub TIEARRAY {
   my $self = { varname => $_[1], };
-
   bless $self, $_[0];
-
 }
 
 sub STORE {
@@ -33,13 +24,12 @@ sub STORE {
   my $value = shift;
 
   return __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     my $ret = $ref->{ $self->{varname} }->{data}->[$index] = $value;
     __store $ref;
 
     return $ret;
   };
-
 }
 
 sub FETCH {
@@ -47,7 +37,7 @@ sub FETCH {
   my $index = shift;
 
   return __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     my $ret = $ref->{ $self->{varname} }->{data}->[$index];
 
     return $ret;
@@ -58,11 +48,10 @@ sub CLEAR {
   my $self = shift;
 
   __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     $ref->{ $self->{varname} } = { data => [] };
     __store $ref;
   };
-
 }
 
 sub DELETE {
@@ -70,11 +59,10 @@ sub DELETE {
   my $index = shift;
 
   __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     delete $ref->{ $self->{varname} }->{data}->[$index];
     __store $ref;
   };
-
 }
 
 sub EXISTS {
@@ -82,10 +70,9 @@ sub EXISTS {
   my $index = shift;
 
   return __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     return exists $ref->{ $self->{varname} }->{data}->[$index];
   };
-
 }
 
 sub PUSH {
@@ -93,7 +80,7 @@ sub PUSH {
   my @data = @_;
 
   __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
 
     if ( !ref( $ref->{ $self->{varname} }->{data} ) eq "ARRAY" ) {
       $ref->{ $self->{varname} }->{data} = [];
@@ -103,7 +90,6 @@ sub PUSH {
 
     __store $ref;
   };
-
 }
 
 sub EXTEND {
@@ -120,44 +106,12 @@ sub FETCHSIZE {
   my $self = shift;
 
   return __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     if ( !exists $ref->{ $self->{varname} } ) {
       return 0;
     }
     return scalar( @{ $ref->{ $self->{varname} }->{data} } );
   };
-
-}
-
-sub DESTROY {
-  my $self = shift;
-}
-
-sub __lock {
-
-  sysopen( my $dblock, "vars.db.lock", O_RDONLY | O_CREAT ) or die($!);
-  flock( $dblock, LOCK_SH ) or die($!);
-
-  my $ret = &{ $_[0] }();
-
-  close($dblock);
-
-  return $ret;
-}
-
-sub __store {
-  my $ref = shift;
-  store( $ref, "vars.db" );
-}
-
-sub __retr {
-
-  if ( !-f "vars.db" ) {
-    return {};
-  }
-
-  return retrieve("vars.db");
-
 }
 
 1;

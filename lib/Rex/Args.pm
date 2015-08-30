@@ -19,7 +19,7 @@ our $KEY_VAL             = 1;
 our $REMOVE_TASK_OPTIONS = 0;
 our $CLEANUP             = 1;
 
-sub import {
+sub parse_args {
   my ( $class, %args ) = @_;
 
   #### clean up @ARGV

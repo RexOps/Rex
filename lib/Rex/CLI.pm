@@ -20,6 +20,7 @@ use Text::Wrap;
 use Term::ReadKey;
 
 use Rex;
+use Rex::Args;
 use Rex::Config;
 use Rex::Group;
 use Rex::Batch;
@@ -49,8 +50,6 @@ if ( $#ARGV < 0 ) {
   @ARGV = qw(-h);
 }
 
-require Rex::Args;
-
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
@@ -65,7 +64,7 @@ sub __run__ {
 
   my ( $self, %more_args ) = @_;
 
-  Rex::Args->import(
+  Rex::Args->parse_args(
     C => {},
     c => {},
     q => {},

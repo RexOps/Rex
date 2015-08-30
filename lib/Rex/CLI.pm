@@ -220,20 +220,8 @@ FORCE_SERVER: {
       }
     }
 
-    eval {
-      my $env             = environment;
-      my $ini_dir         = dirname($::rexfile);
-      my $server_ini_file = "$ini_dir/server.$env.ini";
-      $server_ini_file = "$ini_dir/server.ini"
-        if !-f $server_ini_file;
-      if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
-        Rex::Group::Lookup::INI::groups_file($server_ini_file);
-      }
-    };
-
-    if ($@) { print $@ . "\n"; exit 1; }
-
-    load_rexfile($::rexfile);
+  load_server_ini_file($::rexfile);
+  load_rexfile($::rexfile);
 
   #### check if some parameters should be overwritten from the command line
 CHECK_OVERWRITE: {
@@ -688,6 +676,21 @@ sub summarize {
          ncmp( $a->{task}, $b->{task} )
       || ncmp( $a->{server}, $b->{server} )
     } @failures;
+}
+
+sub load_server_ini_file {
+  my $rexfile = shift;
+
+  # load server ini file
+  my $env             = environment;
+  my $ini_dir         = dirname($rexfile);
+  my $server_ini_file = "$ini_dir/server.$env.ini";
+  $server_ini_file = "$ini_dir/server.ini" unless -f $server_ini_file;
+
+  if (-f $server_ini_file && Rex::Group::Lookup::INI->is_loadable) {
+    Rex::Logger::debug("Loading $server_ini_file");
+    Rex::Group::Lookup::INI::groups_file($server_ini_file);
+  }
 }
 
 sub load_rexfile {

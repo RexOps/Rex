@@ -179,20 +179,20 @@ FORCE_SERVER: {
 
   handle_lock_file($::rexfile);
 
-    Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
+  Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
 
-    if ( $opts{'g'} || $opts{'G'} ) {
+  if ( $opts{'g'} || $opts{'G'} ) {
 
-      #$::FORCE_SERVER = "\0" . $opts{'g'};
-      $opts{'g'} ||= $opts{'G'};
+    #$::FORCE_SERVER = "\0" . $opts{'g'};
+    $opts{'g'} ||= $opts{'G'};
 
-      if ( ref $opts{'g'} ne "ARRAY" ) {
-        $::FORCE_SERVER = [ $opts{'g'} ];
-      }
-      else {
-        $::FORCE_SERVER = $opts{'g'};
-      }
+    if ( ref $opts{'g'} ne "ARRAY" ) {
+      $::FORCE_SERVER = [ $opts{'g'} ];
     }
+    else {
+      $::FORCE_SERVER = $opts{'g'};
+    }
+  }
 
   load_server_ini_file($::rexfile);
   load_rexfile($::rexfile);

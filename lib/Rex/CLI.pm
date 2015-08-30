@@ -177,33 +177,7 @@ FORCE_SERVER: {
     Rex::Output->get( $opts{'o'} );
   }
 
-    # handle lock file
-    if ( $^O !~ m/^MSWin/ ) {
-      if ( -f "$::rexfile.lock" && !exists $opts{'F'} ) {
-        Rex::Logger::debug("Found $::rexfile.lock");
-        my $pid = eval { local ( @ARGV, $/ ) = ("$::rexfile.lock"); <>; };
-        system(
-          "ps aux | awk -F' ' ' { print \$2 } ' | grep '^$pid\$' >/dev/null 2>&1"
-        );
-        if ( $? == 0 ) {
-          Rex::Logger::info("Rexfile is in use by $pid.");
-          CORE::exit 1;
-        }
-        else {
-          Rex::Logger::debug("Found stale lock file. Removing it.");
-          Rex::global_sudo(0);
-          CORE::unlink("$::rexfile.lock");
-        }
-      }
-
-      Rex::Logger::debug("Creating lock-file ($::rexfile.lock)");
-      open( my $f, ">", "$::rexfile.lock" ) or die($!);
-      print $f $$;
-      close($f);
-    }
-    else {
-      Rex::Logger::debug("Running on windows. Disabled lock file support.");
-    }
+  handle_lock_file($::rexfile);
 
     Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
 
@@ -676,6 +650,36 @@ sub summarize {
          ncmp( $a->{task}, $b->{task} )
       || ncmp( $a->{server}, $b->{server} )
     } @failures;
+}
+
+sub handle_lock_file {
+  my $rexfile = shift;
+
+  if ( $^O !~ m/^MSWin/ ) {
+    if ( -f "$rexfile.lock" && !exists $opts{'F'} ) {
+      Rex::Logger::debug("Found $rexfile.lock");
+      my $pid = eval { local ( @ARGV, $/ ) = ("$rexfile.lock"); <>; };
+      system(
+        "ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
+      if ( $? == 0 ) {
+        Rex::Logger::info("Rexfile is in use by $pid.");
+        CORE::exit 1;
+      }
+      else {
+        Rex::Logger::debug("Found stale lock file. Removing it.");
+        Rex::global_sudo(0);
+        CORE::unlink("$rexfile.lock");
+      }
+    }
+
+    Rex::Logger::debug("Creating lock-file ($rexfile.lock)");
+    open( my $f, ">", "$rexfile.lock" ) or die($!);
+    print $f $$;
+    close($f);
+  }
+  else {
+    Rex::Logger::debug("Running on windows. Disabled lock file support.");
+  }
 }
 
 sub load_server_ini_file {

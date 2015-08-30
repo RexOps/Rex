@@ -177,9 +177,7 @@ FORCE_SERVER: {
     Rex::Output->get( $opts{'o'} );
   }
 
-  # Load Rexfile before exec in order to suppport group exec
-  if ( -f $::rexfile ) {
-    Rex::Logger::debug("$::rexfile exists");
+    # handle lock file
     if ( $^O !~ m/^MSWin/ ) {
       if ( -f "$::rexfile.lock" && !exists $opts{'F'} ) {
         Rex::Logger::debug("Found $::rexfile.lock");
@@ -236,14 +234,6 @@ FORCE_SERVER: {
     if ($@) { print $@ . "\n"; exit 1; }
 
     load_rexfile($::rexfile);
-  }
-  else {
-    Rex::Logger::info( "No Rexfile found.", "warn" );
-    Rex::Logger::info(
-      "Please create a file named 'Rexfile' inside this directory,", "warn" );
-    Rex::Logger::info( "or specify the file you want to use with:", "warn" );
-    Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
-  }
 
   #### check if some parameters should be overwritten from the command line
 CHECK_OVERWRITE: {
@@ -703,6 +693,14 @@ sub summarize {
 sub load_rexfile {
   my $rexfile = shift;
   Rex::Logger::debug("Loading $rexfile");
+
+  if (! -f $rexfile ) {
+    Rex::Logger::info( "No Rexfile found.", "warn" );
+    Rex::Logger::info( "Create a file named 'Rexfile' in this directory,", "warn" );
+    Rex::Logger::info( "or specify the file you want to use with:", "warn" );
+    Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
+    return;
+  }
 
   # load Rexfile
   eval { require $rexfile };

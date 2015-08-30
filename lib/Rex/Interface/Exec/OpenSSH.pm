@@ -51,10 +51,6 @@ sub _exec {
 
 END_OPEN:
   waitpid( $pid, 0 ) or die($!);
-  if ( $ssh->error || $? ) {
-    $? = $? >> 8;
-  }
-
   return ( $out, $err );
 }
 1;

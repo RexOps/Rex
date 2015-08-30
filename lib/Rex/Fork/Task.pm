@@ -37,7 +37,7 @@ sub start {
     $self->{chld} = 1;
 
     eval { $self->{coderef}->($self) };
-    my $exit_code = $@ ? ($? || 1) : 0;
+    my $exit_code = $@ ? (($? >> 8) || 1) : 0;
     push @SUMMARY, {
       task      => $self->{task}->name,
       server    => $self->{server},

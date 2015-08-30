@@ -84,7 +84,7 @@ sub run {
       $fm->start and next;
 
       eval { $forked_sub->() };
-      my $exit_code = $@ ? ($? || 1) : 0;
+      my $exit_code = $@ ? (($? >> 8) || 1) : 0;
       push @SUMMARY, {
         task      => $task_name,
         server    => $server->to_s,

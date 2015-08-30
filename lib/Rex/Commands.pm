@@ -348,6 +348,7 @@ sub task {
     };
   }
 
+  $options->{'dont_register'} ||= $dont_register_tasks;
   return $task_o;
 }
 

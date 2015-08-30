@@ -180,25 +180,6 @@ FORCE_SERVER: {
   # Load Rexfile before exec in order to suppport group exec
   if ( -f $::rexfile ) {
     Rex::Logger::debug("$::rexfile exists");
-
-    Rex::Logger::debug("Checking Rexfile Syntax...");
-
-    if ( !exists $ENV{PAR_TEMP} ) {
-
-      # don't check syntax under PAR
-
-      my $out =
-        qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $::rexfile 2>&1};
-      if ( $? > 0 ) {
-        print $out;
-      }
-
-      if ( $? != 0 ) {
-        exit 1;
-      }
-
-    }
-
     if ( $^O !~ m/^MSWin/ ) {
       if ( -f "$::rexfile.lock" && !exists $opts{'F'} ) {
         Rex::Logger::debug("Found $::rexfile.lock");
@@ -223,11 +204,8 @@ FORCE_SERVER: {
       close($f);
     }
     else {
-      Rex::Logger::debug("Running on windows. Disabled syntax checking.");
       Rex::Logger::debug("Running on windows. Disabled lock file support.");
     }
-
-    Rex::Logger::debug("Including/Parsing $::rexfile");
 
     Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
 
@@ -253,87 +231,11 @@ FORCE_SERVER: {
       if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
         Rex::Group::Lookup::INI::groups_file($server_ini_file);
       }
-      my $ok = do($::rexfile);
-
-      if ( !$ok ) {
-
-        # read rexfile
-        my $content = eval { local ( @ARGV, $/ ) = ($::rexfile); <>; };
-
-        # and try to evaluate it
-        my @rex_code = ("package Rex::Test::Rexfile::Syntax;");
-        if ( $content !~ m/use Rex \-.*;/ ) {
-          push @rex_code, "use Rex -base;";
-        }
-        push @rex_code, "my \$b=\$Rex::Commands::dont_register_tasks;";
-        push @rex_code, "\$Rex::Commands::dont_register_tasks = 1;";
-        push @rex_code, "our \$syntax_check = 1;";
-        push @rex_code, "$content";
-        push @rex_code, "\$Rex::Commands::dont_register_tasks = \$b;";
-        push @rex_code, "1;";
-
-        eval join( "\n", @rex_code );
-
-        if ($@) {
-          $ok = 0;
-        }
-        else {
-          Rex::Logger::debug(
-            "We can't load your Rexfile but the syntax seems to be correct.");
-          Rex::Logger::debug(
-            "This happens if the Rexfile doesn't return a true value.");
-          Rex::Logger::debug(
-            "Please append a '1;' at the very end of your Rexfile.");
-          $ok = 1;
-        }
-      }
-
-      Rex::Logger::debug("eval your Rexfile.");
-      if ( !$ok ) {
-        Rex::Logger::info(
-          "There seems to be an error on some of your required files. $@",
-          "error" );
-
-        if ( !exists $ENV{PAR_TEMP} ) {
-
-          my @dir = ( dirname($::rexfile) );
-          for my $d (@dir) {
-            opendir( my $dh, $d ) or die($!);
-            while ( my $entry = readdir($dh) ) {
-              if ( $entry =~ m/^\./ ) {
-                next;
-              }
-
-              if ( -d "$d/$entry" ) {
-                push( @dir, "$d/$entry" );
-                next;
-              }
-
-              if ( $entry =~ m/Rexfile/ || $entry =~ m/\.pm$/ ) {
-
-                # check files for syntax errors
-                my $check_out =
-                  qx{$^X -MRex::Commands -MRex::Commands::Run -MRex::Commands::Fs -MRex::Commands::Download -MRex::Commands::Upload -MRex::Commands::File -MRex::Commands::Gather -MRex::Commands::Kernel -MRex::Commands::Pkg -MRex::Commands::Service -MRex::Commands::Sysctl -MRex::Commands::Tail -MRex::Commands::Process -c $d/$entry 2>&1};
-                if ( $? > 0 ) {
-                  print "$d/$entry\n";
-                  print
-                    "--------------------------------------------------------------------------------\n";
-                  print $check_out;
-                  print "\n";
-                }
-              }
-            }
-            closedir($dh);
-          }
-
-        }
-
-        exit 1;
-      }
     };
 
     if ($@) { print $@ . "\n"; exit 1; }
 
+    load_rexfile($::rexfile);
   }
   else {
     Rex::Logger::info( "No Rexfile found.", "warn" );
@@ -796,6 +698,19 @@ sub summarize {
          ncmp( $a->{task}, $b->{task} )
       || ncmp( $a->{server}, $b->{server} )
     } @failures;
+}
+
+sub load_rexfile {
+  my $rexfile = shift;
+  Rex::Logger::debug("Loading $rexfile");
+
+  # load Rexfile
+  eval { require $rexfile };
+  if ($@) {
+    chomp $@;
+    Rex::Logger::info("Compile time errors:\n$@", 'error');
+    exit 1;
+  }
 }
 
 1;

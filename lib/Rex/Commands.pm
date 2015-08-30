@@ -121,6 +121,7 @@ use Rex::Profiler;
 use Rex::Report;
 use Rex;
 use Rex::Helper::Misc;
+use Rex::RunList;
 
 use vars
   qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler %auth_late);
@@ -1096,17 +1097,20 @@ sub needs {
   my @tasks_to_run = @{"${self}::tasks"};
   use strict;
 
-  my %opts = Rex::Args->get;
+  my $run_list     = Rex::RunList->instance;
+  my $current_task = $run_list->current_task;
+  my %task_opts    = $current_task->get_opts;
+  my @task_args    = $current_task->get_args;
 
   for my $task (@tasks_to_run) {
     my $task_name = $task->{"name"};
     if ( @args && grep ( /^$task_name$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task->{"name"} );
-      &{ $task->{"code"} }( \%opts );
+      $task->{"code"}->( \%task_opts, \@task_args );
     }
     elsif ( !@args ) {
       Rex::Logger::debug( "Calling " . $task->{"name"} );
-      &{ $task->{"code"} }( \%opts );
+      $task->{"code"}->( \%task_opts, \@task_args );
     }
   }
 

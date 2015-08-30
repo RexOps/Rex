@@ -60,7 +60,7 @@ our (
   $register_cmdb_template,   $check_service_exists,
   $set_no_append,            $use_net_openssh_if_present,
   $use_template_ng,          $use_rex_kvm_agent,
-  $autodie,
+  $autodie,                  $task_chaining_cmdline_args,
 
 );
 
@@ -160,6 +160,15 @@ sub set_disable_taskname_warning {
 
 sub get_disable_taskname_warning {
   return $disable_taskname_warning;
+}
+
+sub set_task_chaining_cmdline_args {
+  my $class = shift;
+  $task_chaining_cmdline_args = shift;
+}
+
+sub get_task_chaining_cmdline_args {
+  return $task_chaining_cmdline_args;
 }
 
 sub set_verbose_run {

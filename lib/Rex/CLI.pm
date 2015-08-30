@@ -20,6 +20,7 @@ use Text::Wrap;
 use Term::ReadKey;
 
 use Rex;
+use Rex::Args;
 use Rex::Config;
 use Rex::Group;
 use Rex::Batch;
@@ -49,8 +50,6 @@ if ( $#ARGV < 0 ) {
   @ARGV = qw(-h);
 }
 
-require Rex::Args;
-
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
@@ -62,43 +61,9 @@ sub new {
 }
 
 sub __run__ {
-
   my ( $self, %more_args ) = @_;
 
-  Rex::Args->import(
-    C => {},
-    c => {},
-    q => {},
-    Q => {},
-    F => {},
-    T => {},
-    h => {},
-    v => {},
-    d => {},
-    s => {},
-    m => {},
-    y => {},
-    w => {},
-    S => { type => "string" },
-    E => { type => "string" },
-    o => { type => "string" },
-    f => { type => "string" },
-    M => { type => "string" },
-    b => { type => "string" },
-    e => { type => "string" },
-    H => { type => "string" },
-    u => { type => "string" },
-    p => { type => "string" },
-    P => { type => "string" },
-    K => { type => "string" },
-    G => { type => "string" },
-    g => { type => "string" },
-    z => { type => "string" },
-    O => { type => "string" },
-    t => { type => "string" },
-    %more_args,
-  );
-
+  Rex::Args->parse_rex_opts;
   %opts = Rex::Args->getopts;
 
   if ( $opts{'Q'} ) {
@@ -546,32 +511,16 @@ CHECK_OVERWRITE: {
   }
 
   eval {
+    my $run_list = Rex::RunList->instance;
+
     if ( $opts{'b'} ) {
-      Rex::Logger::debug( "Running batch: " . $opts{'b'} );
       my $batch = $opts{'b'};
-      if ( Rex::Batch->is_batch($batch) ) {
-        Rex::Batch->run($batch);
-      }
+      Rex::Logger::debug("Running batch: $batch");
+      $run_list->add_task($_) for Rex::Batch->get_batch($batch);
     }
 
-    if ( defined $ARGV[0] ) {
-      for my $task (@ARGV) {
-        if ( Rex::TaskList->create()->is_task($task) ) {
-          Rex::Logger::debug("Running task: $task");
-          Rex::TaskList->run($task);
-        }
-        elsif ( $task =~ m/^\-\-/ || $task =~ m/=/ ) {
-
-          # skip, is parameter
-        }
-        else {
-          Rex::Logger::info(
-            "No task named '$task' found. Task names are case sensitive and the module delimiter is a single colon.",
-            "error"
-          );
-        }
-      }
-    }
+    $run_list->parse_opts(@ARGV);
+    $run_list->run_tasks;
   };
 
   if ($@) {

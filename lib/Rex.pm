@@ -786,6 +786,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "task_chaining_cmdline_args" ) {
+        Rex::Logger::debug("Enabling task_chaining_cmdline_args feature");
+        Rex::Config->set_task_chaining_cmdline_args(1);
+        $found_feature = 1;
+      }
+
       if ( $found_feature == 0 ) {
         Rex::Logger::info(
           "You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.",

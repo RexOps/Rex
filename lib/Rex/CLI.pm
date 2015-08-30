@@ -64,7 +64,7 @@ sub __run__ {
 
   my ( $self, %more_args ) = @_;
 
-  Rex::Args->parse_args(
+  Rex::Args->parse_rex_opts(
     C => {},
     c => {},
     q => {},
@@ -543,6 +543,8 @@ CHECK_OVERWRITE: {
     $mod =~ s{::}{/}g;
     require "$mod.pm";
   }
+
+  Rex::Args->parse_task_opts;
 
   eval {
     if ( $opts{'b'} ) {

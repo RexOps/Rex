@@ -40,11 +40,9 @@ sub new {
 }
 
 sub run {
-  my ( $self, $task_name, %option ) = @_;
-  my $task = $self->get_task($task_name);
+  my ( $self, $task, %option ) = @_;
 
-  $option{params} ||= { Rex::Args->get };
-
+  my $task_name  = $task->name;
   my @all_server = @{ $task->server };
 
   my $fm = Parallel::ForkManager->new( $self->get_thread_count($task) );
@@ -66,12 +64,13 @@ sub run {
       # create a single task object for the run on $server
 
       Rex::Logger::info("Running task $task_name on $server");
-      my $run_task = Rex::Task->new( %{ $task->get_data } );
+      my $run_task = $task->clone;
 
       $run_task->run(
         $server,
         in_transaction => $self->{IN_TRANSACTION},
-        params         => $option{params}
+        params         => $option{params},
+        args           => $option{args},
       );
 
       # destroy cached os info

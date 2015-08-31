@@ -11,9 +11,8 @@ use warnings;
 
 # VERSION
 
-use vars qw(%task_opts %rex_opts);
+use vars qw(%rex_opts);
 use Rex::Logger;
-use Data::Dumper;
 
 our $CLEANUP = 1;
 
@@ -107,21 +106,6 @@ sub parse_rex_opts {
   }
 }
 
-# parse tasks and task options
-sub parse_task_opts {
-  my ($class) = @_;
-
-  my @params = @ARGV;
-
-  for my $p (@params) {
-    my ($key, $val) = split /=/, $p, 2;
-
-    $key =~ s/^--//;
-
-    $task_opts{$key} = defined $val ? $val : 1;
-  }
-}
-
 sub getopts { return %rex_opts; }
 
 sub is_opt {
@@ -130,7 +114,5 @@ sub is_opt {
     return $rex_opts{$opt};
   }
 }
-
-sub get { return %task_opts; }
 
 1;

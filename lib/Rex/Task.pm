@@ -75,6 +75,8 @@ This is the constructor.
     after_task_finished => [sub {}, sub {}, ...],
     name => $task_name,
     executor => Rex::Interface::Executor->create,
+    opts => {key1 => val1, key2 => val2, ...},
+    args => [arg1, arg2, ...],
   );
 
 
@@ -94,6 +96,8 @@ sub new {
   $self->{no_ssh}   ||= 0;
   $self->{func}     ||= sub { };
   $self->{executor} ||= Rex::Interface::Executor->create;
+  $self->{opts}     ||= {};
+  $self->{args}     ||= [];
 
   $self->{connection} = undef;
 
@@ -479,15 +483,21 @@ sub run_hook {
 
   for my $code ( @{ $self->{$hook} } ) {
     if ( $hook eq "after" ) { # special case for after hooks
-      &$code(
+      $code->(
         $$server,
         ( $self->{"__was_authenticated"} ? undef : 1 ),
-        { Rex::Args->get }, @more_args
+        { $self->get_opts },
+        @more_args
       );
     }
     else {
       my $old_server = $$server if $server;
-      &$code( $$server, $server, { Rex::Args->get }, @more_args );
+      $code->(
+        $$server,
+        $server,
+        { $self->get_opts },
+        @more_args
+      );
       if ( $old_server && $old_server ne $$server ) {
         $self->{current_server} = $$server;
       }
@@ -713,6 +723,8 @@ sub get_data {
     name            => $self->{name},
     executor        => $self->{executor},
     connection_type => $self->{connection_type},
+    opts            => $self->{opts},
+    args            => $self->{args},
   };
 }
 
@@ -733,6 +745,10 @@ sub run {
   if ( ref( $_[0] ) ) {
     my ( $self, $server, %options ) = @_;
 
+    $options{opts}   ||= { $self->get_opts };
+    $options{args}   ||= [ $self->get_args ];
+    $options{params} ||= $options{opts};
+
     if ( !ref $server ) {
       $server = Rex::Group::Entry::Server->new( name => $server );
     }
@@ -741,7 +757,7 @@ sub run {
 
       # run is called without any server.
       # so just connect to any servers.
-      return Rex::TaskList->create()->run( $self->name, %options );
+      return Rex::TaskList->create()->run( $self, %options );
     }
 
     # this is a method call
@@ -775,7 +791,7 @@ sub run {
     my $ret;
 
     eval {
-      $ret = $self->executor->exec( $options{params} );
+      $ret = $self->executor->exec( $options{params}, $options{args} );
       my $notify = Rex::get_current_connection()->{notify};
       $notify->run_postponed();
     } or do {
@@ -869,6 +885,31 @@ sub exit_on_connect_fail {
 sub set_exit_on_connect_fail {
   my ( $self, $exit ) = @_;
   $self->{exit_on_connect_fail} = $exit;
+}
+
+sub get_args {
+  my ($self) = @_;
+  @{ $self->{args} };
+}
+
+sub get_opts {
+  my ($self) = @_;
+  %{ $self->{opts} };
+}
+
+sub set_args {
+  my ($self, @args) = @_;
+  $self->{args} = \@args;
+}
+
+sub set_opts {
+  my ($self, %opts) = @_;
+  $self->{opts} = \%opts;
+}
+
+sub clone {
+  my $self = shift;
+  return Rex::Task->new( %{ $self->get_data } );
 }
 
 1;

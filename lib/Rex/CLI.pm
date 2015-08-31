@@ -547,6 +547,7 @@ CHECK_OVERWRITE: {
   Rex::Args->parse_task_opts;
 
   eval {
+
     if ( $opts{'b'} ) {
       Rex::Logger::debug( "Running batch: " . $opts{'b'} );
       my $batch = $opts{'b'};
@@ -555,24 +556,9 @@ CHECK_OVERWRITE: {
       }
     }
 
-    if ( defined $ARGV[0] ) {
-      for my $task (@ARGV) {
-        if ( Rex::TaskList->create()->is_task($task) ) {
-          Rex::Logger::debug("Running task: $task");
-          Rex::TaskList->run($task);
-        }
-        elsif ( $task =~ m/^\-\-/ || $task =~ m/=/ ) {
-
-          # skip, is parameter
-        }
-        else {
-          Rex::Logger::info(
-            "No task named '$task' found. Task names are case sensitive and the module delimiter is a single colon.",
-            "error"
-          );
-        }
-      }
-    }
+    my $run_list = Rex::RunList->instance;
+    $run_list->parse_opts(@ARGV);
+    $run_list->run_tasks;
   };
 
   if ($@) {

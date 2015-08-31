@@ -1096,17 +1096,15 @@ sub needs {
   my @tasks_to_run = @{"${self}::tasks"};
   use strict;
 
-  my %opts = Rex::Args->get;
-
   for my $task (@tasks_to_run) {
     my $task_name = $task->{"name"};
     if ( @args && grep ( /^$task_name$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task->{"name"} );
-      &{ $task->{"code"} }( \%opts );
+      $task->{"code"}->({ $task->get_opts });
     }
     elsif ( !@args ) {
       Rex::Logger::debug( "Calling " . $task->{"name"} );
-      &{ $task->{"code"} }( \%opts );
+      $task->{"code"}->({ $task->get_opts });
     }
   }
 

@@ -38,7 +38,7 @@ sub create {
 
   eval "use $class_name";
   if ($@) {
-    die("TaskList module not found.");
+    die("TaskList module not found: $@");
   }
 
   $task_list = $class_name->new;
@@ -51,15 +51,8 @@ sub create {
 
 sub run {
   my ( $class, $task_name ) = @_;
-  my $task_object = $class->create()->get_task($task_name);
-
-  for my $code ( @{ $task_object->{before_task_start} } ) {
-    $code->($task_object);
-  }
-
-  $class->create()->run($task_name);
-
-  for my $code ( @{ $task_object->{after_task_finished} } ) {
-    $code->($task_object);
-  }
+  my $task = $class->create()->get_task($task_name);
+  $_->($task) for @{ $task->{before_task_start} };
+  $class->create->run($task);
+  $_->($task) for @{ $task->{after_task_finished} };
 }

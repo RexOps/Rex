@@ -20,11 +20,17 @@ sub create_batch {
   my $class      = shift;
   my $batch_name = shift;
   my $batch_desc = pop;
-  my @tasks      = @_;
+  my @task_names = @_;
+  my $task_list  = Rex::TaskList->create;
+
+  for my $task_name (@task_names) {
+    die "ERROR: no task: $task_name"
+      if $task_list->is_task($task_name);
+  }
 
   $batchs{$batch_name} = {
     desc  => $batch_desc,
-    tasks => \@tasks
+    task_names => \@task_names
   };
 }
 
@@ -32,7 +38,7 @@ sub get_batch {
   my $class      = shift;
   my $batch_name = shift;
 
-  return @{ $batchs{$batch_name}->{'tasks'} };
+  return @{ $batchs{$batch_name}->{'task_names'} };
 }
 
 sub get_desc {
@@ -53,22 +59,6 @@ sub is_batch {
 
   if ( defined $batchs{$batch_name} ) { return 1; }
   return 0;
-}
-
-sub run {
-  my $class = shift;
-  my $batch = shift;
-
-  my @tasks = $class->get_batch($batch);
-  for my $t (@tasks) {
-    if ( Rex::TaskList->create()->is_task($t) ) {
-      Rex::TaskList->create()->run($t);
-    }
-    else {
-      print STDERR "ERROR: no task: $t\n";
-      die;
-    }
-  }
 }
 
 1;

@@ -544,19 +544,15 @@ CHECK_OVERWRITE: {
     require "$mod.pm";
   }
 
-  Rex::Args->parse_task_opts;
-
   eval {
+    my $run_list = Rex::RunList->instance;
 
     if ( $opts{'b'} ) {
-      Rex::Logger::debug( "Running batch: " . $opts{'b'} );
       my $batch = $opts{'b'};
-      if ( Rex::Batch->is_batch($batch) ) {
-        Rex::Batch->run($batch);
-      }
+      Rex::Logger::debug("Running batch: $batch");
+      $run_list->add_task($_) for Rex::Batch->get_batch($batch);
     }
 
-    my $run_list = Rex::RunList->instance;
     $run_list->parse_opts(@ARGV);
     $run_list->run_tasks;
   };

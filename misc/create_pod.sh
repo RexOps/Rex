@@ -105,7 +105,7 @@ for x in \
                   | sed -e "s/<a href=\"\/api\/Rex\/Commands.html\">the Rex::Commands manpage<\/a>/<a href=\"\/api\/Rex\/Commands.pm.html\">Rex::Commands<\/a>/g" \
                   | perl -lpe "s/<a href=\"file:\/[^\"]+\">([^<]+)<\/a>/\$1/g" \
                   | perl -lpe "s/<h1><a name=\"[^\"]+\">(.*?)<\/a><\/h1>/<h2>\$1<\/h2>/g" \
-                  | perl -lpe "s/<a href=\"\/api\/Rex\/Commands\/([^\.]+)\.html\">/<a href=\"\/api\/Rex\/Commands\/\$1.pm.html\">/g" \
+                  | perl -lpe "s/<a href=\"\/api\/Rex\/Commands\/([^\.]+)\.html\">/<a href=\"\/api\/Rex\/Commands\/\${1}.pm.html\">/g" \
                   | perl -lpe "s/the (Rex::Commands::[a-zA-Z0-9]+) manpage/\$1/g" \
                   | perl -lpe "s/<strong><a name=\"[^\"]+\" class=\"item\">(.*?)<\/a><\/strong>/<strong>\$1<\/strong>/g" \
                   | perl -le '$/= undef; $content = <>; my ($title) = ($content =~ m/<h1[^>]+>NAME<\/h1>\s*<p>([^>]+)<\/p>/msi); $content =~ s/\{\{TITLE\}\}/$title/; print $content;' \

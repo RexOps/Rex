@@ -40,15 +40,14 @@ the execution of the rsync task.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Rsync;
 
+use strict;
 use warnings;
+
+# VERSION
 
 BEGIN {
   use Rex::Require;
@@ -63,9 +62,13 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(sync);
 
-=item sync($source, $dest, $opts)
+=head2 sync($source, $dest, $opts)
 
 This function executes rsync to sync $source and $dest.
+
+If you want to use sudo, you need to disable I<requiretty> option for this user. You can do this with the following snippet in your sudoers configuration.
+
+ Defaults:username !requiretty
 
 =over 4
 
@@ -105,6 +108,15 @@ sub sync {
   my $server             = $current_connection->{server};
   my $cmd;
 
+  my $port       = 22;
+  my $servername = $server->to_s;
+
+  # there is a :1234 port in the server  string
+  if ( $servername =~ m/:\d+$/ ) {
+    my $_t;
+    ( $servername, $port ) = split( /:/, $servername );
+  }
+
   my $auth = $current_connection->{conn}->get_auth;
 
   if ( !exists $opt->{download} && $source !~ m/^\// ) {
@@ -131,23 +143,25 @@ sub sync {
     $params .= " " . $opt->{parameters};
   }
 
+  my @rsync_cmd = ();
+
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     Rex::Logger::debug("Downloading $source -> $dest");
-    $cmd =
-        "rsync -a -e '\%s' --verbose --stats $params "
-      . $auth->{user} . "\@"
-      . $server . ":"
-      . $source . " "
-      . $dest;
+    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params ";
+    push @rsync_cmd, $auth->{user} . "\@" . $server . ":" . $source;
+    push @rsync_cmd, $dest;
   }
   else {
     Rex::Logger::debug("Uploading $source -> $dest");
-    $cmd =
-        "rsync -a -e '\%s' --verbose --stats $params $source "
-      . $auth->{user} . "\@"
-      . $server . ":"
-      . $dest;
+    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params $source ";
+    push @rsync_cmd, $auth->{user} . "\@$server:$dest";
   }
+
+  if (Rex::is_sudo) {
+    push @rsync_cmd, "--rsync-path='sudo rsync'";
+  }
+
+  $cmd = join( " ", @rsync_cmd );
 
   my $pass           = $auth->{password};
   my @expect_options = ();
@@ -164,7 +178,7 @@ sub sync {
 
   if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
-      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ' );
+      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ', $port );
     push(
       @expect_options,
       [
@@ -217,9 +231,8 @@ sub sync {
   else {
     if ( $auth_type eq "key" ) {
       $cmd = sprintf( $cmd,
-            'ssh -i '
-          . $server->get_private_key
-          . " -o StrictHostKeyChecking=no " );
+        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no ",
+        $port );
     }
     else {
       $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );
@@ -322,9 +335,5 @@ sub sync {
   }
 
 }
-
-=back
-
-=cut
 
 1;

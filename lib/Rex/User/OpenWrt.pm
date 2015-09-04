@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::User::OpenWrt;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 require Rex::Commands;
@@ -26,7 +27,7 @@ use base qw(Rex::User::Linux);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 

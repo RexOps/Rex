@@ -8,11 +8,12 @@
 # Some of the code is based on Net::Amazon::EC2
 #
 
-use strict;
-
 package Rex::Cloud::Amazon;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Cloud::Base;
@@ -138,7 +139,7 @@ sub run_instance {
     $self->attach_volume(
       volume_id   => $data{"volume"},
       instance_id => $ref->{"instancesSet"}->{"item"}->{"instanceId"},
-      name => "/dev/sdh",    # default for new instances
+      name => "/dev/sdh", # default for new instances
     );
   }
 
@@ -359,7 +360,7 @@ sub list_instances {
     if ( ref $isi eq 'HASH' ) {
       push( @ret, { $self->_make_instance_map($isi) } );
     }
-    elsif ( $isi eq 'ARRAY' ) {
+    elsif ( ref $isi eq 'ARRAY' ) {
       for my $iset (@$isi) {
         push( @ret, { $self->_make_instance_map($iset) } );
       }

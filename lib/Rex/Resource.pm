@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Resource;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Constants;
 
@@ -22,11 +23,14 @@ sub new {
 
   bless( $self, $proto );
 
+  $self->{__status__} = "unchanged";
+
   return $self;
 }
 
-sub name { (shift)->{name}; }
-sub type { (shift)->{type}; }
+sub name         { (shift)->{name}; }
+sub display_name { (shift)->{display_name}; }
+sub type         { (shift)->{type}; }
 
 sub call {
   my ( $self, $name, %params ) = @_;
@@ -48,7 +52,7 @@ sub call {
   $self->{res_ensure} = $params{ensure} ||= present;
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => $self->type, name => $name );
+    ->report_resource_start( type => $self->display_name, name => $name );
 
   # make parameters automatically availabel in templates
   # store old values so that we can recover them after resource finish
@@ -63,31 +67,32 @@ sub call {
     $self->{cb}->( \%params );
     1;
   } or do {
+    Rex::Logger::info( $@,                                 "error" );
     Rex::Logger::info( "Resource execution failed: $name", "error" );
     $failed = 1;
   };
 
-  if ( $self->changed ) {
+  if ( $self->was_updated ) {
     Rex::get_current_connection()->{reporter}->report(
       changed => 1,
       failed  => $failed,
-      message => $self->name . " changed.",
+      message => $self->message,
     );
   }
   else {
     Rex::get_current_connection()->{reporter}->report(
       changed => 0,
       failed  => $failed,
-      message => $self->name . " not changed.",
+      message => $self->display_name . " not changed.",
     );
   }
 
-  if ( exists $params{on_change} && $self->changed ) {
-    $params{on_change}->();
+  if ( exists $params{on_change} && $self->was_updated ) {
+    $params{on_change}->( $self->{__status__} );
   }
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => $self->type, name => $name );
+    ->report_resource_end( type => $self->display_name, name => $name );
 
   $INSIDE_RES = 0;
   pop @CURRENT_RES;
@@ -103,14 +108,57 @@ sub call {
   }
 }
 
+sub was_updated {
+  my ($self) = @_;
+
+  if ( $self->changed || $self->created || $self->removed ) {
+    return 1;
+  }
+
+  return 0;
+}
+
 sub changed {
   my ( $self, $changed ) = @_;
 
   if ( defined $changed ) {
-    $self->{changed} = $changed;
+    $self->{__status__} = "changed";
   }
   else {
-    return $self->{changed};
+    return ( $self->{__status__} eq "changed" ? 1 : 0 );
+  }
+}
+
+sub created {
+  my ( $self, $created ) = @_;
+
+  if ( defined $created ) {
+    $self->{__status__} = "created";
+  }
+  else {
+    return ( $self->{__status__} eq "created" ? 1 : 0 );
+  }
+}
+
+sub removed {
+  my ( $self, $removed ) = @_;
+
+  if ( defined $removed ) {
+    $self->{__status__} = "removed";
+  }
+  else {
+    return ( $self->{__status__} eq "removed" ? 1 : 0 );
+  }
+}
+
+sub message {
+  my ( $self, $message ) = @_;
+
+  if ( defined $message ) {
+    $self->{message} = $message;
+  }
+  else {
+    return ( $self->{message} || ( $self->display_name . " changed." ) );
   }
 }
 

@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Service::OpenWrt;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -25,14 +26,14 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start        => '/etc/init.d/%s start >/dev/null',
-    restart      => '/etc/init.d/%s restart >/dev/null',
-    stop         => '/etc/init.d/%s stop >/dev/null',
-    reload       => '/etc/init.d/%s reload >/dev/null',
-    status       => '/sbin/start-stop-daemon -K -t -q -n %s >/dev/null',
+    start        => '/etc/init.d/%s start',
+    restart      => '/etc/init.d/%s restart',
+    stop         => '/etc/init.d/%s stop',
+    reload       => '/etc/init.d/%s reload',
+    status       => '/sbin/start-stop-daemon -K -t -q -n %s',
     ensure_stop  => '/etc/init.d/%s disable',
     ensure_start => '/etc/init.d/%s enable',
-    action       => '/etc/init.d/%s %s >/dev/null',
+    action       => '/etc/init.d/%s %s',
   };
 
   return $self;

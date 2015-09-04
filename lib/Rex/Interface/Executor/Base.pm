@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Executor::Base;
 
+use strict;
 use warnings;
+
+# VERSION
 
 sub new {
   my $that  = shift;

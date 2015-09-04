@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Service::SuSE;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -24,14 +25,14 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start        => '/etc/rc.d/%s start >/dev/null',
-    restart      => '/etc/rc.d/%s restart >/dev/null',
-    stop         => '/etc/rc.d/%s stop >/dev/null',
-    reload       => '/etc/rc.d/%s reload >/dev/null',
-    status       => '/etc/rc.d/%s status >/dev/null',
+    start        => '/etc/rc.d/%s start',
+    restart      => '/etc/rc.d/%s restart',
+    stop         => '/etc/rc.d/%s stop',
+    reload       => '/etc/rc.d/%s reload',
+    status       => '/etc/rc.d/%s status',
     ensure_stop  => 'chkconfig %s off',
     ensure_start => 'chkconfig %s on',
-    action       => '/etc/rc.d/%s %s >/dev/null',
+    action       => '/etc/rc.d/%s %s',
   };
 
   return $self;

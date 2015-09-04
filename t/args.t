@@ -2,11 +2,12 @@ use strict;
 use warnings;
 
 use Test::More tests => 13;
-use Data::Dumper;
 
-use_ok 'Rex::Args';
+use Rex::Args;
 
-push( @ARGV, qw(-h -T -dv -u user -p pass -t 5 foo --name=thename --num=5) );
+push( @ARGV,
+  qw(-h -g test1 -g test2 -T -dv -u user -p pass -t 5 foo --name=thename --num=5)
+);
 
 Rex::Args->import(
   C => {},
@@ -32,10 +33,14 @@ Rex::Args->import(
   P => { type => "string" },
   K => { type => "string" },
   G => { type => "string" },
+  g => { type => "string" },
   t => { type => "integer" },
 );
 
-my %opts = Rex::Args->getopts;
+my %opts   = Rex::Args->getopts;
+my $groups = $opts{g};
+
+is_deeply( $groups, [qw/test1 test2/], "Got array for groups" );
 
 ok( exists $opts{h} && $opts{h}, "single parameter" );
 ok( exists $opts{T} && $opts{T}, "single parameter (2)" );
@@ -51,12 +56,12 @@ ok(
 );
 ok( exists $opts{t} && $opts{t} == 5, "parameter with option (3) / integer" );
 
-ok( $ARGV[0] eq "foo", "got the taskname" );
+is( $ARGV[0], "foo", "got the taskname" );
 
 my %params = Rex::Args->get;
 
-ok( $ARGV[1] eq "--name=thename", "got the whole parameter (1)" );
-ok( $ARGV[2] eq "--num=5",        "got the whole parameter (2)" );
+is( $ARGV[1], "--name=thename", "got the whole parameter (1)" );
+is( $ARGV[2], "--num=5",        "got the whole parameter (2)" );
 
 ok( exists $params{name} && $params{name} eq "thename",
   "got task parameter (1)" );

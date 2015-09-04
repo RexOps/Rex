@@ -28,15 +28,14 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::LVM;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
@@ -46,7 +45,7 @@ use vars qw(@EXPORT);
 
 use Rex::Commands::Run;
 
-=item pvs
+=head2 pvs
 
 Get Information for all your physical volumes.
 
@@ -96,7 +95,7 @@ sub pvs {
 
 }
 
-=item vgs
+=head2 vgs
 
 Get Information for all your volume groups.
 
@@ -153,7 +152,7 @@ sub vgs {
 
 }
 
-=item lvs
+=head2 lvs
 
 Get Information for all your logical volumes.
 
@@ -278,9 +277,5 @@ sub vgextend {
 
   return 1;
 }
-
-=back
-
-=cut
 
 1;

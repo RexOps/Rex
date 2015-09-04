@@ -2,11 +2,12 @@
 # Work with ALT Linux APT-RPM package management system
 #
 
-use strict;
-
 package Rex::Pkg::ALT;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;

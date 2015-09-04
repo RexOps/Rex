@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Service::SunOS;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -25,12 +26,12 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start   => '/etc/init.d/%s start >/dev/null',
-    restart => '/etc/init.d/%s restart >/dev/null',
-    stop    => '/etc/init.d/%s stop >/dev/null',
-    reload  => '/etc/init.d/%s reload >/dev/null',
-    status  => '/etc/init.d/%s status >/dev/null',
-    action  => '/etc/init.d/%s %s >/dev/null',
+    start   => '/etc/init.d/%s start',
+    restart => '/etc/init.d/%s restart',
+    stop    => '/etc/init.d/%s stop',
+    reload  => '/etc/init.d/%s reload',
+    status  => '/etc/init.d/%s status',
+    action  => '/etc/init.d/%s %s',
   };
 
   return $self;
@@ -47,7 +48,7 @@ sub ensure {
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    my ($runlevel) = grep { $_ = $1 if m/run\-level (\d)/ } i_run "who -r";
+    my ($runlevel) = map { /run-level (\d)/ } i_run "who -r";
     ln "/etc/init.d/$service", "/etc/rc${runlevel}.d/S99$service";
   }
 

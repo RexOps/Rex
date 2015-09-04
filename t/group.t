@@ -1,19 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 102;
-use Data::Dumper;
+use Test::More tests => 95;
 
-use_ok 'Rex';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'List::MoreUtils';
+use Rex -feature => '0.31';
 
-Rex->import( -feature => 0.31 );
-Rex::Commands->import();
+delete $ENV{REX_USER};
 
 user("root3");
 password("pass3");

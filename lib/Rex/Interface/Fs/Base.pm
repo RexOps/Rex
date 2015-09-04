@@ -4,13 +4,15 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Fs::Base;
 
+use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Interface::Exec;
+use Rex::Helper::File::Spec;
 
 sub new {
   my $that  = shift;
@@ -38,6 +40,7 @@ sub download    { die("Must be implemented by Interface Class"); }
 
 sub is_symlink {
   my ( $self, $path ) = @_;
+  ($path) = $self->_normalize_path($path);
 
   $self->_exec("/bin/sh -c '[ -L \"$path\" ]'");
   my $ret = $?;
@@ -49,10 +52,15 @@ sub ln {
   my ( $self, $from, $to ) = @_;
 
   Rex::Logger::debug("Symlinking files: $to -> $from");
+  ($from) = $self->_normalize_path($from);
+  ($to)   = $self->_normalize_path($to);
+
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("ln -snf '$from' '$to'");
+  $exec->exec("ln -snf $from $to");
 
   if ( $? == 0 ) { return 1; }
+
+  die "Error creating symlink. ($from -> $to)" if ( Rex::Config->get_autodie );
 }
 
 sub rmdir {
@@ -65,6 +73,9 @@ sub rmdir {
   $exec->exec( "/bin/rm -rf " . join( " ", @dirs ) );
 
   if ( $? == 0 ) { return 1; }
+
+  die( "Error removing directory: " . join( ", ", @dirs ) )
+    if ( Rex::Config->get_autodie );
 }
 
 sub chown {
@@ -78,9 +89,19 @@ sub chown {
   }
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("chown $recursive $user $file");
 
-  if ( $? == 0 ) { return 1; }
+  if ( $exec->can_run( ['chown'] ) ) {
+    $exec->exec("chown $recursive $user $file");
+
+    if ( $? == 0 ) { return 1; }
+
+    die("Error running chown $recursive $user $file")
+      if ( Rex::Config->get_autodie );
+  }
+  else {
+    Rex::Logger::debug("Can't find `chown`.");
+    return 1; # fake success for windows
+  }
 }
 
 sub chgrp {
@@ -94,9 +115,19 @@ sub chgrp {
   }
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("chgrp $recursive $group $file");
 
-  if ( $? == 0 ) { return 1; }
+  if ( $exec->can_run( ['chgrp'] ) ) {
+    $exec->exec("chgrp $recursive $group $file");
+
+    if ( $? == 0 ) { return 1; }
+
+    die("Error running chgrp $recursive $group $file")
+      if ( Rex::Config->get_autodie );
+  }
+  else {
+    Rex::Logger::debug("Can't find `chgrp`.");
+    return 1; # fake success for windows
+  }
 }
 
 sub chmod {
@@ -110,9 +141,19 @@ sub chmod {
   }
 
   my $exec = Rex::Interface::Exec->create;
-  $exec->exec("chmod $recursive $mode $file");
 
-  if ( $? == 0 ) { return 1; }
+  if ( $exec->can_run( ['chmod'] ) ) {
+    $exec->exec("chmod $recursive $mode $file");
+
+    if ( $? == 0 ) { return 1; }
+
+    die("Error running chmod $recursive $mode $file")
+      if ( Rex::Config->get_autodie );
+  }
+  else {
+    Rex::Logger::debug("Can't find `chmod`.");
+    return 1; # fake success for windows
+  }
 }
 
 sub cp {
@@ -124,16 +165,38 @@ sub cp {
   $exec->exec("cp -R $source $dest");
 
   if ( $? == 0 ) { return 1; }
+
+  die("Error copying $source -> $dest") if ( Rex::Config->get_autodie );
 }
 
 sub _normalize_path {
   my ( $self, @dirs ) = @_;
 
-  for (@dirs) {
-    s/ /\\ /g;
+  my @ret;
+  for my $d (@dirs) {
+    my @t;
+    if (Rex::is_ssh) {
+      @t = Rex::Helper::File::Spec->splitdir($d);
+    }
+    else {
+      @t = Rex::Helper::File::Spec->splitdir($d);
+    }
+    push( @ret,
+      Rex::Helper::File::Spec->catfile( map { $self->_quotepath($_) } @t ) );
   }
 
-  return @dirs;
+  #  for (@dirs) {
+  #    s/ /\\ /g;
+  #  }
+
+  return @ret;
+}
+
+sub _quotepath {
+  my ( $self, $p ) = @_;
+  $p =~ s/([\@\$\% ])/\\$1/g;
+
+  return $p;
 }
 
 sub _exec {

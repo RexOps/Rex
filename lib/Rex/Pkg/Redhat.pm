@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Pkg::Redhat;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -39,8 +40,7 @@ sub new {
 sub bulk_install {
   my ( $self, $packages_aref, $option ) = @_;
 
-  delete $option->{version}
-    ;    # makes no sense to specify the same version for several packages
+  delete $option->{version}; # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
 
@@ -86,6 +86,8 @@ sub add_repository {
   $fh->write("name=$desc\n");
   $fh->write( "baseurl=" . $data{"url"} . "\n" );
   $fh->write("enabled=1\n");
+  $fh->write( "gpgkey=" . $data{"gpgkey"} . "\n" )
+    if defined $data{"gpgkey"};
   $fh->write( "gpgcheck=" . $data{"gpgcheck"} . "\n" )
     if defined $data{"gpgcheck"};
 

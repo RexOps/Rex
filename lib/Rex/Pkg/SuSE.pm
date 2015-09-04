@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Pkg::SuSE;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -36,8 +37,7 @@ sub new {
 sub bulk_install {
   my ( $self, $packages_aref, $option ) = @_;
 
-  delete $option->{version}
-    ;    # makes no sense to specify the same version for several packages
+  delete $option->{version}; # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
 

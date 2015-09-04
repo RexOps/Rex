@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Fs::HTTP;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands;
 use Rex::Interface::Exec;
@@ -76,6 +77,8 @@ sub stat {
   if ( $resp->{ok} ) {
     return %{ $resp->{stat} };
   }
+
+  return undef;
 }
 
 sub is_readable {

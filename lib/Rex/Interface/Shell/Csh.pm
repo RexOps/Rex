@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Shell::Csh;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Interface::Shell::Base;
 use base qw(Rex::Interface::Shell::Base);
@@ -81,7 +82,7 @@ sub exec {
     $complete_cmd = "cd $option->{cwd} && $complete_cmd";
   }
 
-  if ( $self->{path} ) {
+  if ( $self->{path} && !exists $self->{__env__}->{PATH} ) {
     $complete_cmd = "set PATH=$self->{path}; $complete_cmd ";
   }
 
@@ -120,10 +121,21 @@ sub exec {
 
   # rewrite the command again
   if ( exists $option->{format_cmd} ) {
-    $complete_cmd =~ s/{{CMD}}/$cmd/;
+    $complete_cmd =~ s/\{\{CMD\}\}/$cmd/;
   }
 
   return $complete_cmd;
+}
+
+sub detect {
+  my ( $self, $con ) = @_;
+
+  my ($shell_path) = $con->_exec("echo \$SHELL");
+  if ( $shell_path =~ m/\/csh$/ ) {
+    return 1;
+  }
+
+  return 0;
 }
 
 1;

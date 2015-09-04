@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Exec::Sudo;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Config;
 use Rex::Interface::Exec::Local;
@@ -19,6 +20,8 @@ use Rex::Interface::File::SSH;
 
 use Rex::Commands;
 use Rex::Helper::Path;
+
+use base 'Rex::Interface::Exec::Base';
 
 sub new {
   my $that  = shift;
@@ -56,7 +59,7 @@ sub exec {
     $exec = Rex::Interface::Exec->create("Local");
     $file = Rex::Interface::File->create("Local");
   }
-  $shell = Rex::Interface::Shell->create("Sh");    # we're using sh for sudo
+  $shell = Rex::Interface::Shell->create("Sh"); # we're using sh for sudo
 
 ######## envs setzen. aber erst nachdem wir wissen ob wir sh forcen duerfen
   # if(exists $option->{env}) {
@@ -136,7 +139,7 @@ EOF
 
     # $option->{format_cmd} =
     #   "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S {{CMD}}";
-      $sudo_command = "perl $random_file '$enc_pw' | $sudo_command";
+      $sudo_command = "perl $random_file '$enc_pw' 2>/dev/null | $sudo_command";
     }
 
     # else {
@@ -178,7 +181,7 @@ EOF
 # $option->{_force_sh} = 1;
 
     if ($enc_pw) {
-      $sudo_command = "perl $random_file '$enc_pw' | $sudo_command";
+      $sudo_command = "perl $random_file '$enc_pw' 2>/dev/null | $sudo_command";
 
 # $option->{format_cmd} =
 #   "perl $random_file '$enc_pw' | sudo $sudo_options_str -p '' -S sh -c \"{{CMD}}\"";

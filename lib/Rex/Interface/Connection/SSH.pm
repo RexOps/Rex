@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Connection::SSH;
 
+use strict;
 use warnings;
+
+# VERSION
 
 BEGIN {
   use Rex::Require;
@@ -55,7 +56,7 @@ sub connect {
 
   Rex::Logger::debug( "Using user: " . $user );
   Rex::Logger::debug(
-    "Using password: " . ( $pass ? "***********" : "<no password>" ) );
+    Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
 
   $self->{server} = $server;
 
@@ -81,7 +82,7 @@ CON_SSH:
     goto CON_SSH
       if (
       $fail_connect < Rex::Config->get_max_connect_fails( server => $server ) )
-      ;    # try connecting 3 times
+      ; # try connecting 3 times
 
     Rex::Logger::info( "Can't connect to $server", "warn" );
 

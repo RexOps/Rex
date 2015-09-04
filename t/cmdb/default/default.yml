@@ -1,3 +1,15 @@
 dns:
-   - 1.1.1.1
-   - 2.2.2.2
+  - 1.1.1.1
+  - 2.2.2.2
+vhost2:
+  name: defaulthost
+  doc_root: /var/www
+
+
+users:
+  user01:
+    id: 500
+    password: puser01
+  user02:
+    id: 600
+    password: puser02

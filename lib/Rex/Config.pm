@@ -16,17 +16,16 @@ With this module you can specify own configuration parameters for your modules.
 
 =head1 EXPORTED METHODS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Config;
 
+use strict;
 use warnings;
 
-use File::Spec;
+# VERSION
+
+use Rex::Helper::File::Spec;
 use Rex::Logger;
 use YAML;
 use Data::Dumper;
@@ -61,6 +60,7 @@ our (
   $register_cmdb_template,   $check_service_exists,
   $set_no_append,            $use_net_openssh_if_present,
   $use_template_ng,          $use_rex_kvm_agent,
+  $autodie,
 
 );
 
@@ -71,6 +71,15 @@ our (
   ruby   => "ruby",
   bash   => "bash",
 );
+
+sub set_autodie {
+  my $class = shift;
+  $autodie = shift;
+}
+
+sub get_autodie {
+  return $autodie;
+}
 
 sub set_use_net_openssh_if_present {
   my $class = shift;
@@ -260,14 +269,17 @@ sub get_sudo_without_sh {
 }
 
 sub set_openssh_opt {
-  my ( $class, $key, $val ) = @_;
-  if ( !defined $val ) {
-    $openssh_opt{$key} = undef;
-    delete $openssh_opt{$key};
-    return;
-  }
+  my ( $class, %opt ) = @_;
 
-  $openssh_opt{$key} = $val;
+  for my $key ( keys %opt ) {
+    if ( !defined $opt{$key} ) {
+      $openssh_opt{$key} = undef;
+      delete $openssh_opt{$key};
+      next;
+    }
+
+    $openssh_opt{$key} = $opt{$key};
+  }
 }
 
 sub get_openssh_opt {
@@ -331,10 +343,10 @@ sub get_tmp_dir {
       }
       my ($out) =
         $exec->exec("perl -MFile::Spec -le 'print File::Spec->tmpdir'");
-      chomp $out;
-      $out =~ s/[\r\n]//gms;
 
       if ( $? == 0 && $out ) {
+        $out =~ s/[\r\n]//gms;
+
         $cache->set( "tmpdir", $out );
         return $out;
       }
@@ -342,8 +354,8 @@ sub get_tmp_dir {
       return "/tmp";
     }
     else {
-      $cache->set( "tmpdir", File::Spec->tmpdir );
-      return File::Spec->tmpdir;
+      $cache->set( "tmpdir", Rex::Helper::File::Spec->tmpdir );
+      return Rex::Helper::File::Spec->tmpdir;
     }
   }
   return $tmp_dir;
@@ -571,7 +583,7 @@ sub get_public_key {
     return $public_key;
   }
 
-  return undef;
+  return;
 }
 
 sub set_private_key {
@@ -589,7 +601,7 @@ sub get_private_key {
     return $private_key;
   }
 
-  return undef;
+  return;
 }
 
 sub set_parallelism {
@@ -711,6 +723,21 @@ sub get_connection_type {
       Rex::Logger::debug(
         "Found Net::OpenSSH and Net::SFTP::Foreign - using it as default");
       $connection_type = "OpenSSH";
+      return "OpenSSH";
+    }
+  }
+
+  if ( !$connection_type ) {
+    my $has_net_ssh2 = 0;
+    eval {
+      Net::SSH2->require;
+      $has_net_ssh2 = 1;
+      1;
+    };
+
+    if ($has_net_ssh2) {
+      $connection_type = "SSH";
+      return "SSH";
     }
   }
 
@@ -780,7 +807,7 @@ sub get_no_tty {
   return $no_tty;
 }
 
-=item register_set_handler($handler_name, $code)
+=head2 register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
 
@@ -848,7 +875,7 @@ sub get_all {
   return $set_param;
 }
 
-=item register_config_handler($topic, $code)
+=head2 register_config_handler($topic, $code)
 
 With this function it is possible to register own sections in the users config file ($HOME/.rex/config.yml).
 
@@ -1055,9 +1082,5 @@ sub _home_dir {
 
   return $ENV{'HOME'} || "";
 }
-
-=back
-
-=cut
 
 1;

@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Helper::INI;
 
+use strict;
 use warnings;
+
+# VERSION
 
 BEGIN { String::Escape->use('string2hash'); }
 
@@ -23,7 +24,7 @@ sub parse {
 
     (/^#|^;|^\s*$/) && (next);
 
-    if (/^\[(.*)\]/) {
+    if ( /^\[(.*)\]/ && !/^\[(\d+((?:,)|(?:\.\.))*)+(\/\d+)*\]/ ) {
 
       # check for inheritance
       $section = $1;

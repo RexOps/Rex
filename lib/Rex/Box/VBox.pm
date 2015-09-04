@@ -80,14 +80,11 @@ It is also possible to run VirtualBox in headless mode. This only works on Linux
 
 See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Box::VBox;
 
+use strict;
 use warnings;
 use Data::Dumper;
 use Rex::Box::Base;
@@ -96,6 +93,8 @@ use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
+
+# VERSION
 
 BEGIN {
   LWP::UserAgent->use;
@@ -114,7 +113,7 @@ $|++;
 # BEGIN of class methods
 ################################################################################
 
-=item new(name => $vmname)
+=head2 new(name => $vmname)
 
 Constructor if used in OO mode.
 
@@ -272,7 +271,7 @@ sub select_bridge {
   return $ifname;
 }
 
-=item share_folder(%option)
+=head2 share_folder(%option)
 
 Creates a shared folder inside the VM with the content from a folder from the Host machine. This only works with VirtualBox.
 
@@ -288,7 +287,7 @@ sub share_folder {
   $self->{__shared_folder} = \%option;
 }
 
-=item info
+=head2 info
 
 Returns a hashRef of vm information.
 
@@ -314,7 +313,7 @@ sub info {
   return $self->{info};
 }
 
-=item ip
+=head2 ip
 
 This method return the ip of a vm on which the ssh daemon is listening.
 
@@ -360,9 +359,5 @@ sub ip {
 
   return $server;
 }
-
-=back
-
-=cut
 
 1;

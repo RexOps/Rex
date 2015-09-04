@@ -49,15 +49,19 @@ See L<Rex::Commands> for a list of all commands you can use.
 
 =head1 CLASS METHODS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex;
 
+use strict;
 use warnings;
+
+# VERSION
+
+# development version if this variable is not set
+if ( !$Rex::VERSION ) {
+  $Rex::VERSION = "9999.99.99";
+}
 
 BEGIN {
   use Rex::Logger;
@@ -74,10 +78,10 @@ BEGIN {
   eval { Net::SSH2->require; };
 }
 
-our ( @EXPORT, $VERSION, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
+our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
   $WITH_EXIT_STATUS );
 
-$WITH_EXIT_STATUS = 1;    # since 0.50 activated by default
+$WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
 
@@ -169,7 +173,7 @@ sub search_module_path {
         return;
       }
 
-      open( my $fh, $file );
+      open( my $fh, "<", $file );
       return $fh;
     }
   }
@@ -222,7 +226,7 @@ sub modified_caller {
   }
 }
 
-=item get_current_connection
+=head2 get_current_connection
 
 This function is deprecated since 0.28! See Rex::Commands::connection.
 
@@ -266,7 +270,7 @@ sub get_current_connection_object {
   return Rex::get_current_connection()->{conn};
 }
 
-=item is_ssh
+=head2 is_ssh
 
 Returns 1 if the current connection is a ssh connection. 0 if not.
 
@@ -283,7 +287,7 @@ sub is_ssh {
   return 0;
 }
 
-=item is_local
+=head2 is_local
 
 Returns 1 if the current connection is local. Otherwise 0.
 
@@ -300,7 +304,7 @@ sub is_local {
   return 0;
 }
 
-=item is_sudo
+=head2 is_sudo
 
 Returns 1 if the current operation is executed within sudo.
 
@@ -330,7 +334,7 @@ sub global_sudo {
   Rex::Config->set_use_cache(1);
 }
 
-=item get_sftp
+=head2 get_sftp
 
 Returns the sftp object for the current ssh connection.
 
@@ -352,7 +356,7 @@ sub get_cache {
   return Rex::Interface::Cache->create();
 }
 
-=item connect
+=head2 connect
 
 Use this function to create a connection if you use Rex as a library.
 
@@ -388,7 +392,8 @@ sub connect {
   my $cached_conn = $param->{"cached_connection"};
 
   if ( !$cached_conn ) {
-    my $conn = Rex::Interface::Connection->create("SSH");
+    my $conn =
+      Rex::Interface::Connection->create(Rex::Config::get_connection_type);
 
     $conn->connect(
       user     => $user,
@@ -400,7 +405,7 @@ sub connect {
     );
 
     unless ( $conn->is_connected ) {
-      die("Connetion error or refused.");
+      die("Connection error or refused.");
     }
 
     # push a remote connection
@@ -464,6 +469,9 @@ sub import {
 
   my ( $register_to, $file, $line ) = caller;
 
+  # use Net::OpenSSH if present (default without feature flag)
+  Rex::Config->set_use_net_openssh_if_present(1);
+
   if ( $what eq "-base" || $what eq "base" || $what eq "-feature" ) {
     require Rex::Commands;
     Rex::Commands->import( register_in => $register_to );
@@ -526,14 +534,16 @@ sub import {
     if ( !ref($addition1) ) {
       $addition1 = [$addition1];
     }
-
     for my $add ( @{$addition1} ) {
 
       my $found_feature = 0;
 
       if ( $add =~ m/^(\d+\.\d+)$/ ) {
         my $vers = $1;
-        my ( $major, $minor, $patch ) = split( /\./, $VERSION );
+        my $_ver = $Rex::VERSION;
+        $_ver =~ s/_\d+$//; # remove rc info
+
+        my ( $major, $minor, $patch ) = split( /\./, $_ver );
         my ( $c_major, $c_minor ) = split( /\./, $vers );
 
         if ( ( $c_major > $major )
@@ -547,24 +557,44 @@ sub import {
         }
       }
 
-      # remove default task auth
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.31 ) {
-        Rex::Logger::debug("activating featureset >= 0.31");
-        Rex::TaskList->create()->set_default_auth(0);
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.3 ) {
+        Rex::Logger::debug("Activating new template engine.");
+        Rex::Config->set_use_template_ng(1);
         $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
-        Rex::Logger::debug("activating featureset >= 0.35");
-        $Rex::Commands::REGISTER_SUB_HASH_PARAMETER = 1;
-        $found_feature                              = 1;
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.0 ) {
+        Rex::Logger::debug("Disabling usage of a tty");
+        Rex::Config->set_no_tty(1);
+        $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {
-        Rex::Logger::debug("activating featureset >= 0.40");
-        $Rex::Template::BE_LOCAL = 1;
-        $Rex::WITH_EXIT_STATUS   = 1;
-        $found_feature           = 1;
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.56 ) {
+        Rex::Logger::debug("Activating autodie.");
+        Rex::Config->set_autodie(1);
+        $found_feature = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.55 ) {
+        Rex::Logger::debug("Using Net::OpenSSH if present.");
+        Rex::Config->set_use_net_openssh_if_present(1);
+        $found_feature = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.54 ) {
+        Rex::Logger::debug("Add service check.");
+        Rex::Config->set_check_service_exists(1);
+
+        Rex::Logger::debug("Setting set() to not append data.");
+        Rex::Config->set_set_no_append(1);
+
+        $found_feature = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.53 ) {
+        Rex::Logger::debug("Registering CMDB as template variables.");
+        Rex::Config->set_register_cmdb_template(1);
+        $found_feature = 1;
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.51 ) {
@@ -594,25 +624,29 @@ sub import {
         $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.55 ) {
-        Rex::Logger::debug("Using Net::OpenSSH if present.");
-        Rex::Config->set_use_net_openssh_if_present(1);
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.40 ) {
+        Rex::Logger::debug("activating featureset >= 0.40");
+        $Rex::Template::BE_LOCAL = 1;
+        $Rex::WITH_EXIT_STATUS   = 1;
+        $found_feature           = 1;
+      }
+
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.35 ) {
+        Rex::Logger::debug("activating featureset >= 0.35");
+        $Rex::Commands::REGISTER_SUB_HASH_PARAMETER = 1;
+        $found_feature                              = 1;
+      }
+
+      # remove default task auth
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.31 ) {
+        Rex::Logger::debug("activating featureset >= 0.31");
+        Rex::TaskList->create()->set_default_auth(0);
         $found_feature = 1;
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.53 ) {
-        Rex::Logger::debug("Registering CMDB as template variables.");
-        Rex::Config->set_register_cmdb_template(1);
-        $found_feature = 1;
-      }
-
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.54 ) {
-        Rex::Logger::debug("Add service check.");
-        Rex::Config->set_check_service_exists(1);
-
-        Rex::Logger::debug("Setting set() to not append data.");
-        Rex::Config->set_set_no_append(1);
-
+      if ( $add eq "no_autodie" ) {
+        Rex::Logger::debug("disabling autodie");
+        Rex::Config->set_autodie(0);
         $found_feature = 1;
       }
 
@@ -624,8 +658,14 @@ sub import {
       }
 
       if ( $add eq "template_ng" ) {
-        Rex::Logger::debug("Activating experimental new template engine.");
+        Rex::Logger::debug("Activating new template engine.");
         Rex::Config->set_use_template_ng(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "no_template_ng" ) {
+        Rex::Logger::debug("Deactivating new template engine.");
+        Rex::Config->set_use_template_ng(0);
         $found_feature = 1;
       }
 
@@ -658,6 +698,12 @@ sub import {
         Rex::Logger::debug(
           "Using sudo without locales. this _will_ break things!");
         Rex::Config->set_sudo_without_locales(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "tty" ) {
+        Rex::Logger::debug("Enabling pty usage for ssh");
+        Rex::Config->set_no_tty(0);
         $found_feature = 1;
       }
 
@@ -765,133 +811,9 @@ sub import {
   strict->import;
 }
 
-=back
-
 =head1 CONTRIBUTORS
 
-Many thanks to the contributors for their work (alphabetical order).
-
-=over 4
-
-=item alex1line
-
-=item Alexandr Ciornii
-
-=item Anders Ossowicki
-
-=item Andrej Zverev
-
-=item bollwarm
-
-=item Boris Däppen
-
-=item Brian Manning
-
-=item Cameron Daniel
-
-=item Chris Steigmeier
-
-=item complefor
-
-=item Cuong Manh Le
-
-=item Daniel Baeurer
-
-=item David Golovan
-
-=item Denis Silakov
-
-=item Dominik Danter
-
-=item Dominik Schulz
-
-=item eduardoj
-
-=item Erik Huelsmann
-
-=item fanyeren
-
-=item Ferenc Erki
-
-=item Fran Rodriguez
-
-=item Franky Van Liedekerke
-
-=item Gilles Gaudin, for writing a french howto
-
-=item Graham Todd
-
-=item Hiroaki Nakamura
-
-=item Ilya Evseev
-
-=item Jean Charles Passard
-
-=item Jean-Marie Renouard
-
-=item Jeen Lee
-
-=item Jens Berthold
-
-=item Jonathan Delgado
-
-=item Jon Gentle
-
-=item Joris
-
-=item Jose Luis Martinez
-
-=item Kasim Tuman
-
-=item Keedi Kim
-
-=item Laird Liu
-
-=item Mario Domgoergen
-
-=item Nathan Abu
-
-=item Naveed Massjouni
-
-=item Nicolas Leclercq
-
-=item Niklas Larsson
-
-=item Nikolay Fetisov
-
-=item Nils Domrose
-
-=item Peter H. Ezetta
-
-=item Peter Manthey
-
-=item Piotr Karbowski
-
-=item Rao Chenlin (Chenryn)
-
-=item RenatoCRON
-
-=item Renee Bäcker
-
-=item Robert Abraham
-
-=item Samuele Tognini
-
-=item Sascha Guenther
-
-=item Simon Bertrang
-
-=item Stephane Benoit
-
-=item Sven Dowideit
-
-=item Tianon Gravi
-
-=item Tokuhiro Matsuno
-
-=item Tomohiro Hosaka
-
-=back
+Many thanks to the contributors for their work. Please see L<CONTRIBUTORS|https://github.com/RexOps/Rex/blob/master/CONTRIBUTORS> file for a complete list.
 
 =head1 LICENSE
 

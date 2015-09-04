@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Report::YAML;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex;
 use Data::Dumper;
@@ -18,6 +19,25 @@ use YAML;
 use base qw(Rex::Report::Base);
 
 our $REPORT_PATH = "./reports";
+
+my $report_name_generator = sub {
+  my $str = time();
+  return $str;
+};
+
+sub set_report_name {
+  my ( $class, $code ) = @_;
+
+  if ( ref $class eq "CODE" ) {
+    $code = $class;
+  }
+
+  if ( ref $code ne "CODE" ) {
+    die "Rex::Report::YAML->set_report_name(\$code_ref) wrong arguments.";
+  }
+
+  $report_name_generator = $code;
+}
 
 sub new {
   my $that  = shift;
@@ -45,8 +65,12 @@ sub write_report {
   if ( !-d $REPORT_PATH . "/" . $server_name ) {
     mkdir "$REPORT_PATH/$server_name";
   }
-  open( my $fh, ">", "$REPORT_PATH/$server_name/" . time() . ".yml" )
-    or die($!);
+  open(
+    my $fh,
+    ">",
+    "$REPORT_PATH/$server_name/"
+      . $report_name_generator->($server_name) . ".yml"
+  ) or die($!);
   print $fh Dump( $self->{__reports__} );
   close($fh);
 

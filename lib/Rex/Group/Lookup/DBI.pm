@@ -20,15 +20,14 @@ With this module you can define hostgroups out of an DBI source.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Group::Lookup::DBI;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex -base;
 use Carp;
@@ -40,18 +39,18 @@ use vars qw(@EXPORT);
 use Rex::Helper::DBI;
 @EXPORT = qw(groups_dbi);
 
-=item groups_dbi($dsn, $user, $password, $sql)
+=head2 groups_dbi($dsn, $user, $password, $sql)
 
  With this function you can read groups from DBI source.
 
-=item Example:
+=head2 Example:
  groups_dbi( 'DBI:mysql:rex;host=db01',
    user             => 'username',
    password         => 'password',
    sql              => "SELECT * FROM HOST",
    create_all_group => TRUE);
 
-=item Database sample for MySQL
+=head2 Database sample for MySQL
 
  CREATE TABLE IF NOT EXISTS `HOST` (
    `ID` int(11) NOT NULL,
@@ -60,7 +59,7 @@ use Rex::Helper::DBI;
    PRIMARY KEY (`ID`)
  );
 
-=item Data sample for MySQL
+=head2 Data sample for MySQL
 
  INSERT INTO `HOST` (`ID`, `GROUP`, `HOST`) VALUES
    (1, 'db', 'db01'),
@@ -71,7 +70,7 @@ use Rex::Helper::DBI;
 =cut
 
 sub groups_dbi {
-  my ( $dsn, %option ) = @_;    # $user, $pass, $sql) = @_;
+  my ( $dsn, %option ) = @_; # $user, $pass, $sql) = @_;
 
   confess "You have to define the sql." if ( !exists $option{sql} );
 
@@ -100,9 +99,5 @@ sub groups_dbi {
     group( "all", values %all_hosts );
   }
 }
-
-=back
-
-=cut
 
 1;

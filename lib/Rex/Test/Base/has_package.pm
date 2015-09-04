@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Test::Base::has_package;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex -base;
 use base qw(Rex::Test::Base);
@@ -27,29 +28,20 @@ sub new {
 }
 
 sub run_test {
-  my ( $self, $pkg, $version ) = @_;
-  if ($version) {
-    my @packages = installed_packages;
-    for my $p (@packages) {
-      if ( $p->{name} eq $pkg ) {
-        if ( $p->{version} eq $version ) {
-          $self->ok( 1, "Found package $pkg in version $version." );
-          return 1;
-        }
-      }
-    }
+  my ( $self, $package, $version ) = @_;
+
+  my $pkg = Rex::Pkg->get;
+
+  if ( $pkg->is_installed( $package, { version => $version } ) ) {
+    $self->ok( 1,
+      "Found package $package" . ( $version ? " at version $version" : "" ) );
+    return 1;
   }
   else {
-    if ( is_installed($pkg) ) {
-      $self->ok( 1, "Found package $pkg" );
-      return 1;
-    }
+    $self->ok( 0,
+      "Found package $package" . ( $version ? " at version $version" : "" ) );
+    return 0;
   }
-
-  $self->ok( 0,
-    "Found package $pkg" . ( $version ? " in version $version" : "" ) );
-
-  return 0;
 }
 
 1;

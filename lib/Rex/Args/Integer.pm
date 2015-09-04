@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Args::Integer;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 
@@ -23,7 +24,7 @@ sub get {
 
   Rex::Logger::debug("Invalid argument for $name");
 
-  return undef;
+  return;
 }
 
 1;

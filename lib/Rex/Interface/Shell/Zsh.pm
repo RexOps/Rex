@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Shell::Zsh;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Interface::Shell::Bash;
 
@@ -22,6 +23,17 @@ sub new {
   bless( $self, $class );
 
   return $self;
+}
+
+sub detect {
+  my ( $self, $con ) = @_;
+
+  my ($shell_path) = $con->_exec("echo \$SHELL");
+  if ( $shell_path =~ m/\/zsh$/ ) {
+    return 1;
+  }
+
+  return 0;
 }
 
 1;

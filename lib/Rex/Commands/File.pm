@@ -54,16 +54,15 @@ With this module you can manipulate files.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::File;
 
+use strict;
 use warnings;
 use Fcntl;
+
+# VERSION
 
 require Rex::Exporter;
 use Data::Dumper;
@@ -92,12 +91,12 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(file_write file_read file_append
   cat sed
   delete_lines_matching append_if_no_such_line delete_lines_according_to
-  file template
+  file template append_or_amend_line
   extract);
 
 use vars qw(%file_handles);
 
-=item template($file, @params)
+=head2 template($file, @params)
 
 Parse a template and return the content.
 
@@ -255,7 +254,7 @@ sub _get_std_template_vars {
   return %template_vars;
 }
 
-=item file($file_name, %options)
+=head2 file($file_name, %options)
 
 This function is the successor of I<install file>. Please use this function to upload files to your server.
 
@@ -419,7 +418,7 @@ sub file {
     # first upload file to tmp location, to get md5 sum.
     # than we can decide if we need to replace the current (old) file.
 
-    my @splitted_file = split( /\//, $file );
+    my @splitted_file = split( /[\/\\]/, $file );
     my $file_name     = ".rex.tmp." . pop(@splitted_file);
     my $tmp_file_name = (
       $#splitted_file != -1
@@ -444,7 +443,7 @@ sub file {
 
       # md5 sums are the same, delete tmp.
       $fs->unlink($tmp_file_name);
-      $need_md5 = 0;    # we don't need to execute on_change hook
+      $need_md5 = 0; # we don't need to execute on_change hook
 
       Rex::get_current_connection()->{reporter}->report(
         changed => 0,
@@ -612,46 +611,49 @@ sub file {
     }
   }
 
-  if ($need_md5) {
-    eval { $new_md5 = md5($file); };
-  }
+  if ( $option->{ensure} ne "absent" ) {
 
-  my %stat_old = $fs->stat($file);
+    if ($need_md5) {
+      eval { $new_md5 = md5($file); };
+    }
+    my %stat_old = $fs->stat($file);
 
-  if ( exists $option->{"mode"} ) {
-    $fs->chmod( $option->{"mode"}, $file );
-  }
+    if ( exists $option->{"mode"} ) {
+      $fs->chmod( $option->{"mode"}, $file );
+    }
 
-  if ( exists $option->{"group"} ) {
-    $fs->chgrp( $option->{"group"}, $file );
-  }
+    if ( exists $option->{"group"} ) {
+      $fs->chgrp( $option->{"group"}, $file );
+    }
 
-  if ( exists $option->{"owner"} ) {
-    $fs->chown( $option->{"owner"}, $file );
-  }
+    if ( exists $option->{"owner"} ) {
+      $fs->chown( $option->{"owner"}, $file );
+    }
 
-  my %stat_new = $fs->stat($file);
+    my %stat_new = $fs->stat($file);
 
-  if ( %stat_old && %stat_new && $stat_old{mode} ne $stat_new{mode} ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message =>
-        "File-System permissions changed from $stat_old{mode} to $stat_new{mode}.",
-    );
-  }
+    if ( %stat_old && %stat_new && $stat_old{mode} ne $stat_new{mode} ) {
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message =>
+          "File-System permissions changed from $stat_old{mode} to $stat_new{mode}.",
+      );
+    }
 
-  if ( %stat_old && %stat_new && $stat_old{uid} ne $stat_new{uid} ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message => "Owner changed from $stat_old{uid} to $stat_new{uid}.",
-    );
-  }
+    if ( %stat_old && %stat_new && $stat_old{uid} ne $stat_new{uid} ) {
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message => "Owner changed from $stat_old{uid} to $stat_new{uid}.",
+      );
+    }
 
-  if ( %stat_old && %stat_new && $stat_old{gid} ne $stat_new{gid} ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message => "Group changed from $stat_old{gid} to $stat_new{gid}.",
-    );
+    if ( %stat_old && %stat_new && $stat_old{gid} ne $stat_new{gid} ) {
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message => "Group changed from $stat_old{gid} to $stat_new{gid}.",
+      );
+    }
+
   }
 
   my $on_change_done = 0;
@@ -692,7 +694,7 @@ sub file {
   return $__ret->{changed};
 }
 
-=item file_write($file_name)
+=head2 file_write($file_name)
 
 This function opens a file for writing (it will truncate the file if it already exists). It returns a Rex::FS::File object on success.
 
@@ -729,7 +731,7 @@ sub file_write {
   return Rex::FS::File->new( fh => $fh );
 }
 
-=item file_append($file_name)
+=head2 file_append($file_name)
 
 =cut
 
@@ -749,7 +751,7 @@ sub file_append {
   return Rex::FS::File->new( fh => $fh );
 }
 
-=item file_read($file_name)
+=head2 file_read($file_name)
 
 This function opens a file for reading. It returns a Rex::FS::File object on success.
 
@@ -787,7 +789,7 @@ sub file_read {
   return Rex::FS::File->new( fh => $fh );
 }
 
-=item cat($file_name)
+=head2 cat($file_name)
 
 This function returns the complete content of $file_name as a string.
 
@@ -809,7 +811,7 @@ sub cat {
   return $content;
 }
 
-=item delete_lines_matching($file, $regexp)
+=head2 delete_lines_matching($file, $regexp)
 
 Delete lines that match $regexp in $file.
 
@@ -885,7 +887,7 @@ OUT:
     ->report_resource_end( type => "delete_lines_matching", name => $file );
 }
 
-=item delete_lines_according_to($search, $file, @options)
+=head2 delete_lines_according_to($search, $file, @options)
 
 This is the successor of the delete_lines_matching() function. This function also allows the usage of an on_change hook.
 
@@ -925,7 +927,7 @@ sub delete_lines_according_to {
 
 }
 
-=item append_if_no_such_line($file, $new_line, @regexp)
+=head2 append_if_no_such_line($file, $new_line, @regexp)
 
 Append $new_line to $file if none in @regexp is found. If no regexp is
 supplied, the line is appended unless there is already an identical line
@@ -953,7 +955,33 @@ Since 0.42 you can use named parameters as well
 =cut
 
 sub append_if_no_such_line {
-  my $file = shift;
+  _append_or_update( 'append_if_no_such_line', @_ );
+}
+
+=head2 append_or_amend_line($file, $line, @regexp)
+
+Similar to L<append_if_no_such_line>, but if the line in the regexp is
+found, it will be updated. Otherwise, it will be appended.
+
+ task "update-group", sub {
+   append_or_amend_line "/etc/groups",
+     line  => "mygroup:*:100:myuser3,myuser4",
+     regexp => qr{^mygroup},
+     on_change => sub {
+                say "file was changed, do something.";
+              };
+ };
+
+=cut
+
+sub append_or_amend_line {
+  _append_or_update( 'append_or_amend_line', @_ );
+}
+
+sub _append_or_update {
+  my $action = shift;
+  my $file   = shift;
+
   $file = resolv_path($file);
   my ( $new_line, @m );
 
@@ -961,7 +989,7 @@ sub append_if_no_such_line {
   my ( $option, $on_change );
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => "append_if_no_such_line", name => $file );
+    ->report_resource_start( type => $action, name => $file );
 
   eval {
     no warnings;
@@ -1000,9 +1028,9 @@ sub append_if_no_such_line {
   $old_md5 = md5($file);
 
   # slow but secure way
-  my @content;
+  my $content;
   eval {
-    @content = split( /\n/, cat($file) );
+    $content = [ split( /\n/, cat($file) ) ];
     1;
   } or do {
     $ret = 1;
@@ -1012,25 +1040,29 @@ sub append_if_no_such_line {
     push @m, qr{\Q$new_line\E};
   }
 
-  for my $line (@content) {
+  my $found;
+  for my $line ( 0 .. $#{$content} ) {
     for my $match (@m) {
       if ( ref($match) ne "Regexp" ) {
         $match = qr{$match};
       }
-      if ( $line =~ $match ) {
-        return 0;
+      if ( $content->[$line] =~ $match ) {
+        return 0 if $action eq 'append_if_no_such_line';
+        $content->[$line] = "$new_line";
+        $found = 1;
       }
     }
   }
 
-  push @content, "$new_line\n";
+  push @$content, "$new_line" unless $found;
 
   eval {
     my $fh = file_write $file;
     unless ($fh) {
       die("can't open file for writing");
     }
-    $fh->write( join( "\n", @content ) );
+    $fh->write( join( "\n", @$content ) );
+    $fh->write("\n");
     $fh->close;
     $ret = 0;
     1;
@@ -1073,12 +1105,14 @@ sub append_if_no_such_line {
   }
 
   Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "append_if_no_such_line", name => $file );
+    ->report_resource_end( type => $action, name => $file );
 }
 
-=item extract($file [, %options])
+=head2 extract($file [, %options])
 
-This function extracts a file. Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
+This function extracts a file. The target directory optionally specified with the `to` option will be created automatically.
+
+Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, .gz, .bz2, .war, .jar.
 
  task prepare => sub {
    extract "/tmp/myfile.tar.gz",
@@ -1116,6 +1150,7 @@ sub extract {
     $type = $option{type};
   }
 
+  Rex::Commands::Fs::mkdir($to);
   $pre_cmd = "cd $to; ";
 
   my $exec = Rex::Interface::Exec->create;
@@ -1165,7 +1200,7 @@ sub extract {
 
 }
 
-=item sed($search, $replace, $file)
+=head2 sed($search, $replace, $file)
 
 Search some string in a file and replace it.
 
@@ -1205,7 +1240,9 @@ sub sed {
   }
   else {
     @content = split( /\n/, cat($file) );
-    map { s/$search/$replace/ } @content;
+    for (@content) {
+      s/$search/$replace/;
+    }
   }
 
   my $fs   = Rex::Interface::Fs->create;
@@ -1225,9 +1262,5 @@ sub sed {
 
   return $ret;
 }
-
-=back
-
-=cut
 
 1;

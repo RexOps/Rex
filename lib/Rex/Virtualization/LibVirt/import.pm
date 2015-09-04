@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Virtualization::LibVirt::import;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Helper::Run;
@@ -33,8 +34,9 @@ sub execute {
   my $cwd = i_run "pwd";
   chomp $cwd;
 
-  my $dir  = dirname $opt{file};
-  my $file = "storage/" . basename $opt{file};
+  my $dir = dirname $opt{file};
+  my ( undef, undef, $suffix ) = fileparse( $opt{file}, qr{\.[^.]*} );
+  my $file = "storage/" . $dom . $suffix;
   mkdir "./storage";
 
   my $format = "qcow2";
@@ -93,7 +95,8 @@ sub execute {
   }
 
   for (@network) {
-    $_->{type} = "bridge"  if ( $_->{type} eq "bridged" );
+    $_->{type} ||= "network";
+    $_->{type} = "bridge" if ( $_->{type} && $_->{type} eq "bridged" );
     $_->{type} = "network" if ( $_->{type} eq "nat" );
     if ( $_->{type} eq "network" && !exists $_->{network} ) {
       $_->{network} = "default";

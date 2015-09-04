@@ -24,15 +24,14 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Kernel;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands::Run;
@@ -47,7 +46,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(kmod);
 
-=item kmod($action => $module)
+=head2 kmod($action => $module)
 
 This function loads or unloads a kernel module.
 
@@ -101,7 +100,7 @@ sub kmod {
       my @mod_split = split( /\//, $module );
       my $mod = $mod_split[-1];
 
-      my ($mod_id) = grep { $_ = $1 if $_ =~ qr{(\d+).*$mod} } run "modinfo";
+      my ($mod_id) = map { /^\s*(\d+)\s+.*$mod/ } run "modinfo";
       my $cmd = "modunload -i $mod_id";
 
       if ( $options->{"exec_file"} ) {
@@ -147,9 +146,5 @@ sub kmod {
     die("Unknown action $action");
   }
 }
-
-=back
-
-=cut
 
 1;

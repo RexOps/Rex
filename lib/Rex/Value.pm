@@ -6,11 +6,12 @@
 #
 # this is a simple helper class for the get() function
 
-use strict;
-
 package Rex::Value;
 
+use strict;
 use warnings;
+
+# VERSION
 
 sub new {
   my $that  = shift;

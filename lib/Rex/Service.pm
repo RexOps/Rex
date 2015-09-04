@@ -4,17 +4,19 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Service;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Config;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
+use Rex::Helper::Run;
 use Rex::Logger;
 
 my %SERVICE_PROVIDER;
@@ -27,8 +29,11 @@ sub register_service_provider {
 
 sub get {
 
-  my $operatingsystem   = Rex::Hardware::Host->get_operating_system();
-  my $can_run_systemctl = can_run("systemctl");
+  my $operatingsystem = Rex::Hardware::Host->get_operating_system();
+
+  i_run "systemctl --no-pager > /dev/null";
+  my $can_run_systemctl = $? == 0 ? 1 : 0;
+
   my $class;
 
   $class = "Rex::Service::" . $operatingsystem;
@@ -51,6 +56,11 @@ sub get {
   }
   elsif ( is_mageia($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Mageia::systemd";
+  }
+  elsif ( is_debian($operatingsystem) && $can_run_systemctl ) {
+
+    # this also counts for Ubuntu
+    $class = "Rex::Service::Debian::systemd";
   }
 
   my $provider_for = Rex::Config->get("service_provider") || {};

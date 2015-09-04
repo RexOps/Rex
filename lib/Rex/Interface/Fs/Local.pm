@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Fs::Local;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Interface::Fs::Base;
 use base qw(Rex::Interface::Fs::Base);
@@ -48,6 +49,9 @@ sub ls {
   };
 
   # failed open directory, return undef
+
+  die "Error listing directory content ($path)"
+    if ( $@ && Rex::Config->get_autodie );
   if ($@) { return; }
 
   # return directory content
@@ -66,20 +70,26 @@ sub rmdir {
     $exec->exec( "rd /Q /S " . join( " ", @dirs ) );
   }
   else {
+    @dirs = $self->_normalize_path(@dirs);
     $exec->exec( "/bin/rm -rf " . join( " ", @dirs ) );
   }
 
   if ( $? == 0 ) { return 1; }
+
+  die( "Error removing directory: " . join( ", ", @dirs ) )
+    if ( Rex::Config->get_autodie );
 }
 
 sub is_dir {
   my ( $self, $path ) = @_;
-  if ( -d $path ) { return 1; }
+  ( -d $path ) ? return 1 : return undef;
 }
 
 sub is_file {
   my ( $self, $file ) = @_;
-  if ( -f $file ) { return 1; }
+  ( -f $file || -l $file || -b $file || -c $file || -p $file || -S $file )
+    ? return 1
+    : return undef;
 }
 
 sub unlink {
@@ -89,7 +99,12 @@ sub unlink {
 
 sub mkdir {
   my ( $self, $dir ) = @_;
-  CORE::mkdir($dir);
+  if ( CORE::mkdir($dir) == 0 ) {
+    die "Error creating directory: $dir" if ( Rex::Config->get_autodie );
+    return 0;
+  }
+
+  return 1;
 }
 
 sub stat {
@@ -116,6 +131,7 @@ sub stat {
     return %ret;
   }
 
+  return undef;
 }
 
 sub is_readable {
@@ -144,10 +160,15 @@ sub rename {
     $exec->exec("move \"$old\" \"$new\"");
   }
   else {
-    $exec->exec("/bin/mv '$old' '$new'");
+    ($old) = $self->_normalize_path($old);
+    ($new) = $self->_normalize_path($new);
+    $exec->exec("/bin/mv $old $new");
   }
 
   if ( $? == 0 ) { return 1; }
+
+  die "Error renaming file or directory: $old -> $new"
+    if ( Rex::Config->get_autodie );
 }
 
 sub glob {

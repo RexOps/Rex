@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Cron::Base;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands;
@@ -38,7 +39,7 @@ sub list_jobs {
   my ($self) = @_;
   my @jobs = @{ $self->{cron} };
   my @ret =
-    map { $_ = { line => $_->{line}, %{ $_->{cron} } } }
+    map { { line => $_->{line}, %{ $_->{cron} } } }
     grep { $_->{type} eq "job" } @jobs;
 }
 
@@ -147,7 +148,7 @@ sub write_cron {
 
   my $rnd_file = get_tmp_file;
 
-  my @lines = map { $_ = $_->{line} } @{ $self->{cron} };
+  my @lines = map { $_->{line} } @{ $self->{cron} };
 
   my $fh = file_write $rnd_file;
   $fh->write( join( "\n", @lines ) . "\n" );
@@ -158,13 +159,17 @@ sub write_cron {
 
 sub activate_user_cron {
   my ( $self, $file, $user ) = @_;
-  i_run "crontab -u $user $file";
+  my $command = 'crontab';
+  $command .= " -u $user" if defined $user;
+  i_run "$command $file";
   unlink $file;
 }
 
 sub read_user_cron {
   my ( $self, $user ) = @_;
-  my @lines = i_run "crontab -u $user -l";
+  my $command = 'crontab -l';
+  $command .= " -u $user" if defined $user;
+  my @lines = i_run $command;
   $self->parse_cron(@lines);
 }
 

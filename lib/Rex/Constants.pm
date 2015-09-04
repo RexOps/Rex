@@ -4,11 +4,12 @@
 # vim: set ts=3 sw=3 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Constants;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);

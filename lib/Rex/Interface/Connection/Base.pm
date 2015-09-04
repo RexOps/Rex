@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Connection::Base;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
@@ -94,6 +95,10 @@ sub push_use_sudo {
 
 sub get_current_use_sudo {
   my ($self) = @_;
+
+  if ( $self->{is_sudo} ) {
+    return 1;
+  }
   return $self->{__use_sudo__}->[-1];
 }
 

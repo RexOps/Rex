@@ -55,15 +55,14 @@ Version <= 1.0: All these functions will not be reported.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Box;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use YAML;
 use Data::Dumper;
@@ -103,7 +102,7 @@ Rex::Config->register_set_handler(
   }
 );
 
-=item new(name => $box_name)
+=head2 new(name => $box_name)
 
 Constructor if used in OO mode.
 
@@ -116,7 +115,7 @@ sub new {
   return Rex::Box->create(@_);
 }
 
-=item box(sub {})
+=head2 box(sub {})
 
 With this function you can create a new Rex/Box. The first parameter of this function is the Box object. With this object you can define your box.
 
@@ -175,7 +174,7 @@ sub box(&) {
   return $self->ip;
 }
 
-=item list_boxes
+=head2 list_boxes
 
 This function returns an array of hashes containing all information that can be gathered from the hypervisor about the Rex/Box. This function doesn't start a Rex/Box.
 
@@ -220,7 +219,7 @@ sub list_boxes {
   return @{$ref};
 }
 
-=item get_box($box_name)
+=head2 get_box($box_name)
 
 This function tries to gather all information of a Rex/Box. This function also starts a Rex/Box to gather all information of the running system.
 
@@ -308,7 +307,7 @@ sub get_box {
 
 }
 
-=item boxes($action, @data)
+=head2 boxes($action, @data)
 
 With this function you can control your boxes. Currently there are 3 actions.
 
@@ -412,13 +411,9 @@ sub boxes {
 
 }
 
-Rex::TaskList->create()->create_task(
-  "get_sys_info",
-  sub {
-    return { get_system_information() };
-  },
-  { dont_register => 1, exit_on_connect_fail => 0 }
-);
+task 'get_sys_info', sub {
+  return { get_system_information() };
+}, { dont_register => 1, exit_on_connect_fail => 0 };
 
 sub import {
   my ( $class, %option ) = @_;
@@ -457,9 +452,5 @@ sub import {
 
   __PACKAGE__->export_to_level( 1, @_ );
 }
-
-=back
-
-=cut
 
 1;

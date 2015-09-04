@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Pkg::Debian;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -27,11 +28,11 @@ sub new {
 
   $self->{commands} = {
     install =>
-      'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install %s',
+      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -y install %s',
     install_version =>
-      'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold --force-yes -y install %s=%s',
+      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -y install %s=%s',
     update_system =>
-      'APT_LISTCHANGES_FRONTEND=text DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
+      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
     remove            => 'apt-get -y remove %s',
     purge             => 'dpkg --purge %s',
     update_package_db => 'apt-get -y update',
@@ -43,8 +44,7 @@ sub new {
 sub bulk_install {
   my ( $self, $packages_aref, $option ) = @_;
 
-  delete $option->{version}
-    ;    # makes no sense to specify the same version for several packages
+  delete $option->{version}; # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
 
@@ -55,7 +55,7 @@ sub get_installed {
   my ( $self, $pkg ) = @_;
   my @pkgs;
   my $dpkg_cmd =
-    'dpkg-query -W --showformat "\${Status} \${Package}|\${Version}\n"';
+    'dpkg-query -W --showformat "\${Status} \${Package}|\${Version}|\${Architecture}\n"';
   if ($pkg) {
     $dpkg_cmd .= " " . $pkg;
   }
@@ -63,18 +63,62 @@ sub get_installed {
   my @lines = i_run $dpkg_cmd;
 
   for my $line (@lines) {
-    if ( $line =~ m/^install ok installed ([^\|]+)\|(.*)$/ ) {
+    if ( $line =~ m/^install ok installed ([^\|]+)\|([^\|]+)\|(.*)$/ ) {
       push(
         @pkgs,
         {
-          name    => $1,
-          version => $2,
+          name         => $1,
+          version      => $2,
+          architecture => $3,
         }
       );
     }
   }
 
   return @pkgs;
+}
+
+sub diff_package_list {
+  my ( $self, $list1, $list2 ) = @_;
+
+  my @old_installed = @{$list1};
+  my @new_installed = @{$list2};
+
+  my @modifications;
+
+  # getting modifications of old packages
+OLD_PKG:
+  for my $old_pkg (@old_installed) {
+  NEW_PKG:
+    for my $new_pkg (@new_installed) {
+      if ( $old_pkg->{name} eq $new_pkg->{name}
+        && $old_pkg->{architecture} eq $new_pkg->{architecture} )
+      {
+
+        # flag the package as found in new package list,
+        # to find removed and new ones.
+        $old_pkg->{found} = 1;
+        $new_pkg->{found} = 1;
+
+        if ( $old_pkg->{version} ne $new_pkg->{version} ) {
+          push @modifications, { %{$new_pkg}, action => 'updated' };
+        }
+        next OLD_PKG;
+      }
+    }
+  }
+
+  # getting removed old packages
+  push @modifications, map { $_->{action} = 'removed'; $_ }
+    grep { !exists $_->{found} } @old_installed;
+
+  # getting new packages
+  push @modifications, map { $_->{action} = 'installed'; $_ }
+    grep { !exists $_->{found} } @new_installed;
+
+  map { delete $_->{found} } @modifications;
+
+  return @modifications;
 }
 
 sub add_repository {
@@ -110,6 +154,10 @@ sub add_repository {
 
   if ( exists $data{"key_url"} ) {
     i_run "wget -O - " . $data{"key_url"} . " | apt-key add -";
+  }
+
+  if ( exists $data{"key_file"} ) {
+    i_run "apt-key add $data{'key_file'}";
   }
 
   if ( exists $data{"key_id"} && $data{"key_server"} ) {

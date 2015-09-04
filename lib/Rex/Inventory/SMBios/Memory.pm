@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Inventory::SMBios::Memory;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Inventory::SMBios::Section;
 use base qw(Rex::Inventory::SMBios::Section);
@@ -22,7 +23,7 @@ __PACKAGE__->has(
     { key => 'Locator', from => "Device Locator" },
   ],
   1
-);    # is_array 1
+); # is_array 1
 
 sub new {
   my $that  = shift;

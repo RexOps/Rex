@@ -48,20 +48,26 @@ Only I<open_port> and I<close_port> are idempotent.
          A => "POSTROUTING",
          o => "eth0",
          j => "MASQUERADE";
+
+   # The 'iptables' function also accepts long options,
+   # however, options with dashes need to be quoted
+   iptables table => "nat",
+         accept          => "POSTROUTING",
+         "out-interface" => "eth0",
+         jump            => "MASQUERADE";
  
  };
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Iptables;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use Data::Dumper;
@@ -82,7 +88,7 @@ use Rex::Logger;
 
 sub iptables;
 
-=item open_port($port, $option)
+=head2 open_port($port, $option)
 
 Open a port for inbound connections.
 
@@ -124,7 +130,7 @@ sub open_port {
 
 }
 
-=item close_port($port, $option)
+=head2 close_port($port, $option)
 
 Close a port for inbound connections.
 
@@ -161,9 +167,9 @@ sub close_port {
 
 }
 
-=item redirect_port($in_port, $option)
+=head2 redirect_port($in_port, $option)
 
-Redirect $in_port to an other local port.
+Redirect $in_port to another local port.
 
  task "redirects", sub {
    redirect_port 80 => 10080;
@@ -230,18 +236,40 @@ sub redirect_port {
   iptables @opts;
 }
 
-=item iptables(@params)
+=head2 iptables(@params)
 
 Write standard iptable comands.
+
+Note that there is a short form for the IPTables C<--flush> option; when you
+pass the option of C<-F|"flush"> as the only argument, the command
+C<iptables -F> is run on the connected host.  With the two argument form of
+C<flush> shown in the examples below, the second argument is table you want to
+flush.
 
  task "firewall", sub {
    iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
    iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
  
+   # automatically flushes all tables; equivalent to 'iptables -F'
    iptables "flush";
    iptables -F;
+
+   # flush only the "filter" table
    iptables flush => "filter";
    iptables -F => "filter";
+ };
+
+ # Note: options with dashes "-" need to be quoted to escape them from Perl
+ task "long_form_firewall", sub {
+   iptables table => "nat",
+        append          => "POSTROUTING",
+        "out-interface" => "eth0",
+        jump            => "MASQUERADE";
+   iptables table => "filter",
+        "in-interface" => "eth0",
+        match          => "state",
+        state          => "RELATED,ESTABLISHED",
+        jump           => "ACCEPT";
  };
 
 =cut
@@ -279,11 +307,11 @@ sub iptables {
   }
 
   if ( can_run("iptables") ) {
-    run "iptables $cmd";
+    my $output = run "iptables $cmd";
 
     if ( $? != 0 ) {
       Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
-      die("Error setting iptable rule: $cmd");
+      die("Error setting iptable rule: $cmd; command output: $output");
     }
   }
   else {
@@ -292,7 +320,7 @@ sub iptables {
   }
 }
 
-=item is_nat_gateway
+=head2 is_nat_gateway
 
 This function creates a NAT gateway for the device the default route points to.
 
@@ -326,7 +354,7 @@ sub is_nat_gateway {
 
 }
 
-=item default_state_rule(%option)
+=head2 default_state_rule(%option)
 
 Set the default state rules for the given device.
 
@@ -359,7 +387,7 @@ sub default_state_rule {
     j     => "ACCEPT";
 }
 
-=item iptables_list
+=head2 iptables_list
 
 List all iptables rules.
 
@@ -410,7 +438,7 @@ sub _iptables_list {
   return $ret;
 }
 
-=item iptables_clear
+=head2 iptables_clear
 
 Remove all iptables rules.
 
@@ -519,9 +547,5 @@ sub _rule_exists {
 
   return 0;
 }
-
-=back
-
-=cut
 
 1;

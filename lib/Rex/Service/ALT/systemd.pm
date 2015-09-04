@@ -2,11 +2,12 @@
 # ALT systemd support
 #
 
-use strict;
-
 package Rex::Service::ALT::systemd;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Logger;

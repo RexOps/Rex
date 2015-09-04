@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Inventory::DMIDecode::Memory;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Inventory::DMIDecode::Section;
 use base qw(Rex::Inventory::DMIDecode::Section);
@@ -22,7 +23,7 @@ __PACKAGE__->has(
     'Locator',
   ],
   1
-);    # is_array 1
+); # is_array 1
 
 sub new {
   my $that  = shift;

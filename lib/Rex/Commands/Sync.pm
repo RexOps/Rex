@@ -34,6 +34,7 @@ This module can sync directories between your Rex system and your servers withou
        mode  => 700,
      },
      exclude => [ '*.tmp' ],
+     parse_templates => TRUE|FALSE,
      on_change => sub {
       my (@files_changed) = @_;
      },
@@ -45,11 +46,12 @@ This module can sync directories between your Rex system and your servers withou
 
 =cut
 
-use strict;
-
 package Rex::Commands::Sync;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
@@ -63,7 +65,10 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
+use Rex::Helper::Encode;
 use JSON::XS;
+use Text::Glob 'glob_to_regex';
+use File::Basename 'basename';
 
 @EXPORT = qw(sync_up sync_down);
 
@@ -78,6 +83,9 @@ sub sync_up {
   else {
     $options = {@option};
   }
+
+  # default is, parsing templates (*.tpl) files
+  $options->{parse_templates} = TRUE;
 
   $source = resolv_path($source);
   $dest   = resolv_path($dest);
@@ -117,30 +125,14 @@ sub sync_up {
   my $excludes = $options->{exclude} ||= [];
   $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
 
-  my @excluded_files;
-  foreach my $ex (@$excludes) {
-    LOCAL {
-      if ( is_dir $ex) {
-        map {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath("$ex/$_->{name}") ) )
-        } _get_local_files($ex);
-      }
-      else {
-        foreach my $path ( glob $ex ) {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath($path) ) );
-        }
-      }
-    };
-  }
+  my @excluded_files = map { glob_to_regex($_) } @{$excludes};
 
   #
   # fifth, upload the different files
   #
 
   for my $file (@diff) {
-    next if grep { $_ eq $file->{name} } @excluded_files;
+    next if grep { basename( $file->{name} ) =~ $_ } @excluded_files;
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
@@ -191,7 +183,7 @@ sub sync_up {
 
     Rex::Logger::debug(
       "(sync_up) Uploading $file->{path} to $dest/$file->{name}");
-    if ( $file->{path} =~ m/\.tpl$/ ) {
+    if ( $file->{path} =~ m/\.tpl$/ && $options->{parse_templates} ) {
       my $file_name = $file->{name};
       $file_name =~ s/\.tpl$//;
 
@@ -261,30 +253,14 @@ sub sync_down {
   my $excludes = $options->{exclude} ||= [];
   $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
 
-  my @excluded_files;
-  foreach my $ex (@$excludes) {
-    LOCAL {
-      if ( is_dir $ex) {
-        map {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath("$ex/$_->{name}") ) )
-        } _get_local_files($ex);
-      }
-      else {
-        foreach my $path ( glob $ex ) {
-          push( @excluded_files,
-            sprintf( '/%s', File::Spec->canonpath($path) ) );
-        }
-      }
-    };
-  }
+  my @excluded_files = map { glob_to_regex($_); } @{$excludes};
 
   #
   # fifth, download the different files
   #
 
   for my $file (@diff) {
-    next if grep { $_ eq $file->{name} } @excluded_files;
+    next if grep { basename( $file->{name} ) =~ $_ } @excluded_files;
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
@@ -364,116 +340,25 @@ sub _get_remote_files {
   my @remote_dirs = ($dest);
   my @remote_files;
 
-  if ( can_run("md5sum") ) {
-
-    # if md5sum executable is available
-    # copy a script to the remote host so it is fast to scan
-    # the directory.
-
-    my $script = q|
-use strict;
-use warnings;
-
-unlink $0;
-
-my $dest = $ARGV[0];
-my @dirs = ($dest);
-my @tree = ();
-
-for my $dir (@dirs) {
-  opendir(my $dh, $dir) or die($!);
-  while(my $entry = readdir($dh)) {
-    next if($entry eq ".");
-    next if($entry eq "..");
-
-    if(-d "$dir/$entry") {
-      push(@dirs, "$dir/$entry");
-      next;
-    }
-
-    my $name = "$dir/$entry";
-    $name =~ s/^\Q$dest\E//;
-
-    my $md5 = qx{md5sum $dir/$entry \| awk ' { print \$1 } '};
-
-    chomp $md5;
-
-    push(@tree, {
-      path => "$dir/$entry",
-      name => $name,
-      md5  => $md5,
-    });
-  }
-  closedir($dh);
-}
-
-print to_json(\@tree);
-
-sub to_json {
-  my ($ref) = @_;
-
-  my $s = "";
-
-  if(ref $ref eq "ARRAY") {
-    $s .= "[";
-    for my $itm (@{ $ref }) {
-      if(substr($s, -1) ne "[") {
-        $s .= ",";
+  for my $dir (@remote_dirs) {
+    for my $entry ( list_files($dir) ) {
+      next if ( $entry eq "." );
+      next if ( $entry eq ".." );
+      if ( is_dir("$dir/$entry") ) {
+        push( @remote_dirs, "$dir/$entry" );
+        next;
       }
-      $s .= to_json($itm);
-    }
-    return $s . "]";
-  }
-  elsif(ref $ref eq "HASH") {
-    $s .= "{";
-    for my $key (keys %{ $ref }) {
-      if(substr($s, -1) ne "{") {
-        $s .= ",";
-      }
-      $s .= "\"$key\": " . to_json($ref->{$key});
-    }
-    return $s . "}";
-  }
-  else {
-    if($ref =~ /^\d+$/) {
-      return $ref;
-    }
-    else {
-      $ref =~ s/'/\\\'/g;
-      return "\"$ref\"";
-    }
-  }
-}
-    |;
 
-    my $rnd_file = get_tmp_file;
-    file $rnd_file, content => $script;
-    my $content = run "perl $rnd_file $dest";
-    my $ref     = decode_json($content);
-    @remote_files = @{$ref};
-  }
-  else {
-    # fallback if no md5sum executable is available
-    for my $dir (@remote_dirs) {
-      for my $entry ( list_files($dir) ) {
-        next if ( $entry eq "." );
-        next if ( $entry eq ".." );
-        if ( is_dir("$dir/$entry") ) {
-          push( @remote_dirs, "$dir/$entry" );
-          next;
+      my $name = "$dir/$entry";
+      $name =~ s/^\Q$dest\E//;
+      push(
+        @remote_files,
+        {
+          name => $name,
+          path => "$dir/$entry",
+          md5  => md5("$dir/$entry"),
         }
-
-        my $name = "$dir/$entry";
-        $name =~ s/^\Q$dest\E//;
-        push(
-          @remote_files,
-          {
-            name => $name,
-            path => "$dir/$entry",
-            md5  => md5("$dir/$entry"),
-          }
-        );
-      }
+      );
     }
   }
 

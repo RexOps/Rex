@@ -4,12 +4,13 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Fork::Task;
 
+use strict;
 use warnings;
 use POSIX ":sys_wait_h";
+
+# VERSION
 
 BEGIN {
 
@@ -40,7 +41,7 @@ sub start {
 
     # only allow this if no parallelism is given.
     # with parallelism active it doesn't make sense.
-    if ( $Rex::WITH_EXIT_STATUS && Rex::Config->get_parallelism == 1 ) {
+    if ($Rex::WITH_EXIT_STATUS) {
       eval {
         &$func($self);
         1;

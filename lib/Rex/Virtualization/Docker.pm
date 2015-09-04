@@ -47,11 +47,12 @@ With this module you can manage Docker.
 
 =cut
 
-use strict;
-
 package Rex::Virtualization::Docker;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Virtualization::Base;
 use base qw(Rex::Virtualization::Base);

@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::User::FreeBSD;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands::Run;
@@ -29,7 +30,7 @@ use base qw(Rex::User::Linux);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = {@_};
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
@@ -75,7 +76,7 @@ sub create_user {
     $cmd .= " -d " . $data->{"home"};
   }
 
-  if ( $should_create_home && !defined $uid ) {    #useradd mode
+  if ( $should_create_home && !defined $uid ) { #useradd mode
     $cmd .= " -m ";
   }
 
@@ -104,15 +105,16 @@ sub create_user {
   $fh->close;
 
   i_run "/bin/sh $rnd_file";
-  if ( $? == 0 ) {
+  my $retval = $?;
+  Rex::Interface::Fs->create()->unlink($rnd_file);
+
+  if ( $retval == 0 ) {
     Rex::Logger::debug("User $user created/updated.");
   }
   else {
     Rex::Logger::info( "Error creating/updating user $user", "warn" );
     die("Error creating/updating user $user");
   }
-
-  Rex::Interface::Fs->create()->unlink($rnd_file);
 
   if ( exists $data->{password} ) {
     Rex::Logger::debug("Changing password of $user.");
@@ -125,11 +127,13 @@ sub create_user {
     $fh->close;
 
     i_run "/bin/sh $rnd_file";
-    if ( $? != 0 ) {
+    my $pw_retval = $?;
+    Rex::Interface::Fs->create()->unlink($rnd_file);
+
+    if ( $pw_retval != 0 ) {
       die("Error setting password for $user");
     }
 
-    Rex::Interface::Fs->create()->unlink($rnd_file);
   }
 
   my $new_pw_md5 = md5("/etc/passwd");

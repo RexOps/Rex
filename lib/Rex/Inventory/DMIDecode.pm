@@ -4,12 +4,13 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Inventory::DMIDecode;
 
+use strict;
 use warnings;
 use Data::Dumper;
+
+# VERSION
 
 use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;

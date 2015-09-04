@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Cloud::OpenStack;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 
@@ -475,9 +476,9 @@ sub upload_key {
 
   # read public key
   my $fh;
-  unless ( open( $fh, glob($public_key) ) ) {
+  unless ( open( $fh, "<", glob($public_key) ) ) {
     Rex::Logger::debug("Cannot read $public_key");
-    return undef;
+    return;
   }
 
   { local $/ = undef; ( $type, $key, $comment ) = split( /\s+/, <$fh> ); }

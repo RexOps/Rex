@@ -4,13 +4,14 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Helper::Path;
 
+use strict;
 use warnings;
 
-use File::Spec;
+# VERSION
+
+use Rex::Helper::File::Spec;
 use File::Basename qw(dirname);
 require Exporter;
 
@@ -88,14 +89,14 @@ sub get_file_path {
   {
     foreach my $pattern ( @{ $path_map{$prefix} } ) {
       my $expansion =
-        File::Spec->catfile( parse_path($pattern),
+        Rex::Helper::File::Spec->catfile( parse_path($pattern),
         substr( $file_name, length($prefix) ) );
 
       if ( -e $expansion ) {
         return $fix_path->($expansion);
       }
 
-      $expansion = File::Spec->catfile( $real_path, $expansion );
+      $expansion = Rex::Helper::File::Spec->catfile( $real_path, $expansion );
       if ( -e $expansion ) {
         return $fix_path->($expansion);
       }
@@ -106,7 +107,8 @@ sub get_file_path {
     return $fix_path->($file_name);
   }
 
-  my $cat_file_name = File::Spec->catfile( $real_path, $file_name );
+  my $cat_file_name =
+    Rex::Helper::File::Spec->catfile( $real_path, $file_name );
   if ( -e $cat_file_name ) {
     return $fix_path->($cat_file_name);
   }
@@ -121,7 +123,8 @@ sub get_file_path {
     }
 
     my $module_path = Rex::get_module_path($caller_package);
-    $cat_file_name = File::Spec->catfile( $module_path, $file_name );
+    $cat_file_name =
+      Rex::Helper::File::Spec->catfile( $module_path, $file_name );
     if ( -e $cat_file_name ) {
       return $fix_path->($cat_file_name);
     }
@@ -129,13 +132,14 @@ sub get_file_path {
     $i++;
   }
 
-  $file_name = File::Spec->catfile( dirname($old_caller_file), $file_name );
+  $file_name =
+    Rex::Helper::File::Spec->catfile( dirname($old_caller_file), $file_name );
 
   return $fix_path->($file_name);
 }
 
 sub get_tmp_file {
-  return File::Spec->join( Rex::Config->get_tmp_dir(),
+  return Rex::Helper::File::Spec->join( Rex::Config->get_tmp_dir(),
     Rex::Commands::get_random( 12, 'a' .. 'z' ) . '.tmp' );
 }
 

@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Hardware::Network::Linux;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Helper::Run;
@@ -161,11 +162,12 @@ sub _parse_ip {
     }
 
     # loopback
-    if ( $line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/ ) {
-      $dev->{$cur_dev}->{ip}      = $1;
-      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
-    }
+    #    if ( $line =~ m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) scope host lo/ ) {
+    #      $dev->{$cur_dev}->{ip}      = $1;
+    #      $dev->{$cur_dev}->{netmask} = _convert_cidr_prefix($2);
+    #    }
 
+    my $sec_i = 1;
     if ( $line =~
       m/^\s*inet (\d+\.\d+\.\d+\.\d+)\/(\d+) (brd (\d+\.\d+\.\d+\.\d+) )?scope ([^\s]+) (\w+\s)?(.+?)$/
       )
@@ -184,6 +186,16 @@ sub _parse_ip {
         $dev->{$dev_name}->{broadcast} = $broadcast;
         $dev->{$dev_name}->{netmask}   = _convert_cidr_prefix($cidr_prefix);
         $dev->{$dev_name}->{mac}       = $dev->{$cur_dev}->{mac};
+      }
+      elsif ( $dev_name eq $cur_dev && $dev->{$cur_dev}->{ip} ) {
+
+        # there is already an ip address, so this must be a secondary
+        $dev->{"${dev_name}_${sec_i}"}->{ip}        = $ip;
+        $dev->{"${dev_name}_${sec_i}"}->{broadcast} = $broadcast;
+        $dev->{"${dev_name}_${sec_i}"}->{netmask} =
+          _convert_cidr_prefix($cidr_prefix);
+        $dev->{"${dev_name}_${sec_i}"}->{mac} = $dev->{$cur_dev}->{mac};
+        $sec_i++;
       }
       else {
         $dev->{$cur_dev}->{ip}        = $ip;
@@ -214,7 +226,7 @@ sub route {
   }
 
   shift @route;
-  shift @route;    # remove first 2 lines
+  shift @route; # remove first 2 lines
 
   for my $route_entry (@route) {
     my ( $dest, $gw, $genmask, $flags, $mss, $window, $irtt, $iface ) =
@@ -274,18 +286,32 @@ sub netstat {
   if ( $? != 0 ) {
     die("Error running netstat");
   }
-  my ( $in_inet, $in_unix ) = ( 0, 0 );
+  my ( $in_inet, $in_unix, $in_unknown ) = ( 0, 0, 0 );
   for my $line (@netstat) {
     if ( $in_inet == 1 ) { ++$in_inet; next; }
     if ( $in_unix == 1 ) { ++$in_unix; next; }
     if ( $line =~ m/^Active Internet/ ) {
-      $in_inet = 1;
+      $in_inet    = 1;
+      $in_unix    = 0;
+      $in_unknown = 0;
       next;
     }
 
     if ( $line =~ m/^Active UNIX/ ) {
-      $in_inet = 0;
-      $in_unix = 1;
+      $in_inet    = 0;
+      $in_unix    = 1;
+      $in_unknown = 0;
+      next;
+    }
+
+    if ( $line =~ m/^Active/ ) {
+      $in_inet    = 0;
+      $in_unix    = 0;
+      $in_unknown = 1;
+      next;
+    }
+
+    if ($in_unknown) {
       next;
     }
 
@@ -355,7 +381,7 @@ sub netstat {
       }
 
       $state =~ s/^\s|\s$//g if ($state);
-      $flags =~ s/\s+$//;
+      $flags =~ s/\s+$//     if ($flags);
       $cmd =~ s/\s+$//;
 
       my $data = {

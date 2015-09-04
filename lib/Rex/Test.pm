@@ -4,14 +4,15 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Test;
 
+use strict;
 use warnings;
 use Rex -base;
 use Data::Dumper;
 use Rex::Commands::Box;
+
+# VERSION
 
 desc 'Run tests specified with --test=testfile (default: t/*.t)';
 task run => make {

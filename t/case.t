@@ -1,8 +1,5 @@
-BEGIN {
-  use Test::More tests => 8;
-  use_ok 'Rex::Commands';
-  Rex::Commands->import;
-}
+use Test::More tests => 7;
+use Rex::Commands;
 
 my $test = "Debian";
 
@@ -11,21 +8,21 @@ my $var = case $test, {
     default => "bar",
 };
 
-ok( $var eq "foo", "string equality" );
+is( $var, "foo", "string equality" );
 
 $var = case $test, {
   qr{debian}i => "baz",
     default   => "this is bad",
 };
 
-ok( $var eq "baz", "regexp match" );
+is( $var, "baz", "regexp match" );
 
 $var = case $test, {
   debian    => "some",
     default => "this is good",
 };
 
-ok( $var eq "this is good", "return default" );
+is( $var, "this is good", "return default" );
 
 $var = case $test, {
   debian => "tata",
@@ -38,7 +35,7 @@ $var = case $test, {
     default => sub { return "default"; }
 };
 
-ok( $var eq "this is debian", "use a sub - string match" );
+is( $var, "this is debian", "use a sub - string match" );
 
 $var = undef;
 
@@ -47,7 +44,7 @@ $var = case $test, {
     default   => sub { return "default"; }
 };
 
-ok( $var eq "this is debian", "use a sub - regexp match" );
+is( $var, "this is debian", "use a sub - regexp match" );
 
 $var = undef;
 
@@ -56,5 +53,4 @@ $var = case $test, {
     default => sub { return "default"; }
 };
 
-ok( $var eq "default", "use a sub - return default" );
-
+is( $var, "default", "use a sub - return default" );

@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Service::Debian;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use base qw(Rex::Service::Base);
 
@@ -20,14 +21,14 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start          => '/etc/init.d/%s start >/dev/null',
-    restart        => '/etc/init.d/%s restart >/dev/null',
-    stop           => '/etc/init.d/%s stop >/dev/null',
-    reload         => '/etc/init.d/%s reload >/dev/null',
-    status         => '/etc/init.d/%s status >/dev/null',
+    start          => '/etc/init.d/%s start',
+    restart        => '/etc/init.d/%s restart',
+    stop           => '/etc/init.d/%s stop',
+    reload         => '/etc/init.d/%s reload',
+    status         => '/etc/init.d/%s status',
     ensure_stop    => 'update-rc.d -f %s remove',
     ensure_start   => 'update-rc.d %s defaults',
-    action         => '/etc/init.d/%s %s >/dev/null',
+    action         => '/etc/init.d/%s %s',
     service_exists => '/usr/sbin/service --status-all 2>&1 | grep %s',
   };
 

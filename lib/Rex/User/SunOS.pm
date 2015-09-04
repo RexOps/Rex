@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::User::SunOS;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands::Run;
@@ -26,7 +27,7 @@ use base qw(Rex::User::OpenBSD);
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
-  my $self  = $that->SUPER::new(@_);
+  my $self  = $proto->SUPER::new(@_);
 
   bless( $self, $proto );
 
@@ -75,7 +76,7 @@ sub create_user {
     $cmd .= " -d " . $data->{home};
   }
 
-  if ( $should_create_home && !defined $uid ) {    #useradd mode
+  if ( $should_create_home && !defined $uid ) { #useradd mode
     $cmd .= " -m ";
   }
 

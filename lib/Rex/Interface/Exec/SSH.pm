@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Exec::SSH;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Helper::SSH2;
 use File::Basename 'basename';
@@ -116,12 +117,26 @@ sub _exec {
 sub _get_shell {
   my ($self) = @_;
 
-  my ($shell_path) = $self->_exec("echo \$SHELL");
-  $shell_path ||= '/bin/sh';    # fallback to /bin/sh
-  chomp $shell_path;
+  Rex::Logger::debug("Detecting shell...");
 
-  my $used_shell = basename($shell_path);
-  return $used_shell;
+  my $cache = Rex::get_cache();
+  if ( $cache->valid("shell") ) {
+    Rex::Logger::debug( "Found shell in cache: " . $cache->get("shell") );
+    return $cache->get("shell");
+  }
+
+  my %shells = Rex::Interface::Shell->get_shell_provider;
+  for my $shell ( keys %shells ) {
+    Rex::Logger::debug( "Searching for shell: " . $shell );
+    $shells{$shell}->require;
+    if ( $shells{$shell}->detect($self) ) {
+      Rex::Logger::debug( "Found shell and using: " . $shell );
+      $cache->set( "shell", $shell );
+      return $shell;
+    }
+  }
+
+  return "sh";
 }
 
 1;

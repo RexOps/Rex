@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Helper::Run;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Exporter;
 use base qw(Exporter);
@@ -68,7 +69,11 @@ sub i_run {
     $is_no_hup = 1;
   }
 
-  my $path = join( ":", Rex::Config->get_path() );
+  my $path;
+
+  if ( !Rex::Config->get_no_path_cleanup() ) {
+    $path = join( ":", Rex::Config->get_path() );
+  }
 
   my $exec = Rex::Interface::Exec->create;
   my ( $out, $err ) = $exec->exec( $cmd, $path, $option );

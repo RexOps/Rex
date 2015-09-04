@@ -28,11 +28,12 @@ This module is the logging module. You can define custom logformats.
 
 =cut
 
-use strict;
-
 package Rex::Logger;
 
+use strict;
 use warnings;
+
+# VERSION
 
 #use Rex;
 
@@ -261,6 +262,19 @@ sub format_string {
   $line =~ s/\%p/$pid/gms;
 
   return $line;
+}
+
+sub masq {
+  my ( $format, @params ) = @_;
+
+  return $format if scalar @params == 0;
+  return $format if scalar( grep { defined } @params ) == 0;
+
+  if ( exists $ENV{REX_DEBUG_INSECURE} && $ENV{REX_DEBUG_INSECURE} eq "1" ) {
+    return sprintf( $format, @params );
+  }
+
+  return sprintf( $format, ("**********") x @params );
 }
 
 =back

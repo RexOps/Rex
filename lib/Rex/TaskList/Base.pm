@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::TaskList::Base;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Data::Dumper;
 use Rex::Logger;
@@ -19,6 +20,7 @@ use Rex::Fork::Manager;
 use Rex::Report;
 use Rex::Group;
 use Time::HiRes qw(time);
+use POSIX qw(floor);
 
 sub new {
   my $that  = shift;
@@ -56,31 +58,56 @@ sub create_task {
     $func = pop;
   }
 
+# matching against a task count of 2 because of the two internal tasks (filtered below)
+  if ( ( scalar( keys %{ $self->{tasks} } ) ) == 2 ) {
+    my $requested_env = Rex::Config->get_environment;
+    my @environments  = Rex::Commands->get_environments;
+
+    if ( $task_name ne 'Commands:Box:get_sys_info'
+      && $task_name ne 'Test:run'
+      && $requested_env ne ''
+      && !grep { $_ eq $requested_env } @environments )
+    {
+      Rex::Logger::info(
+        "Environment '$requested_env' has been requested, but it could not be found in the Rexfile. This is most likely only by mistake.",
+        'warn'
+      );
+      Rex::Logger::info(
+        "If it is intentional, you can suppress this warning by specifying an empty environment: environment '$requested_env' => sub {};",
+        'warn'
+      );
+    }
+  }
+
   my @server = ();
 
   if ($::FORCE_SERVER) {
 
-    if ( $::FORCE_SERVER =~ m/^\0/ ) {
-      my $group_name = substr( $::FORCE_SERVER, 1 );
+    if ( ref $::FORCE_SERVER eq "ARRAY" ) {
+      my $group_name_arr = $::FORCE_SERVER;
 
-      if ( !Rex::Group->is_group($group_name) ) {
-        Rex::Logger::debug("Using late group-lookup");
+      for my $group_name ( @{$group_name_arr} ) {
+        if ( !Rex::Group->is_group($group_name) ) {
+          Rex::Logger::debug("Using late group-lookup");
 
-        push @server, sub {
-          if ( !Rex::Group->is_group($group_name) ) {
-            Rex::Logger::info( "No group $group_name defined.", "error" );
-            exit 1;
-          }
+          push @server, sub {
+            if ( !Rex::Group->is_group($group_name) ) {
+              Rex::Logger::info( "No group $group_name defined.", "error" );
+              exit 1;
+            }
 
-          return Rex::Group->get_group($group_name);
-        };
-      }
-      else {
+            return
+              map { Rex::Group::Entry::Server->new( name => $_ )->get_servers; }
+              Rex::Group->get_group($group_name);
+          };
+        }
+        else {
 
-        push( @server,
-          map { Rex::Group::Entry::Server->new( name => $_ ); }
-            Rex::Group->get_group($group_name) );
+          push( @server,
+            map { Rex::Group::Entry::Server->new( name => $_ ); }
+              Rex::Group->get_group($group_name) );
 
+        }
       }
     }
     else {
@@ -134,7 +161,14 @@ sub create_task {
                 exit 1;
               }
 
-              return Rex::Group->get_group($group);
+              return map {
+                if ( ref $_ && $_->isa("Rex::Group::Entry::Server") ) {
+                  $_->get_servers;
+                }
+                else {
+                  Rex::Group::Entry::Server->new( name => $_ )->get_servers;
+                }
+              } Rex::Group->get_group($group);
             };
 
           }
@@ -145,7 +179,7 @@ sub create_task {
           push(
             @server,
             (
-              ref($entry) eq "Rex::Group::Entry"
+              ref $entry && $entry->isa("Rex::Group::Entry::Server")
               ? $entry
               : Rex::Group::Entry::Server->new( name => $entry )
             )
@@ -179,12 +213,16 @@ sub create_task {
 
   if ( $self->{DEFAULT_AUTH} ) {
     $task_hash{auth} = {
-      user          => Rex::Config->get_user,
-      password      => Rex::Config->get_password,
-      private_key   => Rex::Config->get_private_key,
-      public_key    => Rex::Config->get_public_key,
-      sudo_password => Rex::Config->get_sudo_password,
+      user          => Rex::Config->get_user          || undef,
+      password      => Rex::Config->get_password      || undef,
+      private_key   => Rex::Config->get_private_key   || undef,
+      public_key    => Rex::Config->get_public_key    || undef,
+      sudo_password => Rex::Config->get_sudo_password || undef,
     };
+  }
+
+  if ( exists $Rex::Commands::auth_late{$task_name} ) {
+    $task_hash{auth} = $Rex::Commands::auth_late{$task_name};
   }
 
   $self->{tasks}->{$task_name} = Rex::Task->new(%task_hash);
@@ -218,7 +256,8 @@ sub get_tasks_for {
     }
   }
 
-  return sort { $a cmp $b } @tasks;
+  my @ret = sort { $a cmp $b } @tasks;
+  return @ret;
 }
 
 sub get_task {
@@ -254,8 +293,7 @@ sub run {
 
   my @all_server = @{ $task->server };
 
-  my $fm = Rex::Fork::Manager->new( max => $task->parallelism
-      || Rex::Config->get_parallelism );
+  my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
 
   for my $server (@all_server) {
 
@@ -304,6 +342,8 @@ sub run {
 
 sub modify {
   my ( $self, $type, $task, $code, $package, $file, $line ) = @_;
+
+  return if defined $Rex::Test::Rexfile::Syntax::syntax_check;
 
   if ( $package ne "main" && $package ne "Rex::CLI" ) {
     if ( $task !~ m/:/ ) {
@@ -357,6 +397,23 @@ sub is_transaction {
 sub get_exit_codes {
   my ($self) = @_;
   return @Rex::Fork::Task::PROCESS_LIST;
+}
+
+sub get_thread_count {
+  my ( $self, $task ) = @_;
+  my $threads = $task->parallelism || Rex::Config->get_parallelism;
+  my $server_count = scalar @{ $task->server };
+
+  return $1                                if $threads =~ /^(\d+)$/;
+  return floor( $server_count / $1 )       if $threads =~ /^max\s?\/(\d+)$/;
+  return floor( $server_count * $1 / 100 ) if $threads =~ /^max (\d+)%$/;
+  return $server_count                     if $threads eq 'max';
+
+  Rex::Logger::info(
+    "Unrecognized thread count requested: '$threads'. Falling back to a single thread.",
+    'warn'
+  );
+  return 1;
 }
 
 1;

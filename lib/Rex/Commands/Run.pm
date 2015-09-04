@@ -20,15 +20,14 @@ With this module you can run a command.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Run;
 
+use strict;
 use warnings;
+
+# VERSION
 
 #require Exporter;
 require Rex::Exporter;
@@ -58,9 +57,9 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(run can_run sudo);
 
-=item run($command [, $callback])
+=head2 run($command [, $callback])
 
-=item run($command_description, command => $command, %options)
+=head2 run($command_description, command => $command, %options)
 
 This function will execute the given command and returns the output. In
 scalar context it returns the raw output as is, and in list context it
@@ -140,12 +139,20 @@ If you want to end the command upon receiving a certain output:
    
 =cut
 
-our $LAST_OUTPUT;    # this variable stores the last output of a run.
-    # so that it is possible to get for example the output of an apt-get update
-    # that is called through >> install "foo" <<
+our $LAST_OUTPUT; # this variable stores the last output of a run.
+ # so that it is possible to get for example the output of an apt-get update
+ # that is called through >> install "foo" <<
 
 sub run {
   my $cmd = shift;
+
+  if ( ref $cmd eq "ARRAY" ) {
+    for my $_cmd ( @{$cmd} ) {
+      &run( $_cmd, @_ );
+    }
+    return;
+  }
+
   my ( $code, $option );
   if ( ref $_[0] eq "CODE" ) {
     $code = shift;
@@ -186,7 +193,7 @@ sub run {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "run", name => $res_cmd );
 
-  my $changed = 1;    # default for run() is 1
+  my $changed = 1; # default for run() is 1
 
   if ( exists $option->{creates} ) {
     my $fs = Rex::Interface::Fs->create();
@@ -203,7 +210,7 @@ sub run {
       Rex::Logger::debug(
         "Don't executing $cmd because $option->{only_if} return $?.");
       $changed = 0;
-      $?       = 0;    # reset $?
+      $?       = 0; # reset $?
     }
   }
 
@@ -217,6 +224,7 @@ sub run {
   }
 
   my $out_ret;
+  my ( $out, $err );
 
   if ($changed) {
     my $path;
@@ -225,7 +233,6 @@ sub run {
       $path = join( ":", Rex::Config->get_path() );
     }
 
-    my ( $out, $err );
     my $exec = Rex::Interface::Exec->create;
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
       eval {
@@ -292,7 +299,7 @@ sub run {
 
   if ( exists $option->{auto_die} && $option->{auto_die} ) {
     if ( $? != 0 ) {
-      die("Error executing: $cmd.\nOutput:\n$out_ret");
+      die("Error executing: $cmd.\nSTDOUT:\n$out\nSTDERR:\n$err");
     }
   }
 
@@ -303,7 +310,7 @@ sub run {
   return $out_ret;
 }
 
-=item can_run($command)
+=head2 can_run($command)
 
 This function checks if a command is in the path or is available. You can
 specify multiple commands, the first command found will be returned.
@@ -317,28 +324,12 @@ specify multiple commands, the first command found will be returned.
 =cut
 
 sub can_run {
-  my @cmds = @_;
-
-  if ( !Rex::is_ssh() && $^O =~ m/^MSWin/ ) {
-    return 1;
-  }
-
-  for my $cmd (@cmds) {
-    my @ret = i_run "which $cmd";
-    next if ( $? != 0 );
-
-    if ( grep { /^no.*in/ } @ret ) {
-      next;
-    }
-    else {
-      return $ret[0];
-    }
-  }
-
-  return 0;
+  my @commands = @_;
+  my $exec     = Rex::Interface::Exec->create;
+  $exec->can_run( [@commands] ); # use a new anon ref, so that we don't have drawbacks if some lower layers will manipulate things.
 }
 
-=item sudo
+=head2 sudo
 
 Run a command with I<sudo>. Define the password for sudo with I<sudo_password>.
 
@@ -416,9 +407,5 @@ sub sudo {
 
   return $ret;
 }
-
-=back
-
-=cut
 
 1;

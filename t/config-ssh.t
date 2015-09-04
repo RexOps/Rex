@@ -2,10 +2,9 @@ use strict;
 use warnings;
 
 use File::Temp;
-use Test::More tests => 23;
+use Test::More tests => 21;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
+use Rex::Config;
 
 my $ssh_cfg1 = <<EOF;
 

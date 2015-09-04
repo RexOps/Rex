@@ -31,15 +31,14 @@ With this module you can manage user and groups.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::User;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use Rex::Commands::Run;
@@ -54,10 +53,10 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(create_user delete_user get_uid get_user user_list
   user_groups create_group delete_group get_group get_gid
-  account
+  account lock_password unlock_password
 );
 
-=item account($name, %option)
+=head2 account($name, %option)
 
 Manage user account.
 
@@ -121,7 +120,7 @@ sub account {
   }
 }
 
-=item create_user($user => {})
+=head2 create_user($user => {})
 
 Create or update a user.
 
@@ -198,7 +197,7 @@ sub create_user {
   return $uid->{ret};
 }
 
-=item get_uid($user)
+=head2 get_uid($user)
 
 Returns the uid of $user.
 
@@ -208,7 +207,7 @@ sub get_uid {
   Rex::User->get()->get_uid(@_);
 }
 
-=item get_user($user)
+=head2 get_user($user)
 
 Returns all information about $user.
 
@@ -218,7 +217,7 @@ sub get_user {
   Rex::User->get()->get_user(@_);
 }
 
-=item user_group($user)
+=head2 user_groups($user)
 
 Returns group membership about $user.
 
@@ -228,7 +227,7 @@ sub user_groups {
   Rex::User->get()->user_groups(@_);
 }
 
-=item user_list()
+=head2 user_list()
 
 Returns user list via getent passwd.
 
@@ -244,7 +243,7 @@ sub user_list {
   Rex::User->get()->user_list(@_);
 }
 
-=item delete_user($user)
+=head2 delete_user($user)
 
 Delete a user from the system.
 
@@ -270,7 +269,62 @@ sub delete_user {
   Rex::User->get()->rm_user( $user, $data );
 }
 
-=item create_group($group, {})
+=head2 lock_password($user)
+
+Lock the password of a user account. Currently this is only
+available on Linux (see passwd --lock).
+
+=cut
+
+sub lock_password {
+  Rex::User->get()->lock_password(@_);
+}
+
+=head2 unlock_password($user)
+
+Unlock the password of a user account. Currently this is only
+available on Linux (see passwd --unlock).
+
+=cut
+
+sub unlock_password {
+  Rex::User->get()->unlock_password(@_);
+}
+
+# internal wrapper for resource style calling
+# will be called from Rex::Commands::group() function
+sub group_resource {
+  my @params = @_;
+
+  my $name   = shift @params;
+  my %option = @params;
+
+  if ( ref $name ne "ARRAY" ) {
+    $name = [$name];
+  }
+  $option{ensure} ||= "present";
+
+  for my $group_name ( @{$name} ) {
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "group", name => $group_name );
+
+    if ( $option{ensure} eq "present" ) {
+      Rex::Commands::User::create_group( $group_name, %option );
+    }
+    elsif ( $option{ensure} eq "absent" ) {
+      Rex::Commands::User::delete_group($group_name);
+    }
+    else {
+      die "Unknown 'ensure' value. Valid values are 'present' and 'absent'.";
+    }
+
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_end( type => "group", name => $group_name );
+  }
+}
+
+=head2 create_group($group, {})
 
 Create or update a group.
 
@@ -295,7 +349,7 @@ sub create_group {
   Rex::User->get()->create_group( $group, @params );
 }
 
-=item get_gid($group)
+=head2 get_gid($group)
 
 Return the group id of $group.
 
@@ -305,7 +359,7 @@ sub get_gid {
   Rex::User->get()->get_gid(@_);
 }
 
-=item get_group($group)
+=head2 get_group($group)
 
 Return information of $group.
 
@@ -317,7 +371,7 @@ sub get_group {
   Rex::User->get()->get_group(@_);
 }
 
-=item delete_group($group)
+=head2 delete_group($group)
 
 Delete a group.
 
@@ -326,9 +380,5 @@ Delete a group.
 sub delete_group {
   Rex::User->get()->rm_group(@_);
 }
-
-=back
-
-=cut
 
 1;

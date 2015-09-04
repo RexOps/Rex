@@ -4,9 +4,10 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Inventory::Hal;
+
+use strict;
+use warnings;
 
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Run;
@@ -14,9 +15,9 @@ use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Rex::Logger;
 
-use Data::Dumper;
+# VERSION
 
-use warnings;
+use Data::Dumper;
 
 sub new {
   my $that  = shift;

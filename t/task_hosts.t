@@ -1,17 +1,8 @@
 package main;
 
-use Test::More tests => 13;
+use Test::More tests => 2;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Commands::Upload';
-
-Rex::Commands->import();
+use Rex::Commands;
 
 desc("Test");
 task(
@@ -42,13 +33,11 @@ task(
 );
 
 my @tasks = Rex::TaskList->create()->get_tasks_for("server01");
-ok( $tasks[0] eq "test" );
-ok( scalar(@tasks) == 1 );
+is_deeply( \@tasks, ["test"], "tasks has one element: 'test'" );
 
 @tasks = Rex::TaskList->create()->get_tasks_for("fe06");
-ok( $tasks[0] eq "test2" );
-ok( $tasks[1] eq "test3" );
-ok( scalar(@tasks) == 2 );
-
-1;
-
+is_deeply(
+  \@tasks,
+  [ "test2", "test3" ],
+  "tasks has two elements: 'test2' and 'test3'"
+);

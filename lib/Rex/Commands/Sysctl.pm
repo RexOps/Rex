@@ -27,15 +27,14 @@ This function doesn't persist the entries in /etc/sysctl.conf.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Sysctl;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands::Run;
@@ -47,7 +46,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(sysctl);
 
-=item sysctl($key [, $val])
+=head2 sysctl($key [, $val])
 
 This function will read the sysctl key $key.
 
@@ -95,9 +94,5 @@ sub sysctl {
   }
 
 }
-
-=back
-
-=cut
 
 1;

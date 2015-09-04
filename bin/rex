@@ -1,4 +1,4 @@
-#!perl -w
+#!perl
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
@@ -9,6 +9,8 @@
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::CLI;
 
 my $rex = Rex::CLI->new;
@@ -18,7 +20,11 @@ __END__
 
 =pod
 
-=head1 (R)?ex - (Remote)? Execution
+=head1 NAME
+
+(R)?ex - (Remote)? Execution
+
+=head1 DESCRIPTION
 
 Rex is a tool to ease the execution of commands on multiple remote servers. You can define small tasks, chain tasks to batches, link them with servers or server groups, and execute them easily in your terminal.
 
@@ -34,7 +40,9 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -H              Execute task on these hosts
 
-=item -G              Execute task on these group
+=item -z              Execute task on hosts from this command's output
+
+=item -G|-g           Execute task on these group
 
 =item -u              Username for the ssh connection
 
@@ -46,9 +54,17 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -T              List all known tasks.
 
+=item -Tm             List all known tasks in "machine readable" format
+
+=item -Ty             List all known tasks in YAML format
+
+=item -Tv             List all known tasks with all information
+
 =item -f              Use this file instead of Rexfile
 
 =item -h              Display this help
+
+=item -m              Monochrome output. No colors
 
 =item -M              Load Module instead of Rexfile
 
@@ -70,16 +86,24 @@ Rex is a tool to ease the execution of commands on multiple remote servers. You 
 
 =item -c              Turn cache ON
 
+=item -q              Quiet mode. No Logging output
+
+=item -qw             Quiet mode. Only output warnings and errors
+
+=item -Q              Really quiet. Output nothing.
+
+=item -t              Number of threads to use ('parallelism' parameter)
+
 =back
 
 
 =head2 Rexfile
 
-If you run I<rex> it will read the file I<Rexfile> in the current working directory. A Rexfile consists 3 major parts.
+If you run I<rex> it will read the file I<Rexfile> in the current working directory. A Rexfile consists of 3 major parts.
 
 =head3 Authentication and Configuration
 
-In that part you define the user and password you want to use to log into your servers. You can even define timeouts or the paralellism of task exexecution.
+In that part you define the user and password you want to use to log into your servers. You can even define timeouts or the paralellism of task execution.
 
 =head4 Simple Authentication
 

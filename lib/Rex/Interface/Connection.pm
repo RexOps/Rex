@@ -4,17 +4,18 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Connection;
 
+use strict;
 use warnings;
+
+# VERSION
 
 sub create {
   my ( $class, $type ) = @_;
 
   unless ($type) {
-    $type = "SSH";
+    $type = Rex::Config->get_connection_type();
   }
 
   my $class_name = "Rex::Interface::Connection::$type";

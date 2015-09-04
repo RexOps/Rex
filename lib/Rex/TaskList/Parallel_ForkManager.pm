@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::TaskList::Parallel_ForkManager;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Data::Dumper;
 use Rex::Logger;
@@ -46,8 +47,7 @@ sub run {
 
   my @all_server = @{ $task->server };
 
-  my $fm = Parallel::ForkManager->new( $task->parallelism
-      || Rex::Config->get_parallelism );
+  my $fm = Parallel::ForkManager->new( $self->get_thread_count($task) );
 
   $fm->run_on_finish(
     sub {
@@ -92,7 +92,7 @@ sub run {
       } or do {
 
         # exit with error
-        $? = 255 if !$?;    # unknown error
+        $? = 255 if !$?; # unknown error
         exit $?;
       };
       $fm->finish;

@@ -20,15 +20,14 @@ With this module you can upload a local file via sftp to a remote host.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Upload;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use File::Basename qw(basename);
@@ -45,7 +44,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(upload);
 
-=item upload($local, $remote)
+=head2 upload($local, $remote)
 
 Perform an upload. If $remote is a directory the file will be uploaded to that directory.
 
@@ -116,9 +115,11 @@ sub upload {
   # will first look if files/hosts.live is available, if not it will
   # use files/hosts
 
-  my $old_local = $local;    # for the upload location use the given name
+  my $old_local = $local; # for the upload location use the given name
 
-  if ( -f "$local." . Rex::Config->get_environment ) {
+  if ( Rex::Config->get_environment
+    && -f "$local." . Rex::Config->get_environment )
+  {
     $local = "$local." . Rex::Config->get_environment;
   }
 
@@ -193,9 +194,5 @@ sub upload {
 
   return $__ret;
 }
-
-=back
-
-=cut
 
 1;

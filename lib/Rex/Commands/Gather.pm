@@ -21,15 +21,14 @@ All these functions will not be reported. These functions don't modify anything.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Gather;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Data::Dumper;
 use Rex::Hardware;
@@ -49,13 +48,15 @@ use vars qw(@EXPORT);
   is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora
   get_system_information dump_system_information);
 
-=item get_operating_system
+=head2 get_operating_system
 
 Will return the current operating system name.
 
  task "get-os", "server01", sub {
    say get_operating_system();
  };
+
+Aliased by operating_system().
 
 =cut
 
@@ -67,11 +68,17 @@ sub get_operating_system {
 
 }
 
+=head2 operating_system
+
+Alias for get_operating_system()
+
+=cut
+
 sub operating_system {
   return get_operating_system();
 }
 
-=item get_system_information
+=head2 get_system_information
 
 Will return a hash of all system information. These Information will be also used by the template function.
 
@@ -81,7 +88,7 @@ sub get_system_information {
   return Rex::Helper::System::info();
 }
 
-=item dump_system_information
+=head2 dump_system_information
 
 This function dumps all known system information on stdout.
 
@@ -95,7 +102,7 @@ sub dump_system_information {
     { prepend_key => '$', key_value_sep => " = ", no_root => 1 } );
 }
 
-=item operating_system_is($string)
+=head2 operating_system_is($string)
 
 Will return 1 if the operating system is $string.
 
@@ -121,7 +128,7 @@ sub operating_system_is {
 
 }
 
-=item operating_system_version()
+=head2 operating_system_version()
 
 Will return the os release number as an integer. For example, it will convert 5.10 to 510, 10.04 to 1004 or 6.0.3 to 603.
 
@@ -145,7 +152,7 @@ sub operating_system_version {
 
 }
 
-=item operating_system_release()
+=head2 operating_system_release()
 
 Will return the os release number as is.
 
@@ -156,7 +163,7 @@ sub operating_system_release {
   return Rex::Hardware::Host->get_operating_system_version();
 }
 
-=item network_interfaces
+=head2 network_interfaces
 
 Return an HashRef of all the networkinterfaces and their configuration.
 
@@ -181,7 +188,7 @@ sub network_interfaces {
 
 }
 
-=item memory
+=head2 memory
 
 Return an HashRef of all memory information.
 
@@ -205,7 +212,7 @@ sub memory {
 
 }
 
-=item is_freebsd
+=head2 is_freebsd
 
 Returns true if the target system is a FreeBSD.
 
@@ -227,7 +234,7 @@ sub is_freebsd {
   }
 }
 
-=item is_redhat
+=head2 is_redhat
 
  task "foo", "server1", sub {
    if(is_redhat) {
@@ -244,8 +251,9 @@ sub is_redhat {
     "Fedora",                      "Redhat",
     "CentOS",                      "Scientific",
     "RedHatEnterpriseServer",      "RedHatEnterpriseES",
-    "RedHatEnterpriseWorkstation", "Amazon",
-    "ROSAEnterpriseServer"
+    "RedHatEnterpriseWorkstation", "RedHatEnterpriseWS",
+    "Amazon",                      "ROSAEnterpriseServer",
+    "CloudLinuxServer",
   );
 
   if ( grep { /$os/i } @redhat_clones ) {
@@ -253,7 +261,7 @@ sub is_redhat {
   }
 }
 
-=item is_fedora
+=head2 is_fedora
 
  task "foo", "server1", sub {
    if(is_fedora) {
@@ -273,7 +281,7 @@ sub is_fedora {
   }
 }
 
-=item is_suse
+=head2 is_suse
 
  task "foo", "server1", sub {
    if(is_suse) {
@@ -293,7 +301,7 @@ sub is_suse {
   }
 }
 
-=item is_mageia
+=head2 is_mageia
 
  task "foo", "server1", sub {
    if(is_mageia) {
@@ -313,7 +321,7 @@ sub is_mageia {
   }
 }
 
-=item is_debian
+=head2 is_debian
 
  task "foo", "server1", sub {
    if(is_debian) {
@@ -333,7 +341,7 @@ sub is_debian {
   }
 }
 
-=item is_alt
+=head2 is_alt
 
  task "foo", "server1", sub {
    if(is_alt) {
@@ -353,7 +361,7 @@ sub is_alt {
   }
 }
 
-=item is_netbsd
+=head2 is_netbsd
 
 Returns true if the target system is a NetBSD.
 
@@ -375,7 +383,7 @@ sub is_netbsd {
   }
 }
 
-=item is_openbsd
+=head2 is_openbsd
 
 Returns true if the target system is an OpenBSD.
 
@@ -397,7 +405,7 @@ sub is_openbsd {
   }
 }
 
-=item is_linux
+=head2 is_linux
 
 Returns true if the target system is a Linux System.
 
@@ -423,7 +431,7 @@ sub is_linux {
   }
 }
 
-=item is_bsd
+=head2 is_bsd
 
 Returns true if the target system is a BSD System.
 
@@ -446,7 +454,7 @@ sub is_bsd {
   }
 }
 
-=item is_solaris
+=head2 is_solaris
 
 Returns true if the target system is a Solaris System.
 
@@ -472,7 +480,7 @@ sub is_solaris {
   }
 }
 
-=item is_windows
+=head2 is_windows
 
 Returns true if the target system is a Windows System.
 
@@ -489,7 +497,7 @@ sub is_windows {
 
 }
 
-=item is_openwrt
+=head2 is_openwrt
 
 Returns true if the target system is an OpenWrt System.
 
@@ -503,7 +511,7 @@ sub is_openwrt {
 
 }
 
-=item is_gentoo
+=head2 is_gentoo
 
 Returns true if the target system is a Gentoo System.
 
@@ -516,9 +524,5 @@ sub is_gentoo {
   }
 
 }
-
-=back
-
-=cut
 
 1;

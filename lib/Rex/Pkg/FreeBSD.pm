@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Pkg::FreeBSD;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -34,7 +35,7 @@ sub new {
     install_version   => 'pkg install -q -y %s',
     remove            => 'pkg remove -q -y %s',
     query             => 'pkg info',
-    update_package_db => 'pkg update -q',
+    update_package_db => 'pkg update -q -f',
 
     # pkg can't update system yet, only packages
     update_system => 'pkg upgrade -q -y',
@@ -63,20 +64,25 @@ sub remove {
 }
 
 sub is_installed {
-  my ( $self, $pkg ) = @_;
+  my ( $self, $pkg, $option ) = @_;
+  my $version = $option->{version};
 
-  Rex::Logger::debug("Checking if $pkg is installed");
+  Rex::Logger::debug(
+    "Checking if $pkg" . ( $version ? "-$version" : "" ) . " is installed" );
 
   # pkg info -e allow get quick answer about is pkg installed or not.
-  my $command = sprintf( $self->{commands}->{query} . " %s %s", '-e', $pkg );
+  my $command =
+    $self->{commands}->{query} . " -e $pkg" . ( $version ? "-$version" : "" );
   i_run $command;
 
   if ( $? != 0 ) {
-    Rex::Logger::debug("$pkg is NOT installed.");
+    Rex::Logger::debug(
+      "$pkg" . ( $version ? "-$version" : "" ) . " is NOT installed." );
     return 0;
   }
 
-  Rex::Logger::debug("$pkg is installed.");
+  Rex::Logger::debug(
+    "$pkg" . ( $version ? "-$version" : "" ) . " is installed." );
   return 1;
 
 }

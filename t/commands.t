@@ -1,84 +1,79 @@
 use strict;
 use warnings;
 
-use Test::More tests => 26;
+use Test::More tests => 18;
 
-use_ok 'Rex';
-use_ok 'Rex::Config';
-use_ok 'Rex::Group';
-use_ok 'Rex::Task';
-use_ok 'Rex::TaskList';
-use_ok 'Rex::Commands';
-use_ok 'Rex::Commands::Run';
-use_ok 'Rex::Commands::Upload';
+use Rex::Commands;
 
-Rex::Commands->import();
+delete $ENV{REX_USER};
 
 user("test");
-ok( Rex::Config->get_user eq "test", "setting user" );
+is( Rex::Config->get_user, "test", "setting user" );
 
 password("test");
-ok( Rex::Config->get_password eq "test", "setting password" );
+is( Rex::Config->get_password, "test", "setting password" );
 
 sudo_password("test");
-ok( Rex::Config->get_sudo_password eq "test", "setting password" );
+is( Rex::Config->get_sudo_password, "test", "setting password" );
 
 timeout(5);
-ok( Rex::Config->get_timeout == 5, "setting timeout" );
+is( Rex::Config->get_timeout, 5, "setting timeout" );
 
 max_connect_retries(5);
-ok( Rex::Config->get_max_connect_fails == 5, "setting max connect retries" );
+is( Rex::Config->get_max_connect_fails, 5, "setting max connect retries" );
 
-ok( length( get_random( 5, 'a' .. 'z' ) ) == 5, "get random string" );
+is( length( get_random( 5, 'a' .. 'z' ) ), 5, "get random string" );
 
 public_key("/tmp/pub.key");
-ok( Rex::Config->get_public_key eq "/tmp/pub.key", "set public key" );
+is( Rex::Config->get_public_key, "/tmp/pub.key", "set public key" );
 
 private_key("/tmp/priv.key");
-ok( Rex::Config->get_private_key eq "/tmp/priv.key", "set private key" );
+is( Rex::Config->get_private_key, "/tmp/priv.key", "set private key" );
 
 pass_auth();
 ok( Rex::Config->get_password_auth, "password auth" );
 
 parallelism(5);
-ok( Rex::Config->get_parallelism == 5, "set parallelism" );
+is( Rex::Config->get_parallelism, 5, "set parallelism" );
 parallelism(1);
 
 path( "/bin", "/sbin" );
-ok( join( ",", Rex::Config->get_path ) eq "/bin,/sbin", "set path" );
+is_deeply( [ Rex::Config->get_path ], [qw!/bin /sbin!], "set path" );
 
 set( "foo", "bar" );
-ok( get("foo") eq "bar", "set/get" );
+is( get("foo"), "bar", "set/get" );
 
 my @ret = Rex::Commands::evaluate_hostname("test[01..04]");
-ok( join( ",", @ret ) eq "test01,test02,test03,test04", "evaluate hostname" );
+is_deeply( \@ret, [qw/test01 test02 test03 test04/], "evaluate hostname" );
 
 @ret = Rex::Commands::evaluate_hostname("test[01..04].rexify.org");
-ok(
-  join( ",", @ret ) eq
-    "test01.rexify.org,test02.rexify.org,test03.rexify.org,test04.rexify.org",
+is_deeply(
+  \@ret,
+  [qw/test01.rexify.org test02.rexify.org test03.rexify.org test04.rexify.org/],
   "evaluate hostname / with domain"
 );
 
 @ret = Rex::Commands::evaluate_hostname("test[1..4]");
-ok( join( ",", @ret ) eq "test1,test2,test3,test4",
-  "evaluate hostname without zeros" );
+is_deeply(
+  \@ret,
+  [qw/test1 test2 test3 test4/],
+  "evaluate hostname without zeros"
+);
 
 @ret = Rex::Commands::evaluate_hostname("test[1..4].rexify.org");
-ok(
-  join( ",", @ret ) eq
-    "test1.rexify.org,test2.rexify.org,test3.rexify.org,test4.rexify.org",
+is_deeply(
+  \@ret,
+  [qw/test1.rexify.org test2.rexify.org test3.rexify.org test4.rexify.org/],
   "evaluate hostname with domainname / without zero"
 );
 
 @ret = Rex::Commands::evaluate_hostname("10.5.9.[8..11]");
-ok( join( ",", @ret ) eq "10.5.9.8,10.5.9.9,10.5.9.10,10.5.9.11",
-  "evaluate ip" );
+is_deeply( \@ret, [qw/10.5.9.8 10.5.9.9 10.5.9.10 10.5.9.11/], "evaluate ip" );
 
 @ret = Rex::Commands::evaluate_hostname("[1..3].host.domain");
-is(
-  join( ",", @ret ),
-  "1.host.domain,2.host.domain,3.host.domain",
+is_deeply(
+  \@ret,
+  [qw/1.host.domain 2.host.domain 3.host.domain/],
   "evaluate leading range"
 );
 

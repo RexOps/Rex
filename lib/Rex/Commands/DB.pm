@@ -52,15 +52,14 @@ Version <= 1.0: All these functions will not be reported.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::DB;
 
+use strict;
 use warnings;
+
+# VERSION
 
 BEGIN {
   use Rex::Require;
@@ -74,7 +73,7 @@ use vars qw(@EXPORT $dbh);
 
 @EXPORT = qw(db);
 
-=item db
+=head2 db
 
 Do a database action.
 
@@ -197,10 +196,6 @@ sub db {
   }
 
 }
-
-=back
-
-=cut
 
 sub import {
 

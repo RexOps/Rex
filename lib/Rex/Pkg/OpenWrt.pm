@@ -5,11 +5,12 @@
 #  OpenWrt package management module for (R)?ex
 #  based on Rex::Pkg::Debian
 
-use strict;
-
 package Rex::Pkg::OpenWrt;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -37,8 +38,7 @@ sub new {
 sub bulk_install {
   my ( $self, $packages_aref, $option ) = @_;
 
-  delete $option->{version}
-    ;    # makes no sense to specify the same version for several packages
+  delete $option->{version}; # makes no sense to specify the same version for several packages
 
   $self->update( "@{$packages_aref}", $option );
 

@@ -4,13 +4,14 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::Connection::HTTPS;
 
+use strict;
 use warnings;
 use Rex::Interface::Connection::HTTP;
 use base qw(Rex::Interface::Connection::HTTP);
+
+# VERSION
 
 use Rex::Logger;
 

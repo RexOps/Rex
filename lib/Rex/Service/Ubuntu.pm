@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Service::Ubuntu;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -24,14 +25,14 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start          => '/usr/sbin/service %s start >/dev/null',
-    restart        => '/usr/sbin/service %s restart >/dev/null',
-    stop           => '/usr/sbin/service %s stop >/dev/null',
-    reload         => '/usr/sbin/service %s reload >/dev/null',
-    status         => '/usr/sbin/service %s status >/dev/null',
+    start          => '/usr/sbin/service %s start',
+    restart        => '/usr/sbin/service %s restart',
+    stop           => '/usr/sbin/service %s stop',
+    reload         => '/usr/sbin/service %s reload',
+    status         => '/usr/sbin/service %s status',
     ensure_stop    => '/usr/sbin/update-rc.d -f %s remove',
     ensure_start   => '/usr/sbin/update-rc.d %s defaults',
-    action         => '/usr/sbin/service %s %s >/dev/null',
+    action         => '/usr/sbin/service %s %s',
     service_exists => '/usr/sbin/service --status-all 2>&1 | grep %s',
   };
 

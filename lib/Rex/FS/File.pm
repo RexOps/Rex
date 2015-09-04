@@ -14,6 +14,10 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 =head1 SYNOPSIS
 
+ use Rex::Interface::File;
+ my $fh = Rex::Interface::File->create('Local');
+ $fh->open( '<', 'filename' );
+
  my $file = Rex::FS::File->new(fh => $fh);
  $file->read($len);
  $file->read_all;
@@ -22,23 +26,57 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 =head1 CLASS METHODS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::FS::File;
 
+use strict;
 use warnings;
+use Rex::Interface::File;
+
+# VERSION
 
 use constant DEFAULT_READ_LEN => 64;
 
-=item new
+=head2 new
 
-This is the constructor. You need to set the filehandle which the object should work on.
+This is the constructor. You need to set the filehandle which the object should work on
+or pass a filename. If you pass a filehandle, it has to be a C<Rex::Interface::File::*>
+object
 
+ my $fh = Rex::Interface::File->create('Local');
+ $fh->open( '<', 'filename' );
+ 
  my $file = Rex::FS::File->new(fh => $fh);
+
+Create a C<Rex::FS::File> object with a filename
+
+ # open a local file in read mode
+ my $file = Rex::FS::File->new(
+   filename => 'filename',
+   mode     => 'r', # or '<'
+   type     => 'Local',
+ );
+ 
+ # or shorter
+ my $file = Rex::FS::File->new( filename => 'filename' );
+ 
+ # open a local file in write mode
+ my $file = Rex::FS::File->new(
+   filename => 'filename',
+   mode     => 'w', # or '>'
+ );
+
+Allowed modes:
+
+ <  read
+ r  read
+ >  write
+ w  write
+ >> append
+ a  append
+
+For allowed C<types> see documentation of L<Rex::Interface::File>.
 
 =cut
 
@@ -47,17 +85,43 @@ sub new {
   my $proto = ref($that) || $that;
   my $self  = {@_};
 
+  my %modes = (
+    'w'  => '>',
+    'r'  => '<',
+    'a'  => '>>',
+    '<'  => '<',
+    '>'  => '>',
+    '>>' => '>>',
+  );
+
+  if ( $self->{filename} ) {
+    $self->{mode} ||= '<';
+
+    my $mode = $modes{ $self->{mode} } || '<';
+    $self->{fh} = Rex::Interface::File->create( $self->{type} || 'Local' );
+    $self->{fh}->open( $mode, $self->{filename} );
+  }
+
   bless( $self, $proto );
+
+  if ( ref $self->{fh} !~ m{Rex::Interface::File} ) {
+    die "Need an Rex::Interface::File object";
+  }
 
   return $self;
 }
 
 sub DESTROY {
   my ($self) = @_;
-  $self->close if ( $self->{'fh'} );
+  if ( ref $self->{'fh'} =~ m/^Rex::Interface::File/ ) {
+    $self->close if ( $self->{'fh'}->{'fh'} );
+  }
+  else {
+    $self->close if ( $self->{'fh'} );
+  }
 }
 
-=item write($buf)
+=head2 write($buf)
 
 Write $buf into the filehandle.
 
@@ -81,7 +145,7 @@ sub write {
   }
 }
 
-=item seek($offset)
+=head2 seek($offset)
 
 Seek to the file position $offset.
 
@@ -98,7 +162,7 @@ sub seek {
   $fh->seek($offset);
 }
 
-=item read($len)
+=head2 read($len)
 
 Read $len bytes out of the filehandle.
 
@@ -114,7 +178,7 @@ sub read {
   return $fh->read($len);
 }
 
-=item read_all
+=head2 read_all
 
 Read everything out of the filehandle.
 
@@ -135,7 +199,7 @@ sub read_all {
   return $all;
 }
 
-=item close
+=head2 close
 
 Close the file.
 
@@ -148,9 +212,5 @@ sub close {
   my $fh = $self->{'fh'};
   $fh->close;
 }
-
-=back
-
-=cut
 
 1;

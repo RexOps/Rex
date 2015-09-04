@@ -29,17 +29,16 @@ Version <= 1.0: All these functions will not be reported.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Download;
 
+use strict;
 use warnings;
 use Rex::Helper::UserAgent;
 use Carp;
+
+# VERSION
 
 use vars qw($has_wget $has_curl $has_lwp);
 
@@ -77,7 +76,7 @@ use File::Basename qw(basename);
 
 @EXPORT = qw(download);
 
-=item download($remote, [$local])
+=head2 download($remote, [$local])
 
 Perform a download. If no local file is specified it will download the file to the current directory.
 
@@ -94,6 +93,15 @@ Perform a download. If no local file is specified it will download the file to t
 sub download {
   my ( $remote, $local, %option ) = @_;
 
+  unless ($local) {
+    $local = basename($remote);
+  }
+
+  if ( -d $local ) {
+    $local = $local . '/' . basename($remote);
+  }
+
+  Rex::Logger::debug("saving file to $local");
   $remote = resolv_path($remote);
   $local = resolv_path( $local, 1 );
 
@@ -112,10 +120,6 @@ sub _sftp_download {
   my $fs = Rex::Interface::Fs->create;
 
   Rex::Logger::debug("Downloading via SFTP");
-  unless ($local) {
-    $local = basename($remote);
-  }
-  Rex::Logger::debug("saving file to $local");
 
   unless ( is_file($remote) ) {
     Rex::Logger::info("File $remote not found");
@@ -127,10 +131,6 @@ sub _sftp_download {
     die("$remote is not readable.");
   }
 
-  if ( -d $local ) {
-    $local = $local . '/' . basename($remote);
-  }
-
   $fs->download( $remote, $local );
 
 }
@@ -138,16 +138,7 @@ sub _sftp_download {
 sub _http_download {
   my ( $remote, $local, %option ) = @_;
 
-  unless ($local) {
-    $local = basename($remote);
-  }
-  Rex::Logger::debug("saving file to $local");
-
   my $content = _get_http( $remote, %option );
-
-  if ( -d $local ) {
-    $local = $local . '/' . basename($remote);
-  }
 
   open( my $fh, ">", $local ) or die($!);
   binmode $fh;
@@ -196,9 +187,5 @@ sub _get_http {
 
   return $html;
 }
-
-=back
-
-=cut
 
 1;

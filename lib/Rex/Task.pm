@@ -23,17 +23,16 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 
 =head1 METHODS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Task;
 
+use strict;
 use warnings;
 use Data::Dumper;
 use Time::HiRes qw(time);
+
+# VERSION
 
 use Rex::Logger;
 use Rex::TaskList;
@@ -45,6 +44,7 @@ use Rex::Hardware;
 use Rex::Interface::Cache;
 use Rex::Report;
 use Rex::Helper::Run;
+use Rex::Helper::Path;
 use Rex::Notify;
 use Carp;
 
@@ -52,7 +52,7 @@ require Rex::Commands;
 
 require Rex::Args;
 
-=item new
+=head2 new
 
 This is the constructor.
 
@@ -105,7 +105,7 @@ sub new {
   return $self;
 }
 
-=item connection
+=head2 connection
 
 Returns the current connection object.
 
@@ -113,7 +113,6 @@ Returns the current connection object.
 
 sub connection {
   my ($self) = @_;
-
   if ( !exists $self->{connection} || !$self->{connection} ) {
     $self->{connection} =
       Rex::Interface::Connection->create( $self->get_connection_type );
@@ -122,7 +121,7 @@ sub connection {
   $self->{connection};
 }
 
-=item executor
+=head2 executor
 
 Returns the current executor object.
 
@@ -134,7 +133,7 @@ sub executor {
   return $self->{executor};
 }
 
-=item hidden
+=head2 hidden
 
 Returns true if the task is hidden. (Should not be displayed on ,,rex -T''.)
 
@@ -145,7 +144,7 @@ sub hidden {
   return $self->{hidden};
 }
 
-=item server
+=head2 server
 
 Returns the servers on which the task should be executed as an ArrayRef.
 
@@ -182,7 +181,7 @@ sub server {
         push( @ret, &$srv() );
       }
       else {
-        if ( ref($srv) eq "Rex::Group::Entry::Server" ) {
+        if ( ref $srv && $srv->isa("Rex::Group::Entry::Server") ) {
           push( @ret, $srv->get_servers );
         }
         else {
@@ -201,7 +200,7 @@ sub server {
   return [@ret];
 }
 
-=item set_server(@server)
+=head2 set_server(@server)
 
 With this method you can set new servers on which the task should be executed on.
 
@@ -212,7 +211,7 @@ sub set_server {
   $self->{server} = \@server;
 }
 
-=item delete_server
+=head2 delete_server
 
 Delete every server registered to the task.
 
@@ -225,7 +224,7 @@ sub delete_server {
   $self->rethink_connection;
 }
 
-=item current_server
+=head2 current_server
 
 Returns the current server on which the tasks gets executed right now.
 
@@ -237,7 +236,7 @@ sub current_server {
     || Rex::Group::Entry::Server->new( name => "<local>" );
 }
 
-=item desc
+=head2 desc
 
 Returns the description of a task.
 
@@ -248,7 +247,7 @@ sub desc {
   return $self->{desc};
 }
 
-=item set_desc($description)
+=head2 set_desc($description)
 
 Set the description of a task.
 
@@ -259,7 +258,7 @@ sub set_desc {
   $self->{desc} = $desc;
 }
 
-=item is_remote
+=head2 is_remote
 
 Returns true (1) if the task will be executed remotely.
 
@@ -281,7 +280,7 @@ sub is_remote {
   return 0;
 }
 
-=item is_local
+=head2 is_local
 
 Returns true (1) if the task gets executed on the local host.
 
@@ -292,7 +291,7 @@ sub is_local {
   return $self->is_remote() == 0 ? 1 : 0;
 }
 
-=item is_http
+=head2 is_http
 
 Returns true (1) if the task gets executed over http protocol.
 
@@ -316,7 +315,7 @@ sub is_openssh {
       && lc( $self->{"connection_type"} ) eq "openssh" );
 }
 
-=item want_connect
+=head2 want_connect
 
 Returns true (1) if the task will establish a connection to a remote system.
 
@@ -327,7 +326,7 @@ sub want_connect {
   return $self->{no_ssh} == 0 ? 1 : 0;
 }
 
-=item get_connection_type
+=head2 get_connection_type
 
 This method tries to guess the right connection type for the task and returns it.
 
@@ -354,7 +353,7 @@ sub get_connection_type {
     return "OpenSSH";
   }
   elsif ( $self->is_remote && $self->want_connect ) {
-    return "SSH";
+    return Rex::Config->get_connection_type();
   }
   elsif ( $self->is_remote ) {
     return "Fake";
@@ -364,7 +363,7 @@ sub get_connection_type {
   }
 }
 
-=item modify($key, $value)
+=head2 modify($key, $value)
 
 With this method you can modify values of the task.
 
@@ -386,10 +385,9 @@ sub modify {
 sub rethink_connection {
   my ($self) = @_;
   delete $self->{connection};
-  $self->connection;
 }
 
-=item user
+=head2 user
 
 Returns the current user the task will use.
 
@@ -402,7 +400,7 @@ sub user {
   }
 }
 
-=item set_user($user)
+=head2 set_user($user)
 
 Set the user of a task.
 
@@ -413,7 +411,7 @@ sub set_user {
   $self->{auth}->{user} = $user;
 }
 
-=item password
+=head2 password
 
 Returns the password that will be used.
 
@@ -426,7 +424,7 @@ sub password {
   }
 }
 
-=item set_password($password)
+=head2 set_password($password)
 
 Set the password of the task.
 
@@ -437,7 +435,7 @@ sub set_password {
   $self->{auth}->{password} = $password;
 }
 
-=item name
+=head2 name
 
 Returns the name of the task.
 
@@ -448,7 +446,7 @@ sub name {
   return $self->{name};
 }
 
-=item code
+=head2 code
 
 Returns the code of the task.
 
@@ -459,7 +457,7 @@ sub code {
   return $self->{func};
 }
 
-=item set_code(\&code_ref)
+=head2 set_code(\&code_ref)
 
 Set the code of the task.
 
@@ -470,26 +468,26 @@ sub set_code {
   $self->{func} = $code;
 }
 
-=item run_hook($server, $hook)
+=head2 run_hook($server, $hook)
 
 This method is used internally to execute the specified hooks.
 
 =cut
 
 sub run_hook {
-  my ( $self, $server, $hook ) = @_;
+  my ( $self, $server, $hook, @more_args ) = @_;
 
   for my $code ( @{ $self->{$hook} } ) {
-    if ( $hook eq "after" ) {    # special case for after hooks
+    if ( $hook eq "after" ) { # special case for after hooks
       &$code(
         $$server,
         ( $self->{"__was_authenticated"} ? undef : 1 ),
-        { Rex::Args->get }
+        { Rex::Args->get }, @more_args
       );
     }
     else {
       my $old_server = $$server if $server;
-      &$code( $$server, $server, { Rex::Args->get } );
+      &$code( $$server, $server, { Rex::Args->get }, @more_args );
       if ( $old_server && $old_server ne $$server ) {
         $self->{current_server} = $$server;
       }
@@ -497,7 +495,7 @@ sub run_hook {
   }
 }
 
-=item set_auth($key, $value)
+=head2 set_auth($key, $value)
 
 Set the authentication of the task.
 
@@ -518,7 +516,7 @@ sub set_auth {
   }
 }
 
-=item merge_auth($server)
+=head2 merge_auth($server)
 
 Merges the authentication information from $server into the task.
 Tasks authentication information have precedence.
@@ -544,7 +542,7 @@ sub get_sudo_password {
   return $auth{sudo_password};
 }
 
-=item parallelism
+=head2 parallelism
 
 Get the parallelism count of a task.
 
@@ -555,7 +553,7 @@ sub parallelism {
   return $self->{parallelism};
 }
 
-=item set_parallelism($count)
+=head2 set_parallelism($count)
 
 Set the parallelism of the task.
 
@@ -566,7 +564,7 @@ sub set_parallelism {
   $self->{parallelism} = $para;
 }
 
-=item connect($server)
+=head2 connect($server)
 
 Initiate the connection to $server.
 
@@ -575,7 +573,7 @@ Initiate the connection to $server.
 sub connect {
   my ( $self, $server, %override ) = @_;
 
-  if ( ref($server) ne "Rex::Group::Entry::Server" ) {
+  if ( !ref $server ) {
     $server = Rex::Group::Entry::Server->new( name => $server );
   }
   $self->{current_server} = $server;
@@ -592,7 +590,22 @@ sub connect {
 
   my $rex_int_conf = Rex::Commands::get("rex_internals");
   Rex::Logger::debug( Dumper($rex_int_conf) );
-  Rex::Logger::debug( Dumper($auth) );
+  Rex::Logger::debug("Auth-Information inside Task:");
+  for my $key ( keys %{$auth} ) {
+    my $data = $auth->{$key};
+    if ( $key eq "password" ) {
+      $data = Rex::Logger::masq( "%s", $data );
+    }
+
+    $data ||= "";
+
+    Rex::Logger::debug("$key => [[$data]]");
+  }
+
+  $auth->{public_key} = resolv_path( $auth->{public_key}, 1 )
+    if ( $auth->{public_key} );
+  $auth->{private_key} = resolv_path( $auth->{private_key}, 1 )
+    if ( $auth->{private_key} );
 
   my $profiler = Rex::Profiler->new;
 
@@ -660,7 +673,7 @@ sub connect {
   return 1;
 }
 
-=item disconnect
+=head2 disconnect
 
 Disconnect from the current connection.
 
@@ -669,7 +682,7 @@ Disconnect from the current connection.
 sub disconnect {
   my ( $self, $server ) = @_;
 
-  $self->run_hook( \$server, "around" );
+  $self->run_hook( \$server, "around", 1 );
   $self->connection->disconnect;
 
   my %args = Rex::Args->getopts;
@@ -708,7 +721,7 @@ sub get_data {
 # for compatibility
 #####################################
 
-=item run($server, %options)
+=head2 run($server, %options)
 
 Run the task on $server.
 
@@ -717,11 +730,10 @@ Run the task on $server.
 sub run {
 
   # someone used this function directly... bail out
-
   if ( ref( $_[0] ) ) {
     my ( $self, $server, %options ) = @_;
 
-    if ( ref($server) ne "Rex::Group::Entry::Server" ) {
+    if ( !ref $server ) {
       $server = Rex::Group::Entry::Server->new( name => $server );
     }
 
@@ -843,7 +855,7 @@ sub get_desc {
   return Rex::TaskList->create()->get_desc(@tmp);
 }
 
-=item exit_on_connect_fail()
+=head2 exit_on_connect_fail()
 
 Returns true if rex should exit on connect failure.
 
@@ -858,9 +870,5 @@ sub set_exit_on_connect_fail {
   my ( $self, $exit ) = @_;
   $self->{exit_on_connect_fail} = $exit;
 }
-
-=back
-
-=cut
 
 1;

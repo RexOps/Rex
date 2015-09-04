@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Hardware::Network::Solaris;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands::Run;
@@ -17,7 +18,7 @@ use Rex::Helper::Array;
 
 sub get_network_devices {
 
-  my @device_list = grep { $_ = $1 if /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
+  my @device_list = map { /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
 
   @device_list = array_uniq(@device_list);
   return \@device_list;
@@ -60,9 +61,9 @@ sub route {
   }
 
   shift @route;
-  shift @route;    # remove first 2 lines
+  shift @route; # remove first 2 lines
   shift @route;
-  shift @route;    # remove first 2 lines
+  shift @route; # remove first 2 lines
 
   for my $route_entry (@route) {
 

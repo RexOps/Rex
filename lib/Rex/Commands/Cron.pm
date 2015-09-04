@@ -31,15 +31,14 @@ With this Module you can manage your cronjobs.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Cron;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
@@ -47,10 +46,11 @@ use vars qw(@EXPORT);
 use Carp;
 
 use Rex::Cron;
+use Data::Dumper;
 
 @EXPORT = qw(cron cron_entry);
 
-=item cron_entry($name, %option)
+=head2 cron_entry($name, %option)
 
 Manage cron entries.
 
@@ -154,7 +154,7 @@ sub cron_entry {
     ->report_resource_end( type => "cron_entry", name => $name );
 }
 
-=item cron($action => $user, ...)
+=head2 cron($action => $user, ...)
 
 With this function you can manage cronjobs.
 
@@ -223,7 +223,7 @@ sub cron {
   my ( $action, $user, $config, @more ) = @_;
 
   my $c = Rex::Cron->create();
-  $c->read_user_cron($user);    # this must always be the first action
+  $c->read_user_cron($user); # this must always be the first action
 
   if ( $action eq "list" ) {
     return $c->list_jobs;
@@ -233,9 +233,9 @@ sub cron {
     if ( $c->add( %{$config} ) ) {
       my $rnd_file = $c->write_cron;
       $c->activate_user_cron( $rnd_file, $user );
-      return 1;                 # something changed
+      return 1;              # something changed
     }
-    return 0;                   # nothing changed
+    return 0;                # nothing changed
   }
 
   elsif ( $action eq "delete" ) {
@@ -274,9 +274,5 @@ sub cron {
   }
 
 }
-
-=back
-
-=cut
 
 1;

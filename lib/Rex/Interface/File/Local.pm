@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Interface::File::Local;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Interface::File::Base;
 use base qw(Rex::Interface::File::Base);

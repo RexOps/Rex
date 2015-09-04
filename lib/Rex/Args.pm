@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Args;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use vars qw(%task_opts %rex_opts);
 use Rex::Logger;
@@ -52,8 +53,7 @@ sub import {
           $type = $args{$name_param}->{type};
 
           Rex::Logger::debug("  is a $type");
-          shift
-            @params;   # remove the next parameter, because it must be an option
+          shift @params; # remove the next parameter, because it must be an option
 
           if (
             !exists $ARGV[0]
@@ -84,7 +84,16 @@ sub import {
           $rex_opts{$name_param}++;
         }
         else {
-          $rex_opts{$name_param} = $c->get;
+          # multiple params defined, create an array
+          if ( exists $rex_opts{$name_param} ) {
+            if ( !ref $rex_opts{$name_param} ) {
+              $rex_opts{$name_param} = [ $rex_opts{$name_param} ];
+            }
+            push @{ $rex_opts{$name_param} }, $c->get;
+          }
+          else {
+            $rex_opts{$name_param} = $c->get;
+          }
         }
       }
       else {

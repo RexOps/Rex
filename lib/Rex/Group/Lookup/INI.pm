@@ -20,15 +20,14 @@ With this module you can define hostgroups out of an ini style file.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Group::Lookup::INI;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex -base;
 
@@ -40,11 +39,11 @@ use Rex::Helper::INI;
 
 @EXPORT = qw(groups_file);
 
-=item groups_file($file)
+=head2 groups_file($file)
 
-With this function you can read groups from ini style files.
+With this function you can read groups from INI style files.
 
-File Example:
+File example:
 
  [webserver]
  fe01
@@ -54,8 +53,8 @@ File Example:
  [backends]
  be01
  be02
- 
- groups_file($file);
+
+It also supports hostname expressions like [1..3], [1,2,3] and [1..5/2].
 
 =cut
 
@@ -65,7 +64,7 @@ sub groups_file {
   my $section;
   my %hash;
 
-  open( my $INI, "$file" ) || die "Can't open $file: $!\n";
+  open( my $INI, "<", "$file" ) || die "Can't open $file: $!\n";
   my @lines = <$INI>;
   chomp @lines;
   close($INI);
@@ -89,9 +88,5 @@ sub groups_file {
     group( "$k" => @servers );
   }
 }
-
-=back
-
-=cut
 
 1;

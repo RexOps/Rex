@@ -25,15 +25,14 @@ All these functions are not idempotent.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Commands::Partition;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
@@ -45,22 +44,33 @@ use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::LVM;
 use Rex::Commands::Fs;
+use Rex::Commands qw(TRUE FALSE);
 
 @EXPORT = qw(clearpart partition);
 
-=item clearpart($drive)
+=head2 clearpart($drive)
 
-Clear partitions on $drive.
+Clear partitions on drive `sda`:
 
  clearpart "sda";
+
+Create a new GPT disk label (partition table) on drive `sda`:
  
  clearpart "sda",
   initialize => "gpt";
+
+If GPT initialization is requested, the `bios_boot` option (default: TRUE) can also be set to TRUE or FALSE to control creation of a BIOS boot partition:
+
+ clearpart "sda",
+  initialize => "gpt",
+  bios_boot => FALSE;
 
 =cut
 
 sub clearpart {
   my ( $disk, %option ) = @_;
+
+  $option{bios_boot} = defined $option{bios_boot} ? $option{bios_boot} : TRUE;
 
   if ( $option{initialize} ) {
 
@@ -70,8 +80,8 @@ sub clearpart {
       die("Error setting disklabel from $disk to $option{initialize}");
     }
 
-    if ( $option{initialize} eq "gpt" ) {
-      Rex::Logger::info("Creating bios boot partition");
+    if ( $option{initialize} eq "gpt" && $option{bios_boot} ) {
+      Rex::Logger::info("Creating BIOS boot partition");
       partition(
         "none",
         fstype => "non-fs",
@@ -80,7 +90,6 @@ sub clearpart {
       );
 
       run "parted /dev/$disk set 1 bios_grub on";
-
     }
   }
   else {
@@ -94,7 +103,7 @@ sub clearpart {
   }
 }
 
-=item partition($mountpoint, %option)
+=head2 partition($mountpoint, %option)
 
 Create a partition with mountpoint $mountpoint.
 
@@ -133,7 +142,7 @@ Create a partition with mountpoint $mountpoint.
 sub partition {
   my ( $mountpoint, %option ) = @_;
 
-  $option{type} ||= "primary";    # primary is default
+  $option{type} ||= "primary"; # primary is default
 
   # info:
   # disk size, partition start, partition end is in MB
@@ -265,9 +274,5 @@ sub partition {
 
   return "$disk$part_num";
 }
-
-=back
-
-=cut
 
 1;

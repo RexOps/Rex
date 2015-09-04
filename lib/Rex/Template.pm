@@ -19,15 +19,14 @@ This is a simple template engine for configuration files.
 
 =head1 EXPORTED FUNCTIONS
 
-=over 4
-
 =cut
-
-use strict;
 
 package Rex::Template;
 
+use strict;
 use warnings;
+
+# VERSION
 
 use Rex::Config;
 use Rex::Logger;
@@ -96,20 +95,21 @@ sub parse {
         }
 
         if ( $type && $type =~ m/^[+=]$/ ) {
-          $_ = "\$___r .= $text;";
+          "\$___r .= $text;";
         }
         else {
-          $_ = $text;
+          $text;
         }
 
       }
 
       else {
+        my $chomped = $_;
         if ( $DO_CHOMP || $do_chomp ) {
-          chomp $_;
+          chomp $chomped;
           $do_chomp = 0;
         }
-        $_ = '$___r .= "' . _quote($_) . '";';
+        '$___r .= "' . _quote($chomped) . '";';
 
       }
 
@@ -221,7 +221,7 @@ sub _normalize_var_name {
   return $input;
 }
 
-=item is_defined($variable, $default_value)
+=head2 is_defined($variable, $default_value)
 
 This function will check if $variable is defined. If yes, it will return the value of $variable, otherwise it will return $default_value.
 
@@ -238,9 +238,4 @@ sub is_defined {
   return $default;
 }
 
-=back
-
-=cut
-
 1;
-

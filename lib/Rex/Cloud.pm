@@ -4,11 +4,12 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-use strict;
-
 package Rex::Cloud;
 
+use strict;
 use warnings;
+
+# VERSION
 
 require Exporter;
 use base qw(Exporter);

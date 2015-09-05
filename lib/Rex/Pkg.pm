@@ -41,6 +41,10 @@ sub get {
     $host->{"operatingsystem"} = "Redhat";
   }
 
+  if ( is_debian() ) {
+    $host->{"operatingsystem"} = "Debian";
+  }
+
   my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
 
   my $provider;

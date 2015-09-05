@@ -59,8 +59,11 @@ sub get {
   }
   elsif ( is_debian($operatingsystem) && $can_run_systemctl ) {
 
-    # this also counts for Ubuntu
+    # this also counts for Ubuntu and LinuxMint
     $class = "Rex::Service::Debian::systemd";
+  }
+  elsif ( is_debian($operatingsystem) ) {
+    $class = "Rex::Service::Debian";
   }
 
   my $provider_for = Rex::Config->get("service_provider") || {};

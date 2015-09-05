@@ -1,3 +1,41 @@
+2015-09-04 Ferenc Erki <ferki@rexify.org> (1.3.3)
+  * Catch another way to manage services on FreeBSD (close #773) - timp87
+  * Fix generated links for Commands modules (fix #776) - Ferenc Erki
+  * Fix code block output when there's no space before closing tag - Ferenc Erki
+  * Escape curly braces in template content - Ferenc Erki
+  * Force syncing package information on FreeBSD - Ferenc Erki
+  * Take service name and rcvar mapping into account on FreeBSD (close #770) - timp87
+  * Check if systemctl is functional before using it (fix #753) - Ferenc Erki
+  * Rearrange dist.ini - Ferenc Erki
+  * Fail early on unsupported Windows versions (fix #751) - Ferenc Erki
+  * Warn about missing environment instead of panicking (fix #742) - Ferenc Erki
+  * Document alias of get_operating_system() - Ferenc Erki
+  * Fix perlcritic warnings about modifying list elements - Ferenc Erki
+  * Fix perlcritic warnings about two-argument open - Ferenc Erki
+  * Update auth docs - Ferenc Erki
+  * Fix docs for transaction (fix #686, close #766) - Elmer Quintanilla
+  * Fix ensure option for NetBSD services (close #759) - timp87
+  * Do not silently fail on update errors (close #758) - Andrew Beverley
+  * Fix ensure option for FreeBSD services (close #752) - timp87
+  * Enable Rex to manage system services on FreeBSD (#752) - timp87
+  * Recognize multi-arch packages on Debian (fix #748, close #755) - Erik Huelsmann
+  * Fix Gentoo service detection (fix #747) - Ferenc Erki
+  * force apt-listchanges to not run - Anders Ossowicki
+  * Added doc about using regex for auth - Eivin Giske Skaaren
+  * Fixes #760 timeout for OpenSSH - Eivin Giske Skaaren
+  * Use the correct class for managing forks (fix #743) - Ferenc Erki
+  * Support key files for Debian repositories + add docs (close #736) - John Karr
+  * Don't recreate connection during rethink_connection (fix #694, close #727) - Mitch Broadhead
+  * Pass exception to on_rollback (fix #687, close #732) - Mitch Broadhead
+  * Document hostname expressions support in INI files - Ferenc Erki
+  * Support hostname expressions in INI files (close #713) - okaoka
+  * Document -O CLI option - Ferenc Erki
+  * Revert "Remove unused CLI option" (fix RexOps/rex-jobcontrol#10) - Ferenc Erki
+  * make Fcntl calls os independent - Jan
+  * added a wrapper module for File::Spec - Jan
+  * Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
+  * Add function for checkout of Git tags - Eivin Giske Skaaren
+
 2015-06-17 Ferenc Erki <ferki@rexify.org> (1.3.2)
   * Use binmode as a function - Jan
   * Use raw Rex::Interface::Exec to call can_run - Jan

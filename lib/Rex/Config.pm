@@ -25,7 +25,7 @@ use warnings;
 
 # VERSION
 
-use File::Spec;
+use Rex::Helper::File::Spec;
 use Rex::Logger;
 use YAML;
 use Data::Dumper;
@@ -354,8 +354,8 @@ sub get_tmp_dir {
       return "/tmp";
     }
     else {
-      $cache->set( "tmpdir", File::Spec->tmpdir );
-      return File::Spec->tmpdir;
+      $cache->set( "tmpdir", Rex::Helper::File::Spec->tmpdir );
+      return Rex::Helper::File::Spec->tmpdir;
     }
   }
   return $tmp_dir;

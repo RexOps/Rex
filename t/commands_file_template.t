@@ -14,7 +14,8 @@ my $basename = basename __FILE__;
 {
   # templates from file
   my $tpl =
-    File::Spec->catfile( dirname(__FILE__), 'commands', 'file', 'test.tpl', );
+    Rex::Helper::File::Spec->catfile( dirname(__FILE__), 'commands', 'file',
+    'test.tpl', );
   my $content = template $tpl, basename => $basename;
 
   is $content, $basename . "\n", "template from file";

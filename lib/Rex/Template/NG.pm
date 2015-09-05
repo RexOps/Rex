@@ -276,10 +276,14 @@ sub _parse {
     }
 
     # catch ' %>'
-    if ( $code_block
-      && ( $prev_char eq " " || $prev_char eq "\n" || $prev_char eq "-" )
+    if (
+      $code_block
+      && ( ( $code_block_output || $prev_char eq " " )
+        || $prev_char eq "\n"
+        || $prev_char eq "-" )
       && $curr_char eq "%"
-      && $next_char eq ">" )
+      && $next_char eq ">"
+      )
     {
       $code_block = 0;
 
@@ -335,7 +339,7 @@ sub _parse {
       next;
     }
 
-    $parsed .= $curr_char;
+    $parsed .= $curr_char =~ m/[{}]/ ? "\\$curr_char" : $curr_char;
 
   }
 

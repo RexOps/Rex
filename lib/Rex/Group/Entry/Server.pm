@@ -103,7 +103,7 @@ sub get_servers {
       $_;
     }
     else {
-      $_ = Rex::Group::Entry::Server->new( name => $_, auth => $self->{auth} );
+      Rex::Group::Entry::Server->new( name => $_, auth => $self->{auth} );
     }
   } $self->evaluate_hostname;
 }

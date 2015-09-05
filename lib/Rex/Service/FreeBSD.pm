@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;
+use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;
 
@@ -26,12 +27,12 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start   => '/usr/local/etc/rc.d/%s onestart',
-    restart => '/usr/local/etc/rc.d/%s onerestart',
-    stop    => '/usr/local/etc/rc.d/%s onestop',
-    reload  => '/usr/local/etc/rc.d/%s onereload',
-    status  => '/usr/local/etc/rc.d/%s onestatus',
-    action  => '/usr/local/etc/rc.d/%s %s',
+    start   => '/usr/sbin/service %s onestart',
+    restart => '/usr/sbin/service %s onerestart',
+    stop    => '/usr/sbin/service %s onestop',
+    reload  => '/usr/sbin/service %s onereload',
+    status  => '/usr/sbin/service %s onestatus',
+    action  => '/usr/sbin/service %s %s',
   };
 
   return $self;
@@ -42,14 +43,44 @@ sub ensure {
 
   my $what = $options->{ensure};
 
+  my $rccom = "/usr/sbin/service $service rcvar";
+  my $rcout = i_run $rccom;
+  if ( $? != 0 ) {
+    Rex::Logger::info( "Running `$rccom` failed", "error" );
+    return 0;
+  }
+
+  my ( $rcvar, $rcvalue ) = $rcout =~ m/^\$?(\w+)="?(\w+)"?$/m;
+  unless ($rcvar) {
+    Rex::Logger::info( "Error getting service name.", "error" );
+    return 0;
+  }
+
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
-    delete_lines_matching "/etc/rc.conf",
-      matching => qr/${service}_enable="YES"/;
+    my $stop_regexp = qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
+    if ( $rcvalue =~ m/^YES$/i ) {
+      file "/etc/rc.conf.d/${service}",           ensure => "absent";
+      file "/usr/local/etc/rc.conf.d/${service}", ensure => "absent";
+      if ( is_file("/etc/rc.conf.local") ) {
+        delete_lines_matching "/etc/rc.conf.local", matching => $stop_regexp;
+      }
+      delete_lines_matching "/etc/rc.conf", matching => $stop_regexp;
+    }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
-    append_if_no_such_line "/etc/rc.conf", "${service}_enable=\"YES\"\n";
+    my $start_regexp = qr/^\s*${rcvar}=/;
+    unless ( $rcvalue =~ m/^YES$/i ) {
+      file "/etc/rc.conf.d/${service}",           ensure => "absent";
+      file "/usr/local/etc/rc.conf.d/${service}", ensure => "absent";
+      if ( is_file("/etc/rc.conf.local") ) {
+        delete_lines_matching "/etc/rc.conf.local", matching => $start_regexp;
+      }
+      append_or_amend_line "/etc/rc.conf",
+        line   => "${rcvar}=\"YES\"",
+        regexp => $start_regexp;
+    }
   }
 
   return 1;

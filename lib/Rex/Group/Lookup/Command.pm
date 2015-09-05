@@ -56,7 +56,7 @@ sub lookup_command {
   }
 
   eval {
-    open( my $command_rt, "$command_to_exec |" ) or die($!);
+    open( my $command_rt, "-|", "$command_to_exec" ) or die($!);
     @content = grep { !/^\s*$|^#/ } <$command_rt>;
     close($command_rt);
 

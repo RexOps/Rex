@@ -15,16 +15,16 @@ With this module you can define transactions and rollback scenarios on failure.
 =head1 SYNOPSIS
 
  task "do-something", "server01", sub {
-  on_rollback {
-    rmdir "/tmp/mydata";
-  };
+   transaction {
+     on_rollback {
+       rmdir "/tmp/mydata";
+     };
  
-  transaction {
-    mkdir "/tmp/mydata";
-    upload "files/myapp.tar.gz", "/tmp/mydata";
-    run "cd /tmp/mydata; tar xzf myapp.tar.gz";
-    if($? != 0) { die("Error extracting myapp.tar.gz"); }
-  };
+     mkdir "/tmp/mydata";
+     upload "files/myapp.tar.gz", "/tmp/mydata";
+     run "cd /tmp/mydata; tar xzf myapp.tar.gz";
+     if($? != 0) { die("Error extracting myapp.tar.gz"); }
+   };
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -84,6 +84,7 @@ sub transaction(&) {
   eval { &$code(); };
 
   if ($@) {
+    my $err = $@;
     Rex::Logger::info("Transaction failed. Rolling back.");
 
     $ret = 0;
@@ -93,7 +94,7 @@ sub transaction(&) {
       Rex::push_connection( $rollback_code->{"connection"} );
 
       # run the rollback code
-      &{ $rollback_code->{"code"} }();
+      &{ $rollback_code->{"code"} }($err);
 
       # and pop it away
       Rex::pop_connection();

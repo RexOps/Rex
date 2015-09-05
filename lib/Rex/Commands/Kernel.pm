@@ -100,7 +100,7 @@ sub kmod {
       my @mod_split = split( /\//, $module );
       my $mod = $mod_split[-1];
 
-      my ($mod_id) = grep { $_ = $1 if $_ =~ qr{(\d+).*$mod} } run "modinfo";
+      my ($mod_id) = map { /^\s*(\d+)\s+.*$mod/ } run "modinfo";
       my $cmd = "modunload -i $mod_id";
 
       if ( $options->{"exec_file"} ) {

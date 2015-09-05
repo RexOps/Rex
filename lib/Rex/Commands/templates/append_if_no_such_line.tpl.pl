@@ -6,7 +6,7 @@ use warnings;
 # unlink myself
 unlink $0;
 
-open( my $in, "<%= $file %>" ) || exit(1);
+open( my $in, "<", "<%= $file %>" ) || exit(1);
 my $found = 0;
 while (<$in>) {
   chomp;
@@ -22,7 +22,7 @@ while (<$in>) {
 }
 close $in;
 if ( !$found ) {
-  open( my $out, ">><%= $file %>" ) || exit(3);
+  open( my $out, ">", "<%= $file %>" ) || exit(3);
   print $out '<%= $line %>' . "\n";
   close $out;
 }

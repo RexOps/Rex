@@ -41,9 +41,9 @@ use Rex::Helper::INI;
 
 =head2 groups_file($file)
 
-With this function you can read groups from ini style files.
+With this function you can read groups from INI style files.
 
-File Example:
+File example:
 
  [webserver]
  fe01
@@ -53,8 +53,8 @@ File Example:
  [backends]
  be01
  be02
- 
- groups_file($file);
+
+It also supports hostname expressions like [1..3], [1,2,3] and [1..5/2].
 
 =cut
 

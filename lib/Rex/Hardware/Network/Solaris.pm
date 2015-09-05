@@ -18,7 +18,7 @@ use Rex::Helper::Array;
 
 sub get_network_devices {
 
-  my @device_list = grep { $_ = $1 if /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
+  my @device_list = map { /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
 
   @device_list = array_uniq(@device_list);
   return \@device_list;

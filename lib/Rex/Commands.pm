@@ -570,32 +570,53 @@ sub password {
 
 =head2 auth(for => $entity, %data)
 
-With this function you can modify/set special authentication parameters for tasks and groups. If you want to modify a task's or group's authentication you first have to create it.
+With this function you can modify/set special authentication parameters for tasks and groups.
+If you want to modify a group's authentication you first have to create it.
+(Place the auth command after the group.)
 
 If you want to set special login information for a group you have to activate that feature first.
 
  use Rex -feature => 0.31; # activate setting auth for a group
 
+ # auth for groups
+ 
  group frontends => "web[01..10]";
  group backends => "be[01..05]";
-
+ 
  auth for => "frontends" =>
             user => "root",
             password => "foobar";
-
+ 
  auth for => "backends" =>
             user => "admin",
             private_key => "/path/to/id_rsa",
             public_key => "/path/to/id_rsa.pub",
             sudo => TRUE;
 
+ # auth for tasks
+ 
  task "prepare", group => ["frontends", "backends"], sub {
    # do something
  };
-
+ 
  auth for => "prepare" =>
             user => "root";
 
+ # auth for multiple tasks with regular expression
+ 
+ task "step_1", sub {
+  # do something
+ };
+ 
+ task "step_2", sub {
+  # do something
+ };
+ 
+ auth for => qr/step/ =>
+   user     => $user,
+   password => $password;
+
+ # fallback auth
  auth fallback => {
    user        => "fallback_user1",
    password    => "fallback_pw1",

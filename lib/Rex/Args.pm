@@ -54,7 +54,7 @@ sub args_spec {
 sub parse_rex_opts {
   my ($class) = @_;
 
-  %args = $class->args_spec;
+  my %args = $class->args_spec;
 
   #### clean up @ARGV
   my $runner = 0;

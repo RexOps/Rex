@@ -61,43 +61,9 @@ sub new {
 }
 
 sub __run__ {
-
   my ( $self, %more_args ) = @_;
 
-  Rex::Args->parse_rex_opts(
-    C => {},
-    c => {},
-    q => {},
-    Q => {},
-    F => {},
-    T => {},
-    h => {},
-    v => {},
-    d => {},
-    s => {},
-    m => {},
-    y => {},
-    w => {},
-    S => { type => "string" },
-    E => { type => "string" },
-    o => { type => "string" },
-    f => { type => "string" },
-    M => { type => "string" },
-    b => { type => "string" },
-    e => { type => "string" },
-    H => { type => "string" },
-    u => { type => "string" },
-    p => { type => "string" },
-    P => { type => "string" },
-    K => { type => "string" },
-    G => { type => "string" },
-    g => { type => "string" },
-    z => { type => "string" },
-    O => { type => "string" },
-    t => { type => "string" },
-    %more_args,
-  );
-
+  Rex::Args->parse_rex_opts;
   %opts = Rex::Args->getopts;
 
   if ( $opts{'Q'} ) {

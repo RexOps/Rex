@@ -16,8 +16,45 @@ use Rex::Logger;
 
 our $CLEANUP = 1;
 
+sub args_spec {
+  return (
+    C => {},
+    c => {},
+    q => {},
+    Q => {},
+    F => {},
+    T => {},
+    h => {},
+    v => {},
+    d => {},
+    s => {},
+    m => {},
+    y => {},
+    w => {},
+    S => { type => "string" },
+    E => { type => "string" },
+    o => { type => "string" },
+    f => { type => "string" },
+    M => { type => "string" },
+    b => { type => "string" },
+    e => { type => "string" },
+    H => { type => "string" },
+    u => { type => "string" },
+    p => { type => "string" },
+    P => { type => "string" },
+    K => { type => "string" },
+    G => { type => "string" },
+    g => { type => "string" },
+    z => { type => "string" },
+    O => { type => "string" },
+    t => { type => "string" },
+  );
+}
+
 sub parse_rex_opts {
-  my ( $class, %args ) = @_;
+  my ($class) = @_;
+
+  %args = $class->args_spec;
 
   #### clean up @ARGV
   my $runner = 0;

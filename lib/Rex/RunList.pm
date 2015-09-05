@@ -9,18 +9,11 @@ package Rex::RunList;
 use strict;
 use warnings;
 
-# VERSION
-
 use Rex::Logger;
 use Rex::Task;
 use Rex::TaskList;
-#use Rex::Config;
-#use Rex::Interface::Executor;
-#use Rex::Fork::Manager;
-#use Rex::Report;
-#use Rex::Group;
-#use Time::HiRes qw(time);
-#use POSIX qw(floor);
+
+# VERSION
 
 my $INSTANCE;
 

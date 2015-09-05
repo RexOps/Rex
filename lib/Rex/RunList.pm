@@ -10,7 +10,6 @@ use strict;
 use warnings;
 
 use Rex::Logger;
-use Rex::Task;
 use Rex::TaskList;
 
 # VERSION

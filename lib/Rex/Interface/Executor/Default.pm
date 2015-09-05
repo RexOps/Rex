@@ -48,16 +48,17 @@ sub exec {
     Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );
   };
 
-  my %opts = Rex::Args->getopts;
-  if ($@) {
-    my $error = $@;
+  my $error = $@;
+  my %opts  = Rex::Args->getopts;
+
+  if ($error) {
     if ( exists $opts{o} ) {
-      Rex::Output->get->add( $task->name, error => 1, msg => $@ );
+      Rex::Output->get->add( $task->name, error => 1, msg => $error );
     }
     else {
       Rex::Logger::info( "Error executing task:", "error" );
       Rex::Logger::info( "$error",                "error" );
-      die($@);
+      die($error);
     }
   }
   else {

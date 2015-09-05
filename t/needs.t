@@ -7,37 +7,25 @@ $::QUIET = 1;
 
 use Rex::Commands;
 
-desc("MyTest - Test1");
-task(
-  "test1",
-  sub {
+task "test1", sub {
     open( my $fh, ">", "test1.txt" );
     close($fh);
-  }
-);
+};
 
-desc("MyTest - Test2");
-task(
-  "test2",
-  sub {
+task "test2", sub {
     open( my $fh, ">", "test2.txt" );
     close($fh);
-  }
-);
+};
 
 1;
 
 package main;
 
-use Test::More tests => 3;
+use Test::More;
 
 use Rex::Commands;
 
-desc("Test");
-task(
-  "test",
-  sub {
-
+task "test", sub {
     needs MyTest;
 
     if ( -f "test1.txt" && -f "test2.txt" ) {
@@ -48,14 +36,9 @@ task(
     }
 
     is( 1, -1 );
-  }
-);
+};
 
-desc("Test 2");
-task(
-  "test2",
-  sub {
-
+task "test2", sub {
     needs MyTest "test2";
 
     if ( -f "test2.txt" ) {
@@ -65,14 +48,9 @@ task(
 
     is( 1, -1 );
 
-  }
-);
+};
 
-desc("Test 3");
-task(
-  "test3",
-  sub {
-
+task "test3", sub {
     needs("test4");
 
     if ( -f "test4.txt" ) {
@@ -81,21 +59,30 @@ task(
     }
 
     is( 1, -1 );
-  }
-);
+};
 
-desc("Test 4");
-task(
-  "test4",
-  sub {
+task "test4", sub {
     open( my $fh, ">", "test4.txt" );
     close($fh);
-  }
-);
+};
 
-ok( Rex::TaskList->create()->run("test"),  "testing needs" );
-ok( Rex::TaskList->create()->run("test2"), "testing needs" );
-ok( Rex::TaskList->create()->run("test3"), "testing needs - local namespace" );
+my $task_list = Rex::TaskList->create;
+my $run_list = Rex::RunList->instance;
+$run_list->parse_opts(qw/test test2 test3/);
+  
+for my $task ($run_list->tasks) {
+    ok $task_list->run($task), $task->name;
+    $run_list->increment_current_index;
+}
+
+#my $task  = $run_list->next_task;
+#my $task2 = $task_list->get_task("test2");
+#my $task3 = $task_list->get_task("test3");
+#
+#ok $task_list->run($task),  "testing needs";
+##ok $task_list->run($task2), "testing needs";
+##ok $task_list->run($task3), "testing needs - local namespace";
+
+done_testing;
 
 1;
-

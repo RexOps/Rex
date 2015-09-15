@@ -55,7 +55,25 @@ Only I<open_port> and I<close_port> are idempotent.
          accept          => "POSTROUTING",
          "out-interface" => "eth0",
          jump            => "MASQUERADE";
- 
+
+   # Version of IP can be specified in the first argument
+   # of any function: -4 or -6 (if no version specified,
+   # -4 implies)
+   iptables_clear -6;
+
+   open_port -6, [22, 80];
+   close_port -6, "all";
+   redirect_port -6, 80 => 10080;
+   default_state_rule -6;
+
+   iptables -6, "flush";
+   iptables -6,
+         t     => "filter",
+         A     => "INPUT",
+         i     => "eth0",
+         m     => "state",
+         state => "RELATED,ESTABLISHED",
+         j     => "ACCEPT";
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -109,8 +127,9 @@ Open a port for inbound connections.
 =cut
 
 sub open_port {
-
-  my ( $port, $option ) = @_;
+  my (@params) = @_;
+  my $ip_version = _get_ip_version( \@params );
+  my ( $port, $option ) = @params;
 
   my %option_h;
   if ( ref $option ne "HASH" ) {
@@ -126,7 +145,8 @@ sub open_port {
     delete $option_h{only_if};
     $option = {%option_h};
   }
-  _open_or_close_port( "i", "I", "INPUT", "ACCEPT", $port, $option );
+  _open_or_close_port( $ip_version, "i", "I", "INPUT", "ACCEPT", $port,
+    $option );
 
 }
 
@@ -145,8 +165,9 @@ Close a port for inbound connections.
 =cut
 
 sub close_port {
-
-  my ( $port, $option ) = @_;
+  my (@params) = @_;
+  my $ip_version = _get_ip_version( \@params );
+  my ( $port, $option ) = @params;
 
   my %option_h;
   if ( ref $option ne "HASH" ) {
@@ -163,7 +184,7 @@ sub close_port {
     $option = {%option_h};
   }
 
-  _open_or_close_port( "i", "A", "INPUT", "DROP", $port, $option );
+  _open_or_close_port( $ip_version, "i", "A", "INPUT", "DROP", $port, $option );
 
 }
 
@@ -182,7 +203,9 @@ Redirect $in_port to another local port.
 =cut
 
 sub redirect_port {
-  my ( $in_port, $option ) = @_;
+  my (@params) = @_;
+  my $ip_version = _get_ip_version( \@params );
+  my ( $in_port, $option ) = @params;
 
   my @opts;
 
@@ -233,7 +256,7 @@ sub redirect_port {
     );
   }
 
-  iptables @opts;
+  iptables $ip_version, @opts;
 }
 
 =head2 iptables(@params)
@@ -276,13 +299,14 @@ flush.
 
 sub iptables {
   my (@params) = @_;
+  my $iptables = _get_executable( \@params );
 
   if ( $params[0] eq "flush" || $params[0] eq "-flush" || $params[0] eq "-F" ) {
     if ( $params[1] ) {
-      run "iptables -F -t $params[1]";
+      run "$iptables -F -t $params[1]";
     }
     else {
-      run "iptables -F";
+      run "$iptables -F";
     }
 
     return;
@@ -306,8 +330,8 @@ sub iptables {
     }
   }
 
-  if ( can_run("iptables") ) {
-    my $output = run "iptables $cmd";
+  if ( can_run($iptables) ) {
+    my $output = run "$iptables $cmd";
 
     if ( $? != 0 ) {
       Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
@@ -315,8 +339,8 @@ sub iptables {
     }
   }
   else {
-    Rex::Logger::info("IPTables not found.");
-    die("IPTables not found.");
+    Rex::Logger::info("$iptables not found.");
+    die("$iptables not found.");
   }
 }
 
@@ -365,7 +389,9 @@ Set the default state rules for the given device.
 =cut
 
 sub default_state_rule {
-  my (%option) = @_;
+  my (@params)   = @_;
+  my $ip_version = _get_ip_version( \@params );
+  my (%option)   = @params;
 
   unless ( exists $option{"dev"} ) {
     my $net_info = network_interfaces();
@@ -378,7 +404,7 @@ sub default_state_rule {
     return;
   }
 
-  iptables
+  iptables $ip_version,
     t     => "filter",
     A     => "INPUT",
     i     => $option{"dev"},
@@ -393,12 +419,15 @@ List all iptables rules.
 
  task "list-iptables", sub {
    print Dumper iptables_list;
+   print Dumper iptables_list -6;
  };
 
 =cut
 
 sub iptables_list {
-  my @lines = run "/sbin/iptables-save";
+  my (@params) = @_;
+  my $iptables = _get_executable( \@params );
+  my @lines    = run "/sbin/$iptables-save";
   _iptables_list(@lines);
 }
 
@@ -449,20 +478,28 @@ Remove all iptables rules.
 =cut
 
 sub iptables_clear {
+  my (@params) = @_;
+  my $ip_version = _get_ip_version( \@params );
 
   for my $table (qw/nat mangle filter/) {
-    iptables t => $table, F => '';
-    iptables t => $table, X => '';
+
+    # NAT for IPv6 supported in iptables >= v1.4.18
+    if ( $table eq "nat" && $ip_version == -6 ) {
+      next if _iptables_version() < 1_004_018;
+    }
+
+    iptables $ip_version, t => $table, F => '';
+    iptables $ip_version, t => $table, X => '';
   }
 
   for my $p (qw/INPUT FORWARD OUTPUT/) {
-    iptables P => $p, ["ACCEPT"];
+    iptables $ip_version, P => $p, ["ACCEPT"];
   }
 
 }
 
 sub _open_or_close_port {
-  my ( $dev_type, $push_type, $chain, $jump, $port, $option ) = @_;
+  my ( $ip_version, $dev_type, $push_type, $chain, $jump, $port, $option ) = @_;
 
   my @opts;
 
@@ -482,8 +519,8 @@ sub _open_or_close_port {
       my $new_option = $option;
       $new_option->{"dev"} = $dev;
 
-      _open_or_close_port( $dev_type, $push_type, $chain, $jump, $port,
-        $new_option );
+      _open_or_close_port( $ip_version, $dev_type, $push_type, $chain, $jump,
+        $port, $new_option );
     }
 
     return;
@@ -504,8 +541,8 @@ sub _open_or_close_port {
   else {
     if ( ref($port) eq "ARRAY" ) {
       for my $port_num ( @{$port} ) {
-        _open_or_close_port( $dev_type, $push_type, $chain, $jump, $port_num,
-          $option );
+        _open_or_close_port( $ip_version, $dev_type, $push_type, $chain, $jump,
+          $port_num, $option );
       }
       return;
     }
@@ -514,17 +551,17 @@ sub _open_or_close_port {
     push( @opts, "j",     $jump );
   }
 
-  if ( _rule_exists(@opts) ) {
+  if ( _rule_exists( $ip_version, @opts ) ) {
     Rex::Logger::debug("IPTables rule already exists. skipping...");
     return;
   }
 
-  iptables @opts;
+  iptables $ip_version, @opts;
 
 }
 
 sub _rule_exists {
-  my (@check_rule) = @_;
+  my ( $ip_version, @check_rule ) = @_;
 
   shift @check_rule;
   shift @check_rule;
@@ -532,7 +569,7 @@ sub _rule_exists {
 
   my $str_check_rule = join( " ", "A", @check_rule );
 
-  my $current_tables = iptables_list();
+  my $current_tables = iptables_list($ip_version);
   if ( exists $current_tables->{filter} ) {
     for my $rule ( @{ $current_tables->{filter} } ) {
       my $str_rule = join( " ", @{$rule} );
@@ -546,6 +583,27 @@ sub _rule_exists {
   }
 
   return 0;
+}
+
+sub _get_ip_version {
+  my ($params) = @_;
+  if ( defined $params->[0] && !ref $params->[0] ) {
+    if ( $params->[0] eq "-4" || $params->[0] eq "-6" ) {
+      return shift @$params;
+    }
+  }
+  return -4;
+}
+
+sub _get_executable {
+  my ($params) = @_;
+  return _get_ip_version($params) == -6 ? "ip6tables" : "iptables";
+}
+
+sub _iptables_version {
+  my $version = join "", map { sprintf "%03d", $_ } split /[.]/,
+    substr run("iptables -V"), 10;
+  return $version =~ s/^0+//r;
 }
 
 1;

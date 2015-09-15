@@ -441,7 +441,7 @@ sub get_user {
     return $user;
   }
 
-  return getlogin || getpwuid($<) || "Kilroy";
+  return getpwuid($<) || getlogin || "Kilroy";
 }
 
 sub get_password {

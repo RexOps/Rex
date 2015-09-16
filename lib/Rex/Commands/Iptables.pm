@@ -133,7 +133,7 @@ sub open_port {
 
   my %option_h;
   if ( ref $option ne "HASH" ) {
-    ( $port, %option_h ) = @_;
+    ( $port, %option_h ) = @params;
 
     if ( exists $option_h{only_if} ) {
       run( $option_h{only_if} );
@@ -171,7 +171,7 @@ sub close_port {
 
   my %option_h;
   if ( ref $option ne "HASH" ) {
-    ( $port, %option_h ) = @_;
+    ( $port, %option_h ) = @params;
 
     if ( exists $option_h{only_if} ) {
       run( $option_h{only_if} );
@@ -205,8 +205,15 @@ Redirect $in_port to another local port.
 sub redirect_port {
   my (@params) = @_;
   my $ip_version = _get_ip_version( \@params );
-  my ( $in_port, $option ) = @params;
+  if ( $ip_version == -6 ) {
+    my $iptables_version = _iptables_version();
+    if ( $iptables_version < 1_004_018 ) {
+      Rex::Logger::info("IPtables < v1.4.18 doesn't support NAT for IPv6");
+      die("IPtables < v1.4.18 doesn't support NAT for IPv6");
+    }
+  }
 
+  my ( $in_port, $option ) = @params;
   my @opts;
 
   push( @opts, "t", "nat" );
@@ -350,11 +357,14 @@ This function creates a NAT gateway for the device the default route points to.
 
  task "make-gateway", sub {
    is_nat_gateway;
+   is_nat_gateway -6;
  };
 
 =cut
 
 sub is_nat_gateway {
+  my (@params) = @_;
+  my $ip_version = _get_ip_version( \@params );
 
   Rex::Logger::debug("Changing this system to a nat gateway.");
 
@@ -362,13 +372,28 @@ sub is_nat_gateway {
 
     my @iptables_option = ();
 
-    my ($default_line) = run "/sbin/ip r |grep ^default";
+    my ($default_line) = run "/sbin/ip $ip_version r |grep ^default";
     my ($dev)          = ( $default_line =~ m/dev ([a-z0-9]+)/i );
     Rex::Logger::debug("Default GW Device is $dev");
 
-    sysctl "net.ipv4.ip_forward" => 1;
-    iptables t => "nat", A => "POSTROUTING", o => $dev, j => "MASQUERADE";
-
+    if ( $ip_version == -6 ) {
+      sysctl "net.ipv6.conf.all.forwarding",     1;
+      sysctl "net.ipv6.conf.default.forwarding", 1;
+      if ( _iptables_version() < 1_004_018 ) {
+        Rex::Logger::info("NAT for IPv6 supported by iptables >= v1.4.18");
+      }
+      else {
+        iptables $ip_version,
+          t => "nat",
+          A => "POSTROUTING",
+          o => $dev,
+          j => "MASQUERADE";
+      }
+    }
+    else {
+      sysctl "net.ipv4.ip_forward" => 1;
+      iptables t => "nat", A => "POSTROUTING", o => $dev, j => "MASQUERADE";
+    }
   }
   else {
 
@@ -483,7 +508,7 @@ sub iptables_clear {
 
   for my $table (qw/nat mangle filter/) {
 
-    # NAT for IPv6 supported in iptables >= v1.4.18
+    # NAT for IPv6 supported by iptables >= v1.4.18
     if ( $table eq "nat" && $ip_version == -6 ) {
       next if _iptables_version() < 1_004_018;
     }

@@ -82,10 +82,14 @@ sub connect {
   $ssh_opts{ConnectTimeout} = $timeout;
 
   my %net_openssh_constructor_options = (
-    exists $ssh_opts{initialize_options} ? %{ $ssh_opts{initialize_options} } : () );
-  
-  delete $ssh_opts{initialize_options} if(exists $ssh_opts{initialize_options});
-  
+    exists $ssh_opts{initialize_options}
+    ? %{ $ssh_opts{initialize_options} }
+    : ()
+  );
+
+  delete $ssh_opts{initialize_options}
+    if ( exists $ssh_opts{initialize_options} );
+
   my @ssh_opts_line;
 
   for my $key ( keys %ssh_opts ) {

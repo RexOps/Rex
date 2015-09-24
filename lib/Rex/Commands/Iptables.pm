@@ -207,8 +207,8 @@ sub redirect_port {
   if ( $ip_version == -6 ) {
     my $iptables_version = _iptables_version();
     if ( $iptables_version < 1_004_018 ) {
-      Rex::Logger::info("IPtables < v1.4.18 doesn't support NAT for IPv6");
-      die("IPtables < v1.4.18 doesn't support NAT for IPv6");
+      Rex::Logger::info("iptables < v1.4.18 doesn't support NAT for IPv6");
+      die("iptables < v1.4.18 doesn't support NAT for IPv6");
     }
   }
 
@@ -269,7 +269,7 @@ sub redirect_port {
 
 Write standard iptable comands.
 
-Note that there is a short form for the IPTables C<--flush> option; when you
+Note that there is a short form for the iptables C<--flush> option; when you
 pass the option of C<-F|"flush"> as the only argument, the command
 C<iptables -F> is run on the connected host.  With the two argument form of
 C<flush> shown in the examples below, the second argument is table you want to
@@ -576,7 +576,7 @@ sub _open_or_close_port {
   }
 
   if ( _rule_exists( $ip_version, @opts ) ) {
-    Rex::Logger::debug("IPTables rule already exists. skipping...");
+    Rex::Logger::debug("iptables rule already exists. skipping...");
     return;
   }
 

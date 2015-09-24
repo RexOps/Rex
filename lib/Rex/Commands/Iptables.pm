@@ -57,8 +57,7 @@ Only I<open_port> and I<close_port> are idempotent.
          jump            => "MASQUERADE";
 
    # Version of IP can be specified in the first argument
-   # of any function: -4 or -6 (if no version specified,
-   # -4 implies)
+   # of any function: -4 or -6 (defaults to -4)
    iptables_clear -6;
 
    open_port -6, [22, 80];

@@ -628,7 +628,8 @@ sub _get_executable {
 sub _iptables_version {
   my $version = join "", map { sprintf "%03d", $_ } split /[.]/,
     substr run("iptables -V"), 10;
-  return $version =~ s/^0+//r;
+  $version =~ s/^0+//;
+  return $version;
 }
 
 1;

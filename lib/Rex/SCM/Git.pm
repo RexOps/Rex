@@ -79,12 +79,14 @@ sub checkout {
   }
   elsif ( is_dir("$checkout_to/.git") ) {
     my $branch = $checkout_opt->{"branch"} || "master";
-    run "git pull origin $branch", cwd => $checkout_to;
+    my $rebase = $checkout_opt->{"rebase"} ? '--rebase' : '';
+    my $out = run "git pull $rebase origin $branch", cwd => $checkout_to;
+    Rex::Logger::debug($out);
 
     if ( exists $checkout_opt->{"tag"} ) {
       my $tag = $checkout_opt->{tag};
       Rex::Logger::info( "Switching to tag " . $tag );
-      my $out = run "git fetch origin", cwd => $checkout_to;
+      $out = run "git fetch origin", cwd => $checkout_to;
       Rex::Logger::debug($out);
       $out = run "git checkout -b $tag $tag", cwd => $checkout_to;
       Rex::Logger::debug($out);

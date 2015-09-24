@@ -127,7 +127,7 @@ Open a port for inbound connections.
 =cut
 
 sub open_port {
-  my (@params) = @_;
+  my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
   my ( $port, $option ) = @params;
 
@@ -165,7 +165,7 @@ Close a port for inbound connections.
 =cut
 
 sub close_port {
-  my (@params) = @_;
+  my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
   my ( $port, $option ) = @params;
 
@@ -203,7 +203,7 @@ Redirect $in_port to another local port.
 =cut
 
 sub redirect_port {
-  my (@params) = @_;
+  my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
   if ( $ip_version == -6 ) {
     my $iptables_version = _iptables_version();
@@ -305,7 +305,7 @@ flush.
 =cut
 
 sub iptables {
-  my (@params) = @_;
+  my @params   = @_;
   my $iptables = _get_executable( \@params );
 
   if ( $params[0] eq "flush" || $params[0] eq "-flush" || $params[0] eq "-F" ) {
@@ -363,7 +363,7 @@ This function creates a NAT gateway for the device the default route points to.
 =cut
 
 sub is_nat_gateway {
-  my (@params) = @_;
+  my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
 
   Rex::Logger::debug("Changing this system to a nat gateway.");
@@ -414,7 +414,7 @@ Set the default state rules for the given device.
 =cut
 
 sub default_state_rule {
-  my (@params)   = @_;
+  my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
   my (%option)   = @params;
 
@@ -450,7 +450,7 @@ List all iptables rules.
 =cut
 
 sub iptables_list {
-  my (@params) = @_;
+  my @params   = @_;
   my $iptables = _get_executable( \@params );
   my @lines    = run "/sbin/$iptables-save";
   _iptables_list(@lines);
@@ -458,7 +458,7 @@ sub iptables_list {
 
 sub _iptables_list {
   my ( %tables, $ret );
-  my (@lines) = @_;
+  my @lines = @_;
 
   my ($current_table);
   for my $line (@lines) {
@@ -503,7 +503,7 @@ Remove all iptables rules.
 =cut
 
 sub iptables_clear {
-  my (@params) = @_;
+  my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
 
   for my $table (qw/nat mangle filter/) {

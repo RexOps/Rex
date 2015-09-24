@@ -376,18 +376,15 @@ sub is_nat_gateway {
     Rex::Logger::debug("Default GW Device is $dev");
 
     if ( $ip_version == -6 ) {
+      die "NAT for IPv6 supported by iptables >= v1.4.18"
+        if _iptables_version() < 1_004_018;
       sysctl "net.ipv6.conf.all.forwarding",     1;
       sysctl "net.ipv6.conf.default.forwarding", 1;
-      if ( _iptables_version() < 1_004_018 ) {
-        Rex::Logger::info("NAT for IPv6 supported by iptables >= v1.4.18");
-      }
-      else {
-        iptables $ip_version,
-          t => "nat",
-          A => "POSTROUTING",
-          o => $dev,
-          j => "MASQUERADE";
-      }
+      iptables $ip_version,
+        t => "nat",
+        A => "POSTROUTING",
+        o => $dev,
+        j => "MASQUERADE";
     }
     else {
       sysctl "net.ipv4.ip_forward" => 1;
@@ -508,9 +505,10 @@ sub iptables_clear {
   for my $table (qw/nat mangle filter/) {
 
     # NAT for IPv6 supported by iptables >= v1.4.18
-    if ( $table eq "nat" && $ip_version == -6 ) {
-      next if _iptables_version() < 1_004_018;
-    }
+    next
+      if $table eq "nat"
+      && $ip_version == -6
+      && _iptables_version() < 1_004_018;
 
     iptables $ip_version, t => $table, F => '';
     iptables $ip_version, t => $table, X => '';

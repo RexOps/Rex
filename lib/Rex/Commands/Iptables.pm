@@ -83,6 +83,7 @@ package Rex::Commands::Iptables;
 
 use strict;
 use warnings;
+use version;
 
 # VERSION
 
@@ -96,6 +97,7 @@ use vars qw(@EXPORT);
 use Rex::Commands::Sysctl;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
+use Rex::Helper::Run;
 
 use Rex::Logger;
 
@@ -205,8 +207,8 @@ sub redirect_port {
   my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
   if ( $ip_version == -6 ) {
-    my $iptables_version = _iptables_version();
-    if ( $iptables_version < 1_004_018 ) {
+    my $iptables_version = _iptables_version($ip_version);
+    if ( $iptables_version < v1.4.18 ) {
       Rex::Logger::info("iptables < v1.4.18 doesn't support NAT for IPv6");
       die("iptables < v1.4.18 doesn't support NAT for IPv6");
     }
@@ -371,7 +373,7 @@ sub is_nat_gateway {
 
     if ( $ip_version == -6 ) {
       die "NAT for IPv6 supported by iptables >= v1.4.18"
-        if _iptables_version() < 1_004_018;
+        if _iptables_version($ip_version) < v1.4.18;
       sysctl "net.ipv6.conf.all.forwarding",     1;
       sysctl "net.ipv6.conf.default.forwarding", 1;
       iptables $ip_version,
@@ -502,7 +504,7 @@ sub iptables_clear {
     next
       if $table eq "nat"
       && $ip_version == -6
-      && _iptables_version() < 1_004_018;
+      && _iptables_version($ip_version) < v1.4.18;
 
     iptables $ip_version, t => $table, F => '';
     iptables $ip_version, t => $table, X => '';
@@ -620,10 +622,15 @@ sub _get_executable {
 }
 
 sub _iptables_version {
-  my $version = join "", map { sprintf "%03d", $_ } split /[.]/,
-    substr run("iptables -V"), 10;
-  $version =~ s/^0+//;
-  return $version;
+  my (@params) = @_;
+  my $iptables = _get_executable( \@params );
+  my $out      = i_run("$iptables -V");
+  if ( $out =~ /v([.\d]+)/ms ) {
+    return version->parse($1);
+  }
+  else {
+    die "Can't parse `$iptables -V' output `$out'";
+  }
 }
 
 1;

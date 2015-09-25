@@ -336,17 +336,11 @@ sub iptables {
     }
   }
 
-  if ( can_run($iptables) ) {
-    my $output = run "$iptables $cmd";
+  my $output = run "$iptables $cmd";
 
-    if ( $? != 0 ) {
-      Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
-      die("Error setting iptable rule: $cmd; command output: $output");
-    }
-  }
-  else {
-    Rex::Logger::info("$iptables not found.");
-    die("$iptables not found.");
+  if ( $? != 0 ) {
+    Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
+    die("Error setting iptable rule: $cmd; command output: $output");
   }
 }
 
@@ -619,7 +613,10 @@ sub _get_ip_version {
 
 sub _get_executable {
   my ($params) = @_;
-  return _get_ip_version($params) == -6 ? "ip6tables" : "iptables";
+  my $binary = _get_ip_version($params) == -6 ? "ip6tables" : "iptables";
+  my $executable = can_run($binary);
+  die "Can't find $binary in PATH" if $executable eq '';
+  return $executable;
 }
 
 sub _iptables_version {

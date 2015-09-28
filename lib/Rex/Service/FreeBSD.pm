@@ -43,41 +43,71 @@ sub ensure {
 
   my $what = $options->{ensure};
 
-  my $rccom = "/usr/sbin/service $service rcvar";
-  my $rcout = i_run $rccom;
+  my $get_rc_out = "/usr/sbin/service $service rcvar";
+  my $rc_out     = i_run $get_rc_out;
   if ( $? != 0 ) {
-    Rex::Logger::info( "Running `$rccom` failed", "error" );
+    Rex::Logger::info( "Running `$get_rc_out` failed", "error" );
     return 0;
   }
 
-  my ( $rcvar, $rcvalue ) = $rcout =~ m/^\$?(\w+)="?(\w+)"?$/m;
+  my ( $rcvar, $rcvalue ) = $rc_out =~ m/^\$?(\w+)="?(\w+)"?$/m;
   unless ($rcvar) {
-    Rex::Logger::info( "Error getting service name.", "error" );
+    Rex::Logger::info( "Error getting service \$rcvar name.", "error" );
     return 0;
+  }
+
+  my $get_rcconf_out =
+    "/bin/sh -c '. /etc/rc.subr; load_rc_config 'XXX'; echo \$rc_conf_files'";
+  my $rcconf_out = i_run "$get_rcconf_out";
+  if ( $? != 0 ) {
+    Rex::Logger::info( "Running `$get_rcconf_out` failed", "error" );
+    return 0;
+  }
+  my @rcconf = split /\s+/, $rcconf_out;
+  unless (@rcconf) {
+    Rex::Logger::info( "Error getting rc.conf files", "error" );
+    return 0;
+  }
+
+  my $get_rcconfd_out =
+    "/bin/sh -c '. /etc/rc.subr; load_rc_config 'XXX'; for dir in /etc \$local_startup; do dir=\${dir\%/rc.d}; echo \${dir}/rc.conf.d; done'";
+  my $rcconfd_out = i_run "$get_rcconfd_out";
+  if ( $? != 0 ) {
+    Rex::Logger::info( "Running `$get_rcconfd_out` failed", "warn" );
+  }
+  my @rcconfd = split /\s+/, $rcconfd_out;
+  unless (@rcconfd) {
+    Rex::Logger::info( "Error getting rc.conf.d dirs", "warn" );
   }
 
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
     my $stop_regexp = qr/^\s*${rcvar}=((?i)["']?YES["']?)/;
     if ( $rcvalue =~ m/^YES$/i ) {
-      file "/etc/rc.conf.d/${service}",           ensure => "absent";
-      file "/usr/local/etc/rc.conf.d/${service}", ensure => "absent";
-      if ( is_file("/etc/rc.conf.local") ) {
-        delete_lines_matching "/etc/rc.conf.local", matching => $stop_regexp;
+      for my $rcconfd (@rcconfd) {
+        file "${rcconfd}/${service}", ensure => "absent";
       }
-      delete_lines_matching "/etc/rc.conf", matching => $stop_regexp;
+      for my $rcconf (@rcconf) {
+        if ( is_file($rcconf) ) {
+          delete_lines_matching $rcconf, matching => $stop_regexp;
+        }
+      }
     }
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );
     my $start_regexp = qr/^\s*${rcvar}=/;
     unless ( $rcvalue =~ m/^YES$/i ) {
-      file "/etc/rc.conf.d/${service}",           ensure => "absent";
-      file "/usr/local/etc/rc.conf.d/${service}", ensure => "absent";
-      if ( is_file("/etc/rc.conf.local") ) {
-        delete_lines_matching "/etc/rc.conf.local", matching => $start_regexp;
+      for my $rcconfd (@rcconfd) {
+        file "${rcconfd}/${service}", ensure => "absent";
       }
-      append_or_amend_line "/etc/rc.conf",
+      my $etc_rcconf = shift @rcconf;
+      for my $rcconf (@rcconf) {
+        if ( is_file($rcconf) ) {
+          delete_lines_matching $rcconf, matching => $start_regexp;
+        }
+      }
+      append_or_amend_line $etc_rcconf,
         line   => "${rcvar}=\"YES\"",
         regexp => $start_regexp;
     }

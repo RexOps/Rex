@@ -62,6 +62,9 @@ sub get {
     # this also counts for Ubuntu
     $class = "Rex::Service::Debian::systemd";
   }
+  elsif ( is_archlinux($operatingsystem) && $can_run_systemctl ) {
+    $class = "Rex::Service::ArchLinux::systemd";
+  }
 
   my $provider_for = Rex::Config->get("service_provider") || {};
   my $provider;

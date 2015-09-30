@@ -1344,6 +1344,7 @@ Require:
 -M Rex::Service::OpenBSD
 -M Rex::Service::SunOS::svcadm
 -M Rex::Service::SuSE::systemd
+-M Rex::Service::ArchLinux::systemd
 -M Rex
 -M Net::SSH2
 @end

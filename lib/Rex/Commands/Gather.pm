@@ -45,7 +45,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory
   get_operating_system operating_system operating_system_version operating_system_release
-  is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora
+  is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora is_archlinux
   get_system_information dump_system_information);
 
 =head2 get_operating_system
@@ -523,6 +523,26 @@ sub is_gentoo {
     return 1;
   }
 
+}
+
+=head2 is_archlinux
+
+ task "foo", "server1", sub {
+   if(is_archlinux) {
+     # do something on a archlinux system
+   }
+ };
+
+=cut
+
+sub is_archlinux {
+  my $os = @_ ? shift : get_operating_system();
+
+  my @archlinux_clones = ( "ArchLinux", "Manjaro", "Antergos" );
+
+  if ( grep { /$os/i } @archlinux_clones ) {
+    return 1;
+  }
 }
 
 1;

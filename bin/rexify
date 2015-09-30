@@ -1050,7 +1050,7 @@ Require:
 
 
 @pp.args.tpl
--M Net::OpenSSH::ShellQuoter::POSIX 
+-M Net::OpenSSH::ShellQuoter::POSIX
 -M Net::SFTP::Foreign::Backend::Unix
 -M Sys::Syslog
 -M Net::OpenSSH
@@ -1348,6 +1348,7 @@ Require:
 -M Rex::Service::OpenBSD
 -M Rex::Service::SunOS::svcadm
 -M Rex::Service::SuSE::systemd
+-M Rex::Service::Arch::systemd
 -M Rex
 -M Net::SSH2
 @end

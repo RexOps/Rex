@@ -266,4 +266,8 @@ sub _create_defaults {
   return %config;
 }
 
+sub _whoami {
+  return i_run q(perl -e 'print scalar getpwuid($<)');
+}
+
 1;

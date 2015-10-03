@@ -159,16 +159,22 @@ sub write_cron {
 
 sub activate_user_cron {
   my ( $self, $file, $user ) = @_;
+  $user = undef if $user eq &_whoami;
+
   my $command = 'crontab';
   $command .= " -u $user" if defined $user;
+
   i_run "$command $file";
   unlink $file;
 }
 
 sub read_user_cron {
   my ( $self, $user ) = @_;
+  $user = undef if $user eq &_whoami;
+
   my $command = 'crontab -l';
   $command .= " -u $user" if defined $user;
+
   my @lines = i_run $command;
   $self->parse_cron(@lines);
 }

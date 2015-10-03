@@ -62,6 +62,11 @@ sub checkout {
       Rex::Logger::info( "Switching to branch " . $checkout_opt->{"branch"} );
 
       $out = run "$checkout_cmd", cwd => $checkout_to;
+      unless ( $? == 0 ) {
+        Rex::Logger::info( "Error switching to branch.", "warn" );
+        Rex::Logger::info($out);
+        die("Error switching to branch.");
+      }
       Rex::Logger::debug($out);
     }
 
@@ -74,19 +79,42 @@ sub checkout {
 
       Rex::Logger::info( "Switching to tag " . $checkout_opt->{"tag"} );
       $out = run "$checkout_cmd", cwd => $checkout_to;
+      unless ( $? == 0 ) {
+        Rex::Logger::info( "Error switching to tag.", "warn" );
+        Rex::Logger::info($out);
+        die("Error switching to tag.");
+      }
       Rex::Logger::debug($out);
     }
   }
   elsif ( is_dir("$checkout_to/.git") ) {
     my $branch = $checkout_opt->{"branch"} || "master";
-    run "git pull origin $branch", cwd => $checkout_to;
+    Rex::Logger::info( "Pulling "
+        . $repo_info->{"url"} . " to "
+        . ( $checkout_to ? $checkout_to : "." ) );
+    my $out = run "git pull origin $branch", cwd => $checkout_to;
+    unless ( $? == 0 ) {
+      Rex::Logger::info( "Error pulling.", "warn" );
+      Rex::Logger::info($out);
+      die("Error pulling.");
+    }
 
     if ( exists $checkout_opt->{"tag"} ) {
       my $tag = $checkout_opt->{tag};
       Rex::Logger::info( "Switching to tag " . $tag );
-      my $out = run "git fetch origin", cwd => $checkout_to;
+      $out = run "git fetch origin", cwd => $checkout_to;
+      unless ( $? == 0 ) {
+        Rex::Logger::info( "Error switching to tag.", "warn" );
+        Rex::Logger::info($out);
+        die("Error switching to tag.");
+      }
       Rex::Logger::debug($out);
       $out = run "git checkout -b $tag $tag", cwd => $checkout_to;
+      unless ( $? == 0 ) {
+        Rex::Logger::info( "Error switching to tag.", "warn" );
+        Rex::Logger::info($out);
+        die("Error switching to tag.");
+      }
       Rex::Logger::debug($out);
     }
   }

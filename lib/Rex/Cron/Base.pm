@@ -174,6 +174,7 @@ sub read_user_cron {
 
   my $command = 'crontab -l';
   $command .= " -u $user" if defined $user;
+  $command .= ' 2> /dev/null';
 
   my @lines = i_run $command;
   $self->parse_cron(@lines);

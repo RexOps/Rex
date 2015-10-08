@@ -614,19 +614,33 @@ sub _get_ip_version {
 }
 
 sub _get_executable {
-  my ($params) = @_;
-  my $binary = _get_ip_version($params) == -6 ? "ip6tables" : "iptables";
+  my ($params)       = @_;
+  my $ip_version     = _get_ip_version($params);
+  my $cache          = Rex::get_cache();
+  my $cache_key_name = "iptables.$ip_version.executable";
+  return $cache->get($cache_key_name) if $cache->valid($cache_key_name);
+
+  my $binary = $ip_version == -6 ? "ip6tables" : "iptables";
   my $executable = can_run($binary);
   die "Can't find $binary in PATH" if $executable eq '';
+  $cache->set( $cache_key_name, $executable );
   return $executable;
 }
 
 sub _iptables_version {
-  my (@params) = @_;
+  my @params         = @_;
+  my $ip_version     = _get_ip_version( \@params );
+  my $cache          = Rex::get_cache();
+  my $cache_key_name = "iptables.$ip_version.version";
+  return version->parse( $cache->get($cache_key_name) )
+    if $cache->valid($cache_key_name);
+
   my $iptables = _get_executable( \@params );
   my $out      = i_run("$iptables -V");
   if ( $out =~ /v([.\d]+)/ms ) {
-    return version->parse($1);
+    my $version = version->parse($1);
+    $cache->set( $cache_key_name, "$version" );
+    return $version;
   }
   else {
     die "Can't parse `$iptables -V' output `$out'";

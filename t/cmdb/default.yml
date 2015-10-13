@@ -11,3 +11,6 @@ users:
   root:
     id: 0
     password: proot
+    
+MyTest::foo::mode: '0666'
+

@@ -69,13 +69,13 @@ set(
 );
 
 my $foo_all = get( cmdb( undef, "foo" ) );
-
 is_deeply(
   $foo_all,
   {
     'ntp'    => [ 'ntp1',            'ntp2' ],
     'newntp' => [ 'ntpdefaultfoo01', 'ntpdefaultfoo02', 'ntp1', 'ntp2' ],
     'dns'    => [ '1.1.1.1',         '2.2.2.2' ],
+    'MyTest::foo::mode' => '0666',
     'vhost' => {
       'name'     => 'foohost',
       'doc_root' => '/var/www'

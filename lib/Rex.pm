@@ -527,6 +527,8 @@ sub import {
     require Rex::Commands::User;
     Rex::Commands::User->import( register_in => $register_to );
 
+    require Rex::Helper::Rexfile::ParamLookup;
+    Rex::Helper::Rexfile::ParamLookup->import( register_in => $register_to );
   }
 
   if ( $what eq "-feature" || $what eq "feature" ) {

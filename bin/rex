@@ -11,7 +11,14 @@ use warnings;
 
 # VERSION
 
-use Rex::CLI;
+use Rex::DetectCLI;
+my $cli = detect_cli;
+
+eval "require 'Rex/CLI/$cli.pm'";
+if ($@) {
+  print "Error loading wanted command line interface: $cli\n";
+  exit 1;
+}
 
 my $rex = Rex::CLI->new;
 $rex->__run__;

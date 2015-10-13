@@ -37,13 +37,20 @@ sub exec {
 
   Rex::Logger::debug( "Executing " . $task->name );
 
-  my $ret;
+  my $wantarray = wantarray;
+
+  my @ret;
   eval {
     my $code = $task->code;
 
     Rex::Hook::run_hook( task => "before_execute", $task->name, @_ );
 
-    $ret = $code->( $opts, $args );
+    if ($wantarray) {
+      @ret = $code->( $opts, $args );
+    }
+    else {
+      $ret[0] = $code->( $opts, $args );
+    }
 
     Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );
   };
@@ -67,7 +74,12 @@ sub exec {
     }
   }
 
-  return $ret;
+  if ($wantarray) {
+    return @ret;
+  }
+  else {
+    return $ret[0];
+  }
 }
 
 1;

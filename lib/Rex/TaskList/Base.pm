@@ -227,6 +227,7 @@ sub create_task {
 
   $self->{tasks}->{$task_name} = Rex::Task->new(%task_hash);
 
+  return $self->{tasks}->{$task_name};
 }
 
 sub get_tasks {

@@ -3,6 +3,8 @@ use warnings;
 
 use Test::More tests => 18;
 
+use Rex::Config;
+use Rex::Commands;
 use Rex::Template;
 
 my $t = Rex::Template->new;

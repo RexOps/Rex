@@ -624,7 +624,7 @@ sub connect {
       ssh      => $self->connection->get_connection_object,
       server   => $server,
       cache    => Rex::Interface::Cache->create(),
-      task     => $self,
+      task     => [],
       profiler => $profiler,
       reporter => Rex::Report->create( Rex::Config->get_report_type ),
       notify   => Rex::Notify->new(),
@@ -757,35 +757,55 @@ sub run {
     # this is a method call
     # so run the task
 
-    my $in_transaction = $options{in_transaction};
+    # TODO: refactor complete task calling
+    #       direct call with function and normal task call
 
-    $self->run_hook( \$server, "before" );
-    $self->connect($server);
+    my ( $in_transaction, $start_time );
 
-    my $start_time = time;
+    push @{ Rex::get_current_connection->{task} }, $self;
 
-    if ( Rex::Args->is_opt("c") ) {
+    $start_time = time;
 
-      # get and cache all os info
-      if ( !Rex::get_cache()->load() ) {
-        Rex::Logger::debug("No cache found, need to collect new data.");
-        $server->gather_information;
+    if ( $server ne "<func>" ) {
+
+      # this is _not_ a task call via function syntax.
+
+      $in_transaction = $options{in_transaction};
+
+      $self->run_hook( \$server, "before" );
+      $self->connect($server);
+
+      if ( Rex::Args->is_opt("c") ) {
+
+        # get and cache all os info
+        if ( !Rex::get_cache()->load() ) {
+          Rex::Logger::debug("No cache found, need to collect new data.");
+          $server->gather_information;
+        }
       }
-    }
 
-    if ( !$server->test_perl ) {
-      Rex::Logger::info(
-        "There is no perl interpreter found on this system. Some commands may not work. Sudo won't work.",
-        "warn"
-      );
-      sleep 3;
+      if ( !$server->test_perl ) {
+        Rex::Logger::info(
+          "There is no perl interpreter found on this system. Some commands may not work. Sudo won't work.",
+          "warn"
+        );
+        sleep 3;
+      }
+
     }
 
     # execute code
-    my $ret;
+    my @ret;
+    my $wantarray = wantarray;
 
     eval {
-      $ret = $self->executor->exec( $options{params}, $options{args} );
+      $self->{__task_parameters__} = $options{params};
+      if ($wantarray) {
+        @ret = $self->executor->exec( $options{params}, $options{args} );
+      }
+      else {
+        $ret[0] = $self->executor->exec( $options{params}, $options{args} );
+      }
       my $notify = Rex::get_current_connection()->{notify};
       $notify->run_postponed();
     } or do {
@@ -808,24 +828,34 @@ sub run {
       }
     };
 
-    if ( Rex::Args->is_opt("c") ) {
+    if ( $server ne "<func>" ) {
+      if ( Rex::Args->is_opt("c") ) {
 
-      # get and cache all os info
-      Rex::get_cache()->save();
+        # get and cache all os info
+        Rex::get_cache()->save();
+      }
+
+      Rex::get_current_connection()->{reporter}->report_task_execution(
+        failed     => 0,
+        start_time => $start_time,
+        end_time   => time,
+      );
+
+      Rex::get_current_connection()->{reporter}->write_report();
+
+      $self->disconnect($server) unless ($in_transaction);
+      $self->run_hook( \$server, "after" );
+
     }
 
-    Rex::get_current_connection()->{reporter}->report_task_execution(
-      failed     => 0,
-      start_time => $start_time,
-      end_time   => time,
-    );
+    pop @{ Rex::get_current_connection->{task} };
 
-    Rex::get_current_connection()->{reporter}->write_report();
-
-    $self->disconnect($server) unless ($in_transaction);
-    $self->run_hook( \$server, "after" );
-
-    return $ret;
+    if ($wantarray) {
+      return @ret;
+    }
+    else {
+      return $ret[0];
+    }
   }
 
   else {
@@ -839,6 +869,16 @@ sub run {
     # this is a deprecated static call
     Rex::TaskList->create()->run( $task, params => $params );
   }
+}
+
+sub set_parameter {
+  my ( $self, $key, $value ) = @_;
+  $self->{__task_parameters__}->{$key} = $value;
+}
+
+sub get_all_parameters {
+  my ($self) = @_;
+  return $self->{__task_parameters__};
 }
 
 sub modify_task {

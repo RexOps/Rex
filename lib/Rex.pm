@@ -529,6 +529,9 @@ sub import {
 
     require Rex::Helper::Rexfile::ParamLookup;
     Rex::Helper::Rexfile::ParamLookup->import( register_in => $register_to );
+
+    require Rex::Resource::firewall;
+    Rex::Resource::firewall->import( register_in => $register_to );
   }
 
   if ( $what eq "-feature" || $what eq "feature" ) {

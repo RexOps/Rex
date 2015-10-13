@@ -120,6 +120,7 @@ sub resource {
       ($caller_pkg) = caller(2);
     }
     Rex::Logger::debug("Registering $name_save in $caller_pkg namespace.");
+
     *{"${caller_pkg}::$name_save"} = $func;
     use strict;
   }

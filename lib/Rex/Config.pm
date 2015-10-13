@@ -865,6 +865,7 @@ sub unset {
 
 sub get {
   my ( $class, $var ) = @_;
+  $var or return;
   if ( exists $set_param->{$var} ) {
     return $set_param->{$var};
   }

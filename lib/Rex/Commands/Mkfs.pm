@@ -10,6 +10,12 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 sub mkfs {
+    my (%option) = @_;
+
+    if ( !exists $option{size} || !exists $option{onvg} ) {
+        die("Missing parameter size or onvg.");
+    }
+
     if ( exists $option{fstype} ) {
         if ( can_run("mkfs.$option{fstype}") ) {
             Rex::Logger::info(

@@ -25,7 +25,7 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    install           => 'emerge %s',
+    install           => 'emerge -u %s',
     install_version   => 'emerge =%s-%s',
     update_system     => 'emerge --update --deep --with-bdeps=y --newuse world',
     remove            => 'emerge -C %s',

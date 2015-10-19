@@ -14,10 +14,14 @@ use vars qw(@EXPORT);
 use Rex::Commands::Run;
 
 sub mkfs {
-    my (%option) = @_;
+    my ($lvname, %option) = @_;
 
     unless ( ( defined $option{ondisk} ) xor( defined $option{onvg} ) ) {
         die('You have to specify exactly one of ondisk or onvg options.');
+    }
+
+    unless ( $lvname =~ m/^[a-z0-9\-\._]+$/i ) {
+        die("Error in lvname. Allowed characters a-z, 0-9 and _-. .");
     }
 
     if ( exists $option{fstype} ) {
@@ -56,4 +60,3 @@ sub mkswap {
 }
 
 1;
-58:	To save a full .LOG file rerun with -g

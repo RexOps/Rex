@@ -49,7 +49,7 @@ sub mkfs {
 
     if ( exists $option{fstype} ) {
         if ( $option{fstype} eq "swap" ) {
-            Rex::Logger::info("Creating swap space on /dev/$lv_path");
+            Rex::Logger::info("Creating swap space on /dev/$devname");
             run "mkswap -f /dev/$devname";
         }
         elsif ( can_run("mkfs.$option{fstype}") ) {

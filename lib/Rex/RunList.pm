@@ -78,6 +78,9 @@ sub run_tasks {
 sub parse_opts {
   my ($self, @params) = @_;
 
+  return $self->deprecated(@params) 
+    unless Rex::Config->get_task_chaining_cmdline_args;
+
   while (my $task_name = shift @params) {
     die "Expected a task name but found '$task_name' instead\n"
       unless $self->task_list->is_task($task_name);
@@ -106,6 +109,40 @@ sub parse_opts {
   }
 
   return $self;
+}
+
+sub deprecated {
+  my ($self, @params) = @_;
+
+  my $msg = <<EOF;
+The default way command line arguments work will change somewhat in a future
+release.  Major changes include:
+ - Fixes for argument handling for multiple tasks (aka chained tasks).  
+ - Tasks accept arguments as well as options.  
+Use the feature 'task_chaining_cmdline_args' to remove this warning and enable
+the new features.  For more info see:
+http://www.rexify.org/docs/other/a_word_on_backward_compatibility.html
+EOF
+  Rex::Logger::info($msg, 'warn');
+
+  #### parse task options
+  my %task_opts;
+
+  for my $p (@params) {
+    my ( $key, $val ) = split( /=/, $p, 2 );
+
+    $key =~ s/^--//;
+
+    if ( defined $val ) { $task_opts{$key} = $val; next; }
+    $task_opts{$key} = 1;
+  }
+
+  for my $task_name (@params) {
+    next if $task_name =~ m/^\-\-/ || $task_name =~ m/=/;
+    next unless $self->task_list->is_task($task_name);
+
+    $self->add_task($task_name, [], \%task_opts);
+  }
 }
 
 1;

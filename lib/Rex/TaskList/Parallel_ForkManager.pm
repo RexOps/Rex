@@ -90,10 +90,12 @@ sub run {
         $forked_sub->();
         1;
       } or do {
+        my $errcode = $?;
 
         # exit with error
-        $? = 255 if !$?; # unknown error
-        exit $?;
+        $errcode = 255 if !$errcode;         # unknown error
+        $errcode = 254 if ( $errcode > 255 );
+        exit $errcode;
       };
       $fm->finish;
     }

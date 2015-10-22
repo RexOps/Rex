@@ -9,16 +9,9 @@ package Rex::Shared::Var::Scalar;
 use strict;
 use warnings;
 
+use Rex::Shared::Var::Common qw/__lock __store __retrieve/;
+
 # VERSION
-
-use Fcntl qw(:DEFAULT :flock);
-use Data::Dumper;
-
-use Storable;
-
-sub __lock;
-sub __retr;
-sub __store;
 
 sub TIESCALAR {
   my $self = { varname => $_[1], };
@@ -30,50 +23,21 @@ sub STORE {
   my $value = shift;
 
   return __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     my $ret = $ref->{ $self->{varname} } = $value;
     __store $ref;
 
     return $ret;
   };
-
 }
 
 sub FETCH {
   my $self = shift;
 
   return __lock sub {
-    my $ref = __retr;
+    my $ref = __retrieve;
     return $ref->{ $self->{varname} };
   };
-
-}
-
-sub __lock {
-
-  sysopen( my $dblock, "vars.db.lock", O_RDONLY | O_CREAT ) or die($!);
-  flock( $dblock, LOCK_SH ) or die($!);
-
-  my $ret = &{ $_[0] }();
-
-  close($dblock);
-
-  return $ret;
-}
-
-sub __store {
-  my $ref = shift;
-  store( $ref, "vars.db" );
-}
-
-sub __retr {
-
-  if ( !-f "vars.db" ) {
-    return {};
-  }
-
-  return retrieve("vars.db");
-
 }
 
 1;

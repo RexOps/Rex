@@ -277,14 +277,6 @@ FORCE_SERVER: {
       }
     }
 
-    if ( -f "vars.db" ) {
-      CORE::unlink("vars.db");
-    }
-
-    if ( -f "vars.db.lock" ) {
-      CORE::unlink("vars.db.lock");
-    }
-
     eval {
       my $env             = environment;
       my $ini_dir         = dirname($::rexfile);
@@ -601,15 +593,6 @@ CHECK_OVERWRITE: {
   Rex::global_sudo(0);
   Rex::Logger::debug("Removing lockfile") if ( !exists $opts{'F'} );
   CORE::unlink("$::rexfile.lock") if ( !exists $opts{'F'} );
-
-  # delete shared variable db
-  if ( -f "vars.db" ) {
-    CORE::unlink("vars.db");
-  }
-
-  if ( -f "vars.db.lock" ) {
-    CORE::unlink("vars.db.lock");
-  }
 
   select STDOUT;
 

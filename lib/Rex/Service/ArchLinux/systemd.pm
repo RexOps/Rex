@@ -2,7 +2,7 @@
 # ArchLinux systemd support
 #
 
-package Rex::Service::ArchLinux::systemd;
+package Rex::Service::Arch::systemd;
 
 use strict;
 use warnings;
@@ -27,4 +27,3 @@ sub new {
 }
 
 1;
-

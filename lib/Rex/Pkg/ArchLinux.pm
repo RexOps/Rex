@@ -4,7 +4,7 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::Pkg::ArchLinux;
+package Rex::Pkg::Arch;
 
 use strict;
 use warnings;

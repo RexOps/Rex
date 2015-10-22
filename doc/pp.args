@@ -1,4 +1,4 @@
--M Net::OpenSSH::ShellQuoter::POSIX 
+-M Net::OpenSSH::ShellQuoter::POSIX
 -M Net::SFTP::Foreign::Backend::Unix
 -M Sys::Syslog
 -M Net::OpenSSH
@@ -127,7 +127,7 @@
 -M Rex::Pkg::OpenBSD
 -M Rex::Pkg::SunOS::pkg
 -M Rex::Pkg::SunOS::OpenCSW
--M Rex::Pkg::ArchLinux
+-M Rex::Pkg::Arch
 -M Rex::Template
 -M Rex::Profiler
 -M Rex::User
@@ -297,5 +297,5 @@
 -M Rex::Service::OpenBSD
 -M Rex::Service::SunOS::svcadm
 -M Rex::Service::SuSE::systemd
--M Rex::Service::ArchLinux::systemd
+-M Rex::Service::Arch::systemd
 -M Rex

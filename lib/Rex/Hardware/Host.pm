@@ -174,7 +174,7 @@ sub get_operating_system {
   }
 
   if ( is_file("/etc/arch-release") ) {
-    return "ArchLinux";
+    return "Arch";
   }
 
   my $os_string = i_run("uname -s");
@@ -307,7 +307,7 @@ sub get_operating_system_version {
 
     return $content;
   }
-  elsif ( $op eq "ArchLinux" ) {
+  elsif ( $op eq "Arch" ) {
     my $available_updates = i_run "checkupdates";
     if ($available_updates eq "") {
       return "latest";

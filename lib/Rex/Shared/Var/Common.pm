@@ -20,7 +20,7 @@ use Storable;
 
 # $PARENT_PID gets set when Rex starts.  This value remains the same after the
 # process forks.  So $PARENT_PID is always the pid of the parent process.  $$
-# however is always the pid of the current process.  
+# however is always the pid of the current process.
 our $PARENT_PID = $$;
 our $FILE       = "vars.db.$PARENT_PID";
 our $LOCK_FILE  = "vars.db.lock.$PARENT_PID";
@@ -48,12 +48,13 @@ sub __retrieve {
 }
 
 sub END {
-    # return if we exiting a child process
-    return unless $$ eq $PARENT_PID;
 
-    # we are exiting the master process
-    unlink $FILE      if -f $FILE;
-    unlink $LOCK_FILE if -f $LOCK_FILE;
+  # return if we exiting a child process
+  return unless $$ eq $PARENT_PID;
+
+  # we are exiting the master process
+  unlink $FILE      if -f $FILE;
+  unlink $LOCK_FILE if -f $LOCK_FILE;
 }
 
 1;

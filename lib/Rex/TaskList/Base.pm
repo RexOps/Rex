@@ -288,7 +288,7 @@ sub is_task {
 sub run {
   my ( $self, $task, %options ) = @_;
 
-  my $fm = Rex::Fork::Manager->new(max => $self->get_thread_count($task));
+  my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
   my $task_name   = $task->name;
   my $all_servers = $task->server;
 
@@ -311,7 +311,8 @@ sub run {
       return $return_value;
     };
 
-    if ($self->{IN_TRANSACTION}) {
+    if ( $self->{IN_TRANSACTION} ) {
+
       # Inside a transaction -- no forking and no chance to get zombies.
       # This only happens if someone calls do_task() from inside a transaction.
       # Note the result is not appended to @SUMMARY.

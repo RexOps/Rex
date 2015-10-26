@@ -538,6 +538,7 @@ CHECK_OVERWRITE: {
   }
 
   Rex::Logger::info($_) for summarize();
+
   #print ">> $$\n";
   #print Dumper(\@exit_codes);
   # lock loeschen
@@ -777,7 +778,7 @@ sub summarize {
   my @msgs    = ("SUMMARY");
 
   my @failures = grep { $_->{exit_code} != 0 } @summary;
-  if (! @failures) {
+  if ( !@failures ) {
     push @msgs, "All tasks successful on all hosts";
     return @msgs;
   }

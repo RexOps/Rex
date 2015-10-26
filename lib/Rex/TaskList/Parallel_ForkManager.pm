@@ -43,8 +43,8 @@ sub new {
 sub run {
   my ( $self, $task, %options ) = @_;
 
-  my $fm = Parallel::ForkManager->new($self->get_thread_count($task));
-  my $task_name   = $task->name;
+  my $fm        = Parallel::ForkManager->new( $self->get_thread_count($task) );
+  my $task_name = $task->name;
   my $all_servers = $task->server;
 
   $fm->run_on_finish(
@@ -73,7 +73,8 @@ sub run {
       return $return_value;
     };
 
-    if ($self->{IN_TRANSACTION}) {
+    if ( $self->{IN_TRANSACTION} ) {
+
       # Inside a transaction -- no forking and no chance to get zombies.
       # This only happens if someone calls do_task() from inside a transaction.
       # Note the result is not appended to @SUMMARY.
@@ -84,12 +85,13 @@ sub run {
       $fm->start and next;
 
       eval { $forked_sub->() };
-      my $exit_code = $@ ? (($? >> 8) || 1) : 0;
-      push @SUMMARY, {
+      my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
+      push @SUMMARY,
+        {
         task      => $task_name,
         server    => $server->to_s,
         exit_code => $exit_code,
-      };
+        };
 
       $fm->finish;
     }

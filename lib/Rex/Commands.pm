@@ -1097,20 +1097,20 @@ sub needs {
   my @tasks_to_run = @{"${self}::tasks"};
   use strict;
 
-  my $run_list = Rex::RunList->instance;
+  my $run_list     = Rex::RunList->instance;
   my $current_task = $run_list->current_task;
-  my %task_opts = $current_task->get_opts;
-  my @task_args = $current_task->get_args;
+  my %task_opts    = $current_task->get_opts;
+  my @task_args    = $current_task->get_args;
 
   for my $task (@tasks_to_run) {
     my $task_name = $task->{"name"};
     if ( @args && grep ( /^$task_name$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task->{"name"} );
-      $task->{"code"}->(\%task_opts, \@task_args);
+      $task->{"code"}->( \%task_opts, \@task_args );
     }
     elsif ( !@args ) {
       Rex::Logger::debug( "Calling " . $task->{"name"} );
-      $task->{"code"}->(\%task_opts, \@task_args);
+      $task->{"code"}->( \%task_opts, \@task_args );
     }
   }
 

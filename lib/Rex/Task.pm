@@ -486,18 +486,12 @@ sub run_hook {
       $code->(
         $$server,
         ( $self->{"__was_authenticated"} ? undef : 1 ),
-        { $self->get_opts },
-        @more_args
+        { $self->get_opts }, @more_args
       );
     }
     else {
       my $old_server = $$server if $server;
-      $code->(
-        $$server,
-        $server,
-        { $self->get_opts },
-        @more_args
-      );
+      $code->( $$server, $server, { $self->get_opts }, @more_args );
       if ( $old_server && $old_server ne $$server ) {
         $self->{current_server} = $$server;
       }
@@ -898,12 +892,12 @@ sub get_opts {
 }
 
 sub set_args {
-  my ($self, @args) = @_;
+  my ( $self, @args ) = @_;
   $self->{args} = \@args;
 }
 
 sub set_opts {
-  my ($self, %opts) = @_;
+  my ( $self, %opts ) = @_;
   $self->{opts} = \%opts;
 }
 

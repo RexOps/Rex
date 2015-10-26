@@ -29,7 +29,7 @@ sub create_batch {
   }
 
   $batchs{$batch_name} = {
-    desc  => $batch_desc,
+    desc       => $batch_desc,
     task_names => \@task_names
   };
 }

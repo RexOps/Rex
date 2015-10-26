@@ -17,7 +17,7 @@ use Rex::TaskList;
 my $INSTANCE;
 
 sub new {
-  my ($class, %args) = @_;
+  my ( $class, %args ) = @_;
   return bless \%args, $class;
 }
 
@@ -29,7 +29,7 @@ sub instance {
 }
 
 sub add_task {
-  my ($self, $task_name, $task_args, $task_opts) = @_;
+  my ( $self, $task_name, $task_args, $task_opts ) = @_;
   $task_args ||= [];
   $task_opts ||= {};
   my $task = $self->task_list->get_task($task_name)->clone;
@@ -50,13 +50,13 @@ sub increment_current_index {
 
 sub current_task {
   my $self = shift;
-  my $i = $self->current_index;
+  my $i    = $self->current_index;
   $self->{tasks}->[$i];
 }
 
 sub tasks { @{ shift->{tasks} } }
 
-sub task_list    { 
+sub task_list {
   my $self = shift;
   return $self->{task_list} if $self->{task_list};
   $self->{task_list} = Rex::TaskList->create;
@@ -64,8 +64,8 @@ sub task_list    {
 
 sub run_tasks {
   my ($self) = @_;
-  
-  for my $task ($self->tasks) {
+
+  for my $task ( $self->tasks ) {
     $_->($task) for @{ $task->{before_task_start} };
     $self->task_list->run($task);
     $_->($task) for @{ $task->{after_task_finished} };
@@ -76,26 +76,26 @@ sub run_tasks {
 # Parse @ARGV to get tasks, task args, and task opts.  Use these values to
 # generate a list of tasks the user wants to run.
 sub parse_opts {
-  my ($self, @params) = @_;
+  my ( $self, @params ) = @_;
 
-  return $self->deprecated(@params) 
+  return $self->deprecated(@params)
     unless Rex::Config->get_task_chaining_cmdline_args;
 
-  while (my $task_name = shift @params) {
+  while ( my $task_name = shift @params ) {
     die "Expected a task name but found '$task_name' instead\n"
       unless $self->task_list->is_task($task_name);
 
     my @args;
     my %opts;
 
-    while (my $param = shift @params) {
-      if ($self->task_list->is_task($param)) {
+    while ( my $param = shift @params ) {
+      if ( $self->task_list->is_task($param) ) {
         unshift @params, $param;
         last;
       }
 
-      if ($param =~ /^--/) {
-        my ($key, $val) = split /=/, $param, 2;
+      if ( $param =~ /^--/ ) {
+        my ( $key, $val ) = split /=/, $param, 2;
         $key =~ s/^--//;
 
         $opts{$key} = defined $val ? $val : 1;
@@ -105,14 +105,14 @@ sub parse_opts {
       }
     }
 
-    $self->add_task($task_name, \@args, \%opts);
+    $self->add_task( $task_name, \@args, \%opts );
   }
 
   return $self;
 }
 
 sub deprecated {
-  my ($self, @params) = @_;
+  my ( $self, @params ) = @_;
 
   my $msg = <<EOF;
 The default way command line arguments work will change somewhat in a future
@@ -123,7 +123,7 @@ Use the feature 'task_chaining_cmdline_args' to remove this warning and enable
 the new features.  For more info see:
 http://www.rexify.org/docs/other/a_word_on_backward_compatibility.html
 EOF
-  Rex::Logger::info($msg, 'warn');
+  Rex::Logger::info( $msg, 'warn' );
 
   #### parse task options
   my %task_opts;
@@ -141,7 +141,7 @@ EOF
     next if $task_name =~ m/^\-\-/ || $task_name =~ m/=/;
     next unless $self->task_list->is_task($task_name);
 
-    $self->add_task($task_name, [], \%task_opts);
+    $self->add_task( $task_name, [], \%task_opts );
   }
 }
 

@@ -6,7 +6,7 @@ use Test::More;
 use Rex::Args;
 
 @ARGV = qw(
-    -h -g test1 -g test2 -T -dv -u user -p pass -t 5 foo --name=thename --num=5
+  -h -g test1 -g test2 -T -dv -u user -p pass -t 5 foo --name=thename --num=5
 );
 
 Rex::Args->parse_rex_opts;

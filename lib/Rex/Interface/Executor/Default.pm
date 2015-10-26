@@ -43,7 +43,7 @@ sub exec {
 
     Rex::Hook::run_hook( task => "before_execute", $task->name, @_ );
 
-    $ret = $code->($opts, $args);
+    $ret = $code->( $opts, $args );
 
     Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );
   };

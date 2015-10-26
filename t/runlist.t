@@ -8,6 +8,7 @@ use Rex::RunList;
 use Rex::Commands;
 
 $Rex::Logger::silent = 1;
+Rex::Config->set_task_chaining_cmdline_args(1);
 
 task task1 => sub { };
 task task2 => sub { };

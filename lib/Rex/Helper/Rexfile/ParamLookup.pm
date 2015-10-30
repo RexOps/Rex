@@ -69,8 +69,7 @@ sub param_lookup {
     $ret = $default;
   }
 
-  # make the variable also known to templates
-  Rex::Commands::set( $key => $ret );
+  Rex::Commands::task()->set_parameter( $key => $ret );
 
   return $ret;
 }
@@ -90,7 +89,7 @@ This module also looks inside a CMDB (if present) for a valid key.
 
 =head1 SYNOPSIS
 
- task "setup", make {
+ task "setup", sub {
    my $var = param_lookup "param_name", "default_value";
  };
 

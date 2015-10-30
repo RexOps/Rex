@@ -241,7 +241,7 @@ sub task {
 
   if ( !@_ ) {
     if ( my $t = Rex::get_current_connection ) {
-      return $t->{task};
+      return $t->{task}->[-1];
     }
     return;
   }
@@ -321,112 +321,31 @@ sub task {
   use strict;
   use warnings;
 
+  $options->{'dont_register'} ||= $dont_register_tasks;
+  my $task_o = Rex::TaskList->create()->create_task( $task_name, @_, $options );
+
   if (!$class->can($task_name_save)
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
     no strict 'refs';
     Rex::Logger::debug("Registering task: ${class}::$task_name_save");
-
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
       Rex::Logger::info("Running task $task_name_save on current connection");
+      my $param;
 
-      Rex::Hook::run_hook( task => "before_execute", $task_name_save, @_ );
-
-      if ( Rex::Config->get_task_call_by_method
-        && $_[0]
-        && $_[0] =~ m/^[A-Za-z0-9_:]+$/
-        && ref $_[1] eq "HASH" )
-      {
-        shift;
-      }
-
-      my @ret;
-      if ( ref( $_[0] ) eq "HASH" ) {
-        if (wantarray) {
-          @ret = $code->(@_);
-        }
-        else {
-          my $t = $code->(@_);
-          @ret = ($t);
-        }
+      if ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 && !ref $_[0] ) {
+        $param = {@_};
       }
       else {
-        if ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
-          if (wantarray) {
-            @ret = $code->( {@_} );
-          }
-          else {
-            my $t = $code->( {@_} );
-            @ret = ($t);
-          }
-        }
-        else {
-          if (wantarray) {
-            @ret = $code->(@_);
-          }
-          else {
-            my $t = $code->(@_);
-            @ret = ($t);
-          }
-        }
+        $param = $_[0];
       }
 
-      Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
-
-      if (wantarray) {
-        return @ret;
-      }
-      else {
-        return $ret[0];
-      }
+      $task_o->run( "<func>", params => $param );
     };
-    use strict;
-  }
-  elsif ( ( $class ne "main" && $class ne "Rex::CLI" )
-    && !$class->can($task_name_save)
-    && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
-  {
-    # if not in main namespace, register the task as a sub
-    no strict 'refs';
-    Rex::Logger::debug(
-      "Registering task (not main namespace): ${class}::$task_name_save");
-    my $code = $_[-2];
-    *{"${class}::$task_name_save"} = sub {
-      Rex::Logger::info("Running task $task_name_save on current connection");
-
-      Rex::Hook::run_hook( task => "before_execute", $task_name_save, @_ );
-
-      my @ret;
-      if ( ref( $_[0] ) eq "HASH" ) {
-        if (wantarray) {
-          @ret = $code->(@_);
-        }
-        else {
-          my $t = $code->(@_);
-          @ret = ($t);
-        }
-      }
-      else {
-        if (wantarray) {
-          @ret = $code->( {@_} );
-        }
-        else {
-          my $t = $code->( {@_} );
-          @ret = ($t);
-        }
-      }
-
-      Rex::Hook::run_hook( task => "after_execute", $task_name_save, @_ );
-
-      return @ret;
-    };
-
-    use strict;
   }
 
-  $options->{'dont_register'} ||= $dont_register_tasks;
-  Rex::TaskList->create()->create_task( $task_name, @_, $options );
+  return $task_o;
 }
 
 =head2 desc($description)

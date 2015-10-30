@@ -785,7 +785,13 @@ sub set_template_function {
 
 sub get_template_function {
   if ( ref($template_function) eq "CODE" ) {
-    return $template_function;
+    return sub {
+      my ( $content, $template_vars ) = @_;
+      $template_vars =
+        { %{ Rex::Commands::task()->get_all_parameters }, %{$template_vars} }
+        if ( Rex::Commands::task() );
+      return $template_function->( $content, $template_vars );
+    };
   }
 
   if ( Rex::Template::NG->is_loadable && get_use_template_ng() ) {
@@ -793,6 +799,9 @@ sub get_template_function {
     # new template engine
     return sub {
       my ( $content, $template_vars ) = @_;
+      $template_vars =
+        { %{ Rex::Commands::task()->get_all_parameters }, %{$template_vars} }
+        if ( Rex::Commands::task() );
       Rex::Template::NG->require;
       my $t = Rex::Template::NG->new;
       return $t->parse( $content, %{$template_vars} );
@@ -801,6 +810,9 @@ sub get_template_function {
 
   return sub {
     my ( $content, $template_vars ) = @_;
+    $template_vars =
+      { %{ Rex::Commands::task()->get_all_parameters }, %{$template_vars} }
+      if ( Rex::Commands::task() );
     use Rex::Template;
     my $template = Rex::Template->new;
     return $template->parse( $content, $template_vars );

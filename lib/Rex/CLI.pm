@@ -203,7 +203,7 @@ FORCE_SERVER: {
         Rex::Logger::debug("Found $::rexfile.lock");
         my $pid = eval { local ( @ARGV, $/ ) = ("$::rexfile.lock"); <>; };
         system(
-          "ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
+          "ps aux | awk -F' ' ' { print \$2 } ' | grep '^$pid\$' >/dev/null 2>&1");
         if ( $? == 0 ) {
           Rex::Logger::info("Rexfile is in use by $pid.");
           CORE::exit 1;

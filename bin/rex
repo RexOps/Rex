@@ -26,174 +26,107 @@ __END__
 
 =head1 DESCRIPTION
 
-Rex is a tool to ease the execution of commands on multiple remote servers. You can define small tasks, chain tasks to batches, link them with servers or server groups, and execute them easily in your terminal.
+Rex is a tool to execution of commands on remote servers. You can define tasks
+in Perl and execute those tasks on remote servers or groups of servers.
 
-=head2 Command line options
+=head1 USAGE
 
-=over 4
+    rex [<options>] [-H <host>] [-G <group>] <task> [<task-options>]
+    rex -T[m|y|v] [<string>]
 
-=item -b              Run batch
+    -b     Run batch
+    -e     Run the given code fragment
+    -E     Execute a task on the given environment
+    -G|-g  Execute a task on the given server groups
+    -H     Execute a task on the given hosts (space delimited)
+    -z     Execute a task on hosts from this command's output
+  
+    -K     Public key file for the ssh connection
+    -P     Private key file for the ssh connection
+    -p     Password for the ssh connection
+    -u     Username for the ssh connection
+  
+    -d     Show debug output
+    -ddd   Show more debug output (includes profiling output)
+    -m     Monochrome output: no colors
+    -o     Output format
+    -q     Quiet mode: no log output
+    -qw    Quiet mode: only output warnings and errors
+    -Q     Really quiet: output nothing
+  
+    -T     List tasks
+    -Tm    List tasks in machine-readable format
+    -Tv    List tasks verbosely
+    -Ty    List tasks in YAML format
+  
+    -c     Turn cache ON
+    -C     Turn cache OFF
+    -f     Use this file instead of Rexfile
+    -F     Force: disregard lock file
+    -h     Display this help message
+    -M     Load this module instead of Rexfile
+    -O     Pass additional options, like CMDB path
+    -s     Use sudo for every command
+    -S     Password for sudo
+    -t     Number of threads to use (aka 'parallelism' param)
+    -v     Display (R)?ex version
 
-=item -e              Run the give code fragment
+=head1 Rexfile
 
-=item -E              Execute task on the given environment
+When you run C<rex> it will read the file C<Rexfile> in the current working directory. A Rexfile consists of 3 major parts.
 
-=item -H              Execute task on these hosts
-
-=item -z              Execute task on hosts from this command's output
-
-=item -G|-g           Execute task on these group
-
-=item -u              Username for the ssh connection
-
-=item -p              Password for the ssh connection
-
-=item -P              Private Keyfile for the ssh connection
-
-=item -K              Public Keyfile for the ssh connection
-
-=item -T              List all known tasks.
-
-=item -Tm             List all known tasks in "machine readable" format
-
-=item -Ty             List all known tasks in YAML format
-
-=item -Tv             List all known tasks with all information
-
-=item -f              Use this file instead of Rexfile
-
-=item -h              Display this help
-
-=item -m              Monochrome output. No colors
-
-=item -M              Load Module instead of Rexfile
-
-=item -s              Use sudo for every command
-
-=item -S              Password for sudo
-
-=item -v              Display (R)?ex Version
-
-=item -F              Force. Don't regard lock file
-
-=item -d              Debug
-
-=item -dd             More Debug (includes Profiling Output)
-
-=item -o <module>     Create a compatible output for the given module
-
-=item -C              Turn cache OFF
-
-=item -c              Turn cache ON
-
-=item -q              Quiet mode. No Logging output
-
-=item -qw             Quiet mode. Only output warnings and errors
-
-=item -Q              Really quiet. Output nothing.
-
-=item -t              Number of threads to use ('parallelism' parameter)
-
-=back
-
-
-=head2 Rexfile
-
-If you run I<rex> it will read the file I<Rexfile> in the current working directory. A Rexfile consists of 3 major parts.
-
-=head3 Authentication and Configuration
+=head2 Authentication and Configuration
 
 In that part you define the user and password you want to use to log into your servers. You can even define timeouts or the paralellism of task execution.
 
-=head4 Simple Authentication
+=head3 Simple Authentication
 
-B<Define the user>
-
- user "<user>";
-
-B<Define the password>
-
- password "<password>";
-
-B<Set password authentication>
-
+ user "bruce";
+ password "batman";
  pass_auth;
 
-
-=head4 Key Authentication
-
-B<Define Private Key>
+=head3 Key Authentication
 
  private_key "/path/to/your/private/key.file";
-
-B<Define Public Key>
-
  public_key "/path/to/your/public/key.file";
 
-=head4 Define Logging
-
-B<Log to a file>
+=head3 Define Logging
 
  logging to_file => "rex.log";
-
-B<Log to syslog>
-
  logging to_syslog => "local0";
 
-=head4 Other Configuration parameters
+=head2 Configuration
 
-B<Define ssh timeout>
-
- timeout 10;
-
-B<Define parallelism>
-
- parallelism 2;
+ timeout 10;    # ssh timeout
+ parallelism 2; # execute tasks in parallel
 
 =head3 Group your servers
 
-Rex gives you the possibility to B<group your servers>. One way is to do
-it in code within the Rexfile. Another is to use a I<server.ini> file
-in the same directory as the Rexfile.
+Rex gives you the ability to define groups of servers. Groups can be defined the Rexfile:
 
-=head4 Code in the Rexfile
+ group "frontends" => "frontend01", "frontend02", "frontend03", "frontend04", "frontend[05..09]";
 
-Rex gives you the possibility to B<group your servers>. So you don't need to type every servername multiple times.
-
- group "frontends" => "frontend01", "frontend02", "frontend03", "frontend04";
-
-You can even B<define ranges> in the servernames:
-
- group "frontends" => "frontend[01..04]";
-
-=head4 Using server.ini
-
-The same group definition can be stored in a I<server.ini> file:
+Groups can also be defined in a B<server.ini> file:
 
  [frontends]
  frontend[01..04]
 
-=head3 Your tasks
+=head2 Your tasks
 
-B<Create a task description>
+A basic task definition looks like this:
+
+ # task description
+ desc "This task tells you how long since the server was rebooted";
+
+ # task definition
+ task "shortname", sub {
+     run "uptime";
+ };
+
+You can also set a default server group:
 
  desc "This is a long description of a task";
-
-B<Create the task>
-
  task "shortname", group => "frontends", sub {
-     run "uptime";
- };
-
-B<or, if you don't have groups>
-
- task "shortname", "frontend01", "frontend02", "frontend03", "frontend04", sub {
-     run "uptime";
- };
-
-B<and with serverranges>
-
- task "shortname", "frontend[01..04]", sub {
      run "uptime";
  };
 

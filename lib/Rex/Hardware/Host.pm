@@ -173,6 +173,10 @@ sub get_operating_system {
     return "OpenWrt";
   }
 
+  if ( is_file("/etc/arch-release") ) {
+    return "Arch";
+  }
+
   my $os_string = i_run("uname -s");
   return $os_string; # return the plain os
 
@@ -302,6 +306,14 @@ sub get_operating_system_version {
     chomp $content;
 
     return $content;
+  }
+  elsif ( $op eq "Arch" ) {
+    my $available_updates = i_run "checkupdates";
+    if ($available_updates eq "") {
+      return "latest";
+    } else {
+      return "outdated";
+    }
   }
 
   return [ i_run("uname -r") ]->[0];

@@ -78,7 +78,7 @@ sub run_tasks {
 sub parse_opts {
   my ( $self, @params ) = @_;
 
-  return $self->deprecated(@params)
+  return $self->pre_1_4_parse_opts(@params)
     unless Rex::Config->get_task_chaining_cmdline_args;
 
   while ( my $task_name = shift @params ) {
@@ -111,19 +111,11 @@ sub parse_opts {
   return $self;
 }
 
-sub deprecated {
+# this function is to parse the task parameters in a pre 1.4 fashion.
+# this is used if the feature flag 'no_task_chaining_cmdline_args' or
+# '< 1.4' is enabled.
+sub pre_1_4_parse_opts {
   my ( $self, @params ) = @_;
-
-  my $msg = <<EOF;
-The default way command line arguments work will change somewhat in a future
-release.  Major changes include:
- - Fixes for argument handling for multiple tasks (aka chained tasks).  
- - Tasks accept arguments as well as options.  
-Use the feature 'task_chaining_cmdline_args' to remove this warning and enable
-the new features.  For more info see:
-http://www.rexify.org/docs/other/a_word_on_backward_compatibility.html
-EOF
-  Rex::Logger::info( $msg, 'warn' );
 
   #### parse task options
   my %task_opts;

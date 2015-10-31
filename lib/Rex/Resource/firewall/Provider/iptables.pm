@@ -9,6 +9,8 @@ package Rex::Resource::firewall::Provider::iptables;
 use strict;
 use warnings;
 
+# VERSION
+
 use Rex::Commands::Iptables;
 use Data::Dumper;
 use base qw(Rex::Resource::firewall::Provider::base);

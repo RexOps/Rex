@@ -9,6 +9,8 @@ package Rex::Resource::firewall::Provider::base;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 
 sub new {

@@ -799,7 +799,7 @@ sub run {
     my $wantarray = wantarray;
 
     eval {
-      $self->{__task_parameters__} = $options{params};
+      $self->set_opts( %{ $options{params} } );
       if ($wantarray) {
         @ret = $self->executor->exec( $options{params}, $options{args} );
       }
@@ -871,16 +871,6 @@ sub run {
   }
 }
 
-sub set_parameter {
-  my ( $self, $key, $value ) = @_;
-  $self->{__task_parameters__}->{$key} = $value;
-}
-
-sub get_all_parameters {
-  my ($self) = @_;
-  return $self->{__task_parameters__};
-}
-
 sub modify_task {
   my $class = shift;
   my $task  = shift;
@@ -934,6 +924,11 @@ sub get_opts {
 sub set_args {
   my ( $self, @args ) = @_;
   $self->{args} = \@args;
+}
+
+sub set_opt {
+  my ( $self, $key, $value ) = @_;
+  $self->{opts}->{$key} = $value;
 }
 
 sub set_opts {

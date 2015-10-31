@@ -74,7 +74,7 @@ sub param_lookup {
   }
 
   if ( !Rex::Resource->is_inside_resource ) {
-    Rex::Commands::task()->set_parameter( $key => $ret );
+    Rex::Commands::task()->set_opt( $key => $ret );
   }
 
   return $ret;

@@ -562,6 +562,12 @@ sub import {
         }
       }
 
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.4 ) {
+        Rex::Logger::debug("Enabling task_chaining_cmdline_args feature");
+        Rex::Config->set_task_chaining_cmdline_args(1);
+        $found_feature = 1;
+      }
+
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.3 ) {
         Rex::Logger::debug("Activating new template engine.");
         Rex::Config->set_use_template_ng(1);
@@ -788,6 +794,12 @@ sub import {
       if ( $add eq "disable_taskname_warning" ) {
         Rex::Logger::debug("Enabling disable_taskname_warning feature");
         Rex::Config->set_disable_taskname_warning(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "no_task_chaining_cmdline_args" ) {
+        Rex::Logger::debug("Disabling task_chaining_cmdline_args feature");
+        Rex::Config->set_task_chaining_cmdline_args(0);
         $found_feature = 1;
       }
 

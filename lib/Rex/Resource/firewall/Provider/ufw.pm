@@ -10,6 +10,8 @@ package Rex::Resource::firewall::Provider::ufw;
 use strict;
 use warnings;
 
+# VERSION
+
 use Data::Dumper;
 use Rex::Commands::Run;
 use Rex::Helper::Run;

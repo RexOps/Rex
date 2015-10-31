@@ -3,6 +3,8 @@ use Rex -base;
 use Rex::Resource;
 use Rex::Resource::Common;
 
+$::QUIET = 1;
+
 resource(
   "testres",
   sub {

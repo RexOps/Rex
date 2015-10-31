@@ -4,6 +4,8 @@ use Rex -base;
 use Rex::Resource::Common;
 use Test::More;
 
+$::QUIET = 1;
+
 resource "foo", sub {
   my $test_name = resource_name;
   my $mode = param_lookup "mode", "0755";

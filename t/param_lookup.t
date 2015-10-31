@@ -5,6 +5,8 @@ use Test::More tests => 8;
 use Rex -base;
 use Rex::Resource;
 
+$::QUIET = 1;
+
 task(
   "test1",
   sub {

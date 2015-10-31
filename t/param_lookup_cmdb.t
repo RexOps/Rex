@@ -6,6 +6,8 @@ use Test::More;
 use Rex::CMDB;
 use Rex::Commands;
 
+$::QUIET = 1;
+
 set(
   cmdb => {
     type => "YAML",

@@ -787,8 +787,15 @@ sub get_template_function {
   if ( ref($template_function) eq "CODE" ) {
     return sub {
       my ( $content, $template_vars ) = @_;
-      $template_vars =
-        { %{ Rex::Commands::task()->get_all_parameters }, %{$template_vars} }
+      $template_vars = {
+        %{ Rex::Commands::task()->get_all_parameters },
+        (
+          Rex::Resource->is_inside_resource
+          ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
+          : ()
+        ),
+        %{$template_vars}
+        }
         if ( Rex::Commands::task() );
       return $template_function->( $content, $template_vars );
     };
@@ -799,8 +806,15 @@ sub get_template_function {
     # new template engine
     return sub {
       my ( $content, $template_vars ) = @_;
-      $template_vars =
-        { %{ Rex::Commands::task()->get_all_parameters }, %{$template_vars} }
+      $template_vars = {
+        %{ Rex::Commands::task()->get_all_parameters },
+        (
+          Rex::Resource->is_inside_resource
+          ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
+          : ()
+        ),
+        %{$template_vars}
+        }
         if ( Rex::Commands::task() );
       Rex::Template::NG->require;
       my $t = Rex::Template::NG->new;
@@ -810,8 +824,15 @@ sub get_template_function {
 
   return sub {
     my ( $content, $template_vars ) = @_;
-    $template_vars =
-      { %{ Rex::Commands::task()->get_all_parameters }, %{$template_vars} }
+    $template_vars = {
+      %{ Rex::Commands::task()->get_all_parameters },
+      (
+        Rex::Resource->is_inside_resource
+        ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
+        : ()
+      ),
+      %{$template_vars}
+      }
       if ( Rex::Commands::task() );
     use Rex::Template;
     my $template = Rex::Template->new;

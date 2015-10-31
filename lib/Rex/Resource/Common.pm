@@ -26,9 +26,11 @@ sub removed { return "removed"; }
 
 sub emit {
   my ( $type, $message ) = @_;
-  if ( !$Rex::Resource::INSIDE_RES ) {
+  if ( !Rex::Resource->is_inside_resource ) {
     die "emit() only allowed inside resource.";
   }
+
+  $message ||= "";
 
   Rex::Logger::debug( "Emiting change: " . $type . " - $message." );
 

@@ -13,8 +13,10 @@ use warnings;
 
 use Rex::Constants;
 
-our $INSIDE_RES = 0;
 our @CURRENT_RES;
+
+sub is_inside_resource { ref $CURRENT_RES[-1] ? 1 : 0 }
+sub get_current_resource { $CURRENT_RES[-1] }
 
 sub new {
   my $that  = shift;
@@ -45,7 +47,6 @@ sub call {
     return;
   }
 
-  $INSIDE_RES = 1;
   push @CURRENT_RES, $self;
 
   $self->{res_name} = $name;
@@ -53,14 +54,6 @@ sub call {
 
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => $self->display_name, name => $name );
-
-  # make parameters automatically availabel in templates
-  # store old values so that we can recover them after resource finish
-  my %old_values;
-  for my $key ( keys %params ) {
-    $old_values{$key} = Rex::Config->get($key);
-    Rex::Config->set( $key => $params{$key} );
-  }
 
   my $failed = 0;
   eval {
@@ -94,18 +87,7 @@ sub call {
   Rex::get_current_connection()->{reporter}
     ->report_resource_end( type => $self->display_name, name => $name );
 
-  $INSIDE_RES = 0;
   pop @CURRENT_RES;
-
-  # recover old values
-  for my $key ( keys %old_values ) {
-    if ( defined $old_values{$key} ) {
-      Rex::Config->set( $key => $old_values{$key} );
-    }
-    else {
-      Rex::Config->set( $key => undef );
-    }
-  }
 }
 
 sub was_updated {
@@ -160,6 +142,16 @@ sub message {
   else {
     return ( $self->{message} || ( $self->display_name . " changed." ) );
   }
+}
+
+sub set_parameter {
+  my ( $self, $key, $value ) = @_;
+  $self->{__res_parameters__}->{$key} = $value;
+}
+
+sub get_all_parameters {
+  my ($self) = @_;
+  return $self->{__res_parameters__};
 }
 
 1;

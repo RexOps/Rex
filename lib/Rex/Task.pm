@@ -762,8 +762,6 @@ sub run {
 
     my ( $in_transaction, $start_time );
 
-    push @{ Rex::get_current_connection->{task} }, $self;
-
     $start_time = time;
 
     if ( $server ne "<func>" ) {
@@ -793,6 +791,8 @@ sub run {
       }
 
     }
+
+    push @{ Rex::get_current_connection()->{task} }, $self;
 
     # execute code
     my @ret;
@@ -828,6 +828,8 @@ sub run {
       }
     };
 
+    pop @{ Rex::get_current_connection()->{task} };
+
     if ( $server ne "<func>" ) {
       if ( Rex::Args->is_opt("c") ) {
 
@@ -847,8 +849,6 @@ sub run {
       $self->run_hook( \$server, "after" );
 
     }
-
-    pop @{ Rex::get_current_connection->{task} };
 
     if ($wantarray) {
       return @ret;

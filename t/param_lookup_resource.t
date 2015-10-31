@@ -1,6 +1,5 @@
 package MyTest;
 
-
 use Rex -base;
 use Rex::Resource::Common;
 use Test::More;
@@ -9,8 +8,8 @@ resource "foo", sub {
   my $test_name = resource_name;
   my $mode = param_lookup "mode", "0755";
 
-  is($test_name, "testname", "resource name is testname");
-  is($mode, "0666", "got mode 0666");
+  is( $test_name, "testname", "resource name is testname" );
+  is( $mode,      "0666",     "got mode 0666" );
 };
 
 1;
@@ -31,7 +30,6 @@ set(
     path => "t/cmdb",
   }
 );
-
 
 use Test::More tests => 2;
 use Rex -base;

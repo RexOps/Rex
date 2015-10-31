@@ -581,6 +581,9 @@ sub connect {
     $server = Rex::Group::Entry::Server->new( name => $server );
   }
   $self->{current_server} = $server;
+  # need to be called, in case of a run_task task call.
+  # see #788
+  $self->rethink_connection;
 
   my $user = $self->user;
 

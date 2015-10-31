@@ -76,7 +76,7 @@ is_deeply(
     'newntp' => [ 'ntpdefaultfoo01', 'ntpdefaultfoo02', 'ntp1', 'ntp2' ],
     'dns'    => [ '1.1.1.1',         '2.2.2.2' ],
     'MyTest::foo::mode' => '0666',
-    'vhost' => {
+    'vhost'             => {
       'name'     => 'foohost',
       'doc_root' => '/var/www'
     },

@@ -1,0 +1,62 @@
+requires 'attributes';
+requires 'base';
+requires 'Carp';
+requires 'constant';
+requires 'Cwd';
+requires 'Data::Dumper';
+requires 'Devel::Caller';
+requires 'Digest::MD5';
+requires 'Exporter';
+requires 'ExtUtils::MakeMaker';
+requires 'Fcntl';
+requires 'File::Basename';
+requires 'File::Spec';
+requires 'File::Spec::Unix';
+requires 'File::Spec::Win32';
+requires 'File::Temp';
+requires 'FindBin';
+requires 'Hash::Merge';
+requires 'HTTP::Request';
+requires 'HTTP::Request::Common';
+requires 'IO::File';
+requires 'IO::Socket';
+requires 'IO::String';
+requires 'IPC::Open3';
+requires 'JSON::XS';
+requires 'List::MoreUtils';
+requires 'List::Util';
+requires 'LWP::UserAgent';
+requires 'MIME::Base64';
+requires 'overload';
+requires 'POSIX';
+requires 'Sort::Naturally';
+requires 'Storable';
+requires 'strict';
+requires 'String::Escape';
+requires 'Symbol';
+requires 'Term::ReadKey';
+requires 'Test::Builder::Module';
+requires 'Test::Deep';
+requires 'Test::More';
+requires 'Test::Pod';
+requires 'Test::UseAllModules';
+requires 'Text::Glob';
+requires 'Text::Wrap';
+requires 'Time::HiRes';
+requires 'UNIVERSAL';
+requires 'URI';
+requires 'URI::QueryParam';
+requires 'vars';
+requires 'warnings';
+requires 'XML::LibXML';
+requires 'XML::Simple';
+requires 'YAML';
+
+if ($^O =~ /MSWin/) {
+    requires 'Net::SSH2';
+}
+else {
+    requires 'IO::Pty';
+    requires 'Net::OpenSSH';
+    requires 'Net::SFTP::Foreign';
+}

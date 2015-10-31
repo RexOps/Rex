@@ -21,8 +21,8 @@ use base qw(Rex::Resource::firewall::Provider::base);
 my %__action_map = (
   accept => "allow",
   allow  => "allow",
-  deny   => "deny",   ## -j DROP
-  drop   => "deny",   ## -j DROP
+  deny   => "deny", ## -j DROP
+  drop   => "deny", ## -j DROP
   reject => "reject", ## -j REJECT
   limit  => "limit",
 );

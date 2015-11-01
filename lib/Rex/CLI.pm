@@ -788,15 +788,11 @@ sub summarize {
     return;
   }
 
-  for my $failure (@failures) {
-    my $task   = $failure->{task};
-    my $server = $failure->{server};
-    Rex::Logger::info( " - $task failed on $server", "error" );
-  }
+  Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" )
+    foreach @failures;
 
-  my $total      = scalar @summary;
-  my $fail_count = scalar @failures;
-  Rex::Logger::info( "$fail_count/$total task execution failures", "error" );
+  Rex::Logger::info( @failures . " out of " . @summary . " task(s) failed",
+    "error" );
 }
 
 1;

@@ -502,6 +502,7 @@ CHECK_OVERWRITE: {
 
     Rex::TaskList->create()->create_task( "eval-line", @params );
     Rex::Commands::do_task("eval-line");
+    Rex::Logger::info($_) for summarize();
     CORE::exit(0);
   }
   elsif ( $opts{'M'} ) {
@@ -536,6 +537,8 @@ CHECK_OVERWRITE: {
   if ($Rex::WITH_EXIT_STATUS) {
     @exit_codes = Rex::TaskList->create()->get_exit_codes();
   }
+
+  Rex::Logger::info($_) for summarize();
 
   #print ">> $$\n";
   #print Dumper(\@exit_codes);
@@ -769,6 +772,29 @@ sub _list_groups {
     my $indent = " " x $max_group_len . "   ";
     print wrap( "", $indent, $output );
   }
+}
+
+sub summarize {
+  my @summary = Rex::TaskList->create()->get_summary();
+  my @msgs    = ("SUMMARY");
+
+  my @failures = grep { $_->{exit_code} != 0 } @summary;
+  if ( !@failures ) {
+    push @msgs, "All tasks successful on all hosts";
+    return @msgs;
+  }
+
+  for my $failure (@failures) {
+    my $task   = $failure->{task};
+    my $server = $failure->{server};
+    push @msgs, " - $task failed on $server";
+  }
+
+  my $total      = scalar @summary;
+  my $fail_count = scalar @failures;
+  push @msgs, "$fail_count/$total task execution failures";
+
+  return @msgs;
 }
 
 1;

@@ -289,52 +289,45 @@ sub is_task {
 sub run {
   my ( $self, $task, %options ) = @_;
 
-  my $task_name  = $task->name;
-  my @all_server = @{ $task->server };
-
   my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
+  my $task_name   = $task->name;
+  my $all_servers = $task->server;
 
-  for my $server (@all_server) {
-
+  for my $server (@$all_servers) {
     my $forked_sub = sub {
-
       Rex::Logger::init();
-
-      # create a single task object for the run on $server
-
       Rex::Logger::info("Running task $task_name on $server");
-      my $run_task = $task->clone;
 
-      $run_task->run(
+      my $run_task     = $task->clone;
+      my $return_value = $run_task->run(
         $server,
         in_transaction => $self->{IN_TRANSACTION},
         params         => $options{params},
         args           => $options{args},
       );
 
-      # destroy cached os info
       Rex::Logger::debug("Destroying all cached os information");
-
       Rex::Logger::shutdown();
 
+      return $return_value;
     };
 
-    # add the worker (forked_sub) to the fork queue
-    unless ( $self->{IN_TRANSACTION} ) {
+    if ( $self->{IN_TRANSACTION} ) {
 
-      # not inside a transaction, so lets fork happyly...
-      $fm->add( $forked_sub, 1 );
+      # Inside a transaction -- no forking and no chance to get zombies.
+      # This only happens if someone calls do_task() from inside a transaction.
+      # Note the result is not appended to @SUMMARY.
+      $forked_sub->();
     }
     else {
-# inside a transaction, no little small funny kids, ... and no chance to get zombies :(
-      &$forked_sub();
+      # Not inside a transaction, so lets fork
+      # Add $forked_sub to the fork queue
+      $fm->add( $forked_sub, $task, $server->to_s );
     }
-
   }
 
   Rex::Logger::debug("Waiting for children to finish");
   my $ret = $fm->wait_for_all;
-
   Rex::reconnect_lost_connections();
 
   return $ret;
@@ -396,7 +389,7 @@ sub is_transaction {
 
 sub get_exit_codes {
   my ($self) = @_;
-  return @Rex::Fork::Task::PROCESS_LIST;
+  return map { $_->{exit_code} } @Rex::Fork::Task::SUMMARY;
 }
 
 sub get_thread_count {
@@ -415,5 +408,7 @@ sub get_thread_count {
   );
   return 1;
 }
+
+sub get_summary { @Rex::Fork::Task::SUMMARY }
 
 1;

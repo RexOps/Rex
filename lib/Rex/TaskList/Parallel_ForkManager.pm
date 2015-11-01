@@ -21,13 +21,14 @@ use Rex::Report;
 use Time::HiRes qw(time);
 
 BEGIN {
+  use Rex::Shared::Var;
+  share qw(@SUMMARY);
+
   use Rex::Require;
   Parallel::ForkManager->require;
 }
 
 use base qw(Rex::TaskList::Base);
-
-my @PROCESS_LIST;
 
 sub new {
   my $that  = shift;
@@ -40,74 +41,64 @@ sub new {
 }
 
 sub run {
-  my ( $self, $task, %option ) = @_;
+  my ( $self, $task, %options ) = @_;
 
-  my $task_name  = $task->name;
-  my @all_server = @{ $task->server };
-
-  my $fm = Parallel::ForkManager->new( $self->get_thread_count($task) );
+  my $fm        = Parallel::ForkManager->new( $self->get_thread_count($task) );
+  my $task_name = $task->name;
+  my $all_servers = $task->server;
 
   $fm->run_on_finish(
     sub {
       my ( $pid, $exit_code ) = @_;
       Rex::Logger::debug("Fork exited: $pid -> $exit_code");
-      push @PROCESS_LIST, $exit_code;
     }
   );
 
-  for my $server (@all_server) {
-
+  for my $server (@$all_servers) {
     my $forked_sub = sub {
-
       Rex::Logger::init();
-
-      # create a single task object for the run on $server
-
       Rex::Logger::info("Running task $task_name on $server");
-      my $run_task = $task->clone;
 
-      $run_task->run(
+      my $run_task     = $task->clone;
+      my $return_value = $run_task->run(
         $server,
         in_transaction => $self->{IN_TRANSACTION},
-        params         => $option{params},
-        args           => $option{args},
+        params         => $options{params},
+        args           => $options{args},
       );
 
-      # destroy cached os info
       Rex::Logger::debug("Destroying all cached os information");
-
       Rex::Logger::shutdown();
 
+      return $return_value;
     };
 
-    # add the worker (forked_sub) to the fork queue
-    unless ( $self->{IN_TRANSACTION} ) {
+    if ( $self->{IN_TRANSACTION} ) {
 
-      # not inside a transaction, so lets fork happyly...
-      $fm->start and next;
-      eval {
-        $forked_sub->();
-        1;
-      } or do {
-        my $errcode = $?;
-
-        # exit with error
-        $errcode = 255 if !$errcode;         # unknown error
-        $errcode = 254 if ( $errcode > 255 );
-        exit $errcode;
-      };
-      $fm->finish;
+      # Inside a transaction -- no forking and no chance to get zombies.
+      # This only happens if someone calls do_task() from inside a transaction.
+      # Note the result is not appended to @SUMMARY.
+      $forked_sub->();
     }
     else {
-# inside a transaction, no little small funny kids, ... and no chance to get zombies :(
-      &$forked_sub();
-    }
+      # Not inside a transaction, so lets fork
+      $fm->start and next;
 
+      eval { $forked_sub->() };
+      my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
+      push @SUMMARY,
+        {
+        task      => $task_name,
+        server    => $server->to_s,
+        exit_code => $exit_code,
+        };
+
+      $fm->finish;
+    }
   }
 
   Rex::Logger::debug("Waiting for children to finish");
   my $ret = $fm->wait_all_children;
-
   Rex::reconnect_lost_connections();
 
   return $ret;
@@ -115,7 +106,19 @@ sub run {
 
 sub get_exit_codes {
   my ($self) = @_;
-  return @PROCESS_LIST;
+  return map { $_->{exit_code} } @SUMMARY;
+}
+
+sub get_summary { @SUMMARY }
+
+sub set_in_transaction {
+  my ( $self, $val ) = @_;
+  $self->{IN_TRANSACTION} = $val;
+}
+
+sub is_transaction {
+  my ($self) = @_;
+  return $self->{IN_TRANSACTION};
 }
 
 1;

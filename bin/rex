@@ -43,12 +43,12 @@ Rex can be used to:
 
 =head1 SYNOPSIS
 
-    bash# rex -h                        # Show usage
-    bash# rex -T                        # List tasks
-    bash# rex uname                     # Run the 'uname' task locally
-    bash# rex -H "server[01..10]" uname # Run the 'uname' task on 10 hosts
-    bash# rex -G production uname       # Run 'uname' on hosts in the 'production' group
-    bash# rex deploy --gracefully       # Pass --gracefully to the 'deploy' task
+    bash# rex -h                      # Show usage
+    bash# rex -T                      # List tasks
+    bash# rex uname                   # Run the 'uname' task
+    bash# rex -H server[01..10] uname # Run the 'uname' task on all the specified hosts
+    bash# rex -G production uname     # Run 'uname' on hosts on the 'production' hostgroup
+    bash# rex deploy --gracefully     # Pass '--gracefully' to the 'deploy' task
 
 =head1 USAGE
 

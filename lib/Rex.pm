@@ -59,7 +59,7 @@ You can find examples and howtos on L<http://rexify.org/>
     1;
    
     # On the command line:
-    bash# rex -H "server[01..10]" uname
+    bash# rex -H server[01..10] uname
 
 See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more information about how to use rex on the command line.
 

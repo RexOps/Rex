@@ -141,14 +141,14 @@ A basic task looks like this:
    
     # task definition
     task "shortname", sub {
-        run "uptime";
+        say run "uptime";
     };
 
 You can also set a default server group:
 
     desc "This is a long description of a task";
     task "shortname", group => "frontends", sub {
-        run "uptime";
+        say run "uptime";
     };
 
 =cut

@@ -12,7 +12,20 @@ Rex - Remote Execution
 
 =head1 DESCRIPTION
 
-(R)?ex is a small script to ease the execution of remote commands. You can write small tasks in a file named I<Rexfile>.
+Rex is a command line tool which executes commands on remote servers.  Define
+tasks in Perl and execute them on remote servers or groups of servers.
+
+Rex can be used to:
+
+=over 4
+
+=item * Deploy web applications to servers sequentially or in parallel.
+
+=item * Automate common tasks.
+
+=item * Provision servers using Rex's builtin tools.
+
+=back
 
 You can find examples and howtos on L<http://rexify.org/>
 
@@ -32,18 +45,23 @@ You can find examples and howtos on L<http://rexify.org/>
 
 =head1 SYNOPSIS
 
- use strict;
- use warnings;
+    # In a Rexfile:
+    use Rex -feature => [qw/1.3/];
+   
+    user "root";
+    password "ch4ngem3";
+   
+    desc "Show Unix version";
+    task "uname", sub {
+       say run "uname -a";
+    };
 
- user "root";
- password "ch4ngem3";
+    1;
+   
+    # On the command line:
+    bash# rex -H "server[01..10]" uname
 
- desc "Show Unix version";
- task "uname", sub {
-    say run "uname -a";
- };
-
- bash# rex -H "server[01..10]" uname
+See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more information about how to use rex on the command line.
 
 See L<Rex::Commands> for a list of all commands you can use.
 

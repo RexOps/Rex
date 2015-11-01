@@ -779,7 +779,6 @@ sub summarize {
   return if $opts{'T'};
 
   my @summary = Rex::TaskList->create()->get_summary();
-  Rex::Logger::info("SUMMARY");
 
   my @failures = grep { $_->{exit_code} != 0 } @summary;
 
@@ -788,11 +787,11 @@ sub summarize {
     return;
   }
 
+  Rex::Logger::info( @failures . " out of " . @summary . " task(s) failed:",
+    "error" );
+
   Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" )
     foreach @failures;
-
-  Rex::Logger::info( @failures . " out of " . @summary . " task(s) failed",
-    "error" );
 }
 
 1;

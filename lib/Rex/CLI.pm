@@ -18,6 +18,7 @@ use Cwd qw(getcwd);
 use List::Util qw(max);
 use Text::Wrap;
 use Term::ReadKey;
+use Sort::Naturally;
 
 use Rex;
 use Rex::Args;
@@ -791,7 +792,10 @@ sub summarize {
     "error" );
 
   Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" )
-    foreach @failures;
+    foreach sort {
+         ncmp( $a->{task}, $b->{task} )
+      || ncmp( $a->{server}, $b->{server} )
+    } @failures;
 }
 
 1;

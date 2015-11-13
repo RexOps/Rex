@@ -776,6 +776,7 @@ sub run {
 
       $self->run_hook( \$server, "before" );
       $self->connect($server);
+      push @{ Rex::get_current_connection()->{task} }, $self;
 
       if ( Rex::Args->is_opt("c") ) {
 
@@ -795,8 +796,9 @@ sub run {
       }
 
     }
-
-    push @{ Rex::get_current_connection()->{task} }, $self;
+    else {
+      push @{ Rex::get_current_connection()->{task} }, $self;
+    }
 
     # execute code
     my @ret;
@@ -828,11 +830,10 @@ sub run {
 
         Rex::get_current_connection()->{reporter}->write_report();
 
+        pop @{ Rex::get_current_connection()->{task} };
         die($error);
       }
     };
-
-    pop @{ Rex::get_current_connection()->{task} };
 
     if ( $server ne "<func>" ) {
       if ( Rex::Args->is_opt("c") ) {
@@ -849,9 +850,14 @@ sub run {
 
       Rex::get_current_connection()->{reporter}->write_report();
 
+      pop @{ Rex::get_current_connection()->{task} };
+
       $self->disconnect($server) unless ($in_transaction);
       $self->run_hook( \$server, "after" );
 
+    }
+    else {
+      pop @{ Rex::get_current_connection()->{task} };
     }
 
     if ($wantarray) {

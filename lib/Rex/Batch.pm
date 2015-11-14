@@ -25,7 +25,7 @@ sub create_batch {
 
   for my $task_name (@task_names) {
     die "ERROR: no task: $task_name"
-      if $task_list->is_task($task_name);
+      unless $task_list->is_task($task_name);
   }
 
   $batchs{$batch_name} = {

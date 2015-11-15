@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Rex::Commands::Iptables;
+use Rex::Helper::Run;
 use Data::Dumper;
 use base qw(Rex::Resource::firewall::Provider::base);
 
@@ -33,7 +34,11 @@ sub present {
   $rule_config->{dport} ||= $rule_config->{port};
   $rule_config->{proto} ||= 'tcp';
 
-  if ( $rule_config->{source} && $rule_config->{source} !~ m/\/(\d+)$/ ) {
+  if ( $rule_config->{source}
+    && $rule_config->{source} !~ m/\/(\d+)$/
+    && $self->_version()->[0] >= 1
+    && $self->_version()->[1] >= 4 )
+  {
     $rule_config->{source} .= "/32";
   }
 
@@ -86,7 +91,11 @@ sub absent {
   $rule_config->{dport} ||= $rule_config->{port};
   $rule_config->{proto} ||= 'tcp';
 
-  if ( $rule_config->{source} && $rule_config->{source} !~ m/\/(\d+)$/ ) {
+  if ( $rule_config->{source}
+    && $rule_config->{source} !~ m/\/(\d+)$/
+    && $self->_version()->[0] >= 1
+    && $self->_version()->[1] >= 4 )
+  {
     $rule_config->{source} .= "/32";
   }
 
@@ -132,6 +141,21 @@ sub absent {
   }
 
   return 0;
+}
+
+sub _version {
+  my ($self) = @_;
+  if ( exists $self->{__version__} ) { return $self->{__version__} }
+
+  my $version = i_run "iptables --version";
+  $version =~ s/^.*\sv(\d+\.\d+\.\d+)/$1/;
+
+  $self->{__version__} = [ split( /\./, $version ) ];
+
+  Rex::Logger::debug(
+    "Got iptables version: " . join( ", ", @{ $self->{__version__} } ) );
+
+  return $self->{__version__};
 }
 
 1;

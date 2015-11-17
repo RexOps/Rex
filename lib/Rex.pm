@@ -329,13 +329,19 @@ Returns 1 if the current operation is executed within sudo.
 =cut
 
 sub is_sudo {
-  if ($GLOBAL_SUDO) { return 1; }
 
   if ( exists $CONNECTION_STACK[-1]->{server}->{auth}->{sudo}
     && $CONNECTION_STACK[-1]->{server}->{auth}->{sudo} == 1 )
   {
     return 1;
   }
+  elsif ( exists $CONNECTION_STACK[-1]->{server}->{auth}->{sudo}
+    && $CONNECTION_STACK[-1]->{server}->{auth}->{sudo} == 0 )
+  {
+    return 0;
+  }
+
+  if ($GLOBAL_SUDO) { return 1; }
 
   if ( $CONNECTION_STACK[-1] ) {
     return $CONNECTION_STACK[-1]->{conn}->get_current_use_sudo;

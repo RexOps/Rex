@@ -61,6 +61,8 @@ sub resource {
   my ( $name, $options, $function ) = @_;
   my $name_save = $name;
 
+  my $caller_pkg = caller;
+
   if ( ref $options eq "CODE" ) {
     $function = $options;
     $options  = {};
@@ -79,8 +81,11 @@ sub resource {
   my $res = Rex::Resource->new(
     type         => "${class}::$name",
     name         => $name,
-    display_name => ( $options->{name} || $name ),
-    cb           => $function
+    display_name => (
+      $options->{name}
+        || ( $options->{export} ? $name : "${caller_pkg}::${name}" )
+    ),
+    cb => $function
   );
 
   my $func = sub {

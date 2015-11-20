@@ -49,6 +49,8 @@ sub call {
 
   push @CURRENT_RES, $self;
 
+  $self->set_all_parameters(%params);
+
   $self->{res_name} = $name;
   $self->{res_ensure} = $params{ensure} ||= present;
 
@@ -147,6 +149,11 @@ sub message {
 sub set_parameter {
   my ( $self, $key, $value ) = @_;
   $self->{__res_parameters__}->{$key} = $value;
+}
+
+sub set_all_parameters {
+  my ( $self, %params ) = @_;
+  $self->{__res_parameters__} = \%params;
 }
 
 sub get_all_parameters {

@@ -777,7 +777,7 @@ sub _list_groups {
 sub summarize {
   my %opts = Rex::Args->getopts;
   return if $opts{'T'};
-  
+
   my @summary = Rex::TaskList->create()->get_summary();
   my @msgs    = ("SUMMARY");
 

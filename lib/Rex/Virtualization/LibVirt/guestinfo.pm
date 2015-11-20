@@ -23,7 +23,6 @@ use Rex::Interface::Exec;
 use JSON::XS;
 require Rex::Commands::Run;
 
-
 sub execute {
   my ( $class, $vmname ) = @_;
 

@@ -21,6 +21,8 @@ use Rex::Virtualization::LibVirt::info;
 use Rex::Interface::File;
 use Rex::Interface::Exec;
 use JSON::XS;
+require Rex::Commands::Run;
+
 
 sub execute {
   my ( $class, $vmname ) = @_;
@@ -132,7 +134,7 @@ sub execute {
 
     my $got_ip = 0;
 
-    my $command = operating_system_is("Gentoo") ? '/sbin/arp' : '/usr/sbin/arp';
+    my $command = Rex::Commands::Run::can_run("arp");
 
     while ( $got_ip < scalar( keys %{$ifs} ) ) {
       my %arp =

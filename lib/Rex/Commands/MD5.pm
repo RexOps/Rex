@@ -69,9 +69,22 @@ sub md5 {
     my $md5 = i_run($command);
 
     unless ( $? == 0 ) {
-      my $message = "Unable to get MD5 checksum of $file: $!";
-      Rex::Logger::info($message);
-      die($message);
+
+      my $exec = Rex::Interface::Exec->create;
+
+      my $os = $exec->exec("uname -s");
+      if ( $os =~ /bsd/i ) {
+        $md5 = $exec->exec("/sbin/md5 -q '$file'");
+      }
+      else {
+        ($md5) = split( /\s/, $exec->exec("md5sum '$file'") );
+      }
+
+      if ( !$md5 ) {
+        my $message = "Unable to get MD5 checksum of $file: $!";
+        Rex::Logger::info($message);
+        die($message);
+      }
     }
 
     chomp $md5;

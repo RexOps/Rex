@@ -54,7 +54,7 @@ sub current_task {
   $self->{tasks}->[$i];
 }
 
-sub tasks { @{ shift->{tasks} } }
+sub tasks { @{ shift->{tasks} || [] } }
 
 sub task_list {
   my $self = shift;

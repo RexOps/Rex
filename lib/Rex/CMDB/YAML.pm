@@ -98,6 +98,15 @@ sub get {
   my $all = {};
   Rex::Logger::debug( Dumper( \@files ) );
 
+  # configuration variables
+  my $config_values = Rex::Config->get_all;
+  my %template_vars;
+  for my $key ( keys %{$config_values} ) {
+    if ( !exists $template_vars{$key} ) {
+      $template_vars{$key} = $config_values->{$key};
+    }
+  }
+
   for my $file (@files) {
     Rex::Logger::debug("CMDB - Opening $file");
     if ( -f $file ) {
@@ -105,7 +114,7 @@ sub get {
       my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
       my $t = Rex::Config->get_template_function();
       $content .= "\n"; # for safety
-      $content = $t->( $content, {} );
+      $content = $t->( $content, \%template_vars );
 
       my $ref = YAML::Load($content);
 

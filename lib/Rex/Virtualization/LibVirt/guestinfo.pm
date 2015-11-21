@@ -133,7 +133,11 @@ sub execute {
 
     my $got_ip = 0;
 
-    my $command = Rex::Commands::Run::can_run("arp");
+    # search arp in different locations.
+    # sometimes there is not PATH for normal users to /sbin commands.
+    # and also arp can be in different locations.
+    my $command =
+      Rex::Commands::Run::can_run( "/sbin/arp", "/usr/sbin/arp", "arp" );
 
     while ( $got_ip < scalar( keys %{$ifs} ) ) {
       my %arp =

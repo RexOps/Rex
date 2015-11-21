@@ -20,7 +20,7 @@ unless ( $have_mods{'Net::SSH2'} or $have_mods{'Net::OpenSSH'} ) {
     'SSH module not found. You need Net::SSH2 or Net::OpenSSH to connect to servers via SSH.';
 }
 else {
-  plan tests => 33;
+  plan tests => 36;
 }
 
 use Rex::Task;
@@ -152,9 +152,43 @@ task(
   }
 );
 
+task(
+  "param_test1",
+  sub {
+    my $param = shift;
+    is_deeply(
+      $param,
+      { name => "foo" },
+      "First parameter to task is a hashRef"
+    );
+  }
+);
+
+task(
+  "param_test2",
+  sub {
+    is_deeply( \@_, [ "city", "bar" ], "Parameters are a list (length 2)." );
+  }
+);
+
+task(
+  "param_test3",
+  sub {
+    is_deeply(
+      \@_,
+      [ "blah", "blub", "bumm" ],
+      "Parameters are a list (length 3)."
+    );
+  }
+);
+
 my $s = ret_test1();
 is( $s, "string", "task successfully returned a string" );
 
 my @l = ret_test2();
 is_deeply( \@l, [ "e1", "e2" ], "task successfully returned a list" );
+
+param_test1( { name => "foo" } );
+param_test2( city => "bar" );
+param_test3( "blah", "blub", "bumm" );
 

@@ -46,10 +46,20 @@ sub exec {
     Rex::Hook::run_hook( task => "before_execute", $task->name, @_ );
 
     if ($wantarray) {
-      @ret = $code->( $opts, $args );
+      if ( ref $opts eq "ARRAY" ) {
+        @ret = $code->( @{$opts} );
+      }
+      else {
+        @ret = $code->( $opts, $args );
+      }
     }
     else {
-      $ret[0] = $code->( $opts, $args );
+      if ( ref $opts eq "ARRAY" ) {
+        $ret[0] = $code->( @{$opts} );
+      }
+      else {
+        $ret[0] = $code->( $opts, $args );
+      }
     }
 
     Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );

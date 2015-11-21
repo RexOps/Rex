@@ -805,7 +805,8 @@ sub run {
     my $wantarray = wantarray;
 
     eval {
-      $self->set_opts( %{ $options{params} } );
+      $self->set_opts( %{ $options{params} } )
+        if ref $options{params} eq "HASH";
       if ($wantarray) {
         @ret = $self->executor->exec( $options{params}, $options{args} );
       }

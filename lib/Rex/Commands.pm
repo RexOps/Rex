@@ -334,11 +334,14 @@ sub task {
       Rex::Logger::info("Running task $task_name_save on current connection");
       my $param;
 
-      if ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 && !ref $_[0] ) {
+      if ( scalar @_ == 1 && ref $_[0] eq "HASH" ) {
+        $param = $_[0];
+      }
+      elsif ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
         $param = {@_};
       }
       else {
-        $param = $_[0];
+        $param = \@_;
       }
 
       $task_o->run( "<func>", params => $param );

@@ -89,6 +89,8 @@ $t1->set_code(
   }
 );
 
+Rex::Config->set(
+  "connection" => $have_mods{"Net::OpenSSH"} ? "OpenSSH" : "SSH" );
 ok( !$t1->connection->is_connected, "connection currently not established" );
 $t1->modify( "no_ssh", 1 );
 $t1->connect("localtest");

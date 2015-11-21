@@ -923,12 +923,12 @@ sub set_exit_on_connect_fail {
 
 sub get_args {
   my ($self) = @_;
-  @{ $self->{args} };
+  @{ $self->{args} || [] };
 }
 
 sub get_opts {
   my ($self) = @_;
-  %{ $self->{opts} };
+  %{ $self->{opts} || {} };
 }
 
 sub set_args {

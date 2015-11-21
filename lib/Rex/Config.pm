@@ -794,7 +794,7 @@ sub get_template_function {
           ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
           : ()
         ),
-        %{$template_vars}
+        %{ $template_vars || {} }
         }
         if ( Rex::Commands::task() );
       return $template_function->( $content, $template_vars );
@@ -813,7 +813,7 @@ sub get_template_function {
           ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
           : ()
         ),
-        %{$template_vars}
+        %{ $template_vars || {} }
         }
         if ( Rex::Commands::task() );
       Rex::Template::NG->require;
@@ -831,7 +831,7 @@ sub get_template_function {
         ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
         : ()
       ),
-      %{$template_vars}
+      %{ $template_vars || {} }
       }
       if ( Rex::Commands::task() );
     use Rex::Template;

@@ -19,6 +19,8 @@ use YAML;
 use Data::Dumper;
 use Hash::Merge qw/merge/;
 
+require Rex::Commands::File;
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
@@ -100,10 +102,12 @@ sub get {
     Rex::Logger::debug("CMDB - Opening $file");
     if ( -f $file ) {
 
-      #my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
-      #$content .= "\n";    # for safety
+      my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
+      my $t = Rex::Config->get_template_function();
+      $content .= "\n"; # for safety
+      $content = $t->($content);
 
-      my $ref = YAML::LoadFile($file);
+      my $ref = YAML::Load( $content, {} );
 
       $all = $self->{merger}->merge( $all, $ref );
     }

@@ -105,9 +105,9 @@ sub get {
       my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
       my $t = Rex::Config->get_template_function();
       $content .= "\n"; # for safety
-      $content = $t->($content);
+      $content = $t->( $content, {} );
 
-      my $ref = YAML::Load( $content, {} );
+      my $ref = YAML::Load($content);
 
       $all = $self->{merger}->merge( $all, $ref );
     }

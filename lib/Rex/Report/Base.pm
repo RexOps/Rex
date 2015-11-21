@@ -82,6 +82,8 @@ sub report_resource_end {
 
 sub report_resource_failed {
   my ( $self, %opt ) = @_;
+
+  confess "not inside a resource." if ( !$self->{__current_resource__}->[-1] );
   $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{failed} = 1;
   push @{ $self->{__reports__}->{ $self->{__current_resource__} > [-1] }
       ->{messages} },

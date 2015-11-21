@@ -50,9 +50,7 @@ sub param_lookup {
         # check in resource
         if ( Rex::Resource->is_inside_resource ) {
           $cmdb_key =
-              "${caller_pkg}::"
-            . Rex::Resource->get_current_resource->display_name
-            . "::$key";
+            Rex::Resource->get_current_resource->display_name . "::$key";
           $ret = Rex::Commands::get( Rex::CMDB::cmdb($cmdb_key) );
         }
       }

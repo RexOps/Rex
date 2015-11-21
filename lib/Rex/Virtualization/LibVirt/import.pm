@@ -36,8 +36,9 @@ sub execute {
 
   my $dir = dirname $opt{file};
   my ( undef, undef, $suffix ) = fileparse( $opt{file}, qr{\.[^.]*} );
-  my $file = "storage/" . $dom . $suffix;
-  mkdir "./storage";
+  $opt{storage_path} = $cwd . '/storage' unless($opt{storage_path});
+  my $file = $opt{storage_path} . '/' . $dom . $suffix;
+  i_run "mkdir -p $opt{storage_path}";
 
   my $format = "qcow2";
 
@@ -53,8 +54,8 @@ sub execute {
     my @vmdk = grep { m/\.vmdk$/ } i_run "tar -C $dir -vxf $opt{file}";
 
     Rex::Logger::debug(
-      "converting $cwd/tmp/$vmdk[0] -> $cwd/storage/$file.qcow2");
-    i_run "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $cwd/$file.qcow2";
+      "converting $cwd/tmp/$vmdk[0] -> $file.qcow2");
+    i_run "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $file.qcow2";
 
     if ( $? != 0 ) {
       Rex::Logger::info(
@@ -107,7 +108,7 @@ sub execute {
     $dom,
     storage => [
       {
-        file        => "$cwd/$file",
+        file        => "$file",
         dev         => "vda",
         driver_type => $format,
       },

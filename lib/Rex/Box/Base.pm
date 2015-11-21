@@ -92,6 +92,18 @@ Sets the tasks that should be executed as soon as the VM is available through SS
 
 =cut
 
+=head2 storage('path/to/vm/disk')
+
+Sets the disk path of the virtual machine. Works only on KVM
+
+=cut
+
+sub storage {
+  my ( $self, $folder ) = @_;
+
+  $self->{storage_path} = $folder;
+}
+
 sub setup {
   my ( $self, @tasks ) = @_;
   $self->{__tasks} = \@tasks;

@@ -450,7 +450,12 @@ sub get_user {
     return $user;
   }
 
-  return getlogin || getpwuid($<) || "Kilroy";
+  if ( $^O =~ m/^MSWin/ ) {
+    return getlogin;
+  }
+  else {
+    return getpwuid($<);
+  }
 }
 
 sub get_password {

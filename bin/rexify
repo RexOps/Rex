@@ -409,7 +409,8 @@ sub resolve_deps {
 
   if ( exists $ref->{Require} ) {
     if ( ref $ref->{Require} eq "ARRAY" ) {
-      $deps{$_} = $_ for @{ $ref->{Require} };
+      do { ref $_ eq "HASH" ? $deps{ $_->{name} } = $_ : $deps{$_} = $_ }
+        for @{ $ref->{Require} };
     }
     else {
       %deps = %{ $ref->{Require} };
@@ -418,7 +419,10 @@ sub resolve_deps {
 
   if ( exists $ref->{PerlRequire} ) {
     if ( ref $ref->{PerlRequire} eq "ARRAY" ) {
-      $perl_deps{$_} = $_ for @{ $ref->{PerlRequire} };
+      do {
+        ref $_ eq "HASH" ? $perl_deps{ $_->{name} } = $_ : $perl_deps{$_} = $_;
+        }
+        for @{ $ref->{PerlRequire} };
     }
     else {
       %perl_deps = %{ $ref->{PerlRequire} };

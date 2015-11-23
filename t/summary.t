@@ -73,13 +73,13 @@ sub create_tasks {
 
   desc "desc 1";
   task "task1" => sub {
-    run "ls asdfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+    my $cmd = $^O =~ /MSWin32/ ? "dir" : "ls";
+    run "$cmd asdfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
   };
 
   desc "desc 2";
   task "task2" => sub {
-    my $cmd = "ls";
-    $cmd = "dir" if $^O =~ /MSWin32/;
+    my $cmd = $^O =~ /MSWin32/ ? "dir" : "ls";
     run $cmd;
   };
 

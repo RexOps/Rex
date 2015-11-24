@@ -110,6 +110,17 @@ sub new {
   return $self;
 }
 
+=head2 memory($memory_size)
+
+Sets the memory of a VM in megabyte.
+
+=cut
+
+sub memory {
+  my ( $self, $mem ) = @_;
+  $self->{memory} = $mem * 1024; # libvirt wants kilobytes
+}
+
 sub import_vm {
   my ($self) = @_;
 

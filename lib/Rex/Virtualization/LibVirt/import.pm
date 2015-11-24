@@ -114,6 +114,8 @@ sub execute {
     ],
     network        => \@network,
     serial_devices => \@serial_devices,
+    memory         => $opt{memory},
+    cpus           => $opt{cpus},
   );
 
   if ( exists $opt{__forward_port} ) {

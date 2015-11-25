@@ -37,7 +37,6 @@ BEGIN {
 
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
-use Data::Dumper;
 
 sub new {
   my $that  = shift;
@@ -196,7 +195,7 @@ Sets the memory of a VM in megabyte.
 
 sub memory {
   my ( $self, $mem ) = @_;
-  $self->{memory} = $mem * 1024; # libvirt wants kilobytes
+  $self->{memory} = $mem;
 }
 
 =head2 network(%option)

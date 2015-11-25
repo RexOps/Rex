@@ -196,7 +196,7 @@ Sets the memory of a VM in megabyte.
 
 sub memory {
   my ( $self, $mem ) = @_;
-  $self->{memory} = $mem;
+  $self->{memory} = $mem * 1024; # libvirt wants kilobytes
 }
 
 =head2 network(%option)

@@ -503,8 +503,7 @@ CHECK_OVERWRITE: {
 
     Rex::TaskList->create()->create_task( "eval-line", @params );
     Rex::Commands::do_task("eval-line");
-    summarize();
-    CORE::exit(0);
+    exit_rex();
   }
   elsif ( $opts{'M'} ) {
     Rex::Logger::debug( "Loading Rex-Module: " . $opts{'M'} );
@@ -533,42 +532,7 @@ CHECK_OVERWRITE: {
     CORE::exit(0);
   }
 
-  my @exit_codes;
-
-  if ($Rex::WITH_EXIT_STATUS) {
-    @exit_codes = Rex::TaskList->create()->get_exit_codes();
-  }
-
-  summarize();
-
-  #print ">> $$\n";
-  #print Dumper(\@exit_codes);
-  # lock loeschen
-  Rex::global_sudo(0);
-  Rex::Logger::debug("Removing lockfile") if ( !exists $opts{'F'} );
-  CORE::unlink("$::rexfile.lock") if ( !exists $opts{'F'} );
-
-  select STDOUT;
-
-  for my $exit_hook (@exit) {
-    &$exit_hook();
-  }
-
-  if ( $opts{'o'} && defined( Rex::Output->get ) ) {
-    Rex::Output->get->write();
-    IPC::Shareable->clean_up_all();
-  }
-
-  if ($Rex::WITH_EXIT_STATUS) {
-    for my $exit_code (@exit_codes) {
-      if ( $exit_code != 0 ) {
-        exit($exit_code);
-      }
-    }
-  }
-  else {
-    exit(0);
-  }
+  exit_rex();
 }
 
 sub _print_color {
@@ -796,6 +760,35 @@ sub summarize {
          ncmp( $a->{task}, $b->{task} )
       || ncmp( $a->{server}, $b->{server} )
     } @failures;
+}
+
+sub exit_rex {
+
+  summarize();
+
+  Rex::global_sudo(0);
+  Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
+  unlink("$::rexfile.lock") if !exists $opts{'F'};
+
+  select STDOUT;
+
+  for my $exit_hook (@exit) {
+    $exit_hook->();
+  }
+
+  if ( $opts{'o'} && defined( Rex::Output->get ) ) {
+    Rex::Output->get->write();
+    IPC::Shareable->clean_up_all();
+  }
+
+  if ($Rex::WITH_EXIT_STATUS) {
+    my @exit_codes = Rex::TaskList->create()->get_exit_codes();
+    for my $exit_code (@exit_codes) {
+      CORE::exit($exit_code) if $exit_code != 0;
+    }
+  }
+
+  CORE::exit(0);
 }
 
 1;

@@ -178,7 +178,8 @@ sub server {
     }
   }
 
-  if ( ref( $self->{server} ) eq "ARRAY" && scalar( @{ $self->{server} } ) > 0 )
+  if ( ref( $self->{server} ) eq "ARRAY"
+    && scalar( @{ $self->{server} } ) > 0 )
   {
     for my $srv ( @{ $self->{server} } ) {
       if ( ref($srv) eq "CODE" ) {
@@ -770,14 +771,14 @@ sub run {
 
     $self->run_hook( \$server, "before" );
 
-    eval {
-      $self->connect($server);
-      1;
-    } or do {
+    eval { $self->connect($server) };
+    if ($@) {
+      my $error = $@;
       $self->{"__was_authenticated"} = 0;
       $self->run_hook( \$server, "after" );
-      die $@;
-    };
+      die $error;
+    }
+
     push @{ Rex::get_current_connection()->{task} }, $self;
 
     if ( Rex::Args->is_opt("c") ) {

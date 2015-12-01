@@ -726,11 +726,6 @@ sub get_data {
   };
 }
 
-#####################################
-# deprecated functions
-# for compatibility
-#####################################
-
 =head2 run($server, %options)
 
 Run the task on $server.
@@ -738,55 +733,54 @@ Run the task on $server.
 =cut
 
 sub run {
+  return pre_40_run(@_) unless ref $_[0];
 
-  # someone used this function directly... bail out
-  if ( ref( $_[0] ) ) {
-    my ( $self, $server, %options ) = @_;
+  my ( $self, $server, %options ) = @_;
 
-    $options{opts}   ||= { $self->get_opts };
-    $options{args}   ||= [ $self->get_args ];
-    $options{params} ||= $options{opts};
+  $options{opts}   ||= { $self->get_opts };
+  $options{args}   ||= [ $self->get_args ];
+  $options{params} ||= $options{opts};
 
-    if ( !ref $server ) {
-      $server = Rex::Group::Entry::Server->new( name => $server );
-    }
+  if ( !ref $server ) {
+    $server = Rex::Group::Entry::Server->new( name => $server );
+  }
 
-    if ( !$_[1] ) {
+  if ( !$_[1] ) {
 
-      # run is called without any server.
-      # so just connect to any servers.
-      return Rex::TaskList->create()->run( $self, %options );
-    }
+    # run is called without any server.
+    # so just connect to any servers.
+    return Rex::TaskList->create()->run( $self, %options );
+  }
 
-    # this is a method call
-    # so run the task
+  # this is a method call
+  # so run the task
 
-    # TODO: refactor complete task calling
-    #       direct call with function and normal task call
+  # TODO: refactor complete task calling
+  #       direct call with function and normal task call
 
-    my ( $in_transaction, $start_time );
+  my ( $in_transaction, $start_time );
 
-    $start_time = time;
+  $start_time = time;
 
-    if ( $server ne "<func>" ) {
+  if ( $server ne "<func>" ) {
 
-      # this is _not_ a task call via function syntax.
+    # this is _not_ a task call via function syntax.
 
-      $in_transaction = $options{in_transaction};
+    $in_transaction = $options{in_transaction};
 
-      $self->run_hook( \$server, "before" );
+    $self->run_hook( \$server, "before" );
 
-      eval {
-        $self->connect($server);
-        1;
-      } or do {
-        $self->{"__was_authenticated"} = 0;
-        $self->run_hook( \$server, "after" );
-        die $@;
-      };
-      push @{ Rex::get_current_connection()->{task} }, $self;
+    eval {
+      $self->connect($server);
+      1;
+    } or do {
+      $self->{"__was_authenticated"} = 0;
+      $self->run_hook( \$server, "after" );
+      die $@;
+    };
+    push @{ Rex::get_current_connection()->{task} }, $self;
 
-      if ( Rex::Args->is_opt("c") ) {
+    if ( Rex::Args->is_opt("c") ) {
 
         # get and cache all os info
         if ( !Rex::get_cache()->load() ) {
@@ -804,91 +798,91 @@ sub run {
         sleep 3;
       }
 
+  }
+  else {
+    push @{ Rex::get_current_connection()->{task} }, $self;
+  }
+
+  # execute code
+  my @ret;
+  my $wantarray = wantarray;
+
+  eval {
+    $self->set_opts( %{ $options{params} } )
+      if ref $options{params} eq "HASH";
+    if ($wantarray) {
+      @ret = $self->executor->exec( $options{params}, $options{args} );
     }
     else {
-      push @{ Rex::get_current_connection()->{task} }, $self;
+      $ret[0] = $self->executor->exec( $options{params}, $options{args} );
     }
+    my $notify = Rex::get_current_connection()->{notify};
+    $notify->run_postponed();
+  } or do {
+    if ($@) {
+      my $error = $@;
 
-    # execute code
-    my @ret;
-    my $wantarray = wantarray;
-
-    eval {
-      $self->set_opts( %{ $options{params} } )
-        if ref $options{params} eq "HASH";
-      if ($wantarray) {
-        @ret = $self->executor->exec( $options{params}, $options{args} );
-      }
-      else {
-        $ret[0] = $self->executor->exec( $options{params}, $options{args} );
-      }
-      my $notify = Rex::get_current_connection()->{notify};
-      $notify->run_postponed();
-    } or do {
-      if ($@) {
-        my $error = $@;
-
-        Rex::get_current_connection()->{reporter}
-          ->report_resource_failed( message => $error );
-
-        Rex::get_current_connection()->{reporter}->report_task_execution(
-          failed     => 1,
-          start_time => $start_time,
-          end_time   => time,
-          message    => $error,
-        );
-
-        Rex::get_current_connection()->{reporter}->write_report();
-
-        pop @{ Rex::get_current_connection()->{task} };
-        die($error);
-      }
-    };
-
-    if ( $server ne "<func>" ) {
-      if ( Rex::Args->is_opt("c") ) {
-
-        # get and cache all os info
-        Rex::get_cache()->save();
-      }
+      Rex::get_current_connection()->{reporter}
+        ->report_resource_failed( message => $error );
 
       Rex::get_current_connection()->{reporter}->report_task_execution(
-        failed     => 0,
+        failed     => 1,
         start_time => $start_time,
         end_time   => time,
+        message    => $error,
       );
 
       Rex::get_current_connection()->{reporter}->write_report();
 
       pop @{ Rex::get_current_connection()->{task} };
+      die($error);
+    }
+  };
 
-      $self->disconnect($server) unless ($in_transaction);
-      $self->run_hook( \$server, "after" );
+  if ( $server ne "<func>" ) {
+    if ( Rex::Args->is_opt("c") ) {
 
-    }
-    else {
-      pop @{ Rex::get_current_connection()->{task} };
+      # get and cache all os info
+      Rex::get_cache()->save();
     }
 
-    if ($wantarray) {
-      return @ret;
-    }
-    else {
-      return $ret[0];
-    }
+    Rex::get_current_connection()->{reporter}->report_task_execution(
+      failed     => 0,
+      start_time => $start_time,
+      end_time   => time,
+    );
+
+    Rex::get_current_connection()->{reporter}->write_report();
+
+    pop @{ Rex::get_current_connection()->{task} };
+
+    $self->disconnect($server) unless ($in_transaction);
+    $self->run_hook( \$server, "after" );
+
   }
-
   else {
-    my ( $class, $task, $server_overwrite, $params ) = @_;
-    Rex::deprecated( "Rex::Task->run()", "0.40" );
-
-    if ($server_overwrite) {
-      Rex::TaskList->create()->get_task($task)->set_server($server_overwrite);
-    }
-
-    # this is a deprecated static call
-    Rex::TaskList->create()->run( $task, params => $params );
+    pop @{ Rex::get_current_connection()->{task} };
   }
+
+  if ($wantarray) {
+    return @ret;
+  }
+  else {
+    return $ret[0];
+  }
+}
+
+sub pre_40_run {
+  my ( $class, $task_name, $server_overwrite, $params ) = @_;
+
+  # static calls to this method are deprecated
+  Rex::deprecated( "Rex::Task->run()", "0.40" );
+
+  my $tasklist = Rex::TaskList->create;
+  my $task     = $tasklist->get_task($task_name);
+
+  $task->set_server($server_overwrite) if $server_overwrite;
+  $tasklist->run( $task, params => $params );
 }
 
 sub modify_task {

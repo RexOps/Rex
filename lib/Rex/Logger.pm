@@ -35,7 +35,10 @@ use warnings;
 
 # VERSION
 
-#use Rex;
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw(log_debug log_info log_warn log_error);
+our %EXPORT_TAGS = (all => [@EXPORT_OK]);
 
 our $no_color = 0;
 eval "use Term::ANSIColor";
@@ -105,7 +108,7 @@ sub init {
   $log_opened = 1;
 }
 
-sub info {
+sub logger {
   my ( $msg, $type ) = @_;
   my $color = 'green';
 
@@ -170,6 +173,15 @@ sub info {
     &shutdown();
   }
 }
+
+sub log_error { logger( shift, "error" ) }
+sub log_warn  { logger( shift, "warn"  ) }
+sub log_info  { logger( shift, "info"  ) }
+sub log_debug { debug(@_) }
+
+sub error { logger( shift, "error" ) }
+sub warn  { logger( shift, "warn"  ) }
+sub info  { logger(@_) }
 
 sub debug {
   my ($msg) = @_;

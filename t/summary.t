@@ -101,22 +101,19 @@ sub create_tasks {
 
 sub test_summary {
   my (%expected) = @_;
+  my @expected_summary;
 
   $Rex::TaskList::task_list = undef;
 
   create_tasks();
 
-  my @summary;
-  my @expected_summary;
-  my $test_description;
-
   for my $task_name ( Rex::TaskList->create->get_tasks ) {
     Rex::TaskList->run($task_name);
-    @summary = Rex::TaskList->create->get_summary;
+    my @summary = Rex::TaskList->create->get_summary;
 
     push @expected_summary, $expected{$task_name};
 
-    $test_description =
+    my $test_description =
       $expected{$task_name}->{exit_code} == 0
       ? "$task_name succeeded"
       : "$task_name failed";
@@ -127,11 +124,7 @@ sub test_summary {
   my $distributor = Rex::Config->get_distributor;
   no warnings;
 
-  @Rex::Fork::Task::SUMMARY = ()
-    if $distributor eq 'Base';
-
-  @Rex::TaskList::Parallel_ForkManager::SUMMARY = ()
-    if $distributor eq 'Parallel_ForkManager';
+  @Rex::TaskList::Base::SUMMARY = ();
 }
 
 sub parallel_forkmanager_not_installed {

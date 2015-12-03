@@ -11,6 +11,11 @@ use warnings;
 
 # VERSION
 
+BEGIN {
+  use Rex::Shared::Var;
+  share qw(@SUMMARY);
+}
+
 use Data::Dumper;
 use Rex::Logger;
 use Rex::Task;
@@ -290,39 +295,21 @@ sub run {
   my ( $self, $task, %options ) = @_;
 
   my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
-  my $task_name   = $task->name;
   my $all_servers = $task->server;
 
   for my $server (@$all_servers) {
-    my $forked_sub = sub {
-      Rex::Logger::init();
-      Rex::Logger::info("Running task $task_name on $server");
-
-      my $run_task     = $task->clone;
-      my $return_value = $run_task->run(
-        $server,
-        in_transaction => $self->{IN_TRANSACTION},
-        params         => $options{params},
-        args           => $options{args},
-      );
-
-      Rex::Logger::debug("Destroying all cached os information");
-      Rex::Logger::shutdown();
-
-      return $return_value;
-    };
+    my $child_coderef = $self->build_child_coderef($task, $server, %options);
 
     if ( $self->{IN_TRANSACTION} ) {
 
       # Inside a transaction -- no forking and no chance to get zombies.
       # This only happens if someone calls do_task() from inside a transaction.
-      # Note the result is not appended to @SUMMARY.
-      $forked_sub->();
+      $child_coderef->();
     }
     else {
       # Not inside a transaction, so lets fork
       # Add $forked_sub to the fork queue
-      $fm->add( $forked_sub, $task, $server->to_s );
+      $fm->add($child_coderef);
     }
   }
 
@@ -331,6 +318,43 @@ sub run {
   Rex::reconnect_lost_connections();
 
   return $ret;
+}
+
+sub build_child_coderef {
+  my ($self, $task, $server, %options) = @_;
+
+  return sub {
+    Rex::Logger::init();
+    Rex::Logger::info("Running task " . $task->name . " on $server");
+
+    my $return_value = eval {
+        $task->clone->run(
+          $server,
+          in_transaction => $self->{IN_TRANSACTION},
+          params         => $options{params},
+          args           => $options{args},
+      );
+    };
+
+    if ($self->{IN_TRANSACTION}) {
+      die $@ if $@;
+    }
+    else {
+      my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
+
+      push @SUMMARY, {
+        task      => $task->name,
+        server    => $server->to_s,
+        exit_code => $exit_code,
+      };
+    }
+
+    Rex::Logger::debug("Destroying all cached os information");
+    Rex::Logger::shutdown();
+
+
+    return $return_value;
+  };
 }
 
 sub modify {
@@ -389,7 +413,7 @@ sub is_transaction {
 
 sub get_exit_codes {
   my ($self) = @_;
-  return map { $_->{exit_code} } @Rex::Fork::Task::SUMMARY;
+  return map { $_->{exit_code} } @SUMMARY;
 }
 
 sub get_thread_count {
@@ -409,6 +433,6 @@ sub get_thread_count {
   return 1;
 }
 
-sub get_summary { @Rex::Fork::Task::SUMMARY }
+sub get_summary { @SUMMARY }
 
 1;

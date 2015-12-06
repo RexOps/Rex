@@ -691,7 +691,7 @@ sub load_server_ini_file {
   my $server_ini_file = "$ini_dir/server.$env.ini";
   $server_ini_file = "$ini_dir/server.ini" unless -f $server_ini_file;
 
-  if (-f $server_ini_file && Rex::Group::Lookup::INI->is_loadable) {
+  if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
     Rex::Logger::debug("Loading $server_ini_file");
     Rex::Group::Lookup::INI::groups_file($server_ini_file);
   }
@@ -701,9 +701,10 @@ sub load_rexfile {
   my $rexfile = shift;
   Rex::Logger::debug("Loading $rexfile");
 
-  if (! -f $rexfile ) {
+  if ( !-f $rexfile ) {
     Rex::Logger::info( "No Rexfile found.", "warn" );
-    Rex::Logger::info( "Create a file named 'Rexfile' in this directory,", "warn" );
+    Rex::Logger::info( "Create a file named 'Rexfile' in this directory,",
+      "warn" );
     Rex::Logger::info( "or specify the file you want to use with:", "warn" );
     Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
     return;
@@ -713,7 +714,7 @@ sub load_rexfile {
   eval { require $rexfile };
   if ($@) {
     chomp $@;
-    Rex::Logger::info("Compile time errors:\n$@", 'error');
+    Rex::Logger::info( "Compile time errors:\n$@", 'error' );
     exit 1;
   }
 }

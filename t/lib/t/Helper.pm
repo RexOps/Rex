@@ -42,8 +42,8 @@ sub test_rex {
         my $stdout = $test->stdout;
         my $stderr = datestrip colorstrip $test->stderr;
 
-        print "STDOUT\n$stdout\n" if $params{debug};
-        print "STDERR\n$stderr\n" if $params{debug};
+        print "CMD-STDOUT\n$stdout\n" if $params{debug};
+        print "CMD-STDERR\n$stderr\n" if $params{debug};
 
         $builder->level(0); # Shouldn't have to do this?
         $builder->like($stdout, qr|$params{stdout}|m // qr||, 'stdout');

@@ -17,4 +17,10 @@ test_rex
     exit_code => 0,
     stderr    => qr/INFO - All tasks successful on all hosts/;
 
+test_rex
+debug => 1,
+    args      => '-e "say run \"asdfasdf9999\""',
+    exit_code => 127,
+    stderr    => qr/ERROR - Error executing task/;
+
 done_testing;

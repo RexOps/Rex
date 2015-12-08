@@ -82,8 +82,7 @@ sub parse_opts {
     unless Rex::Config->get_task_chaining_cmdline_args;
 
   while ( my $task_name = shift @params ) {
-    die "Expected a task name but found '$task_name' instead\n"
-      unless $self->task_list->is_task($task_name);
+    $self->exit_rex($task_name) unless $self->task_list->is_task($task_name);
 
     my @args;
     my %opts;
@@ -131,10 +130,17 @@ sub pre_1_4_parse_opts {
 
   for my $task_name (@params) {
     next if $task_name =~ m/^\-\-/ || $task_name =~ m/=/;
-    next unless $self->task_list->is_task($task_name);
-
+    $self->exit_rex($task_name) unless $self->task_list->is_task($task_name);
     $self->add_task( $task_name, [], \%task_opts );
   }
+}
+
+sub exit_rex {
+  my ($self, $task_name) = @_;
+  my $msg = "Task names are case sensitive ";
+  $msg .= "and the module delimiter is a single colon.";
+  Rex::Logger::info("No task named '$task_name' found. $msg", 'error');
+  Rex::CLI::exit_rex(1);
 }
 
 1;

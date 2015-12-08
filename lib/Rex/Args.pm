@@ -13,6 +13,7 @@ use warnings;
 
 use vars qw(%rex_opts);
 use Rex::Logger;
+use Data::Dumper;
 
 our $CLEANUP = 1;
 

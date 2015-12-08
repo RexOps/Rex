@@ -37,7 +37,6 @@ BEGIN {
 
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
-use Data::Dumper;
 
 sub new {
   my $that  = shift;

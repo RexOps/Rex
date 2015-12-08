@@ -89,6 +89,9 @@ sub new {
   $self->{name} ||= $file;
   $self->{redirect_port} = 2222;
 
+  $self->{memory} = 512;	# default, in MB
+  $self->{cpu}    = 1;          # default
+
   return $self;
 }
 
@@ -101,6 +104,28 @@ The name of the test. A VM called $name will be created for each test. If the VM
 sub name {
   my ( $self, $name ) = @_;
   $self->{name} = $name;
+}
+
+=head2 memory($amount)
+
+The amount of memory the VM should use, in Megabytes.
+
+=cut
+
+sub memory {
+  my ( $self, $memory ) = @_;
+  $self->{memory} = $memory;
+}
+
+=head2 cpu($number)
+
+The number of CPUs the VM should use.
+
+=cut
+
+sub cpu {
+  my ( $self, $cpu ) = @_;
+  $self->{cpu} = $cpu;
 }
 
 =head2 vm_auth(%auth)
@@ -156,6 +181,8 @@ sub run_task {
     $box = shift;
     $box->name( $self->{name} );
     $box->url( $self->{vm} );
+    $box->memory( $self->{memory} );
+    $box->cpus( $self->{cpu} );
 
     $box->network(
       1 => {

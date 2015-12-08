@@ -690,15 +690,13 @@ You may also use an arrayRef for $task if you want to call multiple tasks.
 =cut
 
 sub do_task {
-  my $task = shift;
+  my $thing = shift;
+  my @tasks = ref $thing ? @$thing : $thing;
+  my $current_task = task();
 
-  if ( ref($task) eq "ARRAY" ) {
-    for my $t ( @{$task} ) {
-      Rex::TaskList->run($t);
-    }
-  }
-  else {
-    return Rex::TaskList->run($task);
+  for my $task (@tasks) {
+    $task->parent($current_task);
+    Rex::TaskList->run($task);
   }
 }
 

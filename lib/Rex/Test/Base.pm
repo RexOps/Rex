@@ -88,8 +88,8 @@ sub new {
 
   $self->{name} ||= $file;
   $self->{redirect_port} = 2222;
-  $self->{memory}        = 512; # default, in MB
-  $self->{cpu}           = 1;   # default
+  $self->{memory} ||= 512; # default, in MB
+  $self->{cpu}    ||= 1;   # default
 
   return $self;
 }

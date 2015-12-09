@@ -476,12 +476,12 @@ This method is used internally to execute the specified hooks.
 
 sub run_hook {
   my ( $self, $server, $hook, @more_args ) = @_;
-
+  
   for my $code ( @{ $self->{$hook} } ) {
     if ( $hook eq "after" ) { # special case for after hooks
       &$code(
         $$server,
-        ( $self->{"__was_authenticated"} ? undef : 1 ),
+        ( $self->{"__was_authenticated"} || 0 ),
         { Rex::Args->get }, @more_args
       );
     }
@@ -750,7 +750,14 @@ sub run {
     my $in_transaction = $options{in_transaction};
 
     $self->run_hook( \$server, "before" );
-    $self->connect($server);
+    eval {
+      $self->connect($server);
+      1;
+    } or do {
+      $self->{"__was_authenticated"} = 0;
+      $self->run_hook( \$server, "after" );
+      die $@;
+    };
 
     my $start_time = time;
 

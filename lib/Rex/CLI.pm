@@ -366,24 +366,26 @@ CHECK_OVERWRITE: {
     require "$mod.pm";
   }
 
-  eval {
-    my $run_list = Rex::RunList->instance;
+  my $run_list = Rex::RunList->instance;
 
-    if ( $opts{'b'} ) {
-      my $batch = $opts{'b'};
-      Rex::Logger::debug("Running batch: $batch");
-      $run_list->add_task($_) for Rex::Batch->get_batch($batch);
-    }
+  if ( $opts{'b'} ) {
+    my $batch = $opts{'b'};
+    Rex::Logger::debug("Running batch: $batch");
+    $run_list->add_task($_) for Rex::Batch->get_batch($batch);
+  }
 
-    $run_list->parse_opts(@ARGV);
-    $run_list->run_tasks;
-  };
+  $run_list->parse_opts(@ARGV);
 
+  eval { $run_list->run_tasks };
   if ($@) {
 
     # this is always the child
     Rex::Logger::info( "Error running task/batch: $@", "warn" );
     CORE::exit(0);
+  }
+
+  for my $exit_hook (@exit) {
+    $exit_hook->();
   }
 
   exit_rex();
@@ -598,6 +600,7 @@ sub summarize {
   return if $opts{'T'};
 
   my @summary = Rex::TaskList->create()->get_summary();
+  return unless @summary; # no tasks ran -- nothing to summarize
 
   my @failures = grep { $_->{exit_code} != 0 } @summary;
 
@@ -684,6 +687,7 @@ sub load_rexfile {
 }
 
 sub exit_rex {
+  my ($exit_code_override) = @_;
 
   summarize();
 
@@ -693,16 +697,14 @@ sub exit_rex {
 
   select STDOUT;
 
-  for my $exit_hook (@exit) {
-    $exit_hook->();
-  }
-
   if ( $opts{'o'} && defined( Rex::Output->get ) ) {
     Rex::Output->get->write();
     IPC::Shareable->clean_up_all();
   }
 
   if ($Rex::WITH_EXIT_STATUS) {
+    CORE::exit($exit_code_override) if defined $exit_code_override;
+
     my @exit_codes = Rex::TaskList->create()->get_exit_codes();
     for my $exit_code (@exit_codes) {
       CORE::exit($exit_code) if $exit_code != 0;

@@ -328,10 +328,10 @@ sub task {
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
     no strict 'refs';
-    Rex::Logger::debug("Registering task: ${class}::$task_name_save");
+    Rex::Logger::debug("Registering task: $task_name");
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
-      Rex::Logger::info("Running task ${class}::$task_name_save on current connection");
+      Rex::Logger::info("Running task $task_name on current connection");
       my $param;
 
       if ( scalar @_ == 1 && ref $_[0] eq "HASH" ) {

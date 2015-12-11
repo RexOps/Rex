@@ -480,9 +480,9 @@ This method is used internally to execute the specified hooks.
 
 sub run_hook {
   my ( $self, $server, $hook, @more_args ) = @_;
-  
+
   for my $code ( @{ $self->{$hook} } ) {
-    if ( $hook eq "after" ) { # special case for after hooks
+    if ( $hook eq "after" ) {    # special case for after hooks
       $code->(
         $$server,
         ( $self->{"__was_authenticated"} || 0 ),
@@ -784,7 +784,6 @@ sub run {
         $self->run_hook( \$server, "after" );
         die $@;
       };
-
       push @{ Rex::get_current_connection()->{task} }, $self;
 
       if ( Rex::Args->is_opt("c") ) {
@@ -798,7 +797,8 @@ sub run {
 
       if ( !$server->test_perl ) {
         Rex::Logger::info(
-          "There is no perl interpreter found on this system. Some commands may not work. Sudo won't work.",
+          "There is no perl interpreter found on this system. "
+            . "Some commands may not work. Sudo won't work.",
           "warn"
         );
         sleep 3;

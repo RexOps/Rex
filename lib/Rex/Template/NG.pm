@@ -177,7 +177,7 @@ sub parse {
 sub __out {
   my ( $self, $str ) = @_;
 
-  $self->{__output__} .= $str;
+  $self->{__output__} .= $str || "";
 }
 
 sub _parse {

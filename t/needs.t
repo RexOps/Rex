@@ -2,6 +2,7 @@ use Test::More;
 use Rex::Commands;
 
 {
+
   package MyTest;
   use strict;
   use warnings;

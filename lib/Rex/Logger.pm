@@ -43,7 +43,7 @@ if ($@) { $no_color = 1; }
 
 if ( $^O =~ m/MSWin/ ) {
   eval "use Win32::Console::ANSI";
-  if($@) { $no_color = 1; }
+  if ($@) { $no_color = 1; }
 }
 
 my $has_syslog = 0;

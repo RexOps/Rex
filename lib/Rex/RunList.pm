@@ -136,10 +136,10 @@ sub pre_1_4_parse_opts {
 }
 
 sub exit_rex {
-  my ($self, $task_name) = @_;
+  my ( $self, $task_name ) = @_;
   my $msg = "Task names are case sensitive ";
   $msg .= "and the module delimiter is a single colon.";
-  Rex::Logger::info("No task named '$task_name' found. $msg", 'error');
+  Rex::Logger::info( "No task named '$task_name' found. $msg", 'error' );
   Rex::CLI::exit_rex(1);
 }
 

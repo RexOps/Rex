@@ -106,6 +106,7 @@ sub get {
       $template_vars{$key} = $config_values->{$key};
     }
   }
+  $template_vars{environment} = Rex::Commands::environment();
 
   for my $file (@files) {
     Rex::Logger::debug("CMDB - Opening $file");

@@ -204,7 +204,7 @@ sub create_user {
 
       eval {
        my $cmd = "ssh-keygen";
-       $cmd .= " -b 2048 -t rsa -q -N '' -f" . "/.ssh/" . $data->{"home"},
+       $cmd .= " -b 2048 -t rsa -q -N '' -f " .$data->{"home"},"/.ssh/rex",
       } or do {
 
         # error creating .ssh directory

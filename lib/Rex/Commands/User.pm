@@ -185,6 +185,35 @@ sub create_user {
     }
 
   }
+  else if (defined $data->{"create_ssh_key"} ){
+    if ( !is_dir( $data->{"home"} . "/.ssh" ) ) {
+
+      eval {
+        mkdir $data->{"home"} . "/.ssh",
+          owner         => $user,
+          mode          => 700,
+          not_recursive => 1;
+      } or do {
+
+        # error creating .ssh directory
+        Rex::Logger::debug(
+          "Not creating .ssh directory because parent doesn't exists.");
+      };
+    }
+    if ( !is_file( $data->{"home"} . "/.ssh/rex" ) ) {
+
+      eval {
+       my $cmd = "ssh-keygen";
+       $cmd .= " -b 2048 -t rsa -q -N '' -f" . "/.ssh/" . $data->{"home"},
+      } or do {
+
+        # error creating .ssh directory
+        Rex::Logger::debug(
+          "Not creating .ssh directory because parent doesn't exists.");
+      };
+    }
+    
+  }
 
   #### check and run before hook
   Rex::Hook::run_hook( create_user => "after", @_, $uid );

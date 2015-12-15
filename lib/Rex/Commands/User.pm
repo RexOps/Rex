@@ -26,6 +26,7 @@ With this module you can manage user and groups.
      password    => 'blahblah',
      system      => 1,
      create_home => TRUE,
+     create_ssh => {bit => 384, type => 'ecdsa'},
      ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
@@ -37,7 +38,6 @@ package Rex::Commands::User;
 
 use strict;
 use warnings;
-use Data::Printer;
 # VERSION
 
 require Rex::Exporter;
@@ -203,9 +203,27 @@ sub create_user {
       };
     }
     if ( !is_file( $data->{"home"}."/.ssh/rex" ) ) {
-
+      my $prepare = "";
+      if (defined $data->{'create_ssh'}->{'bit'} ){
+          $prepare .= " -b ".$data->{'create_ssh'}->{'bit'};
+        }
+      else{
+        $prepare .= " -b 2048";
+      }
+      if (defined $data->{'create_ssh'}->{'type'} ){
+          $prepare .= " -t ".$data->{'create_ssh'}->{'type'};
+        }
+      else{
+        $prepare .= " -t RSA";
+      }
+      if (defined $data->{'create_ssh'}->{'passphrase'} ){
+          $prepare .= " -N ".$data->{'create_ssh'}->{'passphrase'};
+        }
+      else{
+        $prepare .= " -N ''";
+      }
       eval {
-        run "ssh-keygen -b 2048 -t rsa -q -N '' -f ".$data->{"home"}."/.ssh/rex";
+        run "ssh-keygen ".$prepare." -q -f ".$data->{"home"}."/.ssh/rex";
       } or do {
 
         # error creating .ssh directory
@@ -213,13 +231,15 @@ sub create_user {
           "Not creating .ssh directory because parent doesn't exists.");
       };
       eval{
-        file $data->{"home"} . "/.ssh/rex", owner   => $user, mode    => 600 ;
+        my $keypath = $data->{"home"}."/.ssh/rex";
+        run "chown ".$user." ".$keypath;
       } or do {
         Rex::Logger::debug(
           "Error while changing file permission");
       };
       eval{
-        file $data->{"home"} . "/.ssh/rex.pub", owner   => $user;
+        my $keypath = $data->{"home"}."/.ssh/rex.pub";
+        run "chown ".$user." ".$keypath;
         } or do {
           Rex::Logger::debug(
           "Error while changing file permission");

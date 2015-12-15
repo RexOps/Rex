@@ -37,7 +37,7 @@ package Rex::Commands::User;
 
 use strict;
 use warnings;
-
+use Data::Printer;
 # VERSION
 
 require Rex::Exporter;
@@ -186,6 +186,8 @@ sub create_user {
 
   }
  if (defined $data->{"create_ssh"} ){
+    my @userinfo = Rex::User->get()->get_user( $user );
+    $data->{"home"} = $userinfo[11];
     if ( !is_dir( $data->{"home"}."/.ssh" ) ) {
 
       eval {
@@ -203,13 +205,25 @@ sub create_user {
     if ( !is_file( $data->{"home"}."/.ssh/rex" ) ) {
 
       eval {
-       "ssh-keygen -b 2048 -t rsa -q -N '' -f ".$data->{"home"}."/.ssh/rex";
+        run "ssh-keygen -b 2048 -t rsa -q -N '' -f ".$data->{"home"}."/.ssh/rex";
       } or do {
 
         # error creating .ssh directory
         Rex::Logger::debug(
           "Not creating .ssh directory because parent doesn't exists.");
       };
+      eval{
+        file $data->{"home"} . "/.ssh/rex", owner   => $user, mode    => 600 ;
+      } or do {
+        Rex::Logger::debug(
+          "Error while changing file permission");
+      };
+      eval{
+        file $data->{"home"} . "/.ssh/rex.pub", owner   => $user;
+        } or do {
+          Rex::Logger::debug(
+          "Error while changing file permission");
+      };  
     }
     
   }

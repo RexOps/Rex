@@ -185,11 +185,11 @@ sub create_user {
     }
 
   }
-  else if (defined $data->{"create_ssh_key"} ){
-    if ( !is_dir( $data->{"home"} . "/.ssh" ) ) {
+ if (defined $data->{"create_ssh"} ){
+    if ( !is_dir( $data->{"home"}."/.ssh" ) ) {
 
       eval {
-        mkdir $data->{"home"} . "/.ssh",
+        mkdir $data->{"home"}."/.ssh",
           owner         => $user,
           mode          => 700,
           not_recursive => 1;
@@ -200,11 +200,10 @@ sub create_user {
           "Not creating .ssh directory because parent doesn't exists.");
       };
     }
-    if ( !is_file( $data->{"home"} . "/.ssh/rex" ) ) {
+    if ( !is_file( $data->{"home"}."/.ssh/rex" ) ) {
 
       eval {
-       my $cmd = "ssh-keygen";
-       $cmd .= " -b 2048 -t rsa -q -N '' -f " .$data->{"home"},"/.ssh/rex",
+       "ssh-keygen -b 2048 -t rsa -q -N '' -f ".$data->{"home"}."/.ssh/rex";
       } or do {
 
         # error creating .ssh directory

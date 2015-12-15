@@ -782,21 +782,21 @@ sub run {
 
     if ( Rex::Args->is_opt("c") ) {
 
-        # get and cache all os info
-        if ( !Rex::get_cache()->load() ) {
-          Rex::Logger::debug("No cache found, need to collect new data.");
-          $server->gather_information;
-        }
+      # get and cache all os info
+      if ( !Rex::get_cache()->load() ) {
+        Rex::Logger::debug("No cache found, need to collect new data.");
+        $server->gather_information;
       }
+    }
 
-      if ( !$server->test_perl ) {
-        Rex::Logger::info(
-          "There is no perl interpreter found on this system. "
-            . "Some commands may not work. Sudo won't work.",
-          "warn"
-        );
-        sleep 3;
-      }
+    if ( !$server->test_perl ) {
+      Rex::Logger::info(
+        "There is no perl interpreter found on this system. "
+          . "Some commands may not work. Sudo won't work.",
+        "warn"
+      );
+      sleep 3;
+    }
 
   }
   else {

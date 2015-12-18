@@ -25,3 +25,4 @@ vars.db
 vars.db.lock
 .includepath
 .project
+tmp/

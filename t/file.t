@@ -44,7 +44,7 @@ file(
 );
 
 my %stats = Rex::Commands::Fs::stat($filename);
-if ( is_windows() && !can_run('chmod') ) {
+if ( is_windows() && $^O ne "cygwin" ) {
   is( $stats{mode}, "0666", "windows without chmod" );
 }
 else {

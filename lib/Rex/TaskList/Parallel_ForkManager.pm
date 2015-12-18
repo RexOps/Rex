@@ -91,7 +91,7 @@ sub run {
         task      => $task_name,
         server    => $server->to_s,
         exit_code => $exit_code,
-        };
+        } unless $task->parent;
 
       $fm->finish;
     }

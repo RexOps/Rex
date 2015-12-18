@@ -43,7 +43,7 @@ sub start {
       task      => $self->{task}->name,
       server    => $self->{server},
       exit_code => $exit_code,
-      };
+      } unless $self->{task}->parent;
 
     $self->{'running'} = 0;
     exit();

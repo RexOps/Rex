@@ -21,6 +21,7 @@ subtest "distributor => 'Base'" => sub {
       task1 => { server => '<local>', task => 'task1', exit_code => 0 },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
+      task4 => { server => '<local>', task => 'task4', exit_code => 1 },
     );
   };
 
@@ -32,6 +33,7 @@ subtest "distributor => 'Base'" => sub {
       task1 => { server => '<local>', task => 'task1', exit_code => 2 },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
+      task4 => { server => '<local>', task => 'task4', exit_code => 1 },
     );
   };
 };
@@ -49,6 +51,7 @@ SKIP: {
         task1 => { server => '<local>', task => 'task1', exit_code => 0 },
         task2 => { server => '<local>', task => 'task2', exit_code => 0 },
         task3 => { server => '<local>', task => 'task3', exit_code => 1 },
+        task4 => { server => '<local>', task => 'task4', exit_code => 1 },
       );
     };
 
@@ -60,6 +63,7 @@ SKIP: {
         task1 => { server => '<local>', task => 'task1', exit_code => 2 },
         task2 => { server => '<local>', task => 'task2', exit_code => 0 },
         task3 => { server => '<local>', task => 'task3', exit_code => 1 },
+        task4 => { server => '<local>', task => 'task4', exit_code => 1 },
       );
     };
   };
@@ -83,11 +87,14 @@ sub create_tasks {
     run $cmd;
   };
 
-  desc "desc 3";
+  desc "desc 3"; # test do_task() in a transaction
   task "task3" => sub {
-    transaction {
-      do_task qw/task0/;
-    };
+    transaction { do_task qw/task0/ };
+  };
+
+  desc "desc 4"; # test do_task()
+  task "task4" => sub {
+    do_task qw/task0/;
   };
 }
 

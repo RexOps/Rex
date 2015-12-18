@@ -724,6 +724,7 @@ sub get_data {
     connection_type => $self->{connection_type},
     opts            => $self->{opts},
     args            => $self->{args},
+    parent          => $self->{parent},
   };
 }
 
@@ -954,6 +955,13 @@ sub set_opts {
 sub clone {
   my $self = shift;
   return Rex::Task->new( %{ $self->get_data } );
+}
+
+sub parent {
+  my ($self, $parent) = @_;
+  $self->{parent} = $parent if $parent;
+  return $self->{parent};
+
 }
 
 1;

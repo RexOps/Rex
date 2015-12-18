@@ -45,32 +45,31 @@ Create a filesystem on device $devname.
 =cut
 
 sub mkfs {
-    my ( $devname, %option ) = @_;
+  my ( $devname, %option ) = @_;
 
-    my $add_opts = "";
+  my $add_opts = "";
 
-    if ( exists $option{label} || exists $option{lable} ) {
-        my $label = $option{label} || $option{lable};
-        $add_opts .= " -L $label ";
+  if ( exists $option{label} || exists $option{lable} ) {
+    my $label = $option{label} || $option{lable};
+    $add_opts .= " -L $label ";
+  }
+
+  if ( exists $option{fstype} ) {
+    if ( $option{fstype} eq "swap" ) {
+      Rex::Logger::info("Creating swap space on /dev/$devname");
+      run "mkswap $add_opts -f /dev/$devname";
     }
+    elsif ( can_run("mkfs.$option{fstype}") ) {
+      Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$devname");
 
-    if ( exists $option{fstype} ) {
-        if ( $option{fstype} eq "swap" ) {
-            Rex::Logger::info("Creating swap space on /dev/$devname");
-            run "mkswap $add_opts -f /dev/$devname";
-        }
-        elsif ( can_run("mkfs.$option{fstype}") ) {
-            Rex::Logger::info(
-                "Creating filesystem $option{fstype} on /dev/$devname");
-
-            run "mkfs.$option{fstype} $add_opts /dev/$devname";
-        }
+      run "mkfs.$option{fstype} $add_opts /dev/$devname";
     }
-    else {
-        croak("Can't format partition with $option{fstype}");
-    }
+  }
+  else {
+    croak("Can't format partition with $option{fstype}");
+  }
 
-    return;
+  return;
 }
 
 1;

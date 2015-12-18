@@ -227,7 +227,7 @@ sub partition {
   }
 
   mkfs "$disk$part_num";
-  
+
   if ( exists $option{mount} && $option{mount} ) {
     mount "/dev/$disk$part_num", $mountpoint, fs => $option{fstype};
   }

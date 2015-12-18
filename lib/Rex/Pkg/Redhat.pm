@@ -79,6 +79,14 @@ sub add_repository {
   my $name = $data{"name"};
   my $desc = $data{"description"} || $data{"name"};
 
+  if ( exists $data{"key_url"} ) {
+    i_run "rpm --import $data{key_url}";
+  }
+
+  if ( exists $data{"key_file"} ) {
+    i_run "rpm --import $data{key_file}";
+  }
+
   my $fh = file_write "/etc/yum.repos.d/$name.repo";
 
   $fh->write("# This file is managed by Rex\n");

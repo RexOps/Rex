@@ -1304,6 +1304,7 @@ Require:
 -M Rex::Commands::Fs
 -M Rex::Commands::Host
 -M Rex::Commands::SCM
+-M Rex::Commands::Mkfs
 -M Rex::Service
 -M Rex::Pkg
 -M Rex::Cron::Linux

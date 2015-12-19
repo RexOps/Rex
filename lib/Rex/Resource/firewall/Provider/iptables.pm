@@ -31,8 +31,10 @@ sub present {
 
   my @iptables_rule = ();
 
-  $rule_config->{dport} ||= $rule_config->{port};
-  $rule_config->{proto} ||= 'tcp';
+  $rule_config->{dport}      ||= $rule_config->{port};
+  $rule_config->{proto}      ||= 'tcp';
+  $rule_config->{chain}      ||= 'INPUT';
+  $rule_config->{ip_version} ||= -4;
 
   if ( $rule_config->{source}
     && $rule_config->{source} !~ m/\/(\d+)$/
@@ -75,8 +77,14 @@ sub present {
   push( @iptables_rule, j => uc( $rule_config->{action} ) )
     if ( defined $rule_config->{action} );
 
-  if ( !Rex::Commands::Iptables::_rule_exists(@iptables_rule) ) {
-    iptables(@iptables_rule);
+  if (
+    !Rex::Commands::Iptables::_rule_exists(
+      $rule_config->{ip_version},
+      @iptables_rule
+    )
+    )
+  {
+    iptables( $rule_config->{ip_version}, @iptables_rule );
     return 1;
   }
 
@@ -90,6 +98,9 @@ sub absent {
 
   $rule_config->{dport} ||= $rule_config->{port};
   $rule_config->{proto} ||= 'tcp';
+  $rule_config->{chain} ||= 'INPUT';
+
+  $rule_config->{ip_version} ||= -4;
 
   if ( $rule_config->{source}
     && $rule_config->{source} !~ m/\/(\d+)$/
@@ -132,11 +143,14 @@ sub absent {
   push( @iptables_rule, j => uc( $rule_config->{action} ) )
     if ( defined $rule_config->{action} );
 
-  my @test_rule = @iptables_rule;
-  $test_rule[0] = "A";
-
-  if ( Rex::Commands::Iptables::_rule_exists(@test_rule) ) {
-    iptables(@iptables_rule);
+  if (
+    Rex::Commands::Iptables::_rule_exists(
+      $rule_config->{ip_version},
+      @iptables_rule
+    )
+    )
+  {
+    iptables( $rule_config->{ip_version}, @iptables_rule );
     return 1;
   }
 

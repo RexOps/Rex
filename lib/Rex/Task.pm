@@ -636,6 +636,10 @@ sub connect {
     }
   );
 
+  push @{ Rex::get_current_connection()->{task} }, $self;
+
+  $self->run_hook( \$server, "before" );
+
   $profiler->start("connect");
   eval {
     $self->connection->connect(%connect_hash);
@@ -701,6 +705,10 @@ sub disconnect {
   }
 
   delete $self->{connection};
+
+  $self->run_hook( \$server, "after" );
+
+  pop @{ Rex::get_current_connection()->{task} };
 
   # need to get rid of this
   Rex::pop_connection();
@@ -769,8 +777,6 @@ sub run {
 
     $in_transaction = $options{in_transaction};
 
-    $self->run_hook( \$server, "before" );
-
     eval { $self->connect($server) };
     if ($@) {
       my $error = $@;
@@ -778,8 +784,6 @@ sub run {
       $self->run_hook( \$server, "after" );
       die $error;
     }
-
-    push @{ Rex::get_current_connection()->{task} }, $self;
 
     if ( Rex::Args->is_opt("c") ) {
 
@@ -855,11 +859,13 @@ sub run {
 
     Rex::get_current_connection()->{reporter}->write_report();
 
-    pop @{ Rex::get_current_connection()->{task} };
-
-    $self->disconnect($server) unless ($in_transaction);
-    $self->run_hook( \$server, "after" );
-
+    if ($in_transaction) {
+      $self->run_hook( \$server, "around", 1 );
+      $self->run_hook( \$server, "after" );
+    }
+    else {
+      $self->disconnect($server);
+    }
   }
   else {
     pop @{ Rex::get_current_connection()->{task} };

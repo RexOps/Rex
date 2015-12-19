@@ -153,4 +153,11 @@ sub is_opt {
   }
 }
 
+sub get {
+  my ($class) = @_;
+
+  my $task = Rex::Commands::task();
+  return $task->get_opts();
+}
+
 1;

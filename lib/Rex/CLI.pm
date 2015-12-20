@@ -678,10 +678,49 @@ sub load_rexfile {
   }
 
   # load Rexfile
-  eval { require $rexfile };
+  eval {
+    unshift @INC, sub {
+      my $load_file = $_[1];
+      if ( $load_file eq $rexfile ) {
+        open( my $fh, "<", $rexfile ) or die("Error can't open $rexfile: $!");
+        my @content = <$fh>;
+        close($fh);
+        chomp @content;
+
+        push @content, "42;"; # add a true return value at the end of $rexfile.
+          # we need to do this because perl want a "true" value
+          # at the end of a file that is loaded.
+
+        shift @INC; # remove this loader from @INC
+
+        return \join( "\n", @content );
+      }
+    };
+
+    my ( $stdout, $stderr );
+
+    # we close STDERR here because we don't want to see the
+    # normal perl error message on the screen. Instead we print
+    # the error message in the catch-if below.
+    local *STDERR;
+    open( STDERR, ">>", \$stderr );
+
+    require $rexfile;
+  };
+
   if ($@) {
-    chomp $@;
-    Rex::Logger::info( "Compile time errors:\n$@", 'error' );
+    my $e = $@;
+    chomp $e;
+
+    # remove the strange path to the Rexfile which exists because
+    # we load the Rexfile via our custom code block.
+    $e =~ s|/loader/[^/]+/||smg;
+
+    my @lines = split( $/, $e );
+
+    Rex::Logger::info( "Compile time errors:", 'error' );
+    Rex::Logger::info( "\t$_", 'error' ) for @lines;
+
     exit 1;
   }
 }

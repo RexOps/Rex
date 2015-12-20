@@ -41,9 +41,11 @@ sub report {
     $option{message} = "Resource already up-to-date.";
   }
 
-  #  push @{$self->{__reports__}}, $msg;
-  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{changed} =
-    $option{changed} || 0;
+  # update all stacked resources
+
+  for my $res ( @{ $self->{__current_resource__} } ) {
+    $self->{__reports__}->{$res}->{changed} = $option{changed} || 0;
+  }
 
   push
     @{ $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{messages}

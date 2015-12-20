@@ -1,4 +1,0 @@
-Install (R)?ex with 2 easy steps:
-
- dzil listdeps --missing | cpanm
- dzil install

@@ -1,2 +1,0 @@
-3: eth1: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN qlen 1000
-    link/ether 00:1c:42:73:ad:3c brd ff:ff:ff:ff:ff:ff

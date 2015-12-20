@@ -1,7 +1,0 @@
-ppp0      Link encap:Point-to-Point Protocol
-          inet addr:123.117.251.17  P-t-P:234.165.249.179  Mask:255.255.255.255
-          UP POINTOPOINT RUNNING NOARP MULTICAST  MTU:1454  Metric:1
-          RX packets:4143329786 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:754829057 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:3
-          RX bytes:1171440390 (1.0 GiB)  TX bytes:121847007 (116.2 MiB)

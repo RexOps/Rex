@@ -1,3 +1,0 @@
-2: wlp2s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP qlen 1000
-    link/ether aa:bb:cc:dd:ee:ff brd ff:ff:ff:ff:ff:ff
-    inet 10.20.30.40/24 brd 10.20.30.255 scope global wlp2s0

@@ -177,7 +177,8 @@ sub template {
       $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
     }
     elsif ( $file =~ m/^\@/ ) {
-      my @caller    = caller(0);
+      my @caller = caller(0);
+
       my $file_path = Rex::get_module_path( $caller[0] );
 
       if ( !-f $file_path ) {
@@ -194,7 +195,11 @@ sub template {
         elsif ( -f $caller[1] ) {
           $file_path = $caller[1];
         }
+        elsif ( $caller[1] =~ m|^/loader/[^/]+/__Rexfile__.pm$| ) {
+          $file_path = $INC{"__Rexfile__.pm"};
+        }
       }
+
       my $file_content = eval { local ( @ARGV, $/ ) = ($file_path); <>; };
       my ($data) = ( $file_content =~ m/.*__DATA__(.*)/ms );
       my $fp = Rex::File::Parser::Data->new( data => [ split( /\n/, $data ) ] );

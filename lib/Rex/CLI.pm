@@ -679,17 +679,37 @@ sub load_rexfile {
 
   # load Rexfile
   eval {
+
+    # add a true return value at the end of $rexfile.
+    # we need to do this because perl want a "true" value
+    # at the end of a file that is loaded.
     unshift @INC, sub {
       my $load_file = $_[1];
-      if ( $load_file eq $rexfile ) {
+      if ( $load_file eq "__Rexfile__.pm" ) {
         open( my $fh, "<", $rexfile ) or die("Error can't open $rexfile: $!");
         my @content = <$fh>;
         close($fh);
         chomp @content;
 
-        push @content, "42;"; # add a true return value at the end of $rexfile.
-          # we need to do this because perl want a "true" value
-          # at the end of a file that is loaded.
+        my $i         = 0;
+        my $found_end = 0;
+
+        # some rexfile has a __DATA__ or __END__ section
+        # and we need to add the true value before those sections.
+        for my $line (@content) {
+          if ( $line =~ m/^__(DATA|END)__$/ ) {
+            splice( @content, $i, 0, "42;" );
+            $found_end++;
+            last;
+          }
+          $i++;
+        }
+
+        # we didn't found __DATA__ or __END__ so we just add
+        # it at the end.
+        if ( $found_end == 0 ) {
+          push @content, "42;";
+        }
 
         shift @INC; # remove this loader from @INC
 
@@ -702,10 +722,16 @@ sub load_rexfile {
     # we close STDERR here because we don't want to see the
     # normal perl error message on the screen. Instead we print
     # the error message in the catch-if below.
-    local *STDERR;
-    open( STDERR, ">>", \$stderr );
+    #local *STDERR;
+    #open( STDERR, ">>", \$stderr );
 
-    require $rexfile;
+    # we can't use $rexfile here, because if the variable contains dots
+    # the perl interpreter try to load the file directly without using @INC
+    # so we just fake a module name.
+    require __Rexfile__;
+
+    # update %INC so that we can later use it to find the rexfile
+    $INC{"__Rexfile__.pm"} = $rexfile;
   };
 
   if ($@) {

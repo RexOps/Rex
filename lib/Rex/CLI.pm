@@ -12,7 +12,7 @@ use warnings;
 # VERSION
 
 use FindBin;
-use File::Basename;
+use File::Basename qw(basename dirname);
 use Time::HiRes qw(gettimeofday tv_interval);
 use Cwd qw(getcwd);
 use List::Util qw(max);
@@ -676,6 +676,9 @@ sub load_rexfile {
     Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
     return;
   }
+
+  my $rexfile_dir = dirname $rexfile;
+  Rex::push_lib_to_inc($rexfile_dir);
 
   # load Rexfile
   eval {

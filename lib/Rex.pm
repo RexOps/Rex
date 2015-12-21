@@ -103,6 +103,22 @@ $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
 
+sub push_lib_to_inc {
+  my $path = shift;
+
+  if ( -d "$path/lib" ) {
+    push( @INC, "$path/lib" );
+    push( @INC, "$path/lib/perl/lib/perl5" );
+    if ( $^O =~ m/^MSWin/ ) {
+      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
+      if ( defined $special_win_path ) {
+        my $mswin32_path = basename $special_win_path;
+        push( @INC, "$path/lib/perl/lib/perl5/$mswin32_path" );
+      }
+    }
+  }
+}
+
 BEGIN {
 
   sub _home_dir {
@@ -123,17 +139,7 @@ BEGIN {
     }
   );
 
-  if ( -d "$cur_dir/lib" ) {
-    push( @INC, "$cur_dir/lib" );
-    push( @INC, "$cur_dir/lib/perl/lib/perl5" );
-    if ( $^O =~ m/^MSWin/ ) {
-      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
-      if ( defined $special_win_path ) {
-        my $mswin32_path = basename $special_win_path;
-        push( @INC, "$cur_dir/lib/perl/lib/perl5/$mswin32_path" );
-      }
-    }
-  }
+  push_lib_to_inc($cur_dir);
 
   my $home_dir = _home_dir();
   if ( -d "$home_dir/.rex/recipes" ) {

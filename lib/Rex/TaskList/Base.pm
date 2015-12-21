@@ -298,7 +298,7 @@ sub run {
   my $all_servers = $task->server;
 
   for my $server (@$all_servers) {
-    my $child_coderef = $self->build_child_coderef($task, $server, %options);
+    my $child_coderef = $self->build_child_coderef( $task, $server, %options );
 
     if ( $self->{IN_TRANSACTION} ) {
 
@@ -321,37 +321,37 @@ sub run {
 }
 
 sub build_child_coderef {
-  my ($self, $task, $server, %options) = @_;
+  my ( $self, $task, $server, %options ) = @_;
 
   return sub {
     Rex::Logger::init();
-    Rex::Logger::info("Running task " . $task->name . " on $server");
+    Rex::Logger::info( "Running task " . $task->name . " on $server" );
 
     my $return_value = eval {
-        $task->clone->run(
-          $server,
-          in_transaction => $self->{IN_TRANSACTION},
-          params         => $options{params},
-          args           => $options{args},
+      $task->clone->run(
+        $server,
+        in_transaction => $self->{IN_TRANSACTION},
+        params         => $options{params},
+        args           => $options{args},
       );
     };
 
-    if ($self->{IN_TRANSACTION}) {
+    if ( $self->{IN_TRANSACTION} ) {
       die $@ if $@;
     }
     else {
       my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
 
-      push @SUMMARY, {
+      push @SUMMARY,
+        {
         task      => $task->name,
         server    => $server->to_s,
         exit_code => $exit_code,
-      };
+        };
     }
 
     Rex::Logger::debug("Destroying all cached os information");
     Rex::Logger::shutdown();
-
 
     return $return_value;
   };

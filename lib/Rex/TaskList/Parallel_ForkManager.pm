@@ -41,7 +41,7 @@ sub run {
   );
 
   for my $server (@$all_servers) {
-    my $child_coderef = $self->build_child_coderef($task, $server, %options);
+    my $child_coderef = $self->build_child_coderef( $task, $server, %options );
 
     if ( $self->{IN_TRANSACTION} ) {
 

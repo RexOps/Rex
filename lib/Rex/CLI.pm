@@ -725,8 +725,8 @@ sub load_rexfile {
     # we close STDERR here because we don't want to see the
     # normal perl error message on the screen. Instead we print
     # the error message in the catch-if below.
-    #local *STDERR;
-    #open( STDERR, ">>", \$stderr );
+    local *STDERR;
+    open( STDERR, ">>", \$stderr );
 
     # we can't use $rexfile here, because if the variable contains dots
     # the perl interpreter try to load the file directly without using @INC

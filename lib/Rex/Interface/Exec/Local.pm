@@ -95,12 +95,20 @@ sub exec {
     $pid = open3( $writer, $reader, $error, $cmd );
 
     while ( my $output = <$reader> ) {
+      if ( $option->{print} ) {
+        chomp(my $print = $output);
+        Rex::Logger::info($print);
+      }
       $out .= $output;
       $self->execute_line_based_operation( $output, $option )
         && goto END_OPEN3;
     }
 
     while ( my $errout = <$error> ) {
+      if ( $option->{print} ) {
+        chomp(my $print = $errout);
+        Rex::Logger::info($print, 'error');
+      }
       $err .= $errout;
       $self->execute_line_based_operation( $errout, $option )
         && goto END_OPEN3;
@@ -111,6 +119,10 @@ sub exec {
   else {
     $pid = open( my $fh, "-|", "$cmd 2>&1" ) or die($!);
     while (<$fh>) {
+      if ( $option->{print} ) {
+        chomp(my $print = $_);
+        Rex::Logger::info($print);
+      }
       $out .= $_;
       $self->execute_line_based_operation( $_, $option )
         && do { kill( 'KILL', $pid ); last };

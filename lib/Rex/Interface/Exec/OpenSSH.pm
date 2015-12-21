@@ -37,6 +37,10 @@ sub _exec {
   ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( { tty => $tty }, $exec );
   while ( my $line = <$out_fh> ) {
     $line =~ s/(\r?\n)$/\n/;
+    if ( $option->{print} ) {
+      chomp(my $print = $line);
+      Rex::Logger::info($print);
+    }
     $out .= $line;
     $self->execute_line_based_operation( $line, $option )
       && do { kill( 'KILL', $pid ); goto END_OPEN };
@@ -44,6 +48,10 @@ sub _exec {
   }
   while ( my $line = <$err_fh> ) {
     $line =~ s/(\r?\n)$/\n/;
+    if ( $option->{print} ) {
+      chomp(my $print = $line);
+      Rex::Logger::info($print, 'error');
+    }
     $err .= $line;
     $self->execute_line_based_operation( $line, $option )
       && do { kill( 'KILL', $pid ); goto END_OPEN };

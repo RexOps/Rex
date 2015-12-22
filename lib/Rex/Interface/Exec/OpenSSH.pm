@@ -51,6 +51,13 @@ sub _exec {
 
 END_OPEN:
   waitpid( $pid, 0 ) or die($!);
+  if ( $ssh->error || $? ) {
+
+    # we need to bitshift $? so that $? contains the right (and for all
+    # connection methods the same) exit code after a run()/i_run() call.
+    # this is for the user, so that he can query $? in his task.
+    $? >>= 8;
+  }
   return ( $out, $err );
 }
 1;

@@ -612,11 +612,20 @@ sub summarize {
   Rex::Logger::info( @failures . " out of " . @summary . " task(s) failed:",
     "error" );
 
-  Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" )
-    foreach sort {
-         ncmp( $a->{task}, $b->{task} )
-      || ncmp( $a->{server}, $b->{server} )
-    } @failures;
+  foreach (
+    sort {
+           ncmp( $a->{task}, $b->{task} )
+        || ncmp( $a->{server}, $b->{server} )
+    } @failures
+    )
+  {
+    Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" );
+    if ( $_->{error_message} ) {
+      for my $line ( split( $/, $_->{error_message} ) ) {
+        Rex::Logger::info( "\t\t$line", "error" );
+      }
+    }
+  }
 }
 
 sub handle_lock_file {

@@ -119,6 +119,11 @@ sub exec {
 
   }
 
+  # we need to bitshift $? so that $? contains the right (and for all
+  # connection methods the same) exit code after a run()/i_run() call.
+  # this is for the user, so that he can query $? in his task.
+  $? >>= 8;
+
   Rex::Logger::debug($out) if ($out);
   if ($err) {
     Rex::Logger::debug("========= ERR ============");

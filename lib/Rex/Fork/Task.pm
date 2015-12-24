@@ -12,11 +12,6 @@ use POSIX ":sys_wait_h";
 
 # VERSION
 
-BEGIN {
-  use Rex::Shared::Var;
-  share qw(@SUMMARY);
-}
-
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
@@ -31,20 +26,12 @@ sub new {
 
 sub start {
   my ($self) = @_;
+
   $self->{'running'} = 1;
-  if ( $self->{pid} = fork ) { return $self->{pid}; }
-  else {
-    $self->{chld} = 1;
+  $self->{pid} = fork;
 
-    eval { $self->{coderef}->($self) };
-    my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
-    push @SUMMARY,
-      {
-      task      => $self->{task}->name,
-      server    => $self->{server},
-      exit_code => $exit_code,
-      };
-
+  if ( !$self->{pid} ) {
+    $self->{coderef}->($self);
     $self->{'running'} = 0;
     exit();
   }

@@ -178,7 +178,8 @@ sub server {
     }
   }
 
-  if ( ref( $self->{server} ) eq "ARRAY" && scalar( @{ $self->{server} } ) > 0 )
+  if ( ref( $self->{server} ) eq "ARRAY"
+    && scalar( @{ $self->{server} } ) > 0 )
   {
     for my $srv ( @{ $self->{server} } ) {
       if ( ref($srv) eq "CODE" ) {
@@ -635,6 +636,10 @@ sub connect {
     }
   );
 
+  push @{ Rex::get_current_connection()->{task} }, $self;
+
+  $self->run_hook( \$server, "before" );
+
   $profiler->start("connect");
   eval {
     $self->connection->connect(%connect_hash);
@@ -700,6 +705,10 @@ sub disconnect {
   }
 
   delete $self->{connection};
+
+  $self->run_hook( \$server, "after" );
+
+  pop @{ Rex::get_current_connection()->{task} };
 
   # need to get rid of this
   Rex::pop_connection();
@@ -768,35 +777,31 @@ sub run {
 
     $in_transaction = $options{in_transaction};
 
-    $self->run_hook( \$server, "before" );
-
-    eval {
-      $self->connect($server);
-      1;
-    } or do {
+    eval { $self->connect($server) };
+    if ($@) {
+      my $error = $@;
       $self->{"__was_authenticated"} = 0;
       $self->run_hook( \$server, "after" );
-      die $@;
-    };
-    push @{ Rex::get_current_connection()->{task} }, $self;
+      die $error;
+    }
 
     if ( Rex::Args->is_opt("c") ) {
 
-        # get and cache all os info
-        if ( !Rex::get_cache()->load() ) {
-          Rex::Logger::debug("No cache found, need to collect new data.");
-          $server->gather_information;
-        }
+      # get and cache all os info
+      if ( !Rex::get_cache()->load() ) {
+        Rex::Logger::debug("No cache found, need to collect new data.");
+        $server->gather_information;
       }
+    }
 
-      if ( !$server->test_perl ) {
-        Rex::Logger::info(
-          "There is no perl interpreter found on this system. "
-            . "Some commands may not work. Sudo won't work.",
-          "warn"
-        );
-        sleep 3;
-      }
+    if ( !$server->test_perl ) {
+      Rex::Logger::info(
+        "There is no perl interpreter found on this system. "
+          . "Some commands may not work. Sudo won't work.",
+        "warn"
+      );
+      sleep 3;
+    }
 
   }
   else {
@@ -854,11 +859,13 @@ sub run {
 
     Rex::get_current_connection()->{reporter}->write_report();
 
-    pop @{ Rex::get_current_connection()->{task} };
-
-    $self->disconnect($server) unless ($in_transaction);
-    $self->run_hook( \$server, "after" );
-
+    if ($in_transaction) {
+      $self->run_hook( \$server, "around", 1 );
+      $self->run_hook( \$server, "after" );
+    }
+    else {
+      $self->disconnect($server);
+    }
   }
   else {
     pop @{ Rex::get_current_connection()->{task} };

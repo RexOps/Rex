@@ -16,6 +16,7 @@ use Rex::Commands;
 
 use Symbol 'gensym';
 use IPC::Open3;
+use IO::Select;
 
 # Use 'parent' is recommended, but from Perl 5.10.1 its in core
 use base 'Rex::Interface::Exec::Base';
@@ -94,17 +95,25 @@ sub exec {
   if ( Rex::Config->get_no_tty ) {
     $pid = open3( $writer, $reader, $error, $cmd );
 
-    while ( my $output = <$reader> ) {
-      $out .= $output;
-      $self->execute_line_based_operation( $output, $option )
-        && goto END_OPEN3;
+    my $selector = IO::Select->new();
+    $selector->add($reader);
+    $selector->add($error);
+
+    my $line;
+
+    while ( my @ready = $selector->can_read ) {
+      foreach my $fh (@ready) {
+        $line = <$fh>;
+        goto END_OPEN3 unless defined $line;
+
+        $out .= $line if $fh == $reader;
+        $err .= $line if $fh == $error;
+
+        $self->execute_line_based_operation( $line, $option )
+          && goto END_OPEN3;
+      }
     }
 
-    while ( my $errout = <$error> ) {
-      $err .= $errout;
-      $self->execute_line_based_operation( $errout, $option )
-        && goto END_OPEN3;
-    }
   END_OPEN3:
     waitpid( $pid, 0 ) or die($!);
   }

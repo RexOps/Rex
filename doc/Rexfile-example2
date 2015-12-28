@@ -1,0 +1,91 @@
+# enable new Features
+
+use Rex -feature => 0.40;
+
+# This example is meant to give you a quick understanding of how 
+# groups of servers work, and also how options can be associated
+# with each server in a group. Here, each server has 
+# a different user and password. The task "checklogdu_weekly" 
+# also uses a server option=>value to determine if the task should
+# be applied. 
+
+# In practice, a BETTER way to define your groups is with
+# an INI file. For more information about that see: 
+# Rex::Group::Lookup::INI
+
+# A group of servers may be stored in a list. 
+
+my @group_a = (
+    "servera1.com" => {
+        user => "usera1",
+        password => "passa1",
+        cldu_schedule=>'weekly',
+        cldu_path=>'/path/to/logs/a1',
+    },
+    "servera2.com" => {
+        user => "usera2",
+        password => "passa2",
+        cldu_schedule=>'monthly',
+        cldu_path=>'/path/to/logs/a2',
+    },
+);
+
+# Here's another list. 
+
+my @group_b = (
+    "serverb1.com" => {
+        user => "userb1",
+        password => "passb1",
+        cldu_schedule=>'weekly',
+        cldu_path=>'/path/to/logs/b1',
+    },
+);
+
+# The lists can be combined.
+
+my @all = (@group_a, @group_b);
+
+set group "all" => @all;
+set group "group_a" => @group_a;
+set group "group_b" => @group_b;
+
+require rex;
+
+task "checklogdu_weekly", group=>"all", sub {
+
+    # The task will iterate over the group list using sub
+
+    my $server=connection->server->name || '';
+
+    my $schedule=connection->server->option("cldu_schedule");
+
+    my $log_path=connection->server->option("cldu_path");
+
+    # Check if the cldu_schedule option is "weekly".
+    # If not, return and move onto the next server 
+    # in the group list.
+
+    if(!($schedule and $schedule eq 'weekly')) {
+        warn "Check Log DU is NOT scheduled weekly for $server\n";
+        return;
+    }
+
+    # Check if we have a log path and if not return and go to 
+    # next server in the group list.
+
+    if(!($log_path)) {
+        warn "... log_path must be defined.\n";
+        return; 
+    }
+
+    print "Server: " . $server ."\n";
+    print "Log path: " . $log_path ."\n";
+
+    say "Check disk usage for log path on [$server]\n===\n";
+
+    run "du -h \'$log_path\'", sub {
+        my ($stdout, $stderr) = @_;
+        say "$stdout\n===\n";
+    };
+
+};

@@ -41,19 +41,28 @@ sub _exec {
   $selector->add($out_fh);
   $selector->add($err_fh);
 
-  my $line;
+  my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
+  my $buffer_size = 1024;
+  if ( exists $rex_int_conf->{read_buffer_size} ) {
+    $buffer_size = $rex_int_conf->{read_buffer_size};
+  }
 
   while ( my @ready = $selector->can_read ) {
     foreach my $fh (@ready) {
-      my $line = <$fh>;
-      goto END_OPEN unless defined $line;
-      $line =~ s/(\r?\n)$/\n/;
+      my $buf;
 
-      $out .= $line if $fh == $out_fh;
-      $err .= $line if $fh == $err_fh;
+      my $len = sysread $fh, $buf, $buffer_size;
+      $selector->remove($fh) unless $len;
 
-      $self->execute_line_based_operation( $line, $option )
-        && do { kill( 'KILL', $pid ); goto END_OPEN };
+      for my $line ( split( /(\r?\n)/, $buf ) ) {
+        $line =~ s/(\r?\n)$/\n/;
+
+        $out .= $line if $fh == $out_fh;
+        $err .= $line if $fh == $err_fh;
+
+        $self->execute_line_based_operation( $line, $option )
+          && do { kill( 'KILL', $pid ); goto END_OPEN };
+      }
     }
   }
 

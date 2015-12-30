@@ -58,7 +58,7 @@ sub exec {
 
   Rex::Commands::profiler()->start("exec: $cmd");
 
-  my $used_shell = $self->_get_shell();
+  my $used_shell = $self->shell;
 
   my $shell;
 
@@ -114,7 +114,7 @@ sub _exec {
   return ( $out, $err );
 }
 
-sub _get_shell {
+sub shell {
   my ($self) = @_;
 
   Rex::Logger::debug("Detecting shell...");

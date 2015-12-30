@@ -58,15 +58,13 @@ sub exec {
 
   Rex::Commands::profiler()->start("exec: $cmd");
 
-  my $used_shell = $self->_get_shell();
-
   my $shell;
 
   if ( $option->{_force_sh} ) {
     $shell = Rex::Interface::Shell->create("Sh");
   }
   else {
-    $shell = Rex::Interface::Shell->create($used_shell);
+    $shell = $self->shell;
   }
 
   $shell->set_locale("C");
@@ -114,7 +112,7 @@ sub _exec {
   return ( $out, $err );
 }
 
-sub _get_shell {
+sub shell {
   my ($self) = @_;
 
   Rex::Logger::debug("Detecting shell...");
@@ -122,7 +120,7 @@ sub _get_shell {
   my $cache = Rex::get_cache();
   if ( $cache->valid("shell") ) {
     Rex::Logger::debug( "Found shell in cache: " . $cache->get("shell") );
-    return $cache->get("shell");
+    return Rex::Interface::Shell->create( $cache->get("shell") );
   }
 
   my %shells = Rex::Interface::Shell->get_shell_provider;
@@ -132,11 +130,11 @@ sub _get_shell {
     if ( $shells{$shell}->detect($self) ) {
       Rex::Logger::debug( "Found shell and using: " . $shell );
       $cache->set( "shell", $shell );
-      return $shell;
+      return Rex::Interface::Shell->create($shell);
     }
   }
 
-  return "sh";
+  return Rex::Interface::Shell->create("sh");
 }
 
 1;

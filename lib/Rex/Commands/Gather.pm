@@ -116,12 +116,14 @@ Will return 1 if the operating system is $string.
 
 sub operating_system_is {
 
-  my ($os) = @_;
+  my (@oses) = @_;
 
   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-  if ( $operatingsystem eq $os ) {
-    return 1;
+  for my $os (@oses) {
+    if ( $operatingsystem eq $os ) {
+      return 1;
+    }
   }
 
   return 0;

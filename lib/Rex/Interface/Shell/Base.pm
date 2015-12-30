@@ -22,6 +22,13 @@ sub new {
   return $self;
 }
 
+sub name {
+  my ($self) = @_;
+  my $class_name = ref $self;
+  my @parts = split( /::/, $class_name );
+  return lc( $parts[-1] );
+}
+
 sub set_environment {
   my ( $self, $env ) = @_;
   $self->{__env__} = $env;

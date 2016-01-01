@@ -112,29 +112,4 @@ sub _exec {
   return ( $out, $err );
 }
 
-sub shell {
-  my ($self) = @_;
-
-  Rex::Logger::debug("Detecting shell...");
-
-  my $cache = Rex::get_cache();
-  if ( $cache->valid("shell") ) {
-    Rex::Logger::debug( "Found shell in cache: " . $cache->get("shell") );
-    return Rex::Interface::Shell->create( $cache->get("shell") );
-  }
-
-  my %shells = Rex::Interface::Shell->get_shell_provider;
-  for my $shell ( keys %shells ) {
-    Rex::Logger::debug( "Searching for shell: " . $shell );
-    $shells{$shell}->require;
-    if ( $shells{$shell}->detect($self) ) {
-      Rex::Logger::debug( "Found shell and using: " . $shell );
-      $cache->set( "shell", $shell );
-      return Rex::Interface::Shell->create($shell);
-    }
-  }
-
-  return Rex::Interface::Shell->create("sh");
-}
-
 1;

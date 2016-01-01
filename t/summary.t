@@ -111,6 +111,11 @@ sub test_summary {
     Rex::TaskList->run($task_name);
     my @summary = Rex::TaskList->create->get_summary;
 
+    # for the tests we remove the error message.
+    for (@summary) {
+      delete $_->{error_message};
+    }
+
     push @expected_summary, $expected{$task_name};
 
     my $test_description =

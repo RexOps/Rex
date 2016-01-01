@@ -24,15 +24,4 @@ sub new {
   return $self;
 }
 
-sub detect {
-  my ( $self, $con ) = @_;
-
-  my ($shell_path) = $con->_exec("echo \$SHELL");
-  if ( $shell_path =~ m/\/tcsh$/ ) {
-    return 1;
-  }
-
-  return 0;
-}
-
 1;

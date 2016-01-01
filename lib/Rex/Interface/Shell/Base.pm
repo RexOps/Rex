@@ -49,4 +49,20 @@ sub set_sudo_env {
   $self->{__sudo_env__} = $sudo_env;
 }
 
+sub detect {
+  my ( $self, $con ) = @_;
+
+  my $shell_class = ref $self;
+  my @parts       = split /::/, $shell_class;
+  my $last_part   = lc( $parts[-1] || "" );
+
+  my ($shell_path) = $con->_exec("echo \$SHELL");
+
+  if ( $shell_path && $shell_path =~ m/\/\Q$last_part\E$/ ) {
+    return 1;
+  }
+
+  return 0;
+}
+
 1;

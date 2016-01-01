@@ -89,7 +89,34 @@ sub exec {
 
   Rex::Logger::debug("Executing: $cmd");
 
-  my ( $writer, $reader, $error );
+  ($out, $err) = $self->_exec($cmd, $option);
+
+  Rex::Logger::debug($out) if ($out);
+  if ($err) {
+    Rex::Logger::debug("========= ERR ============");
+    Rex::Logger::debug($err);
+    Rex::Logger::debug("========= ERR ============");
+  }
+
+  Rex::Commands::profiler()->end("exec: $cmd");
+
+  if (wantarray) { return ( $out, $err ); }
+
+  return $out;
+}
+
+sub can_run {
+  my ( $self, $commands_to_check, $check_with_command ) = @_;
+
+  $check_with_command ||= $^O =~ /^MSWin/i ? 'where' : 'which';
+
+  return $self->SUPER::can_run( $commands_to_check, $check_with_command );
+}
+
+sub _exec {
+  my ($self, $cmd, $option) = @_;
+
+  my ( $pid, $writer, $reader, $error, $out, $err );
   $error = gensym;
 
   if ( Rex::Config->get_no_tty ) {
@@ -132,27 +159,8 @@ sub exec {
   # connection methods the same) exit code after a run()/i_run() call.
   # this is for the user, so that he can query $? in his task.
   $? >>= 8;
-
-  Rex::Logger::debug($out) if ($out);
-  if ($err) {
-    Rex::Logger::debug("========= ERR ============");
-    Rex::Logger::debug($err);
-    Rex::Logger::debug("========= ERR ============");
-  }
-
-  Rex::Commands::profiler()->end("exec: $cmd");
-
-  if (wantarray) { return ( $out, $err ); }
-
-  return $out;
-}
-
-sub can_run {
-  my ( $self, $commands_to_check, $check_with_command ) = @_;
-
-  $check_with_command ||= $^O =~ /^MSWin/i ? 'where' : 'which';
-
-  return $self->SUPER::can_run( $commands_to_check, $check_with_command );
+ 
+  return ($out, $err); 
 }
 
 1;

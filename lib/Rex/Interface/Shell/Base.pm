@@ -57,6 +57,7 @@ sub detect {
   my $last_part   = lc( $parts[-1] || "" );
 
   my ($shell_path) = $con->_exec("echo \$SHELL");
+  $shell_path =~ s/(\r?\n)//gms; # remove unnecessary newlines
 
   if ( $shell_path && $shell_path =~ m/\/\Q$last_part\E$/ ) {
     return 1;

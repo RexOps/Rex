@@ -68,6 +68,36 @@ sub can_run {
   return undef;
 }
 
+sub direct_exec {
+  my ( $self, $exec, $option ) = @_;
+
+  Rex::Commands::profiler()->start("direct_exec: $exec");
+
+  my $class_name = ref $self;
+
+  Rex::Logger::debug("$class_name/executing: $exec");
+  my ( $out, $err ) = $self->_exec( $exec, $option );
+
+  Rex::Commands::profiler()->end("direct_exec: $exec");
+
+  Rex::Logger::debug($out) if ($out);
+  if ($err) {
+    Rex::Logger::debug("========= ERR ============");
+    Rex::Logger::debug($err);
+    Rex::Logger::debug("========= ERR ============");
+  }
+
+  if (wantarray) { return ( $out, $err ); }
+
+  return $out;
+}
+
+sub _exec {
+  my ($self) = @_;
+  my $class_name = ref $self;
+  die("_exec method must be overwritten by class ($class_name).");
+}
+
 sub shell {
   my ($self) = @_;
 

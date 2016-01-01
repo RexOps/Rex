@@ -29,28 +29,6 @@ sub new {
   return $self;
 }
 
-sub direct_exec {
-  my ( $self, $exec, $option ) = @_;
-
-  Rex::Commands::profiler()->start("direct_exec: $exec");
-
-  Rex::Logger::debug("SSH/executing: $exec");
-  my ( $out, $err ) = $self->_exec( $exec, $option );
-
-  Rex::Commands::profiler()->end("direct_exec: $exec");
-
-  Rex::Logger::debug($out) if ($out);
-  if ($err) {
-    Rex::Logger::debug("========= ERR ============");
-    Rex::Logger::debug($err);
-    Rex::Logger::debug("========= ERR ============");
-  }
-
-  if (wantarray) { return ( $out, $err ); }
-
-  return $out;
-}
-
 sub exec {
   my ( $self, $cmd, $path, $option ) = @_;
 

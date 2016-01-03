@@ -222,7 +222,7 @@ sub download_recipe_git {
 
   Rex::Logger::info("Cloning $clone_url to $path. Using branch: $branch.");
 
-  system "git clone $url -b $branch '$path'";
+  system "git", "clone", $url, "-b", $branch, $path;
 
   chdir $path;
   resolve_deps("meta.yml");
@@ -232,7 +232,7 @@ sub download_recipe_local_tar_gz {
   my ($url) = @_;
   $Rex::Logger::silent = 0;
 
-  system "tar xzf $url";
+  system "tar", "xzf", $url;
 
   my $path = basename($url);
   $path =~ s/\.tar\.gz$//;
@@ -384,8 +384,7 @@ sub download_recipe {
   print $fh $content;
   close($fh);
   chdir("lib");
-  system("tar xvzf ../tmp-mod.tar.gz >dl.log 2>&1");
-  unlink("dl.log");
+  system "tar", "xzf", "../tmp-mod.tar.gz";
   chdir("..");
   unlink("tmp-mod.tar.gz");
 
@@ -458,11 +457,11 @@ sub resolve_deps {
         }
 
         if ( -d "$path/.git" ) {
-          system "rm -rf '$path'";
+          rmdir $path;
         }
 
         Rex::Logger::info("Cloning $deps{$req}->{git}#$branch to $path");
-        system "git clone $deps{$req}->{git} -b $branch '$path'";
+        system "git", "clone", $deps{$req}->{git}, "-b", $branch, $path;
         resolve_deps("$path/meta.yml");
       }
     }
@@ -497,13 +496,13 @@ sub resolve_deps {
         }
 
         Rex::Logger::info("Cloning $perl_deps{$req}->{git}#$branch to $path");
-        system "git clone $perl_deps{$req}->{git} -b $branch '$path'";
+        system "git", "clone", $perl_deps{$req}->{git}, "-b", $branch, $path;
 
         chdir $path;
-        system "cpanm -l '$lib_path' .";
+        system "cpanm", "-l", $lib_path, ".";
         chdir $curdir;
 
-        system "rm -rf '$path'";
+        rmdir $path;
       }
     }
     else {
@@ -512,7 +511,7 @@ sub resolve_deps {
 
       eval "use $req";
       if ($@) {
-        system "cpanm -l '$lib_path' $req";
+        system "cpanm", "-l", $lib_path, $req;
       }
     }
   }

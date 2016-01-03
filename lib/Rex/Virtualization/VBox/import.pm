@@ -24,6 +24,9 @@ sub execute {
   my $dom = $arg1;
   Rex::Logger::debug( "importing: $dom -> " . $opt{file} );
 
+  $opt{cpus}   ||= 1;
+  $opt{memory} ||= 512;
+
   my $add_cmd = "";
 
   if ( exists $opt{cpus} ) {

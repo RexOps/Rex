@@ -89,7 +89,7 @@ sub exec {
 
   Rex::Logger::debug("Executing: $cmd");
 
-  ($out, $err) = $self->_exec($cmd, $option);
+  ( $out, $err ) = $self->_exec( $cmd, $option );
 
   Rex::Logger::debug($out) if ($out);
   if ($err) {
@@ -114,7 +114,7 @@ sub can_run {
 }
 
 sub _exec {
-  my ($self, $cmd, $option) = @_;
+  my ( $self, $cmd, $option ) = @_;
 
   my ( $pid, $writer, $reader, $error, $out, $err );
   $error = gensym;
@@ -159,8 +159,8 @@ sub _exec {
   # connection methods the same) exit code after a run()/i_run() call.
   # this is for the user, so that he can query $? in his task.
   $? >>= 8;
- 
-  return ($out, $err); 
+
+  return ( $out, $err );
 }
 
 1;

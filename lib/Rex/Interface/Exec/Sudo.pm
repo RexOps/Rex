@@ -216,8 +216,8 @@ sub _exec {
   else {
     $exec = Rex::Interface::Exec->create("Local");
   }
-  
-  return $exec->_exec($cmd, $option);
+
+  return $exec->_exec( $cmd, $option );
 }
 
 1;

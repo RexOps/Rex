@@ -341,7 +341,7 @@ sub build_child_coderef {
     }
     else {
       my $e = $@;
-      my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
+      my $exit_code = $@ ? ( $? || 1 ) : 0;
 
       push @SUMMARY,
         {

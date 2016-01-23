@@ -246,7 +246,7 @@ sub lvcreate {
 
   my $lv_path = $option{onvg} . "/" . $lvname;
 
-  mkfs "$lv_path";
+  mkfs "$lv_path", fstype => $option{fstype};
 
   if ( $? != 0 ) {
     die("Error creating lv.\n$s\n");

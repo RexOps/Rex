@@ -266,7 +266,7 @@ sub partition {
     sleep 1;
   }
 
-  mkfs "$disk$part_num";
+  mkfs "$disk$part_num", fstype => $option{fstype}, label => $option{label};
 
   if ( exists $option{mount} && $option{mount} ) {
     mount "/dev/$disk$part_num", $mountpoint, fs => $option{fstype};

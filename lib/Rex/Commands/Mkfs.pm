@@ -58,7 +58,9 @@ sub mkfs {
     return;
   }
 
-  if ( exists $option{label} || exists $option{lable} ) {
+  if ( ( exists $option{label} && $option{label} )
+    || ( exists $option{lable} && $option{lable} ) )
+  {
     my $label = $option{label} || $option{lable};
     $add_opts .= " -L $label ";
   }

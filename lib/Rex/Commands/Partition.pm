@@ -106,37 +106,77 @@ sub clearpart {
 
 =head2 partition($mountpoint, %option)
 
-Create a partition with mountpoint $mountpoint.
+Create a partition with the specified parameters:
+
+=over 4
+
+=item ondisk
+
+The disk to be partitioned. Mandatory.
+
+=item size
+
+Desired size of the partition in MB. It is mandatory to pass either a C<size> or a C<grow> parameter (but not both).
+
+=item grow
+
+If C<TRUE>, then the partition will take up all the available space on the disk. It is mandatory to pass either a C<grow> or a C<size> parameter (but not both).
+
+=item type
+
+Partition type to be passed to C<parted>'s C<mkpart> command. Optional, defaults to C<primary>.
+
+=boot
+
+Sets boot flag on the partition if C<TRUE>. Optional, no boot flag is set by default.
+
+=item fstype
+
+Create a filesystem after creating the partition. Optional, no filesystem is created by default.
+
+=item label
+
+Label to be used with the filesystem. Optional, defaults to no label.
+
+=mount
+
+If C<TRUE>, try to mount the partition after creating it. Optional, no mount is attempted by default.
+
+=mount_persistent
+
+If C<TRUE>, try to mount the partition after creating it, and also register it in C</etc/fstab>. Optional, no mount or C</etc/fstab> manipulation is attempted by default.
+
+=vg
+
+Creates an LVM PV, then creates the specifed LVM VG (or extends it, if the VG already exists). Needs C<ondisk>.
+
+=back
+
+Examples:
 
  partition "/",
-   fstype  => "ext3",
+   fstype => "ext3",
    size   => 15000,
-   ondisk  => "sda",
+   ondisk => "sda",
    type   => "primary";
  
  partition "none",
-   type  => "extended",
+   type   => "extended",
    ondisk => "sda",
-   grow  => 1,
+   grow   => 1,
    mount  => TRUE,
  
  partition "swap",
    fstype => "swap",
-   type  => "logical",
+   type   => "logical",
    ondisk => "sda",
-   size  => 8000;
- 
- partition "none",
-   lvm   => 1,
-   type  => "primary",
-   size  => 15000,
-   ondisk => "vda";
- 
+   size   => 8000;
+
  partition "/",
    fstype => "ext3",
-   size  => 10000,
-   onvg  => "vg0";
-
+   size   => 10000,
+   ondisk => "sda",
+   vg     => "vg0";
 
 =cut
 

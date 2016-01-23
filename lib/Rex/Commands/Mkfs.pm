@@ -53,6 +53,11 @@ sub mkfs {
     croak("Missing or undefined fstype.");
   }
 
+  if ( grep { $option{fstype} eq $_ } ( "non-fs", "none", "" ) ) {
+    Rex::Logger::debug("Skip creating a filesystem of type '$option{fstype}'");
+    return;
+  }
+
   if ( exists $option{label} || exists $option{lable} ) {
     my $label = $option{label} || $option{lable};
     $add_opts .= " -L $label ";

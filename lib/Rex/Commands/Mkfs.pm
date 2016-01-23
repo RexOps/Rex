@@ -49,24 +49,23 @@ sub mkfs {
 
   my $add_opts = "";
 
+  unless ( exists $option{fstype} && defined $option{fstype} ) {
+    croak("Missing or undefined fstype.");
+  }
+
   if ( exists $option{label} || exists $option{lable} ) {
     my $label = $option{label} || $option{lable};
     $add_opts .= " -L $label ";
   }
 
-  if ( exists $option{fstype} ) {
-    if ( $option{fstype} eq "swap" ) {
-      Rex::Logger::info("Creating swap space on /dev/$devname");
-      run "mkswap $add_opts -f /dev/$devname";
-    }
-    elsif ( can_run("mkfs.$option{fstype}") ) {
-      Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$devname");
-
-      run "mkfs.$option{fstype} $add_opts /dev/$devname";
-    }
+  if ( $option{fstype} eq "swap" ) {
+    Rex::Logger::info("Creating swap space on /dev/$devname");
+    run "mkswap $add_opts -f /dev/$devname";
   }
-  else {
-    croak("Can't format partition with $option{fstype}");
+  elsif ( can_run("mkfs.$option{fstype}") ) {
+    Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$devname");
+
+    run "mkfs.$option{fstype} $add_opts /dev/$devname";
   }
 
   return;

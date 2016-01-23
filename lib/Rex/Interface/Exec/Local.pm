@@ -126,18 +126,30 @@ sub _exec {
     $selector->add($reader);
     $selector->add($error);
 
-    my $line;
+    my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
+    my $buffer_size = 1024;
+    if ( exists $rex_int_conf->{read_buffer_size} ) {
+      $buffer_size = $rex_int_conf->{read_buffer_size};
+    }
 
     while ( my @ready = $selector->can_read ) {
       foreach my $fh (@ready) {
-        $line = <$fh>;
-        goto END_OPEN3 unless defined $line;
+        my $buf;
 
-        $out .= $line if $fh == $reader;
-        $err .= $line if $fh == $error;
+        my $len = sysread $fh, $buf, $buffer_size;
+        $selector->remove($fh) unless $len;
 
-        $self->execute_line_based_operation( $line, $option )
-          && goto END_OPEN3;
+        for my $line ( split( /(\r?\n)/, $buf ) ) {
+          $line =~ s/(\r?\n)$/\n/;
+
+          goto END_OPEN3 unless defined $line;
+
+          $out .= $line if $fh == $reader;
+          $err .= $line if $fh == $error;
+
+          $self->execute_line_based_operation( $line, $option )
+            && goto END_OPEN3;
+        }
       }
     }
 

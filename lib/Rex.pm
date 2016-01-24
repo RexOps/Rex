@@ -78,7 +78,7 @@ use warnings;
 
 # development version if this variable is not set
 if ( !$Rex::VERSION ) {
-  $Rex::VERSION = "9999.99.99";
+  $Rex::VERSION = "9999.99.99_99";
 }
 
 BEGIN {
@@ -575,18 +575,23 @@ sub import {
 
       if ( $add =~ m/^(\d+\.\d+)$/ ) {
         my $vers = $1;
-        my $_ver = $Rex::VERSION;
-        $_ver =~ s/_\d+$//; # remove rc info
+        my ( $major, $minor, $patch, $dev_release ) =
+          $Rex::VERSION =~ m/^(\d+)\.(\d+)\.(\d+)_?(\d+)?$/;
 
-        my ( $major, $minor, $patch ) = split( /\./, $_ver );
         my ( $c_major, $c_minor ) = split( /\./, $vers );
 
-        if ( ( $c_major > $major )
+        if ( defined $dev_release && $c_major == $major && $c_minor > $minor ) {
+          Rex::Logger::info(
+            "This is development release $Rex::VERSION of Rex. Enabling experimental feature flag for $vers.",
+            "warn"
+          );
+        }
+        elsif ( ( $c_major > $major )
           || ( $c_major >= $major && $c_minor > $minor ) )
         {
           Rex::Logger::info(
             "This Rexfile tries to enable features that are not supported with your version. Please update.",
-            "warn"
+            "error"
           );
           exit 1;
         }

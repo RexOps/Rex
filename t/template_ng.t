@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 20;
+use Test::More tests => 21;
 use Rex::Template::NG;
 use Rex::Commands;
 use Rex::Config;
@@ -71,6 +71,12 @@ is( $t->parse( $content, { foo => "baz" } ), "Hello this is baz",
 $content = '<%= join(",", @{ $arr }) %>';
 is( $t->parse( $content, { arr => [qw/one two three/] } ),
   "one,two,three", "local var with array" );
+
+$content = 'This is a false value: <%= $value %>';
+
+$content_ok = 'This is a false value: 0';
+
+is( $t->parse( $content, value => 0 ), $content_ok, 'false value passed' );
 
 #
 # old variable style

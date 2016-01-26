@@ -17,7 +17,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Cloud::Base;
-use Rex::Cloud::Amazon::Sign;
+use AWS::Signature4;
 use HTTP::Request::Common;
 
 use base qw(Rex::Cloud::Base);
@@ -54,7 +54,7 @@ sub new {
 
 sub signer {
   my ($self) = @_;
-  return Rex::Cloud::Amazon::Sign->new(
+  return AWS::Signature4->new(
     -access_key => $self->{__access_key},
     -secret_key => $self->{__secret_access_key}
   );

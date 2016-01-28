@@ -144,4 +144,8 @@ resource "firewall", { export => 1 }, sub {
 
 };
 
+=back
+
+=cut
+
 1;

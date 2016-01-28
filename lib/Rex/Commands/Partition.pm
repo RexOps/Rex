@@ -126,7 +126,7 @@ If C<TRUE>, then the partition will take up all the available space on the disk.
 
 Partition type to be passed to C<parted>'s C<mkpart> command. Optional, defaults to C<primary>.
 
-=boot
+=item boot
 
 Sets boot flag on the partition if C<TRUE>. Optional, no boot flag is set by default.
 
@@ -138,15 +138,15 @@ Create a filesystem after creating the partition. Optional, no filesystem is cre
 
 Label to be used with the filesystem. Optional, defaults to no label.
 
-=mount
+=item mount
 
 If C<TRUE>, try to mount the partition after creating it. Optional, no mount is attempted by default.
 
-=mount_persistent
+=item mount_persistent
 
 If C<TRUE>, try to mount the partition after creating it, and also register it in C</etc/fstab>. Optional, no mount or C</etc/fstab> manipulation is attempted by default.
 
-=vg
+=item vg
 
 Creates an LVM PV, then creates the specifed LVM VG (or extends it, if the VG already exists). Needs C<ondisk>.
 

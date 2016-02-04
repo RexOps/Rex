@@ -59,10 +59,12 @@ use strict;
 use warnings;
 
 # VERSION
-require Rex::Exporter;
+
 use Data::Dumper;
 
-use Rex -base;
+use Rex -minimal;
+
+use Rex::Commands::Gather;
 use Rex::Resource::Common;
 
 use Carp;

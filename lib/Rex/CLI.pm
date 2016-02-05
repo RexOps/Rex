@@ -723,9 +723,15 @@ sub load_rexfile {
           push @content, "42;";
         }
 
-        shift @INC; # remove this loader from @INC
+        # we can't remove this load from @INC because on perl 5.8
+        # this causes a crash
+        #shift @INC; # remove this loader from @INC
 
-        return \join( "\n", @content );
+        # we can't directly return a scalar reference because perl 5.8
+        # needs a filehandle. so we create a virtual filehandle...
+        my $c = join( "\n", @content );
+        open( my $rex_fh, "<", \$c );
+        return $rex_fh;
       }
     };
 

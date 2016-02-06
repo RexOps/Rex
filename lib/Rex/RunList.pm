@@ -32,7 +32,7 @@ sub add_task {
   my ( $self, $task_name, $task_args, $task_opts ) = @_;
   $task_args ||= [];
   $task_opts ||= {};
-  my $task = $self->task_list->get_task($task_name)->clone;
+  my $task = $self->task_list->get_task($task_name);
   $task->set_args(@$task_args);
   $task->set_opts(%$task_opts);
   push @{ $self->{tasks} }, $task;

@@ -331,40 +331,42 @@ sub can_run {
 
 =head2 sudo
 
-Run a command with I<sudo>. Define the password for sudo with I<sudo_password>.
+Run a single command, a code block, or all commands with C<sudo>. You need perl to be available on the remote systems to use C<sudo>.
 
-You can use this function to run one command with sudo privileges or to turn on sudo globally.
+Depending on your remote sudo configuration, you may need to define a sudo password with I<sudo_password> first:
 
- user "unprivuser";
- sudo_password "f00b4r";
- sudo -on;  # turn sudo globally on
+ sudo_password 'my_sudo_password'; # hardcoding
 
- task prepare => sub {
-   install "apache2";
-   file "/etc/ntp.conf",
-     source => "files/etc/ntp.conf",
-     owner  => "root",
-     mode  => 640;
- };
+Or alternatively, since Rexfile is plain perl, you can read the password from terminal at the start:
 
-Or, if you didn't enable sudo globally:
+ use Term::ReadKey;
+ 
+ print 'I need sudo password: ';
+ ReadMode('noecho');
+ sudo_password ReadLine(0);
+ ReadMode('restore');
 
- task prepare => sub {
-   file "/tmp/foo.txt",
-     content => "this file was written without sudo privileges\n";
+Similarly, it is also possible to read it from a secret file, database, etc.
 
-   # everything in this section will be executed with sudo privileges
-   sudo sub {
-     install "apache2";
-     file "/tmp/foo2.txt",
-       content => "this file was written with sudo privileges\n";
-   };
- };
+You can turn sudo on globally with:
 
-Run only one command within sudo.
+ sudo TRUE; # run _everything_ with sudo
 
- task "eth1-down", sub {
-  sudo "ifconfig eth1 down";
+To run only a specific command with sudo, use :
+
+ say sudo 'id';                # passing a remote command directly
+ say sudo { command => 'id' }; # passing anonymous hashref
+ 
+ say sudo { command => 'id', user => 'different' }; # run a single command with sudo as different user
+ 
+ # running a single command with sudo as different user, and `cd` to another directory too
+ say sudo { command => 'id', user => 'different', cwd => '/home/different' };
+
+Passing an anonymous I<coderef> to C<sudo> allows for running the commands in the sub with sudo:
+
+ sudo sub {
+     service 'nginx' => 'restart';
+     say run 'id';
  };
 
 =cut

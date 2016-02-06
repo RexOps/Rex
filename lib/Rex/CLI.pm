@@ -735,7 +735,8 @@ sub load_rexfile {
       }
     };
 
-    my ( $stdout, $stderr );
+    my ( $stdout, $stderr, $default_stderr );
+    open $default_stderr, ">&", STDERR;
 
     # we close STDERR here because we don't want to see the
     # normal perl error message on the screen. Instead we print
@@ -750,6 +751,17 @@ sub load_rexfile {
 
     # update %INC so that we can later use it to find the rexfile
     $INC{"__Rexfile__.pm"} = $rexfile;
+
+    if ($stderr) {
+      local *STDERR;
+      open STDERR, ">&", $default_stderr;
+
+      my @lines = split( $/, $stderr );
+      Rex::Logger::info( "You have some code warnings:", 'warn' );
+      Rex::Logger::info( "\t$_", 'warn' ) for @lines;
+    }
+
+    1;
   };
 
   if ($@) {

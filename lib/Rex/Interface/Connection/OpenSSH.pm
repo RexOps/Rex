@@ -72,7 +72,7 @@ sub connect {
     $server = $1;
     $port   = $2;
   }
-  Rex::Logger::info( "Connecting to $server:$port (" . $user . ")" );
+  Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
 
   my %ssh_opts = Rex::Config->get_openssh_opt();
   Rex::Logger::debug("get_openssh_opt()");
@@ -177,7 +177,7 @@ CONNECT_TRY:
   }
 
   Rex::Logger::debug( "Current Error-Code: " . $self->{ssh}->error() );
-  Rex::Logger::info("Connected and authenticated to $server.");
+  Rex::Logger::debug("Connected and authenticated to $server.");
 
   $self->{connected} = 1;
   $self->{auth_ret}  = 1;

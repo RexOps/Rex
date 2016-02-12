@@ -51,8 +51,14 @@ sub create {
 
 sub run {
   my ( $class, $task_name, %option ) = @_;
-  my $task = $class->create()->get_task($task_name);
+
+  $class = ref $class ? $class : $class->create;
+
+  my $task = ref $task_name ? $task_name : $class->get_task($task_name);
+
+  $class->{__current_task__} = $task;
+
   $_->($task) for @{ $task->{before_task_start} };
-  $class->create->run($task, %option);
+  $class->run( $task, %option );
   $_->($task) for @{ $task->{after_task_finished} };
 }

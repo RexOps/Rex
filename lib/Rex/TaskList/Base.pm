@@ -291,10 +291,12 @@ sub is_task {
   return 0;
 }
 
+sub current_task { shift->{__current_task__} }
+
 sub run {
   my ( $self, $task, %options ) = @_;
 
-  if(! ref $task) {
+  if ( !ref $task ) {
     $task = Rex::TaskList->create()->get_task($task);
   }
 

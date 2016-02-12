@@ -66,9 +66,7 @@ sub run_tasks {
   my ($self) = @_;
 
   for my $task ( $self->tasks ) {
-    $_->($task) for @{ $task->{before_task_start} };
-    $self->task_list->run($task);
-    $_->($task) for @{ $task->{after_task_finished} };
+    Rex::TaskList->run($task);
     $self->increment_current_index;
   }
 }

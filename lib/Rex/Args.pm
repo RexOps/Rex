@@ -156,7 +156,7 @@ sub is_opt {
 sub get {
   my ($class) = @_;
 
-  my $task = Rex::Commands::task();
+  my $task = Rex::TaskList->create->current_task;
   return $task->get_opts();
 }
 

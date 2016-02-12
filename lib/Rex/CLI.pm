@@ -384,10 +384,6 @@ CHECK_OVERWRITE: {
     CORE::exit(0);
   }
 
-  for my $exit_hook (@exit) {
-    $exit_hook->();
-  }
-
   exit_rex();
 }
 
@@ -785,7 +781,7 @@ sub exit_rex {
   my ($exit_code_override) = @_;
 
   summarize();
-
+  
   Rex::global_sudo(0);
   Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
   unlink("$::rexfile.lock") if !exists $opts{'F'};
@@ -795,6 +791,10 @@ sub exit_rex {
   if ( $opts{'o'} && defined( Rex::Output->get ) ) {
     Rex::Output->get->write();
     IPC::Shareable->clean_up_all();
+  }
+
+  for my $exit_hook (@exit) {
+    $exit_hook->();
   }
 
   if ($Rex::WITH_EXIT_STATUS) {

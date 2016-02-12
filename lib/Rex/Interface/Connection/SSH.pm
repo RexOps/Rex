@@ -84,7 +84,7 @@ CON_SSH:
       $fail_connect < Rex::Config->get_max_connect_fails( server => $server ) )
       ; # try connecting 3 times
 
-    Rex::Logger::debug( "Can't connect to $server", "warn" );
+    Rex::Logger::info( "Can't connect to $server", "warn" );
 
     $self->{connected} = 0;
 

@@ -717,7 +717,7 @@ sub connect {
     croak($message);
   }
   else {
-    Rex::Logger::info("Successfully authenticated on $server.")
+    Rex::Logger::debug("Successfully authenticated on $server.")
       if ( $self->connection->get_connection_type ne "Local" );
     $self->{"__was_authenticated"} = 1;
   }

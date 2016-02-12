@@ -294,6 +294,10 @@ sub is_task {
 sub run {
   my ( $self, $task, %options ) = @_;
 
+  if(! ref $task) {
+    $task = Rex::TaskList->create()->get_task($task);
+  }
+
   my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
   my $all_servers = $task->server;
 

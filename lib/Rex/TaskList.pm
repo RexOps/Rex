@@ -50,9 +50,9 @@ sub create {
 }
 
 sub run {
-  my ( $class, $task_name ) = @_;
+  my ( $class, $task_name, %option ) = @_;
   my $task = $class->create()->get_task($task_name);
   $_->($task) for @{ $task->{before_task_start} };
-  $class->create->run($task);
+  $class->create->run($task, %option);
   $_->($task) for @{ $task->{after_task_finished} };
 }

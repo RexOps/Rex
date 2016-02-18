@@ -97,6 +97,7 @@ use vars qw(@EXPORT);
 use Rex::Commands::Sysctl;
 use Rex::Commands::Run;
 use Rex::Commands::Gather;
+use Rex::Commands::Fs;
 use Rex::Helper::Run;
 
 use Rex::Logger;
@@ -497,17 +498,17 @@ Remove all iptables rules.
 sub iptables_clear {
   my @params     = @_;
   my $ip_version = _get_ip_version( \@params );
+  my %tables_of  = (
+    -4 => "/proc/net/ip_tables_names",
+    -6 => "/proc/net/ip6_tables_names",
+  );
 
-  for my $table (qw/nat mangle filter/) {
-
-    # NAT for IPv6 supported by iptables >= v1.4.18
-    next
-      if $table eq "nat"
-      && $ip_version == -6
-      && _iptables_version($ip_version) < v1.4.18;
-
-    iptables $ip_version, t => $table, F => '';
-    iptables $ip_version, t => $table, X => '';
+  if ( is_file("$tables_of{$ip_version}") ) {
+    my @tables = i_run("cat $tables_of{$ip_version}");
+    for my $table (@tables) {
+      iptables $ip_version, t => $table, F => '';
+      iptables $ip_version, t => $table, X => '';
+    }
   }
 
   for my $p (qw/INPUT FORWARD OUTPUT/) {

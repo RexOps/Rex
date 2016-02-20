@@ -328,10 +328,10 @@ sub task {
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
     no strict 'refs';
-    Rex::Logger::debug("Registering task: ${class}::$task_name_save");
+    Rex::Logger::debug("Registering task: $task_name");
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
-      Rex::Logger::info("Running task $task_name_save on current connection");
+      Rex::Logger::info("Running task $task_name on current connection");
       my $param;
 
       if ( scalar @_ == 1 && ref $_[0] eq "HASH" ) {
@@ -348,6 +348,7 @@ sub task {
     };
   }
 
+  $options->{'dont_register'} ||= $dont_register_tasks;
   return $task_o;
 }
 
@@ -690,14 +691,15 @@ You may also use an arrayRef for $task if you want to call multiple tasks.
 
 sub do_task {
   my $task = shift;
+  my $params = shift;
 
   if ( ref($task) eq "ARRAY" ) {
     for my $t ( @{$task} ) {
-      Rex::TaskList->run($t);
+      Rex::TaskList->run($t, ($params ? (params => $params) : ()));
     }
   }
   else {
-    return Rex::TaskList->run($task);
+    return Rex::TaskList->run($task, ($params ? (params => $params) : ()));
   }
 }
 
@@ -1172,7 +1174,7 @@ sub LOCAL (&) {
       ssh      => 0,
       server   => $cur_conn->{server},
       cache    => Rex::Interface::Cache->create(),
-      task     => task(),
+      task     => [task()],
       reporter => Rex::Report->create( Rex::Config->get_report_type ),
       notify   => Rex::Notify->new(),
     }
@@ -1348,7 +1350,7 @@ sub around {
 =head2 before_task_start($task => sub {})
 
 Run code before executing the specified task. This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
-If called repeatedly, each sub will be appended to a list of 'before' functions.
+If called repeatedly, each sub will be appended to a list of 'before_task_start' functions.
 
 Note: must come after the definition of the specified task
 
@@ -1373,7 +1375,7 @@ sub before_task_start {
 =head2 after_task_finished($task => sub {})
 
 Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
-If called repeatedly, each sub will be appended to a list of 'before' functions.
+If called repeatedly, each sub will be appended to a list of 'after_task_finished' functions.
 
 Note: must come after the definition of the specified task
 

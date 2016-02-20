@@ -27,12 +27,9 @@ sub new {
 }
 
 sub add {
-  my ( $self, $coderef, $task, $server ) = @_;
-  my $f = Rex::Fork::Task->new(
-    coderef => $coderef,
-    task    => $task,
-    server  => $server,
-  );
+  my ( $self, $coderef ) = @_;
+
+  my $f = Rex::Fork::Task->new( coderef => $coderef );
 
   push( @{ $self->{'forks'} }, $f );
 

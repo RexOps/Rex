@@ -117,16 +117,12 @@ sub resource {
   }
 
   if ( exists $options->{export} && $options->{export} ) {
+    no strict 'refs';
 
     # register in caller namespace
-    no strict 'refs';
-    my ($caller_pkg) = caller(1);
-    if ( $caller_pkg eq "Rex" ) {
-      ($caller_pkg) = caller(2);
-    }
-    Rex::Logger::debug("Registering $name_save in $caller_pkg namespace.");
-
-    *{"${caller_pkg}::$name_save"} = $func;
+    push @{ $caller_pkg . "::ISA" }, "Rex::Exporter"
+      unless ( grep { $_ eq "Rex::Exporter" } @{ $caller_pkg . "::ISA" } );
+    push @{ $caller_pkg . "::EXPORT" }, $name_save;
     use strict;
   }
 }

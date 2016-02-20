@@ -32,7 +32,7 @@ sub add_task {
   my ( $self, $task_name, $task_args, $task_opts ) = @_;
   $task_args ||= [];
   $task_opts ||= {};
-  my $task = $self->task_list->get_task($task_name)->clone;
+  my $task = $self->task_list->get_task($task_name);
   $task->set_args(@$task_args);
   $task->set_opts(%$task_opts);
   push @{ $self->{tasks} }, $task;
@@ -66,9 +66,7 @@ sub run_tasks {
   my ($self) = @_;
 
   for my $task ( $self->tasks ) {
-    $_->($task) for @{ $task->{before_task_start} };
-    $self->task_list->run($task);
-    $_->($task) for @{ $task->{after_task_finished} };
+    Rex::TaskList->run($task);
     $self->increment_current_index;
   }
 }
@@ -82,8 +80,7 @@ sub parse_opts {
     unless Rex::Config->get_task_chaining_cmdline_args;
 
   while ( my $task_name = shift @params ) {
-    die "Expected a task name but found '$task_name' instead\n"
-      unless $self->task_list->is_task($task_name);
+    $self->exit_rex($task_name) unless $self->task_list->is_task($task_name);
 
     my @args;
     my %opts;
@@ -131,10 +128,17 @@ sub pre_1_4_parse_opts {
 
   for my $task_name (@params) {
     next if $task_name =~ m/^\-\-/ || $task_name =~ m/=/;
-    next unless $self->task_list->is_task($task_name);
-
+    $self->exit_rex($task_name) unless $self->task_list->is_task($task_name);
     $self->add_task( $task_name, [], \%task_opts );
   }
+}
+
+sub exit_rex {
+  my ( $self, $task_name ) = @_;
+  my $msg = "Task names are case sensitive ";
+  $msg .= "and the module delimiter is a single colon.";
+  Rex::Logger::info( "No task named '$task_name' found. $msg", 'error' );
+  Rex::CLI::exit_rex(1);
 }
 
 1;

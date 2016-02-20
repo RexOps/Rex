@@ -53,6 +53,18 @@ sub param_lookup {
             Rex::Resource->get_current_resource->display_name . "::$key";
           $ret = Rex::Commands::get( Rex::CMDB::cmdb($cmdb_key) );
         }
+
+        if ( !$ret ) {
+
+          # check in task
+          my $task = Rex::Commands::task();
+          if ($task) {
+            my $task_name = $task->{name};
+            $task_name =~ s/:/::/;
+            $cmdb_key = $task_name . "::$key";
+            $ret      = Rex::Commands::get( Rex::CMDB::cmdb($cmdb_key) );
+          }
+        }
       }
 
       if ( !$ret ) {

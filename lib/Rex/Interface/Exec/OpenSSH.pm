@@ -14,6 +14,7 @@ use warnings;
 use Rex::Helper::SSH2;
 require Rex::Commands;
 use Rex::Interface::Exec::SSH;
+use IO::Select;
 
 use base qw(Rex::Interface::Exec::SSH);
 
@@ -35,22 +36,46 @@ sub _exec {
   my $tty = !Rex::Config->get_no_tty;
 
   ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( { tty => $tty }, $exec );
-  while ( my $line = <$out_fh> ) {
-    $line =~ s/(\r?\n)$/\n/;
-    $out .= $line;
-    $self->execute_line_based_operation( $line, $option )
-      && do { kill( 'KILL', $pid ); goto END_OPEN };
 
+  my $selector = IO::Select->new();
+  $selector->add($out_fh);
+  $selector->add($err_fh);
+
+  my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
+  my $buffer_size = 1024;
+  if ( exists $rex_int_conf->{read_buffer_size} ) {
+    $buffer_size = $rex_int_conf->{read_buffer_size};
   }
-  while ( my $line = <$err_fh> ) {
-    $line =~ s/(\r?\n)$/\n/;
-    $err .= $line;
-    $self->execute_line_based_operation( $line, $option )
-      && do { kill( 'KILL', $pid ); goto END_OPEN };
+
+  while ( my @ready = $selector->can_read ) {
+    foreach my $fh (@ready) {
+      my $buf;
+
+      my $len = sysread $fh, $buf, $buffer_size;
+      $selector->remove($fh) unless $len;
+
+      for my $line ( split( /(\r?\n)/, $buf ) ) {
+        $line =~ s/(\r?\n)$/\n/;
+
+        $out .= $line if $fh == $out_fh;
+        $err .= $line if $fh == $err_fh;
+
+        $self->execute_line_based_operation( $line, $option )
+          && do { kill( 'KILL', $pid ); goto END_OPEN };
+      }
+    }
   }
 
 END_OPEN:
   waitpid( $pid, 0 ) or die($!);
+  if ( $ssh->error || $? ) {
+
+    # we need to bitshift $? so that $? contains the right (and for all
+    # connection methods the same) exit code after a run()/i_run() call.
+    # this is for the user, so that he can query $? in his task.
+    $? >>= 8;
+  }
   return ( $out, $err );
 }
+
 1;

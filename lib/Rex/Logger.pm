@@ -41,9 +41,9 @@ our $no_color = 0;
 eval "use Term::ANSIColor";
 if ($@) { $no_color = 1; }
 
-# no colors under windows
 if ( $^O =~ m/MSWin/ ) {
-  $no_color = 1;
+  eval "use Win32::Console::ANSI";
+  if ($@) { $no_color = 1; }
 }
 
 my $has_syslog = 0;
@@ -58,6 +58,11 @@ Setting this variable to 1 will enable debug logging.
 =cut
 
 our $debug = 0;
+
+# we store the default handle to stderr
+# so that we can restore the handle inside the logging functions
+my $DEFAULT_STDERR;
+open $DEFAULT_STDERR, ">&", STDERR;
 
 =item $silent
 
@@ -118,6 +123,9 @@ sub info {
 
   return if $silent;
 
+  local *STDERR;
+  open STDERR, ">&", $DEFAULT_STDERR;
+
   if ( defined($type) ) {
     $msg = format_string( $msg, uc($type) );
   }
@@ -175,6 +183,9 @@ sub debug {
   my ($msg) = @_;
   return if $silent;
   return unless $debug;
+
+  local *STDERR;
+  open STDERR, ">&", $DEFAULT_STDERR;
 
   $msg = format_string( $msg, "DEBUG" );
 

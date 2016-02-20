@@ -100,6 +100,8 @@ sub transaction(&) {
       Rex::pop_connection();
     }
 
+    Rex::TaskList->create()->set_in_transaction(0);
+
     die("Transaction failed. Rollback done.");
   }
 

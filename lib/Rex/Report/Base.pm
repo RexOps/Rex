@@ -41,9 +41,10 @@ sub report {
     $option{message} = "Resource already up-to-date.";
   }
 
-  #  push @{$self->{__reports__}}, $msg;
-  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{changed} =
-    $option{changed} || 0;
+  # update all stacked resources
+  for my $res ( @{ $self->{__current_resource__} } ) {
+    $self->{__reports__}->{$res}->{changed} ||= $option{changed} || 0;
+  }
 
   push
     @{ $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{messages}
@@ -71,9 +72,6 @@ sub report_resource_end {
   my ( $self, %option ) = @_;
 
   confess "not inside a resource." if ( !$self->{__current_resource__}->[-1] );
-  if ( $self->_gen_res_name(%option) ne $self->{__current_resource__}->[-1] ) {
-    die("Another resource is in progress");
-  }
 
   $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{end_time} =
     time;
@@ -84,7 +82,12 @@ sub report_resource_failed {
   my ( $self, %opt ) = @_;
 
   confess "not inside a resource." if ( !$self->{__current_resource__}->[-1] );
-  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{failed} = 1;
+
+  # update all stacked resources
+  for my $res ( @{ $self->{__current_resource__} } ) {
+    $self->{__reports__}->{$res}->{failed} = 1;
+  }
+
   push @{ $self->{__reports__}->{ $self->{__current_resource__} > [-1] }
       ->{messages} },
     $opt{message};

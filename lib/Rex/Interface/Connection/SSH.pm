@@ -75,7 +75,7 @@ CON_SSH:
     $server = $1;
     $port   = $2;
   }
-  Rex::Logger::info( "Connecting to $server:$port (" . $user . ")" );
+  Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
   unless ( $self->{ssh}->connect( $server, $port, Timeout => $timeout ) ) {
     ++$fail_connect;
     sleep 1;
@@ -92,7 +92,7 @@ CON_SSH:
   }
 
   Rex::Logger::debug( "Current Error-Code: " . $self->{ssh}->error() );
-  Rex::Logger::info("Connected to $server, trying to authenticate.");
+  Rex::Logger::debug("Connected to $server, trying to authenticate.");
 
   $self->{connected} = 1;
 

@@ -1,29 +1,27 @@
-package MyTest;
-
-use strict;
-use warnings;
-
-$::QUIET = 1;
-
-use Rex::Commands;
-
-task "test1", sub {
-  open( my $fh, ">", "test1.txt" );
-  close($fh);
-};
-
-task "test2", sub {
-  open( my $fh, ">", "test2.txt" );
-  close($fh);
-};
-
-1;
-
-package main;
-
 use Test::More;
-
 use Rex::Commands;
+
+{
+
+  package MyTest;
+  use strict;
+  use warnings;
+  use Rex::Commands;
+
+  $::QUIET = 1;
+
+  task "test1", sub {
+    open( my $fh, ">", "test1.txt" );
+    close($fh);
+  };
+
+  task "test2", sub {
+    open( my $fh, ">", "test2.txt" );
+    close($fh);
+  };
+
+  1;
+}
 
 task "test", sub {
   needs MyTest;
@@ -31,11 +29,10 @@ task "test", sub {
   if ( -f "test1.txt" && -f "test2.txt" ) {
     unlink("test1.txt");
     unlink("test2.txt");
-
     return 1;
   }
 
-  is( 1, -1 );
+  die;
 };
 
 task "test2", sub {
@@ -46,8 +43,7 @@ task "test2", sub {
     return 1;
   }
 
-  is( 1, -1 );
-
+  die;
 };
 
 task "test3", sub {
@@ -58,7 +54,7 @@ task "test3", sub {
     return 1;
   }
 
-  is( 1, -1 );
+  die;
 };
 
 task "test4", sub {
@@ -71,18 +67,10 @@ my $run_list  = Rex::RunList->instance;
 $run_list->parse_opts(qw/test test2 test3/);
 
 for my $task ( $run_list->tasks ) {
-  ok $task_list->run($task), $task->name;
+  $task_list->run($task);
+  my @summary = $task_list->get_summary;
+  is_deeply $summary[-1]->{exit_code}, 0, $task->name;
   $run_list->increment_current_index;
 }
 
-#my $task  = $run_list->next_task;
-#my $task2 = $task_list->get_task("test2");
-#my $task3 = $task_list->get_task("test3");
-#
-#ok $task_list->run($task),  "testing needs";
-##ok $task_list->run($task2), "testing needs";
-##ok $task_list->run($task3), "testing needs - local namespace";
-
 done_testing;
-
-1;

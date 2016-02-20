@@ -201,4 +201,23 @@ EOF
   return $exec->direct_exec( $real_exec, $option );
 }
 
+sub _exec {
+  my ( $self, $cmd, $path, $option ) = @_;
+
+  my ( $exec, $file, $shell );
+  if ( my $ssh = Rex::is_ssh() ) {
+    if ( ref $ssh eq "Net::OpenSSH" ) {
+      $exec = Rex::Interface::Exec->create("OpenSSH");
+    }
+    else {
+      $exec = Rex::Interface::Exec->create("SSH");
+    }
+  }
+  else {
+    $exec = Rex::Interface::Exec->create("Local");
+  }
+
+  return $exec->_exec( $cmd, $option );
+}
+
 1;

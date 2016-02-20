@@ -13,6 +13,7 @@ use warnings;
 
 use vars qw(%rex_opts);
 use Rex::Logger;
+use Data::Dumper;
 
 our $CLEANUP = 1;
 
@@ -150,6 +151,13 @@ sub is_opt {
   if ( exists $rex_opts{$opt} ) {
     return $rex_opts{$opt};
   }
+}
+
+sub get {
+  my ($class) = @_;
+
+  my $task = Rex::TaskList->create->current_task;
+  return $task->get_opts();
 }
 
 1;

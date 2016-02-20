@@ -44,6 +44,7 @@ use Rex::Commands::Run;
 use Rex::Commands::File;
 use Rex::Commands::LVM;
 use Rex::Commands::Fs;
+use Rex::Commands::Mkfs;
 use Rex::Commands qw(TRUE FALSE);
 
 @EXPORT = qw(clearpart partition);
@@ -105,37 +106,77 @@ sub clearpart {
 
 =head2 partition($mountpoint, %option)
 
-Create a partition with mountpoint $mountpoint.
+Create a partition with the specified parameters:
+
+=over 4
+
+=item ondisk
+
+The disk to be partitioned. Mandatory.
+
+=item size
+
+Desired size of the partition in MB. It is mandatory to pass either a C<size> or a C<grow> parameter (but not both).
+
+=item grow
+
+If C<TRUE>, then the partition will take up all the available space on the disk. It is mandatory to pass either a C<grow> or a C<size> parameter (but not both).
+
+=item type
+
+Partition type to be passed to C<parted>'s C<mkpart> command. Optional, defaults to C<primary>.
+
+=item boot
+
+Sets boot flag on the partition if C<TRUE>. Optional, no boot flag is set by default.
+
+=item fstype
+
+Create a filesystem after creating the partition. Optional, no filesystem is created by default.
+
+=item label
+
+Label to be used with the filesystem. Optional, defaults to no label.
+
+=item mount
+
+If C<TRUE>, try to mount the partition after creating it. Optional, no mount is attempted by default.
+
+=item mount_persistent
+
+If C<TRUE>, try to mount the partition after creating it, and also register it in C</etc/fstab>. Optional, no mount or C</etc/fstab> manipulation is attempted by default.
+
+=item vg
+
+Creates an LVM PV, then creates the specifed LVM VG (or extends it, if the VG already exists). Needs C<ondisk>.
+
+=back
+
+Examples:
 
  partition "/",
-   fstype  => "ext3",
+   fstype => "ext3",
    size   => 15000,
-   ondisk  => "sda",
+   ondisk => "sda",
    type   => "primary";
  
  partition "none",
-   type  => "extended",
+   type   => "extended",
    ondisk => "sda",
-   grow  => 1,
+   grow   => 1,
    mount  => TRUE,
  
  partition "swap",
    fstype => "swap",
-   type  => "logical",
+   type   => "logical",
    ondisk => "sda",
-   size  => 8000;
- 
- partition "none",
-   lvm   => 1,
-   type  => "primary",
-   size  => 15000,
-   ondisk => "vda";
- 
+   size   => 8000;
+
  partition "/",
    fstype => "ext3",
-   size  => 10000,
-   onvg  => "vg0";
-
+   size   => 10000,
+   ondisk => "sda",
+   vg     => "vg0";
 
 =cut
 
@@ -225,41 +266,7 @@ sub partition {
     sleep 1;
   }
 
-  if ( !exists $option{fstype}
-    || $option{fstype} eq "non-fs"
-    || $option{fstype} eq "none"
-    || $option{fstype} eq "" )
-  {
-    # nix
-  }
-  elsif ( can_run("mkfs.$option{fstype}") ) {
-    Rex::Logger::info(
-      "Creating filesystem $option{fstype} on /dev/$disk$part_num");
-
-    my $add_opts = "";
-
-    if ( exists $option{label} || exists $option{lable} ) {
-      my $label = $option{label} || $option{lable};
-      $add_opts .= " -L $label ";
-    }
-
-    run "mkfs.$option{fstype} $add_opts /dev/$disk$part_num";
-  }
-  elsif ( $option{fstype} eq "swap" ) {
-    Rex::Logger::info("Creating swap space on /dev/$disk$part_num");
-
-    my $add_opts = "";
-
-    if ( exists $option{label} || exists $option{lable} ) {
-      my $label = $option{label} || $option{lable};
-      $add_opts .= " -L $label ";
-    }
-
-    run "mkswap $add_opts /dev/$disk$part_num";
-  }
-  else {
-    die("Can't format partition with $option{fstype}");
-  }
+  mkfs "$disk$part_num", fstype => $option{fstype}, label => $option{label};
 
   if ( exists $option{mount} && $option{mount} ) {
     mount "/dev/$disk$part_num", $mountpoint, fs => $option{fstype};

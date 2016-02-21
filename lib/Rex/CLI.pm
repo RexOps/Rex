@@ -781,7 +781,7 @@ sub exit_rex {
   my ($exit_code_override) = @_;
 
   summarize();
-  
+
   Rex::global_sudo(0);
   Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
   unlink("$::rexfile.lock") if !exists $opts{'F'};

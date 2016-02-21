@@ -30,7 +30,7 @@ use base qw(Rex::TaskList::Base);
 sub run {
   my ( $self, $task, %options ) = @_;
 
-  if(! ref $task) {
+  if ( !ref $task ) {
     $task = Rex::TaskList->create()->get_task($task);
   }
 

@@ -690,16 +690,17 @@ You may also use an arrayRef for $task if you want to call multiple tasks.
 =cut
 
 sub do_task {
-  my $task = shift;
+  my $task   = shift;
   my $params = shift;
 
   if ( ref($task) eq "ARRAY" ) {
     for my $t ( @{$task} ) {
-      Rex::TaskList->run($t, ($params ? (params => $params) : ()));
+      Rex::TaskList->run( $t, ( $params ? ( params => $params ) : () ) );
     }
   }
   else {
-    return Rex::TaskList->run($task, ($params ? (params => $params) : ()));
+    return Rex::TaskList->run( $task,
+      ( $params ? ( params => $params ) : () ) );
   }
 }
 
@@ -1174,7 +1175,7 @@ sub LOCAL (&) {
       ssh      => 0,
       server   => $cur_conn->{server},
       cache    => Rex::Interface::Cache->create(),
-      task     => [task()],
+      task     => [ task() ],
       reporter => Rex::Report->create( Rex::Config->get_report_type ),
       notify   => Rex::Notify->new(),
     }

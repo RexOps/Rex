@@ -81,7 +81,7 @@ sub report_resource_end {
 sub report_resource_failed {
   my ( $self, %opt ) = @_;
 
-  confess "not inside a resource." if ( !$self->{__current_resource__}->[-1] );
+  return if ( !$self->{__current_resource__}->[-1] );
 
   # update all stacked resources
   for my $res ( @{ $self->{__current_resource__} } ) {

@@ -28,6 +28,7 @@ sub new {
 
 sub run_test {
   my ( $self, $service ) = @_;
+  local $::QUIET = 1;
   $self->ok( service( $service, "status" ) == 0, "Service $service stopped." );
 }
 

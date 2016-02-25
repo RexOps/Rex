@@ -39,7 +39,7 @@ sub _exec {
 
   ( undef, $out_fh, $err_fh, $pid ) = $ssh->open3( { tty => $tty }, $exec );
 
-  ( $out, $err ) = $self->io_read( $out_fh, $err_fh, $option );
+  ( $out, $err ) = $self->io_read( $out_fh, $err_fh, $pid, $option );
 
   waitpid( $pid, 0 ) or die($!);
   if ( $ssh->error || $? ) {

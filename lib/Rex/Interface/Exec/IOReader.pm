@@ -42,7 +42,13 @@ sub io_read {
 
       if ( $buf =~ /\r?\n/ ) { # buffer has one or more newlines
         $buf =~ s/\r?\n/\n/;   # normalize EOL characters
+
         my @line_chunks = split /\n/, $buf;
+
+        my $partial_last_chunk = '';
+        if ( $buf !~ /\n$/ ) { # last chunk is partial
+          $partial_last_chunk = pop @line_chunks;
+        }
 
         foreach my $chunk (@line_chunks) {
           if ( $fh == $out_fh ) {
@@ -58,8 +64,14 @@ sub io_read {
             $err_line = '';
           }
         }
+
+        if ($partial_last_chunk) { # append partial chunk to line if present
+          $out_line .= $partial_last_chunk if $fh == $out_fh;
+          $err_line .= $partial_last_chunk if $fh == $err_fh;
+        }
+
       }
-      else { # buffer doesn't have any newlines
+      else {                       # buffer doesn't have any newlines
         $out_line .= $buf if $fh == $out_fh;
         $err_line .= $buf if $fh == $err_fh;
       }

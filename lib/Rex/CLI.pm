@@ -749,10 +749,10 @@ sub load_rexfile {
     # update %INC so that we can later use it to find the rexfile
     $INC{"__Rexfile__.pm"} = $rexfile;
 
-    if ($stderr) {
-      local *STDERR;
-      open STDERR, ">&", $default_stderr;
+    # reopen STDERR
+    open STDERR, ">&", $default_stderr;
 
+    if ($stderr) {
       my @lines = split( $/, $stderr );
       Rex::Logger::info( "You have some code warnings:", 'warn' );
       Rex::Logger::info( "\t$_", 'warn' ) for @lines;

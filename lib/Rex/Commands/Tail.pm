@@ -79,25 +79,10 @@ sub tail {
 
   Rex::Logger::debug("Tailing: $file");
 
-  my $int =
-    Rex::Commands::get("rex_internals") || { read_buffer_size => 1024, };
-
-  my $old_buf_size = $int->{read_buffer_size} || 1024;
-
-  Rex::Commands::set(
-    "rex_internals",
-    {
-      read_buffer_size => 1,
-    }
-  );
-
   run "tail -f $file", continuous_read => sub {
     $callback->(@_);
     },
     ;
-
-  $int->{read_buffer_size} = $old_buf_size;
-  Rex::Commands::set( "rex_internals", $int );
 
 }
 

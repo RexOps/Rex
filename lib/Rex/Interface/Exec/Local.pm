@@ -123,7 +123,7 @@ sub _exec {
   if ( Rex::Config->get_no_tty ) {
     $pid = open3( $writer, $reader, $error, $cmd );
 
-    ( $out, $err ) = $self->io_read( $reader, $error, $option );
+    ( $out, $err ) = $self->io_read( $reader, $error, $pid, $option );
 
     waitpid( $pid, 0 ) or die($!);
   }

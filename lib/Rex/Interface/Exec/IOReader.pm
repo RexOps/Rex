@@ -14,8 +14,8 @@ use warnings;
 use IO::Select;
 
 sub io_read {
-  my ( $self, $out_fh, $err_fh, $option ) = @_;
-  my ( $out, $err, $pid );
+  my ( $self, $out_fh, $err_fh, $pid, $option ) = @_;
+  my ( $out, $err, $out_line, $err_line );
 
   my $selector = IO::Select->new();
   $selector->add($out_fh);
@@ -33,39 +33,47 @@ sub io_read {
     foreach my $fh (@ready) {
       my $buf = "";
 
-      my $len = 0;
-      my $concat_buf =
-        ( $fh == $out_fh ? $last_line_stdout : $last_line_stderr );
-
-      while ( $concat_buf !~ m/\n/ms ) {
-        my $read_len = sysread $fh, $buf, $buffer_size;
-        $len += $read_len;
-        $concat_buf .= $buf;
-        if ( !$read_len ) {
-          last;
-        }
-      }
-
+      my $len = sysread $fh, $buf, $buffer_size;
       $selector->remove($fh) unless $len;
 
-      my @lines = split( /(\r?\n)/, $concat_buf );
+      # append buffer to the proper overall output
+      $out .= $buf if $fh == $out_fh;
+      $err .= $buf if $fh == $err_fh;
 
-      $last_line_stdout = pop @lines
-        if ( $fh == $out_fh && $concat_buf !~ m/\n$/ms );
-      $last_line_stderr = pop @lines
-        if ( $fh == $err_fh && $concat_buf !~ m/\n$/ms );
+      if ( $buf =~ /\r?\n/ ) { # buffer has one or more newlines
+        $buf =~ s/\r?\n/\n/;   # normalize EOL characters
 
-      for my $line (@lines) {
+        my @line_chunks = split /\n/, $buf;
 
-        $out .= $line if $fh == $out_fh;
-        $err .= $line if $fh == $err_fh;
-
-        chomp $line;
-
-        if ($line) {
-          $self->execute_line_based_operation( $line, $option )
-            && do { kill( 'KILL', $pid ); goto END_OPEN };
+        my $partial_last_chunk = '';
+        if ( $buf !~ /\n$/ ) { # last chunk is partial
+          $partial_last_chunk = pop @line_chunks;
         }
+
+        foreach my $chunk (@line_chunks) {
+          if ( $fh == $out_fh ) {
+            $out_line .= $chunk;
+            $self->execute_line_based_operation( $out_line, $option )
+              && do { kill( 'KILL', $pid ); goto END_OPEN };
+            $out_line = '';
+          }
+          elsif ( $fh == $err_fh ) {
+            $err_line .= $chunk;
+            $self->execute_line_based_operation( $err_line, $option )
+              && do { kill( 'KILL', $pid ); goto END_OPEN };
+            $err_line = '';
+          }
+        }
+
+        if ($partial_last_chunk) { # append partial chunk to line if present
+          $out_line .= $partial_last_chunk if $fh == $out_fh;
+          $err_line .= $partial_last_chunk if $fh == $err_fh;
+        }
+
+      }
+      else {                       # buffer doesn't have any newlines
+        $out_line .= $buf if $fh == $out_fh;
+        $err_line .= $buf if $fh == $err_fh;
       }
     }
   }
@@ -76,7 +84,7 @@ sub io_read {
       && do { kill( 'KILL', $pid ); goto END_OPEN };
   }
 
-  unless ($out) {
+  unless ($err) {
     $err = $last_line_stderr;
     $self->execute_line_based_operation( $err, $option )
       && do { kill( 'KILL', $pid ); goto END_OPEN };

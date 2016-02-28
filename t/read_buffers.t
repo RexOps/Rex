@@ -22,11 +22,13 @@ my $command =
   ? qq{perl -e "my \$count = 500_000; while ( \$count-- ) { if ( \$count % 2) { print STDERR 'x'} else { print STDOUT 'x'} }"}
   : qq{perl -e 'my \$count = 500_000; while ( \$count-- ) { if ( \$count % 2) { print STDERR "x"} else { print STDOUT "x"} }'};
 
-alarm 5;
+alarm 30;
 
 $SIG{ALRM} = sub { BAIL_OUT 'Reading from buffer timed out'; };
 
 my ( $out, $err ) = $exec->exec($command);
+
+alarm 0;
 
 if ( $^O =~ m/^MSWin/i ) {
   is length($out), 500_000, 'output length on Windows';

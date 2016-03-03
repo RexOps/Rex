@@ -592,6 +592,7 @@ sub _list_groups {
 }
 
 sub summarize {
+  my ($signal) = @_;
   my %opts = Rex::Args->getopts;
   return if $opts{'T'};
 
@@ -748,10 +749,10 @@ sub load_rexfile {
     # update %INC so that we can later use it to find the rexfile
     $INC{"__Rexfile__.pm"} = $rexfile;
 
-    if ($stderr) {
-      local *STDERR;
-      open STDERR, ">&", $default_stderr;
+    # reopen STDERR
+    open STDERR, ">&", $default_stderr;
 
+    if ($stderr) {
       my @lines = split( $/, $stderr );
       Rex::Logger::info( "You have some code warnings:", 'warn' );
       Rex::Logger::info( "\t$_", 'warn' ) for @lines;
@@ -778,23 +779,23 @@ sub load_rexfile {
 }
 
 sub exit_rex {
-  my ($exit_code_override) = @_;
+  my ( $exit_code_override, $signal ) = @_;
 
-  summarize();
-  
+  summarize($signal) if !$signal;
+
   Rex::global_sudo(0);
   Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
   unlink("$::rexfile.lock") if !exists $opts{'F'};
 
   select STDOUT;
 
-  if ( $opts{'o'} && defined( Rex::Output->get ) ) {
+  if ( !$signal && $opts{'o'} && defined( Rex::Output->get ) ) {
     Rex::Output->get->write();
     IPC::Shareable->clean_up_all();
   }
 
   for my $exit_hook (@exit) {
-    $exit_hook->();
+    $exit_hook->( $exit_code_override, $signal );
   }
 
   if ($Rex::WITH_EXIT_STATUS) {
@@ -808,5 +809,11 @@ sub exit_rex {
 
   CORE::exit(0);
 }
+
+# we capture CTRL+C so we can cleanup vars files
+# and give modules the chance to also do cleanup
+$SIG{INT} = sub {
+  exit_rex( 1, "INT" );
+};
 
 1;

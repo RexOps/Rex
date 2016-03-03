@@ -20,12 +20,12 @@ $::QUIET = 1;
 $::rexfile = "noop";
 
 task task1 => sub {
-  
+
 };
 
 before_task_start task1 => sub {
   my %args = Rex::Args->get;
-  is($args{name}, "thename", "got taskopt");
+  is( $args{name}, "thename", "got taskopt" );
 };
 
 @ARGV = qw(task1 --name=thename --num=5 --hey=what);

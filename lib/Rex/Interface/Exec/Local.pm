@@ -17,9 +17,10 @@ use Rex::Commands;
 use Symbol 'gensym';
 use IPC::Open3;
 use IO::Select;
+use Rex::Interface::Exec::IOReader;
 
 # Use 'parent' is recommended, but from Perl 5.10.1 its in core
-use base 'Rex::Interface::Exec::Base';
+use base qw(Rex::Interface::Exec::Base Rex::Interface::Exec::IOReader);
 
 sub new {
   my $that  = shift;
@@ -122,44 +123,15 @@ sub _exec {
   if ( Rex::Config->get_no_tty ) {
     $pid = open3( $writer, $reader, $error, $cmd );
 
-    my $selector = IO::Select->new();
-    $selector->add($reader);
-    $selector->add($error);
+    ( $out, $err ) = $self->io_read( $reader, $error, $pid, $option );
 
-    my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
-    my $buffer_size = 1024;
-    if ( exists $rex_int_conf->{read_buffer_size} ) {
-      $buffer_size = $rex_int_conf->{read_buffer_size};
-    }
-
-    while ( my @ready = $selector->can_read ) {
-      foreach my $fh (@ready) {
-        my $buf;
-
-        my $len = sysread $fh, $buf, $buffer_size;
-        $selector->remove($fh) unless $len;
-
-        for my $line ( split( /(\r?\n)/, $buf ) ) {
-          $line =~ s/(\r?\n)$/\n/;
-
-          goto END_OPEN3 unless defined $line;
-
-          $out .= $line if $fh == $reader;
-          $err .= $line if $fh == $error;
-
-          $self->execute_line_based_operation( $line, $option )
-            && goto END_OPEN3;
-        }
-      }
-    }
-
-  END_OPEN3:
     waitpid( $pid, 0 ) or die($!);
   }
   else {
     $pid = open( my $fh, "-|", "$cmd 2>&1" ) or die($!);
     while (<$fh>) {
       $out .= $_;
+      chomp;
       $self->execute_line_based_operation( $_, $option )
         && do { kill( 'KILL', $pid ); last };
     }

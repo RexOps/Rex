@@ -37,7 +37,7 @@ sub io_read {
       $selector->remove($fh) unless $len;
 
       # remove \r from output. this is added when using tty
-      $out =~ s/\r//gms if $out;
+      $buf =~ s/\r//gms if $buf;
 
       # append buffer to the proper overall output
       $out .= $buf if $fh == $out_fh;

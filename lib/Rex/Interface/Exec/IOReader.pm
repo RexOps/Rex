@@ -91,6 +91,11 @@ sub io_read {
   }
 
 END_OPEN:
+
+  # cleanup last newline(s)
+  $out =~ s/[\r\n]+$//ms;
+  $err =~ s/[\r\n]+$//ms;
+
   return ( $out, $err );
 }
 

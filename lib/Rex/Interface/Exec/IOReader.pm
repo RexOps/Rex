@@ -36,6 +36,9 @@ sub io_read {
       my $len = sysread $fh, $buf, $buffer_size;
       $selector->remove($fh) unless $len;
 
+      # remove \r from output. this is added when using tty
+      $out =~ s/\r//gms if $out;
+
       # append buffer to the proper overall output
       $out .= $buf if $fh == $out_fh;
       $err .= $buf if $fh == $err_fh;
@@ -91,10 +94,6 @@ sub io_read {
   }
 
 END_OPEN:
-
-  # cleanup last newline(s)
-  $out =~ s/[\r\n]+$//ms;
-  $err =~ s/[\r\n]+$//ms;
 
   return ( $out, $err );
 }

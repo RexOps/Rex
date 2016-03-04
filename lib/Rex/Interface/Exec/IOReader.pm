@@ -36,13 +36,13 @@ sub io_read {
       my $len = sysread $fh, $buf, $buffer_size;
       $selector->remove($fh) unless $len;
 
+      $buf =~ s/\r?\n/\n/g; # normalize EOL characters
+
       # append buffer to the proper overall output
       $out .= $buf if $fh == $out_fh;
       $err .= $buf if $fh == $err_fh;
 
-      if ( $buf =~ /\r?\n/ ) { # buffer has one or more newlines
-        $buf =~ s/\r?\n/\n/;   # normalize EOL characters
-
+      if ( $buf =~ /\n/ ) { # buffer has one or more newlines
         my @line_chunks = split /\n/, $buf;
 
         my $partial_last_chunk = '';

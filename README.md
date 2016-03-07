@@ -47,7 +47,7 @@ All contributions are welcome: documentation, patches, bug reports, ideas, promo
 
 For more details, see the [Help (R)?ex](http://www.rexify.org/care/help__r__ex.html) page on the website.
 
-If you want to contribute new functionality or fix things, you can just clone the repository on GitHub and send pull requests against the *master* branch. We encourage you to logically group your commits together in topic/feature branches and send a pull request for each of your topic branches.
+If you want to contribute new functionality or fix things, you can just clone the repository on GitHub and send pull requests against the *development* branch. We encourage you to logically group your commits together in topic/feature branches and send a pull request for each of your topic branches.
 
 We use perltidy to help us to maintain a consequent code style throughout the project (check out our .perltidyrc for more details). We recommend setting it up with your favorite IDE or text editor, so you can apply formatting easily or even automatically to your changes before committing them.
 

@@ -78,7 +78,7 @@ use warnings;
 
 # development version if this variable is not set
 if ( !$Rex::VERSION ) {
-  $Rex::VERSION = "9999.99.99";
+  $Rex::VERSION = "9999.99.99_99";
 }
 
 BEGIN {
@@ -103,6 +103,22 @@ $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
 
+sub push_lib_to_inc {
+  my $path = shift;
+
+  if ( -d "$path/lib" ) {
+    push( @INC, "$path/lib" );
+    push( @INC, "$path/lib/perl/lib/perl5" );
+    if ( $^O =~ m/^MSWin/ ) {
+      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
+      if ( defined $special_win_path ) {
+        my $mswin32_path = basename $special_win_path;
+        push( @INC, "$path/lib/perl/lib/perl5/$mswin32_path" );
+      }
+    }
+  }
+}
+
 BEGIN {
 
   sub _home_dir {
@@ -123,17 +139,7 @@ BEGIN {
     }
   );
 
-  if ( -d "$cur_dir/lib" ) {
-    push( @INC, "$cur_dir/lib" );
-    push( @INC, "$cur_dir/lib/perl/lib/perl5" );
-    if ( $^O =~ m/^MSWin/ ) {
-      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
-      if ( defined $special_win_path ) {
-        my $mswin32_path = basename $special_win_path;
-        push( @INC, "$cur_dir/lib/perl/lib/perl5/$mswin32_path" );
-      }
-    }
-  }
+  push_lib_to_inc($cur_dir);
 
   my $home_dir = _home_dir();
   if ( -d "$home_dir/.rex/recipes" ) {
@@ -496,6 +502,14 @@ sub import {
   # use Net::OpenSSH if present (default without feature flag)
   Rex::Config->set_use_net_openssh_if_present(1);
 
+  if ( $what eq "-minimal" ) {
+    require Rex::Commands;
+    Rex::Commands->import( register_in => $register_to );
+
+    require Rex::Helper::Rexfile::ParamLookup;
+    Rex::Helper::Rexfile::ParamLookup->import( register_in => $register_to );
+  }
+
   if ( $what eq "-base" || $what eq "base" || $what eq "-feature" ) {
     require Rex::Commands;
     Rex::Commands->import( register_in => $register_to );
@@ -569,18 +583,23 @@ sub import {
 
       if ( $add =~ m/^(\d+\.\d+)$/ ) {
         my $vers = $1;
-        my $_ver = $Rex::VERSION;
-        $_ver =~ s/_\d+$//; # remove rc info
+        my ( $major, $minor, $patch, $dev_release ) =
+          $Rex::VERSION =~ m/^(\d+)\.(\d+)\.(\d+)_?(\d+)?$/;
 
-        my ( $major, $minor, $patch ) = split( /\./, $_ver );
         my ( $c_major, $c_minor ) = split( /\./, $vers );
 
-        if ( ( $c_major > $major )
+        if ( defined $dev_release && $c_major == $major && $c_minor > $minor ) {
+          Rex::Logger::info(
+            "This is development release $Rex::VERSION of Rex. Enabling experimental feature flag for $vers.",
+            "warn"
+          );
+        }
+        elsif ( ( $c_major > $major )
           || ( $c_major >= $major && $c_minor > $minor ) )
         {
           Rex::Logger::info(
             "This Rexfile tries to enable features that are not supported with your version. Please update.",
-            "warn"
+            "error"
           );
           exit 1;
         }

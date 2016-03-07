@@ -38,7 +38,8 @@ With this module it is easy to manage different firewall systems.
      log         => "new|all",  # if provider supports it
      log_level   => "",         # if provider supports it
      log_prefix  => "FW:",      # if provider supports it
-     state       => "NEW";
+     state       => "NEW",
+     ip_version  => -4;         # for iptables provider. valid options -4 and -6
  };
 
  # Add overall logging (if provider supports)
@@ -58,10 +59,12 @@ use strict;
 use warnings;
 
 # VERSION
-require Rex::Exporter;
+
 use Data::Dumper;
 
-use Rex -base;
+use Rex -minimal;
+
+use Rex::Commands::Gather;
 use Rex::Resource::Common;
 
 use Carp;
@@ -98,6 +101,7 @@ resource "firewall", { export => 1 }, sub {
     log_level   => param_lookup( "log_level", undef ),  # logging for rule
     log_prefix  => param_lookup( "log_prefix", undef ),
     state       => param_lookup( "state", undef ),
+    ip_version  => param_lookup( "ip_version", -4 ),
   };
 
   my $provider =
@@ -141,5 +145,9 @@ resource "firewall", { export => 1 }, sub {
   }
 
 };
+
+=back
+
+=cut
 
 1;

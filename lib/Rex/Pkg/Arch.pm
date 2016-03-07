@@ -31,7 +31,6 @@ sub new {
     install_version => 'pacman --noprogressbar --noconfirm --needed -S %s', # makes no sense to specify the package version
     update_system   => 'pacman --noprogressbar --noconfirm -Syu',
     remove          => 'pacman --noprogressbar --noconfirm -Rs %s',
-    purge           => 'pacman --noprogressbar --noconfirm -Rns %s',
     update_package_db => 'pacman --noprogressbar -Sy',
   };
 

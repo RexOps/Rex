@@ -291,8 +291,14 @@ sub is_task {
   return 0;
 }
 
+sub current_task { shift->{__current_task__} }
+
 sub run {
   my ( $self, $task, %options ) = @_;
+
+  if ( !ref $task ) {
+    $task = Rex::TaskList->create()->get_task($task);
+  }
 
   my $fm = Rex::Fork::Manager->new( max => $self->get_thread_count($task) );
   my $all_servers = $task->server;
@@ -340,13 +346,15 @@ sub build_child_coderef {
       die $@ if $@;
     }
     else {
-      my $exit_code = $@ ? ( ( $? >> 8 ) || 1 ) : 0;
+      my $e = $@;
+      my $exit_code = $@ ? ( $? || 1 ) : 0;
 
       push @SUMMARY,
         {
-        task      => $task->name,
-        server    => $server->to_s,
-        exit_code => $exit_code,
+        task          => $task->name,
+        server        => $server->to_s,
+        exit_code     => $exit_code,
+        error_message => $e,
         };
     }
 

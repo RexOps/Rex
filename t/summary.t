@@ -32,7 +32,7 @@ subtest "distributor => 'Base'" => sub {
       task1 => {
         server    => '<local>',
         task      => 'task1',
-        exit_code => ( $^O =~ m/^MSWin/ ? 1 : 2 )
+        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin)/ ? 1 : 2 )
       },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
@@ -64,7 +64,7 @@ SKIP: {
         task1 => {
           server    => '<local>',
           task      => 'task1',
-          exit_code => ( $^O =~ m/^MSWin/ ? 1 : 2 )
+          exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin)/ ? 1 : 2 )
         },
         task2 => { server => '<local>', task => 'task2', exit_code => 0 },
         task3 => { server => '<local>', task => 'task3', exit_code => 1 },
@@ -110,6 +110,11 @@ sub test_summary {
   for my $task_name ( Rex::TaskList->create->get_tasks ) {
     Rex::TaskList->run($task_name);
     my @summary = Rex::TaskList->create->get_summary;
+
+    # for the tests we remove the error message.
+    for (@summary) {
+      delete $_->{error_message};
+    }
 
     push @expected_summary, $expected{$task_name};
 

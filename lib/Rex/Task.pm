@@ -14,12 +14,18 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 
 =head1 SYNOPSIS
 
- use Rex::Task
+ use Rex::Task;
  
-  my $task = Rex::Task->new(name => "testtask");
-  $task->set_server("remoteserver");
-  $task->set_code(sub { say "Hello"; });
-  $task->modify("no_ssh", 1);
+ # create a new task
+ my $task = Rex::Task->new(name => "testtask");
+ $task->set_server("remoteserver");
+ $task->set_code(sub { say "Hello"; });
+ $task->modify("no_ssh", 1);
+ 
+ # retrieve an existing task
+ use Rex::TaskList;
+ 
+ my $existing_task = Rex::TaskList->get_task('my_task');
 
 =head1 METHODS
 
@@ -56,29 +62,28 @@ require Rex::Args;
 
 This is the constructor.
 
-  $task = Rex::Task->new(
-    func => sub { some_code_here },
-    server => [ @server ],
-    desc => $description,
-    no_ssh => $no_ssh,
-    hidden => $hidden,
-    auth => {
-      user      => $user,
-      password   => $password,
-      private_key => $private_key,
-      public_key  => $public_key,
-    },
-    before => [sub {}, sub {}, ...],
-    after  => [sub {}, sub {}, ...],
-    around => [sub {}, sub {}, ...],
-    before_task_start => [sub {}, sub {}, ...],
-    after_task_finished => [sub {}, sub {}, ...],
-    name => $task_name,
-    executor => Rex::Interface::Executor->create,
-    opts => {key1 => val1, key2 => val2, ...},
-    args => [arg1, arg2, ...],
-  );
-
+ $task = Rex::Task->new(
+   func => sub { some_code_here },
+   server => [ @server ],
+   desc => $description,
+   no_ssh => $no_ssh,
+   hidden => $hidden,
+   auth => {
+     user      => $user,
+     password   => $password,
+     private_key => $private_key,
+     public_key  => $public_key,
+   },
+   before => [sub {}, sub {}, ...],
+   after  => [sub {}, sub {}, ...],
+   around => [sub {}, sub {}, ...],
+   before_task_start => [sub {}, sub {}, ...],
+   after_task_finished => [sub {}, sub {}, ...],
+   name => $task_name,
+   executor => Rex::Interface::Executor->create,
+   opts => {key1 => val1, key2 => val2, ...},
+   args => [arg1, arg2, ...],
+ );
 
 =cut
 
@@ -308,11 +313,23 @@ sub is_http {
       && lc( $self->{"connection_type"} ) eq "http" );
 }
 
+=head2 is_https
+
+Returns true (1) if the task gets executed over https protocol.
+
+=cut
+
 sub is_https {
   my ($self) = @_;
   return ( $self->{"connection_type"}
       && lc( $self->{"connection_type"} ) eq "https" );
 }
+
+=head2 is_openssh
+
+Returns true (1) if the task gets executed with openssh.
+
+=cut
 
 sub is_openssh {
   my ($self) = @_;
@@ -335,13 +352,25 @@ sub want_connect {
 
 This method tries to guess the right connection type for the task and returns it.
 
-Current return values are SSH, Fake and Local.
+Current return values are below:
 
-SSH - will create a ssh connection to the remote server
+=over 4
 
-Local - will not create any connections
+=item * SSH: connect to the remote server using Net::SSH2
 
-Fake - will not create any connections. But it populates the connection properties so you can use this type to iterate over a list of remote hosts but don't let rex build a connection. For example if you want to use Sys::Virt or other modules.
+=item * OpenSSH: connect to the remote server using Net::OpenSSH
+
+=item * Local: runs locally (without any connections)
+
+=item * HTTP: uses experimental HTTP connection
+
+=item * HTTPS: uses experimental HTTPS connection
+
+=item * Fake: populate the connection properties, but do not connect
+
+So you can use this type to iterate over a list of remote hosts, but don't let rex build a connection. For example if you want to use Sys::Virt or other modules.
+
+=back
 
 =cut
 
@@ -387,6 +416,12 @@ sub modify {
   $self->rethink_connection;
 }
 
+=head2 rethink_connection
+
+Deletes current connection object.
+
+=cut
+
 sub rethink_connection {
   my ($self) = @_;
   delete $self->{connection};
@@ -394,7 +429,7 @@ sub rethink_connection {
 
 =head2 user
 
-Returns the current user the task will use.
+Returns the username the task will use.
 
 =cut
 
@@ -407,7 +442,7 @@ sub user {
 
 =head2 set_user($user)
 
-Set the user of a task.
+Set the username of a task.
 
 =cut
 
@@ -537,6 +572,12 @@ sub merge_auth {
 
   return \%auth;
 }
+
+=head2 get_sudo_password
+
+Returns the sudo password.
+
+=cut
 
 sub get_sudo_password {
   my ($self) = @_;
@@ -676,7 +717,7 @@ sub connect {
     croak($message);
   }
   else {
-    Rex::Logger::info("Successfully authenticated on $server.")
+    Rex::Logger::debug("Successfully authenticated on $server.")
       if ( $self->connection->get_connection_type ne "Local" );
     $self->{"__was_authenticated"} = 1;
   }
@@ -714,6 +755,12 @@ sub disconnect {
   Rex::pop_connection();
 }
 
+=head2 get_data
+
+Dump task data.
+
+=cut
+
 sub get_data {
   my ($self) = @_;
 
@@ -737,7 +784,7 @@ sub get_data {
 
 =head2 run($server, %options)
 
-Run the task on $server.
+Run the task on C<$server>, with C<%options>.
 
 =cut
 
@@ -892,6 +939,12 @@ sub pre_40_run {
   $tasklist->run( $task, params => $params );
 }
 
+=head2 modify_task($task, $key => $value)
+
+Modify C<$task>, by setting C<$key> to C<$value>.
+
+=cut
+
 sub modify_task {
   my $class = shift;
   my $task  = shift;
@@ -901,22 +954,40 @@ sub modify_task {
   Rex::TaskList->create()->get_task($task)->modify( $key => $value );
 }
 
+=head2 is_task
+
+Returns true(1) if the passed object is a task.
+
+=cut
+
 sub is_task {
   my ( $class, $task ) = @_;
   return Rex::TaskList->create()->is_task($task);
 }
+
+=head2 get_tasks
+
+Returns list of tasks.
+
+=cut
 
 sub get_tasks {
   my ( $class, @tmp ) = @_;
   return Rex::TaskList->create()->get_tasks(@tmp);
 }
 
+=head2 get_desc
+
+Returns description of task.
+
+=cut
+
 sub get_desc {
   my ( $class, @tmp ) = @_;
   return Rex::TaskList->create()->get_desc(@tmp);
 }
 
-=head2 exit_on_connect_fail()
+=head2 exit_on_connect_fail
 
 Returns true if rex should exit on connect failure.
 
@@ -927,35 +998,77 @@ sub exit_on_connect_fail {
   return $self->{exit_on_connect_fail};
 }
 
+=head2 set_exit_on_connect_fail
+
+Sets if rex should exit on connect failure.
+
+=cut
+
 sub set_exit_on_connect_fail {
   my ( $self, $exit ) = @_;
   $self->{exit_on_connect_fail} = $exit;
 }
+
+=head2 get_args
+
+Returns arguments of task.
+
+=cut
 
 sub get_args {
   my ($self) = @_;
   @{ $self->{args} || [] };
 }
 
+=head2 get_opts
+
+Returns options of task.
+
+=cut
+
 sub get_opts {
   my ($self) = @_;
   %{ $self->{opts} || {} };
 }
+
+=head2 set_args
+
+Sets arguments for task.
+
+=cut
 
 sub set_args {
   my ( $self, @args ) = @_;
   $self->{args} = \@args;
 }
 
+=head2 set_opt
+
+Sets an option for task.
+
+=cut
+
 sub set_opt {
   my ( $self, $key, $value ) = @_;
   $self->{opts}->{$key} = $value;
 }
 
+=head2 set_opts
+
+Sets options for task.
+
+=cut
+
 sub set_opts {
   my ( $self, %opts ) = @_;
   $self->{opts} = \%opts;
 }
+
+=head2 clone
+
+Clones a task.
+
+=cut
 
 sub clone {
   my $self = shift;

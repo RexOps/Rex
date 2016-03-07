@@ -30,6 +30,10 @@ use base qw(Rex::TaskList::Base);
 sub run {
   my ( $self, $task, %options ) = @_;
 
+  if ( !ref $task ) {
+    $task = Rex::TaskList->create()->get_task($task);
+  }
+
   my $fm = Parallel::ForkManager->new( $self->get_thread_count($task) );
   my $all_servers = $task->server;
 

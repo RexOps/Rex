@@ -1,3 +1,176 @@
+2016-03-06 Ferenc Erki <ferki@cpan.org> (1.4.0)
+  * Normalize EOL characters earlier (fix #957) - Ferenc Erki
+  * fixed variable usage - Jan
+  * remove chr(13) everywhere - fix #957 - Jan
+  * cleanup newline(s) at the end. fix for #957 - Jan
+  * Increase timeout for read_buffer test (fix #954) - Ferenc Erki
+  * Test with a bit less output - Ferenc Erki
+  * Update read_buffer test for Windows - Ferenc Erki
+  * removed read_buffer reduction - Jan Gehring
+  * Handle partial last chunks from STDOUT and STDERR - Ferenc Erki
+  * Fix draining IO - Ferenc Erki
+  * Add initial tests for draining IO - Ferenc Erki
+  * fix continuous read bug - RexOps/#951 - Jan
+  * Reopen STDERR after loading Rexfile - Dmitry Kopytov
+  * Let service tests be silent - Ferenc Erki
+  * Don't confess upon failure of a non-resource (fix #936) - Ferenc Erki
+  * iptables_clear should clear only loaded tables - Dmitry Kopytov
+  * Fix copy-pasta POD errors - Ferenc Erki
+  * Make CPAN Testers happy for unsupported OSes - Ferenc Erki
+  * fixed issue of calling Rex::Args->get inside before_task_start - RexOps/Rex#934 - krimdomu
+  * can't connect message must be ::info logging - krimdomu
+  * check if task is no object, and get the task object then - Jan Gehring
+  * removed connecting to mesages (change to debug level) - Jan Gehring
+  * added parameters to do_task and fixed LOCAL block - Jan Gehring
+  * fixed calling of exit hooks after summary - Jan Gehring
+  * Update docs for Rex::Task - Ferenc Erki
+  * Add docs for Rex::Shared::Var (fix #920) - Ferenc Erki
+  * Update sudo docs (fix #918) - Ferenc Erki
+  * Fix summary tests for Mac OS X - Ferenc Erki
+  * Add tests for task hooks - Ferenc Erki
+  * don't clone task object. When cloned before_task_start/after_task_finished hooks doesn't work - fix #919 - krimdomu
+  * debug output now gets displayed again. - fix RexOps/Rex#910 - krimdomu
+  * fix loading of Rexfile on perl 5.8.9 - RexOps/Rex#922 - krimdomu
+  * fixed loading of resource module in perl 5.8 - RexOps/Rex#917 - krimdomu
+  * try to fix failing tests on freebsd - #901 - krimdomu
+  * Fix POD - Ferenc Erki
+  * Unbundle AWS::Signature4 - Ferenc Erki
+  * Fix rendering of false values in templates - Ferenc Erki
+  * Test rendering of false values in templates - Ferenc Erki
+  * Avoid __Rexfile__ as dependency - Ferenc Erki
+  * Enable more feature flags for development releases - Ferenc Erki
+  * Use development versioning - Ferenc Erki
+  * Pass options to mkfs (#fix 905) - Ferenc Erki
+  * Don't fail mkfs if label is undefined - Ferenc Erki
+  * Skip creating filesystems for some reserved words - Ferenc Erki
+  * Check for fstype existence at the start - Ferenc Erki
+  * Update docs for partition command - Ferenc Erki
+  * Remove purge package action on arch (fix #867) - Ferenc Erki
+  * Use sysread for local exec interface too (fix #887) - Ferenc Erki
+  * Avoid bitshifting error code twice (fix #901) - Ferenc Erki
+  * add default values for cpu and memory - krimdomu
+  * some windows fixes for rexify command - krimdomu
+  * run shell detection a second time if first time failed - krimdomu
+  * remove unnecessary new lines - krimdomu
+  * moved detect method to base, because it is everywhere the same, created direct_exec method for all interfaces - krimdomu
+  * remove error message, we don't need it for the tests - krimdomu
+  * fixed inheritance problem, moved shell() method to base class. - krimdomu
+  * return always shell object - krimdomu
+  * load right cron module if os is *bsd and shell is csh - #883 - krimdomu
+  * use sysread to read from filehandle. fixes #887 - krimdomu
+  * Read STDOUT and STDERR in parallel (fix #756) - Ferenc Erki
+  * fix error code in $? after a run command which was introduced by 6c8441 - krimdomu
+  * print the error message in the summary when a task die()d - krimdomu
+  * readd close of stderr - krimdomu
+  * only update chained resource when the upper resource wasn't changed before. Also removed 'inside resource check' because this is not needed anymore due to stacked resources - krimdomu
+  * fix loading of libraries in lib directory when use -f path/to/Rexfile - krimdomu
+  * fixed loading of rexfiles with -f - krimdomu
+  * load a rexfile also if it doesn't return a true value. This fixes a regression - RexOps/Rex#513 - krimdomu
+  * fixed reporting of nested resources (changed resource) - krimdomu
+  * fixed firewall resource to work with ipv6 patch - krimdomu
+  * added Rex::Args->get method again. fixes #860 - krimdomu
+  * Refactor Rex::TaskList.  No functional change. - Eric Johnson
+  * fixed tests for windows - krimdomu
+  * added tmp to gitignore - krimdomu
+  * Add Rex::Commands::Mkfs to rexify and pp.args - Ferenc Erki
+  * The after hook now runs even if the ssh connection fails. - Eric Johnson
+  * added archlinux support - Harm Müller
+  * support key_url and key_file also on redhat systems - krimdomu
+  * also lookup task name in cmdb - krimdomu
+  * Fix regression in deprecated static call to Rex::Task->run() - Eric Johnson
+  * Fix links in README (fix #853) - Ferenc Erki
+  * Output full task names (fix #825, close #842) - Daniel Cesario
+  * use empty string to prevent uninitialized warning messages - krimdomu
+  * make environment available inside cmdb template - krimdomu
+  * color for windows - krimdomu
+  * defaults for cpus and memory - krimdomu
+  * call after task hook, even if connection to system failed - krimdomu
+  * fix after hook call for connections that wasn't successfull - krimdomu
+  * Fix passing memory/cpus options to constructor - Ferenc Erki
+  * Allow tests so set Box memory and cpus (close #839) - Patrick Lauer
+  * Exit with an error message when a bad task name is used. - Eric Johnson
+  * Exit codes now work when using 'rex -e' (fix #761, close #840) - Eric Johnson
+  * Fix indentation - Eric Johnson
+  * Refactor out some code into handle_lock_file() - Eric Johnson
+  * Refactor out logic for loading server ini file into load_server_ini_file(). - Eric Johnson
+  * Put Rexfile exists check inside load_rexfile() - Eric Johnson
+  * Simplify loading the Rexfile and improve error handling. - Eric Johnson
+  * Add missing Data::Dumper import - Ken Crowell
+  * Tests for needs() were not useful.  Now they are. - Eric Johnson
+  * allow mix of modules.rexify.org modules and git modules - Jan
+  * Fix summary test tasks for Windows - Ferenc Erki
+  * Add support for ip6tables (close #795) - Dmitry Kopytov
+  * Prefer uid over getlogin as fallback username (close #793, fix #792) - Ferenc Erki
+  * Sort failure list - Ferenc Erki
+  * Further simplify summary output - Ferenc Erki
+  * Refactor summary output - Ferenc Erki
+  * Use error level output in the summary if some tasks failed - Ferenc Erki
+  * added AWS::Signature4 directly to code, due to problems with Centos5 dependencies (#737) - Jan
+  * ignore eclipse files - Jan
+  * fixed call of task as functions with normal parameters, #827 - Jan
+  * allow config (set) vars in cmdb templates - Jan
+  * Fix template handling in YAML CMDB files - Ferenc Erki
+  * YAML cmdb can now contain template code - Jan
+  * don't concat caller package anymore - Jan
+  * fixed some unitialized warnings - Jan
+  * fixed lookup path for arp command - Jan
+  * report all packages - Jan
+  * allow nested resources in reports - Jan
+  * use md5 binary if perl module is not available - fix for #834 - Jan
+  * default to empty task list - Jan
+  * don't print summary on rex -T - Jan
+  * use can_run to detect arp command - Jan Gehring
+  * Custom storage path for kvm - Prajithp
+  * give server configuration precedence - Jan
+  * detect iptables version and choose syntax for ip adresses - Jan
+  * fixed a logic bug, that prevents batch creation - Jan
+  * fixed a bug that was introduced by b0416b1710611b900284ba5a2d9d74991fc4351b - Jan
+  * Ensuring that labels can be added to swap partitions - Peter H. Ezetta
+  * Ensure proper test-time connection type (fix #821) - Ferenc Erki
+  * Fix examples - Ferenc Erki
+  * Slightly reword synopsis - Ferenc Erki
+  * Updated pod in bin/rex and lib/Rex.pm - Eric Johnson
+  * Fix static side comments - Ferenc Erki
+  * Use static comments to avoid alignment change later - Ferenc Erki
+  * Checking for a running rex process failed if the pidfile contains a pid that partially matches a running process. - petersonchen
+  * Updated documentation in bin/rex (pod/man page) - Eric Johnson
+  * fixed loading of Rex::Commands via require. RexOps/Rex#789 - Jan Gehring
+  * Recognize Raspbian as a Debian clone - Ferenc Erki
+  * Mute noisy tests - Ferenc Erki
+  * Added option for rebase during pull. - Eivin Giske Skaaren
+  * added feature flag for 1.4 and removed deprecated warning of Rex::RunList - Jan
+  * Added a firewall module to manage different firewall models with one interface. - Jan
+  * resource and task now have own namespace for template variables - Jan
+  * Exit codes need to be bit shifted by 8.  Do it in one place. - Eric Johnson
+  * Summary tests for all permutations of Parallel::ForkManager, Base, and exec_autodie - Eric Johnson
+  * Summarize success/failure at the end of a run - Eric Johnson
+  * added ParamLookup and registering task parameter as template variables. - Jan
+  * Suppress STDERR during crontab listings - Ferenc Erki
+  * Fix managing a user's own crontab via cron_entry - Ferenc Erki
+  * Add _whoami to determine remote effective username - Ferenc Erki
+  * Add docs on glob usage with file command (close #712, fix #738) - Jose Luis Perez Diez
+  * Map Debian clones correctly - Ferenc Erki
+  * Recognize LinuxMint as a Debian clone (close #506) - Ferenc Erki
+  * Fix GetRex link url - hiroraba
+  * Avoid unnecessary package rebuilds on Gentoo (close #809) - Patrick Lauer
+  * Don't parse @ARGV on import. - Eric Johnson
+  * Refactor child/parent pid logic + comments to be more readable - Eric Johnson
+  * Avoid race condition when doing IPC. - Eric Johnson
+  * Test for race condition problem in Rex::Shared::Var. - Eric Johnson
+  * Refactoring LVM.pm to use mkfs(); - Peter H. Ezetta
+  * refactor Partition.pm, fix $lv_name in Mkfs.pm - Peter H. Ezetta
+  * refactoring swap logic into mkfs logic, silly to separate. - Peter H. Ezetta
+  * code cleanup and addition of POD - Peter H. Ezetta
+  * error checking on $lvname - Peter H. Ezetta
+  * setting up logic for lvm vs raw disk - Peter H. Ezetta
+  * starting to add option parsing - Peter H. Ezetta
+  * start of refactor mkfs/mkswap into their own pm - Peter H. Ezetta
+  * Fix undef warnings if calling get() without param - Andy Beverley
+  * lower exitecode to less than 255 because some os have problems with larger ones - Jan
+  * Fatal exceptions if git switching fail - alex1line
+  * fix for Net::OpenSSH can't set initialize_options for the constructor - #796 - Jan Gehring
+  * fixes the problem of run_task connecting to the wrong host #788 - Jan Gehring
+
 2015-09-04 Ferenc Erki <ferki@rexify.org> (1.3.3)
   * Catch another way to manage services on FreeBSD (close #773) - timp87
   * Fix generated links for Commands modules (fix #776) - Ferenc Erki

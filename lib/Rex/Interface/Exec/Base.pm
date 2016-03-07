@@ -68,4 +68,59 @@ sub can_run {
   return undef;
 }
 
+sub direct_exec {
+  my ( $self, $exec, $option ) = @_;
+
+  Rex::Commands::profiler()->start("direct_exec: $exec");
+
+  my $class_name = ref $self;
+
+  Rex::Logger::debug("$class_name/executing: $exec");
+  my ( $out, $err ) = $self->_exec( $exec, $option );
+
+  Rex::Commands::profiler()->end("direct_exec: $exec");
+
+  Rex::Logger::debug($out) if ($out);
+  if ($err) {
+    Rex::Logger::debug("========= ERR ============");
+    Rex::Logger::debug($err);
+    Rex::Logger::debug("========= ERR ============");
+  }
+
+  if (wantarray) { return ( $out, $err ); }
+
+  return $out;
+}
+
+sub _exec {
+  my ($self) = @_;
+  my $class_name = ref $self;
+  die("_exec method must be overwritten by class ($class_name).");
+}
+
+sub shell {
+  my ($self) = @_;
+
+  Rex::Logger::debug("Detecting shell...");
+
+  my $cache = Rex::get_cache();
+  if ( $cache->valid("shell") ) {
+    Rex::Logger::debug( "Found shell in cache: " . $cache->get("shell") );
+    return Rex::Interface::Shell->create( $cache->get("shell") );
+  }
+
+  my %shells = Rex::Interface::Shell->get_shell_provider;
+  for my $shell ( keys %shells ) {
+    Rex::Logger::debug( "Searching for shell: " . $shell );
+    $shells{$shell}->require;
+    if ( $shells{$shell}->detect($self) ) {
+      Rex::Logger::debug( "Found shell and using: " . $shell );
+      $cache->set( "shell", $shell );
+      return Rex::Interface::Shell->create($shell);
+    }
+  }
+
+  return Rex::Interface::Shell->create("sh");
+}
+
 1;

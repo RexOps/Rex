@@ -16,9 +16,11 @@ use Rex::Commands;
 
 use Symbol 'gensym';
 use IPC::Open3;
+use IO::Select;
+use Rex::Interface::Exec::IOReader;
 
 # Use 'parent' is recommended, but from Perl 5.10.1 its in core
-use base 'Rex::Interface::Exec::Base';
+use base qw(Rex::Interface::Exec::Base Rex::Interface::Exec::IOReader);
 
 sub new {
   my $that  = shift;
@@ -88,36 +90,7 @@ sub exec {
 
   Rex::Logger::debug("Executing: $cmd");
 
-  my ( $writer, $reader, $error );
-  $error = gensym;
-
-  if ( Rex::Config->get_no_tty ) {
-    $pid = open3( $writer, $reader, $error, $cmd );
-
-    while ( my $output = <$reader> ) {
-      $out .= $output;
-      $self->execute_line_based_operation( $output, $option )
-        && goto END_OPEN3;
-    }
-
-    while ( my $errout = <$error> ) {
-      $err .= $errout;
-      $self->execute_line_based_operation( $errout, $option )
-        && goto END_OPEN3;
-    }
-  END_OPEN3:
-    waitpid( $pid, 0 ) or die($!);
-  }
-  else {
-    $pid = open( my $fh, "-|", "$cmd 2>&1" ) or die($!);
-    while (<$fh>) {
-      $out .= $_;
-      $self->execute_line_based_operation( $_, $option )
-        && do { kill( 'KILL', $pid ); last };
-    }
-    waitpid( $pid, 0 ) or die($!);
-
-  }
+  ( $out, $err ) = $self->_exec( $cmd, $option );
 
   Rex::Logger::debug($out) if ($out);
   if ($err) {
@@ -139,6 +112,39 @@ sub can_run {
   $check_with_command ||= $^O =~ /^MSWin/i ? 'where' : 'which';
 
   return $self->SUPER::can_run( $commands_to_check, $check_with_command );
+}
+
+sub _exec {
+  my ( $self, $cmd, $option ) = @_;
+
+  my ( $pid, $writer, $reader, $error, $out, $err );
+  $error = gensym;
+
+  if ( Rex::Config->get_no_tty ) {
+    $pid = open3( $writer, $reader, $error, $cmd );
+
+    ( $out, $err ) = $self->io_read( $reader, $error, $pid, $option );
+
+    waitpid( $pid, 0 ) or die($!);
+  }
+  else {
+    $pid = open( my $fh, "-|", "$cmd 2>&1" ) or die($!);
+    while (<$fh>) {
+      $out .= $_;
+      chomp;
+      $self->execute_line_based_operation( $_, $option )
+        && do { kill( 'KILL', $pid ); last };
+    }
+    waitpid( $pid, 0 ) or die($!);
+
+  }
+
+  # we need to bitshift $? so that $? contains the right (and for all
+  # connection methods the same) exit code after a run()/i_run() call.
+  # this is for the user, so that he can query $? in his task.
+  $? >>= 8;
+
+  return ( $out, $err );
 }
 
 1;

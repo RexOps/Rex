@@ -12,7 +12,7 @@ use warnings;
 # VERSION
 
 use FindBin;
-use File::Basename;
+use File::Basename qw(basename dirname);
 use Time::HiRes qw(gettimeofday tv_interval);
 use Cwd qw(getcwd);
 use List::Util qw(max);
@@ -384,10 +384,6 @@ CHECK_OVERWRITE: {
     CORE::exit(0);
   }
 
-  for my $exit_hook (@exit) {
-    $exit_hook->();
-  }
-
   exit_rex();
 }
 
@@ -596,6 +592,7 @@ sub _list_groups {
 }
 
 sub summarize {
+  my ($signal) = @_;
   my %opts = Rex::Args->getopts;
   return if $opts{'T'};
 
@@ -612,11 +609,20 @@ sub summarize {
   Rex::Logger::info( @failures . " out of " . @summary . " task(s) failed:",
     "error" );
 
-  Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" )
-    foreach sort {
-         ncmp( $a->{task}, $b->{task} )
-      || ncmp( $a->{server}, $b->{server} )
-    } @failures;
+  foreach (
+    sort {
+           ncmp( $a->{task}, $b->{task} )
+        || ncmp( $a->{server}, $b->{server} )
+    } @failures
+    )
+  {
+    Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" );
+    if ( $_->{error_message} ) {
+      for my $line ( split( $/, $_->{error_message} ) ) {
+        Rex::Logger::info( "\t\t$line", "error" );
+      }
+    }
+  }
 }
 
 sub handle_lock_file {
@@ -677,19 +683,105 @@ sub load_rexfile {
     return;
   }
 
+  my $rexfile_dir = dirname $rexfile;
+  Rex::push_lib_to_inc($rexfile_dir);
+
   # load Rexfile
-  eval { require $rexfile };
+  eval {
+
+    # add a true return value at the end of $rexfile.
+    # we need to do this because perl want a "true" value
+    # at the end of a file that is loaded.
+    unshift @INC, sub {
+      my $load_file = $_[1];
+      if ( $load_file eq "__Rexfile__.pm" ) {
+        open( my $fh, "<", $rexfile ) or die("Error can't open $rexfile: $!");
+        my @content = <$fh>;
+        close($fh);
+        chomp @content;
+
+        my $i         = 0;
+        my $found_end = 0;
+
+        # some rexfile has a __DATA__ or __END__ section
+        # and we need to add the true value before those sections.
+        for my $line (@content) {
+          if ( $line =~ m/^__(DATA|END)__$/ ) {
+            splice( @content, $i, 0, "42;" );
+            $found_end++;
+            last;
+          }
+          $i++;
+        }
+
+        # we didn't found __DATA__ or __END__ so we just add
+        # it at the end.
+        if ( $found_end == 0 ) {
+          push @content, "42;";
+        }
+
+        # we can't remove this load from @INC because on perl 5.8
+        # this causes a crash
+        #shift @INC; # remove this loader from @INC
+
+        # we can't directly return a scalar reference because perl 5.8
+        # needs a filehandle. so we create a virtual filehandle...
+        my $c = join( "\n", @content );
+        open( my $rex_fh, "<", \$c );
+        return $rex_fh;
+      }
+    };
+
+    my ( $stdout, $stderr, $default_stderr );
+    open $default_stderr, ">&", STDERR;
+
+    # we close STDERR here because we don't want to see the
+    # normal perl error message on the screen. Instead we print
+    # the error message in the catch-if below.
+    local *STDERR;
+    open( STDERR, ">>", \$stderr );
+
+    # we can't use $rexfile here, because if the variable contains dots
+    # the perl interpreter try to load the file directly without using @INC
+    # so we just fake a module name.
+    require __Rexfile__;
+
+    # update %INC so that we can later use it to find the rexfile
+    $INC{"__Rexfile__.pm"} = $rexfile;
+
+    # reopen STDERR
+    open STDERR, ">&", $default_stderr;
+
+    if ($stderr) {
+      my @lines = split( $/, $stderr );
+      Rex::Logger::info( "You have some code warnings:", 'warn' );
+      Rex::Logger::info( "\t$_", 'warn' ) for @lines;
+    }
+
+    1;
+  };
+
   if ($@) {
-    chomp $@;
-    Rex::Logger::info( "Compile time errors:\n$@", 'error' );
+    my $e = $@;
+    chomp $e;
+
+    # remove the strange path to the Rexfile which exists because
+    # we load the Rexfile via our custom code block.
+    $e =~ s|/loader/[^/]+/||smg;
+
+    my @lines = split( $/, $e );
+
+    Rex::Logger::info( "Compile time errors:", 'error' );
+    Rex::Logger::info( "\t$_", 'error' ) for @lines;
+
     exit 1;
   }
 }
 
 sub exit_rex {
-  my ($exit_code_override) = @_;
+  my ( $exit_code_override, $signal ) = @_;
 
-  summarize();
+  summarize($signal) if !$signal;
 
   Rex::global_sudo(0);
   Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
@@ -697,9 +789,13 @@ sub exit_rex {
 
   select STDOUT;
 
-  if ( $opts{'o'} && defined( Rex::Output->get ) ) {
+  if ( !$signal && $opts{'o'} && defined( Rex::Output->get ) ) {
     Rex::Output->get->write();
     IPC::Shareable->clean_up_all();
+  }
+
+  for my $exit_hook (@exit) {
+    $exit_hook->( $exit_code_override, $signal );
   }
 
   if ($Rex::WITH_EXIT_STATUS) {
@@ -713,5 +809,11 @@ sub exit_rex {
 
   CORE::exit(0);
 }
+
+# we capture CTRL+C so we can cleanup vars files
+# and give modules the chance to also do cleanup
+$SIG{INT} = sub {
+  exit_rex( 1, "INT" );
+};
 
 1;

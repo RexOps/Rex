@@ -4,6 +4,25 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
+=head1 NAME
+
+Rex::Shared::Var - Share variables across Rex tasks
+
+=head1 DESCRIPTION
+
+Share variables across Rex tasks with the help of Storable, using a C<vars.db.$PID> file in the local directory, where C<$PID> is the PID of the parent process.
+
+=head1 SYNOPSIS
+
+ BEGIN {                           # put share in a BEGIN block
+   use Rex::Shared::Var;
+   share qw($scalar @array %hash); # share the listed variables
+ }
+
+=head1 METHODS
+
+=cut
+
 package Rex::Shared::Var;
 
 use strict qw(vars subs);
@@ -15,9 +34,26 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-use Data::Dumper;
-
 @EXPORT = qw(share);
+
+=head2 share
+
+Share the passed list of variables across Rex tasks. Should be used in a C<BEGIN> block.
+
+ BEGIN {
+   use Rex::Shared::Var;
+   share qw($error_count);
+ }
+
+ task 'count', sub {
+   $error_count += run 'wc -l /var/log/syslog';
+ };
+
+ after_task_finished 'count', sub {
+   say "Total number of errors: $error_count";
+ };
+
+=cut
 
 sub share {
   my @vars = @_;

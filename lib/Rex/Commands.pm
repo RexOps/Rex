@@ -690,15 +690,17 @@ You may also use an arrayRef for $task if you want to call multiple tasks.
 =cut
 
 sub do_task {
-  my $task = shift;
+  my $task   = shift;
+  my $params = shift;
 
   if ( ref($task) eq "ARRAY" ) {
     for my $t ( @{$task} ) {
-      Rex::TaskList->run($t);
+      Rex::TaskList->run( $t, ( $params ? ( params => $params ) : () ) );
     }
   }
   else {
-    return Rex::TaskList->run($task);
+    return Rex::TaskList->run( $task,
+      ( $params ? ( params => $params ) : () ) );
   }
 }
 
@@ -1173,7 +1175,7 @@ sub LOCAL (&) {
       ssh      => 0,
       server   => $cur_conn->{server},
       cache    => Rex::Interface::Cache->create(),
-      task     => task(),
+      task     => [ task() ],
       reporter => Rex::Report->create( Rex::Config->get_report_type ),
       notify   => Rex::Notify->new(),
     }
@@ -1349,7 +1351,7 @@ sub around {
 =head2 before_task_start($task => sub {})
 
 Run code before executing the specified task. This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
-If called repeatedly, each sub will be appended to a list of 'before' functions.
+If called repeatedly, each sub will be appended to a list of 'before_task_start' functions.
 
 Note: must come after the definition of the specified task
 
@@ -1374,7 +1376,7 @@ sub before_task_start {
 =head2 after_task_finished($task => sub {})
 
 Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
-If called repeatedly, each sub will be appended to a list of 'before' functions.
+If called repeatedly, each sub will be appended to a list of 'after_task_finished' functions.
 
 Note: must come after the definition of the specified task
 

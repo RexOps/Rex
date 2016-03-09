@@ -26,14 +26,14 @@ sub new {
   bless( $self, $proto );
 
   $self->{commands} = {
-    start          => 'systemctl start %s',
-    restart        => 'systemctl restart %s',
-    stop           => 'systemctl stop %s',
-    reload         => 'systemctl reload %s',
-    status         => 'systemctl is-active %s',
-    ensure_stop    => 'systemctl disable %s',
-    ensure_start   => 'systemctl enable %s',
-    service_exists => 'systemctl show %s | grep LoadState=loaded',
+    start          => 'systemctl --no-pager start %s',
+    restart        => 'systemctl --no-pager restart %s',
+    stop           => 'systemctl --no-pager stop %s',
+    reload         => 'systemctl --no-pager reload %s',
+    status         => 'systemctl --no-pager is-active %s',
+    ensure_stop    => 'systemctl --no-pager disable %s',
+    ensure_start   => 'systemctl --no-pager enable %s',
+    service_exists => 'systemctl --no-pager show %s | grep LoadState=loaded',
   };
 
   return $self;
@@ -56,7 +56,7 @@ sub _prepare_service_name {
 sub action {
   my ( $self, $service, $action ) = @_;
 
-  i_run "systemctl $action $service >/dev/null", nohup => 1;
+  i_run "systemctl --no-pager $action $service >/dev/null", nohup => 1;
   if ( $? == 0 ) { return 1; }
 }
 

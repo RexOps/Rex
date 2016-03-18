@@ -11,30 +11,35 @@ use warnings;
 
 # VERSION
 
-use Moo::Role;
+use Moose::Role;
 use List::Util qw(first);
 use Rex::Resource::Common;
 
-requires qw(present absent);
+with qw(Rex::Resource::Role::Testable);
 
 has ensure_options => (
   is      => 'ro',
-  default => sub {[qw/present absent/]},
+  isa     => 'ArrayRef[Str]',
+  default => sub { [qw/present absent/] },
 );
 
+requires qw(present absent);
+
 sub process {
-  my ($self, $mod_config, $res_type, $res_name) = @_;
-  
-  my $okay = first { $_ eq $mod_config->{ensure} } @{ $self->ensure_options };
-  
-  if(! $okay) {
-    die "Error: $mod_config->{ensure} not a valid option for 'ensure'.";
-  }
-  
-  if ( $self->$okay($mod_config) ) {
-    emit created, "$res_type" . "[$res_name] is now $okay.";
+  my ($self) = @_;
+
+  my $ensure_func =
+    first { $_ eq $self->config->{ensure} } @{ $self->ensure_options };
+
+  if ( !$ensure_func ) {
+    die "Error: "
+      . $self->config->{ensure}
+      . " not a valid option for 'ensure'.";
   }
 
+  if ( !$self->test ) {
+    $self->$ensure_func;
+  }
 }
 
 1;

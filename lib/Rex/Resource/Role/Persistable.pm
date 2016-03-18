@@ -11,17 +11,16 @@ use warnings;
 
 # VERSION
 
-use Moo::Role;
+use Moose::Role;
 
 with qw(Rex::Resource::Role::Ensureable);
 
-has '+ensure_options' => (
+has ensure_options => (
   is      => 'ro',
-  default => sub {[qw/present absent enabled disabled/]},
+  isa     => 'ArrayRef[Str]',
+  default => sub { [qw/present absent enabled disabled/] },
 );
 
-
 requires qw(enabled disabled);
-
 
 1;

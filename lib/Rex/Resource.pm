@@ -13,6 +13,8 @@ use warnings;
 
 use Rex::Constants;
 
+require Rex::Resource::Common;
+
 our @CURRENT_RES;
 
 sub is_inside_resource { ref $CURRENT_RES[-1] ? 1 : 0 }
@@ -59,7 +61,22 @@ sub call {
 
   my $failed = 0;
   eval {
-    $self->{cb}->( \%params );
+    my ( $provider, $mod_config ) = $self->{cb}->( \%params );
+    my $provider_o = $provider->new(
+      type   => $self->type,
+      config => $mod_config,
+      name   => $name
+    );
+
+    $provider_o->process;
+
+    Rex::Resource::Common::emit( $provider_o->status(),
+          $provider_o->type . "["
+        . $provider_o->name
+        . "] is now "
+        . $self->{res_ensure}
+        . "." );
+
     1;
   } or do {
     Rex::Logger::info( $@,                                 "error" );

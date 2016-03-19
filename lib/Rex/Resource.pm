@@ -68,6 +68,7 @@ sub call {
       name   => $name
     );
 
+    # TODO add dry-run feature
     $provider_o->process;
 
     Rex::Resource::Common::emit( $provider_o->status(),

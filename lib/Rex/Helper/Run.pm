@@ -15,13 +15,14 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
+use Net::OpenSSH::ShellQuoter;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Helper::Path;
 require Rex::Commands;
 require Rex::Config;
 
-@EXPORT = qw(upload_and_run i_run);
+@EXPORT = qw(upload_and_run i_run i_exec i_exec_nohup);
 
 sub upload_and_run {
   my ( $template, %option ) = @_;
@@ -101,6 +102,27 @@ sub i_run {
   }
 
   return $out;
+}
+
+sub i_exec {
+  my ( $cmd, @args ) = @_;
+
+  my $exec   = Rex::Interface::Exec->create;
+  my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+
+  my $_cmd_str = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @args );
+
+  i_run $_cmd_str;
+}
+
+sub i_exec_nohup {
+  my ( $cmd, @args ) = @_;
+
+  my $exec   = Rex::Interface::Exec->create;
+  my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+
+  my $_cmd_str = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @args );
+  i_run $_cmd_str, nohup => 1;
 }
 
 1;

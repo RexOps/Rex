@@ -28,7 +28,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(mkfs);
 
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Carp;
 
 =head2 mkfs($devname, %option)
@@ -67,12 +67,12 @@ sub mkfs {
 
   if ( $option{fstype} eq "swap" ) {
     Rex::Logger::info("Creating swap space on /dev/$devname");
-    run "mkswap $add_opts -f /dev/$devname";
+    i_run "mkswap $add_opts -f /dev/$devname";
   }
   elsif ( can_run("mkfs.$option{fstype}") ) {
     Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$devname");
 
-    run "mkfs.$option{fstype} $add_opts /dev/$devname";
+    i_run "mkfs.$option{fstype} $add_opts /dev/$devname";
   }
 
   return;

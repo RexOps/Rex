@@ -77,7 +77,7 @@ sub clearpart {
   if ( $option{initialize} ) {
 
     # will destroy partition table
-    run "parted -s /dev/$disk mklabel " . $option{initialize};
+    i_run "parted -s /dev/$disk mklabel " . $option{initialize};
     if ( $? != 0 ) {
       die("Error setting disklabel from $disk to $option{initialize}");
     }
@@ -91,7 +91,7 @@ sub clearpart {
         size   => "1"
       );
 
-      run "parted /dev/$disk set 1 bios_grub on";
+      i_run "parted /dev/$disk set 1 bios_grub on";
     }
   }
   else {
@@ -100,7 +100,7 @@ sub clearpart {
     for my $part_line (@partitions) {
       my ( $num, $part ) = ( $part_line =~ m/\d+\s+(\d+)\s+\d+\s(.*)$/ );
       Rex::Logger::info("Removing $part");
-      run "parted -s /dev/$disk rm $num";
+      i_run "parted -s /dev/$disk rm $num";
     }
   }
 }
@@ -199,7 +199,7 @@ sub partition {
 
   my $disk = $option{ondisk};
 
-  my @output_lines = grep { /^\s+\d+/ } run "parted /dev/$disk unit kB print";
+  my @output_lines = grep { /^\s+\d+/ } i_run "parted /dev/$disk unit kB print";
 
   my $last_partition_end = 1;
   my $unit;
@@ -221,7 +221,7 @@ sub partition {
   my $next_partition_end =
     $option{grow} ? "-- -1" : $last_partition_end + $option{size};
 
-  run
+  i_run
     "parted -s /dev/$disk mkpart $option{type} $next_partition_start $next_partition_end";
 
   if ( $? != 0 ) {
@@ -248,11 +248,11 @@ sub partition {
   }
 
   if ( $option{boot} ) {
-    run "parted /dev/$disk set $part_num boot on";
+    i_run "parted /dev/$disk set $part_num boot on";
   }
 
   if ( $option{vg} ) {
-    run "parted /dev/$disk set $part_num lvm on";
+    i_run "parted /dev/$disk set $part_num lvm on";
     pvcreate "/dev/$disk$part_num";
     my @vgs = vgs();
     if ( grep { $_->{volume_group} eq $option{vg} } @vgs ) {
@@ -270,7 +270,7 @@ sub partition {
   while ( $found_part == 0 ) {
     Rex::Logger::debug("Waiting for /dev/$disk$part_num to appear...");
 
-    run "ls -l /dev/$disk$part_num";
+    i_run "ls -l /dev/$disk$part_num";
     if ( $? == 0 ) { $found_part = 1; last; }
 
     sleep 1;

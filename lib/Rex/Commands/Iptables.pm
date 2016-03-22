@@ -95,9 +95,9 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Commands::Sysctl;
-use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Commands::Fs;
+use Rex::Commands::Run;
 use Rex::Helper::Run;
 
 use Rex::Logger;
@@ -138,7 +138,7 @@ sub open_port {
     ( $port, %option_h ) = @params;
 
     if ( exists $option_h{only_if} ) {
-      run( $option_h{only_if} );
+      i_run( $option_h{only_if} );
       if ( $? != 0 ) {
         return;
       }
@@ -176,7 +176,7 @@ sub close_port {
     ( $port, %option_h ) = @params;
 
     if ( exists $option_h{only_if} ) {
-      run( $option_h{only_if} );
+      i_run( $option_h{only_if} );
       if ( $? != 0 ) {
         return;
       }
@@ -312,10 +312,10 @@ sub iptables {
 
   if ( $params[0] eq "flush" || $params[0] eq "-flush" || $params[0] eq "-F" ) {
     if ( $params[1] ) {
-      run "$iptables -F -t $params[1]";
+      i_run "$iptables -F -t $params[1]";
     }
     else {
-      run "$iptables -F";
+      i_run "$iptables -F";
     }
 
     return;
@@ -339,7 +339,7 @@ sub iptables {
     }
   }
 
-  my $output = run "$iptables $cmd";
+  my $output = i_run "$iptables $cmd";
 
   if ( $? != 0 ) {
     Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
@@ -445,7 +445,7 @@ List all iptables rules.
 sub iptables_list {
   my @params   = @_;
   my $iptables = _get_executable( \@params );
-  my @lines    = run "$iptables-save";
+  my @lines    = i_run "$iptables-save";
   _iptables_list(@lines);
 }
 

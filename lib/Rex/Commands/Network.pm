@@ -37,7 +37,6 @@ use warnings;
 # VERSION
 
 require Rex::Exporter;
-use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware::Network;
 use Data::Dumper;

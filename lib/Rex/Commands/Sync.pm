@@ -59,7 +59,6 @@ use vars qw(@EXPORT);
 
 use Data::Dumper;
 use Rex::Commands;
-use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Commands::Fs;
 use Rex::Commands::File;

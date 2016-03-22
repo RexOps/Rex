@@ -12,8 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Pkg::Debian;
-use Rex::Commands::Run;
-use Rex::Commands::File;
 
 use base qw(Rex::Pkg::Debian);
 

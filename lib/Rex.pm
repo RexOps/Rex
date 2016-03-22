@@ -577,6 +577,11 @@ sub import {
     Rex::Commands::Kernel->import( register_in => $register_to );
   }
 
+  if ( $what eq "base" || $what eq "-base" ) {
+    require Rex::Commands::Say;
+    Rex::Commands::Say->import( register_in => $register_to );
+  }
+
   if ( $what eq "-feature" || $what eq "feature" ) {
 
     if ( !ref($addition1) ) {
@@ -615,6 +620,9 @@ sub import {
         # feature lower than 1.5, so we load all commands module.
         require Rex::Commands::Kernel;
         Rex::Commands::Kernel->import( register_in => $register_to );
+
+        require Rex::Commands::Say;
+        Rex::Commands::Say->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.5 ) {

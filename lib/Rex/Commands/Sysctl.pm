@@ -37,7 +37,7 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 
 require Rex::Exporter;
 
@@ -67,10 +67,10 @@ sub sysctl {
   if ($val) {
 
     Rex::Logger::debug("Setting sysctl key $key to $val");
-    my $ret = run "/sbin/sysctl -n $key";
+    my $ret = i_run "/sbin/sysctl -n $key";
 
     if ( $ret ne $val ) {
-      run "/sbin/sysctl -w $key=$val";
+      i_run "/sbin/sysctl -w $key=$val";
       if ( $? != 0 ) {
         die("Sysctl failed $key -> $val");
       }
@@ -82,7 +82,7 @@ sub sysctl {
   }
   else {
 
-    my $ret = run "/sbin/sysctl -n $key";
+    my $ret = i_run "/sbin/sysctl -n $key";
     if ( $? == 0 ) {
       return $ret;
     }

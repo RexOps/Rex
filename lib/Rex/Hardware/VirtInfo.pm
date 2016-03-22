@@ -6,7 +6,6 @@ use warnings;
 # VERSION
 
 use Rex;
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;

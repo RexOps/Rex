@@ -26,7 +26,7 @@ use warnings;
 # VERSION
 
 use Rex::Commands -no => [qw/auth/];
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
@@ -388,7 +388,7 @@ sub _download {
 
     }
     else {
-      run "wget -c -qO ./tmp/$filename $self->{url}";
+      i_exec "wget", "-c", "-qO", "./tmp/$filename", $self->{url};
 
       if ( $? != 0 ) {
         die(

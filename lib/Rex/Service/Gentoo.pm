@@ -11,10 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
-use Rex::Helper::Run;
-use Rex::Logger;
-
 use base qw(Rex::Service::Base);
 
 sub new {

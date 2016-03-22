@@ -12,8 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
-use Rex::Helper::Run;
 
 use Data::Dumper;
 use Rex::Virtualization::LibVirt::dumpxml;

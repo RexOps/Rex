@@ -268,7 +268,7 @@ Dump the contents of a file to STDOUT.
     my $aug_key = $file;
 
     if ( $is_ssh || !$has_config_augeas ) {
-      my @list = run "augtool print $aug_key";
+      my @list = i_exec "augtool", "print", $aug_key;
       print join( "\n", @list ) . "\n";
     }
     else {

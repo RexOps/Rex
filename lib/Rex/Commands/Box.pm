@@ -68,7 +68,6 @@ use YAML;
 use Data::Dumper;
 
 use Rex::Commands -no => [qw/auth/];
-use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::Gather;

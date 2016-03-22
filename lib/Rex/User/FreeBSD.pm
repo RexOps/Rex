@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Helper::Run;
 use Rex::Helper::Encode;

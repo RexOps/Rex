@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;

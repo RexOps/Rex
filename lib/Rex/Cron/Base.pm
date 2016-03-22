@@ -15,7 +15,6 @@ use Rex::Logger;
 use Rex::Commands;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Data::Dumper;
 use Rex::Helper::Path;

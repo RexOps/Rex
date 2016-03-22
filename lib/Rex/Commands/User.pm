@@ -41,7 +41,6 @@ use warnings;
 # VERSION
 
 require Rex::Exporter;
-use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Logger;

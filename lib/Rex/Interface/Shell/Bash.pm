@@ -14,6 +14,7 @@ use warnings;
 use Rex::Interface::Shell::Base;
 use base qw(Rex::Interface::Shell::Base);
 use Data::Dumper;
+use Net::OpenSSH::ShellQuoter;
 
 sub new {
   my $class = shift;
@@ -127,12 +128,8 @@ sub exec {
   }
 
   if ( $self->{__inner_shell__} ) {
-    $complete_cmd =~ s/\\/\\\\/gms;
-    $complete_cmd =~ s/"/\\"/gms;
-    $complete_cmd =~ s/\$/\\\$/gms;
-    $complete_cmd =~ s/\`/\\\`/gms;
-
-    $complete_cmd = "sh -c \"$complete_cmd\"";
+    my $quoter = Net::OpenSSH::ShellQuoter->quoter("sh");
+    $complete_cmd = "sh -c " . $quoter->quote($complete_cmd);
   }
 
   if ( exists $option->{prepend_command} && $option->{prepend_command} ) {

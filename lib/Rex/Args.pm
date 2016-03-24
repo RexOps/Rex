@@ -157,7 +157,28 @@ sub get {
   my ($class) = @_;
 
   my $task = Rex::TaskList->create->current_task;
-  return $task->get_opts();
+  if ($task) {
+    return $task->get_opts();
+  }
+  else {
+    return _read_old_way();
+  }
+}
+
+sub _read_old_way {
+  #### parse task options
+  my %task_opts;
+
+  for my $p (@ARGV) {
+    my ( $key, $val ) = split( /=/, $p, 2 );
+
+    $key =~ s/^--//;
+
+    if ( defined $val ) { $task_opts{$key} = $val; next; }
+    $task_opts{$key} = 1;
+  }
+
+  return %task_opts;
 }
 
 1;

@@ -11,9 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
-use Rex::Commands::File;
-
 use Rex::Pkg::NetBSD;
 
 use base qw(Rex::Pkg::NetBSD);

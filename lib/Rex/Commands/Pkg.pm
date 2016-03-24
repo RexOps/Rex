@@ -40,7 +40,6 @@ use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Commands::MD5;
 use Rex::Commands::Upload;
-use Rex::Commands::Run;
 use Rex::Config;
 use Rex::Commands;
 use Rex::Hook;

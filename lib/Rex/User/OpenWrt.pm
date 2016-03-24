@@ -13,7 +13,6 @@ use warnings;
 
 use Rex::Logger;
 require Rex::Commands;
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Interface::File;

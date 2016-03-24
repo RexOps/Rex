@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
 use Rex::Helper::Array;
 use Rex::Hardware::Network::OpenBSD;
 

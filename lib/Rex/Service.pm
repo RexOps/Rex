@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Config;
-use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;

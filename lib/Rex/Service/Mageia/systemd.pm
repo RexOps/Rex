@@ -11,10 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
-use Rex::Logger;
-use Rex::Commands::Fs;
-
 use Rex::Service::Redhat::systemd;
 use base qw(Rex::Service::Redhat::systemd);
 

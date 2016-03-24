@@ -567,7 +567,7 @@ sub merge_auth {
   my ( $self, $server ) = @_;
 
   # merge auth hashs
-  # task auth as precedence
+  # auth info of task has precedence
   my %auth = $server->merge_auth( $self->{auth} );
 
   return \%auth;
@@ -659,7 +659,7 @@ sub connect {
 
   my $profiler = Rex::Profiler->new;
 
-  # task specific auth rules over all
+  # auth rules of task over all
   my %connect_hash = %{$auth};
   $connect_hash{server} = $server;
 

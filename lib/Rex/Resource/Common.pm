@@ -13,12 +13,14 @@ use warnings;
 
 require Exporter;
 require Rex::Config;
+use Rex::Commands::Gather;
 use Rex::Resource;
 use Data::Dumper;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-@EXPORT = qw(emit resource resource_name changed created removed);
+@EXPORT =
+  qw(emit resource resource_name changed created removed get_resource_provider);
 
 sub changed { return "changed"; }
 sub created { return "created"; }
@@ -139,6 +141,50 @@ sub resource_ensure {
 
 sub current_resource {
   return $Rex::Resource::CURRENT_RES[-1];
+}
+
+sub get_resource_provider {
+  my ( $os, $os_name ) = @_;
+  my ($pkg) = caller;
+
+  if ( is_redhat($os_name) ) {
+    $os_name = "redhat";
+  }
+
+  elsif ( is_debian($os_name) ) {
+    $os_name = "debian";
+  }
+
+  elsif ( is_ubuntu($os_name) ) {
+    $os_name = "ubuntu";
+  }
+
+  my $try_load = sub {
+    my @mods = @_;
+
+    my $ret;
+    for my $mod (@mods) {
+      Rex::Logger::debug("Try to load provider: $mod");
+      eval {
+        $mod->require;
+        $ret = $mod;
+        1;
+      } or do {
+        Rex::Logger::debug("Failed loading provider: $mod\n$@");
+        $ret = undef;
+      };
+
+      return $ret if ($ret);
+    }
+  };
+
+  my $provider_pkg = $try_load->(
+    "${pkg}::Provider::" . lc("${os}::${os_name}"),
+    "${pkg}::Provider::" . lc("${os}::default"),
+    "${pkg}::Provider::" . lc($os)
+  );
+
+  return $provider_pkg;
 }
 
 =back

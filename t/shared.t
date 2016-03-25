@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 BEGIN {
-  use Test::More tests => 15;
+  use Test::More tests => 16;
   use Test::Deep;
   use Time::HiRes;
   use Rex::Shared::Var;
@@ -26,6 +26,9 @@ is_deeply( \@array, [qw(two three four five)], "shared array after shift" );
 
 is( pop @array, "five", "pop from shared array" );
 is_deeply( \@array, [qw(two three four)], "shared array after pop" );
+
+unshift( @array, "six" );
+is( $array[0], "six", "unshift to shared array" );
 
 %hash = (
   name     => "joe",

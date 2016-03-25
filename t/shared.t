@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 BEGIN {
-  use Test::More tests => 12;
+  use Test::More tests => 15;
   use Test::Deep;
   use Time::HiRes;
   use Rex::Shared::Var;
@@ -13,6 +13,7 @@ $scalar = "scalar";
 is( $scalar, "scalar", "scalar test" );
 
 is( shift @array, undef, "shift from empty shared array" );
+is( pop @array,   undef, "pop from empty shared array" );
 
 @array = qw(one two three four);
 is( join( "-", @array ), "one-two-three-four", "array test" );
@@ -22,6 +23,9 @@ is( $array[-1], "five", "array push" );
 
 is( shift @array, "one", "shift from shared array" );
 is_deeply( \@array, [qw(two three four five)], "shared array after shift" );
+
+is( pop @array, "five", "pop from shared array" );
+is_deeply( \@array, [qw(two three four)], "shared array after pop" );
 
 %hash = (
   name     => "joe",

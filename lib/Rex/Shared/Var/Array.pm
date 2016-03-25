@@ -92,6 +92,22 @@ sub PUSH {
   };
 }
 
+sub SHIFT {
+  my $self = shift;
+  my @data = @_;
+  my $result;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    $result = shift( @{ $ref->{ $self->{varname} }->{data} } );
+
+    __store $ref;
+  };
+
+  return $result;
+}
+
 sub EXTEND {
   my $self  = shift;
   my $count = shift;

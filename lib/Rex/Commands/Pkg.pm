@@ -568,7 +568,7 @@ sub update_system {
   my @old_installed = $pkg->get_installed;
 
   eval { $pkg->update_system; };
-  Rex::Logger::info( "An error occured for update_system: $@", "warn" ) if $@;
+  Rex::Logger::info( "An error occurred for update_system: $@", "warn" ) if $@;
 
   my @new_installed = $pkg->get_installed;
 

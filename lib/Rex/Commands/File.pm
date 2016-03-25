@@ -723,7 +723,7 @@ On failure it will die.
  
  # catch an error
  if($@) {
-   print "An error occured. $@.\n";
+   print "An error occurred. $@.\n";
  }
  
  # work with the filehandle
@@ -780,7 +780,7 @@ On failure it will die.
  
  # catch an error
  if($@) {
-   print "An error occured. $@.\n";
+   print "An error occurred. $@.\n";
  }
  
  # work with the filehandle

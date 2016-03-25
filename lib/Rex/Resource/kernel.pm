@@ -58,5 +58,4 @@ resource "kmod", { export => 1 }, sub {
   return ( $provider, $mod_config );
 };
 
-
 1;

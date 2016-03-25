@@ -108,6 +108,22 @@ sub SHIFT {
   return $result;
 }
 
+sub POP {
+  my $self = shift;
+  my @data = @_;
+  my $result;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    $result = pop( @{ $ref->{ $self->{varname} }->{data} } );
+
+    __store $ref;
+  };
+
+  return $result;
+}
+
 sub EXTEND {
   my $self  = shift;
   my $count = shift;

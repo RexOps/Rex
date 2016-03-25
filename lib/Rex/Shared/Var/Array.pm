@@ -92,6 +92,23 @@ sub PUSH {
   };
 }
 
+sub UNSHIFT {
+  my $self = shift;
+  my @data = @_;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    if ( !ref( $ref->{ $self->{varname} }->{data} ) eq "ARRAY" ) {
+      $ref->{ $self->{varname} }->{data} = [];
+    }
+
+    unshift( @{ $ref->{ $self->{varname} }->{data} }, @data );
+
+    __store $ref;
+  };
+}
+
 sub SHIFT {
   my $self = shift;
   my @data = @_;

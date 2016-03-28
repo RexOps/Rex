@@ -234,6 +234,7 @@ sub run {
     }
 
     my $exec = Rex::Interface::Exec->create;
+
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
       eval {
         local $SIG{ALRM} = sub { die("timeout"); };

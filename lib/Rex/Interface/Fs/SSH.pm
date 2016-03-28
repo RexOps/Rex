@@ -138,7 +138,8 @@ sub stat {
 
   if ( !%ret ) { return undef; }
 
-  $ret{'mode'} = sprintf( "%04o", $ret{'mode'} & 07777 );
+  $ret{'mode'} =
+    sprintf( "%04o", Rex::Helper::File::Stat->S_IMODE( $ret{'mode'} ) );
 
   Rex::Commands::profiler()->end("stat: $file");
 

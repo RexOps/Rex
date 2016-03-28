@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Interface::Fs::Base;
 use base qw(Rex::Interface::Fs::Base);
+use Rex::Helper::File::Stat;
 
 sub new {
   my $that  = shift;
@@ -121,7 +122,7 @@ sub stat {
 
     my %ret;
 
-    $ret{'mode'}  = sprintf( "%04o", $mode & 07777 );
+    $ret{'mode'}  = sprintf( "%04o", Rex::Helper::File::Stat->S_IMODE($mode) );
     $ret{'size'}  = $size;
     $ret{'uid'}   = $uid;
     $ret{'gid'}   = $gid;

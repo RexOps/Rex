@@ -49,6 +49,11 @@ sub S_ISSOCK {
   _fcntl()->S_ISSOCK(@_);
 }
 
+sub S_IMODE {
+  shift;
+  _fcntl()->S_IMODE(@_);
+}
+
 sub _fcntl {
   if ( $^O =~ m/^MSWin/ ) {
     return "Rex::Helper::File::Stat::Win32";

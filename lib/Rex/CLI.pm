@@ -363,7 +363,8 @@ CHECK_OVERWRITE: {
     Rex::Logger::debug( "Loading Rex-Module: " . $opts{'M'} );
     my $mod = $opts{'M'};
     $mod =~ s{::}{/}g;
-    require "$mod.pm";
+    $mod .= ".pm";
+    require $mod;
   }
 
   my $run_list = Rex::RunList->instance;

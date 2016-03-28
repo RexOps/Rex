@@ -88,7 +88,7 @@ This module only exports the I<vm> function. You can manage everything with this
 
 =head2 Creating a Virtual Machine
 
-Create a (VirtualBox) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size beeing a file on disk.
+Create a (VirtualBox) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size being a file on disk.
 With a cdrom as an iso image and a natted network. The bootorder is set to "dvd".
 
  vm create => "vm01",
@@ -107,7 +107,7 @@ With a cdrom as an iso image and a natted network. The bootorder is set to "dvd"
     boot => "dvd";
 
 
-Create a (KVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size beeing a file on disk.
+Create a (KVM) VM named "vm01" with 512 MB ram and 1 cpu. One harddrive, 10 GB in size being a file on disk.
 With a cdrom as an iso image and a bridged network on the bridge virbr0. The Bootorder is set to "cdrom".
 
  vm create => "vm01",

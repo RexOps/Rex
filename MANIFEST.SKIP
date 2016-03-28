@@ -20,7 +20,6 @@ MYMETA.json
 MYMETA.yml
 .DS_Store
 screencasts
-.perltidyrc
 misc
 README.md
 vars\..*

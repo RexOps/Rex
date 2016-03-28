@@ -1,0 +1,18 @@
+language: perl
+perl:
+  - "5.22"
+cache:
+  apt: true
+  directories:
+    - /home/travis/perl5/perlbrew/perls/5.22.0
+sudo: false
+before_install:
+  - cpanm --quiet --notest Perl::Critic
+  - perlcritic --quiet --single-policy=RequireTidyCode bin
+install:
+  - dzil authordeps --missing | cpanm --quiet --notest
+  - dzil listdeps --missing | cpanm --quiet --notest
+  - cpanm --quiet --notest DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1 String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Test::mysqld
+  - dzil build --in build --notgz
+script:
+  - cd build && RELEASE_TESTING=1 AUTHOR_TESTING=1 prove --timer --lib --recurse --jobs 2 --shuffle t/

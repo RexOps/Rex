@@ -298,7 +298,12 @@ Configure the authentication to the VM.
 
 sub auth {
   my ( $self, %auth ) = @_;
-  $self->{__auth} = \%auth;
+  if(%auth) {
+    $self->{__auth} = \%auth;
+  }
+  else {
+    return $self->{__auth};
+  }
 }
 
 sub wait_for_ssh {

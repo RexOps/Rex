@@ -1,5 +1,7 @@
 use Test::More;
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 
 {
 
@@ -7,6 +9,8 @@ use Rex::Commands;
   use strict;
   use warnings;
   use Rex::Commands;
+  use Rex::Commands::Task;
+  use Rex::Commands::Environment;
 
   $::QUIET = 1;
 

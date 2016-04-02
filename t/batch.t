@@ -1,5 +1,6 @@
 use Test::More tests => 2;
 use Rex::Commands;
+use Rex::Commands::Task;
 use Rex::Batch;
 
 desc("Test");

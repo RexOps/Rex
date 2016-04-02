@@ -6,6 +6,8 @@ use Test::Deep;
 
 use Rex::Config;
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 use Rex::Commands::Run;
 use Rex::Transaction;
 

@@ -31,6 +31,8 @@ use YAML;
 use Data::Dumper;
 use Rex::Require;
 
+require Rex::Commands::Task;
+
 our (
   $user,                     $password,
   $port,                     $timeout,
@@ -793,7 +795,7 @@ sub get_template_function {
     return sub {
       my ( $content, $template_vars ) = @_;
       $template_vars = {
-        Rex::Commands::task()->get_opts,
+        Rex::Commands::Task::task()->get_opts,
         (
           Rex::Resource->is_inside_resource
           ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
@@ -801,7 +803,7 @@ sub get_template_function {
         ),
         %{ $template_vars || {} }
         }
-        if ( Rex::Commands::task() );
+        if ( Rex::Commands::Task::task() );
       return $template_function->( $content, $template_vars );
     };
   }
@@ -812,7 +814,7 @@ sub get_template_function {
     return sub {
       my ( $content, $template_vars ) = @_;
       $template_vars = {
-        Rex::Commands::task()->get_opts,
+        Rex::Commands::Task::task()->get_opts,
         (
           Rex::Resource->is_inside_resource
           ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
@@ -820,7 +822,7 @@ sub get_template_function {
         ),
         %{ $template_vars || {} }
         }
-        if ( Rex::Commands::task() );
+        if ( Rex::Commands::Task::task() );
       Rex::Template::NG->require;
       my $t = Rex::Template::NG->new;
       return $t->parse( $content, %{$template_vars} );
@@ -830,7 +832,7 @@ sub get_template_function {
   return sub {
     my ( $content, $template_vars ) = @_;
     $template_vars = {
-      Rex::Commands::task()->get_opts,
+      Rex::Commands::Task::task()->get_opts,
       (
         Rex::Resource->is_inside_resource
         ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
@@ -838,7 +840,7 @@ sub get_template_function {
       ),
       %{ $template_vars || {} }
       }
-      if ( Rex::Commands::task() );
+      if ( Rex::Commands::Task::task() );
     use Rex::Template;
     my $template = Rex::Template->new;
     return $template->parse( $content, $template_vars );

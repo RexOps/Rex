@@ -21,6 +21,8 @@ use Cwd 'realpath';
 
 require Rex;
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 require Rex::Config;
 
 use Rex::Interface::Exec;
@@ -202,7 +204,7 @@ sub parse_path {
   require Rex::Commands::Gather;
 
   $hw{server}      = Rex::Commands::connection()->server;
-  $hw{environment} = Rex::Commands::environment();
+  $hw{environment} = Rex::Commands::Environment::environment();
 
   $path =~ s/\{(server|environment)\}/$hw{$1}/gms;
 

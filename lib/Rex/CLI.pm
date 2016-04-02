@@ -261,7 +261,7 @@ CHECK_OVERWRITE: {
   }
   elsif ( $opts{'T'} && $opts{'y'} ) {
     my @tasks  = Rex::TaskList->create()->get_tasks;
-    my @envs   = Rex::Commands->get_environments();
+    my @envs   = Rex::Commands::Environment->get_environments();
     my %groups = Rex::Group->get_groups;
 
     my %real_groups;
@@ -557,8 +557,8 @@ sub _list_envs {
   Rex::Logger::debug("Listing Envs");
 
   my @envs =
-    map { Rex::Commands->get_environment($_) }
-    sort Rex::Commands->get_environments();
+    map { Rex::Commands::Environment->get_environment($_) }
+    sort Rex::Commands::Environment->get_environments();
   return unless @envs;
 
   _print_color( "Environments\n", "yellow" ) if scalar @envs;

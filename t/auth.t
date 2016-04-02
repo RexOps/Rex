@@ -4,6 +4,7 @@ use warnings;
 use Test::More tests => 48;
 
 use Rex::Commands;
+use Rex::Commands::Task;
 use Rex::Group;
 
 {

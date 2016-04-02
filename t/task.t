@@ -25,6 +25,8 @@ else {
 
 use Rex::Task;
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 
 {
   no warnings 'once';

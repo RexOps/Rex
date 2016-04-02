@@ -6,6 +6,8 @@ use Test::More;
 use Rex::Args;
 use Rex::RunList;
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 
 $Rex::Logger::silent = 1;
 Rex::Config->set_task_chaining_cmdline_args(1);

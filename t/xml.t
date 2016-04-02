@@ -11,6 +11,7 @@ SKIP: {
 
   use Rex::Group;
   use Rex::Commands;
+  use Rex::Commands::Task;
 
   no warnings 'once';
 
@@ -44,7 +45,7 @@ SKIP: {
       }
     )
   );
-  Rex::Commands::do_task("xml_task1");
+  Rex::Commands::Task::do_task("xml_task1");
 
   no_ssh(
     task(
@@ -58,6 +59,6 @@ SKIP: {
       }
     )
   );
-  Rex::Commands::do_task("xml_task2");
+  Rex::Commands::Task::do_task("xml_task2");
   Rex::TaskList->create()->set_in_transaction(0);
 }

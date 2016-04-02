@@ -3,6 +3,7 @@ package main;
 use Test::More tests => 2;
 
 use Rex::Commands;
+use Rex::Commands::Task;
 
 desc("Test");
 task(

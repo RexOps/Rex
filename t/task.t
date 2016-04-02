@@ -49,7 +49,7 @@ is( $t1->desc, "Description", "get/set description" );
 
 is(
   $t1->get_connection_type,
-  ( $have_mods{"Net::OpenSSH"} ? "OpenSSH" : "SSH" ),
+  ( $have_mods{"Net::OpenSSH"} && $^O !~ m/^MSWin/ ? "OpenSSH" : "SSH" ),
   "get connection type for ssh"
 );
 is( $t1->want_connect, 1, "want a connection?" );
@@ -60,7 +60,7 @@ $t1->modify( "no_ssh", 0 );
 is( $t1->want_connect, 1, "want a connection?" );
 is(
   $t1->get_connection_type,
-  ( $have_mods{"Net::OpenSSH"} ? "OpenSSH" : "SSH" ),
+  ( $have_mods{"Net::OpenSSH"} && $^O !~ m/^MSWin/ ? "OpenSSH" : "SSH" ),
   "get connection type for ssh"
 );
 
@@ -89,8 +89,8 @@ $t1->set_code(
   }
 );
 
-Rex::Config->set(
-  "connection" => $have_mods{"Net::OpenSSH"} ? "OpenSSH" : "SSH" );
+Rex::Config->set( "connection" => $have_mods{"Net::OpenSSH"}
+    && $^O !~ m/^MSWin/ ? "OpenSSH" : "SSH" );
 ok( !$t1->connection->is_connected, "connection currently not established" );
 $t1->modify( "no_ssh", 1 );
 $t1->connect("localtest");

@@ -174,7 +174,22 @@ Executes the given tasks on the VM.
 
 sub provision_vm {
   my ( $self, @tasks ) = @_;
-  die("This method must be overwritten.");
+
+  if ( !@tasks ) {
+    @tasks = @{ $self->{__tasks} };
+  }
+
+  $self->wait_for_ssh();
+
+  for my $task (@tasks) {
+    my $task_o = Rex::TaskList->create()->get_task($task);
+    if ( !$task_o ) {
+      die "Task $task not found.";
+    }
+
+    $task_o->set_auth( %{ $self->{__auth} } );
+    $task_o->run( $self->ip );
+  }
 }
 
 =head2 cpus($count)

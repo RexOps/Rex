@@ -107,6 +107,7 @@ sub checkout {
 
     if ( exists $checkout_opt->{"tag"} ) {
       my $tag = $checkout_opt->{tag};
+      my $checkout_cmd = sprintf( $CHECKOUT_TAG_COMMAND, $tag, $tag );
       Rex::Logger::info( "Switching to tag " . $tag );
       $out = run "git fetch origin", cwd => $checkout_to;
 
@@ -118,7 +119,7 @@ sub checkout {
       else {
         Rex::Logger::debug($out);
       }
-      $out = run "git checkout -b $tag $tag", cwd => $checkout_to;
+      $out = i_run "$checkout_cmd", cwd => $checkout_to;
       unless ( $? == 0 ) {
         Rex::Logger::info( "Error switching to tag.", "warn" );
         Rex::Logger::info($out);

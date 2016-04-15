@@ -199,21 +199,6 @@ sub security_group {
   $self->{security_group} = $sec_group;
 }
 
-sub provision_vm {
-  my ( $self, @tasks ) = @_;
-
-  if ( !@tasks ) {
-    @tasks = @{ $self->{__tasks} };
-  }
-
-  $self->wait_for_ssh();
-
-  for my $task (@tasks) {
-    Rex::TaskList->create()->get_task($task)->set_auth( %{ $self->{__auth} } );
-    Rex::TaskList->create()->get_task($task)->run( $self->ip );
-  }
-}
-
 =head2 forward_port(%option)
 
 Not available for Amazon Boxes.

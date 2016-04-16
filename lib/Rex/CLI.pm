@@ -356,7 +356,7 @@ CHECK_OVERWRITE: {
     push @params, {};
 
     Rex::TaskList->create()->create_task( "eval-line", @params );
-    Rex::Commands::do_task("eval-line");
+    Rex::Commands::Task::do_task("eval-line");
     exit_rex();
   }
   elsif ( $opts{'M'} ) {

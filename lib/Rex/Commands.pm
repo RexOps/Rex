@@ -654,7 +654,7 @@ sub LOCAL (&) {
       ssh      => 0,
       server   => $cur_conn->{server},
       cache    => Rex::Interface::Cache->create(),
-      task     => [ task() ],
+      task     => [ Rex::Commands::Task::task() ],
       reporter => Rex::Report->create( Rex::Config->get_report_type ),
       notify   => Rex::Notify->new(),
     }

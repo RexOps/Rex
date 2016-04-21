@@ -67,6 +67,7 @@ sub connect {
 CON_SSH:
   $port ||= Rex::Config->get_port( server => $server ) || 22;
   $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
+  $self->{ssh}->timeout($timeout);
 
   $server =
     Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
@@ -76,7 +77,7 @@ CON_SSH:
     $port   = $2;
   }
   Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
-  unless ( $self->{ssh}->connect( $server, $port, Timeout => $timeout ) ) {
+  unless ( $self->{ssh}->connect( $server, $port ) ) {
     ++$fail_connect;
     sleep 1;
     goto CON_SSH

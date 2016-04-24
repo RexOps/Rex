@@ -54,8 +54,8 @@ sub connect {
 
   Rex::Logger::debug("Using Net::OpenSSH for connection");
   Rex::Logger::debug( "Using user: " . $user );
-  Rex::Logger::debug(
-    Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
+  Rex::Logger::debug( Rex::Logger::masq( "Using password: %s", $pass ) )
+    if defined $pass;
 
   my $proxy_command = Rex::Config->get_proxy_command( server => $server );
 

@@ -695,10 +695,12 @@ sub do_task {
 
   if ( ref($task) eq "ARRAY" ) {
     for my $t ( @{$task} ) {
+      Rex::TaskList->create()->get_task($t) || die "Task $t not found.";
       Rex::TaskList->run( $t, ( $params ? ( params => $params ) : () ) );
     }
   }
   else {
+    Rex::TaskList->create()->get_task($task) || die "Task $task not found.";
     return Rex::TaskList->run( $task,
       ( $params ? ( params => $params ) : () ) );
   }

@@ -67,4 +67,9 @@ sub S_ISSOCK {
   }
 }
 
+sub S_IMODE {
+  shift;
+  Fcntl::S_IMODE(@_);
+}
+
 1;

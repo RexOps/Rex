@@ -516,6 +516,7 @@ This method is used internally to execute the specified hooks.
 
 sub run_hook {
   my ( $self, $server, $hook, @more_args ) = @_;
+  my $old_server;
 
   for my $code ( @{ $self->{$hook} } ) {
     if ( $hook eq "after" ) { # special case for after hooks
@@ -526,7 +527,7 @@ sub run_hook {
       );
     }
     else {
-      my $old_server = $$server if $server;
+      $old_server = $$server if $server;
       $code->( $$server, $server, { $self->get_opts }, @more_args );
       if ( $old_server && $old_server ne $$server ) {
         $self->{current_server} = $$server;

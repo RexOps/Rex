@@ -1,3 +1,8 @@
+theme = core
 severity = 5
-[BuiltinFunctions::ProhibitStringyEval]
+[-BuiltinFunctions::ProhibitStringyEval]
 allow_includes = 1
+[TestingAndDebugging::ProhibitNoStrict]
+allow = refs vars
+[-Subroutines::ProhibitSubroutinePrototypes]
+[-Subroutines::ProhibitExplicitReturnUndef]

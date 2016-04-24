@@ -122,7 +122,7 @@ sub stat {
   if ( !$ret ) { return undef; }
 
   my %ret = (
-    mode  => sprintf( "%04o", $ret->perm & 07777 ),
+    mode  => sprintf( "%04o", Rex::Helper::File::Stat->S_IMODE( $ret->perm ) ),
     size  => $ret->size,
     uid   => $ret->uid,
     gid   => $ret->gid,

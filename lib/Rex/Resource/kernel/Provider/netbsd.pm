@@ -50,7 +50,7 @@ Unload the module if module is loaded and ensure that the module isn't loaded on
 
 =cut
 
-package Rex::Resource::kernel::Provider::linux::netbsd;
+package Rex::Resource::kernel::Provider::netbsd;
 
 use strict;
 use warnings;

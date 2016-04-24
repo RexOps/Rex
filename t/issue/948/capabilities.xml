@@ -1,0 +1,243 @@
+<capabilities>
+
+  <host>
+    <uuid>9d400c30-4e27-11e0-a18b-1c7508ed862e</uuid>
+    <cpu>
+      <arch>x86_64</arch>
+      <model>SandyBridge</model>
+      <vendor>Intel</vendor>
+      <topology sockets='1' cores='4' threads='2'/>
+      <feature name='invtsc'/>
+      <feature name='osxsave'/>
+      <feature name='pcid'/>
+      <feature name='pdcm'/>
+      <feature name='xtpr'/>
+      <feature name='tm2'/>
+      <feature name='est'/>
+      <feature name='vmx'/>
+      <feature name='ds_cpl'/>
+      <feature name='monitor'/>
+      <feature name='dtes64'/>
+      <feature name='pbe'/>
+      <feature name='tm'/>
+      <feature name='ht'/>
+      <feature name='ss'/>
+      <feature name='acpi'/>
+      <feature name='ds'/>
+      <feature name='vme'/>
+      <pages unit='KiB' size='4'/>
+      <pages unit='KiB' size='2048'/>
+    </cpu>
+    <power_management>
+      <suspend_mem/>
+    </power_management>
+    <migration_features>
+      <live/>
+      <uri_transports>
+        <uri_transport>tcp</uri_transport>
+        <uri_transport>rdma</uri_transport>
+      </uri_transports>
+    </migration_features>
+    <topology>
+      <cells num='1'>
+        <cell id='0'>
+          <memory unit='KiB'>16282820</memory>
+          <pages unit='KiB' size='4'>4070705</pages>
+          <pages unit='KiB' size='2048'>0</pages>
+          <distances>
+            <sibling id='0' value='10'/>
+          </distances>
+          <cpus num='8'>
+            <cpu id='0' socket_id='0' core_id='0' siblings='0-1'/>
+            <cpu id='1' socket_id='0' core_id='0' siblings='0-1'/>
+            <cpu id='2' socket_id='0' core_id='1' siblings='2-3'/>
+            <cpu id='3' socket_id='0' core_id='1' siblings='2-3'/>
+            <cpu id='4' socket_id='0' core_id='2' siblings='4-5'/>
+            <cpu id='5' socket_id='0' core_id='2' siblings='4-5'/>
+            <cpu id='6' socket_id='0' core_id='3' siblings='6-7'/>
+            <cpu id='7' socket_id='0' core_id='3' siblings='6-7'/>
+          </cpus>
+        </cell>
+      </cells>
+    </topology>
+    <secmodel>
+      <model>apparmor</model>
+      <doi>0</doi>
+    </secmodel>
+    <secmodel>
+      <model>dac</model>
+      <doi>0</doi>
+      <baselabel type='kvm'>+121:+129</baselabel>
+      <baselabel type='qemu'>+121:+129</baselabel>
+    </secmodel>
+  </host>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='i686'>
+      <wordsize>32</wordsize>
+      <emulator>/usr/bin/qemu-system-i386</emulator>
+      <machine canonical='pc-i440fx-vivid' maxCpus='255'>ubuntu</machine>
+      <machine maxCpus='255'>pc-0.12</machine>
+      <machine maxCpus='255'>pc-1.3</machine>
+      <machine maxCpus='255'>pc-q35-1.6</machine>
+      <machine maxCpus='255'>pc-q35-1.5</machine>
+      <machine maxCpus='255'>pc-i440fx-1.6</machine>
+      <machine maxCpus='255'>pc-q35-2.2</machine>
+      <machine maxCpus='1'>xenpv</machine>
+      <machine maxCpus='255'>pc-i440fx-1.7</machine>
+      <machine maxCpus='255'>pc-0.11</machine>
+      <machine maxCpus='255'>pc-q35-2.1</machine>
+      <machine canonical='pc-i440fx-2.3' maxCpus='255'>pc</machine>
+      <machine maxCpus='255'>pc-0.10</machine>
+      <machine maxCpus='255'>pc-i440fx-trusty</machine>
+      <machine maxCpus='255'>pc-1.2</machine>
+      <machine maxCpus='255'>pc-i440fx-2.2</machine>
+      <machine maxCpus='1'>isapc</machine>
+      <machine maxCpus='255'>pc-q35-1.4</machine>
+      <machine maxCpus='128'>xenfv</machine>
+      <machine maxCpus='255'>pc-0.15</machine>
+      <machine canonical='pc-i440fx-utopic' maxCpus='255'>ubuntu</machine>
+      <machine maxCpus='255'>pc-i440fx-1.5</machine>
+      <machine maxCpus='255'>pc-0.14</machine>
+      <machine maxCpus='255'>pc-i440fx-1.4</machine>
+      <machine maxCpus='255'>pc-q35-2.0</machine>
+      <machine maxCpus='255'>pc-1.1</machine>
+      <machine maxCpus='255'>pc-q35-1.7</machine>
+      <machine maxCpus='255'>pc-i440fx-2.1</machine>
+      <machine maxCpus='255'>pc-1.0</machine>
+      <machine maxCpus='255'>pc-i440fx-2.0</machine>
+      <machine canonical='pc-q35-2.3' maxCpus='255'>q35</machine>
+      <machine maxCpus='255'>pc-0.13</machine>
+      <domain type='qemu'/>
+      <domain type='kvm'>
+        <emulator>/usr/bin/kvm-spice</emulator>
+        <machine canonical='pc-i440fx-vivid' maxCpus='255'>ubuntu</machine>
+        <machine maxCpus='255'>pc-1.3</machine>
+        <machine maxCpus='255'>pc-0.12</machine>
+        <machine maxCpus='255'>pc-q35-1.6</machine>
+        <machine maxCpus='255'>pc-q35-1.5</machine>
+        <machine maxCpus='255'>pc-i440fx-1.6</machine>
+        <machine maxCpus='255'>pc-q35-2.2</machine>
+        <machine maxCpus='255'>pc-i440fx-1.7</machine>
+        <machine maxCpus='1'>xenpv</machine>
+        <machine maxCpus='255'>pc-q35-2.1</machine>
+        <machine maxCpus='255'>pc-0.11</machine>
+        <machine maxCpus='255'>pc-0.10</machine>
+        <machine maxCpus='255'>pc-i440fx-trusty</machine>
+        <machine maxCpus='255'>pc-i440fx-2.2</machine>
+        <machine maxCpus='255'>pc-1.2</machine>
+        <machine maxCpus='1'>isapc</machine>
+        <machine canonical='pc-i440fx-2.3' maxCpus='255'>pc</machine>
+        <machine maxCpus='255'>pc-q35-1.4</machine>
+        <machine maxCpus='128'>xenfv</machine>
+        <machine maxCpus='255'>pc-0.15</machine>
+        <machine canonical='pc-i440fx-utopic' maxCpus='255'>ubuntu</machine>
+        <machine maxCpus='255'>pc-i440fx-1.5</machine>
+        <machine maxCpus='255'>pc-i440fx-1.4</machine>
+        <machine maxCpus='255'>pc-q35-2.0</machine>
+        <machine maxCpus='255'>pc-0.14</machine>
+        <machine maxCpus='255'>pc-1.1</machine>
+        <machine maxCpus='255'>pc-q35-1.7</machine>
+        <machine maxCpus='255'>pc-i440fx-2.1</machine>
+        <machine maxCpus='255'>pc-1.0</machine>
+        <machine maxCpus='255'>pc-i440fx-2.0</machine>
+        <machine canonical='pc-q35-2.3' maxCpus='255'>q35</machine>
+        <machine maxCpus='255'>pc-0.13</machine>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+      <pae/>
+      <nonpae/>
+    </features>
+  </guest>
+
+  <guest>
+    <os_type>hvm</os_type>
+    <arch name='x86_64'>
+      <wordsize>64</wordsize>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <machine canonical='pc-i440fx-vivid' maxCpus='255'>ubuntu</machine>
+      <machine maxCpus='255'>pc-1.3</machine>
+      <machine maxCpus='255'>pc-0.12</machine>
+      <machine maxCpus='255'>pc-q35-1.6</machine>
+      <machine maxCpus='255'>pc-q35-1.5</machine>
+      <machine maxCpus='255'>pc-i440fx-1.6</machine>
+      <machine maxCpus='255'>pc-q35-2.2</machine>
+      <machine maxCpus='255'>pc-i440fx-1.7</machine>
+      <machine maxCpus='1'>xenpv</machine>
+      <machine maxCpus='255'>pc-q35-2.1</machine>
+      <machine maxCpus='255'>pc-0.11</machine>
+      <machine maxCpus='255'>pc-0.10</machine>
+      <machine maxCpus='255'>pc-i440fx-trusty</machine>
+      <machine maxCpus='255'>pc-i440fx-2.2</machine>
+      <machine maxCpus='255'>pc-1.2</machine>
+      <machine maxCpus='1'>isapc</machine>
+      <machine canonical='pc-i440fx-2.3' maxCpus='255'>pc</machine>
+      <machine maxCpus='255'>pc-q35-1.4</machine>
+      <machine maxCpus='128'>xenfv</machine>
+      <machine maxCpus='255'>pc-0.15</machine>
+      <machine canonical='pc-i440fx-utopic' maxCpus='255'>ubuntu</machine>
+      <machine maxCpus='255'>pc-i440fx-1.5</machine>
+      <machine maxCpus='255'>pc-i440fx-1.4</machine>
+      <machine maxCpus='255'>pc-q35-2.0</machine>
+      <machine maxCpus='255'>pc-0.14</machine>
+      <machine maxCpus='255'>pc-1.1</machine>
+      <machine maxCpus='255'>pc-q35-1.7</machine>
+      <machine maxCpus='255'>pc-i440fx-2.1</machine>
+      <machine maxCpus='255'>pc-1.0</machine>
+      <machine maxCpus='255'>pc-i440fx-2.0</machine>
+      <machine canonical='pc-q35-2.3' maxCpus='255'>q35</machine>
+      <machine maxCpus='255'>pc-0.13</machine>
+      <domain type='qemu'/>
+      <domain type='kvm'>
+        <emulator>/usr/bin/kvm-spice</emulator>
+        <machine canonical='pc-i440fx-vivid' maxCpus='255'>ubuntu</machine>
+        <machine maxCpus='255'>pc-1.3</machine>
+        <machine maxCpus='255'>pc-0.12</machine>
+        <machine maxCpus='255'>pc-q35-1.6</machine>
+        <machine maxCpus='255'>pc-q35-1.5</machine>
+        <machine maxCpus='255'>pc-i440fx-1.6</machine>
+        <machine maxCpus='255'>pc-q35-2.2</machine>
+        <machine maxCpus='255'>pc-i440fx-1.7</machine>
+        <machine maxCpus='1'>xenpv</machine>
+        <machine maxCpus='255'>pc-q35-2.1</machine>
+        <machine maxCpus='255'>pc-0.11</machine>
+        <machine maxCpus='255'>pc-0.10</machine>
+        <machine maxCpus='255'>pc-i440fx-trusty</machine>
+        <machine maxCpus='255'>pc-i440fx-2.2</machine>
+        <machine maxCpus='255'>pc-1.2</machine>
+        <machine maxCpus='1'>isapc</machine>
+        <machine canonical='pc-i440fx-2.3' maxCpus='255'>pc</machine>
+        <machine maxCpus='255'>pc-q35-1.4</machine>
+        <machine maxCpus='128'>xenfv</machine>
+        <machine maxCpus='255'>pc-0.15</machine>
+        <machine canonical='pc-i440fx-utopic' maxCpus='255'>ubuntu</machine>
+        <machine maxCpus='255'>pc-i440fx-1.5</machine>
+        <machine maxCpus='255'>pc-i440fx-1.4</machine>
+        <machine maxCpus='255'>pc-q35-2.0</machine>
+        <machine maxCpus='255'>pc-0.14</machine>
+        <machine maxCpus='255'>pc-1.1</machine>
+        <machine maxCpus='255'>pc-q35-1.7</machine>
+        <machine maxCpus='255'>pc-i440fx-2.1</machine>
+        <machine maxCpus='255'>pc-1.0</machine>
+        <machine maxCpus='255'>pc-i440fx-2.0</machine>
+        <machine canonical='pc-q35-2.3' maxCpus='255'>q35</machine>
+        <machine maxCpus='255'>pc-0.13</machine>
+      </domain>
+    </arch>
+    <features>
+      <cpuselection/>
+      <deviceboot/>
+      <disksnapshot default='on' toggle='no'/>
+      <acpi default='on' toggle='yes'/>
+      <apic default='on' toggle='no'/>
+    </features>
+  </guest>
+
+</capabilities>

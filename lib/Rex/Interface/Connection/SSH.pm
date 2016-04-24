@@ -38,8 +38,6 @@ sub connect {
     $port, $timeout, $auth_type,   $is_sudo
   );
 
-  Rex::Logger::debug("Using Net::SSH2 for connection");
-
   $user        = $option{user};
   $pass        = $option{password};
   $server      = $option{server};
@@ -50,15 +48,14 @@ sub connect {
   $auth_type   = $option{auth_type};
   $is_sudo     = $option{sudo};
 
-  $self->{is_sudo} = $is_sudo;
-
+  $self->{server}        = $server;
+  $self->{is_sudo}       = $is_sudo;
   $self->{__auth_info__} = \%option;
 
+  Rex::Logger::debug("Using Net::SSH2 for connection");
   Rex::Logger::debug( "Using user: " . $user );
   Rex::Logger::debug(
     Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
-
-  $self->{server} = $server;
 
   $self->{ssh} = Net::SSH2->new;
 

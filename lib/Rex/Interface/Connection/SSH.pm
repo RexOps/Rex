@@ -54,8 +54,8 @@ sub connect {
 
   Rex::Logger::debug("Using Net::SSH2 for connection");
   Rex::Logger::debug( "Using user: " . $user );
-  Rex::Logger::debug(
-    Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
+  Rex::Logger::debug( Rex::Logger::masq( "Using password: %s", $pass ) )
+    if defined $pass;
 
   $self->{ssh} = Net::SSH2->new;
 

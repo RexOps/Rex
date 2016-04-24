@@ -30,8 +30,8 @@ sub get {
 
   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-  i_run "systemctl --no-pager > /dev/null";
-  my $can_run_systemctl = $? == 0 ? 1 : 0;
+  eval { i_run "systemctl --no-pager > /dev/null"; };
+  my $can_run_systemctl = defined $@ ? 0 : 1;
 
   my $class;
 

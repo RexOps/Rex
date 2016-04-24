@@ -122,6 +122,9 @@ sub pkg {
 
   foreach my $candidate ( reverse sort @package_list ) {
     if ( my ($change) = grep { $candidate eq $_->{name} } @modifications ) {
+      if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
+        $option{on_change}->( $change->{name}, %option );
+      }
 
       my ($old_package) = grep { $_->{name} eq $change->{name} } @old_installed;
       my ($new_package) = grep { $_->{name} eq $change->{name} } @new_installed;
@@ -130,10 +133,6 @@ sub pkg {
         && $new_package
         && $old_package->{version} ne $new_package->{version} )
       {
-        if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
-          $option{on_change}->( $change->{name}, %option );
-        }
-
         Rex::get_current_connection()->{reporter}->report(
           changed => 1,
           message =>
@@ -146,20 +145,12 @@ sub pkg {
           message =>
             "Package $change->{name} installed in version $new_package->{version}"
         );
-
-        if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
-          $option{on_change}->( $change->{name}, %option );
-        }
       }
       elsif ( $old_package && !$new_package ) {
         Rex::get_current_connection()->{reporter}->report(
           changed => 1,
           message => "Package $change->{name} removed."
         );
-
-        if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
-          $option{on_change}->( $change->{name}, %option );
-        }
       }
     }
     else {

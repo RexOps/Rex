@@ -57,9 +57,11 @@ sub can_run {
   $check_with_command ||= "which";
 
   for my $command ( @{$commands_to_check} ) {
-    my @output = Rex::Helper::Run::i_run "$check_with_command $command";
+    my @output;
 
-    next if ( $? != 0 );
+    eval { @output = Rex::Helper::Run::i_run "$check_with_command $command"; };
+
+    next if ($@);
     next if ( grep { /^no $command in/ } @output ); # for solaris
 
     return $output[0];

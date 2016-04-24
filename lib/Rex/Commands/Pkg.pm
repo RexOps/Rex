@@ -82,13 +82,6 @@ Use this resource to install or update a package. This resource will generate re
 sub pkg {
   my ( $res_package, %option ) = @_;
 
-  if ( ref $res_package eq "ARRAY" ) {
-    for my $p ( @{$res_package} ) {
-      &pkg( $p, %option );
-    }
-    return;
-  }
-
   my $package = $res_package;
 
   if ( exists $option{package} ) {

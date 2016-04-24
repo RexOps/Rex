@@ -129,27 +129,24 @@ sub pkg {
 
       my ($old_package) = grep { $_->{name} eq $change->{name} } @old_installed;
       my ($new_package) = grep { $_->{name} eq $change->{name} } @new_installed;
+      my $message;
 
       if ( $change->{action} eq "updated" ) {
-        Rex::get_current_connection()->{reporter}->report(
-          changed => 1,
-          message =>
-            "Package $change->{name} updated $old_package->{version} -> $new_package->{version}"
-        );
+        $message =
+          "Package $change->{name} updated $old_package->{version} -> $new_package->{version}";
       }
       elsif ( $change->{action} eq "installed" ) {
-        Rex::get_current_connection()->{reporter}->report(
-          changed => 1,
-          message =>
-            "Package $change->{name} installed in version $new_package->{version}"
-        );
+        $message =
+          "Package $change->{name} installed in version $new_package->{version}";
       }
       elsif ( $change->{action} eq "removed" ) {
-        Rex::get_current_connection()->{reporter}->report(
-          changed => 1,
-          message => "Package $change->{name} removed."
-        );
+        $message = "Package $change->{name} removed.";
       }
+
+      Rex::get_current_connection()->{reporter}->report(
+        changed => 1,
+        message => $message,
+      );
     }
     else {
       Rex::get_current_connection()->{reporter}->report( changed => 0, );

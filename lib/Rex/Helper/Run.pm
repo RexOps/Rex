@@ -79,10 +79,10 @@ sub i_run {
 
   my $exec = Rex::Interface::Exec->create;
   my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+  my $ret_val = $?;
+
   chomp $out if $out;
   chomp $err if $err;
-
-  my $ret_val = $?;
 
   $Rex::Commands::Run::LAST_OUTPUT = [ $out, $err ];
 

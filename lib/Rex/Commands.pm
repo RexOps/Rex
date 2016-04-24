@@ -691,14 +691,11 @@ sub do_task {
   my $task   = shift;
   my $params = shift;
 
-  if ( ref($task) eq "ARRAY" ) {
-    for my $t ( @{$task} ) {
-      Rex::TaskList->run( $t, ( $params ? ( params => $params ) : () ) );
-    }
-  }
-  else {
-    return Rex::TaskList->run( $task,
-      ( $params ? ( params => $params ) : () ) );
+  my @tasks = ref($task) eq "ARRAY" ? @{$task} : ($task);
+
+  foreach (@tasks) {
+    Rex::TaskList->create()->get_task($_) || die "Task $_ not found.";
+    Rex::TaskList->run( $_, ( $params ? ( params => $params ) : () ) );
   }
 }
 

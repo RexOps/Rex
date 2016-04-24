@@ -122,35 +122,31 @@ sub pkg {
     $pkg->diff_package_list( \@old_installed, \@new_installed );
 
   foreach my $candidate ( reverse sort @package_list ) {
+    my %report_args = ( changed => 0 );
+
     if ( my ($change) = grep { $candidate eq $_->{name} } @modifications ) {
+      $report_args{changed} = 1;
       if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
         $option{on_change}->( $change->{name}, %option );
       }
 
       my ($old_package) = grep { $_->{name} eq $change->{name} } @old_installed;
       my ($new_package) = grep { $_->{name} eq $change->{name} } @new_installed;
-      my $message;
 
       if ( $change->{action} eq "updated" ) {
-        $message =
+        $report_args{message} =
           "Package $change->{name} updated $old_package->{version} -> $new_package->{version}";
       }
       elsif ( $change->{action} eq "installed" ) {
-        $message =
+        $report_args{message} =
           "Package $change->{name} installed in version $new_package->{version}";
       }
       elsif ( $change->{action} eq "removed" ) {
-        $message = "Package $change->{name} removed.";
+        $report_args{message} = "Package $change->{name} removed.";
       }
+    }
 
-      Rex::get_current_connection()->{reporter}->report(
-        changed => 1,
-        message => $message,
-      );
-    }
-    else {
-      Rex::get_current_connection()->{reporter}->report( changed => 0, );
-    }
+    Rex::get_current_connection()->{reporter}->report(%report_args);
 
     Rex::get_current_connection()->{reporter}
       ->report_resource_end( type => "pkg", name => $candidate );

@@ -149,6 +149,22 @@ sub EXTEND {
 sub STORESIZE {
   my $self    = shift;
   my $newsize = shift;
+
+  my $size = $self->FETCHSIZE;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    if ( $newsize > $size ) {
+      $ref->{ $self->{varname} }->{data}->[$_] = undef
+        foreach ( $size .. $newsize - 1 );
+    }
+    elsif ( $newsize < $size ) {
+      pop @{ $ref->{ $self->{varname} }->{data} }
+        foreach ( $newsize .. $size - 1 );
+    }
+    __store $ref;
+  };
 }
 
 sub FETCHSIZE {

@@ -364,11 +364,11 @@ sub is_nat_gateway {
 
   Rex::Logger::debug("Changing this system to a nat gateway.");
 
-  if ( can_run("ip") ) {
+  if ( my $ip = can_run("ip") ) {
 
     my @iptables_option = ();
 
-    my ($default_line) = i_run "/sbin/ip $ip_version r |grep ^default";
+    my ($default_line) = i_run "$ip $ip_version r |grep ^default";
     my ($dev)          = ( $default_line =~ m/dev ([a-z0-9]+)/i );
     Rex::Logger::debug("Default GW Device is $dev");
 
@@ -390,7 +390,7 @@ sub is_nat_gateway {
   }
   else {
 
-    Rex::Logger::info("No /sbin/ip found.");
+    Rex::Logger::info("No ip command found.");
 
   }
 

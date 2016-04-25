@@ -2,22 +2,23 @@ use strict;
 use warnings;
 
 BEGIN {
-  use Test::More tests => 5;
+  use Test::More tests => 4;
+  use Test::Deep;
   use Rex::Shared::Var;
   share('%hash');
 }
 
 %hash = (
-  name     => "joe",
-  surename => "doe",
-  multi    => {
-    key1 => "foo",
-    arr1 => [qw/bar baz/],
+  scalar => "myscalar",
+  array  => [qw(first second)],
+  hash   => {
+    scalar2 => "myscalar2",
+    array2  => [qw(bar baz)],
   }
 );
 
-is( $hash{name},               "joe", "hash test, key 1" );
-is( $hash{surename},           "doe", "hash test, key 2" );
-is( $hash{multi}->{key1},      "foo", "multidimension, key1" );
-is( $hash{multi}->{arr1}->[0], "bar", "multidimension, arr1 - key0" );
-is( $hash{multi}->{arr1}->[1], "baz", "multidimension, arr1 - key1" );
+is( $hash{scalar}, "myscalar", "scalar value in shared hash" );
+is_deeply( $hash{array}, [qw(first second)], "arrayref in shared hash" );
+is( $hash{hash}->{scalar2}, "myscalar2", "scalar in hashref in shared hash" );
+is_deeply( $hash{hash}->{array2},
+  [qw(bar baz)], "arrayref in hashref in shared hash" );

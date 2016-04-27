@@ -195,7 +195,7 @@ FORCE_SERVER: {
   }
 
   load_server_ini_file($::rexfile);
-  load_rexfile($::rexfile);
+  load_rexfile($::rexfile) if ( !exists $opts{'e'} );
 
   #### check if some parameters should be overwritten from the command line
 CHECK_OVERWRITE: {

@@ -1,5 +1,7 @@
 use Test::More tests => 1;
 
+$::QUIET = 1;
+
 BEGIN {
   @ARGV = ( "-e", "print '';" );
   require Rex::CLI;

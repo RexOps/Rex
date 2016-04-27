@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use Rex::Commands;
 
@@ -76,4 +76,9 @@ is_deeply(
   [qw/1.host.domain 2.host.domain 3.host.domain/],
   "evaluate leading range"
 );
+
+LOCAL {
+  my $con = connection->server;
+  is( $con, "<local>", "got a local connection" );
+};
 

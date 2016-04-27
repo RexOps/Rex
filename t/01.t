@@ -4,6 +4,7 @@ use warnings;
 use Test::More tests => 3;
 
 use Rex::Commands;
+use Rex::Commands::Task;
 
 desc("Test");
 task(

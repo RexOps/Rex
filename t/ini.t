@@ -14,6 +14,7 @@ SKIP: {
 
   use Rex::Group;
   use Rex::Commands;
+  use Rex::Commands::Task;
 
   no warnings 'once';
 
@@ -104,6 +105,6 @@ SKIP: {
 
   # don't fork the task
   Rex::TaskList->create()->set_in_transaction(1);
-  Rex::Commands::do_task("mytask");
+  Rex::Commands::Task::do_task("mytask");
   Rex::TaskList->create()->set_in_transaction(0);
 }

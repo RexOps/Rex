@@ -35,8 +35,13 @@ sub import {
       next;
     }
 
+    no warnings 'once';
     *{ $mod_to_register_in . "::" . $reg_func } =
       *{ $mod_to_register . "::" . $reg_func };
+  }
+
+  if ( $mod_to_register->can("import_ex") ) {
+    $mod_to_register->import_ex( $mod_to_register_in, %option );
   }
 }
 

@@ -27,6 +27,8 @@ use Rex::Group;
 use Time::HiRes qw(time);
 use POSIX qw(floor);
 
+require Rex::Commands::Environment;
+
 sub new {
   my $that  = shift;
   my $proto = ref($that) || $that;
@@ -66,7 +68,7 @@ sub create_task {
 # matching against a task count of 2 because of the two internal tasks (filtered below)
   if ( ( scalar( keys %{ $self->{tasks} } ) ) == 2 ) {
     my $requested_env = Rex::Config->get_environment;
-    my @environments  = Rex::Commands->get_environments;
+    my @environments  = Rex::Commands::Environment->get_environments;
 
     if ( $task_name ne 'Commands:Box:get_sys_info'
       && $task_name ne 'Test:run'

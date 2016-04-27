@@ -5,6 +5,8 @@ BEGIN {
   use Test::More tests => 8;
   use File::Temp;
   use Rex::Commands;
+  use Rex::Commands::Task;
+  use Rex::Commands::Environment;
   use Rex::RunList;
   use Rex::Shared::Var;
   share

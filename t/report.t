@@ -5,6 +5,8 @@ use Test::More tests => 3;
 use YAML;
 
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
 use Rex::Report::YAML;

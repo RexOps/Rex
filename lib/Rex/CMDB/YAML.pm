@@ -13,7 +13,7 @@ use warnings;
 
 use base qw(Rex::CMDB::Base);
 
-use Rex::Commands -no => [qw/get/];
+use Rex::Commands::Environment;
 use Rex::Logger;
 use YAML;
 use Data::Dumper;
@@ -106,7 +106,7 @@ sub get {
       $template_vars{$key} = $config_values->{$key};
     }
   }
-  $template_vars{environment} = Rex::Commands::environment();
+  $template_vars{environment} = environment;
 
   for my $file (@files) {
     Rex::Logger::debug("CMDB - Opening $file");

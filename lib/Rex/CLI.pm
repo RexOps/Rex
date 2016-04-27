@@ -195,7 +195,7 @@ FORCE_SERVER: {
   }
 
   load_server_ini_file($::rexfile);
-  load_rexfile($::rexfile);
+  load_rexfile($::rexfile) if ( !exists $opts{'e'} );
 
   #### check if some parameters should be overwritten from the command line
 CHECK_OVERWRITE: {
@@ -261,7 +261,7 @@ CHECK_OVERWRITE: {
   }
   elsif ( $opts{'T'} && $opts{'y'} ) {
     my @tasks  = Rex::TaskList->create()->get_tasks;
-    my @envs   = Rex::Commands->get_environments();
+    my @envs   = Rex::Commands::Environment->get_environments();
     my %groups = Rex::Group->get_groups;
 
     my %real_groups;
@@ -356,7 +356,7 @@ CHECK_OVERWRITE: {
     push @params, {};
 
     Rex::TaskList->create()->create_task( "eval-line", @params );
-    Rex::Commands::do_task("eval-line");
+    Rex::Commands::Task::do_task("eval-line");
     exit_rex();
   }
   elsif ( $opts{'M'} ) {
@@ -557,8 +557,8 @@ sub _list_envs {
   Rex::Logger::debug("Listing Envs");
 
   my @envs =
-    map { Rex::Commands->get_environment($_) }
-    sort Rex::Commands->get_environments();
+    map { Rex::Commands::Environment->get_environment($_) }
+    sort Rex::Commands::Environment->get_environments();
   return unless @envs;
 
   _print_color( "Environments\n", "yellow" ) if scalar @envs;

@@ -5,6 +5,8 @@ use Test::More tests => 18;
 
 use Rex::Config;
 use Rex::Commands;
+use Rex::Commands::Task;
+use Rex::Commands::Environment;
 use Rex::Template;
 
 my $t = Rex::Template->new;

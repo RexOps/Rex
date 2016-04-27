@@ -57,7 +57,7 @@ sub param_lookup {
         if ( !$ret ) {
 
           # check in task
-          my $task = Rex::Commands::task();
+          my $task = Rex::Commands::Task::task();
           if ($task) {
             my $task_name = $task->{name};
             $task_name =~ s/:/::/;
@@ -84,7 +84,7 @@ sub param_lookup {
   }
 
   if ( !Rex::Resource->is_inside_resource ) {
-    Rex::Commands::task()->set_opt( $key => $ret );
+    Rex::Commands::Task::task()->set_opt( $key => $ret );
   }
 
   return $ret;

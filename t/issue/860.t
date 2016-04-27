@@ -6,6 +6,7 @@ use Test::More tests => 6;
 use Rex::Args;
 use Rex::RunList;
 use Rex::Commands;
+use Rex::Commands::Task;
 use Rex::CLI;
 use Rex::Transaction;
 

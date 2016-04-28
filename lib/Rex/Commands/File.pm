@@ -16,7 +16,7 @@ With this module you can manipulate files.
 
  task "read_passwd", "server01", sub {
    my $fh = file_read "/etc/passwd";
-   for my $line = ($fh->read_all) {
+   for my $line ($fh->read_all) {
      print $line;
    }
    $fh->close;

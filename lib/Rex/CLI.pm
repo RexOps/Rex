@@ -676,11 +676,13 @@ sub load_rexfile {
   Rex::Logger::debug("Loading $rexfile");
 
   if ( !-f $rexfile ) {
-    Rex::Logger::info( "No Rexfile found.", "warn" );
-    Rex::Logger::info( "Create a file named 'Rexfile' in this directory,",
-      "warn" );
-    Rex::Logger::info( "or specify the file you want to use with:", "warn" );
-    Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
+    if ( !exists $opts{'e'} ) {
+      Rex::Logger::info( "No Rexfile found.", "warn" );
+      Rex::Logger::info( "Create a file named 'Rexfile' in this directory,",
+        "warn" );
+      Rex::Logger::info( "or specify the file you want to use with:", "warn" );
+      Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
+    }
     return;
   }
 

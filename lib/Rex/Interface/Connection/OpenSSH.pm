@@ -167,7 +167,8 @@ CONNECT_TRY:
 
   if ( $self->{ssh} && $self->{ssh}->error ) {
     Rex::Logger::info(
-      "Can't connect to $server (" . $self->{ssh}->error() . ")", "warn" );
+      "Can't authenticate against $server (" . $self->{ssh}->error() . ")",
+      "warn" );
     $self->{connected} = 1;
 
     return;

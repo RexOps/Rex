@@ -13,6 +13,12 @@ use warnings;
 
 use Moose;
 
+has __version__ => (
+  is      => 'ro',
+  isa     => 'Str',
+  default => sub { "1" },
+);
+
 has name => (
   is       => 'ro',
   isa      => 'Str',

@@ -33,7 +33,7 @@ use Rex -base;
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
-XML::LibXML->require;
+use XML::LibXML;
 
 @EXPORT = qw(groups_xml);
 

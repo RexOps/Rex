@@ -19,16 +19,15 @@ use Rex::Logger;
 use Rex::Cloud::Base;
 use AWS::Signature4;
 use HTTP::Request::Common;
-
+use Digest::HMAC_SHA1;
 use base qw(Rex::Cloud::Base);
+use LWP::UserAgent;
+use XML::Simple;
 
 BEGIN {
   use Rex::Require;
-  LWP::UserAgent->use;
-  Digest::HMAC_SHA1->use;
   HTTP::Date->use(qw(time2isoz));
   MIME::Base64->use(qw(encode_base64 decode_base64));
-  XML::Simple->require;
 }
 
 use Data::Dumper;

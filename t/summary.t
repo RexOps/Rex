@@ -42,38 +42,33 @@ subtest "distributor => 'Base'" => sub {
   };
 };
 
-SKIP: {
-  skip "Parallel::ForkManager is not installed", 1
-    if parallel_forkmanager_not_installed();
-
-  subtest "distributor => 'Parallel_ForkManager'" => sub {
-    subtest 'exec_autodie => 0' => sub {
-      Rex::Config->set_exec_autodie(0);
-      Rex::Config->set_distributor('Parallel_ForkManager');
-      test_summary(
-        task0 => { server => '<local>', task => 'task0', exit_code => 1 },
-        task1 => { server => '<local>', task => 'task1', exit_code => 0 },
-        task2 => { server => '<local>', task => 'task2', exit_code => 0 },
-        task3 => { server => '<local>', task => 'task3', exit_code => 1 },
-      );
-    };
-
-    subtest 'exec_autodie => 1' => sub {
-      Rex::Config->set_exec_autodie(1);
-      Rex::Config->set_distributor('Parallel_ForkManager');
-      test_summary(
-        task0 => { server => '<local>', task => 'task0', exit_code => 1 },
-        task1 => {
-          server    => '<local>',
-          task      => 'task1',
-          exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin)/ ? 1 : 2 )
-        },
-        task2 => { server => '<local>', task => 'task2', exit_code => 0 },
-        task3 => { server => '<local>', task => 'task3', exit_code => 1 },
-      );
-    };
+subtest "distributor => 'Parallel_ForkManager'" => sub {
+  subtest 'exec_autodie => 0' => sub {
+    Rex::Config->set_exec_autodie(0);
+    Rex::Config->set_distributor('Parallel_ForkManager');
+    test_summary(
+      task0 => { server => '<local>', task => 'task0', exit_code => 1 },
+      task1 => { server => '<local>', task => 'task1', exit_code => 0 },
+      task2 => { server => '<local>', task => 'task2', exit_code => 0 },
+      task3 => { server => '<local>', task => 'task3', exit_code => 1 },
+    );
   };
-}
+
+  subtest 'exec_autodie => 1' => sub {
+    Rex::Config->set_exec_autodie(1);
+    Rex::Config->set_distributor('Parallel_ForkManager');
+    test_summary(
+      task0 => { server => '<local>', task => 'task0', exit_code => 1 },
+      task1 => {
+        server    => '<local>',
+        task      => 'task1',
+        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin)/ ? 1 : 2 )
+      },
+      task2 => { server => '<local>', task => 'task2', exit_code => 0 },
+      task3 => { server => '<local>', task => 'task3', exit_code => 1 },
+    );
+  };
+};
 
 sub create_tasks {
   desc "desc 0";
@@ -132,10 +127,4 @@ sub test_summary {
   no warnings;
 
   @Rex::TaskList::Base::SUMMARY = ();
-}
-
-sub parallel_forkmanager_not_installed {
-  eval { require Parallel::ForkManager };
-  return 1 if $@;
-  return 0;
 }

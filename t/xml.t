@@ -56,4 +56,3 @@ no_ssh(
 );
 Rex::Commands::Task::do_task("xml_task2");
 Rex::TaskList->create()->set_in_transaction(0);
-

@@ -26,6 +26,7 @@ With this module you can manage user and groups.
      password    => 'blahblah',
      system      => 1,
      create_home => TRUE,
+     shell       => '/bin/bash',
      ssh_key     => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
  };
 
@@ -71,6 +72,7 @@ Manage user account.
    crypt_password => '*', # on Linux, OpenBSD and NetBSD
    system         => 1,
    create_home    => TRUE,
+   shell          => '/bin/bash',
    ssh_key        => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChUw...";
 
 There is also a no_create_home option similar to create_home but doing the

@@ -273,17 +273,18 @@ Get a list of all running instances of a cloud service. This can be used for a I
 sub get_cloud_instances_as_group {
 
   # return funcRef
-  return sub {
-    my @list = cloud_object()->list_running_instances();
+  # without return sub evenrything works as expected
+  #return sub {
+  my @list = cloud_object()->list_running_instances();
 
-    my @ret;
+  my @ret;
 
-    for my $instance (@list) {
-      push( @ret, Rex::Group::Entry::Server->new( name => $instance->{"ip"} ) );
-    }
+  for my $instance (@list) {
+    push( @ret, Rex::Group::Entry::Server->new( name => $instance->{"ip"} ) );
+  }
 
-    return @ret;
-  };
+  return @ret;
+  #};
 
 }
 

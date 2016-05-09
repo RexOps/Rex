@@ -111,6 +111,9 @@ sub get_operating_system {
       if ( $ret eq "SUSE LINUX" || $ret eq "openSUSE project" ) {
         $ret = "SuSE";
       }
+      elsif ( $ret eq "ManjaroLinux" ) {
+        $ret = "Manjaro";
+      }
       return $ret;
     }
   }
@@ -175,6 +178,10 @@ sub get_operating_system {
 
   if ( is_file("/etc/arch-release") ) {
     return "Arch";
+  }
+
+  if ( is_file("/etc/manjaro-release") ) {
+    return "Manjaro";
   }
 
   my $os_string = i_run("uname -s");

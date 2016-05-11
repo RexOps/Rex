@@ -272,9 +272,6 @@ Get a list of all running instances of a cloud service. This can be used for a I
 
 sub get_cloud_instances_as_group {
 
-  # return funcRef
-  # without return sub evenrything works as expected
-  #return sub {
   my @list = cloud_object()->list_running_instances();
 
   my @ret;
@@ -284,8 +281,6 @@ sub get_cloud_instances_as_group {
   }
 
   return @ret;
-  #};
-
 }
 
 =head2 cloud_instance($action, $data)

@@ -228,7 +228,11 @@ sub finish {
   $tb->is_passing()
     ? print "PASS\n"
     : print "FAIL\n";
+  if ( !$tb->is_passing() ) {
+    Rex::Test::push_exit("FAIL");
+  }
   $tb->reset();
+
   Rex::pop_connection();
 }
 

@@ -11,8 +11,26 @@ use warnings;
 use Rex -base;
 use Data::Dumper;
 use Rex::Commands::Box;
+require Rex::CLI;
 
 # VERSION
+
+BEGIN {
+  use Rex::Shared::Var;
+  share qw(@exit);
+}
+
+Rex::CLI->add_exit(
+  sub {
+    if ( scalar @exit > 0 ) {
+      CORE::exit(1);
+    }
+  }
+);
+
+sub push_exit {
+  push @exit, shift;
+}
 
 desc 'Run tests specified with --test=testfile (default: t/*.t)';
 task run => make {

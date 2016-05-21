@@ -12,6 +12,8 @@ Rex::Shared::Var - Share variables across Rex tasks
 
 Share variables across Rex tasks with the help of Storable, using a C<vars.db.$PID> file in the local directory, where C<$PID> is the PID of the parent process.
 
+Attention: Currently it is only possible to store flat hashs and arrays. Multidimensional hashs and arrays are not supported.
+
 =head1 SYNOPSIS
 
  BEGIN {                           # put share in a BEGIN block

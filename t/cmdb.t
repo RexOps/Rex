@@ -6,6 +6,7 @@ use Test::More tests => 13;
 use Rex::CMDB;
 use Rex::Commands;
 use Rex::Commands::File;
+use Rex::Commands::Template;
 
 set(
   cmdb => {

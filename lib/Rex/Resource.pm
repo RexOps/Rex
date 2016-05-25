@@ -71,7 +71,7 @@ sub call {
       my $provider_o = $provider->new(
         type   => $self->type,
         config => $mod_config,
-        name   => $name
+        name   => ( $mod_config->{name} || $name )
       );
 
       # TODO add dry-run feature
@@ -81,8 +81,8 @@ sub call {
             $provider_o->type . "["
           . $provider_o->name
           . "] is now "
-          . $self->{res_ensure}
-          . "." );
+          . $self->{res_ensure} . "."
+          . $provider_o->message );
     }
     else {
       # TODO add deprecation warning

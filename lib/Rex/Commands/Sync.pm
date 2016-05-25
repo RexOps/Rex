@@ -62,6 +62,7 @@ use Rex::Commands;
 use Rex::Commands::MD5;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
+use Rex::Commands::Template;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
 use Rex::Helper::Encode;

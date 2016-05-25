@@ -38,6 +38,58 @@ sub is_writable { die("Must be implemented by Interface Class"); }
 sub upload      { die("Must be implemented by Interface Class"); }
 sub download    { die("Must be implemented by Interface Class"); }
 
+sub chksum {
+  my ( $self, $file ) = @_;
+
+  my $chksum;
+  eval { $chksum = $self->md5($file); };
+
+  return $chksum;
+}
+
+sub md5 {
+  my ( $self, $file ) = @_;
+
+  if ( $self->is_file($file) ) {
+    Rex::Logger::debug("Calculating checksum (MD5) of $file");
+
+    my $command =
+      ( $^O =~ m/^MSWin/i && Rex::is_local() )
+      ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
+      : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
+
+    my $md5 = $self->_exec($command);
+
+    unless ( $? == 0 ) {
+
+      my $os = $self->_exec("uname -s");
+      if ( $os =~ /bsd/i ) {
+        $md5 = $self->_exec("/sbin/md5 -q '$file'");
+      }
+      else {
+        ($md5) = split( /\s/, $self->_exec("md5sum '$file'") );
+      }
+
+      if ( !$md5 ) {
+        my $message = "Unable to get MD5 checksum of $file: $!";
+        Rex::Logger::info($message);
+        die($message);
+      }
+    }
+
+    chomp $md5;
+
+    Rex::Logger::debug("MD5 checksum of $file: $md5");
+
+    return $md5;
+  }
+  else {
+    my $message = "File not found: $file";
+    Rex::Logger::debug($message);
+    die($message);
+  }
+}
+
 sub is_symlink {
   my ( $self, $path ) = @_;
   ($path) = $self->_normalize_path($path);
@@ -201,7 +253,8 @@ sub _quotepath {
 
 sub _exec {
   my ( $self, $cmd ) = @_;
-  my $exec = Rex::Interface::Exec->create;
+  my ($type) = ( ref($self) =~ m/::([^:]+)$/ );
+  my $exec = Rex::Interface::Exec->create($type);
   return $exec->exec($cmd);
 }
 

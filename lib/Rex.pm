@@ -600,6 +600,9 @@ sub import {
     require Rex::Commands::Task;
     Rex::Commands::Task->import( register_in => $register_to );
 
+    require Rex::Commands::Template;
+    Rex::Commands::Template->import( register_in => $register_to );
+
     require Rex::Commands::Environment;
     Rex::Commands::Environment->import( register_in => $register_to );
 
@@ -664,11 +667,17 @@ sub import {
 
         require Rex::Commands::Say;
         Rex::Commands::Say->import( register_in => $register_to );
+
+        require Rex::Commands::File;
+        Rex::Commands::File->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.5 ) {
         require Rex::Resource::kernel;
         Rex::Resource::kernel->import( register_in => $register_to );
+
+        require Rex::Resource::file;
+        Rex::Resource::file->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.4 ) {

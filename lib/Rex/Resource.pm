@@ -49,7 +49,30 @@ sub call {
     return;
   }
 
+  if ( ref $name eq "ARRAY" ) {
+
+    # multiple resource call
+    for my $n ( @{$name} ) {
+      $self->call( $n, %params );
+    }
+
+    return;
+  }
+
   push @CURRENT_RES, $self;
+
+  #### check and run before hook
+  eval {
+    my @new_args =
+      Rex::Hook::run_hook( $self->type => "before", $name, %params );
+    if (@new_args) {
+      ( $name, %params ) = @new_args;
+    }
+    1;
+  } or do {
+    die( "Before hook failed. Cancelling " . $self->type . " resource: $@" );
+  };
+  ##############################
 
   $self->set_all_parameters(%params);
 
@@ -59,7 +82,9 @@ sub call {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => $self->display_name, name => $name );
 
-  my $failed = 0;
+  my $failed     = 0;
+  my $failed_msg = "";
+
   eval {
     my ( $provider, $mod_config ) = $self->{cb}->( \%params );
 
@@ -71,18 +96,22 @@ sub call {
       my $provider_o = $provider->new(
         type   => $self->type,
         config => $mod_config,
-        name   => $name
+        name   => ( $mod_config->{name} || $name )
       );
 
       # TODO add dry-run feature
       $provider_o->process;
 
+      #### check and run after hook
+      Rex::Hook::run_hook( $self->type => "after", $name, %{$mod_config} );
+      ##############################
+
       Rex::Resource::Common::emit( $provider_o->status(),
             $provider_o->type . "["
           . $provider_o->name
           . "] is now "
-          . $self->{res_ensure}
-          . "." );
+          . $self->{res_ensure} . "."
+          . $provider_o->message );
     }
     else {
       # TODO add deprecation warning
@@ -90,8 +119,11 @@ sub call {
 
     1;
   } or do {
-    Rex::Logger::info( $@,                                 "error" );
-    Rex::Logger::info( "Resource execution failed: $name", "error" );
+    $failed_msg = $@;
+    Rex::Logger::info( $failed_msg, "error" );
+    Rex::Logger::info(
+      "Resource execution failed: " . $self->display_name . "[$name]",
+      "error" );
     $failed = 1;
   };
 
@@ -118,6 +150,9 @@ sub call {
     ->report_resource_end( type => $self->display_name, name => $name );
 
   pop @CURRENT_RES;
+
+  # TODO: resource autodie?
+  die $failed_msg if $failed;
 }
 
 sub was_updated {

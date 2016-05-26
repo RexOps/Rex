@@ -57,47 +57,8 @@ sub md5 {
   my ($file) = @_;
 
   my $fs = Rex::Interface::Fs->create;
+  return $fs->md5($file);
 
-  if ( $fs->is_file($file) ) {
-    Rex::Logger::debug("Calculating checksum (MD5) of $file");
-
-    my $command =
-      ( $^O =~ m/^MSWin/i && Rex::is_local() )
-      ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
-      : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
-
-    my $md5 = i_run($command);
-
-    unless ( $? == 0 ) {
-
-      my $exec = Rex::Interface::Exec->create;
-
-      my $os = $exec->exec("uname -s");
-      if ( $os =~ /bsd/i ) {
-        $md5 = $exec->exec("/sbin/md5 -q '$file'");
-      }
-      else {
-        ($md5) = split( /\s/, $exec->exec("md5sum '$file'") );
-      }
-
-      if ( !$md5 ) {
-        my $message = "Unable to get MD5 checksum of $file: $!";
-        Rex::Logger::info($message);
-        die($message);
-      }
-    }
-
-    chomp $md5;
-
-    Rex::Logger::debug("MD5 checksum of $file: $md5");
-
-    return $md5;
-  }
-  else {
-    my $message = "File not found: $file";
-    Rex::Logger::debug($message);
-    die($message);
-  }
 }
 
 1;

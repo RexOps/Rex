@@ -327,6 +327,40 @@ sub user_list {
   return @$data;
 }
 
+sub get_user_by_uid {
+  my ( $self, $uid ) = @_;
+
+  Rex::Logger::debug("Getting information for user by uid $uid");
+  my $rnd_file = get_tmp_file;
+  my $fh       = Rex::Interface::File->create;
+  my $script   = q|
+    unlink $0;
+    print to_json([ getpwuid($ARGV[0]) ]);
+  |;
+  $fh->open( ">", $rnd_file );
+  $fh->write($script);
+  $fh->write( func_to_json() );
+  $fh->close;
+
+  my $data_str = i_run "perl $rnd_file $uid";
+  if ( $? != 0 ) {
+    die("Error getting user information for user $uid");
+  }
+
+  my $data = decode_json($data_str);
+
+  return (
+    name     => $data->[0],
+    password => $data->[1],
+    uid      => $data->[2],
+    gid      => $data->[3],
+    comment  => $data->[5],
+    home     => $data->[7],
+    shell    => $data->[8],
+    expire   => exists $data->[9] ? $data->[9] : 0,
+  );
+}
+
 sub get_user {
   my ( $self, $user ) = @_;
 
@@ -472,6 +506,24 @@ sub get_gid {
 
   my %data = $self->get_group($group);
   return $data{gid};
+}
+
+sub get_group_by_gid {
+  my ( $self, $gid ) = @_;
+
+  Rex::Logger::debug("Getting information for group by id $gid");
+  my @data =
+    split( " ",
+    "" . i_run("perl -le 'print join(\" \", getgrgid(\$ARGV[0]));' $gid") );
+  if ( $? != 0 ) {
+    die("Error getting group information");
+  }
+
+  return (
+    name     => $data[0],
+    password => $data[1],
+    gid      => $data[2],
+  );
 }
 
 sub get_group {

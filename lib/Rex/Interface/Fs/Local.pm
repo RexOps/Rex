@@ -35,6 +35,22 @@ sub download {
   $self->cp( $source, $target );
 }
 
+sub chksum {
+  my ( $self, $file ) = @_;
+
+  if ( $^O =~ m/^MSWin/ ) {
+    require Digest::MD5;
+    open my $fh, '<', $file or return undef;
+    binmode $fh;
+    my $d = Digest::MD5->new->addfile($fh)->hexdigest;
+    close $fh;
+    return $d;
+  }
+  else {
+    return $self->SUPER::chksum($file);
+  }
+}
+
 sub ls {
   my ( $self, $path ) = @_;
 

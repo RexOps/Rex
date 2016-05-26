@@ -7,6 +7,7 @@ my $cwd = getcwd;
 use Test::More tests => 55;
 
 use Rex::Commands::File;
+use Rex::Commands::Template;
 use Rex::Commands::Fs;
 use Rex::Commands::Gather;
 use Rex::Commands::Run;

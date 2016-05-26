@@ -8,6 +8,7 @@ use Test::More tests => 4;
 use File::Basename;
 
 use Rex::Commands::File;
+use Rex::Commands::Template;
 
 my $basename = basename __FILE__;
 

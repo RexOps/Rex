@@ -44,4 +44,32 @@ has status => (
   default => sub { 'unchanged' },
 );
 
+has fs => (
+  is      => 'rw',
+  isa     => 'Rex::Interface::Fs::Base',
+  lazy    => 1,
+  default => sub { return Rex::Interface::Fs->create },
+);
+
+has file => (
+  is      => 'rw',
+  isa     => 'Rex::Interface::File::Base',
+  lazy    => 1,
+  default => sub { return Rex::Interface::File->create },
+);
+
+has exec => (
+  is      => 'rw',
+  isa     => 'Rex::Interface::Exec::Base',
+  lazy    => 1,
+  default => sub { return Rex::Interface::Exec->create },
+);
+
+has message => (
+  is      => 'ro',
+  isa     => 'Str',
+  writer  => '_set_message',
+  default => sub { '' },
+);
+
 1;

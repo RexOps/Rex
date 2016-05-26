@@ -49,6 +49,16 @@ sub call {
     return;
   }
 
+  if ( ref $name eq "ARRAY" ) {
+
+    # multiple resource call
+    for my $n ( @{$name} ) {
+      $self->call( $n, %params );
+    }
+
+    return;
+  }
+
   push @CURRENT_RES, $self;
 
   $self->set_all_parameters(%params);

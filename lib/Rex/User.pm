@@ -47,4 +47,7 @@ sub get {
 
 }
 
+# alias for get() most factory classes use create()
+sub create { shift->get(@_) }
+
 1;

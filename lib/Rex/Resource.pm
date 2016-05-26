@@ -82,7 +82,8 @@ sub call {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => $self->display_name, name => $name );
 
-  my $failed = 0;
+  my $failed     = 0;
+  my $failed_msg = "";
 
   eval {
     my ( $provider, $mod_config ) = $self->{cb}->( \%params );
@@ -118,8 +119,11 @@ sub call {
 
     1;
   } or do {
-    Rex::Logger::info( $@,                                 "error" );
-    Rex::Logger::info( "Resource execution failed: $name", "error" );
+    $failed_msg = $@;
+    Rex::Logger::info( $failed_msg, "error" );
+    Rex::Logger::info(
+      "Resource execution failed: " . $self->display_name . "[$name]",
+      "error" );
     $failed = 1;
   };
 
@@ -146,6 +150,9 @@ sub call {
     ->report_resource_end( type => $self->display_name, name => $name );
 
   pop @CURRENT_RES;
+
+  # TODO: resource autodie?
+  die $failed_msg if $failed;
 }
 
 sub was_updated {

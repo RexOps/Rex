@@ -3,6 +3,8 @@ package Rex::Commands::Template;
 use strict;
 use warnings;
 
+# VERSION
+
 require Rex::Exporter;
 
 use Data::Dumper;

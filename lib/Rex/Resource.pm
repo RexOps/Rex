@@ -61,6 +61,19 @@ sub call {
 
   push @CURRENT_RES, $self;
 
+  #### check and run before hook
+  eval {
+    my @new_args =
+      Rex::Hook::run_hook( $self->type => "before", $name, %params );
+    if (@new_args) {
+      ( $name, %params ) = @new_args;
+    }
+    1;
+  } or do {
+    die( "Before hook failed. Cancelling " . $self->type . " resource: $@" );
+  };
+  ##############################
+
   $self->set_all_parameters(%params);
 
   $self->{res_name} = $name;
@@ -70,6 +83,7 @@ sub call {
     ->report_resource_start( type => $self->display_name, name => $name );
 
   my $failed = 0;
+
   eval {
     my ( $provider, $mod_config ) = $self->{cb}->( \%params );
 
@@ -86,6 +100,10 @@ sub call {
 
       # TODO add dry-run feature
       $provider_o->process;
+
+      #### check and run after hook
+      Rex::Hook::run_hook( $self->type => "after", $name, %{$mod_config} );
+      ##############################
 
       Rex::Resource::Common::emit( $provider_o->status(),
             $provider_o->type . "["

@@ -644,10 +644,8 @@ sub connect {
   Rex::Logger::debug("Auth-Information inside Task:");
   for my $key ( keys %{$auth} ) {
     my $data = $auth->{$key};
-    if ( $key eq "password" ) {
-      $data = Rex::Logger::masq( "%s", $data );
-    }
-
+    $data = Rex::Logger::masq( "%s", $data ) if $key eq 'password';
+    $data = Rex::Logger::masq( "%s", $data ) if $key eq 'sudo_password';
     $data ||= "";
 
     Rex::Logger::debug("$key => [[$data]]");

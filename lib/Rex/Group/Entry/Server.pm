@@ -212,7 +212,8 @@ sub get_public_key {
 sub get_private_key {
   my ($self) = @_;
 
-  if ( exists $self->{auth}->{private_key} && -f $self->{auth}->{public_key} ) {
+  if ( exists $self->{auth}->{private_key} && -f $self->{auth}->{private_key} )
+  {
     Rex::Logger::debug( "Rex::Group::Entry::Server (private_key): returning "
         . $self->{auth}->{private_key} );
     return $self->{auth}->{private_key};

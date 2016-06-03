@@ -7,8 +7,8 @@ use warnings;
 
 use Cwd qw(getcwd);
 use Rex::Commands::Fs;
-use Rex::Commands::Run;
 use File::Basename;
+use Rex::Helper::Run;
 
 use vars qw($CHECKOUT_BRANCH_COMMAND $CHECKOUT_TAG_COMMAND $CLONE_COMMAND);
 
@@ -37,7 +37,7 @@ sub checkout {
     Rex::Logger::info( "Cloning "
         . $repo_info->{"url"} . " to "
         . ( $checkout_to ? $checkout_to : "." ) );
-    my $out = run "$clone_cmd", cwd => dirname($checkout_to);
+    my $out = i_run "$clone_cmd", cwd => dirname($checkout_to);
     unless ( $? == 0 ) {
       Rex::Logger::info( "Error cloning repository.", "warn" );
       Rex::Logger::info($out);
@@ -61,7 +61,7 @@ sub checkout {
 
       Rex::Logger::info( "Switching to branch " . $checkout_opt->{"branch"} );
 
-      $out = run "$checkout_cmd", cwd => $checkout_to;
+      $out = i_run "$checkout_cmd", cwd => $checkout_to;
       unless ( $? == 0 ) {
         Rex::Logger::info( "Error switching to branch.", "warn" );
         Rex::Logger::info($out);
@@ -78,7 +78,7 @@ sub checkout {
       );
 
       Rex::Logger::info( "Switching to tag " . $checkout_opt->{"tag"} );
-      $out = run "$checkout_cmd", cwd => $checkout_to;
+      $out = i_run "$checkout_cmd", cwd => $checkout_to;
       unless ( $? == 0 ) {
         Rex::Logger::info( "Error switching to tag.", "warn" );
         Rex::Logger::info($out);
@@ -94,7 +94,7 @@ sub checkout {
         . ( $checkout_to ? $checkout_to : "." ) );
 
     my $rebase = $checkout_opt->{"rebase"} ? '--rebase' : '';
-    my $out = run "git pull $rebase origin $branch", cwd => $checkout_to;
+    my $out = i_run "git pull $rebase origin $branch", cwd => $checkout_to;
 
     unless ( $? == 0 ) {
       Rex::Logger::info( "Error pulling.", "warn" );
@@ -109,7 +109,7 @@ sub checkout {
       my $tag = $checkout_opt->{tag};
       my $checkout_cmd = sprintf( $CHECKOUT_TAG_COMMAND, $tag, $tag );
       Rex::Logger::info( "Switching to tag " . $tag );
-      $out = run "git fetch origin", cwd => $checkout_to;
+      $out = i_run "git fetch origin", cwd => $checkout_to;
 
       unless ( $? == 0 ) {
         Rex::Logger::info( "Error switching to tag.", "warn" );

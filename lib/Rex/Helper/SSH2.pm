@@ -91,8 +91,17 @@ sub net_ssh2_exec {
 END_READ:
   $chan->send_eof;
 
+  my $wait_c = 0;
+  my $wait_max = $rex_int_conf->{ssh2_channel_closewait_max} || 500;
   while ( !$chan->eof ) {
     Rex::Logger::debug("Waiting for eof on ssh channel.");
+    select undef, undef, undef, 0.002; # wait a little for retry
+    $wait_c++;
+    if($wait_c >= $wait_max) {
+      # channel will be force closed.
+      Rex::Logger::debug("Rex::Helper::SSH2::net_ssh2_exec: force closing channel for command: $cmd");
+      last;
+    }
   }
 
   $chan->wait_closed;

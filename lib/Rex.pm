@@ -183,7 +183,16 @@ sub search_module_path {
   }
 
   for my $file (@search_in) {
-    if ( -f $file ) {
+    my $o = -f $file;
+    my $fh_t;
+    if ( $^O =~ m/^MSWin/i && !$o ) {
+
+      # this is a windows workaround for if(-f ) on symlinks
+      $o = open( my $fh_t, "<", $file );
+    }
+
+    if ($o) {
+      close $fh_t if $fh_t;
       my ($path) = ( $file =~ m/^(.*)\/.+?$/ );
       if ( $path !~ m/\// ) {
         $path = $cur_dir . "/$path";

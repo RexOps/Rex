@@ -176,7 +176,7 @@ sub provision_vm {
   my ( $self, @tasks ) = @_;
 
   if ( !@tasks ) {
-    @tasks = @{ $self->{__tasks} };
+    @tasks = @{ $self->{__tasks} } if ( exists $self->{__tasks} );
   }
 
   $self->wait_for_ssh();
@@ -298,7 +298,7 @@ Configure the authentication to the VM.
 
 sub auth {
   my ( $self, %auth ) = @_;
-  if(%auth) {
+  if (%auth) {
     $self->{__auth} = \%auth;
   }
   else {

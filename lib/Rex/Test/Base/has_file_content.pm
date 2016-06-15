@@ -29,7 +29,7 @@ sub new {
 sub run_test {
   my ( $self, $file, $wanted_content ) = @_;
   my $content = cat $file;
-  
+
   $self->ok( $content eq $wanted_content, "File $file has content: $content" );
 }
 

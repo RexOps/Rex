@@ -392,11 +392,11 @@ sub boxes {
             $box->$key( $vm_ref->{$key} );
           }
         }
-        
+
         $box_vms->{$vm} = $box;
       };
     }
-    
+
     return $box_vms;
   }
 
@@ -421,7 +421,7 @@ task 'get_sys_info', sub {
 }, { dont_register => 1, exit_on_connect_fail => 0 };
 
 sub load_init_file {
-  my ($class, $file) = @_;
+  my ( $class, $file ) = @_;
 
   if ( !-f $file ) {
     die("Error: Wrong configuration file: $file.");

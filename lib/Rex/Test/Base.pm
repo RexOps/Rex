@@ -174,9 +174,9 @@ The task to run on the test VM. You can run multiple tasks by passing an array r
 
 sub run_task {
   my ( $self, $task ) = @_;
-  
+
   # allow multiple calls to run_task() without setting up new box
-  if($self->{box}) {
+  if ( $self->{box} ) {
     $self->{box}->provision_vm($task);
     return;
   }
@@ -291,10 +291,10 @@ sub AUTOLOAD {
   if ( $method eq "DESTROY" ) {
     return;
   }
-  
+
   my $real_method = $method;
-  my $is_not = 0;
-  if($real_method =~ m/^has_not_/) {
+  my $is_not      = 0;
+  if ( $real_method =~ m/^has_not_/ ) {
     $real_method =~ s/^has_not_/has_/;
     $is_not = 1;
   }
@@ -306,7 +306,7 @@ sub AUTOLOAD {
   }
 
   my $p = $pkg->new;
-  if($is_not) {
+  if ($is_not) {
     $p->run_not_test(@_);
   }
   else {

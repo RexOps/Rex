@@ -32,10 +32,11 @@ sub run_test {
   my ( $self, $user, $key, $value, $count ) = @_;
 
   my @crons = cron list => $user;
-  my @matched_crons = grep { $_->{ $key } eq $value } @crons;
-  
-  if($count) {
-    $self->ok( scalar @matched_crons == $count, "Found $count cron(s) with $key = $value" );
+  my @matched_crons = grep { $_->{$key} eq $value } @crons;
+
+  if ($count) {
+    $self->ok( scalar @matched_crons == $count,
+      "Found $count cron(s) with $key = $value" );
   }
   else {
     $self->ok( scalar @matched_crons > 0, "Found cron with $key = $value" );
@@ -46,13 +47,15 @@ sub run_not_test {
   my ( $self, $user, $key, $value, $count ) = @_;
 
   my @crons = cron list => $user;
-  my @matched_crons = grep { $_->{ $key } eq $value } @crons;
-  
-  if($count) {
-    $self->ok( scalar @matched_crons != $count, "Not found $count cron(s) with $key = $value" );
+  my @matched_crons = grep { $_->{$key} eq $value } @crons;
+
+  if ($count) {
+    $self->ok( scalar @matched_crons != $count,
+      "Not found $count cron(s) with $key = $value" );
   }
   else {
-    $self->ok( scalar @matched_crons == 0, "Not found cron with $key = $value" );
+    $self->ok( scalar @matched_crons == 0,
+      "Not found cron with $key = $value" );
   }
 }
 

@@ -34,11 +34,13 @@ sub run_test {
   my @envs = cron env => $user => "list";
   my @matched_envs = grep { $_->{name} eq $key && $_->{value} eq $value } @envs;
 
-  if($count) {
-    $self->ok( scalar @matched_envs == $count, "Found $count cron(s) env entries with $key = $value" );
+  if ($count) {
+    $self->ok( scalar @matched_envs == $count,
+      "Found $count cron(s) env entries with $key = $value" );
   }
   else {
-    $self->ok( scalar @matched_envs > 0, "Found cron env entry with $key = $value" );
+    $self->ok( scalar @matched_envs > 0,
+      "Found cron env entry with $key = $value" );
   }
 }
 
@@ -48,11 +50,13 @@ sub run_not_test {
   my @envs = cron env => $user => "list";
   my @matched_envs = grep { $_->{name} eq $key && $_->{value} eq $value } @envs;
 
-  if($count) {
-    $self->ok( scalar @matched_envs != $count, "Not found $count cron(s) env entries with $key = $value" );
+  if ($count) {
+    $self->ok( scalar @matched_envs != $count,
+      "Not found $count cron(s) env entries with $key = $value" );
   }
   else {
-    $self->ok( scalar @matched_envs == 0, "Not found cron env entry with $key = $value" );
+    $self->ok( scalar @matched_envs == 0,
+      "Not found cron env entry with $key = $value" );
   }
 }
 

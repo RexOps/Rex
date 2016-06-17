@@ -658,7 +658,9 @@ sub connect {
 
   my $profiler = Rex::Profiler->new;
 
-  # auth rules of task over all
+  $self->run_hook( \$server, "before" );
+
+  # task specific auth rules over all
   my %connect_hash = %{$auth};
   $connect_hash{server} = $server;
 
@@ -677,8 +679,6 @@ sub connect {
   );
 
   push @{ Rex::get_current_connection()->{task} }, $self;
-
-  $self->run_hook( \$server, "before" );
 
   $profiler->start("connect");
   eval {

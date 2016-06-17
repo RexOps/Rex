@@ -107,9 +107,11 @@ sub run_instance {
       $i++;
     }
   }
-  else {
+  elsif ( !exists $data{options}->{SubnetId} ) {
     $security_group{SecurityGroup} = $security_groups || "default";
   }
+
+  my %more_options = %{ $data{options} || {} };
 
   my $xml = $self->_request(
     "RunInstances",
@@ -119,7 +121,8 @@ sub run_instance {
     KeyName                      => $data{"key"},
     InstanceType                 => $data{"type"} || "m1.small",
     "Placement.AvailabilityZone" => $data{"zone"} || "",
-    %security_group
+    %security_group,
+    %more_options,
   );
 
   my $ref = $self->_xml($xml);

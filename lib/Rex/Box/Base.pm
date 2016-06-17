@@ -306,6 +306,27 @@ sub auth {
   }
 }
 
+=head2 options(%option)
+
+Addition options for boxes
+
+ $box->options(
+   opt1 => $val1,
+   opt2 => $val2,
+ );
+
+=cut
+
+sub options {
+  my ( $self, %opt ) = @_;
+  if (%opt) {
+    $self->{__options} = \%opt;
+  }
+  else {
+    return $self->{__options};
+  }
+}
+
 sub wait_for_ssh {
   my ( $self, $ip, $port ) = @_;
 

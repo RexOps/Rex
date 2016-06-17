@@ -155,6 +155,7 @@ sub import_vm {
       zone           => $self->{options}->{zone},
       type           => $self->{type} || "m1.large",
       security_group => $self->{security_group} || "default",
+      options        => $self->options,
     };
   }
 

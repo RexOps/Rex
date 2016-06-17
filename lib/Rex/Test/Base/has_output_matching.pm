@@ -30,7 +30,7 @@ sub new {
 sub run_test {
   my ( $self, $exec, $wanted_output ) = @_;
   my $output = i_exec $exec;
-  $self->ok( $output =~ $wanted_output > 0, "Output of $exec is as expected." );
+  $self->like( $output, $wanted_output, "Output of $exec is as expected." );
 }
 
 1;

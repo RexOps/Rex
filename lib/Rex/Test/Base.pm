@@ -222,6 +222,12 @@ sub ok($;$) {
   $tb->ok( $test, $msg );
 }
 
+sub like {
+  my ( $self, $thing, $want, $name ) = @_;
+  my $tb = Rex::Test::Base->builder;
+  $tb->like( $thing, $want, $name );
+}
+
 sub diag {
   my ( $self, $msg ) = @_;
   my $tb = Rex::Test::Base->builder;

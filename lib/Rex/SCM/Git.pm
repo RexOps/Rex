@@ -9,6 +9,7 @@ use Cwd qw(getcwd);
 use Rex::Commands::Fs;
 use Rex::Helper::Run;
 use File::Basename;
+use Rex::Helper::Run;
 
 use vars qw($CHECKOUT_BRANCH_COMMAND $CHECKOUT_TAG_COMMAND $CLONE_COMMAND);
 

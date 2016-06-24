@@ -72,14 +72,16 @@ sub update {
       $option->{version};
   }
 
-  my $f = i_run $cmd;
+  my ( $out, $err ) = i_run $cmd, sub { @_ };
+  my @return = $self->test_return( 'update', $out, $err );
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error installing $pkg.", "warn" );
-    Rex::Logger::debug($f);
+    Rex::Logger::debug($out);
     die("Error installing $pkg");
   }
 
+  $self->_report_output( 'Running package update command', @return );
   Rex::Logger::debug("$pkg successfully installed.");
 
   return 1;
@@ -94,14 +96,16 @@ sub update_system {
   }
 
   my $cmd = $self->{commands}->{update_system};
-  my $f   = i_run $cmd;
+  my ( $out, $err ) = i_run $cmd, sub { @_ };
+  my @return = $self->test_return( 'update_system', $out, $err );
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error updating system.", "warn" );
-    Rex::Logger::debug($f);
+    Rex::Logger::debug($out);
     die("Error updating system");
   }
 
+  $self->_report_output( 'Running update_system package command', @return );
   Rex::Logger::debug("System successfully updated.");
 
   return 1;
@@ -113,14 +117,16 @@ sub remove {
   Rex::Logger::debug("Removing $pkg");
   my $cmd = sprintf $self->{commands}->{remove}, $pkg;
 
-  my $f = i_run $cmd;
+  my ( $out, $err ) = i_run $cmd, sub { @_ };
+  my @return = $self->test_return( 'update_pkg_db', $out, $err );
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error removing $pkg.", "warn" );
-    Rex::Logger::debug($f);
+    Rex::Logger::debug($out);
     die("Error removing $pkg");
   }
 
+  $self->_report_output( 'Running package remove command', @return );
   Rex::Logger::debug("$pkg successfully removed.");
 
   return 1;
@@ -132,14 +138,16 @@ sub purge {
   Rex::Logger::debug("Purging $pkg");
   my $cmd = sprintf $self->{commands}->{purge}, $pkg;
 
-  my $f = i_run $cmd;
+  my ( $out, $err ) = i_run $cmd, sub { @_ };
+  my @return = $self->test_return( 'update_pkg_db', $out, $err );
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error purging $pkg.", "warn" );
-    Rex::Logger::debug($f);
+    Rex::Logger::debug($out);
     die("Error purging $pkg");
   }
 
+  $self->_report_output( 'Running package purge command', @return );
   Rex::Logger::debug("$pkg successfully purged.");
 
   return 1;
@@ -154,10 +162,17 @@ sub update_pkg_db {
   }
 
   my $cmd = $self->{commands}->{update_package_db};
-  i_run $cmd;
+
+  my ( $out, $err ) = i_run $cmd, sub { @_ };
+  my @return = $self->test_return( 'update_pkg_db', $out, $err );
+
   if ( $? != 0 ) {
-    die("Error updating package database");
+    die(
+      "Running package database update command returned failure in exit status"
+    );
   }
+
+  $self->_report_output( 'Running package database update command', @return );
 }
 
 sub bulk_install {
@@ -223,6 +238,15 @@ OLD_PKG:
   map { delete $_->{found} } @modifications;
 
   return @modifications;
+}
+
+sub test_return { }
+
+sub _report_output {
+  my ( $self, $description, $errors, $warnings, $debug ) = @_;
+  Rex::Logger::info( "$description: $errors",   'error' ) if $errors;
+  Rex::Logger::info( "$description: $warnings", 'warn' )  if $warnings;
+  Rex::Logger::debug("$description: $debug") if $debug;
 }
 
 1;

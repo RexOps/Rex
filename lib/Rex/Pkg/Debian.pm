@@ -172,4 +172,25 @@ sub rm_repository {
   unlink "/etc/apt/sources.list.d/$name.list";
 }
 
+# Check the return value from apt-get. Unless the return value of the
+# command is an error, these otherwise go unreported.
+sub test_return {
+  my ( $self, $type, $out, $err ) = @_;
+
+  # For the moment we assume that the tests are the same regardless
+  # of the type of task being performed. Not all command permutations
+  # have been tested though, so a check for $type can be added in
+  # the future if required.
+
+  # Under some circumstances, STDERR and STDOUT are both received
+  # in STDOUT (see https://github.com/RexOps/Rex/issues/112).
+  # We don't really care where the errors/warnings came from, so
+  # check both.
+  my @warnings = grep { /^W: / } split "\n", $out . $err;
+  my @errors   = grep { /^E: / } split "\n", $out . $err;
+  my $warning = join ", ", @warnings;
+  my $error   = join ", ", @errors;
+  return ( $error, $warning, $out );
+}
+
 1;

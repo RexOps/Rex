@@ -148,13 +148,13 @@ sub sync {
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     Rex::Logger::debug("Downloading $source -> $dest");
     push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params ";
-    push @rsync_cmd, $auth->{user} . "\@" . $server . ":" . $source;
-    push @rsync_cmd, $dest;
+    push @rsync_cmd, "'" . $auth->{user} . "\@" . $server . ":" . $source . "'";
+    push @rsync_cmd, "'$dest'";
   }
   else {
     Rex::Logger::debug("Uploading $source -> $dest");
-    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params $source ";
-    push @rsync_cmd, $auth->{user} . "\@$server:$dest";
+    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params '$source' ";
+    push @rsync_cmd, "'" . $auth->{user} . "\@$server:$dest" . "'";
   }
 
   if (Rex::is_sudo) {

@@ -28,6 +28,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(mkfs);
 
+use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Carp;
 

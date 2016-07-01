@@ -79,15 +79,36 @@ sub add {
 
 sub add_env {
   my ( $self, $name, $value ) = @_;
-  unshift(
-    @{ $self->{cron} },
-    {
-      type  => "env",
-      line  => "$name=\"$value\"",
-      name  => $name,
-      value => $value,
+
+  my $env_index = 0;
+  my $exists    = 0;
+  for my $env ( $self->list_envs ) {
+    if ( $env->{name} eq "$name" ) {
+      if ( $env->{value} ne "\"$value\"" ) {
+        Rex::Logger::debug("Environment variable changed : $name");
+        $self->delete_env($env_index);
+      }
+      else {
+        Rex::Logger::debug(
+          "Environment variable already exists with same value: $name=$value");
+        $exists = 1;
+      }
     }
-  );
+
+    $env_index++;
+  }
+
+  if ( $exists == 0 ) {
+    unshift(
+      @{ $self->{cron} },
+      {
+        type  => "env",
+        line  => "$name=\"$value\"",
+        name  => $name,
+        value => $value,
+      }
+    );
+  }
 }
 
 sub delete_job {

@@ -152,6 +152,8 @@ sub get {
     else {
 
       $free_str =~ s/\r//g;
+      $free_str =~ s/^\s+|\s+$//g;
+
       my ( $total, $used, $free ) =
         ( $free_str =~ m/^Swap:\s+(\d+)\s+(\d+)\s+(\d+)$/ );
 

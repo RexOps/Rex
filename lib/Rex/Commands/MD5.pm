@@ -16,6 +16,7 @@ This is just a helper function and will not be reported.
 
 =head1 SYNOPSIS
 
+ use Rex::Commands::MD5;
  my $md5 = md5($file);
 
 =head1 EXPORTED FUNCTIONS
@@ -47,8 +48,8 @@ use vars qw(@EXPORT);
 
 This function will return the MD5 checksum (hexadecimal) for the given file.
 
- task "md5", "server01", sub {
-   my $md5 = md5("/etc/passwd");
+ task "checksum", "server01", sub {
+   say md5("/etc/passwd");
  };
 
 =cut

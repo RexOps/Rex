@@ -14,8 +14,6 @@ our $VERSION = '1.4.0'; # VERSION
 use Rex::Logger;
 use Rex::Helper::Run;
 
-use Data::Dumper;
-
 # Not sure if global scope is good place to keep this.
 # Also not sure "polluting" execute method wih this is also an option.
 my %allowed_states;

@@ -21,8 +21,12 @@ With this module you can manage Linux Containers.
  use Data::Dumper;
 
  print Dumper vm list => "all";
- print Dumper vm list => "active";
+ print Dumper vm list => "active",
+   fancy => 1,
+   format => 'name,ram';
 
+ print Dumper vm list => "all",
+ fancy => 1;
 
 =cut
 

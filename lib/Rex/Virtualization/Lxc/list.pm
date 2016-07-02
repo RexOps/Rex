@@ -26,7 +26,6 @@ $allowed_states{stopped} = 1;
 
 sub execute {
   my ( $class, $state, %opt ) = @_;
-  print Dumper \@_, \%opt;
   my @containers;
 
   my $opts = \%opt;

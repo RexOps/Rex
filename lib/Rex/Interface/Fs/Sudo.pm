@@ -34,7 +34,12 @@ sub ls {
 
   my @ret;
 
-  my @out = split( /\n/, $self->_exec("ls -a1 $path") );
+  my @out = split(
+    /\n/,
+    $self->_exec(
+      "ls -a1 $path", undef, { env => { QUOTING_STYLE => "literal" } }
+    )
+  );
 
   # failed open directory, return undef
   if ( $? != 0 ) { return; }
@@ -279,9 +284,9 @@ sub _write_to_rnd_file {
 }
 
 sub _exec {
-  my ( $self, $cmd ) = @_;
+  my ( $self, $cmd, $path, $option ) = @_;
   my $exec = Rex::Interface::Exec->create("Sudo");
-  return $exec->exec($cmd);
+  return $exec->exec( $cmd, $path, $option );
 }
 
 1;

@@ -30,7 +30,10 @@ sub execute {
   }
 
   my $opts = \%opt;
-  my $timeout = (exists $opts->{timeout} and looks_like_number($opts->{timeout})) ? $opts->{timeout}: 30;
+  my $timeout =
+    ( exists $opts->{timeout} and looks_like_number( $opts->{timeout} ) )
+    ? $opts->{timeout}
+    : 30;
 
   i_run "lxc-stop -t $timeout -n \"$container_name\"";
   if ( $? != 0 ) {

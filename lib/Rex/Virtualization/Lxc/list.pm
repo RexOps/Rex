@@ -17,9 +17,9 @@ use Rex::Helper::Run;
 # Not sure if global scope is good place to keep this.
 # Also not sure "polluting" execute method wih this is also an option.
 my %allowed_states;
-$allowed_states{active} = 1;
+$allowed_states{active}  = 1;
 $allowed_states{running} = 1;
-$allowed_states{frozen} = 1;
+$allowed_states{frozen}  = 1;
 $allowed_states{stopped} = 1;
 
 sub execute {
@@ -31,12 +31,15 @@ sub execute {
   Rex::Logger::debug("Getting Linux Containers list");
 
   $state = exists $allowed_states{$state} ? '--' . $state : '';
-  my $format = exists $opts->{format} ? $opts->{format} : 'name,state,autostart,groups,ipv4,ipv6,pid';
+  my $format =
+    exists $opts->{format}
+    ? $opts->{format}
+    : 'name,state,autostart,groups,ipv4,ipv6,pid';
   my $fancy = exists $opts->{fancy} ? '-f' : '';
   my $groups = exists $opts->{groups} ? '-g' . $opts->{groups} : '';
 
   # When using not fancy output, lxc-ls defaults to outputting only name.
-  if ($fancy ne '-f') {
+  if ( $fancy ne '-f' ) {
     $format = 'name';
   }
 
@@ -46,8 +49,7 @@ sub execute {
     die("Error running lxc-ls");
   }
 
-
-  my @columns = split(',', $format);
+  my @columns = split( ',', $format );
   my @ret = ();
   for my $line (@containers) {
     next if $line =~ m/NAME|AUTOSTART|STATE|IPV4|IPV6|AUTOSTART|PID|RAM|SWAP\s/;
@@ -55,14 +57,11 @@ sub execute {
 
     # Convert provided format into hash values.
     my %row = ();
-    for my $column (keys @columns) {
-      $row{$columns[$column]} = $values[$column];
+    for my $column ( keys @columns ) {
+      $row{ $columns[$column] } = $values[$column];
     }
 
-    push(
-      @ret,
-      \%row,
-    );
+    push( @ret, \%row, );
   }
 
   return \@ret;

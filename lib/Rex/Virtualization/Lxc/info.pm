@@ -31,7 +31,8 @@ sub execute {
 
   my %ret;
   for my $line (@container_info) {
-    my ( $column, $value) = split(':', $line );
+    my ( $column, $value ) = split( ':', $line );
+
     # Trim white spaces.
     $column =~ s/^\s+|\s+$//g;
     $value =~ s/^\s+|\s+$//g;

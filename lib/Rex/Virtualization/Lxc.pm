@@ -1,5 +1,5 @@
 #
-# (c) Jan Gehring <jan.gehring@gmail.com>
+# (c) Oleg Hardt <litwol@litwol.com>
 #
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
@@ -35,7 +35,7 @@ package Rex::Virtualization::Lxc;
 use strict;
 use warnings;
 
-our $VERSION = '1.4.0'; # VERSION
+# VERSION
 
 use Rex::Virtualization::Base;
 use base qw(Rex::Virtualization::Base);

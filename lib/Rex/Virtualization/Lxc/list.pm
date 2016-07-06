@@ -58,7 +58,7 @@ sub execute {
 
     # Convert provided format into hash values.
     my %row = ();
-    for my $column ( keys @columns ) {
+    foreach my $column (0 .. $#columns) {
       $row{ $columns[$column] } = $values[$column];
     }
 

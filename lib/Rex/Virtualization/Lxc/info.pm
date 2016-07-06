@@ -15,32 +15,32 @@ use Rex::Logger;
 use Rex::Helper::Run;
 
 sub execute {
-  my ( $class, $arg1 ) = @_;
-  my @dominfo;
+    my ( $class, $arg1 ) = @_;
+    my @dominfo;
 
-  if ( !$arg1 ) {
-    die('Must define container ID');
-  }
+    if ( !$arg1 ) {
+        die('Must define container ID');
+    }
 
-  Rex::Logger::debug("Getting lxc-info");
+    Rex::Logger::debug("Getting lxc-info");
 
-  my @container_info = i_run "lxc-info -n $arg1";
-  if ( $? != 0 ) {
-    die("Error running lxc-info");
-  }
+    my @container_info = i_run "lxc-info -n $arg1";
+    if ( $? != 0 ) {
+        die("Error running lxc-info");
+    }
 
-  my %ret;
-  for my $line (@container_info) {
-    my ( $column, $value ) = split( ':', $line );
+    my %ret;
+    for my $line (@container_info) {
+        my ( $column, $value ) = split( ':', $line );
 
-    # Trim white spaces.
-    $column =~ s/^\s+|\s+$//g;
-    $value =~ s/^\s+|\s+$//g;
+        # Trim white spaces.
+        $column =~ s/^\s+|\s+$//g;
+        $value =~ s/^\s+|\s+$//g;
 
-    $ret{$column} = $value;
-  }
+        $ret{$column} = $value;
+    }
 
-  return \%ret;
+    return \%ret;
 }
 
 1;

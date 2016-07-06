@@ -41,13 +41,13 @@ use Rex::Virtualization::Base;
 use base qw(Rex::Virtualization::Base);
 
 sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = {@_};
+    my $that  = shift;
+    my $proto = ref($that) || $that;
+    my $self  = {@_};
 
-  bless( $self, $proto );
+    bless( $self, $proto );
 
-  return $self;
+    return $self;
 }
 
 1;

@@ -23,48 +23,50 @@ $allowed_states{frozen}  = 1;
 $allowed_states{stopped} = 1;
 
 sub execute {
-  my ( $class, $state, %opt ) = @_;
-  my @containers;
+    my ( $class, $state, %opt ) = @_;
+    my @containers;
 
-  my $opts = \%opt;
+    my $opts = \%opt;
 
-  Rex::Logger::debug("Getting Linux Containers list");
+    Rex::Logger::debug("Getting Linux Containers list");
 
-  $state = exists $allowed_states{$state} ? '--' . $state : '';
-  my $format =
-    exists $opts->{format}
-    ? $opts->{format}
-    : 'name,state,autostart,groups,ipv4,ipv6,pid';
-  my $fancy = exists $opts->{fancy} ? '-f' : '';
-  my $groups = exists $opts->{groups} ? '-g' . $opts->{groups} : '';
+    $state = exists $allowed_states{$state} ? '--' . $state : '';
+    my $format =
+      exists $opts->{format}
+      ? $opts->{format}
+      : 'name,state,autostart,groups,ipv4,ipv6,pid';
+    my $fancy = exists $opts->{fancy} ? '-f' : '';
+    my $groups = exists $opts->{groups} ? '-g' . $opts->{groups} : '';
 
-  # When using not fancy output, lxc-ls defaults to outputting only name.
-  if ( $fancy ne '-f' ) {
-    $format = 'name';
-  }
-
-  my $command_to_run = "lxc-ls -1 $state $groups $fancy -F\"$format\"";
-  @containers = i_run $command_to_run;
-  if ( $? != 0 ) {
-    die("Error running lxc-ls");
-  }
-
-  my @columns = split( ',', $format );
-  my @ret = ();
-  for my $line (@containers) {
-    next if $line =~ m/NAME|AUTOSTART|STATE|IPV4|IPV6|AUTOSTART|PID|RAM|SWAP\s/;
-    my @values = split( /\s{1,}/, $line );
-
-    # Convert provided format into hash values.
-    my %row = ();
-    for my $column ( keys @columns ) {
-      $row{ $columns[$column] } = $values[$column];
+    # When using not fancy output, lxc-ls defaults to outputting only name.
+    if ( $fancy ne '-f' ) {
+        $format = 'name';
     }
 
-    push( @ret, \%row, );
-  }
+    my $command_to_run = "lxc-ls -1 $state $groups $fancy -F\"$format\"";
+    @containers = i_run $command_to_run;
+    if ( $? != 0 ) {
+        die("Error running lxc-ls");
+    }
 
-  return \@ret;
+    my @columns = split( ',', $format );
+    my @ret = ();
+    for my $line (@containers) {
+        next
+          if $line =~
+          m/NAME|AUTOSTART|STATE|IPV4|IPV6|AUTOSTART|PID|RAM|SWAP\s/;
+        my @values = split( /\s{1,}/, $line );
+
+        # Convert provided format into hash values.
+        my %row = ();
+        for my $column ( keys @columns ) {
+            $row{ $columns[$column] } = $values[$column];
+        }
+
+        push( @ret, \%row, );
+    }
+
+    return \@ret;
 }
 
 1;

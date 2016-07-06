@@ -16,29 +16,29 @@ use Rex::Helper::Run;
 use Scalar::Util qw(looks_like_number);
 
 sub execute {
-    my ( $class, $arg1, %opt ) = @_;
+  my ( $class, $arg1, %opt ) = @_;
 
-    unless ($arg1) {
-        die("You have to define the container name!");
-    }
+  unless ($arg1) {
+    die("You have to define the container name!");
+  }
 
-    my $container_name = $arg1;
-    Rex::Logger::debug("stopping container $container_name");
+  my $container_name = $arg1;
+  Rex::Logger::debug("stopping container $container_name");
 
-    unless ($container_name) {
-        die("VM $container_name not found.");
-    }
+  unless ($container_name) {
+    die("VM $container_name not found.");
+  }
 
-    my $opts = \%opt;
-    my $timeout =
-      ( exists $opts->{timeout} and looks_like_number( $opts->{timeout} ) )
-      ? $opts->{timeout}
-      : 30;
+  my $opts = \%opt;
+  my $timeout =
+    ( exists $opts->{timeout} and looks_like_number( $opts->{timeout} ) )
+    ? $opts->{timeout}
+    : 30;
 
-    i_run "lxc-stop -t $timeout -n \"$container_name\"";
-    if ( $? != 0 ) {
-        die("Error stopping container $container_name");
-    }
+  i_run "lxc-stop -t $timeout -n \"$container_name\"";
+  if ( $? != 0 ) {
+    die("Error stopping container $container_name");
+  }
 
 }
 

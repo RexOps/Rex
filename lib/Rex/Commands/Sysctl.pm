@@ -38,6 +38,8 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
+use Rex::Commands::File;
 
 require Rex::Exporter;
 
@@ -46,7 +48,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(sysctl);
 
-=head2 sysctl($key [, $val])
+=head2 sysctl($key [, $val [, %options]])
 
 This function will read the sysctl key $key.
 
@@ -58,11 +60,25 @@ If $val is given, then this function will set the sysctl key $key.
    }
  };
 
+If both $val and option persistent => "true" are passed the sysctl key and value are stored in /etc/sysctl.conf.
+If the key already exists in the file, it will be updated to the new value.
+
+ task "forwarding", "server01", sub {
+   sysctl "net.ipv4.ip_forward" => 1, persistent => TRUE;
+ }
+
 =cut
+
+sub sysctl_save {
+  my ( $key, $value ) = @_;
+  append_or_amend_line "/etc/sysctl.conf",
+    line   => "$key=$value",
+    regexp => qr{\Q$key=};
+}
 
 sub sysctl {
 
-  my ( $key, $val ) = @_;
+  my ( $key, $val, %options ) = @_;
 
   if ($val) {
 
@@ -77,6 +93,11 @@ sub sysctl {
     }
     else {
       Rex::Logger::debug("$key has already value $val");
+    }
+
+    if ( $options{persistent} ) {
+      Rex::Logger::debug("Writing $key=$val to sysctl.conf");
+      sysctl_save $key, $val;
     }
 
   }

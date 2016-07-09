@@ -102,11 +102,11 @@ sub sysctl {
     if ( $options{ensure} ) {
       if ( $options{ensure} eq "present" ) {
         Rex::Logger::debug("Writing $key=$val to sysctl.conf");
-        sysctl_save $key, $val;
+        sysctl_save $key, $val if($options{persistent});
       }
       elsif ( $options{ensure} eq "absent" ) {
         Rex::Logger::debug("Removing $key=$val of sysctl.conf");
-        sysctl_remove $key, $val;
+        sysctl_remove $key, $val if($options{persistent};
       }
       else {
         Rex::Logger::info(

@@ -94,11 +94,9 @@ sub sysctl {
       Rex::Logger::debug("$key has already value $val");
     }
 
-    if ( defined %options ) {
-      if ( exists $options{persistent} && $options{persistent} eq "true" ) {
-        Rex::Logger::debug("Writing $key=$val to sysctl.conf");
-        sysctl_save $key, $val;
-      }
+    if ( exists $options{persistent} && $options{persistent} eq "true" ) {
+      Rex::Logger::debug("Writing $key=$val to sysctl.conf");
+      sysctl_save $key, $val;
     }
 
   }

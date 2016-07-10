@@ -1,3 +1,61 @@
+2016-07-10 Jan Gehring <jfried@rexify.org> (1.4.1)
+  * set ls quoting for fedora 24 which magically quotes filenames - Jan Gehring
+  * added cache for can_run - Jan Gehring
+  * removed space from line ending. fixed test on centos 6 - Jan Gehring
+  * Don't add duplicates env variable in crontab - Rapenne Solène
+  * quote source and destination, so spaces in directory names are possible - Jan Gehring
+  * fixed summary tests for netbsd - Jan Gehring
+  * run hooks before push_connection - Jan Gehring
+  * Don't hardcode LibXML dependency - Jan Gehring
+  * workaround for wrong behaviour with -f and windows symlinks - Jan Gehring
+  * it seems that the channel sometimes doesn't get closed in time. so we need an option to force close it after command run. - Jan Gehring
+  * fixed reporting for named resource - Jan Gehring
+  * pass cli parameters to tasks for pre 1.4 feature flags. fix #1039 - Jan Gehring
+  * fixed old style Rex::Args->get when called from outside a task - Jan Gehring
+  * Fix for #1054 - get_private_key() to check the private key file - Tamas Molnar
+  * Fix for #1052 - mask sudo_password in debug log - Tamas Molnar
+  * exit rex with an exitcode of 1 if some tests failed. fix #989 - Jan Gehring
+  * show how to assign a user with a non-default shell - Andrew Solomon
+  * Fix example code (fix #1034) - Ferenc Erki
+  * Update example tasknames - Ferenc Erki
+  * Add possible root cause to authentication error message (fix #671) - Ferenc Erki
+  * Correct message for authentication problems - Ferenc Erki
+  * Avoid hardcoded path - Ferenc Erki
+  * Refactor calls to reporting - Ferenc Erki
+  * Refactor reporting message handling - Ferenc Erki
+  * Simplify detection of pkg change type - Ferenc Erki
+  * Refactor pkg on_change handling - Ferenc Erki
+  * Report each pkg modification (fix #838) - Ferenc Erki
+  * Revert "report all packages" - Ferenc Erki
+  * Timeout value should be passed in milliseconds - Ferenc Erki
+  * Fix compatibility with recent Net::SSH2 (fix #1023) - Ferenc Erki
+  * Only log masked password if one is being used - Ferenc Erki
+  * Avoid logging undefined host during connection - Ferenc Erki
+  * Refactor do_task - Ferenc Erki
+  * Backport task existence check for do_task from #1010 (fix #992) - Ferenc Erki
+  * Initial tests for do_task - Ferenc Erki
+  * fix hardcoded git tag command - Kirill Babikhin
+  * Document perlcritic violations - Ferenc Erki
+  * Integer with leading zeros - Ferenc Erki
+  * Add S_IMODE - Ferenc Erki
+  * Variable declared in conditional statement - Ferenc Erki
+  * "require" statement with library name as string - Ferenc Erki
+  * "select" used to emulate "sleep" - Ferenc Erki
+  * Don't modify $_ in list functions - Ferenc Erki
+  * removed hard coded qemu-img create format and added use of driver_type option. fix #948 - Jan Gehring
+  * added understandable error message when no virtualization module is given. fix #949 - Jan Gehring
+  * print right error message if run_task is calling a task that is not available. fix #970 - Jan Gehring
+  * on windows test for SSH connection type. fix #965 - Jan Gehring
+  * Add more tests for shared arrays - Ferenc Erki
+  * Add unshift for shared arrays - Ferenc Erki
+  * Add tests for unshift to shared arrays - Ferenc Erki
+  * Add pop for shared arrays - Ferenc Erki
+  * Add tests for pop from shared arrays - Ferenc Erki
+  * Add shift for shared arrays (fix #921) - Ferenc Erki
+  * Add tests for shift from shared arrays (ref #921) - Ferenc Erki
+  * Fix #967 - Harm Müller
+  * Add META.json to CPAN release - Kent Fredric
+
 2016-03-06 Ferenc Erki <ferki@cpan.org> (1.4.0)
   * Normalize EOL characters earlier (fix #957) - Ferenc Erki
   * fixed variable usage - Jan

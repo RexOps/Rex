@@ -1,4 +1,6 @@
 2016-07-10 Jan Gehring <jfried@rexify.org> (1.4.1)
+  * bug with get_cloud_instances_as_group - Pierrick DINTRAT
+  * Adds 64bit module path to @INC for linux - Mitch Broadhead
   * set ls quoting for fedora 24 which magically quotes filenames - Jan Gehring
   * added cache for can_run - Jan Gehring
   * removed space from line ending. fixed test on centos 6 - Jan Gehring

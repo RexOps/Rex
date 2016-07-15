@@ -34,7 +34,7 @@ subtest "distributor => 'Base'" => sub {
       task1 => {
         server    => '<local>',
         task      => 'task1',
-        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin)/ ? 1 : 2 )
+        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin|openbsd)/ ? 1 : 2 )
       },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
@@ -62,7 +62,7 @@ subtest "distributor => 'Parallel_ForkManager'" => sub {
       task1 => {
         server    => '<local>',
         task      => 'task1',
-        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin)/ ? 1 : 2 )
+        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin|openbsd)/ ? 1 : 2 )
       },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },

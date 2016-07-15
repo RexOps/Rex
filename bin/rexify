@@ -11,6 +11,13 @@ use warnings;
 
 # VERSION
 
+BEGIN {
+  # this is for new package format
+  if ( -d '/usr/lib/rex/lib' ) {
+    use lib '/usr/lib/rex/lib';
+  }
+}
+
 $|++;
 
 use LWP::UserAgent;
@@ -583,7 +590,14 @@ if ( exists $opts->{bundle} ) {
   close($fh);
 
   # build the perl and application
-  system "pp \@$tmp_args_file -o rex.payload/rex.bin $rex";
+  if ( -d '/usr/lib/rex/lib' ) {
+    system "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex"
+      ;
+  }
+  else {
+    system
+      "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex";
+  }
 
   # find libssh2.so and libexpat.so
   my $arch = qx{uname -m};

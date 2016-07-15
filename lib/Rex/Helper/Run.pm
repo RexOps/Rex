@@ -19,6 +19,7 @@ use Net::OpenSSH::ShellQuoter;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Helper::Path;
+use Carp;
 require Rex::Commands;
 require Rex::Config;
 
@@ -78,15 +79,24 @@ sub i_run {
 
   my $exec = Rex::Interface::Exec->create;
   my ( $out, $err ) = $exec->exec( $cmd, $path, $option );
+  my $ret_val = $?;
+
   chomp $out if $out;
   chomp $err if $err;
-
-  my $ret_val = $?;
 
   $Rex::Commands::Run::LAST_OUTPUT = [ $out, $err ];
 
   $out ||= "";
   $err ||= "";
+
+  if ( $ret_val != 0 ) {
+    Rex::Logger::debug("Error executing `$cmd`: ");
+    Rex::Logger::debug("STDOUT:");
+    Rex::Logger::debug($out);
+    Rex::Logger::debug("STDERR:");
+    Rex::Logger::debug($err);
+    confess("Error during `i_run`");
+  }
 
   if ($code) {
     return &$code( $out, $err );

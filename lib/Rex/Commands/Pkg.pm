@@ -87,7 +87,7 @@ Use this resource to install or update a package. This resource will generate re
 sub pkg {
   my ( $package, %option ) = @_;
 
-  if(exists $option{package} && ref $option{package} eq "ARRAY") {
+  if ( exists $option{package} && ref $option{package} eq "ARRAY" ) {
     die "The `package´ option can't be an array.";
   }
 
@@ -102,8 +102,10 @@ sub pkg {
   my @package_list = ref $package eq "ARRAY" ? @{$package} : ($package);
 
   foreach my $candidate ( sort @package_list ) {
-    Rex::get_current_connection()->{reporter}
-      ->report_resource_start( type => "pkg", name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name));
+    Rex::get_current_connection()->{reporter}->report_resource_start(
+      type => "pkg",
+      name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name )
+    );
   }
 
   my $pkg           = Rex::Pkg->get;
@@ -131,7 +133,10 @@ sub pkg {
   my @modifications =
     $pkg->diff_package_list( \@old_installed, \@new_installed );
 
-  if ( exists $option{on_change} && ref $option{on_change} eq "CODE" && scalar @modifications > 0 ) {
+  if ( exists $option{on_change}
+    && ref $option{on_change} eq "CODE"
+    && scalar @modifications > 0 )
+  {
     $option{on_change}->( $package, %option );
   }
 
@@ -160,8 +165,10 @@ sub pkg {
 
     Rex::get_current_connection()->{reporter}->report(%report_args);
 
-    Rex::get_current_connection()->{reporter}
-      ->report_resource_end( type => "pkg", name => (ref $res_name eq "ARRAY" ? $candidate : $res_name) );
+    Rex::get_current_connection()->{reporter}->report_resource_end(
+      type => "pkg",
+      name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name )
+    );
   }
 }
 

@@ -56,11 +56,22 @@ sub can_run {
 
   $check_with_command ||= "which";
 
+  my $exec  = Rex::Interface::Exec->create;
+  my $cache = Rex::get_cache();
+
   for my $command ( @{$commands_to_check} ) {
+
+    my $cache_key_name = $cache->gen_key_name("can_run.cmd/$command");
+    if ( $cache->valid($cache_key_name) ) {
+      return $cache->get($cache_key_name);
+    }
+
     my @output = Rex::Helper::Run::i_run "$check_with_command $command";
 
     next if ( $? != 0 );
     next if ( grep { /^no $command in/ } @output ); # for solaris
+
+    $cache->set( $cache_key_name, $output[0] );
 
     return $output[0];
   }

@@ -1,5 +1,6 @@
 use Test::More tests => 6;
 use FindBin qw($Bin);
+use Rex::Require;
 
 require Rex::Group::Lookup::XML;
 Rex::Group::Lookup::XML->import;

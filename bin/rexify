@@ -11,6 +11,13 @@ use warnings;
 
 # VERSION
 
+BEGIN {
+  # this is for new package format
+  if ( -d '/usr/lib/rex/lib' ) {
+    use lib '/usr/lib/rex/lib';
+  }
+}
+
 $|++;
 
 use LWP::UserAgent;
@@ -135,15 +142,15 @@ if ( !$ARGV[0]
     "\t--init=git-url\t\t\tWill download and initialize the given repo\n";
   print STDERR "\t--update-from-git\t\tUpdate the cloned repository.\n";
   print STDERR
-    "\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
+"\t--template=template\t\tUse a custom template to create the Rexfile skeleton\n";
   print STDERR "\t--create-module\t\t\tCreate a module skeleton.\n";
   print STDERR
-    "\t--create-module=Mod::Name\tCreate a module skeleton inside a Rex project.\n";
+"\t--create-module=Mod::Name\tCreate a module skeleton inside a Rex project.\n";
   print STDERR "\t--sudo\t\t\t\tTo use sudo for Perl Module installation.\n";
   print STDERR
-    "\t--resolve-deps\t\t\tRead meta.yml and try to resolve project dependencies\n";
+"\t--resolve-deps\t\t\tRead meta.yml and try to resolve project dependencies\n";
   print STDERR
-    "\t--no-install-perl-deps\t\tUse this if you don't want that rexify tries to install Perl Modules.\n";
+"\t--no-install-perl-deps\t\tUse this if you don't want that rexify tries to install Perl Modules.\n";
 
   print STDERR "\n";
   print STDERR "Custom Templates:\n";
@@ -153,7 +160,7 @@ if ( !$ARGV[0]
   print STDERR "Application Bundle Commands:\n";
   print STDERR "\n";
   print STDERR
-    "\t--bundle\tCreate an all-containing redistributable binary application.\n";
+"\t--bundle\tCreate an all-containing redistributable binary application.\n";
   print STDERR
     "\t--task=taskname\tWhich task should be executed. default: setup\n";
   print STDERR "\n";
@@ -161,14 +168,14 @@ if ( !$ARGV[0]
   print STDERR "\n";
   print STDERR "\t--upload\tUpload Rexfile to JobControl server.\n";
   print STDERR
-    "\t\t--project=<project>\t\tProject where the Rexfile should be registered.\n";
+"\t\t--project=<project>\t\tProject where the Rexfile should be registered.\n";
   print STDERR "\t\t--name=<name>\t\t\tThe name for the Rexfile.\n";
   print STDERR
     "\t\t--description='<description>'\tA small description for the Rexfile.\n";
   print STDERR "\n";
   print STDERR "\t--execute\tExecute Job on JobControl server.\n";
   print STDERR
-    "\t\t--project=<project>\t\tProject where the Rexfile should be registered.\n";
+"\t\t--project=<project>\t\tProject where the Rexfile should be registered.\n";
   print STDERR "\t\t--job=<job>\t\t\tThe name of the job to execute.\n";
   print STDERR
     "\t\t--hosts='<server list>'\tA comma seperated list of servers.\n";
@@ -178,7 +185,7 @@ if ( !$ARGV[0]
   print STDERR "\n";
   print STDERR "\t--server=<server>\t\tThe URL to JobControl server.\n";
   print STDERR
-    "\t--username=<username>\t\tThe username to use for login to JobControl server.\n";
+"\t--username=<username>\t\tThe username to use for login to JobControl server.\n";
   print STDERR "\t--password=<password>\t\tThe password for the user.\n";
   print STDERR "\n";
   exit 1;
@@ -560,7 +567,7 @@ sub install_perl_module {
   if ( $? != 0 ) {
     print "[failed]\n";
     print
-      "!! Please install $mod manually. See rexify-install.log for more details.\n";
+"!! Please install $mod manually. See rexify-install.log for more details.\n";
   }
   else {
     print "[ok]\n";
@@ -583,7 +590,14 @@ if ( exists $opts->{bundle} ) {
   close($fh);
 
   # build the perl and application
-  system "pp \@$tmp_args_file -o rex.payload/rex.bin $rex";
+  if ( -d '/usr/lib/rex/lib' ) {
+    system
+      "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex";
+  }
+  else {
+    system
+      "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex";
+  }
 
   # find libssh2.so and libexpat.so
   my $arch = qx{uname -m};
@@ -596,9 +610,9 @@ if ( exists $opts->{bundle} ) {
 
   CORE::mkdir( File::Spec->catdir( "rex.payload", "lib.bin" ) );
   my @libexpat =
-    qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libexpat.so*' -type f 2>/dev/null};
+qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libexpat.so*' -type f 2>/dev/null};
   my @libssh2 =
-    qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libssh2.so*' -type f 2>/dev/null};
+qx{find /usr/lib /usr/lib32 /usr/lib64 /lib -name 'libssh2.so*' -type f 2>/dev/null};
   chomp @libexpat;
   chomp @libssh2;
 
@@ -626,7 +640,7 @@ if ( exists $opts->{bundle} ) {
 
   system "cd rex.payload ; tar czf ../rex.payload.tar.gz *";
   system
-    "cat rex.sh rex.payload.tar.gz >rex.selfextract.sbx ; chmod 755 rex.selfextract.sbx";
+"cat rex.sh rex.payload.tar.gz >rex.selfextract.sbx ; chmod 755 rex.selfextract.sbx";
 
   CORE::unlink($tmp_args_file);
   CORE::unlink("rex.sh");
@@ -830,7 +844,7 @@ unless ( -f 'lib' . $ARGV[0] . '.pm' ) {
   print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
   print STDERR
-    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/RexOps/Rex/issues\n\n";
+"\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/RexOps/Rex/issues\n\n";
 }
 else {
 

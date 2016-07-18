@@ -2,6 +2,9 @@
 
 With (R)?ex you can manage all your boxes from a central point through the complete process of configuration management and software deployment.
 
+This is the development branch for the **1.x** version tree. Use this branch if you want to 
+send a bugfix or enhancement for Rex 1.x.
+
 ## Getting started
 
 We have a [Getting started guide](http://www.rexify.org/docs/guides/start_using__r__ex.html) on the website that should help you with the first steps.

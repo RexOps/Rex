@@ -516,6 +516,7 @@ This method is used internally to execute the specified hooks.
 
 sub run_hook {
   my ( $self, $server, $hook, @more_args ) = @_;
+  my $old_server;
 
   for my $code ( @{ $self->{$hook} } ) {
     if ( $hook eq "after" ) { # special case for after hooks
@@ -526,7 +527,7 @@ sub run_hook {
       );
     }
     else {
-      my $old_server = $$server if $server;
+      $old_server = $$server if $server;
       $code->( $$server, $server, { $self->get_opts }, @more_args );
       if ( $old_server && $old_server ne $$server ) {
         $self->{current_server} = $$server;
@@ -643,10 +644,8 @@ sub connect {
   Rex::Logger::debug("Auth-Information inside Task:");
   for my $key ( keys %{$auth} ) {
     my $data = $auth->{$key};
-    if ( $key eq "password" ) {
-      $data = Rex::Logger::masq( "%s", $data );
-    }
-
+    $data = Rex::Logger::masq( "%s", $data ) if $key eq 'password';
+    $data = Rex::Logger::masq( "%s", $data ) if $key eq 'sudo_password';
     $data ||= "";
 
     Rex::Logger::debug("$key => [[$data]]");
@@ -658,6 +657,8 @@ sub connect {
     if ( $auth->{private_key} );
 
   my $profiler = Rex::Profiler->new;
+
+  $self->run_hook( \$server, "before" );
 
   # task specific auth rules over all
   my %connect_hash = %{$auth};
@@ -679,8 +680,6 @@ sub connect {
 
   push @{ Rex::get_current_connection()->{task} }, $self;
 
-  $self->run_hook( \$server, "before" );
-
   $profiler->start("connect");
   eval {
     $self->connection->connect(%connect_hash);
@@ -698,8 +697,11 @@ sub connect {
   }
   elsif ( !$self->connection->is_authenticated ) {
     Rex::pop_connection();
-    my $message = "Wrong username/password or wrong key on $server.";
-    $message .= " Or root is not permitted to login over SSH."
+    my $message =
+      "Couldn't authenticate against $server. It may be caused by one or more of:\n";
+    $message .= " - wrong username, password, key or passphrase\n";
+    $message .= " - changed remote host key\n";
+    $message .= " - root is not permitted to login over SSH\n"
       if ( $connect_hash{user} eq 'root' );
 
     if ( !exists $override{auth} ) {

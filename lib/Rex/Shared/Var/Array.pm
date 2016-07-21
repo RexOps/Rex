@@ -92,6 +92,55 @@ sub PUSH {
   };
 }
 
+sub UNSHIFT {
+  my $self = shift;
+  my @data = @_;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    if ( !ref( $ref->{ $self->{varname} }->{data} ) eq "ARRAY" ) {
+      $ref->{ $self->{varname} }->{data} = [];
+    }
+
+    unshift( @{ $ref->{ $self->{varname} }->{data} }, @data );
+
+    __store $ref;
+  };
+}
+
+sub SHIFT {
+  my $self = shift;
+  my @data = @_;
+  my $result;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    $result = shift( @{ $ref->{ $self->{varname} }->{data} } );
+
+    __store $ref;
+  };
+
+  return $result;
+}
+
+sub POP {
+  my $self = shift;
+  my @data = @_;
+  my $result;
+
+  __lock sub {
+    my $ref = __retrieve;
+
+    $result = pop( @{ $ref->{ $self->{varname} }->{data} } );
+
+    __store $ref;
+  };
+
+  return $result;
+}
+
 sub EXTEND {
   my $self  = shift;
   my $count = shift;

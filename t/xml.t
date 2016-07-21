@@ -1,9 +1,10 @@
 use Test::More tests => 6;
 use FindBin qw($Bin);
+use Rex::Require;
 
 SKIP: {
 
-  eval { require XML::LibXML };
+  eval { XML::LibXML->require };
   skip 'Missing XML::LibXML for XML file support.', 6 if $@;
 
   require Rex::Group::Lookup::XML;

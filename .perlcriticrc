@@ -1,5 +1,6 @@
+theme = core
 severity = 5
-[BuiltinFunctions::ProhibitStringyEval]
+[-BuiltinFunctions::ProhibitStringyEval]
 allow_includes = 1
 [CodeLayout::RequireTidyCode]
 severity = 5

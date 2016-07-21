@@ -369,7 +369,7 @@ sub old_service {
   }
 
   else {
-    Rex::Logger::info("Execution action $action on $service.");
+    Rex::Logger::info("Executing action $action on $service.");
     $srvc->action( $service, $action );
     $changed = 100;
   }

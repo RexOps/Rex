@@ -47,6 +47,11 @@ sub create {
     $wanted_provider = $wanted_provider->{type} || "LibVirt";
   }
 
+  if ( !$wanted_provider ) {
+    die
+      "No virtualization provider set.\nPlease use `set virtualization => 'YourProvider';` to set one,\nor see `perldoc Rex::Commands::Virtualization` for more options";
+  }
+
   my $klass = "Rex::Virtualization::$wanted_provider";
 
   if ( exists $VM_PROVIDER{$wanted_provider} ) {
@@ -56,8 +61,8 @@ sub create {
   eval "use $klass";
 
   if ($@) {
-    Rex::Logger::info("Virtualization Class $klass not found.");
-    die("Virtualization Class $klass not found.");
+    die
+      "Failed loading given virtualization module.\nTried to load <$klass>.\nError: $@\n";
   }
 
   Rex::Logger::debug("Using $klass for virtualization");

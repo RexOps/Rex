@@ -693,14 +693,25 @@ sub do_task {
   my $task   = shift;
   my $params = shift;
 
+# only get all parameters if task_chaining_cmdline_args (or feature flag >= 1.4)
+# is not active.
+# since 1.4 every task can have its own arguments.
+  if ( !Rex::Config->get_task_chaining_cmdline_args ) {
+    $params ||= { Rex::Args->get };
+  }
+
+  # default is an empty hash
+  $params ||= {};
+
   if ( ref($task) eq "ARRAY" ) {
     for my $t ( @{$task} ) {
-      Rex::TaskList->run( $t, ( $params ? ( params => $params ) : () ) );
+      Rex::TaskList->create()->get_task($t) || die "Task $t not found.";
+      Rex::TaskList->run( $t, params => $params );
     }
   }
   else {
-    return Rex::TaskList->run( $task,
-      ( $params ? ( params => $params ) : () ) );
+    Rex::TaskList->create()->get_task($task) || die "Task $task not found.";
+    return Rex::TaskList->run( $task, params => $params );
   }
 }
 

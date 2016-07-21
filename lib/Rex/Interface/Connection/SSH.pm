@@ -38,8 +38,6 @@ sub connect {
     $port, $timeout, $auth_type,   $is_sudo
   );
 
-  Rex::Logger::debug("Using Net::SSH2 for connection");
-
   $user        = $option{user};
   $pass        = $option{password};
   $server      = $option{server};
@@ -50,15 +48,14 @@ sub connect {
   $auth_type   = $option{auth_type};
   $is_sudo     = $option{sudo};
 
-  $self->{is_sudo} = $is_sudo;
-
+  $self->{server}        = $server;
+  $self->{is_sudo}       = $is_sudo;
   $self->{__auth_info__} = \%option;
 
+  Rex::Logger::debug("Using Net::SSH2 for connection");
   Rex::Logger::debug( "Using user: " . $user );
-  Rex::Logger::debug(
-    Rex::Logger::masq( "Using password: %s", ( $pass || "" ) ) );
-
-  $self->{server} = $server;
+  Rex::Logger::debug( Rex::Logger::masq( "Using password: %s", $pass ) )
+    if defined $pass;
 
   $self->{ssh} = Net::SSH2->new;
 
@@ -67,6 +64,7 @@ sub connect {
 CON_SSH:
   $port ||= Rex::Config->get_port( server => $server ) || 22;
   $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
+  $self->{ssh}->timeout( $timeout * 1000 );
 
   $server =
     Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
@@ -76,7 +74,7 @@ CON_SSH:
     $port   = $2;
   }
   Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
-  unless ( $self->{ssh}->connect( $server, $port, Timeout => $timeout ) ) {
+  unless ( $self->{ssh}->connect( $server, $port ) ) {
     ++$fail_connect;
     sleep 1;
     goto CON_SSH

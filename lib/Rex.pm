@@ -109,6 +109,9 @@ sub push_lib_to_inc {
   if ( -d "$path/lib" ) {
     push( @INC, "$path/lib" );
     push( @INC, "$path/lib/perl/lib/perl5" );
+    if ( $^O eq "linux" ) {
+      push( @INC, "$path/lib/perl/lib/perl5/x86_64-linux" );
+    }
     if ( $^O =~ m/^MSWin/ ) {
       my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
       if ( defined $special_win_path ) {
@@ -181,7 +184,16 @@ sub search_module_path {
   }
 
   for my $file (@search_in) {
-    if ( -f $file ) {
+    my $o = -f $file;
+    my $fh_t;
+    if ( $^O =~ m/^MSWin/i && !$o ) {
+
+      # this is a windows workaround for if(-f ) on symlinks
+      $o = open( my $fh_t, "<", $file );
+    }
+
+    if ($o) {
+      close $fh_t if $fh_t;
       my ($path) = ( $file =~ m/^(.*)\/.+?$/ );
       if ( $path !~ m/\// ) {
         $path = $cur_dir . "/$path";

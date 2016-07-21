@@ -83,7 +83,7 @@ sub execute {
       my $size = $_->{'size'};
       if ( !is_file( $_->{"file"} ) ) {
         Rex::Logger::debug("creating storage disk: \"$_->{file}\"");
-        i_run "$QEMU_IMG create -f raw $_->{'file'} $size";
+        i_run "$QEMU_IMG create -f $_->{driver_type} $_->{'file'} $size";
         if ( $? != 0 ) {
           die("Error creating storage disk: $_->{'file'}");
         }
@@ -97,7 +97,8 @@ sub execute {
         "building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\""
       );
       Rex::Logger::info("Please wait ...");
-      i_run "$QEMU_IMG convert -f raw $_->{'template'} -O raw $_->{'file'}";
+      i_run
+        "$QEMU_IMG convert -f raw $_->{'template'} -O $_->{driver_type} $_->{'file'}";
       if ( $? != 0 ) {
         die(
           "Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n

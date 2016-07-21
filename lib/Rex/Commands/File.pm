@@ -14,20 +14,20 @@ With this module you can manipulate files.
 
 =head1 SYNOPSIS
 
- task "read-passwd", "server01", sub {
+ task "read_passwd", "server01", sub {
    my $fh = file_read "/etc/passwd";
-   for my $line = ($fh->read_all) {
+   for my $line ($fh->read_all) {
      print $line;
    }
    $fh->close;
  };
  
- task "read-passwd2", "server01", sub {
+ task "read_passwd2", "server01", sub {
    say cat "/etc/passwd";
  };
 
 
- task "write-passwd", "server01", sub {
+ task "write_passwd", "server01", sub {
    my $fh = file_write "/etc/passwd";
    $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
    $fh->close;

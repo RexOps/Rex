@@ -11,6 +11,13 @@ use warnings;
 
 # VERSION
 
+BEGIN {
+  # this is for new package format
+  if ( -d '/usr/lib/rex/lib' ) {
+    use lib '/usr/lib/rex/lib';
+  }
+}
+
 use Rex::CLI;
 
 my $rex = Rex::CLI->new;

@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Rex::Fork::Task;
+use Time::HiRes qw(sleep);
 
 sub new {
   my $that  = shift;
@@ -85,7 +86,7 @@ sub wait_for {
 
         return 1 unless $all;
       }
-      select undef, undef, undef, .1;
+      sleep 0.1;
     }
   } until $self->{'running'} == 0;
 }

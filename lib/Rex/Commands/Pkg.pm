@@ -14,11 +14,16 @@ With this module you can install packages and files.
 
 =head1 SYNOPSIS
 
- install file => "/etc/passwd", {
-              source => "/export/files/etc/passwd"
-            };
-
- install package => "perl";
+ pkg "somepkg",
+   ensure => "present";
+ pkg "somepkg",
+   ensure => "latest",
+   on_change => sub {
+     say "package was updated.";
+     service someservice => "restart";
+   };
+ pkg "somepkg",
+   ensure => "absent";
 
 =head1 EXPORTED FUNCTIONS
 
@@ -81,16 +86,13 @@ Use this resource to install or update a package. This resource will generate re
 =cut
 
 sub pkg {
-  my ( $res_package, %option ) = @_;
+  my ( $package, %option ) = @_;
 
-  if ( ref $res_package eq "ARRAY" ) {
-    for my $p ( @{$res_package} ) {
-      &pkg( $p, %option );
-    }
-    return;
+  if(exists $option{package} && ref $option{package} eq "ARRAY") {
+    die "The `package´ option can't be an array.";
   }
 
-  my $package = $res_package;
+  my $res_name = $package;
 
   if ( exists $option{package} ) {
     $package = $option{package};
@@ -98,11 +100,15 @@ sub pkg {
 
   $option{ensure} ||= "present";
 
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => "pkg", name => $res_package );
+  my @package_list = ref $package eq "ARRAY" ? @{$package} : ($package);
 
-  my $pkg = Rex::Pkg->get;
-  my ($old_package) = grep { $_->{name} eq $package } $pkg->get_installed;
+  foreach my $candidate ( sort @package_list ) {
+    Rex::get_current_connection()->{reporter}
+      ->report_resource_start( type => "pkg", name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name));
+  }
+
+  my $pkg           = Rex::Pkg->get;
+  my @old_installed = $pkg->get_installed;
 
   if ( $option{ensure} eq "latest" ) {
     &update( package => $package, \%option );
@@ -122,45 +128,42 @@ sub pkg {
     die("Unknown ensure parameter: $option{ensure}.");
   }
 
-  my ($new_package) = grep { $_->{name} eq $package } $pkg->get_installed;
-  if ( $old_package
-    && $new_package
-    && $old_package->{version} ne $new_package->{version} )
-  {
-    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
-      $option{on_change}->( $package, %option );
+  my @new_installed = $pkg->get_installed;
+  my @modifications =
+    $pkg->diff_package_list( \@old_installed, \@new_installed );
+
+  if ( exists $option{on_change} && ref $option{on_change} eq "CODE" && scalar @modifications > 0 ) {
+    $option{on_change}->( $package, %option );
+  }
+
+  foreach my $candidate ( reverse sort @package_list ) {
+
+    my %report_args = ( changed => 0 );
+
+    if ( my ($change) = grep { $candidate eq $_->{name} } @modifications ) {
+      $report_args{changed} = 1;
+
+      my ($old_package) = grep { $_->{name} eq $change->{name} } @old_installed;
+      my ($new_package) = grep { $_->{name} eq $change->{name} } @new_installed;
+
+      if ( $change->{action} eq "updated" ) {
+        $report_args{message} =
+          "Package $change->{name} updated $old_package->{version} -> $new_package->{version}";
+      }
+      elsif ( $change->{action} eq "installed" ) {
+        $report_args{message} =
+          "Package $change->{name} installed in version $new_package->{version}";
+      }
+      elsif ( $change->{action} eq "removed" ) {
+        $report_args{message} = "Package $change->{name} removed.";
+      }
     }
 
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message =>
-        "Package $package updated $old_package->{version} -> $new_package->{version}"
-    );
-  }
-  elsif ( !$old_package && $new_package ) {
-    Rex::get_current_connection()->{reporter}->report(
-      changed => 1,
-      message => "Package $package installed in version $new_package->{version}"
-    );
+    Rex::get_current_connection()->{reporter}->report(%report_args);
 
-    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
-      $option{on_change}->( $package, %option );
-    }
-  }
-  elsif ( $old_package && !$new_package ) {
     Rex::get_current_connection()->{reporter}
-      ->report( changed => 1, message => "Package $package removed." );
-
-    if ( exists $option{on_change} && ref $option{on_change} eq "CODE" ) {
-      $option{on_change}->( $package, %option );
-    }
+      ->report_resource_end( type => "pkg", name => (ref $res_name eq "ARRAY" ? $candidate : $res_name) );
   }
-  else {
-    Rex::get_current_connection()->{reporter}->report( changed => 0, );
-  }
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "pkg", name => $res_package );
 }
 
 =head2 install($type, $data, $options)

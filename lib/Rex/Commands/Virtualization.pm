@@ -139,6 +139,7 @@ This is the same as above, but with all options in use.
       {  type  => "file",
         size  => "10G",
         device => "disk",
+        driver_type => "qcow2",      # supports all formats qemu-img supports.
         file  => "/mnt/data/libvirt/images/vm01.img",
         dev   => "vda",
         bus   => "virtio",

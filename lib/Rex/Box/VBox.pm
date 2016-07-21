@@ -226,21 +226,6 @@ sub import_vm {
   $self->{info} = vm guestinfo => $self->{name};
 }
 
-sub provision_vm {
-  my ( $self, @tasks ) = @_;
-
-  if ( !@tasks ) {
-    @tasks = @{ $self->{__tasks} } if ( exists $self->{__tasks} );
-  }
-
-  $self->wait_for_ssh();
-
-  for my $task (@tasks) {
-    Rex::TaskList->create()->get_task($task)->set_auth( %{ $self->{__auth} } );
-    Rex::TaskList->create()->get_task($task)->run( $self->ip );
-  }
-}
-
 sub select_bridge {
   my $bridges = vm "bridge";
 

@@ -425,6 +425,7 @@ sub _request {
   my ( $self, $action, %args ) = @_;
 
   my $ua = LWP::UserAgent->new;
+  $ua->timeout(300);
   $ua->env_proxy;
   my %param = $self->_sign( $action, %args );
 

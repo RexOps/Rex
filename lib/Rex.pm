@@ -97,9 +97,10 @@ BEGIN {
 }
 
 our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
-  $WITH_EXIT_STATUS );
+  $WITH_EXIT_STATUS, @FEATURE_FLAGS );
 
 $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
+@FEATURE_FLAGS    = ();
 
 my $cur_dir;
 
@@ -504,8 +505,41 @@ sub deprecated {
 
 }
 
+sub has_feature_version {
+  my ($version) = @_;
+
+  my @version_flags = grep { m/^\d+\./ } @FEATURE_FLAGS;
+  for my $v (@version_flags) {
+    if ( $version <= $v ) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+sub has_feature_version_lower {
+  my ($version) = @_;
+
+  my @version_flags = grep { m/^\d+\./ } @FEATURE_FLAGS;
+  for my $v (@version_flags) {
+    if ( $version > $v ) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 sub import {
   my ( $class, $what, $addition1 ) = @_;
+
+  if ( $addition1 && ref $addition1 eq "ARRAY" ) {
+    push @FEATURE_FLAGS, $what, @{$addition1};
+  }
+  elsif ($addition1) {
+    push @FEATURE_FLAGS, $what, $addition1;
+  }
 
   $what ||= "";
 

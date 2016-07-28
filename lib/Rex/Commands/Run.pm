@@ -58,7 +58,7 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(run can_run sudo);
 
-=head2 run($command [, $callback])
+=head2 run($command [, $callback], %options)
 
 =head2 run($command, $arguments, %options)
 

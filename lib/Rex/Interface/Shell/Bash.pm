@@ -130,6 +130,7 @@ sub exec {
     $complete_cmd =~ s/\\/\\\\/gms;
     $complete_cmd =~ s/"/\\"/gms;
     $complete_cmd =~ s/\$/\\\$/gms;
+    $complete_cmd =~ s/\`/\\\`/gms;
 
     $complete_cmd = "sh -c \"$complete_cmd\"";
   }

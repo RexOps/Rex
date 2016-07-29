@@ -348,9 +348,10 @@ sub _download {
   my ($self) = @_;
 
   my $filename = basename( $self->{url} );
-  my $force = $self->{force} || FALSE;
+  my $force    = $self->{force} || FALSE;
+  my $fs       = Rex::Interface::Fs->create;
 
-  if ( is_file("./tmp/$filename") ) {
+  if ( $fs->is_file("./tmp/$filename") ) {
     Rex::Logger::info(
       "File already downloaded. Please remove the file ./tmp/$filename if you want to download a fresh copy."
     );

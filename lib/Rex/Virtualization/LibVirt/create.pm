@@ -75,13 +75,14 @@ sub execute {
   my $parsed_template = $template->parse( $create_xml, $opts );
 
   Rex::Logger::debug($parsed_template);
+  my $fs = Rex::Interface::Fs->create;
 
   ## create storage devices
   for ( @{ $opts->{'storage'} } ) {
 
     if ( !exists $_->{"template"} && $_->{"size"} && $_->{"type"} eq "file" ) {
       my $size = $_->{'size'};
-      if ( !is_file( $_->{"file"} ) ) {
+      if ( !$fs->is_file( $_->{"file"} ) ) {
         Rex::Logger::debug("creating storage disk: \"$_->{file}\"");
         i_run "$QEMU_IMG create -f $_->{driver_type} $_->{'file'} $size";
         if ( $? != 0 ) {

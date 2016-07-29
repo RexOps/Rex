@@ -105,6 +105,7 @@ sub get_operating_system {
 
   # use lsb_release if available
   my $is_lsb = can_run("lsb_release");
+  my $fs     = Rex::Interface::Fs->create;
 
   if ($is_lsb) {
     if ( my $ret = i_run "lsb_release -s -i" ) {
@@ -124,38 +125,38 @@ sub get_operating_system {
     return "Windows";
   }
 
-  if ( is_file("/etc/system-release") ) {
+  if ( $fs->is_file("/etc/system-release") ) {
     my $content = cat "/etc/system-release";
     if ( $content =~ m/Amazon/sm ) {
       return "Amazon";
     }
   }
 
-  if ( is_file("/etc/debian_version") ) {
+  if ( $fs->is_file("/etc/debian_version") ) {
     return "Debian";
   }
 
-  if ( is_file("/etc/SuSE-release") ) {
+  if ( $fs->is_file("/etc/SuSE-release") ) {
     return "SuSE";
   }
 
-  if ( is_file("/etc/mageia-release") ) {
+  if ( $fs->is_file("/etc/mageia-release") ) {
     return "Mageia";
   }
 
-  if ( is_file("/etc/fedora-release") ) {
+  if ( $fs->is_file("/etc/fedora-release") ) {
     return "Fedora";
   }
 
-  if ( is_file("/etc/gentoo-release") ) {
+  if ( $fs->is_file("/etc/gentoo-release") ) {
     return "Gentoo";
   }
 
-  if ( is_file("/etc/altlinux-release") ) {
+  if ( $fs->is_file("/etc/altlinux-release") ) {
     return "ALT";
   }
 
-  if ( is_file("/etc/redhat-release") ) {
+  if ( $fs->is_file("/etc/redhat-release") ) {
     my $fh      = file_read("/etc/redhat-release");
     my $content = $fh->read_all;
     $fh->close;
@@ -172,15 +173,15 @@ sub get_operating_system {
     }
   }
 
-  if ( is_file("/etc/openwrt_release") ) {
+  if ( $fs->is_file("/etc/openwrt_release") ) {
     return "OpenWrt";
   }
 
-  if ( is_file("/etc/arch-release") ) {
+  if ( $fs->is_file("/etc/arch-release") ) {
     return "Arch";
   }
 
-  if ( is_file("/etc/manjaro-release") ) {
+  if ( $fs->is_file("/etc/manjaro-release") ) {
     return "Manjaro";
   }
 

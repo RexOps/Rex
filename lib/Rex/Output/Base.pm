@@ -11,8 +11,23 @@ use warnings;
 
 # VERSION
 
-sub write { die "Must be implemented by inheriting class" }
-sub add   { die "Must be implemented by inheriting class" }
-sub error { die "Must be implemented by inheriting class" }
+use Moose;
+
+extends qw(Rex::Output);
+
+sub print_s {
+  my ($self, $data) = @_;
+  print "[$data->{title}] $data->{msg} ";
+}
+
+sub endln_ok {
+  my ($self) = @_;
+  print "done.\n";
+}
+
+sub endln_failed {
+  my ($self) = @_;
+  print "failed.\n";
+}
 
 1;

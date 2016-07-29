@@ -37,7 +37,7 @@ use Rex::Helper::Path;
 # so that it can used directly in Rexfile without the need to prepend the
 # namespace of the module.
 function "is_file", { export => 1 }, sub {
-  my ($file) = @_;
+  my ($app, $file) = @_;
   $file = resolv_path($file);
 
   my $fs  = Rex::Interface::Fs->create;

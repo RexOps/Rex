@@ -76,6 +76,8 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
 # development version if this variable is not set
 if ( !$Rex::VERSION ) {
   $Rex::VERSION = "9999.99.99_99";
@@ -104,6 +106,29 @@ our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
 $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
+
+has feature_flags => (
+  is => 'ro',
+  isa => 'ArrayRef',
+);
+
+has output => (
+  is => 'ro',
+  isa => 'Rex::Output',
+  lazy => 1,
+  default => sub {
+    return Rex::Output->create;
+  },
+);
+
+my $INSTANCE;
+
+# returns a singleton
+sub instance {
+  my $class = shift;
+  return $INSTANCE if $INSTANCE;
+  $INSTANCE = $class->new(@_);
+}
 
 sub push_lib_to_inc {
   my $path = shift;

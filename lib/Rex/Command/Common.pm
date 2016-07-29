@@ -29,11 +29,25 @@ sub function {
     $function = $options;
     $options  = {};
   }
+  
+  $options->{name_idx} //= 0;
+  
+  my $app = Rex->instance;
 
   # TODO add dry run
   # TODO add reporting
   my $func = sub {
-    my $ret = $function->(@_);
+    $app->output->print_s({title => $name, msg => $_[$options->{name_idx}]});
+    my $ret;
+    eval {
+      $ret = $function->($app, @_);
+      $app->output->endln_ok();
+      1;
+    } or do {
+      $app->output->endln_failed();
+      die "Error running command: $name.\nError: $@\n";
+    };
+
     return $ret->{value};
   };
 

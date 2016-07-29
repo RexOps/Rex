@@ -30,7 +30,6 @@ With this module you can do file system tasks like creating a directory, deletin
  
  chdir("/tmp");
  
- is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
@@ -69,7 +68,7 @@ use base qw(Rex::Exporter);
 @EXPORT = qw(list_files ls
   unlink rm rmdir mkdir stat readlink symlink ln rename mv chdir cd cp
   chown chgrp chmod
-  is_file is_dir is_readable is_writeable is_writable is_symlink
+  is_dir is_readable is_writeable is_writable is_symlink
   df du
   mount umount
   glob);
@@ -362,7 +361,7 @@ sub mkdir {
     for my $part (@splitted_dir) {
       $str_part .= "$part";
 
-      if ( !is_dir($str_part) && !is_file($str_part) ) {
+      if ( !is_dir($str_part) && !$fs->is_file($str_part) ) {
         if ( !$fs->mkdir($str_part) ) {
           Rex::Logger::debug("Can't create directory $dir");
           die("Can't create directory $dir");
@@ -533,31 +532,6 @@ sub stat {
   %ret = @stat;
 
   return %ret;
-}
-
-=head2 is_file($file)
-
-This function tests if $file is a file. Returns 1 if true. 0 if false.
-
- task "isfile", "server01", sub {
-   if( is_file("/etc/passwd") ) {
-     say "it is a file.";
-   }
-   else {
-     say "hm, this is not a file.";
-   }
- };
-
-This command will not be reported.
-
-=cut
-
-sub is_file {
-  my ($file) = @_;
-  $file = resolv_path($file);
-
-  my $fs = Rex::Interface::Fs->create;
-  return $fs->is_file($file);
 }
 
 =head2 is_dir($dir)

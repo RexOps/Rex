@@ -121,7 +121,7 @@ sub _sftp_download {
 
   Rex::Logger::debug("Downloading via SFTP");
 
-  unless ( is_file($remote) ) {
+  unless ( $fs->is_file($remote) ) {
     Rex::Logger::info("File $remote not found");
     die("$remote not found.");
   }

@@ -624,6 +624,9 @@ sub import {
     require Rex::Resource::firewall;
     Rex::Resource::firewall->import( register_in => $register_to );
 
+    # new command code structure
+    require Rex::Command::Fs::is_file;
+    Rex::Command::Fs::is_file->import( register_in => $register_to );
   }
 
   if ( $what eq "-base" || $what eq "base" ) {
@@ -671,9 +674,9 @@ sub import {
         }
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add < 1.5 ) {
+      if ( $add =~ m/^\d+\.\d+$/ && $add < 2.0 ) {
 
-        # feature lower than 1.5, so we load all commands module.
+        # feature lower than 2.0, so we load all commands module.
         require Rex::Commands::Kernel;
         Rex::Commands::Kernel->import( register_in => $register_to );
 
@@ -684,7 +687,7 @@ sub import {
         Rex::Commands::File->import( register_in => $register_to );
       }
 
-      if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.5 ) {
+      if ( $add =~ m/^\d+\.\d+$/ && $add >= 2.0 ) {
         require Rex::Resource::kernel;
         Rex::Resource::kernel->import( register_in => $register_to );
 

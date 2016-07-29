@@ -496,14 +496,16 @@ Remove all iptables rules.
 =cut
 
 sub iptables_clear {
-  my @params     = @_;
+  my @params = @_;
+  my $fs     = Rex::Interface::Fs->create;
+
   my $ip_version = _get_ip_version( \@params );
   my %tables_of  = (
     -4 => "/proc/net/ip_tables_names",
     -6 => "/proc/net/ip6_tables_names",
   );
 
-  if ( is_file("$tables_of{$ip_version}") ) {
+  if ( $fs->is_file("$tables_of{$ip_version}") ) {
     my @tables = i_run("cat $tables_of{$ip_version}");
     for my $table (@tables) {
       iptables $ip_version, t => $table, F => '';

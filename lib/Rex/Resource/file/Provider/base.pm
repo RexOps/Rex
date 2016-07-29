@@ -75,17 +75,21 @@ sub test {
   my $is_file   = $self->is_file;
   my $is_dir    = $self->is_dir;
   my $is_absent = any { $self->config->{ensure} eq $_ } qw/absent/;
+  my $chksum_ok = 1;
 
   if ( $is_file && $self->fs->is_file($file) ) {
+    if ( $self->config->{source} || $self->config->{content} ) {
 
-    # checksum compare
-    my $local_fs      = Rex::Interface::Fs->create("Local");
-    my $remote_chksum = $self->fs->chksum($file);
-    my $local_chksum =
-        $self->config->{source}
-      ? $local_fs->chksum( $self->config->{source} )
-      : Digest::MD5::md5_hex( $self->config->{content} || "" );
-    my $chksum_ok = $remote_chksum eq $local_chksum;
+      # checksum compare
+      my $local_fs      = Rex::Interface::Fs->create("Local");
+      my $remote_chksum = $self->fs->chksum($file);
+      my $local_chksum =
+          $self->config->{source}
+        ? $local_fs->chksum( $self->config->{source} )
+        : Digest::MD5::md5_hex( $self->config->{content} || "" );
+      $chksum_ok = $remote_chksum eq $local_chksum;
+    }
+
     if ($chksum_ok) {
       $self->_set_upload(0);
     }

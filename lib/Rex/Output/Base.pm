@@ -16,7 +16,7 @@ use Moose;
 extends qw(Rex::Output);
 
 sub print_s {
-  my ($self, $data) = @_;
+  my ( $self, $data ) = @_;
   print "[$data->{title}] $data->{msg} ";
 }
 

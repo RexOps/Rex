@@ -57,12 +57,12 @@ if ( $#ARGV < 0 ) {
 }
 
 has run_list => (
-  is => 'ro',
-  isa => 'Rex::RunList',
-  lazy => 1,
+  is      => 'ro',
+  isa     => 'Rex::RunList',
+  lazy    => 1,
   default => sub {
     my $self = shift;
-    Rex::RunList->instance(app => $self);
+    Rex::RunList->instance( app => $self );
   }
 );
 

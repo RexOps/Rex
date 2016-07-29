@@ -108,14 +108,14 @@ $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 my $cur_dir;
 
 has feature_flags => (
-  is => 'ro',
+  is  => 'ro',
   isa => 'ArrayRef',
 );
 
 has output => (
-  is => 'ro',
-  isa => 'Rex::Output',
-  lazy => 1,
+  is      => 'ro',
+  isa     => 'Rex::Output',
+  lazy    => 1,
   default => sub {
     return Rex::Output->create;
   },
@@ -586,9 +586,6 @@ sub import {
     require Rex::Commands;
     Rex::Commands->import( register_in => $register_to );
 
-    require Rex::Commands::Run;
-    Rex::Commands::Run->import( register_in => $register_to );
-
     require Rex::Commands::Fs;
     Rex::Commands::Fs->import( register_in => $register_to );
 
@@ -710,6 +707,9 @@ sub import {
 
         require Rex::Commands::File;
         Rex::Commands::File->import( register_in => $register_to );
+
+        require Rex::Commands::Run;
+        Rex::Commands::Run->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 2.0 ) {
@@ -718,6 +718,10 @@ sub import {
 
         require Rex::Resource::file;
         Rex::Resource::file->import( register_in => $register_to );
+
+        # new command code structure
+        require Rex::Command::run;
+        Rex::Command::run->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.4 ) {

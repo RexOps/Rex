@@ -118,11 +118,19 @@ CON_SSH:
   }
   else {
     Rex::Logger::debug("Trying to guess the authentication method.");
+    my %key_auth;
+
+    if ( $public_key && $private_key ) {
+      %key_auth = (
+        'publickey'  => $public_key  || "",
+        'privatekey' => $private_key || ""
+      );
+    }
+
     $self->{auth_ret} = $self->{ssh}->auth(
-      'username'   => $user,
-      'password'   => $pass,
-      'publickey'  => $public_key || "",
-      'privatekey' => $private_key || ""
+      'username' => $user,
+      'password' => $pass,
+      %key_auth,
     );
   }
 

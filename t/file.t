@@ -12,6 +12,7 @@ use Rex::Commands::Fs;
 use Rex::Commands::Gather;
 use Rex::Commands::Run;
 use Rex::Command::Fs::is_file;
+use Rex::Output;
 
 Rex::Config->set( foo => "bar" );
 

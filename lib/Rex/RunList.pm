@@ -19,7 +19,7 @@ use Moose;
 my $INSTANCE;
 
 has app => (
-  is => 'ro',
+  is  => 'ro',
   isa => 'Rex',
 );
 

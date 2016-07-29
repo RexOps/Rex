@@ -86,20 +86,43 @@ sub update {
 }
 
 sub update_system {
-  my ($self) = @_;
+  my ( $self, %option ) = @_;
+
+  # default is to update packages
+  $option{update_packages} = 1 if ( !exists $option{update_packages} );
 
   if ( !exists $self->{commands}->{update_system} ) {
     Rex::Logger::debug("Not supported under this OS");
     return;
   }
 
-  my $cmd = $self->{commands}->{update_system};
-  my $f   = i_run $cmd;
+  if ( $option{update_metadata} ) {
+    $self->update_pkg_db(%option);
+  }
 
-  unless ( $? == 0 ) {
-    Rex::Logger::info( "Error updating system.", "warn" );
-    Rex::Logger::debug($f);
-    die("Error updating system");
+  if ( $option{update_packages} ) {
+    my $cmd = $self->{commands}->{update_system};
+    my $f   = i_run $cmd;
+
+    unless ( $? == 0 ) {
+      Rex::Logger::debug($f);
+      die("Error updating system");
+    }
+  }
+
+  if ( $option{dist_upgrade} ) {
+    if ( !exists $self->{commands}->{dist_update_system} ) {
+      Rex::Logger::debug("dist upgrades not supported under this OS");
+    }
+    else {
+      my $cmd = $self->{commands}->{dist_update_system};
+      my $f   = i_run $cmd;
+
+      unless ( $? == 0 ) {
+        Rex::Logger::debug($f);
+        die("Error dist-updating system");
+      }
+    }
   }
 
   Rex::Logger::debug("System successfully updated.");
@@ -146,7 +169,7 @@ sub purge {
 }
 
 sub update_pkg_db {
-  my ($self) = @_;
+  my ( $self, %option ) = @_;
 
   if ( !exists $self->{commands}->{update_package_db} ) {
     Rex::Logger::debug("Not supported under this OS");

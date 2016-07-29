@@ -88,7 +88,7 @@ Use this resource to install or update a package. This resource will generate re
 sub pkg {
   my ( $package, %option ) = @_;
 
-  if(exists $option{package} && ref $option{package} eq "ARRAY") {
+  if ( exists $option{package} && ref $option{package} eq "ARRAY" ) {
     die "The `package´ option can't be an array.";
   }
 
@@ -103,8 +103,10 @@ sub pkg {
   my @package_list = ref $package eq "ARRAY" ? @{$package} : ($package);
 
   foreach my $candidate ( sort @package_list ) {
-    Rex::get_current_connection()->{reporter}
-      ->report_resource_start( type => "pkg", name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name));
+    Rex::get_current_connection()->{reporter}->report_resource_start(
+      type => "pkg",
+      name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name )
+    );
   }
 
   my $pkg           = Rex::Pkg->get;
@@ -132,7 +134,10 @@ sub pkg {
   my @modifications =
     $pkg->diff_package_list( \@old_installed, \@new_installed );
 
-  if ( exists $option{on_change} && ref $option{on_change} eq "CODE" && scalar @modifications > 0 ) {
+  if ( exists $option{on_change}
+    && ref $option{on_change} eq "CODE"
+    && scalar @modifications > 0 )
+  {
     $option{on_change}->( $package, %option );
   }
 
@@ -161,8 +166,10 @@ sub pkg {
 
     Rex::get_current_connection()->{reporter}->report(%report_args);
 
-    Rex::get_current_connection()->{reporter}
-      ->report_resource_end( type => "pkg", name => (ref $res_name eq "ARRAY" ? $candidate : $res_name) );
+    Rex::get_current_connection()->{reporter}->report_resource_end(
+      type => "pkg",
+      name => ( ref $res_name eq "ARRAY" ? $candidate : $res_name )
+    );
   }
 }
 
@@ -560,6 +567,23 @@ If you want to get the packages that where updated, you can use the I<on_change>
      };
  };
 
+Options for I<update_system>
+
+=over 4
+
+=item update_metadata
+
+Set to I<TRUE> if the package metadata should be updated. Since 1.5 default to I<FALSE> if possible. Before 1.5 it depends on the package manager.
+
+=item update_package
+
+Set to I<TRUE> if you want to update the packages. Default is I<TRUE>.
+
+=item dist_upgrade
+
+Set to I<TRUE> if you want to run a dist-upgrade if your distribution supports it. Default is I<FALSE>.
+
+=back
 
 =cut
 
@@ -571,7 +595,7 @@ sub update_system {
   # the package db for changes
   my @old_installed = $pkg->get_installed;
 
-  eval { $pkg->update_system; };
+  eval { $pkg->update_system(%option); };
   Rex::Logger::info( "An error occured for update_system: $@", "warn" ) if $@;
 
   my @new_installed = $pkg->get_installed;

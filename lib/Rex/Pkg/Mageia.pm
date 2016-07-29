@@ -23,13 +23,26 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-    install           => 'urpmi --auto --quiet %s',
-    install_version   => 'urpmi --auto --quiet %s',
-    update_system     => 'urpmi --auto --quiet --auto-update',
-    remove            => 'urpme --auto %s',
-    update_package_db => 'urpmi.update -a',
-  };
+  if ( Rex::has_feature_version('1.5') ) {
+    $self->{commands} = {
+      install            => 'urpmi --auto --quiet %s',
+      install_version    => 'urpmi --auto --quiet %s',
+      update_system      => 'urpmi --auto --quiet --auto-select',
+      dist_update_system => 'urpmi --auto --quiet --auto-select',
+      remove             => 'urpme --auto %s',
+      update_package_db  => 'urpmi.update -a',
+    };
+  }
+  else {
+    $self->{commands} = {
+      install            => 'urpmi --auto --quiet %s',
+      install_version    => 'urpmi --auto --quiet %s',
+      update_system      => 'urpmi --auto --quiet --auto-update',
+      dist_update_system => 'urpmi --auto --quiet --auto-update',
+      remove             => 'urpme --auto %s',
+      update_package_db  => 'urpmi.update -a',
+    };
+  }
 
   return $self;
 }

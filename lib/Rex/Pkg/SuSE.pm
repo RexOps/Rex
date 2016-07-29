@@ -23,13 +23,26 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-    install           => 'zypper -n install %s',
-    install_version   => 'zypper -n install $pkg-%s',
-    update_system     => 'zypper -n up',
-    remove            => 'zypper -n remove %s',
-    update_package_db => 'zypper --no-gpg-checks -n ref -fd',
-  };
+  if ( Rex::has_feature_version('1.5') ) {
+    $self->{commands} = {
+      install            => 'zypper -n install %s',
+      install_version    => 'zypper -n install $pkg-%s',
+      update_system      => 'zypper -n --no-refresh up',
+      dist_update_system => 'zypper -n --no-refresh up',
+      remove             => 'zypper -n remove %s',
+      update_package_db  => 'zypper -n ref -fd',
+    };
+  }
+  else {
+    $self->{commands} = {
+      install            => 'zypper -n install %s',
+      install_version    => 'zypper -n install $pkg-%s',
+      update_system      => 'zypper -n up',
+      dist_update_system => 'zypper -n up',
+      remove             => 'zypper -n remove %s',
+      update_package_db  => 'zypper --no-gpg-checks -n ref -fd',
+    };
+  }
 
   return $self;
 }

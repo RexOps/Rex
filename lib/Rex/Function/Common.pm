@@ -37,6 +37,7 @@ sub function {
   $options->{params_list} //= [ name => { isa => 'Str' }, ];
 
   my $app = Rex->instance;
+  my $c = Rex::Controller::Function->new( app => $app );
 
   push @{ $__lookup_table->{$name} },
     {
@@ -94,7 +95,7 @@ sub function {
         # * unless
         # * creates
 
-        $ret = $f->{code}->( $app, @args, %arg_options );
+        $ret = $f->{code}->( $c, @args, %arg_options );
         last;
       }
       if ( !$found ) {

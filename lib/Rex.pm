@@ -94,6 +94,9 @@ BEGIN {
   use Rex::Report;
   use Rex::Notify;
   use Rex::Require;
+  use Rex::Controller;
+  use Rex::Controller::Function;
+  use Rex::Controller::Resource;
   use File::Basename;
   eval { Net::SSH2->require; };
 }

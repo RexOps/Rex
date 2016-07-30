@@ -38,24 +38,47 @@ use Rex -minimal;
 
 use Rex::Commands::Gather;
 use Rex::Resource::Common;
+use Data::Dumper;
 
 use Carp;
 
-resource "kmod", { export => 1 }, sub {
-  my $mod_name = resource_name;
+# create the resource "kmod"
+resource "kmod", {
 
-  my $mod_config = {
-    ensure => param_lookup( "ensure", "present" ),
-    name   => $mod_name,
-  };
+  # export this resource to the main namespace. so that it can be used
+  # directly in Rexfile without the need to prepend the namespace of the module.
+  export => 1,
 
-  my $provider =
-    param_lookup( "provider",
-    get_resource_provider( kernelname(), operating_system() ) );
+  # define the parameter this resource will have
+  # rex is doing a type check here.
+  params_list => [
+    mod => {
+      isa => 'Str',
+
+      # default is the name parameter (kmod $name, ensure => "present";)
+      default => sub { shift }
+    },
+    ensure => {
+      isa     => 'Str',
+      default => sub { "present" }
+    },
+  ],
+  },
+  sub {
+  my ($c) = @_;
+
+  # here we define the provider the resource should use. If someone want to use
+  # a custom provider we will use this. Otherwise we try to detect the provider
+  # automatically.
+  my $provider = $c->param("provider")
+    || get_resource_provider( kernelname(), operating_system() );
 
   Rex::Logger::debug("Get kernel provider: $provider");
 
-  return ( $provider, $mod_config );
-};
+  # at the end we return the wanted provider and an hash reference containing
+  # all the parameters for this resource.
+  # here we just pass the parameters back without modifying them.
+  return ( $provider, $c->params );
+  };
 
 1;

@@ -16,6 +16,9 @@ require Rex::Config;
 use Rex::Commands::Gather;
 use Rex::Resource;
 use Data::Dumper;
+use MooseX::Params::Validate;
+use Hash::Merge qw/merge/;
+
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
@@ -59,6 +62,8 @@ sub emit {
 
 =cut
 
+my $__lookup_table;
+
 sub resource {
   my ( $name, $options, $function ) = @_;
   my $name_save = $name;
@@ -79,19 +84,143 @@ sub resource {
     die "Wrong resource name syntax.";
   }
 
-  my ( $class, $file, @tmp ) = caller;
-  my $res = Rex::Resource->new(
-    type         => "${class}::$name",
-    name         => $name,
-    display_name => (
-      $options->{name}
-        || ( $options->{export} ? $name : "${caller_pkg}::${name}" )
-    ),
-    cb => $function
-  );
+  push @{ $__lookup_table->{$name} },
+    {
+    options => $options,
+    code    => $function,
+    };
 
+  my ( $class, $file, @tmp ) = caller;
+
+  # this function is responsible to lookup the right resource code
+  # every resource can have multiple resource code depending on its parameters.
+  my $call_func = sub {
+    my $app = Rex->instance;
+
+    $app->output->print_s( { title => $name, msg => $_[0] } );
+
+    eval {
+      my $found = 0;
+      for my $f (
+        sort {
+          scalar( @{ $b->{options}->{params_list} } ) <=>
+            scalar( @{ $a->{options}->{params_list} } )
+        } @{ $__lookup_table->{$name} }
+        )
+      {
+        my %args;
+        eval {
+          my @modified_args = @_;
+          my $name          = shift @modified_args;
+
+          # some defaults maybe a coderef, so we need to execute this now
+          my @_x = @{ $f->{options}->{params_list} };
+          my %_x = @_x;
+          for my $k ( keys %_x ) {
+            if ( ref $_x{$k}->{default} eq "CODE" ) {
+              $_x{$k}->{default} = $_x{$k}->{default}->(@_);
+            }
+          }
+          %args = validated_hash(
+            \@modified_args, %_x,
+            MX_PARAMS_VALIDATE_NO_CACHE    => 1,
+            MX_PARAMS_VALIDATE_ALLOW_EXTRA => 1
+          );
+
+          $found = 1;
+          1;
+        } or do {
+
+          # print "Err: $@\n";
+          # TODO catch no "X parameter was given" errors
+          next;
+        };
+
+        # TODO check for common parameters like
+        # * timeout
+        # * only_notified
+        # * only_if
+        # * unless
+        # * creates
+        # * on_change
+        # * ensure
+
+        my $res = Rex::Resource->new(
+          type         => "${class}::$name",
+          name         => $name,
+          display_name => (
+            $options->{name}
+              || ( $options->{export} ? $name : "${caller_pkg}::${name}" )
+          ),
+          cb => $f->{code},
+        );
+
+        my $c = Rex::Controller::Resource->new( app => $app, params => \%args );
+        $res->call( $c, @_ );
+        last;
+      }
+      if ( !$found ) {
+        die "Resource $name for provided parameter not found.";
+      }
+      1;
+    } or do {
+      $app->output->endln_failed();
+      die "Error executing resource: $name.\nError: $@\n";
+    };
+
+    $app->output->endln_ok();
+  };
+
+  # this is the code that gets registered into the namespace
   my $func = sub {
-    $res->call(@_);
+
+    # test if first parameter to resource is a hash
+    # if so, we have multiple instances of this resource and we need to call
+    # every of them.
+    #
+    # Example:
+    # kmod {
+    #   foo => { ensure => "present", },
+    #   bar => { ensure => "present", },
+    # };
+    if ( ref $_[0] eq "HASH" ) {
+      my ($res_hash) = @_;
+
+      for my $n ( keys %{$res_hash} ) {
+        my $this_p = $res_hash->{$n};
+
+        # test if the second parameter is also a hash, this means we need to
+        # merge this hash as default values into the parameters of the
+        # first hash.
+        if ( $_[1] && ref $_[1] eq "HASH" ) {
+          $this_p = merge( $this_p, $_[1] );
+        }
+
+        # now we call the resource code for each one of the first hash.
+        $call_func->( $n, %{$this_p} );
+      }
+
+      # nothing to do anymore, so we can just return.
+      # a resource doesn't have a specified return value.
+      return undef;
+    }
+
+    # test if the first parameter to resource is an array
+    # if so, we have to iterate over the array and call the resource code for
+    # each of them.
+    if ( ref $_[0] eq "ARRAY" ) {
+      my $all_res = shift;
+      for my $n ( @{$all_res} ) {
+        $call_func->( $n, @_ );
+      }
+
+      # nothing to do anymore, so we can just return.
+      # a resource doesn't have a specified return value.
+      return undef;
+    }
+
+    # default resource call
+    $call_func->(@_);
   };
 
   if (!$class->can($name)

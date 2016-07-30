@@ -65,7 +65,7 @@ function "run", {
   };
 
 sub _run_command {
-  my $app = shift;
+  my $c   = shift;
   my $cmd = shift;
   my ( $args, $options, $path );
 
@@ -103,10 +103,13 @@ sub _run_command {
   }
 
   if ( $? == 127 ) {
-    $app->output->stash( error_info => "Command not found.", error_code => $? );
+    $c->app->output->stash(
+      error_info => "Command not found.",
+      error_code => $?
+    );
   }
   elsif ( $? != 0 ) {
-    $app->output->stash( error_info => "Return code: $?", error_code => $? );
+    $c->app->output->stash( error_info => "Return code: $?", error_code => $? );
   }
 
   my $ret = {};

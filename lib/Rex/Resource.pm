@@ -11,63 +11,32 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
 use Rex::Constants;
-use Hash::Merge qw/merge/;
 
 require Rex::Resource::Common;
 
 our @CURRENT_RES;
 
+has name         => ( is => 'ro', isa => 'Str', );
+has display_name => ( is => 'ro', isa => 'Str', );
+has type         => ( is => 'ro', isa => 'Str', );
+has cb           => ( is => 'ro', isa => 'CodeRef' );
+has __status__ =>
+  ( is => 'ro', isa => 'Str', writer => '_set_status', default => "unchanged" );
+has status_message => (
+  is      => 'ro',
+  isa     => 'Str',
+  default => sub { "" },
+  writer  => "_set_status_message"
+);
+
 sub is_inside_resource { ref $CURRENT_RES[-1] ? 1 : 0 }
 sub get_current_resource { $CURRENT_RES[-1] }
 
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = {@_};
-
-  bless( $self, $proto );
-
-  $self->{__status__} = "unchanged";
-
-  return $self;
-}
-
-sub name         { (shift)->{name}; }
-sub display_name { (shift)->{display_name}; }
-sub type         { (shift)->{type}; }
-
 sub call {
-
-  if ( ref $_[1] eq "HASH" ) {
-    my ( $self, $name ) = @_;
-
-    # multiple resource call
-    for my $n ( keys %{$name} ) {
-      my $this_p = $name->{$n};
-      if ( $_[2] && ref $_[2] eq "HASH" ) {
-
-        # some defaults to merge
-        $this_p = merge( $this_p, $_[2] );
-      }
-
-      $self->call( $n, %{$this_p} );
-    }
-
-    return;
-  }
-
-  my ( $self, $name, %params ) = @_;
-
-  if ( ref $name eq "ARRAY" ) {
-
-    # multiple resource call
-    for my $n ( @{$name} ) {
-      $self->call( $n, %params );
-    }
-
-    return;
-  }
+  my ( $self, $c, $name, %params ) = @_;
 
   push @CURRENT_RES, $self;
 
@@ -96,7 +65,7 @@ sub call {
   my $failed_msg = "";
 
   eval {
-    my ( $provider, $mod_config ) = $self->{cb}->( \%params );
+    my ( $provider, $mod_config ) = $self->cb->( $c, \%params );
 
     if ( $provider =~ m/^[a-zA-Z0-9_:]+$/ && ref $mod_config eq "HASH" ) {
 
@@ -141,7 +110,7 @@ sub call {
     Rex::get_current_connection()->{reporter}->report(
       changed => 1,
       failed  => $failed,
-      message => $self->message,
+      message => $self->status_message,
     );
   }
   else {
@@ -153,7 +122,7 @@ sub call {
   }
 
   if ( exists $params{on_change} && $self->was_updated ) {
-    $params{on_change}->( $self->{__status__} );
+    $params{on_change}->( $self->__status__ );
   }
 
   Rex::get_current_connection()->{reporter}
@@ -179,10 +148,10 @@ sub changed {
   my ( $self, $changed ) = @_;
 
   if ( defined $changed ) {
-    $self->{__status__} = "changed";
+    $self->_set_status("changed");
   }
   else {
-    return ( $self->{__status__} eq "changed" ? 1 : 0 );
+    return ( $self->__status__ eq "changed" ? 1 : 0 );
   }
 }
 
@@ -190,10 +159,10 @@ sub created {
   my ( $self, $created ) = @_;
 
   if ( defined $created ) {
-    $self->{__status__} = "created";
+    $self->_set_status("created");
   }
   else {
-    return ( $self->{__status__} eq "created" ? 1 : 0 );
+    return ( $self->__status__ eq "created" ? 1 : 0 );
   }
 }
 
@@ -201,10 +170,10 @@ sub removed {
   my ( $self, $removed ) = @_;
 
   if ( defined $removed ) {
-    $self->{__status__} = "removed";
+    $self->_set_status("removed");
   }
   else {
-    return ( $self->{__status__} eq "removed" ? 1 : 0 );
+    return ( $self->__status__ eq "removed" ? 1 : 0 );
   }
 }
 
@@ -212,10 +181,10 @@ sub message {
   my ( $self, $message ) = @_;
 
   if ( defined $message ) {
-    $self->{message} = $message;
+    $self->_set_status_message($message);
   }
   else {
-    return ( $self->{message} || ( $self->display_name . " changed." ) );
+    return ( $self->status_message || ( $self->display_name . " changed." ) );
   }
 }
 

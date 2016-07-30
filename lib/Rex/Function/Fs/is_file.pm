@@ -32,11 +32,11 @@ function "is_file", {
   },
 
   # this is the code that will be executed
-  # first parameter of the code reference is always the Rex application object.
+  # first parameter of the code reference is always a Rex controller object.
   # second, third, ... parameter are the real parameter the user passed to the
   # function call.
   sub {
-  my ( $app, $file ) = @_;
+  my ( $c, $file ) = @_;
   $file = resolv_path($file);
 
   my $fs  = Rex::Interface::Fs->create;

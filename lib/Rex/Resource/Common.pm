@@ -21,6 +21,7 @@ use Hash::Merge qw/merge/;
 
 use base qw(Exporter);
 use vars qw(@EXPORT);
+use Carp;
 
 @EXPORT =
   qw(emit resource resource_name changed created removed get_resource_provider);
@@ -99,6 +100,7 @@ sub resource {
 
     $app->output->print_s( { title => $name, msg => $_[0] } );
 
+    my @errors;
     eval {
       my $found = 0;
       for my $f (
@@ -130,6 +132,7 @@ sub resource {
           $found = 1;
           1;
         } or do {
+          push @errors, $@;
 
           # print "Err: $@\n";
           # TODO catch no "X parameter was given" errors
@@ -160,7 +163,13 @@ sub resource {
         last;
       }
       if ( !$found ) {
-        die "Resource $name for provided parameter not found.";
+        my @err_msg;
+        for my $err (@errors) {
+          my ($fline) = split( /\n/, $err );
+          push @err_msg, $fline;
+        }
+        croak "Resource $name for provided parameter not found.\nErrors:\n"
+          . join( "\n", @err_msg );
       }
       1;
     } or do {

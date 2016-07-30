@@ -127,43 +127,56 @@ use Rex -minimal;
 use Rex::Commands::Gather;
 use Rex::Resource::Common;
 use Rex::Helper::Path;
+use Moose::Util::TypeConstraints;
 
 use Carp;
 
-resource "file", { export => 1 }, sub {
-  my $file_name = resolv_path( resource_name() );
+subtype 'OctedNum', as 'Str',
+  where { $_ =~ m/^[0-8]{4}$/ },
+  message { "The given string ($_) is not octal." };
 
-  my $file_config = {
-    ensure        => param_lookup( "ensure",        "present" ),
-    name          => $file_name,
-    mode          => param_lookup( "mode",          undef ),
-    owner         => param_lookup( "owner",         undef ),
-    group         => param_lookup( "group",         undef ),
-    source        => param_lookup( "source",        undef ),
-    content       => param_lookup( "content",       undef ),
-    no_overwrite  => param_lookup( "no_overwrite",  undef ),
-    not_recursive => param_lookup( "not_recursive", 0 ),
-  };
+resource "file", {
+  export      => 1,
+  params_list => [
+    name => {
+      isa     => 'Str',
+      default => sub { shift }
+    },
+    ensure => {
+      isa     => 'Str',
+      default => sub { "present" }
+    },
+    mode          => { isa => 'OctedNum',     default => undef },
+    owner         => { isa => 'Str',          default => undef },
+    group         => { isa => 'Str',          default => undef },
+    source        => { isa => 'Str',          default => undef },
+    content       => { isa => 'Str',          default => undef },
+    no_overwrite  => { isa => 'Bool | Undef', default => undef },
+    not_recursive => { isa => 'Bool',         default => 0 },
+  ],
+  },
+  sub {
+  my ($c) = @_;
+  my $file_name = resolv_path( $c->param("name") );
 
-  my $provider =
-    param_lookup( "provider",
-    get_resource_provider( kernelname(), operating_system() ) );
+  my $provider = $c->param("provider")
+    || get_resource_provider( kernelname(), operating_system() );
 
   Rex::Logger::debug("Get file provider: $provider");
 
-  if ( defined $file_config->{source} ) {
-    $file_config->{source} =
-      get_file_path( resolv_path( $file_config->{source} ), caller() );
+  if ( defined $c->param("source") ) {
+    $c->set_param( "source",
+      get_file_path( resolv_path( $c->param("source") ), caller() ) );
 
     if ( Rex::Config->get_environment
-      && -f $file_config->{source} . "." . Rex::Config->get_environment )
+      && -f $c->param("source") . "." . Rex::Config->get_environment )
     {
-      $file_config->{source} =
-        $file_config->{source} . "." . Rex::Config->get_environment;
+      $c->set_param( "source",
+        $c->param("source") . "." . Rex::Config->get_environment );
     }
   }
 
-  return ( $provider, $file_config );
-};
+  return ( $provider, $c->params );
+  };
 
 1;

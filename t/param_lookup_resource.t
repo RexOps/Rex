@@ -3,6 +3,7 @@ package MyTest;
 use Rex -base;
 use Rex::Resource::Common;
 use Test::More;
+use Rex::Output;
 
 $::QUIET = 1;
 

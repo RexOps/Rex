@@ -795,12 +795,7 @@ sub get_template_function {
     return sub {
       my ( $content, $template_vars ) = @_;
       $template_vars = {
-        Rex::Commands::Task::task()->get_opts,
-        (
-          Rex::Resource->is_inside_resource
-          ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
-          : ()
-        ),
+        %{ Rex->instance->current_run_stage->params },
         %{ $template_vars || {} }
         }
         if ( Rex::Commands::Task::task() );
@@ -814,12 +809,7 @@ sub get_template_function {
     return sub {
       my ( $content, $template_vars ) = @_;
       $template_vars = {
-        Rex::Commands::Task::task()->get_opts,
-        (
-          Rex::Resource->is_inside_resource
-          ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
-          : ()
-        ),
+        %{ Rex->instance->current_run_stage->params },
         %{ $template_vars || {} }
         }
         if ( Rex::Commands::Task::task() );
@@ -832,12 +822,7 @@ sub get_template_function {
   return sub {
     my ( $content, $template_vars ) = @_;
     $template_vars = {
-      Rex::Commands::Task::task()->get_opts,
-      (
-        Rex::Resource->is_inside_resource
-        ? %{ Rex::Resource->get_current_resource()->get_all_parameters }
-        : ()
-      ),
+      %{ Rex->instance->current_run_stage->params },
       %{ $template_vars || {} }
       }
       if ( Rex::Commands::Task::task() );

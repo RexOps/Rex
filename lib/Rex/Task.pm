@@ -58,100 +58,82 @@ require Rex::Commands;
 
 require Rex::Args;
 
-=head2 new
+use Moose;
+use MooseX::Aliases;
 
-This is the constructor.
-
- $task = Rex::Task->new(
-   func => sub { some_code_here },
-   server => [ @server ],
-   desc => $description,
-   no_ssh => $no_ssh,
-   hidden => $hidden,
-   auth => {
-     user      => $user,
-     password   => $password,
-     private_key => $private_key,
-     public_key  => $public_key,
-   },
-   before => [sub {}, sub {}, ...],
-   after  => [sub {}, sub {}, ...],
-   around => [sub {}, sub {}, ...],
-   before_task_start => [sub {}, sub {}, ...],
-   after_task_finished => [sub {}, sub {}, ...],
-   name => $task_name,
-   executor => Rex::Interface::Executor->create,
-   opts => {key1 => val1, key2 => val2, ...},
-   args => [arg1, arg2, ...],
- );
-
-=cut
-
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = {@_};
-
-  bless( $self, $proto );
-
-  if ( !exists $self->{name} ) {
-    die("You have to define a task name.");
+has name => ( is => 'ro', isa => 'Str' );
+has func => (
+  is      => 'ro',
+  isa     => 'CodeRef',
+  default => sub {
+    sub { }
   }
+);
+alias code => 'func';
 
-  $self->{no_ssh}   ||= 0;
-  $self->{func}     ||= sub { };
-  $self->{executor} ||= Rex::Interface::Executor->create;
-  $self->{opts}     ||= {};
-  $self->{args}     ||= [];
-
-  $self->{connection} = undef;
-
-  # set to true as default
-  if ( !exists $self->{exit_on_connect_fail} ) {
-    $self->{exit_on_connect_fail} = 1;
+has server      => ( is => 'ro', isa => 'ArrayRef | Undef' );
+has desc        => ( is => 'ro', isa => 'Str | Undef' );
+has parallelism => ( is => 'rw', isa => 'Int', default => sub { 1 } );
+has no_ssh      => ( is => 'ro', isa => 'Bool', default => sub { 0 } );
+has hidden      => ( is => 'ro', isa => 'Bool | Undef', default => sub { 0 } );
+has auth        => ( is => 'ro', isa => 'HashRef | Undef', default => sub { } );
+has before_hooks =>
+  ( is => 'ro', isa => 'ArrayRef[CodeRef] | Undef', default => sub { } );
+has after_hooks =>
+  ( is => 'ro', isa => 'ArrayRef[CodeRef] | Undef', default => sub { } );
+has around_hooks =>
+  ( is => 'ro', isa => 'ArrayRef[CodeRef] | Undef', default => sub { } );
+has before_task_start_hooks =>
+  ( is => 'ro', isa => 'ArrayRef[CodeRef] | Undef', default => sub { } );
+has after_task_finished_hooks =>
+  ( is => 'ro', isa => 'ArrayRef[CodeRef] | Undef', default => sub { } );
+has app => ( is => 'ro', isa => 'Rex', default => sub { Rex->instance } );
+has executor => (
+  is      => 'ro',
+  isa     => 'Rex::Interface::Executor::Base',
+  lazy    => 1,
+  default => sub {
+    my $self = shift;
+    my $exec = Rex::Interface::Executor->create(
+      "Default",
+      app  => $self->app,
+      task => $self
+    );
+    return $exec;
   }
-
-  return $self;
-}
-
-=head2 connection
-
-Returns the current connection object.
-
-=cut
-
-sub connection {
-  my ($self) = @_;
-  if ( !exists $self->{connection} || !$self->{connection} ) {
-    $self->{connection} =
-      Rex::Interface::Connection->create( $self->get_connection_type );
+);
+has opts => (
+  is      => 'ro',
+  isa     => 'HashRef | Undef',
+  default => sub { {} },
+  writer  => '_set_opts'
+);
+has args => (
+  is      => 'ro',
+  isa     => 'ArrayRef | Undef',
+  default => sub { [] },
+  writer  => '_set_args'
+);
+has connection => (
+  is      => 'ro',
+  isa     => 'Object | Undef',
+  lazy    => 1,
+  clearer => '_clear_connection',
+  default => sub {
+    my $self = shift;
+    Rex::Interface::Connection->create( $self->get_connection_type );
   }
+);
+has exit_on_connect_fail => ( is => 'ro', isa => 'Bool', default => sub { 1 } );
+has connection_type => ( is => 'ro', isa => 'Str', required => 0, );
+has current_server => (
+  is => 'ro',
 
-  $self->{connection};
-}
-
-=head2 executor
-
-Returns the current executor object.
-
-=cut
-
-sub executor {
-  my ($self) = @_;
-  $self->{executor}->set_task($self);
-  return $self->{executor};
-}
-
-=head2 hidden
-
-Returns true if the task is hidden. (Should not be displayed on ,,rex -T''.)
-
-=cut
-
-sub hidden {
-  my ($self) = @_;
-  return $self->{hidden};
-}
+  #isa     => 'Rex::Group::Entry::Server | Undef | Str',
+  writer  => '_set_current_server',
+  lazy    => 1,
+  default => sub { "<local>" }
+);
 
 =head2 server
 
@@ -159,114 +141,57 @@ Returns the servers on which the task should be executed as an ArrayRef.
 
 =cut
 
-sub server {
-  my ($self) = @_;
-
-  my @server = @{ $self->{server} };
-  my @ret    = ();
-
-  if ( ref( $server[-1] ) eq "HASH" ) {
-    Rex::deprecated(
-      undef, "0.40",
-      "Defining extra credentials within the task creation is deprecated.",
-      "Please use set auth => task => 'taskname' instead."
-    );
-
-    # use extra defined credentials
-    my $data = pop(@server);
-    $self->set_auth( "user",     $data->{'user'} );
-    $self->set_auth( "password", $data->{'password'} );
-
-    if ( exists $data->{"private_key"} ) {
-      $self->set_auth( "private_key", $data->{"private_key"} );
-      $self->set_auth( "public_key",  $data->{"public_key"} );
-    }
-  }
-
-  if ( ref( $self->{server} ) eq "ARRAY"
-    && scalar( @{ $self->{server} } ) > 0 )
-  {
-    for my $srv ( @{ $self->{server} } ) {
-      if ( ref($srv) eq "CODE" ) {
-        push( @ret, &$srv() );
-      }
-      else {
-        if ( ref $srv && $srv->isa("Rex::Group::Entry::Server") ) {
-          push( @ret, $srv->get_servers );
-        }
-        else {
-          push( @ret, $srv );
-        }
-      }
-    }
-  }
-  elsif ( ref( $self->{server} ) eq "CODE" ) {
-    push( @ret, &{ $self->{server} }() );
-  }
-  else {
-    push( @ret, Rex::Group::Entry::Server->new( name => "<local>" ) );
-  }
-
-  return [@ret];
-}
-
-=head2 set_server(@server)
-
-With this method you can set new servers on which the task should be executed on.
-
-=cut
-
-sub set_server {
-  my ( $self, @server ) = @_;
-  $self->{server} = \@server;
-}
-
-=head2 delete_server
-
-Delete every server registered to the task.
-
-=cut
-
-sub delete_server {
-  my ($self) = @_;
-  delete $self->{current_server};
-  delete $self->{server};
-  $self->rethink_connection;
-}
-
-=head2 current_server
-
-Returns the current server on which the tasks gets executed right now.
-
-=cut
-
-sub current_server {
-  my ($self) = @_;
-  return $self->{current_server}
-    || Rex::Group::Entry::Server->new( name => "<local>" );
-}
-
-=head2 desc
-
-Returns the description of a task.
-
-=cut
-
-sub desc {
-  my ($self) = @_;
-  return $self->{desc};
-}
-
-=head2 set_desc($description)
-
-Set the description of a task.
-
-=cut
-
-sub set_desc {
-  my ( $self, $desc ) = @_;
-  $self->{desc} = $desc;
-}
+# TODO coerce server attribute to objects
+#sub server {
+#  my ($self) = @_;
+#
+#  my @server = @{ $self->{server} };
+#  my @ret    = ();
+#
+#  if ( ref( $server[-1] ) eq "HASH" ) {
+#    Rex::deprecated(
+#      undef, "0.40",
+#      "Defining extra credentials within the task creation is deprecated.",
+#      "Please use set auth => task => 'taskname' instead."
+#    );
+#
+#    # use extra defined credentials
+#    my $data = pop(@server);
+#    $self->set_auth( "user",     $data->{'user'} );
+#    $self->set_auth( "password", $data->{'password'} );
+#
+#    if ( exists $data->{"private_key"} ) {
+#      $self->set_auth( "private_key", $data->{"private_key"} );
+#      $self->set_auth( "public_key",  $data->{"public_key"} );
+#    }
+#  }
+#
+#  if ( ref( $self->{server} ) eq "ARRAY"
+#    && scalar( @{ $self->{server} } ) > 0 )
+#  {
+#    for my $srv ( @{ $self->{server} } ) {
+#      if ( ref($srv) eq "CODE" ) {
+#        push( @ret, &$srv() );
+#      }
+#      else {
+#        if ( ref $srv && $srv->isa("Rex::Group::Entry::Server") ) {
+#          push( @ret, $srv->get_servers );
+#        }
+#        else {
+#          push( @ret, $srv );
+#        }
+#      }
+#    }
+#  }
+#  elsif ( ref( $self->{server} ) eq "CODE" ) {
+#    push( @ret, &{ $self->{server} }() );
+#  }
+#  else {
+#    push( @ret, Rex::Group::Entry::Server->new( name => "<local>" ) );
+#  }
+#
+#  return [@ret];
+#}
 
 =head2 is_remote
 
@@ -282,7 +207,7 @@ sub is_remote {
     }
   }
   else {
-    if ( exists $self->{server} && scalar( @{ $self->{server} } ) > 0 ) {
+    if ( $self->server && scalar( @{ $self->server } ) > 0 ) {
       return 1;
     }
   }
@@ -309,8 +234,7 @@ Returns true (1) if the task gets executed over http protocol.
 
 sub is_http {
   my ($self) = @_;
-  return ( $self->{"connection_type"}
-      && lc( $self->{"connection_type"} ) eq "http" );
+  return ( $self->connection_type && lc( $self->connection_type ) eq "http" );
 }
 
 =head2 is_https
@@ -321,8 +245,7 @@ Returns true (1) if the task gets executed over https protocol.
 
 sub is_https {
   my ($self) = @_;
-  return ( $self->{"connection_type"}
-      && lc( $self->{"connection_type"} ) eq "https" );
+  return ( $self->connection_type && lc( $self->connection_type ) eq "https" );
 }
 
 =head2 is_openssh
@@ -333,8 +256,8 @@ Returns true (1) if the task gets executed with openssh.
 
 sub is_openssh {
   my ($self) = @_;
-  return ( $self->{"connection_type"}
-      && lc( $self->{"connection_type"} ) eq "openssh" );
+  return ( $self->connection_type
+      && lc( $self->connection_type ) eq "openssh" );
 }
 
 =head2 want_connect
@@ -403,18 +326,19 @@ With this method you can modify values of the task.
 
 =cut
 
-sub modify {
-  my ( $self, $key, $value ) = @_;
-
-  if ( ref( $self->{$key} ) eq "ARRAY" ) {
-    push( @{ $self->{$key} }, $value );
-  }
-  else {
-    $self->{$key} = $value;
-  }
-
-  $self->rethink_connection;
-}
+# TODO use Moose writer functions
+#sub modify {
+#  my ( $self, $key, $value ) = @_;
+#
+#  if ( ref( $self->{$key} ) eq "ARRAY" ) {
+#    push( @{ $self->{$key} }, $value );
+#  }
+#  else {
+#    $self->{$key} = $value;
+#  }
+#
+#  $self->rethink_connection;
+#}
 
 =head2 rethink_connection
 
@@ -424,7 +348,7 @@ Deletes current connection object.
 
 sub rethink_connection {
   my ($self) = @_;
-  delete $self->{connection};
+  $self->_clear_connection;
 }
 
 =head2 user
@@ -435,8 +359,8 @@ Returns the username the task will use.
 
 sub user {
   my ($self) = @_;
-  if ( exists $self->{auth} && $self->{auth}->{user} ) {
-    return $self->{auth}->{user};
+  if ( $self->auth && $self->auth->{user} ) {
+    return $self->auth->{user};
   }
 }
 
@@ -448,7 +372,9 @@ Set the username of a task.
 
 sub set_user {
   my ( $self, $user ) = @_;
-  $self->{auth}->{user} = $user;
+  my $auth = $self->auth;
+  $auth->{user} = $user;
+  $self->_set_auth($auth);
 }
 
 =head2 password
@@ -459,8 +385,8 @@ Returns the password that will be used.
 
 sub password {
   my ($self) = @_;
-  if ( exists $self->{auth} && $self->{auth}->{password} ) {
-    return $self->{auth}->{password};
+  if ( $self->auth && $self->auth->{password} ) {
+    return $self->auth->{password};
   }
 }
 
@@ -472,40 +398,9 @@ Set the password of the task.
 
 sub set_password {
   my ( $self, $password ) = @_;
-  $self->{auth}->{password} = $password;
-}
-
-=head2 name
-
-Returns the name of the task.
-
-=cut
-
-sub name {
-  my ($self) = @_;
-  return $self->{name};
-}
-
-=head2 code
-
-Returns the code of the task.
-
-=cut
-
-sub code {
-  my ($self) = @_;
-  return $self->{func};
-}
-
-=head2 set_code(\&code_ref)
-
-Set the code of the task.
-
-=cut
-
-sub set_code {
-  my ( $self, $code ) = @_;
-  $self->{func} = $code;
+  my $auth = $self->auth;
+  $auth->{password} = $password;
+  $self->_set_auth($auth);
 }
 
 =head2 run_hook($server, $hook)
@@ -550,10 +445,12 @@ sub set_auth {
 
   if ( scalar(@_) > 3 ) {
     my $_d = shift;
-    $self->{auth} = {@_};
+    $self->_set_auth( {@_} );
   }
   else {
-    $self->{auth}->{$key} = $value;
+    my $auth = $self->auth;
+    $auth->{$key} = $value;
+    $self->_set_auth($auth);
   }
 }
 
@@ -569,7 +466,7 @@ sub merge_auth {
 
   # merge auth hashs
   # auth info of task has precedence
-  my %auth = $server->merge_auth( $self->{auth} );
+  my %auth = $server->merge_auth( $self->auth );
 
   return \%auth;
 }
@@ -584,31 +481,9 @@ sub get_sudo_password {
   my ($self) = @_;
 
   my $server = $self->connection->server;
-  my %auth   = $server->merge_auth( $self->{auth} );
+  my %auth   = $server->merge_auth( $self->auth );
 
   return $auth{sudo_password};
-}
-
-=head2 parallelism
-
-Get the parallelism count of a task.
-
-=cut
-
-sub parallelism {
-  my ($self) = @_;
-  return $self->{parallelism};
-}
-
-=head2 set_parallelism($count)
-
-Set the parallelism of the task.
-
-=cut
-
-sub set_parallelism {
-  my ( $self, $para ) = @_;
-  $self->{parallelism} = $para;
 }
 
 =head2 connect($server)
@@ -623,7 +498,7 @@ sub connect {
   if ( !ref $server ) {
     $server = Rex::Group::Entry::Server->new( name => $server );
   }
-  $self->{current_server} = $server;
+  $self->_set_current_server($server);
 
   # need to be called, in case of a run_task task call.
   # see #788
@@ -671,14 +546,15 @@ sub connect {
       ssh      => $self->connection->get_connection_object,
       server   => $server,
       cache    => Rex::Interface::Cache->create(),
-      task     => [],
+      task     => [$self],
       profiler => $profiler,
       reporter => Rex::Report->create( Rex::Config->get_report_type ),
       notify   => Rex::Notify->new(),
     }
   );
 
-  push @{ Rex::get_current_connection()->{task} }, $self;
+  # TODO ist nach oben gewandert
+  #  push @{ Rex::get_current_connection()->{task} }, $self;
 
   $profiler->start("connect");
   eval {
@@ -747,7 +623,7 @@ sub disconnect {
     Rex::Commands::profiler()->report;
   }
 
-  delete $self->{connection};
+  $self->_clear_connection;
 
   $self->run_hook( \$server, "after" );
 
@@ -765,22 +641,21 @@ Dump task data.
 
 sub get_data {
   my ($self) = @_;
-
   return {
-    func            => $self->{func},
-    server          => $self->{server},
-    desc            => $self->{desc},
-    no_ssh          => $self->{no_ssh},
-    hidden          => $self->{hidden},
-    auth            => $self->{auth},
-    before          => $self->{before},
-    after           => $self->{after},
-    around          => $self->{around},
-    name            => $self->{name},
-    executor        => $self->{executor},
-    connection_type => $self->{connection_type},
-    opts            => $self->{opts},
-    args            => $self->{args},
+    func            => $self->func,
+    server          => $self->server,
+    desc            => $self->desc,
+    no_ssh          => $self->no_ssh,
+    hidden          => $self->hidden,
+    auth            => $self->auth,
+    before_hooks    => $self->before_hooks,
+    after_hooks     => $self->after_hooks,
+    around_hooks    => $self->around_hooks,
+    name            => $self->name,
+    executor        => $self->executor,
+    connection_type => $self->connection_type,
+    opts            => $self->opts,
+    args            => $self->args,
   };
 }
 
@@ -791,12 +666,10 @@ Run the task on C<$server>, with C<%options>.
 =cut
 
 sub run {
-  return pre_40_run(@_) unless ref $_[0];
-
   my ( $self, $server, %options ) = @_;
 
-  $options{opts}   ||= { $self->get_opts };
-  $options{args}   ||= [ $self->get_args ];
+  $options{opts}   ||= $self->opts;
+  $options{args}   ||= $self->args;
   $options{params} ||= $options{opts};
 
   if ( !ref $server ) {
@@ -862,7 +735,7 @@ sub run {
   my $wantarray = wantarray;
 
   eval {
-    $self->set_opts( %{ $options{params} } )
+    $self->_set_opts( $options{params} )
       if ref $options{params} eq "HASH";
     if ($wantarray) {
       @ret = $self->executor->exec( $options{params}, $options{args} );
@@ -928,88 +801,20 @@ sub run {
   }
 }
 
-sub pre_40_run {
-  my ( $class, $task_name, $server_overwrite, $params ) = @_;
-
-  # static calls to this method are deprecated
-  Rex::deprecated( "Rex::Task->run()", "0.40" );
-
-  my $tasklist = Rex::TaskList->create;
-  my $task     = $tasklist->get_task($task_name);
-
-  $task->set_server($server_overwrite) if $server_overwrite;
-  $tasklist->run( $task, params => $params );
-}
-
 =head2 modify_task($task, $key => $value)
 
 Modify C<$task>, by setting C<$key> to C<$value>.
 
 =cut
 
-sub modify_task {
-  my $class = shift;
-  my $task  = shift;
-  my $key   = shift;
-  my $value = shift;
-
-  Rex::TaskList->create()->get_task($task)->modify( $key => $value );
-}
-
-=head2 is_task
-
-Returns true(1) if the passed object is a task.
-
-=cut
-
-sub is_task {
-  my ( $class, $task ) = @_;
-  return Rex::TaskList->create()->is_task($task);
-}
-
-=head2 get_tasks
-
-Returns list of tasks.
-
-=cut
-
-sub get_tasks {
-  my ( $class, @tmp ) = @_;
-  return Rex::TaskList->create()->get_tasks(@tmp);
-}
-
-=head2 get_desc
-
-Returns description of task.
-
-=cut
-
-sub get_desc {
-  my ( $class, @tmp ) = @_;
-  return Rex::TaskList->create()->get_desc(@tmp);
-}
-
-=head2 exit_on_connect_fail
-
-Returns true if rex should exit on connect failure.
-
-=cut
-
-sub exit_on_connect_fail {
-  my ($self) = @_;
-  return $self->{exit_on_connect_fail};
-}
-
-=head2 set_exit_on_connect_fail
-
-Sets if rex should exit on connect failure.
-
-=cut
-
-sub set_exit_on_connect_fail {
-  my ( $self, $exit ) = @_;
-  $self->{exit_on_connect_fail} = $exit;
-}
+#sub modify_task {
+#  my $class = shift;
+#  my $task  = shift;
+#  my $key   = shift;
+#  my $value = shift;
+#
+#  Rex::TaskList->create()->get_task($task)->modify( $key => $value );
+#}
 
 =head2 get_args
 
@@ -1019,7 +824,7 @@ Returns arguments of task.
 
 sub get_args {
   my ($self) = @_;
-  @{ $self->{args} || [] };
+  @{ $self->args || [] };
 }
 
 =head2 get_opts
@@ -1030,7 +835,7 @@ Returns options of task.
 
 sub get_opts {
   my ($self) = @_;
-  %{ $self->{opts} || {} };
+  %{ $self->opts || {} };
 }
 
 =head2 set_args
@@ -1041,7 +846,7 @@ Sets arguments for task.
 
 sub set_args {
   my ( $self, @args ) = @_;
-  $self->{args} = \@args;
+  $self->_set_args( \@args );
 }
 
 =head2 set_opt
@@ -1052,7 +857,9 @@ Sets an option for task.
 
 sub set_opt {
   my ( $self, $key, $value ) = @_;
-  $self->{opts}->{$key} = $value;
+  my $opts = $self->opts;
+  $opts->{$key} = $value;
+  $self->_set_opts($opts);
 }
 
 =head2 set_opts
@@ -1063,7 +870,7 @@ Sets options for task.
 
 sub set_opts {
   my ( $self, %opts ) = @_;
-  $self->{opts} = \%opts;
+  $self->_set_opts( \%opts );
 }
 
 =head2 clone

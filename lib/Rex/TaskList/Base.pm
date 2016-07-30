@@ -11,6 +11,10 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
+has app => ( is => 'ro', isa => 'Rex' );
+
 BEGIN {
   use Rex::Shared::Var;
   share qw(@SUMMARY);
@@ -29,18 +33,12 @@ use POSIX qw(floor);
 
 require Rex::Commands::Environment;
 
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = {@_};
-
-  bless( $self, $proto );
+sub BUILD {
+  my $self = shift;
 
   $self->{IN_TRANSACTION} = 0;
   $self->{DEFAULT_AUTH}   = 1;
   $self->{tasks}          = {};
-
-  return $self;
 }
 
 sub create_task {
@@ -208,14 +206,16 @@ sub create_task {
       ? $options->{exit_on_connect_fail}
       : 1
     ),
-    before              => [],
-    after               => [],
-    around              => [],
-    after_task_finished => [],
-    before_task_start   => [],
-    name                => $task_name,
-    executor            => Rex::Interface::Executor->create,
-    connection_type     => Rex::Config->get_connection_type,
+    before_hooks              => [],
+    after_hooks               => [],
+    around_hooks              => [],
+    after_task_finished_hooks => [],
+    before_task_start_hooks   => [],
+    name                      => $task_name,
+
+    #    executor            => Rex::Interface::Executor->create,
+    app             => $self->app,
+    connection_type => Rex::Config->get_connection_type,
   );
 
   if ( $self->{DEFAULT_AUTH} ) {
@@ -351,13 +351,19 @@ sub build_child_coderef {
       my $e = $@;
       my $exit_code = $@ ? ( $? || 1 ) : 0;
 
-      push @SUMMARY,
-        {
-        task          => $task->name,
-        server        => $server->to_s,
-        exit_code     => $exit_code,
-        error_message => $e,
-        };
+      eval {
+        push @SUMMARY,
+          {
+          task          => $task->name,
+          server        => $server->to_s,
+          exit_code     => $exit_code,
+          error_message => $e,
+          };
+        1;
+      } or do {
+        die $e;
+      };
+
     }
 
     Rex::Logger::debug("Destroying all cached os information");

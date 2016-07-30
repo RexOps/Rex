@@ -159,7 +159,13 @@ sub resource {
         );
 
         my $c = Rex::Controller::Resource->new( app => $app, params => \%args );
-        $res->call( $c, @_ );
+        my @args = @_;
+        $app->push_run_stage(
+          $c,
+          sub {
+            $res->call( $c, @args );
+          }
+        );
         last;
       }
       if ( !$found ) {

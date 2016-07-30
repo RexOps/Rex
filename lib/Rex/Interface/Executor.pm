@@ -14,7 +14,7 @@ use warnings;
 use Data::Dumper;
 
 sub create {
-  my ( $class, $type ) = @_;
+  my ( $class, $type, @params ) = @_;
 
   unless ($type) {
     $type = "Default";
@@ -24,7 +24,7 @@ sub create {
   eval "use $class_name;";
   if ($@) { die("Error loading file interface $type.\n$@"); }
 
-  return $class_name->new;
+  return $class_name->new(@params);
 
 }
 

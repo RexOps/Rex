@@ -95,7 +95,12 @@ sub function {
         # * unless
         # * creates
 
-        $ret = $f->{code}->( $c, @args, %arg_options );
+        $app->push_run_stage(
+          $c,
+          sub {
+            $ret = $f->{code}->( $c, @args, %arg_options );
+          }
+        );
         last;
       }
       if ( !$found ) {

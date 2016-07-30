@@ -13,8 +13,6 @@ use warnings;
 
 use Moose;
 
-extends qw(Rex);
-
 use FindBin;
 use File::Basename qw(basename dirname);
 use Time::HiRes qw(gettimeofday tv_interval);
@@ -56,13 +54,19 @@ if ( $#ARGV < 0 ) {
   @ARGV = qw(-h);
 }
 
+has app => (
+  is  => 'ro',
+  isa => 'Rex',
+);
+
 has run_list => (
   is      => 'ro',
   isa     => 'Rex::RunList',
   lazy    => 1,
   default => sub {
     my $self = shift;
-    Rex::RunList->instance( app => $self );
+    Rex::RunList->app( Rex->instance );
+    Rex::RunList->instance;
   }
 );
 

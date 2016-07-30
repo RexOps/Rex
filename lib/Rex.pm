@@ -76,7 +76,7 @@ use warnings;
 
 # VERSION
 
-use Moose;
+use MooseX::Singleton;
 
 # development version if this variable is not set
 if ( !$Rex::VERSION ) {
@@ -95,6 +95,7 @@ BEGIN {
   use Rex::Notify;
   use Rex::Require;
   use Rex::Controller;
+  use Rex::Controller::Task;
   use Rex::Controller::Function;
   use Rex::Controller::Resource;
   use File::Basename;
@@ -115,6 +116,13 @@ has feature_flags => (
   isa => 'ArrayRef',
 );
 
+has run_stages => (
+  is      => 'ro',
+  isa     => 'ArrayRef',
+  default => sub { [] },
+  writer  => '_set_run_stages',
+);
+
 has output => (
   is      => 'ro',
   isa     => 'Rex::Output',
@@ -124,13 +132,23 @@ has output => (
   },
 );
 
-my $INSTANCE;
+sub push_run_stage {
+  my ( $self, $ctrl, $code ) = @_;
+  my $current = $self->run_stages;
+  push @{$current}, $ctrl;
 
-# returns a singleton
-sub instance {
-  my $class = shift;
-  return $INSTANCE if $INSTANCE;
-  $INSTANCE = $class->new(@_);
+  $self->_set_run_stages($current);
+
+  $code->();
+
+  $current = $self->run_stages;
+  pop @{$current};
+  $self->_set_run_stages($current);
+}
+
+sub current_run_stage {
+  my ($self) = @_;
+  $self->run_stages->[-1];
 }
 
 sub push_lib_to_inc {

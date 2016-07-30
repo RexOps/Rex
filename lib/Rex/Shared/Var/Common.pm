@@ -17,6 +17,7 @@ our @EXPORT_OK = qw/__lock __store __retrieve/;
 
 use Fcntl qw(:DEFAULT :flock);
 use Storable;
+use Carp;
 
 # $PARENT_PID gets set when Rex starts.  This value remains the same after the
 # process forks.  So $PARENT_PID is always the pid of the parent process.  $$
@@ -38,7 +39,7 @@ sub __lock {
 
 sub __store {
   my $ref = shift;
-  store( $ref, $FILE );
+  eval { store( $ref, $FILE ); 1; } or do { confess $@ };
 }
 
 sub __retrieve {

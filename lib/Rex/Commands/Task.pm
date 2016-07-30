@@ -31,6 +31,7 @@ use warnings;
 # VERSION
 
 require Rex::Exporter;
+use Data::Dumper;
 
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
@@ -176,7 +177,8 @@ sub task {
   use warnings;
 
   $options->{'dont_register'} ||= $dont_register_tasks;
-  my $task_o = Rex::TaskList->create()->create_task( $task_name, @_, $options );
+  my $task_o = Rex::TaskList->create( app => Rex->instance )
+    ->create_task( $task_name, @_, $options );
 
   if (!$class->can($task_name_save)
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
@@ -188,15 +190,7 @@ sub task {
       Rex::Logger::info("Running task $task_name on current connection");
       my $param;
 
-      if ( scalar @_ == 1 && ref $_[0] eq "HASH" ) {
-        $param = $_[0];
-      }
-      elsif ( $REGISTER_SUB_HASH_PARAMETER && scalar @_ % 2 == 0 ) {
-        $param = {@_};
-      }
-      else {
-        $param = \@_;
-      }
+      $param = {@_};
 
       $task_o->run( "<func>", params => $param );
     };

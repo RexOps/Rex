@@ -2,14 +2,27 @@ use Test::More tests => 11;
 use Rex -base;
 use Rex::Resource;
 use Rex::Resource::Common;
+use Rex::Output;
+
+use Data::Dumper;
 
 $::QUIET = 1;
 
 resource(
   "testres",
+  {
+    params_list => [
+      name => {
+        isa     => 'Str',
+        default => sub { shift }
+      },
+      file => { isa => 'Str', default => "/etc/passwd", },
+    ],
+  },
   sub {
-    my $name = resource_name;
-    my $file = param_lookup "file", "/etc/passwd";
+    my ($c)  = @_;
+    my $name = $c->param("name");
+    my $file = $c->param("file");
 
     is( $name, "foo",         "testres name is foo" );
     is( $file, "/etc/passwd", "testres got default file param" );
@@ -23,9 +36,19 @@ resource(
 
 resource(
   "testres2",
+  {
+    params_list => [
+      name => {
+        isa     => 'Str',
+        default => sub { shift }
+      },
+      file => { isa => 'Str', },
+    ],
+  },
   sub {
-    my $name = resource_name;
-    my $file = param_lookup "file", "/etc/passwd";
+    my ($c)  = @_;
+    my $name = $c->param("name");
+    my $file = $c->param("file");
 
     is( $name, "bar",         "testres2 name is bar" );
     is( $file, "/etc/shadow", "testres2 got custom param" );
@@ -46,9 +69,19 @@ resource(
 
 resource(
   "testres3",
+  {
+    params_list => [
+      name => {
+        isa     => 'Str',
+        default => sub { shift }
+      },
+      file => { isa => 'Str', },
+    ],
+  },
   sub {
-    my $name = resource_name;
-    my $file = param_lookup "file", "/etc/passwd";
+    my ($c)  = @_;
+    my $name = $c->param("name");
+    my $file = $c->param("file");
 
     is( $name, "baz",      "testres3 name is baz" );
     is( $file, "/etc/foo", "testres3 got custom param" );
@@ -61,7 +94,8 @@ resource(
 task(
   "test1",
   sub {
-    my $file = param_lookup "file", "/etc/groups";
+    my $c = shift;
+    my $file = $c->param("file") || "/etc/securetty";
 
     testres("foo");
     testres2( "bar", file => "/etc/shadow" );
@@ -71,7 +105,7 @@ task(
   }
 );
 
-test1( { file => "/etc/securetty" } );
+test1( file => "/etc/securetty" );
 
 done_testing();
 

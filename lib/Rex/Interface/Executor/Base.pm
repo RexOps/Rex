@@ -11,17 +11,17 @@ use warnings;
 
 # VERSION
 
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = $proto->SUPER::new(@_);
+use Moose;
 
-  bless( $self, $proto );
+has app => (
+  is  => 'ro',
+  isa => 'Rex',
+);
 
-  return $self;
-}
-
-sub exec { die("Should be implemented by interface class."); }
+has task => (
+  is  => 'ro',
+  isa => 'Rex::Task'
+);
 
 sub set_task {
   my ( $self, $task ) = @_;

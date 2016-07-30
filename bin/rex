@@ -20,8 +20,10 @@ BEGIN {
 
 require Rex;
 use Rex::CLI;
+use Data::Dumper;
 
-my $rex = Rex::CLI->new;
+my $app = Rex->instance;
+my $rex = Rex::CLI->new(app => $app);
 $rex->__run__();
 
 __END__

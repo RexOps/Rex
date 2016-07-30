@@ -13,24 +13,6 @@ use warnings;
 
 use Moose;
 
-extends qw(Rex::Controller);
-
-has params => (
-  is     => 'ro',
-  isa    => 'HashRef',
-  writer => '_set_params',
-);
-
-sub param {
-  my ( $self, $what ) = @_;
-  return $self->params->{$what} if ($what);
-}
-
-sub set_param {
-  my ( $self, $what, $value ) = @_;
-  my $p = $self->params;
-  $p->{$what} = $value;
-  $self->_set_params($p);
-}
+extends qw(Rex::Controller::Base);
 
 1;

@@ -22,7 +22,9 @@ use vars qw(%tasks);
 our $task_list = {};
 
 sub create {
-  my ($class) = @_;
+  my ( $class, %params ) = @_;
+
+  $params{app} ||= Rex->instance;
 
   # create only one object
   if ( ref($task_list) =~ m/^Rex::TaskList::/ ) {
@@ -41,7 +43,7 @@ sub create {
     die("TaskList module not found: $@");
   }
 
-  $task_list = $class_name->new;
+  $task_list = $class_name->new(%params);
 
   Rex::Logger::debug(
     "new distribution class of type " . ref($task_list) . " created." );

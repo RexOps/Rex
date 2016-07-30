@@ -14,21 +14,12 @@ use Rex::TaskList;
 
 # VERSION
 
-use Moose;
-
-my $INSTANCE;
+use MooseX::Singleton;
 
 has app => (
-  is  => 'ro',
+  is  => 'rw',
   isa => 'Rex',
 );
-
-# returns a singleton
-sub instance {
-  my $class = shift;
-  return $INSTANCE if $INSTANCE;
-  $INSTANCE = $class->new(@_);
-}
 
 sub add_task {
   my ( $self, $task_name, $task_args, $task_opts ) = @_;

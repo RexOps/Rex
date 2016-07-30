@@ -17,17 +17,17 @@ extends qw(Rex::Output);
 
 sub print_s {
   my ( $self, $data ) = @_;
-  print "[$data->{title}] $data->{msg} ";
+  print "[$data->{title}] $data->{msg} " if !$::QUIET;
 }
 
 sub endln_ok {
   my ($self) = @_;
-  print "done.\n";
+  print "done.\n" if !$::QUIET;
 }
 
 sub endln_failed {
   my ($self) = @_;
-  print "failed.\n";
+  print "failed.\n" if !$::QUIET;
 }
 
 1;

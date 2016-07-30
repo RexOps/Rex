@@ -14,12 +14,14 @@ use Rex::TaskList;
 
 # VERSION
 
+use Moose;
+
 my $INSTANCE;
 
-sub new {
-  my ( $class, %args ) = @_;
-  return bless \%args, $class;
-}
+has app => (
+  is  => 'ro',
+  isa => 'Rex',
+);
 
 # returns a singleton
 sub instance {

@@ -11,6 +11,10 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
+extends qw(Rex);
+
 use FindBin;
 use File::Basename qw(basename dirname);
 use Time::HiRes qw(gettimeofday tv_interval);
@@ -28,6 +32,7 @@ use Rex::Batch;
 use Rex::TaskList;
 use Rex::Logger;
 use YAML;
+use Rex::Output;
 
 use Data::Dumper;
 
@@ -51,15 +56,15 @@ if ( $#ARGV < 0 ) {
   @ARGV = qw(-h);
 }
 
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = {@_};
-
-  bless( $self, $proto );
-
-  return $self;
-}
+has run_list => (
+  is      => 'ro',
+  isa     => 'Rex::RunList',
+  lazy    => 1,
+  default => sub {
+    my $self = shift;
+    Rex::RunList->instance( app => $self );
+  }
+);
 
 sub __run__ {
   my ( $self, %more_args ) = @_;
@@ -170,11 +175,6 @@ FORCE_SERVER: {
     else {
       Rex::Logger::info("You must give a valid command.");
     }
-  }
-
-  if ( $opts{'o'} ) {
-    Rex::Output->require;
-    Rex::Output->get( $opts{'o'} );
   }
 
   handle_lock_file($::rexfile);
@@ -367,17 +367,15 @@ CHECK_OVERWRITE: {
     require $mod;
   }
 
-  my $run_list = Rex::RunList->instance;
-
   if ( $opts{'b'} ) {
     my $batch = $opts{'b'};
     Rex::Logger::debug("Running batch: $batch");
-    $run_list->add_task($_) for Rex::Batch->get_batch($batch);
+    $self->run_list->add_task($_) for Rex::Batch->get_batch($batch);
   }
 
-  $run_list->parse_opts(@ARGV);
+  $self->run_list->parse_opts(@ARGV);
 
-  eval { $run_list->run_tasks };
+  eval { $self->run_list->run_tasks };
   if ($@) {
 
     # this is always the child

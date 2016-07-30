@@ -76,6 +76,8 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
 # development version if this variable is not set
 if ( !$Rex::VERSION ) {
   $Rex::VERSION = "9999.99.99_99";
@@ -104,6 +106,29 @@ our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
 $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
+
+has feature_flags => (
+  is  => 'ro',
+  isa => 'ArrayRef',
+);
+
+has output => (
+  is      => 'ro',
+  isa     => 'Rex::Output',
+  lazy    => 1,
+  default => sub {
+    return Rex::Output->create;
+  },
+);
+
+my $INSTANCE;
+
+# returns a singleton
+sub instance {
+  my $class = shift;
+  return $INSTANCE if $INSTANCE;
+  $INSTANCE = $class->new(@_);
+}
 
 sub push_lib_to_inc {
   my $path = shift;
@@ -561,9 +586,6 @@ sub import {
     require Rex::Commands;
     Rex::Commands->import( register_in => $register_to );
 
-    require Rex::Commands::Run;
-    Rex::Commands::Run->import( register_in => $register_to );
-
     require Rex::Commands::Fs;
     Rex::Commands::Fs->import( register_in => $register_to );
 
@@ -625,8 +647,8 @@ sub import {
     Rex::Resource::firewall->import( register_in => $register_to );
 
     # new command code structure
-    require Rex::Command::Fs::is_file;
-    Rex::Command::Fs::is_file->import( register_in => $register_to );
+    require Rex::Function::Fs::is_file;
+    Rex::Function::Fs::is_file->import( register_in => $register_to );
   }
 
   if ( $what eq "-base" || $what eq "base" ) {
@@ -685,6 +707,9 @@ sub import {
 
         require Rex::Commands::File;
         Rex::Commands::File->import( register_in => $register_to );
+
+        require Rex::Commands::Run;
+        Rex::Commands::Run->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 2.0 ) {
@@ -693,6 +718,10 @@ sub import {
 
         require Rex::Resource::file;
         Rex::Resource::file->import( register_in => $register_to );
+
+        # new command code structure
+        require Rex::Function::run;
+        Rex::Function::run->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.4 ) {

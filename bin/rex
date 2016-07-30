@@ -18,10 +18,11 @@ BEGIN {
   }
 }
 
+require Rex;
 use Rex::CLI;
 
 my $rex = Rex::CLI->new;
-$rex->__run__;
+$rex->__run__();
 
 __END__
 

@@ -71,6 +71,7 @@ sub call {
 
       # new resource interface
       # old one is already executed via $self->{cb}->(\%params)
+      $provider->require;
 
       my $provider_o = $provider->new(
         type   => $self->type,

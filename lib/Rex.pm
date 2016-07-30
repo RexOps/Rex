@@ -647,8 +647,8 @@ sub import {
     Rex::Resource::firewall->import( register_in => $register_to );
 
     # new command code structure
-    require Rex::Command::Fs::is_file;
-    Rex::Command::Fs::is_file->import( register_in => $register_to );
+    require Rex::Function::Fs::is_file;
+    Rex::Function::Fs::is_file->import( register_in => $register_to );
   }
 
   if ( $what eq "-base" || $what eq "base" ) {
@@ -720,8 +720,8 @@ sub import {
         Rex::Resource::file->import( register_in => $register_to );
 
         # new command code structure
-        require Rex::Command::run;
-        Rex::Command::run->import( register_in => $register_to );
+        require Rex::Function::run;
+        Rex::Function::run->import( register_in => $register_to );
       }
 
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 1.4 ) {

@@ -4,7 +4,7 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::Command::run;
+package Rex::Function::run;
 
 use strict;
 use warnings;
@@ -12,13 +12,13 @@ use warnings;
 # VERSION
 
 use Rex -minimal;
-use Rex::Command::Common;
+use Rex::Function::Common;
 use Rex::Helper::Path;
 
 # define run() function
 # the run() function has 2 prototypes with different parameters
 # here we can define both and also define which parameters each prototype has
-# so that the code in Rex::Command::Common can detect the right code.
+# so that the code in Rex::Function::Common can detect the right code.
 
 function "run", {
 
@@ -119,7 +119,7 @@ sub _run_command {
 
 =head1 NAME
 
-Rex::Command::run - Execute a command
+Rex::Function::run - Execute a command
 
 =head1 DESCRIPTION
 

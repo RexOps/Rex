@@ -4,7 +4,7 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::Command::Fs::is_file;
+package Rex::Function::Fs::is_file;
 
 use strict;
 use warnings;
@@ -12,7 +12,7 @@ use warnings;
 # VERSION
 
 use Rex -minimal;
-use Rex::Command::Common;
+use Rex::Function::Common;
 use Rex::Helper::Path;
 
 # create the function "is_file"
@@ -52,7 +52,7 @@ function "is_file", {
 
 =head1 NAME
 
-Rex::Command::Fs::is_file - Test if file exists
+Rex::Function::Fs::is_file - Test if file exists
 
 =head1 DESCRIPTION
 

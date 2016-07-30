@@ -4,7 +4,7 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::Command::Common;
+package Rex::Function::Common;
 
 use strict;
 use warnings;

@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Moose;
+use Data::Dumper;
 
 has __version__ => (
   is      => 'ro',
@@ -71,5 +72,16 @@ has message => (
   writer  => '_set_message',
   default => sub { '' },
 );
+
+sub DEMOLISH {
+  my ($self) = @_;
+  $self->report;
+}
+
+sub report {
+  my ($self) = @_;
+
+  # TODO reporting
+}
 
 1;

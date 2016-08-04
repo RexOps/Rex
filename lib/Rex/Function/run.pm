@@ -14,6 +14,7 @@ use warnings;
 use Rex -minimal;
 use Rex::Function::Common;
 use Rex::Helper::Path;
+use Data::Dumper;
 
 # define run() function
 # the run() function has 2 prototypes with different parameters
@@ -65,9 +66,9 @@ function "run", {
   };
 
 sub _run_command {
-  my $c   = shift;
   my $cmd = shift;
   my ( $args, $options, $path );
+  my $app = Rex->instance;
 
   if ( ref $_[0] eq "ARRAY" ) {
     $args = shift;
@@ -103,13 +104,13 @@ sub _run_command {
   }
 
   if ( $? == 127 ) {
-    $c->app->output->stash(
+    $app->output->stash(
       error_info => "Command not found.",
       error_code => $?
     );
   }
   elsif ( $? != 0 ) {
-    $c->app->output->stash( error_info => "Return code: $?", error_code => $? );
+    $app->output->stash( error_info => "Return code: $?", error_code => $? );
   }
 
   my $ret = {};

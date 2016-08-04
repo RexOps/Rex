@@ -114,12 +114,18 @@ resource "firewall", {
   ],
   },
   sub {
-  my ($c) = @_;
+  my ( $name, %args ) = @_;
 
   my $provider =
-    $c->param("provider") || case ( lc(operating_system), $__provider );
+    $args{provider} || case ( lc(operating_system), $__provider );
 
-  return ( $provider, $c->params );
+  # TODO define provider type automatically.
+  $provider->require;
+  my $provider_o =
+    $provider->new( type => "firewall", name => $name, config => \%args );
+  $provider_o->process;
+
+  #  return ( $provider, $c->params );
 
   #  if ( my $logging = $rule_config->{logging} ) {
   #    if ( $provider_o->logging($logging) ) {

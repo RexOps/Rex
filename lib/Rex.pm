@@ -94,10 +94,13 @@ BEGIN {
   use Rex::Report;
   use Rex::Notify;
   use Rex::Require;
-  use Rex::Controller;
-  use Rex::Controller::Task;
-  use Rex::Controller::Function;
-  use Rex::Controller::Resource;
+
+  use Rex::MultiSub;
+  use Rex::MultiSub::PosValidatedList;
+  use Rex::MultiSub::ValidatedHash;
+  use Rex::MultiSub::Resource;
+  use Rex::MultiSub::Function;
+
   use File::Basename;
   eval { Net::SSH2->require; };
 }
@@ -131,25 +134,6 @@ has output => (
     return Rex::Output->create;
   },
 );
-
-sub push_run_stage {
-  my ( $self, $ctrl, $code ) = @_;
-  my $current = $self->run_stages;
-  push @{$current}, $ctrl;
-
-  $self->_set_run_stages($current);
-
-  $code->();
-
-  $current = $self->run_stages;
-  pop @{$current};
-  $self->_set_run_stages($current);
-}
-
-sub current_run_stage {
-  my ($self) = @_;
-  $self->run_stages->[-1];
-}
 
 sub push_lib_to_inc {
   my $path = shift;

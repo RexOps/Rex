@@ -35,32 +35,26 @@ sub exec {
   eval {
     my $code = $task->code;
 
-    my $c = Rex::Controller::Task->new( app => $self->app, params => $opts );
-    $self->app->push_run_stage(
-      $c,
-      sub {
-        Rex::Hook::run_hook( task => "before_execute", $task->name, @_ );
+    Rex::Hook::run_hook( task => "before_execute", $task->name, @_ );
 
-        if ($wantarray) {
-          if ( ref $opts eq "ARRAY" ) {
-            @ret = $code->( $self->app->current_run_stage );
-          }
-          else {
-            @ret = $code->( $self->app->current_run_stage );
-          }
-        }
-        else {
-          if ( ref $opts eq "ARRAY" ) {
-            $ret[0] = $code->( $self->app->current_run_stage );
-          }
-          else {
-            $ret[0] = $code->( $self->app->current_run_stage );
-          }
-        }
-
-        Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );
+    if ($wantarray) {
+      if ( ref $opts eq "ARRAY" ) {
+        @ret = $code->( @{$opts} );
       }
-    );
+      else {
+        @ret = $code->( $opts, $args );
+      }
+    }
+    else {
+      if ( ref $opts eq "ARRAY" ) {
+        $ret[0] = $code->( @{$opts} );
+      }
+      else {
+        $ret[0] = $code->( $opts, $args );
+      }
+    }
+
+    Rex::Hook::run_hook( task => "after_execute", $task->name, @_ );
   };
 
   my $error = $@;

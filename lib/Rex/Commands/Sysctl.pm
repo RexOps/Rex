@@ -16,8 +16,6 @@ Version <= 1.0: All these functions will not be reported.
 
 All these functions are not idempotent.
 
-This function doesn't persist the entries in /etc/sysctl.conf.
-
 =head1 SYNOPSIS
 
  use Rex::Commands::Sysctl;
@@ -60,11 +58,12 @@ If $val is given, then this function will set the sysctl key $key.
    }
  };
 
-If both $val and option persistent => "true" are passed the sysctl key and value are stored in /etc/sysctl.conf.
-If the key already exists in the file, it will be updated to the new value.
+If both $val and ensure option are used, the sysctl key is modified and the value may persist in /etc/sysctl.conf depending if ensure option is "present" or "absent".
+
+With ensure => "present", if the key already exists in the file, it will be updated to the new value.
 
  task "forwarding", "server01", sub {
-   sysctl "net.ipv4.ip_forward" => 1, persistent => TRUE;
+   sysctl "net.ipv4.ip_forward" => 1, ensure => "present";
  }
 
 =cut
@@ -74,6 +73,11 @@ sub sysctl_save {
   append_or_amend_line "/etc/sysctl.conf",
     line   => "$key=$value",
     regexp => qr{\Q$key=};
+}
+
+sub sysctl_remove {
+  my ( $key, $value ) = @_;
+  delete_lines_matching "/etc/sysctl.conf" => "$key=$value";
 }
 
 sub sysctl {
@@ -95,9 +99,19 @@ sub sysctl {
       Rex::Logger::debug("$key has already value $val");
     }
 
-    if ( $options{persistent} ) {
-      Rex::Logger::debug("Writing $key=$val to sysctl.conf");
-      sysctl_save $key, $val;
+    if ( $options{ensure} ) {
+      if ( $options{ensure} eq "present" ) {
+        Rex::Logger::debug("Writing $key=$val to sysctl.conf");
+        sysctl_save $key, $val;
+      }
+      elsif ( $options{ensure} eq "absent" ) {
+        Rex::Logger::debug("Removing $key=$val of sysctl.conf");
+        sysctl_remove $key, $val;
+      }
+      else {
+        Rex::Logger::info(
+          "Error : " . $options{ensure} . " is not a known ensure parameter" );
+      }
     }
 
   }

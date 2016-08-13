@@ -73,6 +73,7 @@ sub enabled {
   my $changed = $self->present;
   my $os_ver  = operating_system_release();
 
+  # TODO migrate to something like Rex::Interface::Fs->file()
   Rex::Commands::File::file(
     "/etc/modules-load.d/$mod_name.conf",
     ensure    => "present",
@@ -111,8 +112,9 @@ sub _is_enabled {
   my ($self) = @_;
 
   my $mod_name = $self->name;
+  my $fs       = Rex::Interface::Fs->create;
 
-  return Rex::Commands::Fs::is_file("/etc/modules-load.d/$mod_name.conf");
+  return $fs->is_file("/etc/modules-load.d/$mod_name.conf");
 }
 
 1;

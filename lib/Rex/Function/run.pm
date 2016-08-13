@@ -80,13 +80,86 @@ sub _run_command {
   $options = {@_} if @_;
 
   my $exec = Rex::Interface::Exec->create;
+  my $fs   = Rex::Interface::Fs->create;
 
   if ( !Rex::Config->get_no_path_cleanup() ) {
     $path = join( ":", Rex::Config->get_path() );
   }
 
+  my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+
+  # test for only_if condition
+  # if only_if is set, the command should only run when the command is
+  # successful
+  if ( $options->{only_if} ) {
+    my $only_if = $options->{only_if};
+    my $only_if_cmd;
+
+    if ( ref $only_if eq "ARRAY" ) {
+      $only_if_cmd = shift @{$only_if};
+      $only_if_cmd =
+        "$only_if_cmd " . join( " ", map { $quoter->quote($_) } @{$only_if} );
+    }
+    else {
+      $only_if_cmd = $only_if;
+    }
+
+    $exec->exec( $only_if_cmd, $path );
+    if ( $? != 0 ) {
+      $app->output->stash(
+        error_info => "only_if condition not met",
+        exit_code  => $?,
+      );
+      return { exit_code => 0, };
+    }
+  }
+
+  # test for unless condition
+  # if unless is set, the command should only run when the command is
+  # not successful
+  if ( $options->{unless} ) {
+    my $unless = $options->{unless};
+    my $unless_cmd;
+
+    if ( ref $unless eq "ARRAY" ) {
+      $unless_cmd = shift @{$unless};
+      $unless_cmd =
+        "$unless_cmd " . join( " ", map { $quoter->quote($_) } @{$unless} );
+    }
+    else {
+      $unless_cmd = $unless;
+    }
+
+    $exec->exec( $unless_cmd, $path );
+    if ( $? == 0 ) {
+      $app->output->stash(
+        error_info => "unless condition not met",
+        exit_code  => $?,
+      );
+      return { exit_code => 0, };
+    }
+  }
+
+  # test for creates condition
+  # if creates is set, the command should only run when the file is not present
+  if ( $options->{creates} ) {
+    my $creates =
+      ref $options->{creates} eq "ARRAY"
+      ? $options->{creates}
+      : [ $options->{creates} ];
+
+    for my $c ( @{$creates} ) {
+      if ( $fs->is_file($c) || $fs->is_dir($c) ) {
+        $app->output->stash(
+          error_info => "creates condition met",
+          exit_code  => 0,
+        );
+        return { exit_code => 0, };
+      }
+    }
+  }
+
   if ( scalar @{$args} ) {
-    my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
     $cmd = "$cmd " . join( " ", map { $quoter->quote($_) } @{$args} );
   }
 
@@ -114,7 +187,8 @@ sub _run_command {
   }
 
   my $ret = {};
-  $ret->{value} = $out;
+  $ret->{value}     = $out;
+  $ret->{exit_code} = $?;
 
   return $ret;
 }

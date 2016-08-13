@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Moose;
+use Data::Dumper;
 
 use Rex::Helper::Run;
 
@@ -31,12 +32,11 @@ sub test {
   {
     return 1;
   }
-  elsif ( $self->config->{ensure} eq "absent" && !$count ) {
+  elsif ( $self->config->{ensure} eq "absent" && $count ) {
     return 1;
   }
   elsif ( $self->config->{ensure} eq "disabled"
-    && !$self->_is_enabled
-    && !$count )
+    && ( $self->_is_enabled || $count ) )
   {
     return 1;
   }

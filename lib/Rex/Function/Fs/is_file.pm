@@ -36,7 +36,7 @@ function "is_file", {
   # second, third, ... parameter are the real parameter the user passed to the
   # function call.
   sub {
-  my ( $c, $file ) = @_;
+  my ($file) = @_;
   $file = resolv_path($file);
 
   my $fs  = Rex::Interface::Fs->create;

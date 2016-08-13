@@ -43,6 +43,8 @@ override call => sub {
 
   my $ret = $code->(@args);
 
+  return unless $ret->{value};
+
   if ( $self->test_wantarray && wantarray ) {
     return split( /\n/, $ret->{value} );
   }

@@ -65,20 +65,22 @@ resource "kmod", {
   ],
   },
   sub {
-  my ($c) = @_;
+  my ( $name, %args ) = @_;
 
   # here we define the provider the resource should use. If someone want to use
   # a custom provider we will use this. Otherwise we try to detect the provider
   # automatically.
-  my $provider = $c->param("provider")
+  my $provider = $args{provider}
     || get_resource_provider( kernelname(), operating_system() );
+
+  # TODO define provider type automatically.
+  $provider->require;
 
   Rex::Logger::debug("Get kernel provider: $provider");
 
-  # at the end we return the wanted provider and an hash reference containing
-  # all the parameters for this resource.
-  # here we just pass the parameters back without modifying them.
-  return ( $provider, $c->params );
+  my $provider_o =
+    $provider->new( type => "kmod", name => $name, config => \%args );
+  $provider_o->process;
   };
 
 1;

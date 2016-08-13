@@ -156,27 +156,31 @@ resource "file", {
   ],
   },
   sub {
-  my ($c) = @_;
-  my $file_name = resolv_path( $c->param("name") );
+  my ( $file_name, %args ) = @_;
 
-  my $provider = $c->param("provider")
+  my $provider =
+    $args{provider}
     || get_resource_provider( kernelname(), operating_system() );
+
+  # TODO define provider type automatically.
+  $provider->require;
 
   Rex::Logger::debug("Get file provider: $provider");
 
-  if ( defined $c->param("source") ) {
-    $c->set_param( "source",
-      get_file_path( resolv_path( $c->param("source") ), caller() ) );
+  if ( defined $args{source} ) {
+    $args{source} = get_file_path( resolv_path( $args{source} ), caller() );
 
     if ( Rex::Config->get_environment
-      && -f $c->param("source") . "." . Rex::Config->get_environment )
+      && -f $args{source} . "." . Rex::Config->get_environment )
     {
-      $c->set_param( "source",
-        $c->param("source") . "." . Rex::Config->get_environment );
+      $args{source} = $args{source} . "." . Rex::Config->get_environment;
     }
   }
 
-  return ( $provider, $c->params );
+  my $provider_o =
+    $provider->new( type => "file", name => $file_name, config => \%args );
+  $provider_o->process;
+
   };
 
 1;

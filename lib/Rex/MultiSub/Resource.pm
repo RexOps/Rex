@@ -52,12 +52,26 @@ override call => sub {
   # * unless
   # * creates
   # * on_change
+  # * on_before_change
   # * ensure
 
   # TODO migrate reporting and error handling from Rex::Resource
   # TODO remove Rex::Resource class
+  # TODO add default values for $args[1] if $args[0] is hash
 
-  $code->(@args);
+  if ( ref $args[0] eq "HASH" ) {
+    for my $k_name ( keys %{ $args[0] } ) {
+      $code->( $k_name, %{ $args[0]->{$k_name} } );
+    }
+  }
+  elsif ( ref $args[0] eq "ARRAY" ) {
+    for my $v_name ( @{ $args[0] } ) {
+      $code->( $v_name, @args[ 1 .. $#args ] );
+    }
+  }
+  else {
+    $code->(@args);
+  }
 };
 
 1;

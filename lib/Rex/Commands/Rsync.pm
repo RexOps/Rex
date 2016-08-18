@@ -60,6 +60,19 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
+use Data::Dumper;
+use Rex::Commands;
+use Rex::Commands::Run;
+use Rex::Commands::MD5;
+use Rex::Commands::Fs;
+use Rex::Commands::File;
+use Rex::Commands::Download;
+use Rex::Helper::Path;
+use Rex::Helper::Encode;
+use JSON::XS;
+use Text::Glob 'glob_to_regex';
+use File::Basename 'basename';
+
 @EXPORT = qw(sync);
 
 =head2 sync($source, $dest, $opts)
@@ -146,15 +159,17 @@ sub sync {
   my @rsync_cmd = ();
 
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
+    $dest = resolv_path($dest);
     Rex::Logger::debug("Downloading $source -> $dest");
-    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params ";
-    push @rsync_cmd, "'" . $auth->{user} . "\@" . $server . ":" . $source . "'";
+    push @rsync_cmd, "rsync -rl -e '\%s' --verbose --stats $params ";
+    push @rsync_cmd, "'" . $auth->{user} . "\@" . $servername . ":" . $source . "'";
     push @rsync_cmd, "'$dest'";
   }
   else {
+    $source = resolv_path($source);
     Rex::Logger::debug("Uploading $source -> $dest");
-    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params '$source' ";
-    push @rsync_cmd, "'" . $auth->{user} . "\@$server:$dest" . "'";
+    push @rsync_cmd, "rsync -rl -e '\%s' --verbose --stats $params '$source' ";
+    push @rsync_cmd, "'" . $auth->{user} . "\@$servername:$dest" . "'";
   }
 
   if (Rex::is_sudo) {
@@ -178,7 +193,7 @@ sub sync {
 
   if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
-      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ', $port );
+      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ' . "$port", $port );
     push(
       @expect_options,
       [
@@ -231,11 +246,11 @@ sub sync {
   else {
     if ( $auth_type eq "key" ) {
       $cmd = sprintf( $cmd,
-        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no ",
+        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no -p " . "$port",
         $port );
     }
     else {
-      $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );
+      $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no -p ' . "$port" );
     }
     push(
       @expect_options,

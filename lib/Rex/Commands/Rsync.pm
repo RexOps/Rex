@@ -61,6 +61,7 @@ use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Helper::IP;
+use Rex::Helper::Path;
 
 @EXPORT = qw(sync);
 
@@ -145,15 +146,17 @@ sub sync {
   my @rsync_cmd = ();
 
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
+    $dest = resolv_path($dest);
     Rex::Logger::debug("Downloading $source -> $dest");
-    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params ";
-    push @rsync_cmd, "'" . $auth->{user} . "\@" . $server . ":" . $source . "'";
+    push @rsync_cmd, "rsync -rl -e '\%s' --verbose --stats $params ";
+    push @rsync_cmd, "'" . $auth->{user} . "\@" . $servername . ":" . $source . "'";
     push @rsync_cmd, "'$dest'";
   }
   else {
+    $source = resolv_path($source);
     Rex::Logger::debug("Uploading $source -> $dest");
-    push @rsync_cmd, "rsync -a -e '\%s' --verbose --stats $params '$source' ";
-    push @rsync_cmd, "'" . $auth->{user} . "\@$server:$dest" . "'";
+    push @rsync_cmd, "rsync -rl -e '\%s' --verbose --stats $params '$source' ";
+    push @rsync_cmd, "'" . $auth->{user} . "\@$servername:$dest" . "'";
   }
 
   if (Rex::is_sudo) {
@@ -177,7 +180,7 @@ sub sync {
 
   if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
-      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no ', $port );
+      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ' . "$port", $port );
     push(
       @expect_options,
       [
@@ -230,11 +233,11 @@ sub sync {
   else {
     if ( $auth_type eq "key" ) {
       $cmd = sprintf( $cmd,
-        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no ",
+        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no -p " . "$port",
         $port );
     }
     else {
-      $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no ' );
+      $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no -p ' . "$port" );
     }
     push(
       @expect_options,

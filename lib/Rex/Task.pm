@@ -130,6 +130,11 @@ sub connection {
   $self->{connection};
 }
 
+sub set_connection {
+  my ( $self, $conn ) = @_;
+  $self->{connection} = $conn;
+}
+
 =head2 executor
 
 Returns the current executor object.
@@ -854,6 +859,11 @@ sub run {
 
   }
   else {
+# we need to push the connection information of the last task onto this task object
+# if we don't do this, the task doesn't have any information of the current connection when called like a function.
+# See: #1091
+    $self->set_connection(
+      Rex::get_current_connection()->{task}->[-1]->connection );
     push @{ Rex::get_current_connection()->{task} }, $self;
   }
 

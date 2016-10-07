@@ -41,6 +41,7 @@ use vars qw(@EXPORT);
 use Data::Dumper;
 use Rex::Logger;
 use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Commands::LVM;
 use Rex::Commands::Fs;

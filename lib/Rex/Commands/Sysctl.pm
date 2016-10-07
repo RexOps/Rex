@@ -99,14 +99,14 @@ sub sysctl {
       Rex::Logger::debug("$key has already value $val");
     }
 
-    if ( $options{ensure} ) {
+    if ( $options{ensure} || $options{persistent} ) {
       if ( $options{ensure} eq "present" ) {
         Rex::Logger::debug("Writing $key=$val to sysctl.conf");
-        sysctl_save $key, $val if($options{persistent});
+        sysctl_save $key, $val;
       }
       elsif ( $options{ensure} eq "absent" ) {
         Rex::Logger::debug("Removing $key=$val of sysctl.conf");
-        sysctl_remove $key, $val if($options{persistent};
+        sysctl_remove $key, $val;
       }
       else {
         Rex::Logger::info(

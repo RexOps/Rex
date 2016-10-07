@@ -60,6 +60,8 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
+use Rex::Helper::IP;
+
 @EXPORT = qw(sync);
 
 =head2 sync($source, $dest, $opts)
@@ -108,14 +110,11 @@ sub sync {
   my $server             = $current_connection->{server};
   my $cmd;
 
-  my $port       = 22;
+  my $port;
   my $servername = $server->to_s;
 
-  # there is a :1234 port in the server  string
-  if ( $servername =~ m/:\d+$/ ) {
-    my $_t;
-    ( $servername, $port ) = split( /:/, $servername );
-  }
+  ( $servername, $port ) =
+    Rex::Helper::IP::get_server_and_port( $servername, 22 );
 
   my $auth = $current_connection->{conn}->get_auth;
 

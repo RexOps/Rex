@@ -17,6 +17,7 @@ BEGIN {
 }
 
 use Carp;
+use Rex::Helper::IP;
 use Rex::Interface::Connection::Base;
 use base qw(Rex::Interface::Connection::Base);
 
@@ -69,11 +70,10 @@ CON_SSH:
   $server =
     Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
 
-  if ( $server =~ m/^(.*?):(\d+)$/ ) {
-    $server = $1;
-    $port   = $2;
-  }
+  ( $server, $port ) = Rex::Helper::IP::get_server_and_port( $server, $port );
+
   Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
+
   unless ( $self->{ssh}->connect( $server, $port ) ) {
     ++$fail_connect;
     sleep 1;

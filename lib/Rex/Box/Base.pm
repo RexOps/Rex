@@ -35,6 +35,7 @@ BEGIN {
   LWP::UserAgent->use;
 }
 
+use Rex::Helper::IP;
 use Time::HiRes qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 use Data::Dumper;
@@ -305,8 +306,7 @@ sub wait_for_ssh {
   my ( $self, $ip, $port ) = @_;
 
   if ( !$ip ) {
-    ( $ip, $port ) = split( /:/, $self->ip );
-    $port ||= 22;
+    ( $ip, $port ) = Rex::Helper::IP::get_server_and_port( $self->ip, 22 );
   }
 
   print "Waiting for SSH to come up on $ip:$port.";

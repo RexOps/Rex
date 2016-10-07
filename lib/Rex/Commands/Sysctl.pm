@@ -71,13 +71,16 @@ With ensure => "present", if the key already exists in the file, it will be upda
 sub sysctl_save {
   my ( $key, $value ) = @_;
   append_or_amend_line "/etc/sysctl.conf",
-    line   => "$key=$value",
-    regexp => qr{\Q$key=};
+    line      => "$key=$value",
+    regexp    => qr{\Q$key=},
+    on_change => sub { i_run '/sbin/sysctl -p' };
 }
 
 sub sysctl_remove {
   my ( $key, $value ) = @_;
-  delete_lines_matching "/etc/sysctl.conf" => "$key=$value";
+
+  delete_lines_according_to "$key=$value", "/etc/sysctl.conf",
+    on_change => sub { i_run '/sbin/sysctl -p' };
 }
 
 sub sysctl {

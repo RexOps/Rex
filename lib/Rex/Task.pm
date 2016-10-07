@@ -863,7 +863,8 @@ sub run {
 # if we don't do this, the task doesn't have any information of the current connection when called like a function.
 # See: #1091
     $self->set_connection(
-      Rex::get_current_connection()->{task}->[-1]->connection );
+      Rex::get_current_connection()->{task}->[-1]->connection )
+      if Rex::get_current_connection()->{task}->[-1];
     push @{ Rex::get_current_connection()->{task} }, $self;
   }
 

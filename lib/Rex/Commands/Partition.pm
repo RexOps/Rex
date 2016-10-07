@@ -56,7 +56,7 @@ Clear partitions on drive `sda`:
  clearpart "sda";
 
 Create a new GPT disk label (partition table) on drive `sda`:
- 
+
  clearpart "sda",
   initialize => "gpt";
 
@@ -159,19 +159,19 @@ Examples:
    size   => 15000,
    ondisk => "sda",
    type   => "primary";
- 
+    
  partition "none",
    type   => "extended",
    ondisk => "sda",
    grow   => 1,
    mount  => TRUE,
- 
+       
  partition "swap",
    fstype => "swap",
    type   => "logical",
    ondisk => "sda",
    size   => 8000;
-
+    
  partition "/",
    fstype => "ext3",
    size   => 10000,
@@ -227,7 +227,16 @@ sub partition {
     die("Error creating partition.");
   }
 
-  run "partprobe";
+  my $partprobe_error;
+
+  for ( 1 .. 5 ) {
+    eval { i_run "partprobe"; };
+    $partprobe_error = $@;
+    last unless $partprobe_error;
+    sleep 5;
+  }
+
+  die $partprobe_error if $partprobe_error;
 
   # get the partition id
   my @partitions = grep { /$disk\d+$/ } split /\n/, cat "/proc/partitions";

@@ -179,7 +179,7 @@ CONNECT_TRY:
   $self->{connected} = 1;
   $self->{auth_ret}  = 1;
 
-  $self->{sftp} = $self->{ssh}->sftp;
+  eval { $self->{sftp} = $self->{ssh}->sftp; };
 }
 
 sub reconnect {

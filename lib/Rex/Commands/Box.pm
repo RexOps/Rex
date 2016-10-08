@@ -273,12 +273,14 @@ sub get_box {
     my $old_q = $::QUIET;
     $::QUIET = 1;
 
-    eval { $vm_infos{$box_name} = run_task "get_sys_info", on => $box_ip; }
-      or do {
+    eval {
+      $vm_infos{$box_name} = run_task "Commands:Box:get_sys_info",
+        on => $box_ip;
+    } or do {
       $::QUIET = $old_q;
       print STDERR "\n";
       Rex::Logger::info(
-        "There was an error connecting to your Box. Please verify the login credentials.",
+        "There was an error connecting to your Box. Please verify the login credentials.\nERROR: $@\n",
         "warn"
       );
       Rex::Logger::debug(
@@ -287,7 +289,7 @@ sub get_box {
       # cleanup
       kill 9, $pid;
       CORE::exit(1);
-      };
+    };
     $::QUIET = $old_q;
 
     for my $key ( keys %{$box_info} ) {

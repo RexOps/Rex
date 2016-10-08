@@ -189,7 +189,9 @@ sub provision_vm {
     }
 
     $task_o->set_auth( %{ $self->{__auth} } );
+    Rex::Commands::set( "box_object", $self );
     $task_o->run( $self->ip );
+    Rex::Commands::set( "box_object", undef );
   }
 }
 

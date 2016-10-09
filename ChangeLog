@@ -1,3 +1,33 @@
+2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
+  * fix a problem with creating boxes. catch errors - Jan Gehring
+  * Fix for  #1051 - Logger.pm - uninitialized value - Tamas Molnar
+  * reload sysctl if file changed - Jan Gehring
+  * use ensure or persistent for persistance - Jan Gehring
+  * fix an extra define on a hash - Solène Rapenne
+  * Detect Manjaro correctly (fix #993) - Ferenc Erki
+  * Don't warn on missing Rexfile when -e is used (fix #1032, ref #1010) - Ferenc Erki
+  * Specify XenServer as RedHat (CentOS) clone - Walery Wysotsky
+  * added i_exec and i_exec_nohup function for better parameter quoting - #872 - Jan Gehring
+  * refactored calls to run() function to use i_run() - Jan Gehring
+  * test for ipv4 - Jan Gehring
+  * don't set_connection if current task is the only one - Jan Gehring
+  * load Helper::Run module - Jan Gehring
+  * Give the kernel time to get informed of partition changes - Robert Abraham
+  * Trying to fix #791 Now get_ssh_config_hostname sub returns a good hosntame. - Paco Esteban
+  * also exclude directories - fix RexOps/Rex#904 - Jan Gehring
+  * push connection information to the new task - fix #1091 - Jan Gehring
+  * Add checking for ensure parameter and an error if ensure parameter isn't present/absent - solene rapenne
+  * sysctl supports remove and keyword changed to ensure - solene rapenne
+  * Create Rexfile-example2 - alx542
+  * callback and options can both be used - Andrew Solomon
+  * Add an option to save a sysctl key/value in /etc/sysctl.conf - Solène Rapenne
+  * Using OpenBSD rcctl tool for managing services - Solène Rapenne
+  * Add OpenBSD compatibility to test - solene rapenne
+  * Implemented LXC container support - Oleg Hardt
+  * try to add same update_system behaviour for as many systems as possible. Fix for RexOps/Rex#546 - Jan Gehring
+  * backported has_feature_version functions - Jan Gehring
+  * Escape backquotes when run command via sudo in the remote host - Nikolay A. Fetisov
+
 2016-07-16 Jan Gehring <jfried@rexify.org> (1.4.1)
   * bug with get_cloud_instances_as_group - Pierrick DINTRAT
   * Adds 64bit module path to @INC for linux - Mitch Broadhead

@@ -1038,6 +1038,12 @@ sub _append_or_update {
     }
   };
 
+  unless ( defined $new_line ) {
+    my ( undef, undef, undef, $subroutine ) = caller(1);
+    $subroutine =~ s/^.*:://;
+    die "Undefined new line while trying to run $subroutine on $file";
+  }
+
   my $fs = Rex::Interface::Fs->create;
 
   my ( $old_md5, $ret );

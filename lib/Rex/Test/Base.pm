@@ -175,6 +175,12 @@ The task to run on the test VM. You can run multiple tasks by passing an array r
 sub run_task {
   my ( $self, $task ) = @_;
 
+  # allow multiple calls to run_task() without setting up new box
+  if ( $self->{box} ) {
+    $self->{box}->provision_vm($task);
+    return;
+  }
+
   my $box;
   box {
     $box = shift;
@@ -214,6 +220,12 @@ sub ok($;$) {
   my ( $self, $test, $msg ) = @_;
   my $tb = Rex::Test::Base->builder;
   $tb->ok( $test, $msg );
+}
+
+sub like {
+  my ( $self, $thing, $want, $name ) = @_;
+  my $tb = Rex::Test::Base->builder;
+  $tb->like( $thing, $want, $name );
 }
 
 sub diag {
@@ -286,14 +298,26 @@ sub AUTOLOAD {
     return;
   }
 
-  my $pkg = __PACKAGE__ . "::$method";
+  my $real_method = $method;
+  my $is_not      = 0;
+  if ( $real_method =~ m/^has_not_/ ) {
+    $real_method =~ s/^has_not_/has_/;
+    $is_not = 1;
+  }
+
+  my $pkg = __PACKAGE__ . "::$real_method";
   eval "use $pkg";
   if ($@) {
     confess "Error loading $pkg. No such test method.";
   }
 
   my $p = $pkg->new;
-  $p->run_test(@_);
+  if ($is_not) {
+    $p->run_not_test(@_);
+  }
+  else {
+    $p->run_test(@_);
+  }
 }
 
 1;

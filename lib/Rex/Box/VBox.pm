@@ -306,7 +306,7 @@ This method return the ip of a vm on which the ssh daemon is listening.
 sub ip {
   my ($self) = @_;
 
-  $self->{info} = vm guestinfo => $self->{name};
+  $self->{info} ||= vm guestinfo => $self->{name};
 
   if ( scalar keys %{ $self->{info} } == 0 ) { return; }
 

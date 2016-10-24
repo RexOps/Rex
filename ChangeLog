@@ -1,4 +1,7 @@
 2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
+  * Added some more tests to Rex::Box::Test - Jan Gehring
+  * Refactored Rex::Box to be able to programmatically load box definitions. - Jan Gehring
+  * Die if undefined line is found during _append_or_update (fix #1044) - Ferenc Erki
   * fix a problem with creating boxes. catch errors - Jan Gehring
   * Fix for  #1051 - Logger.pm - uninitialized value - Tamas Molnar
   * reload sysctl if file changed - Jan Gehring

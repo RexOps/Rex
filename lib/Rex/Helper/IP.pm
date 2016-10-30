@@ -11,7 +11,16 @@ use warnings;
 
 # VERSION
 
-use Data::Validate::IP 'is_ipv4', 'is_ipv6', 'is_ip';
+use Data::Validate::IP 'is_ipv4', 'is_ipv6';
+
+sub is_ip {
+  my ($ip) = @_;
+
+  if ( is_ipv4($ip) || is_ipv6($ip) ) {
+    return 1;
+  }
+  return 0;
+}
 
 sub get_server_and_port {
   my ( $server, $default_port ) = @_;

@@ -1,4 +1,5 @@
 2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
+  * don't use is_ip function, so that it also works with older Data::Validate::IP module - Jan Gehring
   * Added some more tests to Rex::Box::Test - Jan Gehring
   * Refactored Rex::Box to be able to programmatically load box definitions. - Jan Gehring
   * Die if undefined line is found during _append_or_update (fix #1044) - Ferenc Erki

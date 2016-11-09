@@ -74,7 +74,7 @@ sub md5 {
 
       my $os = $exec->exec("uname -s");
       if ( $os =~ /bsd/i ) {
-        $md5 = $exec->exec("/sbin/md5 -q '$file'");
+        ( undef, $md5 ) = split( / = /, $exec->exec("md5 '$file'") );
       }
       else {
         ($md5) = split( /\s/, $exec->exec("md5sum '$file'") );

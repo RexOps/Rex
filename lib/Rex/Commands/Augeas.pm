@@ -142,7 +142,7 @@ Remove an entry.
   elsif ( $action eq "remove" ) {
 
     # Code to run on a change being made
-    if ( $options[-2] eq 'on_change' && ref $options[-1] eq 'CODE' ) {
+    if ( $options[-2] && $options[-2] eq 'on_change' && ref $options[-1] eq 'CODE' ) {
       $on_change = pop @options;
       pop @options;
     }
@@ -193,7 +193,7 @@ Insert an item into the file. Here, the order of the options is important. If th
     delete $opts->{"label"};
 
     # Code to run on a change being made
-    if ( $options[-2] eq 'on_change' && ref $options[-1] eq 'CODE' ) {
+    if ( $options[-2] && $options[-2] eq 'on_change' && ref $options[-1] eq 'CODE' ) {
       $on_change = pop @options;
       pop @options;
     }

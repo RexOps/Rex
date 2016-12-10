@@ -104,26 +104,67 @@ $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
 
-sub push_lib_to_inc {
-  my $path = shift;
+BEGIN {
 
-  if ( -d "$path/lib" ) {
-    push( @INC, "$path/lib" );
-    push( @INC, "$path/lib/perl/lib/perl5" );
-    if ( $^O eq "linux" ) {
-      push( @INC, "$path/lib/perl/lib/perl5/x86_64-linux" );
+  sub generate_inc {
+    my @rex_inc = ();
+
+# this must be the first, special handling for rex modules which uses Module.pm and not
+# __module__.pm as their initial file. (rex pre 0.40 or something)
+    push @rex_inc, sub {
+      my $mod_to_load = $_[1];
+      return search_module_path( $mod_to_load, 1 );
+    };
+
+# this adds the current directory to the lib search path.
+# this must come before all other paths, because custom libraries can be project dependant
+# see: #1108
+    push @rex_inc, add_cwd_to_inc();
+
+# add home directory/.rex/recipes to the search path, so that recipes can be managed
+# at a central location.
+    my $home_dir = _home_dir();
+    if ( -d "$home_dir/.rex/recipes" ) {
+      push( @INC, "$home_dir/.rex/recipes" );
     }
-    if ( $^O =~ m/^MSWin/ ) {
-      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
-      if ( defined $special_win_path ) {
-        my $mswin32_path = basename $special_win_path;
-        push( @INC, "$path/lib/perl/lib/perl5/$mswin32_path" );
+
+    # add the default search locations
+    push @rex_inc, @INC;
+
+    # this must be the last entry, special handling to load rex modules.
+    push(
+      @rex_inc,
+      sub {
+        my $mod_to_load = $_[1];
+        return search_module_path( $mod_to_load, 0 );
+      }
+    );
+
+    return @rex_inc;
+  }
+
+  sub add_cwd_to_inc {
+    my $path = getcwd;
+
+    my @ret = ();
+
+    if ( -d "$path/lib" ) {
+      push( @ret, "$path/lib" );
+      push( @ret, "$path/lib/perl/lib/perl5" );
+      if ( $^O eq "linux" ) {
+        push( @ret, "$path/lib/perl/lib/perl5/x86_64-linux" );
+      }
+      if ( $^O =~ m/^MSWin/ ) {
+        my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
+        if ( defined $special_win_path ) {
+          my $mswin32_path = basename $special_win_path;
+          push( @ret, "$path/lib/perl/lib/perl5/$mswin32_path" );
+        }
       }
     }
-  }
-}
 
-BEGIN {
+    return @ret;
+  }
 
   sub _home_dir {
     if ( $^O =~ m/^MSWin/ ) {
@@ -133,30 +174,8 @@ BEGIN {
     return $ENV{'HOME'} || "";
   }
 
-  $cur_dir = getcwd;
-
-  unshift(
-    @INC,
-    sub {
-      my $mod_to_load = $_[1];
-      return search_module_path( $mod_to_load, 1 );
-    }
-  );
-
-  push_lib_to_inc($cur_dir);
-
-  my $home_dir = _home_dir();
-  if ( -d "$home_dir/.rex/recipes" ) {
-    push( @INC, "$home_dir/.rex/recipes" );
-  }
-
-  push(
-    @INC,
-    sub {
-      my $mod_to_load = $_[1];
-      return search_module_path( $mod_to_load, 0 );
-    }
-  );
+  my @new_inc = generate_inc();
+  @INC = @new_inc;
 
 }
 

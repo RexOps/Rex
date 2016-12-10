@@ -93,6 +93,7 @@ BEGIN {
   use Rex::Notify;
   use Rex::Require;
   use File::Basename;
+  use File::Spec;
   eval { Net::SSH2->require; };
 }
 
@@ -107,6 +108,8 @@ my $cur_dir;
 BEGIN {
 
   sub generate_inc {
+    my @additional = @_;
+
     my @rex_inc = ();
 
 # this must be the first, special handling for rex modules which uses Module.pm and not
@@ -120,6 +123,8 @@ BEGIN {
 # this must come before all other paths, because custom libraries can be project dependant
 # see: #1108
     push @rex_inc, add_cwd_to_inc();
+
+    push @rex_inc, add_libstruct_to_inc($_) for @additional;
 
 # add home directory/.rex/recipes to the search path, so that recipes can be managed
 # at a central location.
@@ -143,27 +148,41 @@ BEGIN {
     return @rex_inc;
   }
 
-  sub add_cwd_to_inc {
-    my $path = getcwd;
-
+  sub add_libstruct_to_inc {
+    my ($path) = @_;
     my @ret = ();
 
-    if ( -d "$path/lib" ) {
-      push( @ret, "$path/lib" );
-      push( @ret, "$path/lib/perl/lib/perl5" );
+    if ( -d File::Spec->catdir( $path, "lib" ) ) {
+      push( @ret, File::Spec->catdir( $path, "lib" ) );
+      push( @ret, File::Spec->catdir( $path, "lib", "perl", "lib", "perl5" ) );
       if ( $^O eq "linux" ) {
-        push( @ret, "$path/lib/perl/lib/perl5/x86_64-linux" );
+        push(
+          @ret,
+          File::Spec->catdir(
+            $path, "lib", "perl", "lib", "perl5", "x86_64-linux"
+          )
+        );
       }
       if ( $^O =~ m/^MSWin/ ) {
         my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
         if ( defined $special_win_path ) {
           my $mswin32_path = basename $special_win_path;
-          push( @ret, "$path/lib/perl/lib/perl5/$mswin32_path" );
+          push(
+            @ret,
+            File::Spec->catdir(
+              $path, "lib", "perl", "lib", "perl5", $mswin32_path
+            )
+          );
         }
       }
     }
 
     return @ret;
+  }
+
+  sub add_cwd_to_inc {
+    my $path = getcwd;
+    return add_libstruct_to_inc($path);
   }
 
   sub _home_dir {

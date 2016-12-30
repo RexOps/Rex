@@ -57,7 +57,7 @@ sub get {
     };
   }
   elsif ( $os eq "SunOS" ) {
-    my ($swap_str) = i_run("swap -s");
+    my ($swap_str) = i_run( "swap -s", fail_ok => 1 );
 
     my ( $used, $u_ent, $avail, $a_ent ) =
       ( $swap_str =~ m/(\d+)([a-z]) used, (\d+)([a-z]) avail/ );
@@ -72,7 +72,7 @@ sub get {
     };
   }
   elsif ( $os eq "OpenBSD" ) {
-    my $swap_str = i_run "top -d1 | grep Swap:";
+    my $swap_str = i_run "top -d1 | grep Swap:", fail_ok => 1;
 
     my ( $used, $u_ent, $total, $t_ent ) =
       ( $swap_str =~ m/Swap: (\d+)([a-z])\/(\d+)([a-z])/i );
@@ -87,7 +87,7 @@ sub get {
     };
   }
   elsif ( $os eq "NetBSD" ) {
-    my $swap_str = i_run "top -d1 | grep Swap:";
+    my $swap_str = i_run "top -d1 | grep Swap:", fail_ok => 1;
 
     my ( $total, $t_ent, $free, $f_ent ) =
       ( $swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])/i );
@@ -103,7 +103,7 @@ sub get {
 
   }
   elsif ( $os =~ /FreeBSD/ ) {
-    my $swap_str = i_run "top -d1 | grep Swap:";
+    my $swap_str = i_run "top -d1 | grep Swap:", fail_ok => 1;
 
     my ( $total, $t_ent, $used, $u_ent, $free, $f_ent ) =
       ( $swap_str =~ m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i );
@@ -140,7 +140,7 @@ sub get {
       };
     }
 
-    my $free_str = [ grep { /^Swap:/ } i_run("free -m") ]->[0];
+    my $free_str = [ grep { /^Swap:/ } i_run( "free -m", fail_ok => 1 ) ]->[0];
     if ( !$free_str ) {
       $data = {
         total => 0,

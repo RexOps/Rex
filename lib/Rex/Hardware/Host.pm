@@ -229,7 +229,7 @@ sub get_operating_system_version {
 
   }
   elsif ( $op eq "Ubuntu" ) {
-    my @l = i_run "lsb_release -r -s";
+    my @l = i_run "lsb_release -r -s", fail_ok => 1;
     return $l[0];
   }
   elsif ( lc($op) eq "redhat"
@@ -319,7 +319,7 @@ sub get_operating_system_version {
     return $content;
   }
   elsif ( $op eq "Arch" ) {
-    my $available_updates = i_run "checkupdates";
+    my $available_updates = i_run "checkupdates", fail_ok => 1;
     if ( $available_updates eq "" ) {
       return "latest";
     }

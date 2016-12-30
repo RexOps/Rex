@@ -43,7 +43,7 @@ sub ensure {
 
   if ( $what =~ /^stop/ ) {
     $self->stop( $service, $options );
-    i_run "rm /etc/rc*.d/S*$service";
+    eval { i_run "rm /etc/rc*.d/S*$service"; };
   }
   elsif ( $what =~ /^start/ || $what =~ m/^run/ ) {
     $self->start( $service, $options );

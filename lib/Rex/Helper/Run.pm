@@ -89,7 +89,8 @@ sub i_run {
   $out ||= "";
   $err ||= "";
 
-  if ( $ret_val != 0 ) {
+  if ( $ret_val != 0 && !grep { $_ == $ret_val } @{ $option->{valid_retval} } )
+  {
     Rex::Logger::debug("Error executing `$cmd`: ");
     Rex::Logger::debug("STDOUT:");
     Rex::Logger::debug($out);

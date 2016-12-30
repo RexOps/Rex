@@ -30,7 +30,7 @@ sub execute {
 
   my ( $xml, @dominfo, $dom );
   if ( $arg1 eq 'capabilities' ) {
-    @dominfo = i_run "virsh -c $uri capabilities";
+    @dominfo = i_run "virsh -c $uri capabilities", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running virsh dominfo $dom");
     }

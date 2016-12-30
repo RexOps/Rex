@@ -28,7 +28,7 @@ sub execute {
     die("VM $container_name not found.");
   }
 
-  i_run "lxc-start -d -n \"$container_name\"";
+  i_run "lxc-start -d -n \"$container_name\"", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error starting container $container_name");
   }

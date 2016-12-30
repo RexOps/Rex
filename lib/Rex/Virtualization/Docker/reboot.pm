@@ -28,7 +28,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "docker restart \"$dom\"";
+  i_run "docker restart \"$dom\"", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error rebooting container $dom");
   }

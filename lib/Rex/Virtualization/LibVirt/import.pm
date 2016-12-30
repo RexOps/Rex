@@ -54,7 +54,8 @@ sub execute {
     my @vmdk = grep { m/\.vmdk$/ } i_run "tar -C $dir -vxf $opt{file}";
 
     Rex::Logger::debug("converting $cwd/tmp/$vmdk[0] -> $file.qcow2");
-    i_run "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $file.qcow2";
+    i_run "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $file.qcow2",
+      fail_ok => 1;
 
     if ( $? != 0 ) {
       Rex::Logger::info(
@@ -78,7 +79,8 @@ sub execute {
     }
   }
 
-  my ($format_out) = grep { m/^file format:/ } i_run "qemu-img info $file";
+  my ($format_out) = grep { m/^file format:/ } i_run "qemu-img info $file",
+    fail_ok => 1;
   if ( $format_out =~ m/^file format: (.*)$/i ) {
     $format = $1;
   }

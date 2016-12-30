@@ -24,7 +24,7 @@ sub execute {
 
   Rex::Logger::debug("Getting lxc-info");
 
-  my @container_info = i_run "lxc-info -n $arg1";
+  my @container_info = i_run "lxc-info -n $arg1", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running lxc-info");
   }

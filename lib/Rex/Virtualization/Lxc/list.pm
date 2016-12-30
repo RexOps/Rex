@@ -44,7 +44,7 @@ sub execute {
   }
 
   my $command_to_run = "lxc-ls -1 $state $groups $fancy -F\"$format\"";
-  @containers = i_run $command_to_run;
+  @containers = i_run $command_to_run, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running lxc-ls");
   }

@@ -144,7 +144,7 @@ sub execute {
         map {
         my @x = ( $_ =~ m/\(([^\)]+)\) at ([^\s]+)\s/ );
         ( $x[1], $x[0] )
-        } i_run "$command -an";
+        } i_run "$command -an", fail_ok => 1;
 
       for my $if ( keys %{$ifs} ) {
         if ( exists $arp{ $ifs->{$if}->{mac} } && $arp{ $ifs->{$if}->{mac} } ) {

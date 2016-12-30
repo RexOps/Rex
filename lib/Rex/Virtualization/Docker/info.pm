@@ -25,7 +25,7 @@ sub execute {
 
   Rex::Logger::debug("Getting docker info by inspect");
 
-  my $ret = i_run "docker inspect $arg1";
+  my $ret = i_run "docker inspect $arg1", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running docker inspect");
   }

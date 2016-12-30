@@ -28,7 +28,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "VBoxManage controlvm \"$dom\" poweroff";
+  i_run "VBoxManage controlvm \"$dom\" poweroff", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error destroying vm $dom");
   }

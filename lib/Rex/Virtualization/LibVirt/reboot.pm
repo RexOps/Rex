@@ -31,7 +31,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "virsh -c $uri reboot '$dom'";
+  i_run "virsh -c $uri reboot '$dom'", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error rebooting vm $dom");
   }

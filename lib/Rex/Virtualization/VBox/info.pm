@@ -29,7 +29,8 @@ sub execute {
 
   my $xml;
 
-  my @dominfo = i_run "VBoxManage showvminfo \"$vmname\" --machinereadable";
+  my @dominfo = i_run "VBoxManage showvminfo \"$vmname\" --machinereadable",
+    fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error running VBoxManage showvminfo $vmname");

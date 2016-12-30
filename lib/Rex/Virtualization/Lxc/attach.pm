@@ -28,7 +28,7 @@ sub execute {
 
   my $attach_command = "lxc-attach $options";
 
-  i_run $attach_command;
+  i_run $attach_command, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running \"$attach_command\"");
   }

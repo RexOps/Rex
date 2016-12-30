@@ -27,7 +27,7 @@ sub execute {
   my $options = _format_opts($opts);
 
   my $copy_command = "lxc-copy $options";
-  i_run $copy_command;
+  i_run $copy_command, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running \"$copy_command\"");
   }

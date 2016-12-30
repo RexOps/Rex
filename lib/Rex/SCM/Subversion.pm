@@ -67,7 +67,7 @@ sub checkout {
   Rex::Logger::info( "Cloning "
       . $repo_info->{"url"} . " to "
       . ( $checkout_to ? $checkout_to : "." ) );
-  my $out = i_run "$checkout_cmd";
+  my $out = i_run "$checkout_cmd", fail_ok => 1;
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error checking out repository.", "warn" );
     Rex::Logger::info($out);

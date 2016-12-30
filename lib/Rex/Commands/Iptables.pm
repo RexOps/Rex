@@ -138,7 +138,7 @@ sub open_port {
     ( $port, %option_h ) = @params;
 
     if ( exists $option_h{only_if} ) {
-      i_run( $option_h{only_if} );
+      i_run( $option_h{only_if}, fail_ok => 1 );
       if ( $? != 0 ) {
         return;
       }
@@ -176,7 +176,7 @@ sub close_port {
     ( $port, %option_h ) = @params;
 
     if ( exists $option_h{only_if} ) {
-      i_run( $option_h{only_if} );
+      i_run( $option_h{only_if}, fail_ok => 1 );
       if ( $? != 0 ) {
         return;
       }
@@ -339,7 +339,7 @@ sub iptables {
     }
   }
 
-  my $output = i_run "$iptables $cmd";
+  my $output = i_run "$iptables $cmd", fail_ok => 1;
 
   if ( $? != 0 ) {
     Rex::Logger::info( "Error setting iptable rule: $cmd", "warn" );
@@ -504,7 +504,7 @@ sub iptables_clear {
   );
 
   if ( is_file("$tables_of{$ip_version}") ) {
-    my @tables = i_run("cat $tables_of{$ip_version}");
+    my @tables = i_run("cat $tables_of{$ip_version}", fail_ok => 1);
     for my $table (@tables) {
       iptables $ip_version, t => $table, F => '';
       iptables $ip_version, t => $table, X => '';
@@ -643,7 +643,7 @@ sub _iptables_version {
     if $cache->valid($cache_key_name);
 
   my $iptables = _get_executable( \@params );
-  my $out      = i_run("$iptables -V");
+  my $out      = i_run("$iptables -V", fail_ok => 1);
   if ( $out =~ /v([.\d]+)/ms ) {
     my $version = version->parse($1);
     $cache->set( $cache_key_name, "$version" );

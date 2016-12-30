@@ -60,7 +60,7 @@ sub kill {
   my ( $process, $sig ) = @_;
   $sig ||= "";
 
-  i_run( "kill $sig " . $process );
+  i_run( "kill $sig " . $process, fail_ok => 1 );
   if ( $? != 0 ) {
     die("Error killing $process");
   }
@@ -82,7 +82,7 @@ sub killall {
   $sig ||= "";
 
   if ( can_run("killall") ) {
-    i_run("killall $sig $process");
+    i_run("killall $sig $process", fail_ok => 1);
     if ( $? != 0 ) {
       die("Error killing $process");
     }
@@ -123,7 +123,7 @@ sub ps {
   if (is_openwrt) {
 
     # openwrt doesn't have ps aux
-    @list = i_run("ps");
+    @list = i_run("ps", fail_ok => 1);
 
     my @ret = ();
     for my $line (@list) {
@@ -147,18 +147,18 @@ sub ps {
 
   elsif ( operating_system_is("SunOS") && operating_system_version() <= 510 ) {
     if (@custom) {
-      @list = i_run( "/usr/ucb/ps awwx -o" . join( ",", @custom ) );
+      @list = i_run( "/usr/ucb/ps awwx -o" . join( ",", @custom ), fail_ok => 1 );
     }
     else {
-      @list = i_run("/usr/ucb/ps auwwx");
+      @list = i_run("/usr/ucb/ps auwwx", fail_ok => 1);
     }
   }
   else {
     if (@custom) {
-      @list = i_run( "ps awwx -o" . join( ",", @custom ) );
+      @list = i_run( "ps awwx -o" . join( ",", @custom ), fail_ok => 1 );
     }
     else {
-      @list = i_run("ps auwwx");
+      @list = i_run("ps auwwx", fail_ok => 1);
     }
   }
 
@@ -235,7 +235,7 @@ Renice a process identified by $pid with the priority $level.
 
 sub nice {
   my ( $pid, $level ) = @_;
-  i_run "renice $level $pid";
+  i_run "renice $level $pid", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error renicing $pid");
   }

@@ -66,7 +66,7 @@ sub md5 {
       ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
       : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
 
-    my $md5 = i_run($command);
+    my $md5 = i_run($command, fail_ok => 1);
 
     unless ( $? == 0 ) {
 

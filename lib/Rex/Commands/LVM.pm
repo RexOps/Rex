@@ -66,7 +66,7 @@ Get Information for all your physical volumes.
 sub pvs {
 
   my @lines =
-    i_run 'pvdisplay --units b --columns --separator "|" --noheadings';
+    i_run 'pvdisplay --units b --columns --separator "|" --noheadings', fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running pvdisplay");
   }
@@ -124,7 +124,7 @@ sub vgs {
     $cmd .= " $vg";
   }
 
-  my @lines = i_run $cmd;
+  my @lines = i_run $cmd, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running vgdisplay");
   }
@@ -181,7 +181,7 @@ sub lvs {
     $cmd .= " " . $vg;
   }
 
-  my @lines = i_run $cmd;
+  my @lines = i_run $cmd, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running lvdisplay");
   }
@@ -209,7 +209,7 @@ sub lvs {
 
 sub pvcreate {
   my ($dev) = @_;
-  my $s = i_run "pvcreate $dev";
+  my $s = i_run "pvcreate $dev", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error creating pv.\n$s\n");
   }
@@ -220,7 +220,7 @@ sub pvcreate {
 sub vgcreate {
   my ( $vgname, @devices ) = @_;
 
-  my $s = i_run "vgcreate $vgname " . join( " ", @devices );
+  my $s = i_run "vgcreate $vgname " . join( " ", @devices ), fail_ok => 1;
   if ( $? != 0 ) {
     die("Error creating vg.\n$s\n");
   }
@@ -243,15 +243,15 @@ sub lvcreate {
   if ( $size =~ m/^[0-9]+$/ ) { $size .= "M"; }
   my $onvg = $option{onvg};
 
-  my $s = i_run "lvcreate -n $lvname -L $size $onvg";
-
-  my $lv_path = $option{onvg} . "/" . $lvname;
-
-  mkfs "$lv_path", fstype => $option{fstype};
+  my $s = i_run "lvcreate -n $lvname -L $size $onvg", fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error creating lv.\n$s\n");
   }
+
+  my $lv_path = $option{onvg} . "/" . $lvname;
+
+  mkfs "$lv_path", fstype => $option{fstype};
 
   return $lv_path;
 }
@@ -259,7 +259,7 @@ sub lvcreate {
 sub vgextend {
   my ( $vgname, @devices ) = @_;
 
-  my $s = i_run "vgextend $vgname " . join( " ", @devices );
+  my $s = i_run "vgextend $vgname " . join( " ", @devices ), fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error extending vg.\n$s\n");

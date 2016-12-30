@@ -46,26 +46,30 @@ sub get {
         map { /^USERDOMAIN=(.*)$/ } split( /\r?\n/, @env );
     }
     elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
-      ( $hostname, $domain ) = split( /\./, i_run("hostname"), 2 );
+      ( $hostname, $domain ) =
+        split( /\./, ( eval { i_run("hostname") } || "unknown.nodomain" ), 2 );
     }
     elsif ( $os eq "SunOS" ) {
-      ($hostname) = map { /^([^\.]+)$/ } i_run("hostname");
-      ($domain) = i_run("domainname");
+      ($hostname) =
+        map { /^([^\.]+)$/ } ( eval { i_run("hostname"); } || "unknown" );
+      ($domain) = eval { i_run("domainname"); } || ("nodomain");
     }
     elsif ( $os eq "OpenWrt" ) {
-      ($hostname) = i_run("uname -n");
-      ($domain)   = i_run("cat /proc/sys/kernel/domainname");
+      ($hostname) = eval { i_run("uname -n"); } || ("unknown");
+      ($domain) =
+        eval { i_run("cat /proc/sys/kernel/domainname"); } || ("unknown");
     }
     else {
-      my @out = i_run("hostname -f 2>/dev/null");
+      my @out =
+        eval { i_run("hostname -f 2>/dev/null"); } || ("unknown.nodomain");
       ( $hostname, $domain ) =
-        split( /\./, i_run("hostname -f 2>/dev/null"), 2 );
+        split( /\./, $out[0], 2 );
 
       if ( !$hostname || $hostname eq "" ) {
         Rex::Logger::debug(
           "Error getting hostname and domainname. There is something wrong with your /etc/hosts file."
         );
-        $hostname = i_run("hostname");
+        ($hostname) = eval { i_run("hostname"); } || ("unknown");
       }
     }
 

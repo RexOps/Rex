@@ -687,7 +687,8 @@ sub load_rexfile {
   }
 
   my $rexfile_dir = dirname $rexfile;
-  Rex::push_lib_to_inc($rexfile_dir);
+  my @new_inc     = Rex::generate_inc($rexfile_dir);
+  @INC = @new_inc;
 
   # load Rexfile
   eval {

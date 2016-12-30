@@ -236,7 +236,7 @@ sub _ufw_exec {
   $cmd = "ufw $cmd";
 
   if ( can_run("ufw") ) {
-    my ( $output, $err ) = i_run $cmd, sub { @_ };
+    my ( $output, $err ) = i_run $cmd, sub { @_ }, fail_ok => 1;
 
     if ( $? != 0 ) {
       Rex::Logger::info( "Error running ufw command: $cmd, received $err",

@@ -104,6 +104,13 @@ sub i_run {
       Rex::Logger::debug($out);
       Rex::Logger::debug("STDERR:");
       Rex::Logger::debug($err);
+
+      if ($is_no_hup) {
+        $out = $exec->exec("cat $tmp_output_file ; rm -f $tmp_output_file");
+        $Rex::Commands::Run::LAST_OUTPUT = [$out];
+        $?                               = $ret_val;
+      }
+
       confess("Error during `i_run`");
     }
   }
@@ -118,7 +125,8 @@ sub i_run {
 
   if ($is_no_hup) {
     $out = $exec->exec("cat $tmp_output_file ; rm -f $tmp_output_file");
-    $?   = $ret_val;
+    $Rex::Commands::Run::LAST_OUTPUT = [$out];
+    $?                               = $ret_val;
   }
 
   return $out;

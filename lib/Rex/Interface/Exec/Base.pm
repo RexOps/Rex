@@ -69,7 +69,7 @@ sub can_run {
     my @output = Rex::Helper::Run::i_run "$check_with_command $command",
       fail_ok => 1;
 
-    next if ($@);
+    next if ($? != 0);
     next if ( grep { /^no $command in/ } @output ); # for solaris
 
     $cache->set( $cache_key_name, $output[0] );

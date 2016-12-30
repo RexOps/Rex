@@ -25,13 +25,13 @@ sub execute {
   my @domains;
 
   if ( $arg1 eq "all" ) {
-    @domains = i_run "virsh -c $uri list --all --name";
+    @domains = i_run "virsh -c $uri list --all --name", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running virsh list --all --name");
     }
   }
   elsif ( $arg1 eq "running" ) {
-    @domains = i_run "virsh -c $uri list --name";
+    @domains = i_run "virsh -c $uri list --name", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running virsh list --name");
     }
@@ -43,7 +43,7 @@ sub execute {
   my @ret = ();
   for my $name (@domains) {
     my %data = map { my ( $key, $val ) = split( /:\s*/, $_ ); ( $key, $val ); }
-      i_run "virsh -c $uri dominfo '$name'";
+      i_run "virsh -c $uri dominfo '$name'", fail_ok => 1;
 
     push(
       @ret,

@@ -87,7 +87,7 @@ sub add_repository {
   i_run "zypper addrepo -f -n "
     . $data{"name"} . " "
     . $data{"url"} . " "
-    . $data{"name"};
+    . $data{"name"}, fail_ok => 1;
   if ( $? == 4 ) {
     if ( Rex::Config->get_do_reporting ) {
       return { changed => 0 };
@@ -100,7 +100,7 @@ sub add_repository {
 
 sub rm_repository {
   my ( $self, $name ) = @_;
-  i_run "zypper removerepo $name";
+  i_run "zypper removerepo $name", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error removing repository $name");
   }

@@ -54,7 +54,7 @@ sub route {
 
   my @ret = ();
 
-  my @route = i_run "netstat -nr";
+  my @route = i_run "netstat -nr", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running netstat");
   }
@@ -99,13 +99,13 @@ sub default_gateway {
 
   if ($new_default_gw) {
     if ( default_gateway() ) {
-      i_run "route delete default " . default_gateway();
+      i_run "route delete default " . default_gateway(), fail_ok => 1;
       if ( $? != 0 ) {
         die("Error running route del default");
       }
     }
 
-    i_run "route add default $new_default_gw";
+    i_run "route add default $new_default_gw", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error route add default");
     }
@@ -126,7 +126,7 @@ sub default_gateway {
 sub netstat {
 
   my @ret;
-  my @netstat = i_run "netstat -na -f inet -f inet6";
+  my @netstat = i_run "netstat -na -f inet -f inet6", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running netstat");
   }
@@ -294,7 +294,7 @@ sub netstat {
 
   }
 
-  @netstat = i_run "netstat -na -f unix";
+  @netstat = i_run "netstat -na -f unix", fail_ok => 1;
   shift @netstat;
   shift @netstat;
   shift @netstat;

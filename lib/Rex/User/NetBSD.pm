@@ -110,7 +110,7 @@ sub create_user {
   $fh->write("$cmd $user\nexit \$?\n");
   $fh->close;
 
-  i_run "/bin/sh $rnd_file";
+  i_run "/bin/sh $rnd_file", fail_ok => 1;
   if ( $? == 0 ) {
     Rex::Logger::debug("User $user created/updated.");
   }
@@ -131,7 +131,7 @@ sub create_user {
       "usermod -p \$(pwhash '" . $data->{password} . "') $user\nexit \$?\n" );
     $fh->close;
 
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting password for $user");
     }
@@ -149,7 +149,7 @@ sub create_user {
       "usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n" );
     $fh->close;
 
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting password for $user");
     }
@@ -188,7 +188,10 @@ sub rm_user {
     $cmd .= " -r";
   }
 
-  i_run $cmd . " " . $user;
+  i_run $cmd . " " . $user, fail_ok => 1;
+  if ( $? != 0 ) {
+    die("Error deleting user $user");
+  }
 
   if ( exists $data->{delete_home} && is_dir( $user_info{home} ) ) {
     Rex::Logger::debug(

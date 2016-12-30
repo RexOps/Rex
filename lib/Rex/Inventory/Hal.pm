@@ -133,7 +133,7 @@ sub _read_lshal {
     die;
   }
 
-  my @lines = i_run "lshal";
+  my @lines = i_run "lshal", fail_ok => 1;
   my %devices;
   my %tmp_devices;
 

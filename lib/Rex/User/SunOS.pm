@@ -109,7 +109,7 @@ sub create_user {
   $fh->write("$cmd $user\nexit \$?\n");
   $fh->close;
 
-  i_run "/bin/sh $rnd_file";
+  i_run "/bin/sh $rnd_file", fail_ok => 1;
   if ( $? == 0 ) {
     Rex::Logger::debug("User $user created/updated.");
   }
@@ -162,7 +162,7 @@ expect eof
       $fh->close;
 
       chmod 700, $chpasswd_file;
-      i_run "/bin/sh $rnd_file";
+      i_run "/bin/sh $rnd_file", fail_ok => 1;
       if ( $? != 0 ) { die("Error changing user's password."); }
 
       rm $chpasswd_file;

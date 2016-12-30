@@ -30,7 +30,7 @@ sub execute {
 
   my $destroy_command = "lxc-destroy $options";
 
-  i_run $destroy_command;
+  i_run $destroy_command, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error destroying container $opts->{name}");
   }

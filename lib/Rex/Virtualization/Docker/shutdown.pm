@@ -28,7 +28,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "docker stop \"$dom\"";
+  i_run "docker stop \"$dom\"", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error shutdowning container $dom");
   }

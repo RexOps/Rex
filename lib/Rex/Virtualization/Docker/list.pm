@@ -21,13 +21,13 @@ sub execute {
   Rex::Logger::debug("Getting docker list by ps");
 
   if ( $arg1 eq "all" ) {
-    @domains = i_run "docker ps -a";
+    @domains = i_run "docker ps -a", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running docker ps");
     }
   }
   elsif ( $arg1 eq "running" ) {
-    @domains = i_run "docker ps";
+    @domains = i_run "docker ps", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running docker ps");
     }

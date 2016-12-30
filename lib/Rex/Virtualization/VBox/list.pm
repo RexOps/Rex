@@ -21,13 +21,13 @@ sub execute {
   my @domains;
 
   if ( $arg1 eq "all" ) {
-    @domains = i_run "VBoxManage list vms";
+    @domains = i_run "VBoxManage list vms", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running VBoxManage list vms");
     }
   }
   elsif ( $arg1 eq "running" ) {
-    @domains = i_run "VBoxManage list runningvms";
+    @domains = i_run "VBoxManage list runningvms", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running VBoxManage runningvms");
     }
@@ -41,7 +41,7 @@ sub execute {
     my ( $name, $id ) = $line =~ m:^"([^"]+)"\s*\{([^\}]+)\}$:;
 
     my @status = map { /^VMState="([^"]+)"$/ }
-      i_run "VBoxManage showvminfo \"{$id}\" --machinereadable";
+      i_run "VBoxManage showvminfo \"{$id}\" --machinereadable", fail_ok => 1;
     my $status;
 
     push(

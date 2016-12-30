@@ -93,7 +93,7 @@ sub sysctl {
     my $ret = i_run "/sbin/sysctl -n $key";
 
     if ( $ret ne $val ) {
-      i_run "/sbin/sysctl -w $key=$val";
+      i_run "/sbin/sysctl -w $key=$val", fail_ok => 1;
       if ( $? != 0 ) {
         die("Sysctl failed $key -> $val");
       }
@@ -120,7 +120,7 @@ sub sysctl {
   }
   else {
 
-    my $ret = i_run "/sbin/sysctl -n $key";
+    my $ret = i_run "/sbin/sysctl -n $key", fail_ok => 1;
     if ( $? == 0 ) {
       return $ret;
     }

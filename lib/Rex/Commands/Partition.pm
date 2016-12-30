@@ -78,7 +78,7 @@ sub clearpart {
   if ( $option{initialize} ) {
 
     # will destroy partition table
-    i_run "parted -s $disk mklabel " . $option{initialize};
+    i_run "parted -s $disk mklabel " . $option{initialize}, fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting disklabel from $disk to $option{initialize}");
     }
@@ -224,7 +224,8 @@ sub partition {
     $option{grow} ? "-- -1" : $last_partition_end + $option{size};
 
   i_run
-    "parted -s $disk mkpart $option{type} $next_partition_start $next_partition_end";
+    "parted -s $disk mkpart $option{type} $next_partition_start $next_partition_end",
+    fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error creating partition.");
@@ -233,7 +234,7 @@ sub partition {
   my $partprobe_error;
 
   for ( 1 .. 5 ) {
-    i_run "partprobe";
+    i_run "partprobe", fail_ok => 1;
     $partprobe_error = $?;
     last unless $partprobe_error;
     sleep 5;
@@ -275,7 +276,7 @@ sub partition {
   while ( $found_part == 0 ) {
     Rex::Logger::debug("Waiting for $disk$part_prefix$part_num to appear...");
 
-    i_run "ls -l $disk$part_prefix$part_num";
+    i_run "ls -l $disk$part_prefix$part_num", fail_ok => 1;
     if ( $? == 0 ) { $found_part = 1; last; }
 
     sleep 1;

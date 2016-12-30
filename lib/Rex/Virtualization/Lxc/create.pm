@@ -27,7 +27,7 @@ sub execute {
   my $options = _format_opts($opts);
 
   my $create_command = "lxc-create $options";
-  i_run $create_command;
+  i_run $create_command, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running \"$create_command\"");
   }

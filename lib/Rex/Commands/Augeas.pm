@@ -394,7 +394,7 @@ sub _run_augtool {
   $fh->write($_) foreach (@commands);
   $fh->close;
   my ( $return, $error ) = i_run "augtool --file $rnd_file --autosave",
-    sub { @_ };
+    sub { @_ }, fail_ok => 1;
   my $ret = $? == 0 ? 1 : 0;
 
   if ($ret) {

@@ -170,7 +170,7 @@ sub create_user {
     $fh->write("rm \$0\n$cmd $user\nexit \$?\n");
     $fh->close;
 
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? == 0 ) {
       Rex::Logger::debug("User $user created/updated.");
     }
@@ -192,7 +192,7 @@ sub create_user {
     $fh->close;
 
     Rex::Logger::debug("Changing password of $user.");
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting password for $user");
     }
@@ -209,7 +209,7 @@ sub create_user {
     $fh->close;
 
     Rex::Logger::debug("Setting encrypted password of $user");
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting password for $user");
     }
@@ -250,7 +250,7 @@ sub rm_user {
     $cmd .= " --force";
   }
 
-  i_run $cmd . " " . $user;
+  i_run $cmd . " " . $user, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error deleting user $user");
   }
@@ -284,7 +284,7 @@ sub user_groups {
   $fh->write( func_to_json() );
   $fh->close;
 
-  my $data_str = i_run "perl $rnd_file $user";
+  my $data_str = i_run "perl $rnd_file $user", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting group list");
   }
@@ -317,7 +317,7 @@ sub user_list {
   $fh->write( func_to_json() );
   $fh->close;
 
-  my $data_str = i_run "perl $rnd_file";
+  my $data_str = i_run "perl $rnd_file", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting user list");
   }
@@ -342,7 +342,7 @@ sub get_user {
   $fh->write( func_to_json() );
   $fh->close;
 
-  my $data_str = i_run "perl $rnd_file $user";
+  my $data_str = i_run "perl $rnd_file $user", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting user information for $user");
   }
@@ -365,7 +365,7 @@ sub lock_password {
   my ( $self, $user ) = @_;
 
   # Is the password already locked?
-  my $result = i_run "passwd --status $user";
+  my $result = i_run "passwd --status $user", fail_ok => 1;
 
   die "Unexpected result from passwd: $result"
     unless $result =~ /^$user\s+(L|NP|P)\s+/;
@@ -376,7 +376,7 @@ sub lock_password {
     return { changed => 0 };
   }
   else {
-    my $ret = i_run "passwd --lock $user";
+    my $ret = i_run "passwd --lock $user", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error locking account $user: $ret");
     }
@@ -391,7 +391,7 @@ sub unlock_password {
   my ( $self, $user ) = @_;
 
   # Is the password already unlocked?
-  my $result = i_run "passwd --status $user";
+  my $result = i_run "passwd --status $user", fail_ok => 1;
 
   die "Unexpected result from passwd: $result"
     unless $result =~ /^$user\s+(L|NP|P)\s+/;
@@ -403,7 +403,7 @@ sub unlock_password {
   }
   else {
     # Capture error string on failure (eg. account has no password)
-    my ( $ret, $err ) = i_run "passwd --unlock $user", sub { @_ };
+    my ( $ret, $err ) = i_run "passwd --unlock $user", sub { @_ }, fail_ok => 1;
     if ( $? != 0 ) {
       die("Error unlocking account $user: $err");
     }
@@ -455,7 +455,7 @@ sub create_group {
     $gid = undef;
   }
 
-  i_run $cmd . " " . $group;
+  i_run $cmd . " " . $group, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error creating/modifying group $group");
   }
@@ -479,9 +479,15 @@ sub get_group {
 
   Rex::Logger::debug("Getting information for $group");
   my @data =
-    split( " ",
-    "" . i_run("perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'"),
-    4 );
+    split(
+    " ",
+    ""
+      . i_run(
+      "perl -le 'print join(\" \", getgrnam(\$ARGV[0]));' '$group'",
+      fail_ok => 1
+      ),
+    4
+    );
   if ( $? != 0 ) {
     die("Error getting group information");
   }
@@ -497,7 +503,7 @@ sub get_group {
 sub rm_group {
   my ( $self, $group ) = @_;
 
-  i_run "/usr/sbin/groupdel $group";
+  i_run "/usr/sbin/groupdel $group", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error deleting group $group");
   }

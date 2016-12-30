@@ -28,7 +28,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "VBoxManage controlvm \"$dom\" reset";
+  i_run "VBoxManage controlvm \"$dom\" reset", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error rebooting vm $dom");
   }

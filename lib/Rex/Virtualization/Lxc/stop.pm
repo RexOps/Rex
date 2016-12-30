@@ -35,7 +35,7 @@ sub execute {
     ? $opts->{timeout}
     : 30;
 
-  i_run "lxc-stop -t $timeout -n \"$container_name\"";
+  i_run "lxc-stop -t $timeout -n \"$container_name\"", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error stopping container $container_name");
   }

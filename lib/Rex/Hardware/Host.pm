@@ -112,7 +112,7 @@ sub get_operating_system {
 
   if ($is_lsb) {
     if ( my $ret = i_run "lsb_release -s -i" ) {
-      if ( $ret eq "SUSE LINUX" || $ret eq "openSUSE project" ) {
+      if ( $ret =~ m/SUSE/i ) {
         $ret = "SuSE";
       }
       elsif ( $ret eq "ManjaroLinux" ) {

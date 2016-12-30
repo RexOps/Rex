@@ -72,7 +72,7 @@ sub update {
       $option->{version};
   }
 
-  my $f = i_run $cmd;
+  my $f = i_run $cmd, fail_ok => 1;
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error installing $pkg.", "warn" );
@@ -102,7 +102,7 @@ sub update_system {
 
   if ( $option{update_packages} ) {
     my $cmd = $self->{commands}->{update_system};
-    my $f   = i_run $cmd;
+    my $f = i_run $cmd, fail_ok => 1;
 
     unless ( $? == 0 ) {
       Rex::Logger::debug($f);
@@ -116,7 +116,7 @@ sub update_system {
     }
     else {
       my $cmd = $self->{commands}->{dist_update_system};
-      my $f   = i_run $cmd;
+      my $f = i_run $cmd, fail_ok => 1;
 
       unless ( $? == 0 ) {
         Rex::Logger::debug($f);
@@ -136,7 +136,7 @@ sub remove {
   Rex::Logger::debug("Removing $pkg");
   my $cmd = sprintf $self->{commands}->{remove}, $pkg;
 
-  my $f = i_run $cmd;
+  my $f = i_run $cmd, fail_ok => 1;
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error removing $pkg.", "warn" );
@@ -155,7 +155,7 @@ sub purge {
   Rex::Logger::debug("Purging $pkg");
   my $cmd = sprintf $self->{commands}->{purge}, $pkg;
 
-  my $f = i_run $cmd;
+  my $f = i_run $cmd, fail_ok => 1;
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error purging $pkg.", "warn" );
@@ -177,7 +177,7 @@ sub update_pkg_db {
   }
 
   my $cmd = $self->{commands}->{update_package_db};
-  i_run $cmd;
+  i_run $cmd, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error updating package database");
   }

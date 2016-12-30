@@ -76,7 +76,7 @@ sub add_repository {
   my ( $self, %data ) = @_;
   my $name = $data{"name"};
 
-  i_run "urpmi.addmedia $name " . $data{"url"};
+  i_run "urpmi.addmedia $name " . $data{"url"}, fail_ok => 1;
   if ( $? != 0 ) {
     die("Error adding repository $name");
   }
@@ -84,7 +84,7 @@ sub add_repository {
 
 sub rm_repository {
   my ( $self, $name ) = @_;
-  i_run "urpmi.removemedia $name";
+  i_run "urpmi.removemedia $name", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error removing repository $name");
   }

@@ -60,6 +60,7 @@ sub _execute {
     $self->{__cmd_output__} = i_run $cmd, nohup => 1;
     $ret_val = 1;
   } or do {
+    $self->{__cmd_output__} = Rex::Commands::last_command_output();
     $ret_val = 0;
   };
 

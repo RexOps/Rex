@@ -56,11 +56,18 @@ sub upload_and_run {
 sub i_run {
   my $cmd = shift;
   my ( $code, $option );
+  $option = {};
   if ( ref $_[0] eq "CODE" ) {
     $code = shift;
   }
   elsif ( scalar @_ > 0 ) {
     $option = {@_};
+  }
+  $option->{valid_retval} ||= [0];
+  $option->{fail_ok} //= 0;
+
+  if ( ref $option->{valid_retval} ne "ARRAY" ) {
+    $option->{valid_retval} = [ $option->{valid_retval} ];
   }
 
   my $is_no_hup       = 0;
@@ -89,13 +96,15 @@ sub i_run {
   $out ||= "";
   $err ||= "";
 
-  if ( $ret_val != 0 ) {
-    Rex::Logger::debug("Error executing `$cmd`: ");
-    Rex::Logger::debug("STDOUT:");
-    Rex::Logger::debug($out);
-    Rex::Logger::debug("STDERR:");
-    Rex::Logger::debug($err);
-    confess("Error during `i_run`");
+  if ( scalar( grep { $_ == $ret_val } @{ $option->{valid_retval} } ) == 0 ) {
+    if ( !$option->{fail_ok} ) {
+      Rex::Logger::debug("Error executing `$cmd`: ");
+      Rex::Logger::debug("STDOUT:");
+      Rex::Logger::debug($out);
+      Rex::Logger::debug("STDERR:");
+      Rex::Logger::debug($err);
+      confess("Error during `i_run`");
+    }
   }
 
   if ($code) {

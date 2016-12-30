@@ -19,7 +19,7 @@ use Data::Dumper;
 
 sub get_bridge_devices {
   local $/ = "\n";
-  my @lines = i_run 'brctl show';
+  my @lines = i_run 'brctl show', fail_ok => 1;
   chomp @lines;
   shift @lines;
 

@@ -445,7 +445,7 @@ List all iptables rules.
 sub iptables_list {
   my @params   = @_;
   my $iptables = _get_executable( \@params );
-  my @lines    = i_run "$iptables-save";
+  my @lines    = i_run "$iptables-save", valid_retval => [ 0, 1 ];
   _iptables_list(@lines);
 }
 

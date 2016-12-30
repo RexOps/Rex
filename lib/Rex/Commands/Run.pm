@@ -422,7 +422,7 @@ sub sudo {
     $ret = &$cmd();
   }
   else {
-    $ret = i_run($cmd, fail_ok => 1);
+    $ret = i_run( $cmd, fail_ok => 1 );
   }
 
   Rex::get_current_connection_object()->pop_use_sudo();

@@ -66,7 +66,8 @@ Get Information for all your physical volumes.
 sub pvs {
 
   my @lines =
-    i_run 'pvdisplay --units b --columns --separator "|" --noheadings', fail_ok => 1;
+    i_run 'pvdisplay --units b --columns --separator "|" --noheadings',
+    fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running pvdisplay");
   }

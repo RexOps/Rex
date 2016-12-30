@@ -224,7 +224,8 @@ sub partition {
     $option{grow} ? "-- -1" : $last_partition_end + $option{size};
 
   i_run
-    "parted -s $disk mkpart $option{type} $next_partition_start $next_partition_end", fail_ok => 1;
+    "parted -s $disk mkpart $option{type} $next_partition_start $next_partition_end",
+    fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error creating partition.");

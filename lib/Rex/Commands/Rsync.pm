@@ -149,7 +149,8 @@ sub sync {
     $dest = resolv_path($dest);
     Rex::Logger::debug("Downloading $source -> $dest");
     push @rsync_cmd, "rsync -rl -e '\%s' --verbose --stats $params ";
-    push @rsync_cmd, "'" . $auth->{user} . "\@" . $servername . ":" . $source . "'";
+    push @rsync_cmd,
+      "'" . $auth->{user} . "\@" . $servername . ":" . $source . "'";
     push @rsync_cmd, "'$dest'";
   }
   else {
@@ -180,7 +181,9 @@ sub sync {
 
   if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
-      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p ' . "$port", $port );
+      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p '
+        . "$port",
+      $port );
     push(
       @expect_options,
       [
@@ -233,7 +236,9 @@ sub sync {
   else {
     if ( $auth_type eq "key" ) {
       $cmd = sprintf( $cmd,
-        'ssh -i ' . $server->get_private_key . " -o StrictHostKeyChecking=no -p " . "$port",
+        'ssh -i '
+          . $server->get_private_key
+          . " -o StrictHostKeyChecking=no -p " . "$port",
         $port );
     }
     else {

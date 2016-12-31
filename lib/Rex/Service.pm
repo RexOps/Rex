@@ -53,6 +53,9 @@ sub get {
   elsif ( is_gentoo($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Gentoo::systemd";
   }
+  elsif ( is_gentoo($operatingsystem) ) {
+    $class = "Rex::Service::Gentoo";
+  }
   elsif ( is_mageia($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Mageia::systemd";
   }

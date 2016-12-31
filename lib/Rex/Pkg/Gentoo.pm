@@ -27,8 +27,9 @@ sub new {
   $self->{commands} = {
     install         => 'emerge --update --changed-use %s',
     install_version => 'emerge --update --changed-use =%s-%s',
-    reinstall_check => 'emerge --pretend --update --changed-use --nodeps --quiet --verbose =%s',
-    update_system   => 'emerge --update --deep --with-bdeps=y --newuse world',
+    reinstall_check =>
+      'emerge --pretend --update --changed-use --nodeps --quiet --verbose =%s',
+    update_system => 'emerge --update --deep --with-bdeps=y --newuse world',
     dist_update_system =>
       'emerge --update --deep --with-bdeps=y --newuse world',
     remove            => 'emerge -C %s',
@@ -77,15 +78,17 @@ sub is_installed {
   }
 
   # Check for any USE flag changes.
-  my $pkg_atom = "$pkg_info[0]->{name}-$pkg_info[0]->{version}$pkg_info[0]->{suffix}$pkg_info[0]->{release}";
-  my $rchk_cmd = sprintf ($self->{commands}->{reinstall_check}, $pkg_atom);
+  my $pkg_atom =
+    "$pkg_info[0]->{name}-$pkg_info[0]->{version}$pkg_info[0]->{suffix}$pkg_info[0]->{release}";
+  my $rchk_cmd = sprintf( $self->{commands}->{reinstall_check}, $pkg_atom );
   my @rchk_out = i_run $rchk_cmd;
 
   for my $line (@rchk_out) {
     next unless $line =~ /\s*\[ebuild[^]]+\]\s+$pkg_info[0]->{name}/;
 
-    Rex::Logger::debug(
-      "$pkg" . ( $version ? "-$version" : "" ) . " is installed but USE flags have changed." );
+    Rex::Logger::debug( "$pkg"
+        . ( $version ? "-$version" : "" )
+        . " is installed but USE flags have changed." );
     return 0;
   }
 

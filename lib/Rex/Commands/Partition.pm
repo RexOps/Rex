@@ -282,9 +282,12 @@ sub partition {
     sleep 1;
   }
 
-  mkfs "$disk$part_prefix$part_num",
-    fstype => $option{fstype},
-    label  => $option{label};
+  # don't format partition if part of a vg
+  if ( !$option{vg} ) {
+    mkfs "$disk$part_prefix$part_num",
+      fstype => $option{fstype},
+      label  => $option{label};
+  }
 
   if ( exists $option{mount} && $option{mount} ) {
     mount "$disk$part_prefix$part_num", $mountpoint, fs => $option{fstype};

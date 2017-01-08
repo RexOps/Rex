@@ -1,4 +1,14 @@
 2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
+  * don't format a partition which is part of vg - Jan Gehring
+  * Fix Rsync.pm paths and ports. - necrophcodr
+  * Fix uninitialized value warnings when using Augeas module - Andy Beverley
+  * fixed #1116 - detect suse systems by regex - Jan Gehring
+  * load project libraries before system libraries. fix RexOps/Rex#1108 - Jan Gehring
+  * fixed systemctl detection #1026 - Jan Gehring
+  * Service.pm: Fix service class for Gentoo & non-systemd - Ali Polatel
+  * Rex::Pkg::Gentoo: Smarter installed check to reinstall on USE updates - Ali Polatel
+  * Handle different md5 styles on BSDs (fix #1099) - Ferenc Erki
+  * Catch exceptions when trying to run dmidecode - Ferenc Erki
   * don't use is_ip function, so that it also works with older Data::Validate::IP module - Jan Gehring
   * Added some more tests to Rex::Box::Test - Jan Gehring
   * Refactored Rex::Box to be able to programmatically load box definitions. - Jan Gehring

@@ -17,13 +17,15 @@ our @EXPORT_OK = qw/__lock __store __retrieve/;
 
 use Fcntl qw(:DEFAULT :flock);
 use Storable;
+use File::Spec;
 
 # $PARENT_PID gets set when Rex starts.  This value remains the same after the
 # process forks.  So $PARENT_PID is always the pid of the parent process.  $$
 # however is always the pid of the current process.
 our $PARENT_PID = $$;
-our $FILE       = "vars.db.$PARENT_PID";
-our $LOCK_FILE  = "vars.db.lock.$PARENT_PID";
+our $FILE = File::Spec->catfile( File::Spec->tmpdir(), "vars.db.$PARENT_PID" );
+our $LOCK_FILE =
+  File::Spec->catfile( File::Spec->tmpdir(), "vars.db.lock.$PARENT_PID" );
 
 sub __lock {
   sysopen( my $dblock, $LOCK_FILE, O_RDONLY | O_CREAT ) or die($!);

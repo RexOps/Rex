@@ -572,6 +572,8 @@ sub has_feature_version_lower {
 sub import {
   my ( $class, $what, $addition1 ) = @_;
 
+  srand();
+
   if ( $addition1 && ref $addition1 eq "ARRAY" ) {
     push @FEATURE_FLAGS, $what, @{$addition1};
   }

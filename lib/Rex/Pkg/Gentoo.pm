@@ -52,11 +52,26 @@ sub bulk_install {
 sub is_installed {
 
   my ( $self, $pkg, $option ) = @_;
+  my $slot;
   my $version = $option->{version};
+
+  # Determine slot.
+  my $slot_idx = index($pkg, ':');
+  if ( $slot_idx != -1 ) {
+    die "Illegal package spec. `$pkg-$version': Both package and version has SLOT" if $version && index($version, ':') != -1;
+    $slot = substr($pkg, $slot_idx + 1);
+    substr($pkg, $slot_idx) = '';
+  } elsif ( $version ) {
+    $slot_idx = index($version, ':');
+    if ( $slot_idx != -1 ) {
+      $slot = substr($version, $slot_idx + 1);
+      substr($version, $slot_idx) = '';
+    }
+  }
 
   $self->{short} = 0;
   Rex::Logger::debug(
-    "Checking if $pkg" . ( $version ? "-$version" : "" ) . " is installed" );
+    "Checking if $pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is installed" );
 
   my @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
   @pkg_info = grep { $_->{version} eq $version } @pkg_info if defined $version;
@@ -73,13 +88,40 @@ sub is_installed {
 
   unless (@pkg_info) {
     Rex::Logger::debug(
-      "$pkg" . ( $version ? "-$version" : "" ) . " is NOT installed." );
+      "$pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is NOT installed." );
     return 0;
   }
 
+  # Check for requested SLOT.
+  my $pkg_atom;
+
+  if ( defined $slot ) {
+      my $slot_ok;
+
+      for my $info (@pkg_info) {
+          $pkg_atom = "$info->{name}-$info->{version}$info->{suffix}$info->{release}";
+
+          my $fh = file_read("/var/db/pkg/$pkg_atom/SLOT");
+          chomp( my $slot_installed = $fh->read_all );
+          $fh->close;
+
+          if ( $slot eq $slot_installed ) {
+              $pkg_atom .= ":$slot";
+              $slot_ok = 1;
+              last;
+          }
+      }
+
+      unless ( $slot_ok ) {
+        Rex::Logger::debug(
+          "$pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is NOT installed." );
+        return 0;
+      }
+  } else {
+      $pkg_atom = "$pkg_info[0]->{name}-$pkg_info[0]->{version}$pkg_info[0]->{suffix}$pkg_info[0]->{release}";
+  }
+
   # Check for any USE flag changes.
-  my $pkg_atom =
-    "$pkg_info[0]->{name}-$pkg_info[0]->{version}$pkg_info[0]->{suffix}$pkg_info[0]->{release}";
   my $rchk_cmd = sprintf( $self->{commands}->{reinstall_check}, $pkg_atom );
   my @rchk_out = i_run $rchk_cmd;
 
@@ -88,12 +130,13 @@ sub is_installed {
 
     Rex::Logger::debug( "$pkg"
         . ( $version ? "-$version" : "" )
+        . ( $slot ? ":$slot" : '')
         . " is installed but USE flags have changed." );
     return 0;
   }
 
   Rex::Logger::debug(
-    "$pkg" . ( $version ? "-$version" : "" ) . " is installed." );
+    "$pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is installed." );
   return 1;
 
 }

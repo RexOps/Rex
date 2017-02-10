@@ -1,4 +1,8 @@
 2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
+  * Rex::Pkg::Gentoo: Add support for slotted package specs - Ali Polatel
+  * only use srand() once. this caused a bug with sudo file writing. sometimes it generated two identical files - Jan Gehring
+  * fix problem with locks when Rexfile is on a nfs share #1130 - Jan Gehring
+  * fix running sudo on local connections - Jan Gehring
   * don't format a partition which is part of vg - Jan Gehring
   * Fix Rsync.pm paths and ports. - necrophcodr
   * Fix uninitialized value warnings when using Augeas module - Andy Beverley

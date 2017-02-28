@@ -807,6 +807,7 @@ sub exit_rex {
 
     my @exit_codes = Rex::TaskList->create()->get_exit_codes();
     for my $exit_code (@exit_codes) {
+      $exit_code = $exit_code >> 8 if $exit_code > 255;
       CORE::exit($exit_code) if $exit_code != 0;
     }
   }

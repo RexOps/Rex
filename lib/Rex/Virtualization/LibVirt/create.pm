@@ -421,6 +421,9 @@ __DATA__
   <name><%= $::name %></name>
   <memory><%= $::memory %></memory>
   <currentMemory><%= $::memory %></currentMemory>
+  <% if(exists $::cpu->{mode}) { %>
+   <cpu mode="<%= $::cpu->{mode} %>" />
+  <% } %>
   <vcpu><%= $::cpus %></vcpu>
   <os>
    <type arch="<%= $::arch %>">hvm</type>

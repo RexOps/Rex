@@ -180,9 +180,22 @@ sub add_repository {
   my ( $self, %data ) = @_;
 
   my $name = $data{"name"};
+  my $readd = $data{"readd"} // 0;
 
   if ( can_run("layman") ) {
-    i_run "layman -a $name";
+    my $op;
+
+    i_run "layman -lqnN | grep -q '$name'", fail_ok => 1;
+    if ($? == 0) {
+      if ($readd) {
+        $op = 'r'; # --readd
+      } else {
+        Rex::Logger::info("Repository $name is present, use `readd' option to re-add from scratch.");
+      }
+    } else {
+      $op = 'a'; # --add
+    }
+    i_run "layman -$op $name" if defined $op;
   }
   else {
     Rex::Logger::debug("You have to install layman, git and subversion.");

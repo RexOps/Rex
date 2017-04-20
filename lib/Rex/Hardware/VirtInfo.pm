@@ -96,6 +96,11 @@ sub get {
       $virtualization_role = "guest";
     }
 
+    elsif ( $sys_vendor =~ /QEMU/ ) {
+      $virtualization_type = "kvm";
+      $virtualization_role = "guest";
+    }
+
     elsif ( $self_status =~ /VxID: \d+/ ) {
       $virtualization_type = "linux_vserver";
       $virtualization_role = "guest";

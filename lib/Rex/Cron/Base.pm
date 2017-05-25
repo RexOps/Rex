@@ -196,7 +196,7 @@ sub read_user_cron {
   $command .= " -u $user" if defined $user;
   $command .= ' 2> /dev/null';
 
-  my @lines = i_run $command;
+  my @lines = i_run $command, fail_ok => 1;
   $self->parse_cron(@lines);
 }
 

@@ -18,6 +18,11 @@ use Rex::Helper::Array;
 use Data::Dumper;
 
 sub get_bridge_devices {
+  unless ( can_run "brctl" ) {
+    Rex::Logger::info("No brctl available");
+    die;
+  }
+
   local $/ = "\n";
   my @lines = i_run 'brctl show', fail_ok => 1;
   chomp @lines;

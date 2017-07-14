@@ -252,7 +252,7 @@ sub lvcreate {
 
   my $lv_path = $option{onvg} . "/" . $lvname;
 
-  mkfs "$lv_path", fstype => $option{fstype};
+  mkfs "$lv_path", fstype => $option{fstype} if ( $option{fstype} );
 
   return $lv_path;
 }

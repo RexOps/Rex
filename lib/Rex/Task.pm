@@ -754,12 +754,12 @@ sub disconnect {
 
   delete $self->{connection};
 
-  $self->run_hook( \$server, "after" );
-
   pop @{ Rex::get_current_connection()->{task} };
 
   # need to get rid of this
   Rex::pop_connection();
+
+  $self->run_hook( \$server, "after" );
 }
 
 =head2 get_data

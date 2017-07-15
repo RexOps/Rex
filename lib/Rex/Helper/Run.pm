@@ -67,6 +67,14 @@ sub i_run {
   $option->{valid_retval} ||= [0];
   $option->{fail_ok} //= 0;
 
+  if ( $option->{no_stderr} ) {
+    $cmd = "$cmd 2>/dev/null";
+  }
+
+  if ( $option->{stderr_to_stdout} ) {
+    $cmd = "$cmd 2>&1";
+  }
+
   if ( ref $option->{valid_retval} ne "ARRAY" ) {
     $option->{valid_retval} = [ $option->{valid_retval} ];
   }

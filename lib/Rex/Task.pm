@@ -630,6 +630,8 @@ sub connect {
   }
   $self->{current_server} = $server;
 
+  $self->run_hook( \$server, "before" );
+
   # need to be called, in case of a run_task task call.
   # see #788
   $self->rethink_connection;
@@ -662,8 +664,6 @@ sub connect {
     if ( $auth->{private_key} );
 
   my $profiler = Rex::Profiler->new;
-
-  $self->run_hook( \$server, "before" );
 
   # task specific auth rules over all
   my %connect_hash = %{$auth};

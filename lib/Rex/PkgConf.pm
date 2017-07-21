@@ -36,6 +36,8 @@ sub get {
 
   if ( is_redhat() ) {
     $host->{"operatingsystem"} = "Redhat";
+  } elsif ( is_debian() ) {
+    $host->{"operatingsystem"} = "Debian";
   }
 
   my $class = "Rex::PkgConf::" . $host->{"operatingsystem"};

@@ -226,7 +226,6 @@ CHECK_OVERWRITE: {
       Rex::Commands::private_key( $opts{'P'} );
 
       for my $task ( Rex::TaskList->create()->get_tasks ) {
-        $task->set_auth( "private_key", $opts{'P'} );
         Rex::TaskList->create()->get_task($task)
           ->set_auth( "private_key", $opts{'P'} );
       }

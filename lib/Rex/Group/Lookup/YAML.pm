@@ -39,24 +39,27 @@ use YAML qw/LoadFile/;
 
 @EXPORT = qw(groups_yaml);
 
-=head2 groups_yaml($file)
+=head2 groups_yaml($file, create_all_group => $boolean )
 
-With this function you can read groups from yaml files.
+With this function you can read groups from yaml files. The optional C<create_all_group> option can be passed. 
+If it is set to C<true>, the group I<all>, including all hosts, will also be created.
 
-File Example:
+  # in my_groups.yml
+  webserver:
+   - fe01
+   - fe02
+   - f03
+  backends:
+   - be01
+   - be02
+   - f03
+   
+  # in Rexfile
 
-webserver:
- - fe01
- - fe02
- - f03
-backends:
- - be01
- - be02
- - f03
+  groups_yaml('my_groups.yml');
  
- groups_yaml($file);
- 
- groups_yaml($file, create_all_group => TRUE);
+  # or
+  groups_yaml('my_groups.yml', create_all_group => TRUE);
 
 =cut
 

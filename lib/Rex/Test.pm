@@ -46,7 +46,7 @@ task run => make {
 
   for my $file (@files) {
     Rex::Logger::info("Running test: $file.");
-    do "$file";
+    do "./$file";
     Rex::Logger::info( "Error running $file: $@", "error" ) if $@;
   }
 };

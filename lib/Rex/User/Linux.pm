@@ -21,7 +21,7 @@ use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::Helper::Path;
-use JSON::XS;
+use JSON::MaybeXS;
 
 use Rex::User::Base;
 use base qw(Rex::User::Base);

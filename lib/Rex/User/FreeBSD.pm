@@ -22,7 +22,7 @@ use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::User::Linux;
 use Rex::Helper::Path;
-use JSON::XS;
+use JSON::MaybeXS;
 
 use base qw(Rex::User::Linux);
 

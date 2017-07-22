@@ -27,7 +27,7 @@ use Rex::Config;
 use Rex::Logger;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
-use JSON::XS;
+use JSON::MaybeXS;
 use Cwd qw(getcwd);
 use Carp;
 use URI;

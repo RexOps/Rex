@@ -30,7 +30,7 @@ sub execute {
     return { running => 'off' };
   }
 
-  my $coder = JSON::XS->new->allow_nonref;
+  my $coder = JSON::MaybeXS->new->allow_nonref;
   my $ref   = $coder->decode($ret);
   $ref = $ref->[0];
   $ref->{running} = "on";

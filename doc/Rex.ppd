@@ -5,7 +5,7 @@
         <REQUIRE NAME="DBI::" />
         <REQUIRE NAME="Digest::HMAC_SHA1" />
         <REQUIRE NAME="HTTP::Date" />
-        <REQUIRE NAME="JSON::XS" />
+        <REQUIRE NAME="JSON::MaybeXS" />
         <REQUIRE NAME="LWP::UserAgent" />
         <REQUIRE NAME="MIME::Base64" />
         <REQUIRE NAME="Net::SSH2" />

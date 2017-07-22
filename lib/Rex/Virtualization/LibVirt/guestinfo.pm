@@ -20,7 +20,7 @@ use Rex::Commands::Gather;
 use Rex::Virtualization::LibVirt::info;
 use Rex::Interface::File;
 use Rex::Interface::Exec;
-use JSON::XS;
+use JSON::MaybeXS;
 require Rex::Commands::Run;
 
 sub execute {

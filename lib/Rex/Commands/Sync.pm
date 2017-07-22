@@ -65,7 +65,7 @@ use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
 use Rex::Helper::Encode;
-use JSON::XS;
+use JSON::MaybeXS;
 use Text::Glob 'glob_to_regex', 'match_glob';
 use File::Basename 'basename';
 

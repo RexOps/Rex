@@ -15,7 +15,7 @@ require Rex::Commands;
 use Rex::Interface::Fs::Base;
 use Rex::Helper::Path;
 use Rex::Helper::Encode;
-use JSON::XS;
+use JSON::MaybeXS;
 use base qw(Rex::Interface::Fs::Base);
 use Data::Dumper;
 

@@ -31,7 +31,8 @@ sub detect {
   eval {
     ($output) = $con->direct_exec('version');
     1;
-  } if ( $output && $output =~ m/SM CLP Version: / ) {
+  };
+  if ( $output && $output =~ m/SM CLP Version: / ) {
     return 1;
   }
 

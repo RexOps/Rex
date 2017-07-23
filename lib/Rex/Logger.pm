@@ -101,6 +101,7 @@ sub init {
   eval {
     die
       if ( Rex::Config->get_log_filename || !Rex::Config->get_log_facility );
+    die if ( $^O =~ m/^MSWin/ );
 
     Sys::Syslog->use;
     openlog( "rex", "ndelay,pid", Rex::Config->get_log_facility );

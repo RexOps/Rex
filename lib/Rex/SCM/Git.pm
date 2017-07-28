@@ -31,8 +31,8 @@ sub checkout {
 
   if ( !is_dir($checkout_to) ) {
     my $clone_cmd =
-      sprintf( $CLONE_COMMAND, $repo_info->{"url"}, $checkout_to );
-    Rex::Logger::debug("clone_cmd: $clone_cmd");
+      sprintf( $CLONE_COMMAND, $repo_info->{"url"}, basename($checkout_to) );
+    Rex::Logger::debug("clone_cmd: $clone_cmd (cwd: " . dirname($checkout_to). ")");
 
     Rex::Logger::info( "Cloning "
         . $repo_info->{"url"} . " to "

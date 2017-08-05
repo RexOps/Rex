@@ -1,3 +1,25 @@
+2017-08-05 Jan Gehring <jfried@rexify.org> (1.6.0)
+  * fixed syntax bug and crash on windows - Jan Gehring
+  * catch exception if version command failed. detect() method must return true/false not throw exception. - fix #1152 - Jan Gehring
+  * replace JSON::XS with JSON::MaybeXS - fix #1153 - Jan Gehring
+  * added initial docker box support - Jan Gehring
+  * indent code to be properly formatted - Yanick Champoux
+  * Allow connection config to be altered in before hook - Andy Beverley
+  * fix #1134 - redirect stderr to dev/null or to stdout - Jan Gehring
+  * fix #1066 - use Task::run() method to call the task code. - Jan Gehring
+  * fix #1117 - run after hook after connection poped from connection stack - Jan Gehring
+  * restore old current task object. - fix #1150 - Jan Gehring
+  * mkfs for lvm volumes is optional - Samuele Tognini
+  * Get PkgConf working with Debian clones like Ubuntu - James D Bearden
+  * Use fail_ok in cron - Daniel Dico
+  * VirtInfo: check dmi sys_vendor for qemu - Ali Polatel
+  * Gentoo/layman: check repo exists for add_repo & add readd option - Ali Polatel
+  * Libvirt: support to select cpu mode for KVM guests - Ali Polatel
+  * Libvirt: vm destroy must not die() for not-running VMs - Ali Polatel
+  * set_auth used before creating the task object - NDZ Prajith
+  * fix exit code on failed logins. we need to bitshift the return value of a fork - Jan Gehring
+  * clearpart: fix partition regex for nvme - Ali Polatel
+
 2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
   * Rex::Pkg::Gentoo: Add support for slotted package specs - Ali Polatel
   * only use srand() once. this caused a bug with sudo file writing. sometimes it generated two identical files - Jan Gehring

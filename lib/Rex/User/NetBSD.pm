@@ -189,16 +189,21 @@ sub rm_user {
     $cmd .= " -r";
   }
 
-  i_run $cmd . " " . $user;
+  my $output = i_run $cmd . " " . $user;
+  if ( $? == 67 ) {
+    Rex::Logger::info("Cannot delete user $user (no such user)", "warn");
+  } elsif ( $? != 0 ) {
+    die("Error deleting user $user ($output)");
+  }
 
   if ( exists $data->{delete_home} && is_dir( $user_info{home} ) ) {
     Rex::Logger::debug(
-      "userdel doesn't deleted home. removing it now by hand...");
+      "userdel doesn't delete home directory. removing it now by hand...");
     rmdir $user_info{home};
   }
 
   if ( $? != 0 ) {
-    die("Error deleting user $user");
+    die("Error removing " . $user_info{home});
   }
 
 }

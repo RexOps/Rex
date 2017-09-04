@@ -31,6 +31,6 @@ passwd
 upload
 .*\.conf
 .*\.log
-images
+^images
 projects
 Rex\-\d+.*

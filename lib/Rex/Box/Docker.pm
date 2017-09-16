@@ -159,8 +159,8 @@ sub import_vm {
 
   my $vminfo = vm info => $self->{name};
 
-  if ( $vminfo->{running} eq "off" ) {
-    $self->create;
+  unless ( $vminfo->{State}->{Running} ) {
+    $self->start;
   }
 
   $self->{info} = vm guestinfo => $self->{name};

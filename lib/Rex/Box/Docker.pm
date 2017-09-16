@@ -200,9 +200,11 @@ sub ip {
     && $self->{info}->{redirects}->{tcp}
     && $self->{info}->{redirects}->{tcp}->{22} )
   {
-    return ( $self->{info}->{redirects}->{tcp}->{22}->[0]->{ip} eq "0.0.0.0"
+    return (
+      $self->{info}->{redirects}->{tcp}->{22}->[0]->{ip} eq "0.0.0.0"
       ? "127.0.0.1"
-      : $self->{info}->{redirects}->{tcp}->{22}->[0]->{ip} )
+      : $self->{info}->{redirects}->{tcp}->{22}->[0]->{ip}
+      )
       . ":"
       . $self->{info}->{redirects}->{tcp}->{22}->[0]->{port};
   }

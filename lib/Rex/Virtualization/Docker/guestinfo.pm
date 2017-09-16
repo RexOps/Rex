@@ -28,7 +28,6 @@ sub execute {
 
   my $status = Rex::Virtualization::Docker::status->execute($vmname);
   if ( $status eq "stopped" ) {
-    print "not running\n";
     Rex::Logger::debug("VM is not running, no guestinfo available.");
     return {};
   }

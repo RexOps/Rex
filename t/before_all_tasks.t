@@ -9,24 +9,18 @@ use Rex::Commands;
 use Rex::Commands::Run;
 
 use t::tasks::cowbefore;
-use Data::Dumper;
 
 $::QUIET = 1;
 
 my $task_list = Rex::TaskList->create;
 
-task 'eat' => sub { return 'delicious cows' };
-
-before ALL => sub { return 'yo' };
-
 my @task_names = $task_list->get_tasks;
 cmp_deeply
   \@task_names,
-  [qw/eat t:tasks:cowbefore:roundup/],
-  "found visible task";
+  [qw/t:tasks:cowbefore:roundup/],
+  "found task";
 
 for my $tn (@task_names) {
-
   my $before = $task_list->get_task($tn)->get_data->{before};
   ok($before);
   is( ( scalar @$before ), 1, $tn );

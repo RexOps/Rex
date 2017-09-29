@@ -123,8 +123,10 @@ BEGIN {
 # this must come before all other paths, because custom libraries can be project dependant
 # see: #1108
     push @rex_inc, add_cwd_to_inc();
-
     push @rex_inc, add_libstruct_to_inc($_) for @additional;
+
+    # we have to add the Rexfile's path to @INC FIX: #1170
+    push @rex_inc, @additional;
 
 # add home directory/.rex/recipes to the search path, so that recipes can be managed
 # at a central location.

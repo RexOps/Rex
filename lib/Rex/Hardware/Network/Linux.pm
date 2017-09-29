@@ -18,9 +18,9 @@ use Rex::Helper::Array;
 use Data::Dumper;
 
 sub get_bridge_devices {
-  unless ( can_run "brctl" ) {
-    Rex::Logger::info("No brctl available");
-    die;
+  unless ( can_run("brctl") ) {
+    Rex::Logger::debug("No brctl available");
+    return {};
   }
 
   local $/ = "\n";

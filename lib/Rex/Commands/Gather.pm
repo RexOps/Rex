@@ -267,7 +267,7 @@ sub is_redhat {
     "RedHatEnterpriseWorkstation", "RedHatEnterpriseWS",
     "Amazon",                      "ROSAEnterpriseServer",
     "CloudLinuxServer",            "XenServer",
-    "OracleServer",
+    "OracleServer", "test",
   );
 
   if ( grep { /$os/i } @redhat_clones ) {

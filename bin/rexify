@@ -343,7 +343,7 @@ sub dispatch_execute_job {
 sub download_recipe {
   my ($name) = @_;
 
-  if ( $name =~ m/^(https|git):\/\// ) {
+  if ( $name =~ m/^(ssh|https|git):\/\// ) {
 
     # seems to be a git link
     download_recipe_git($name);

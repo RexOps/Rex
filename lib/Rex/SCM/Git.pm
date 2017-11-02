@@ -12,7 +12,7 @@ use Rex::Helper::Run;
 
 use vars qw($CHECKOUT_BRANCH_COMMAND $CHECKOUT_TAG_COMMAND $CLONE_COMMAND);
 
-$CLONE_COMMAND           = "git clone %s %s";
+$CLONE_COMMAND           = "git clone %s %s %s";
 $CHECKOUT_BRANCH_COMMAND = "git checkout -b %s origin/%s";
 $CHECKOUT_TAG_COMMAND    = "git checkout -b %s %s";
 
@@ -31,10 +31,11 @@ sub checkout {
 
   my %run_opt;
   $run_opt{env} = $checkout_opt->{env} if($checkout_opt->{env});
+  my $clone_args = join(" ", @{$checkout_opt->{clone_args} || ['']});
 
   if ( !is_dir($checkout_to) ) {
     my $clone_cmd =
-      sprintf( $CLONE_COMMAND, $repo_info->{"url"}, basename($checkout_to) );
+      sprintf( $CLONE_COMMAND, $clone_args, $repo_info->{"url"}, basename($checkout_to) );
     Rex::Logger::debug("clone_cmd: $clone_cmd (cwd: " . dirname($checkout_to). ")");
 
     Rex::Logger::info( "Cloning "

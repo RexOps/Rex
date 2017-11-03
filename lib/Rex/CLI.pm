@@ -483,7 +483,13 @@ sub _handle_T {
 sub _list_tasks {
   Rex::Logger::debug("Listing Tasks");
 
-  my @tasks = Rex::TaskList->create()->get_tasks;
+  my @tasks;
+  if($opts{'a'}) {
+    @tasks = sort Rex::TaskList->create()->get_all_tasks(qr/.*/);
+  } else {
+    @tasks = Rex::TaskList->create()->get_tasks;
+  }
+
   if ( defined $ARGV[0] ) {
     @tasks = grep { $_ =~ /^$ARGV[0]/ } @tasks;
 

@@ -19,6 +19,7 @@ our $CLEANUP = 1;
 
 sub args_spec {
   return (
+    a => {},
     C => {},
     c => {},
     q => {},

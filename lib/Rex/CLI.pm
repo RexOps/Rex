@@ -428,6 +428,7 @@ sub __help__ {
   printf $fmt, "-Q",   "Really quiet: output nothing";
   print "\n";
   printf $fmt, "-T",  "List tasks";
+  printf $fmt, "-Ta", "List all tasks, including hidden";
   printf $fmt, "-Tm", "List tasks in machine-readable format";
   printf $fmt, "-Tv", "List tasks verbosely";
   printf $fmt, "-Ty", "List tasks in YAML format";

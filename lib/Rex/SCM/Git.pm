@@ -13,8 +13,8 @@ use Rex::Helper::Run;
 use vars qw($CHECKOUT_BRANCH_COMMAND $CHECKOUT_TAG_COMMAND $CLONE_COMMAND);
 
 $CLONE_COMMAND           = "git clone %s %s %s";
-$CHECKOUT_BRANCH_COMMAND = "git checkout -b %s origin/%s";
-$CHECKOUT_TAG_COMMAND    = "git checkout -b %s %s";
+$CHECKOUT_BRANCH_COMMAND = "git checkout -B %s origin/%s";
+$CHECKOUT_TAG_COMMAND    = "git checkout -B %s %s";
 
 sub new {
   my $that  = shift;

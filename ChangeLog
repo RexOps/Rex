@@ -1,4 +1,9 @@
-2017-08-05 Jan Gehring <jfried@rexify.org> (1.6.0)
+2017-12-03 Jan Gehring <jfried@rexify.org> (1.6.0)
+  * Check brctl command is available (resolves #1115) - perlancar
+  * fixed path bug in git scm checkout - Joachim Bargsten
+  * add Rexfile path to @INC, fixes bug with perl >=5.26 fixes #1170 - Jan Gehring
+  * Added support for Devuan as clone of Debian. - Christophe Wolfhugel
+  * fix bug with before => ALL in modules - Joachim Bargsten
   * fixed syntax bug and crash on windows - Jan Gehring
   * catch exception if version command failed. detect() method must return true/false not throw exception. - fix #1152 - Jan Gehring
   * replace JSON::XS with JSON::MaybeXS - fix #1153 - Jan Gehring

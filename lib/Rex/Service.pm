@@ -61,11 +61,8 @@ sub get {
   }
   elsif ( is_debian($operatingsystem) && $can_run_systemctl ) {
 
-    # this also counts for Ubuntu and LinuxMint
+    # this also counts for Ubuntu Xenial and newer and LinuxMint
     $class = "Rex::Service::Debian::systemd";
-  }
-  elsif ( is_debian($operatingsystem) ) {
-    $class = "Rex::Service::Debian";
   }
   elsif ( is_arch($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Arch::systemd";

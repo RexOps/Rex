@@ -32,7 +32,7 @@ sub execute {
 
   my $xml;
 
-  my $dumpxml = i_run "virsh -c $uri dumpxml '$vmname'";
+  my $dumpxml = i_run "virsh -c $uri dumpxml '$vmname'", fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error running virsh dumpxml '$vmname'");

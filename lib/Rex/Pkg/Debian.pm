@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -33,6 +32,8 @@ sub new {
       'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -y install %s=%s',
     update_system =>
       'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
+    dist_update_system =>
+      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -y -qq dist-upgrade',
     remove            => 'apt-get -y remove %s',
     purge             => 'dpkg --purge %s',
     update_package_db => 'apt-get -y update',

@@ -89,7 +89,6 @@ use warnings;
 use Data::Dumper;
 use Rex::Box::Base;
 use Rex::Commands -no => [qw/auth/];
-use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
@@ -307,7 +306,7 @@ This method return the ip of a vm on which the ssh daemon is listening.
 sub ip {
   my ($self) = @_;
 
-  $self->{info} = vm guestinfo => $self->{name};
+  $self->{info} ||= vm guestinfo => $self->{name};
 
   if ( scalar keys %{ $self->{info} } == 0 ) { return; }
 

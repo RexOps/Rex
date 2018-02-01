@@ -70,11 +70,9 @@ use Rex::Config;
 use Rex::FS::File;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
-use Rex::Commands::Run;
 use Rex::File::Parser::Data;
 use Rex::Helper::System;
 use Rex::Helper::Path;
-use Rex::Helper::Run;
 use Rex::Hook;
 use Carp;
 
@@ -1039,6 +1037,12 @@ sub _append_or_update {
       }
     }
   };
+
+  unless ( defined $new_line ) {
+    my ( undef, undef, undef, $subroutine ) = caller(1);
+    $subroutine =~ s/^.*:://;
+    die "Undefined new line while trying to run $subroutine on $file";
+  }
 
   my $fs = Rex::Interface::Fs->create;
 

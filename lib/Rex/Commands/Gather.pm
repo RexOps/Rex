@@ -46,7 +46,7 @@ use vars qw(@EXPORT);
 @EXPORT = qw(operating_system_is network_interfaces memory
   get_operating_system operating_system operating_system_version operating_system_release
   is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora is_arch
-  get_system_information dump_system_information);
+  get_system_information dump_system_information kernelname);
 
 =head2 get_operating_system
 
@@ -86,6 +86,17 @@ Will return a hash of all system information. These Information will be also use
 
 sub get_system_information {
   return Rex::Helper::System::info();
+}
+
+=head2 kernelname
+
+Will return the kernel name of the operating system. For example on a linux system it will return I<Linux>.
+
+=cut
+
+sub kernelname {
+  my $host = Rex::Hardware::Host->get();
+  return $host->{kernelname};
 }
 
 =head2 dump_system_information
@@ -255,7 +266,7 @@ sub is_redhat {
     "RedHatEnterpriseServer",      "RedHatEnterpriseES",
     "RedHatEnterpriseWorkstation", "RedHatEnterpriseWS",
     "Amazon",                      "ROSAEnterpriseServer",
-    "CloudLinuxServer",
+    "CloudLinuxServer",            "XenServer",
   );
 
   if ( grep { /$os/i } @redhat_clones ) {
@@ -336,7 +347,7 @@ sub is_mageia {
 sub is_debian {
   my $os = @_ ? shift : get_operating_system();
 
-  my @debian_clones = ( "Debian", "Ubuntu", "LinuxMint", "Raspbian" );
+  my @debian_clones = ( "Debian", "Ubuntu", "LinuxMint", "Raspbian", "Devuan" );
 
   if ( grep { /$os/i } @debian_clones ) {
     return 1;

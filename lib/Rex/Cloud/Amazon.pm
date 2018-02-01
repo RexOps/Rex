@@ -19,16 +19,16 @@ use Rex::Logger;
 use Rex::Cloud::Base;
 use AWS::Signature4;
 use HTTP::Request::Common;
-
+use Digest::HMAC_SHA1;
 use base qw(Rex::Cloud::Base);
+use LWP::UserAgent;
+use XML::Simple;
+use Carp;
 
 BEGIN {
   use Rex::Require;
-  LWP::UserAgent->use;
-  Digest::HMAC_SHA1->use;
   HTTP::Date->use(qw(time2isoz));
   MIME::Base64->use(qw(encode_base64 decode_base64));
-  XML::Simple->require;
 }
 
 use Data::Dumper;
@@ -108,9 +108,11 @@ sub run_instance {
       $i++;
     }
   }
-  else {
+  elsif ( !exists $data{options}->{SubnetId} ) {
     $security_group{SecurityGroup} = $security_groups || "default";
   }
+
+  my %more_options = %{ $data{options} || {} };
 
   my $xml = $self->_request(
     "RunInstances",
@@ -120,7 +122,8 @@ sub run_instance {
     KeyName                      => $data{"key"},
     InstanceType                 => $data{"type"} || "m1.small",
     "Placement.AvailabilityZone" => $data{"zone"} || "",
-    %security_group
+    %security_group,
+    %more_options,
   );
 
   my $ref = $self->_xml($xml);
@@ -423,6 +426,7 @@ sub _request {
   my ( $self, $action, %args ) = @_;
 
   my $ua = LWP::UserAgent->new;
+  $ua->timeout(300);
   $ua->env_proxy;
   my %param = $self->_sign( $action, %args );
 
@@ -529,7 +533,7 @@ sub _xml {
           . ")" );
     }
 
-    die( join( "\n", @error_msg ) );
+    confess( join( "\n", @error_msg ) );
   }
 
   return $res;

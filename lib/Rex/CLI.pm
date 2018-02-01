@@ -226,7 +226,6 @@ CHECK_OVERWRITE: {
       Rex::Commands::private_key( $opts{'P'} );
 
       for my $task ( Rex::TaskList->create()->get_tasks ) {
-        $task->set_auth( "private_key", $opts{'P'} );
         Rex::TaskList->create()->get_task($task)
           ->set_auth( "private_key", $opts{'P'} );
       }
@@ -676,16 +675,19 @@ sub load_rexfile {
   Rex::Logger::debug("Loading $rexfile");
 
   if ( !-f $rexfile ) {
-    Rex::Logger::info( "No Rexfile found.", "warn" );
-    Rex::Logger::info( "Create a file named 'Rexfile' in this directory,",
-      "warn" );
-    Rex::Logger::info( "or specify the file you want to use with:", "warn" );
-    Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
+    if ( !exists $opts{'e'} ) {
+      Rex::Logger::info( "No Rexfile found.", "warn" );
+      Rex::Logger::info( "Create a file named 'Rexfile' in this directory,",
+        "warn" );
+      Rex::Logger::info( "or specify the file you want to use with:", "warn" );
+      Rex::Logger::info( "   rex -f file_to_use task_to_run",         "warn" );
+    }
     return;
   }
 
   my $rexfile_dir = dirname $rexfile;
-  Rex::push_lib_to_inc($rexfile_dir);
+  my @new_inc     = Rex::generate_inc($rexfile_dir);
+  @INC = @new_inc;
 
   # load Rexfile
   eval {
@@ -804,6 +806,7 @@ sub exit_rex {
 
     my @exit_codes = Rex::TaskList->create()->get_exit_codes();
     for my $exit_code (@exit_codes) {
+      $exit_code = $exit_code >> 8 if $exit_code > 255;
       CORE::exit($exit_code) if $exit_code != 0;
     }
   }

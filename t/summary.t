@@ -30,9 +30,10 @@ subtest "distributor => 'Base'" => sub {
     test_summary(
       task0 => { server => '<local>', task => 'task0', exit_code => 1 },
       task1 => {
-        server    => '<local>',
-        task      => 'task1',
-        exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin|netbsd)/i ? 1 : 2 )
+        server => '<local>',
+        task   => 'task1',
+        exit_code =>
+          ( $^O =~ m/^(MSWin|freebsd|darwin|netbsd|openbsd)/ ? 1 : 2 )
       },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
@@ -62,15 +63,16 @@ SKIP: {
       test_summary(
         task0 => { server => '<local>', task => 'task0', exit_code => 1 },
         task1 => {
-          server    => '<local>',
-          task      => 'task1',
-          exit_code => ( $^O =~ m/^(MSWin|freebsd|darwin|netbsd)/i ? 1 : 2 )
+          server => '<local>',
+          task   => 'task1',
+          exit_code =>
+            ( $^O =~ m/^(MSWin|freebsd|darwin|netbsd|openbsd)/ ? 1 : 2 )
         },
         task2 => { server => '<local>', task => 'task2', exit_code => 0 },
         task3 => { server => '<local>', task => 'task3', exit_code => 1 },
       );
     };
-  };
+    }
 }
 
 sub create_tasks {

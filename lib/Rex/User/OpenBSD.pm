@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
@@ -111,7 +110,7 @@ sub create_user {
   $fh->write("$cmd $user\nexit \$?\n");
   $fh->close;
 
-  i_run "/bin/sh $rnd_file";
+  i_run "/bin/sh $rnd_file", fail_ok => 1;
   if ( $? == 0 ) {
     Rex::Logger::debug("User $user created/updated.");
   }
@@ -132,7 +131,7 @@ sub create_user {
         . "') $user\nexit \$?\n" );
     $fh->close;
 
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting password for $user");
     }
@@ -149,7 +148,7 @@ sub create_user {
       "usermod -p '" . $data->{crypt_password} . "' $user\nexit \$?\n" );
     $fh->close;
 
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error setting password for $user");
     }

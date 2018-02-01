@@ -93,36 +93,99 @@ BEGIN {
   use Rex::Notify;
   use Rex::Require;
   use File::Basename;
+  use File::Spec;
   eval { Net::SSH2->require; };
 }
 
 our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
-  $WITH_EXIT_STATUS );
+  $WITH_EXIT_STATUS, @FEATURE_FLAGS );
 
 $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
+@FEATURE_FLAGS    = ();
 
 my $cur_dir;
 
-sub push_lib_to_inc {
-  my $path = shift;
+BEGIN {
 
-  if ( -d "$path/lib" ) {
-    push( @INC, "$path/lib" );
-    push( @INC, "$path/lib/perl/lib/perl5" );
-    if ( $^O eq "linux" ) {
-      push( @INC, "$path/lib/perl/lib/perl5/x86_64-linux" );
+  sub generate_inc {
+    my @additional = @_;
+
+    my @rex_inc = ();
+
+# this must be the first, special handling for rex modules which uses Module.pm and not
+# __module__.pm as their initial file. (rex pre 0.40 or something)
+    push @rex_inc, sub {
+      my $mod_to_load = $_[1];
+      return search_module_path( $mod_to_load, 1 );
+    };
+
+# this adds the current directory to the lib search path.
+# this must come before all other paths, because custom libraries can be project dependant
+# see: #1108
+    push @rex_inc, add_cwd_to_inc();
+    push @rex_inc, add_libstruct_to_inc($_) for @additional;
+
+    # we have to add the Rexfile's path to @INC FIX: #1170
+    push @rex_inc, @additional;
+
+# add home directory/.rex/recipes to the search path, so that recipes can be managed
+# at a central location.
+    my $home_dir = _home_dir();
+    if ( -d "$home_dir/.rex/recipes" ) {
+      push( @INC, "$home_dir/.rex/recipes" );
     }
-    if ( $^O =~ m/^MSWin/ ) {
-      my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
-      if ( defined $special_win_path ) {
-        my $mswin32_path = basename $special_win_path;
-        push( @INC, "$path/lib/perl/lib/perl5/$mswin32_path" );
+
+    # add the default search locations
+    push @rex_inc, @INC;
+
+    # this must be the last entry, special handling to load rex modules.
+    push(
+      @rex_inc,
+      sub {
+        my $mod_to_load = $_[1];
+        return search_module_path( $mod_to_load, 0 );
+      }
+    );
+
+    return @rex_inc;
+  }
+
+  sub add_libstruct_to_inc {
+    my ($path) = @_;
+    my @ret = ();
+
+    if ( -d File::Spec->catdir( $path, "lib" ) ) {
+      push( @ret, File::Spec->catdir( $path, "lib" ) );
+      push( @ret, File::Spec->catdir( $path, "lib", "perl", "lib", "perl5" ) );
+      if ( $^O eq "linux" ) {
+        push(
+          @ret,
+          File::Spec->catdir(
+            $path, "lib", "perl", "lib", "perl5", "x86_64-linux"
+          )
+        );
+      }
+      if ( $^O =~ m/^MSWin/ ) {
+        my ($special_win_path) = grep { m/\/MSWin32\-/ } @INC;
+        if ( defined $special_win_path ) {
+          my $mswin32_path = basename $special_win_path;
+          push(
+            @ret,
+            File::Spec->catdir(
+              $path, "lib", "perl", "lib", "perl5", $mswin32_path
+            )
+          );
+        }
       }
     }
-  }
-}
 
-BEGIN {
+    return @ret;
+  }
+
+  sub add_cwd_to_inc {
+    my $path = getcwd;
+    return add_libstruct_to_inc($path);
+  }
 
   sub _home_dir {
     if ( $^O =~ m/^MSWin/ ) {
@@ -132,30 +195,8 @@ BEGIN {
     return $ENV{'HOME'} || "";
   }
 
-  $cur_dir = getcwd;
-
-  unshift(
-    @INC,
-    sub {
-      my $mod_to_load = $_[1];
-      return search_module_path( $mod_to_load, 1 );
-    }
-  );
-
-  push_lib_to_inc($cur_dir);
-
-  my $home_dir = _home_dir();
-  if ( -d "$home_dir/.rex/recipes" ) {
-    push( @INC, "$home_dir/.rex/recipes" );
-  }
-
-  push(
-    @INC,
-    sub {
-      my $mod_to_load = $_[1];
-      return search_module_path( $mod_to_load, 0 );
-    }
-  );
+  my @new_inc = generate_inc();
+  @INC = @new_inc;
 
 }
 
@@ -504,8 +545,43 @@ sub deprecated {
 
 }
 
+sub has_feature_version {
+  my ($version) = @_;
+
+  my @version_flags = grep { m/^\d+\./ } @FEATURE_FLAGS;
+  for my $v (@version_flags) {
+    if ( $version <= $v ) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+sub has_feature_version_lower {
+  my ($version) = @_;
+
+  my @version_flags = grep { m/^\d+\./ } @FEATURE_FLAGS;
+  for my $v (@version_flags) {
+    if ( $version > $v ) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 sub import {
   my ( $class, $what, $addition1 ) = @_;
+
+  srand();
+
+  if ( $addition1 && ref $addition1 eq "ARRAY" ) {
+    push @FEATURE_FLAGS, $what, @{$addition1};
+  }
+  elsif ($addition1) {
+    push @FEATURE_FLAGS, $what, $addition1;
+  }
 
   $what ||= "";
 

@@ -19,7 +19,7 @@ use Data::Dumper;
 sub execute {
   my $class = shift;
 
-  my $result = i_run "VBoxManage list bridgedifs";
+  my $result = i_run "VBoxManage list bridgedifs", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running VBoxManage list bridgedifs");
   }

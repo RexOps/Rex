@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
@@ -23,13 +22,26 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-    install           => 'zypper -n install %s',
-    install_version   => 'zypper -n install $pkg-%s',
-    update_system     => 'zypper -n up',
-    remove            => 'zypper -n remove %s',
-    update_package_db => 'zypper --no-gpg-checks -n ref -fd',
-  };
+  if ( Rex::has_feature_version('1.5') ) {
+    $self->{commands} = {
+      install            => 'zypper -n install %s',
+      install_version    => 'zypper -n install $pkg-%s',
+      update_system      => 'zypper -n --no-refresh up',
+      dist_update_system => 'zypper -n --no-refresh up',
+      remove             => 'zypper -n remove %s',
+      update_package_db  => 'zypper -n ref -fd',
+    };
+  }
+  else {
+    $self->{commands} = {
+      install            => 'zypper -n install %s',
+      install_version    => 'zypper -n install $pkg-%s',
+      update_system      => 'zypper -n up',
+      dist_update_system => 'zypper -n up',
+      remove             => 'zypper -n remove %s',
+      update_package_db  => 'zypper --no-gpg-checks -n ref -fd',
+    };
+  }
 
   return $self;
 }
@@ -75,7 +87,7 @@ sub add_repository {
   i_run "zypper addrepo -f -n "
     . $data{"name"} . " "
     . $data{"url"} . " "
-    . $data{"name"};
+    . $data{"name"}, fail_ok => 1;
   if ( $? == 4 ) {
     if ( Rex::Config->get_do_reporting ) {
       return { changed => 0 };
@@ -88,7 +100,7 @@ sub add_repository {
 
 sub rm_repository {
   my ( $self, $name ) = @_;
-  i_run "zypper removerepo $name";
+  i_run "zypper removerepo $name", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error removing repository $name");
   }

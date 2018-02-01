@@ -27,8 +27,12 @@ sub new {
 sub detect {
   my ( $self, $con ) = @_;
 
-  my ($output) = $con->direct_exec('version');
-  if ( defined $output && $output =~ m/SM CLP Version: / ) {
+  my ($output);
+  eval {
+    ($output) = $con->direct_exec('version');
+    1;
+  };
+  if ( $output && $output =~ m/SM CLP Version: / ) {
     return 1;
   }
 

@@ -82,7 +82,6 @@ use warnings;
 use Data::Dumper;
 use Rex::Box::Base;
 use Rex::Commands -no => [qw/auth/];
-use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Cloud;
 
@@ -156,6 +155,7 @@ sub import_vm {
       zone           => $self->{options}->{zone},
       type           => $self->{type} || "m1.large",
       security_group => $self->{security_group} || "default",
+      options        => $self->options,
     };
   }
 
@@ -220,7 +220,6 @@ sub list_boxes {
   my ($self) = @_;
 
   my @vms = cloud_instance_list;
-
   my @ret = grep {
          $_->{name}
       && $_->{state} ne "terminated"
@@ -261,6 +260,16 @@ sub stop {
   $self->info;
 
   cloud_instance stop => $self->{info}->{id};
+}
+
+sub destroy {
+  my ($self) = @_;
+
+  Rex::Logger::info( "Destroying instance: " . $self->{name} );
+
+  $self->info;
+
+  cloud_instance terminate => $self->{info}->{id};
 }
 
 =head2 info

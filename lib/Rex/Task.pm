@@ -130,6 +130,11 @@ sub connection {
   $self->{connection};
 }
 
+sub set_connection {
+  my ( $self, $conn ) = @_;
+  $self->{connection} = $conn;
+}
+
 =head2 executor
 
 Returns the current executor object.
@@ -625,6 +630,8 @@ sub connect {
   }
   $self->{current_server} = $server;
 
+  $self->run_hook( \$server, "before" );
+
   # need to be called, in case of a run_task task call.
   # see #788
   $self->rethink_connection;
@@ -657,8 +664,6 @@ sub connect {
     if ( $auth->{private_key} );
 
   my $profiler = Rex::Profiler->new;
-
-  $self->run_hook( \$server, "before" );
 
   # task specific auth rules over all
   my %connect_hash = %{$auth};
@@ -749,12 +754,12 @@ sub disconnect {
 
   delete $self->{connection};
 
-  $self->run_hook( \$server, "after" );
-
   pop @{ Rex::get_current_connection()->{task} };
 
   # need to get rid of this
   Rex::pop_connection();
+
+  $self->run_hook( \$server, "after" );
 }
 
 =head2 get_data
@@ -854,6 +859,12 @@ sub run {
 
   }
   else {
+# we need to push the connection information of the last task onto this task object
+# if we don't do this, the task doesn't have any information of the current connection when called like a function.
+# See: #1091
+    $self->set_connection(
+      Rex::get_current_connection()->{task}->[-1]->connection )
+      if Rex::get_current_connection()->{task}->[-1];
     push @{ Rex::get_current_connection()->{task} }, $self;
   }
 

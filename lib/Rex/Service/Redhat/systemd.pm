@@ -11,10 +11,7 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
-use Rex::Logger;
-use Rex::Commands::Fs;
 
 use base qw(Rex::Service::Base);
 
@@ -56,8 +53,16 @@ sub _prepare_service_name {
 sub action {
   my ( $self, $service, $action ) = @_;
 
-  i_run "systemctl --no-pager $action $service >/dev/null", nohup => 1;
-  if ( $? == 0 ) { return 1; }
+  my $ret_val;
+  eval {
+    i_run "systemctl --no-pager $action $service >/dev/null", nohup => 1;
+    $ret_val = 1;
+    1;
+  } or do {
+    $ret_val = 0;
+  };
+
+  return $ret_val;
 }
 
 1;

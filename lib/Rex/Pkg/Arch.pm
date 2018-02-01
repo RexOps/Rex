@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -26,13 +25,26 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-    install => 'pacman --noprogressbar --noconfirm --needed -S %s',
-    install_version => 'pacman --noprogressbar --noconfirm --needed -S %s', # makes no sense to specify the package version
-    update_system   => 'pacman --noprogressbar --noconfirm -Syu',
-    remove          => 'pacman --noprogressbar --noconfirm -Rs %s',
-    update_package_db => 'pacman --noprogressbar -Sy',
-  };
+  if ( Rex::has_feature_version('1.5') ) {
+    $self->{commands} = {
+      install => 'pacman --noprogressbar --noconfirm --needed -S %s',
+      install_version => 'pacman --noprogressbar --noconfirm --needed -S %s', # makes no sense to specify the package version
+      update_system   => 'pacman --noprogressbar --noconfirm -Su',
+      dist_update_system => 'pacman --noprogressbar --noconfirm -Su',
+      remove             => 'pacman --noprogressbar --noconfirm -Rs %s',
+      update_package_db  => 'pacman --noprogressbar -Sy',
+    };
+  }
+  else {
+    $self->{commands} = {
+      install => 'pacman --noprogressbar --noconfirm --needed -S %s',
+      install_version => 'pacman --noprogressbar --noconfirm --needed -S %s', # makes no sense to specify the package version
+      update_system   => 'pacman --noprogressbar --noconfirm -Syu',
+      dist_update_system => 'pacman --noprogressbar --noconfirm -Syu',
+      remove             => 'pacman --noprogressbar --noconfirm -Rs %s',
+      update_package_db  => 'pacman --noprogressbar -Sy',
+    };
+  }
 
   return $self;
 }

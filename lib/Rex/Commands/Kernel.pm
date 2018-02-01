@@ -34,7 +34,7 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Gather;
 
 use Data::Dumper;
@@ -100,7 +100,7 @@ sub kmod {
       my @mod_split = split( /\//, $module );
       my $mod = $mod_split[-1];
 
-      my ($mod_id) = map { /^\s*(\d+)\s+.*$mod/ } run "modinfo";
+      my ($mod_id) = map { /^\s*(\d+)\s+.*$mod/ } i_run "modinfo";
       my $cmd = "modunload -i $mod_id";
 
       if ( $options->{"exec_file"} ) {
@@ -116,7 +116,7 @@ sub kmod {
 
   if ( $action eq "load" ) {
     Rex::Logger::debug("Loading Kernel Module: $module");
-    run "$load_command $module";
+    i_run "$load_command $module", fail_ok => 1;
     unless ( $? == 0 ) {
       Rex::Logger::info( "Error loading Kernel Module: $module", "warn" );
       die("Error loading Kernel Module: $module");
@@ -132,7 +132,7 @@ sub kmod {
       $unload_command_str = &$unload_command();
     }
 
-    run "$unload_command_str $module";
+    i_run "$unload_command_str $module", fail_ok => 1;
     unless ( $? == 0 ) {
       Rex::Logger::info( "Error unloading Kernel Module: $module", "warn" );
       die("Error unloading Kernel Module: $module");

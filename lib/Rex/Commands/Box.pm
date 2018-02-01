@@ -68,7 +68,6 @@ use YAML;
 use Data::Dumper;
 
 use Rex::Commands -no => [qw/auth/];
-use Rex::Commands::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::Gather;
@@ -274,12 +273,14 @@ sub get_box {
     my $old_q = $::QUIET;
     $::QUIET = 1;
 
-    eval { $vm_infos{$box_name} = run_task "get_sys_info", on => $box_ip; }
-      or do {
+    eval {
+      $vm_infos{$box_name} = run_task "Commands:Box:get_sys_info",
+        on => $box_ip;
+    } or do {
       $::QUIET = $old_q;
       print STDERR "\n";
       Rex::Logger::info(
-        "There was an error connecting to your Box. Please verify the login credentials.",
+        "There was an error connecting to your Box. Please verify the login credentials.\nERROR: $@\n",
         "warn"
       );
       Rex::Logger::debug(
@@ -288,7 +289,7 @@ sub get_box {
       # cleanup
       kill 9, $pid;
       CORE::exit(1);
-      };
+    };
     $::QUIET = $old_q;
 
     for my $key ( keys %{$box_info} ) {
@@ -373,6 +374,7 @@ sub boxes {
       @vms = @{ $yaml_ref->{vms} };
     }
 
+    my $box_vms = {};
     for my $vm_ref (@vms) {
       my $vm = $vm_ref->{name};
       box {
@@ -391,8 +393,12 @@ sub boxes {
             $box->$key( $vm_ref->{$key} );
           }
         }
+
+        $box_vms->{$vm} = $box;
       };
     }
+
+    return $box_vms;
   }
 
   if ( $action eq "stop" ) {
@@ -415,38 +421,42 @@ task 'get_sys_info', sub {
   return { get_system_information() };
 }, { dont_register => 1, exit_on_connect_fail => 0 };
 
+sub load_init_file {
+  my ( $class, $file ) = @_;
+
+  if ( !-f $file ) {
+    die("Error: Wrong configuration file: $file.");
+  }
+
+  my $yaml_str = eval { local ( @ARGV, $/ ) = ($file); <>; };
+  $yaml_str .= "\n";
+
+  my $yaml_ref = Load($yaml_str);
+
+  if ( !exists $yaml_ref->{type} ) {
+    die("You have to define a type.");
+  }
+
+  my $type = ucfirst $yaml_ref->{type};
+  set box_type => $type;
+
+  # set special box options, like amazon out
+  if ( exists $yaml_ref->{"\L$type"} ) {
+    set box_options => $yaml_ref->{"\L$type"};
+  }
+  elsif ( exists $yaml_ref->{$type} ) {
+    set box_options => $yaml_ref->{$type};
+  }
+
+  $VM_STRUCT = $yaml_ref;
+}
+
 sub import {
   my ( $class, %option ) = @_;
 
   if ( $option{init_file} ) {
     my $file = $option{init_file};
-
-    if ( !-f $file ) {
-      die("Error: Wrong configuration file: $file.");
-    }
-
-    my $yaml_str = eval { local ( @ARGV, $/ ) = ($file); <>; };
-    $yaml_str .= "\n";
-
-    my $yaml_ref = Load($yaml_str);
-
-    if ( !exists $yaml_ref->{type} ) {
-      die("You have to define a type.");
-    }
-
-    my $type = ucfirst $yaml_ref->{type};
-    set box_type => $type;
-
-    # set special box options, like amazon out
-    if ( exists $yaml_ref->{"\L$type"} ) {
-      set box_options => $yaml_ref->{"\L$type"};
-    }
-    elsif ( exists $yaml_ref->{$type} ) {
-      set box_options => $yaml_ref->{$type};
-    }
-
-    $VM_STRUCT = $yaml_ref;
-
+    $class->load_init_file($file);
     @_ = ($class);
   }
 

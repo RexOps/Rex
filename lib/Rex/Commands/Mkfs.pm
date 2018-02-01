@@ -28,6 +28,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(mkfs);
 
+use Rex::Helper::Run;
 use Rex::Commands::Run;
 use Carp;
 
@@ -46,6 +47,10 @@ Create a filesystem on device $devname.
 
 sub mkfs {
   my ( $devname, %option ) = @_;
+
+  if ( $devname !~ m/^\// ) {
+    $devname = "/dev/$devname";
+  }
 
   my $add_opts = "";
 
@@ -66,13 +71,13 @@ sub mkfs {
   }
 
   if ( $option{fstype} eq "swap" ) {
-    Rex::Logger::info("Creating swap space on /dev/$devname");
-    run "mkswap $add_opts -f /dev/$devname";
+    Rex::Logger::info("Creating swap space on $devname");
+    i_run "mkswap $add_opts -f $devname";
   }
   elsif ( can_run("mkfs.$option{fstype}") ) {
-    Rex::Logger::info("Creating filesystem $option{fstype} on /dev/$devname");
+    Rex::Logger::info("Creating filesystem $option{fstype} on $devname");
 
-    run "mkfs.$option{fstype} $add_opts /dev/$devname";
+    i_run "mkfs.$option{fstype} $add_opts $devname";
   }
 
   return;

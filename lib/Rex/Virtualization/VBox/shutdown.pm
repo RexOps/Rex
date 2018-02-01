@@ -28,7 +28,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "VBoxManage controlvm \"$dom\" acpipowerbutton";
+  i_run "VBoxManage controlvm \"$dom\" acpipowerbutton", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error shutdown vm $dom");
   }

@@ -31,6 +31,7 @@ use warnings;
 
 #require Exporter;
 require Rex::Exporter;
+use Net::OpenSSH::ShellQuoter;
 use Data::Dumper;
 use Rex;
 use Rex::Logger;
@@ -57,7 +58,15 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(run can_run sudo);
 
-=head2 run($command [, $callback])
+=head2 run($command [, $callback], %options)
+
+=head2 run($command, $arguments, %options)
+
+This form will execute $command with the given $arguments.
+$arguments must be an array reference. The arguments will be quoted.
+
+ run "ls", ["-l", "-t", "-r", "-a"];
+ run "ls", ["/tmp", "-l"], auto_die => TRUE;
 
 =head2 run($command_description, command => $command, %options)
 
@@ -157,6 +166,12 @@ sub run {
   if ( ref $_[0] eq "CODE" ) {
     $code = shift;
   }
+
+  my ($args);
+  if ( ref $_[0] eq "ARRAY" ) {
+    $args = shift;
+  }
+
   if ( scalar @_ > 0 ) {
     $option = {@_};
   }
@@ -234,6 +249,11 @@ sub run {
     }
 
     my $exec = Rex::Interface::Exec->create;
+
+    if ( $args && ref($args) eq "ARRAY" ) {
+      my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+      $cmd = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @{$args} );
+    }
 
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
       eval {
@@ -402,7 +422,7 @@ sub sudo {
     $ret = &$cmd();
   }
   else {
-    $ret = i_run($cmd);
+    $ret = i_run( $cmd, fail_ok => 1 );
   }
 
   Rex::get_current_connection_object()->pop_use_sudo();

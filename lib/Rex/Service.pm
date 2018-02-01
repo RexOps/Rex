@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Config;
-use Rex::Commands::Run;
 use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
@@ -31,7 +30,7 @@ sub get {
 
   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-  i_run "systemctl --no-pager > /dev/null";
+  i_run "systemctl --no-pager > /dev/null", fail_ok => 1;
   my $can_run_systemctl = $? == 0 ? 1 : 0;
 
   my $class;
@@ -53,6 +52,9 @@ sub get {
   }
   elsif ( is_gentoo($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Gentoo::systemd";
+  }
+  elsif ( is_gentoo($operatingsystem) ) {
+    $class = "Rex::Service::Gentoo";
   }
   elsif ( is_mageia($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Mageia::systemd";

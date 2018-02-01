@@ -17,6 +17,7 @@ BEGIN {
 }
 
 use Rex::Interface::Connection::Base;
+use Rex::Helper::IP;
 use Data::Dumper;
 use base qw(Rex::Interface::Connection::Base);
 
@@ -65,10 +66,8 @@ sub connect {
   $server =
     Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
 
-  if ( $server =~ m/^(.*?):(\d+)$/ ) {
-    $server = $1;
-    $port   = $2;
-  }
+  ( $server, $port ) = Rex::Helper::IP::get_server_and_port( $server, $port );
+
   Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
 
   my %ssh_opts = Rex::Config->get_openssh_opt();
@@ -180,7 +179,7 @@ CONNECT_TRY:
   $self->{connected} = 1;
   $self->{auth_ret}  = 1;
 
-  $self->{sftp} = $self->{ssh}->sftp;
+  eval { $self->{sftp} = $self->{ssh}->sftp; };
 }
 
 sub reconnect {

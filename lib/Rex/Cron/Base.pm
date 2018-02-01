@@ -15,7 +15,6 @@ use Rex::Logger;
 use Rex::Commands;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Data::Dumper;
 use Rex::Helper::Path;
@@ -197,7 +196,7 @@ sub read_user_cron {
   $command .= " -u $user" if defined $user;
   $command .= ' 2> /dev/null';
 
-  my @lines = i_run $command;
+  my @lines = i_run $command, fail_ok => 1;
   $self->parse_cron(@lines);
 }
 

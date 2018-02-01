@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Logger;
 
@@ -56,13 +55,16 @@ sub _filter_options {
 sub _execute {
   my ( $self, $cmd ) = @_;
 
-  $self->{__cmd_output__} = i_run $cmd, nohup => 1;
+  my $ret_val;
+  eval {
+    $self->{__cmd_output__} = i_run $cmd, nohup => 1;
+    $ret_val = 1;
+  } or do {
+    $self->{__cmd_output__} = Rex::Commands::last_command_output();
+    $ret_val = 0;
+  };
 
-  if ( $? == 0 ) {
-    return 1;
-  }
-
-  return 0;
+  return $ret_val;
 }
 
 sub start {

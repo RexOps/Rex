@@ -13,7 +13,6 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Helper::Run;
-use Rex::Commands::Run;
 use Rex::Helper::Array;
 use Rex::Hardware::Network::FreeBSD;
 
@@ -31,7 +30,7 @@ sub get_network_configuration {
 
 sub route {
 
-  my @route = i_run "netstat -nr";
+  my @route = i_run "netstat -nr", fail_ok => 1;
   my @ret;
   if ( $? != 0 ) {
     die("Error running netstat");
@@ -114,13 +113,13 @@ sub default_gateway {
 
   if ($new_default_gw) {
     if ( default_gateway() ) {
-      i_run "route delete default";
+      i_run "route delete default", fail_ok => 1;
       if ( $? != 0 ) {
         die("Error running route delete default");
       }
     }
 
-    i_run "route add default $new_default_gw";
+    i_run "route add default $new_default_gw", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error route add default");
     }
@@ -141,7 +140,7 @@ sub default_gateway {
 sub netstat {
 
   my @ret;
-  my @netstat = i_run "netstat -na";
+  my @netstat = i_run "netstat -na", fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error running netstat");

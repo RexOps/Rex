@@ -6,7 +6,6 @@ use warnings;
 # VERSION
 
 use Rex;
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
@@ -33,15 +32,18 @@ sub get {
     ) = ( '', '', '', '', '', '' );
 
     $product_name =
-      i_run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null";
+      i_run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null",
+      fail_ok => 1;
     $bios_vendor =
-      i_run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null";
+      i_run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null",
+      fail_ok => 1;
     $sys_vendor =
-      i_run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null";
+      i_run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null",
+      fail_ok => 1;
 
-    $self_status = i_run "cat /proc/self/status 2>/dev/null";
-    $cpuinfo     = i_run "cat /proc/cpuinfo 2>/dev/null";
-    $modules     = i_run "cat /proc/modules 2>/dev/null";
+    $self_status = i_run "cat /proc/self/status 2>/dev/null", fail_ok => 1;
+    $cpuinfo     = i_run "cat /proc/cpuinfo 2>/dev/null",     fail_ok => 1;
+    $modules     = i_run "cat /proc/modules 2>/dev/null",     fail_ok => 1;
 
     my ( $virtualization_type, $virtualization_role ) = ( '', '' );
 
@@ -49,7 +51,7 @@ sub get {
       $virtualization_type = "xen";
       $virtualization_role = "guest";
 
-      my $string = i_run "cat /proc/xen/capabilities 2>/dev/null";
+      my $string = i_run "cat /proc/xen/capabilities 2>/dev/null", fail_ok => 1;
       if ( $string =~ /control_d/ ) {
         $virtualization_role = "host";
       }
@@ -91,6 +93,11 @@ sub get {
 
     elsif ( $sys_vendor =~ /Parallels Software International Inc/ ) {
       $virtualization_type = "parallels";
+      $virtualization_role = "guest";
+    }
+
+    elsif ( $sys_vendor =~ /QEMU/ ) {
+      $virtualization_type = "kvm";
       $virtualization_role = "guest";
     }
 

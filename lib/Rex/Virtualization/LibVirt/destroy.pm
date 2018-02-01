@@ -31,8 +31,9 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "virsh -c $uri destroy '$dom'";
-  if ( $? != 0 ) {
+  # virsh must distinguish between a not-running VM and failed to destroy via exit code!
+  my $out = i_run "virsh -c $uri destroy '$dom' 2>&1", fail_ok => 1;
+  if ( $? != 0 && $out !~ /domain is not running/) {
     die("Error destroying vm $dom");
   }
 

@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -25,14 +24,28 @@ sub new {
 
   bless( $self, $proto );
 
-  $self->{commands} = {
-    install           => $self->_yum('-y install %s'),
-    install_version   => $self->_yum('-y install %s-%s'),
-    update_system     => $self->_yum("-y upgrade"),
-    remove            => $self->_yum('-y erase %s'),
-    update_package_db => $self->_yum("clean all") . " ; "
-      . $self->_yum("makecache"),
-  };
+  if ( Rex::has_feature_version('1.5') ) {
+    $self->{commands} = {
+      install            => $self->_yum('-y install %s'),
+      install_version    => $self->_yum('-y install %s-%s'),
+      update_system      => $self->_yum("-y -C upgrade"),
+      dist_update_system => $self->_yum("-y -C upgrade"),
+      remove             => $self->_yum('-y erase %s'),
+      update_package_db  => $self->_yum("clean all") . " ; "
+        . $self->_yum("makecache"),
+    };
+  }
+  else {
+    $self->{commands} = {
+      install            => $self->_yum('-y install %s'),
+      install_version    => $self->_yum('-y install %s-%s'),
+      update_system      => $self->_yum("-y upgrade"),
+      dist_update_system => $self->_yum("-y upgrade"),
+      remove             => $self->_yum('-y erase %s'),
+      update_package_db  => $self->_yum("clean all") . " ; "
+        . $self->_yum("makecache"),
+    };
+  }
 
   return $self;
 }

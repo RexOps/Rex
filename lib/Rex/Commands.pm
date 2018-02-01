@@ -1,4 +1,4 @@
-#
+
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
 # vim: set ts=2 sw=2 tw=0:
@@ -1011,16 +1011,22 @@ sub needs {
   }
 
   if ( $self eq "main" ) {
-    $self = "Rex::CLI";
+    $self = ""; # Tasks in main namespace are really registered in Rex::CLI
   }
 
-  no strict 'refs';
-  my @maybe_tasks_to_run = @{"${self}::tasks"};
-  use strict;
+  my $tl = Rex::TaskList->create();
+  my @maybe_tasks_to_run;
+  if($self) {
+    @maybe_tasks_to_run = $tl->get_all_tasks(qr{^\Q$self\E:[A-Za-z0-9_\-]+$});
+  }
+  else {
+    @maybe_tasks_to_run = $tl->get_all_tasks(qr{^[A-Za-z0-9_\-]+$});
+  }
 
   if ( !@args && !@maybe_tasks_to_run ) {
     @args = ($self);
     ($self) = caller;
+    $self = "" if($self =~ m/^(Rex::CLI|main)$/);
   }
 
   if ( ref( $args[0] ) eq "ARRAY" ) {
@@ -1029,24 +1035,36 @@ sub needs {
 
   Rex::Logger::debug("need to call tasks from $self");
 
-  no strict 'refs';
-  my @tasks_to_run = @{"${self}::tasks"};
-  use strict;
+  my @tasks_to_run;
+  if($self) {
+    @tasks_to_run = $tl->get_all_tasks(qr{^\Q$self\E:[A-Za-z0-9_\-]+$});
+  }
+  else {
+    @tasks_to_run = $tl->get_all_tasks(qr{^[A-Za-z0-9_\-]+$});
+  }
 
   my $run_list     = Rex::RunList->instance;
   my $current_task = $run_list->current_task;
   my %task_opts    = $current_task->get_opts;
   my @task_args    = $current_task->get_args;
 
+  if($self) {
+    my $suffix = $self;
+    $suffix =~ s/::/:/g;
+    @args = map { $_ = "$suffix:$_" } @args;
+  }
+
   for my $task (@tasks_to_run) {
-    my $task_name = $task->{"name"};
-    if ( @args && grep ( /^$task_name$/, @args ) ) {
-      Rex::Logger::debug( "Calling " . $task->{"name"} );
-      $task->{"code"}->( \%task_opts, \@task_args );
+    my $task_o = $tl->get_task($task);
+    my $task_name = $task_o->name;
+    my $suffix = $self . ":";
+    if ( @args && grep ( /^\Q$task_name\E$/, @args ) ) {
+      Rex::Logger::debug( "Calling " . $task_o->name );
+      $task_o->run( "<func>", params => \@task_args, args => \%task_opts );
     }
     elsif ( !@args ) {
-      Rex::Logger::debug( "Calling " . $task->{"name"} );
-      $task->{"code"}->( \%task_opts, \@task_args );
+      Rex::Logger::debug( "Calling " . $task_o->name );
+      $task_o->run( "<func>", params => \@task_args, args => \%task_opts );
     }
   }
 
@@ -1180,6 +1198,9 @@ sub LOCAL (&) {
   my $cur_conn      = Rex::get_current_connection();
   my $local_connect = Rex::Interface::Connection->create("Local");
 
+  my $old_global_sudo = $Rex::GLOBAL_SUDO;
+  $Rex::GLOBAL_SUDO = 0;
+
   Rex::push_connection(
     {
       conn     => $local_connect,
@@ -1195,6 +1216,8 @@ sub LOCAL (&) {
   my $ret = $_[0]->();
 
   Rex::pop_connection();
+
+  $Rex::GLOBAL_SUDO = $old_global_sudo;
 
   return $ret;
 }

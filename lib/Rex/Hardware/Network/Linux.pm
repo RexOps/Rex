@@ -18,8 +18,13 @@ use Rex::Helper::Array;
 use Data::Dumper;
 
 sub get_bridge_devices {
+  unless ( can_run("brctl") ) {
+    Rex::Logger::debug("No brctl available");
+    return {};
+  }
+
   local $/ = "\n";
-  my @lines = i_run 'brctl show';
+  my @lines = i_run 'brctl show', fail_ok => 1;
   chomp @lines;
   shift @lines;
 
@@ -46,7 +51,7 @@ sub get_bridge_devices {
 sub get_network_devices {
 
   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
-  my @output = i_run("$command");
+  my @output = i_run( "$command", fail_ok => 1 );
 
   my $devices =
     ( $command eq 'ip addr show' )
@@ -62,7 +67,7 @@ sub get_network_configuration {
   my $device_info = {};
 
   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
-  my @output = i_run("$command");
+  my @output = i_run( "$command", fail_ok => 1 );
 
   my $br_data = get_bridge_devices();
 
@@ -220,7 +225,7 @@ sub route {
 
   my @ret = ();
 
-  my @route = i_run "netstat -nr";
+  my @route = i_run "netstat -nr", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running netstat");
   }
@@ -255,13 +260,13 @@ sub default_gateway {
 
   if ($new_default_gw) {
     if ( default_gateway() ) {
-      i_run "/sbin/route del default";
+      i_run "/sbin/route del default", fail_ok => 1;
       if ( $? != 0 ) {
         die("Error running route del default");
       }
     }
 
-    i_run "/sbin/route add default gw $new_default_gw";
+    i_run "/sbin/route add default gw $new_default_gw", fail_ok => 1;
     if ( $? != 0 ) {
       die("Error route add default");
     }
@@ -282,7 +287,7 @@ sub default_gateway {
 sub netstat {
 
   my @ret;
-  my @netstat = i_run "netstat -nap";
+  my @netstat = i_run "netstat -nap", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error running netstat");
   }

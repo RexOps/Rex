@@ -84,10 +84,10 @@ exit;
 
 EOF
 
-    i_run "perl $filename";
+    i_run "perl $filename", fail_ok => 1;
   }
   else {
-    i_run "VBoxManage startvm \"$dom\"";
+    i_run "VBoxManage startvm \"$dom\"", fail_ok => 1;
   }
 
   if ( $? != 0 ) {

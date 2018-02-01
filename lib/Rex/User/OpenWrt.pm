@@ -13,7 +13,6 @@ use warnings;
 
 use Rex::Logger;
 require Rex::Commands;
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Interface::File;
@@ -58,7 +57,7 @@ sub user_groups {
 
   Rex::Logger::debug("Getting group membership of $user");
 
-  my $data_str = i_run "/usr/bin/id -Gn $user";
+  my $data_str = i_run "/usr/bin/id -Gn $user", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting group list");
   }
@@ -79,7 +78,7 @@ sub user_list {
 
   Rex::Logger::debug("Getting user list");
 
-  my $data_str = i_run "cut -d':' -f1 /etc/passwd";
+  my $data_str = i_run "cut -d':' -f1 /etc/passwd", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting user list");
   }

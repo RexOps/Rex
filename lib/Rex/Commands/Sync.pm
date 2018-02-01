@@ -59,18 +59,18 @@ use vars qw(@EXPORT);
 
 use Data::Dumper;
 use Rex::Commands;
-use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Commands::Download;
 use Rex::Helper::Path;
 use Rex::Helper::Encode;
-use JSON::XS;
-use Text::Glob 'glob_to_regex';
+use JSON::MaybeXS;
+use Text::Glob 'glob_to_regex', 'match_glob';
 use File::Basename 'basename';
 
-@EXPORT = qw(sync_up sync_down);
+@EXPORT                            = qw(sync_up sync_down);
+$Text::Glob::strict_wildcard_slash = 0;
 
 sub sync_up {
   my ( $source, $dest, @option ) = @_;
@@ -125,14 +125,40 @@ sub sync_up {
   my $excludes = $options->{exclude} ||= [];
   $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
 
-  my @excluded_files = map { glob_to_regex($_) } @{$excludes};
+  my @excluded_files = @{$excludes};
 
   #
   # fifth, upload the different files
   #
 
+  my $check_exclude_file = sub {
+    my ( $file, $cmp ) = @_;
+    if ( $cmp =~ m/\// ) {
+
+      # this is a directory exclude
+      if ( match_glob( $cmp, $file ) || match_glob( $cmp, substr( $file, 1 ) ) )
+      {
+        return 1;
+      }
+
+      return 0;
+    }
+
+    if ( match_glob( $cmp, basename($file) ) ) {
+      return 1;
+    }
+
+    return 0;
+  };
+
+  my @uploaded_files;
   for my $file (@diff) {
-    next if grep { basename( $file->{name} ) =~ $_ } @excluded_files;
+    next
+      if (
+      scalar(
+        grep { $check_exclude_file->( $file->{name}, $_ ) } @excluded_files
+      ) > 0
+      );
 
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
@@ -190,17 +216,21 @@ sub sync_up {
       file "$dest/" . $file_name,
         content => template( $file->{path} ),
         %file_perm;
+
+      push @uploaded_files, "$dest/$file_name";
     }
     else {
       file "$dest/" . $file->{name},
         source => $file->{path},
         %file_perm;
+
+      push @uploaded_files, "$dest/" . $file->{name};
     }
   }
 
   if ( exists $options->{on_change}
     && ref $options->{on_change} eq "CODE"
-    && scalar(@diff) > 0 )
+    && scalar(@uploaded_files) > 0 )
   {
     Rex::Logger::debug("Calling on_change hook of sync_up");
     $options->{on_change}->( map { $dest . $_->{name} } @diff );

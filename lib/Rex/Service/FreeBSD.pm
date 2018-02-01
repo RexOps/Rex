@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::File;
@@ -44,11 +43,14 @@ sub ensure {
   my $what = $options->{ensure};
 
   my $rccom = "/usr/sbin/service $service rcvar";
-  my $rcout = i_run $rccom;
-  if ( $? != 0 ) {
+  my $rcout;
+  eval {
+    $rcout = i_run $rccom;
+    1;
+  } or do {
     Rex::Logger::info( "Running `$rccom` failed", "error" );
     return 0;
-  }
+  };
 
   my ( $rcvar, $rcvalue ) = $rcout =~ m/^\$?(\w+)="?(\w+)"?$/m;
   unless ($rcvar) {

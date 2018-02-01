@@ -161,7 +161,7 @@ sub _version {
   my ($self) = @_;
   if ( exists $self->{__version__} ) { return $self->{__version__} }
 
-  my $version = i_run "iptables --version";
+  my $version = i_run "iptables --version", fail_ok => 1;
   $version =~ s/^.*\sv(\d+\.\d+\.\d+)/$1/;
 
   $self->{__version__} = [ split( /\./, $version ) ];

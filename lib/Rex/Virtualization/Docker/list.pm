@@ -21,13 +21,19 @@ sub execute {
   Rex::Logger::debug("Getting docker list by ps");
 
   if ( $arg1 eq "all" ) {
-    @domains = i_run "docker ps -a";
+    @domains =
+      i_run
+      "docker ps -a --format \"{{.ID}}|{{.Image}}|{{.Command}}|{{.CreatedAt}}|{{.Status}}|{{.Names}}\"",
+      fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running docker ps");
     }
   }
   elsif ( $arg1 eq "running" ) {
-    @domains = i_run "docker ps";
+    @domains =
+      i_run
+      "docker ps --format \"{{.ID}}|{{.Image}}|{{.Command}}|{{.CreatedAt}}|{{.Status}}|{{.Names}}\"",
+      fail_ok => 1;
     if ( $? != 0 ) {
       die("Error running docker ps");
     }
@@ -38,13 +44,14 @@ sub execute {
 
   my @ret = ();
   for my $line (@domains) {
-    next if $line =~ m/^CONTAINER ID\s/;
     my ( $id, $images, $cmd, $created, $status, $comment ) =
-      split( /\s{2,}/, $line );
+      split( /\|/, $line );
+    $cmd =~ s/^"|"$//gms;
     push(
       @ret,
       {
         comment => $comment,
+        name    => $comment,
         id      => $id,
         images  => $images,
         command => $cmd,

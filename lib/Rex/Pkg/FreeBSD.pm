@@ -11,7 +11,6 @@ use warnings;
 
 # VERSION
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
@@ -25,7 +24,7 @@ sub new {
   bless( $self, $proto );
 
   # Check if pkg is actually bootstraped (installed and activated)
-  i_run "pkg -N";
+  i_run "pkg -N", fail_ok => 1;
   if ( $? != 0 ) {
     i_run "pkg bootstrap", env => { 'ASSUME_ALWAYS_YES' => 'true' };
   }
@@ -73,7 +72,7 @@ sub is_installed {
   # pkg info -e allow get quick answer about is pkg installed or not.
   my $command =
     $self->{commands}->{query} . " -e $pkg" . ( $version ? "-$version" : "" );
-  i_run $command;
+  i_run $command, fail_ok => 1;
 
   if ( $? != 0 ) {
     Rex::Logger::debug(

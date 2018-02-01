@@ -14,7 +14,6 @@ use warnings;
 use Rex::Cron::Base;
 use base qw(Rex::Cron::Base);
 
-use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
 

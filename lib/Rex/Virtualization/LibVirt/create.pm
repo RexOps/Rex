@@ -83,7 +83,8 @@ sub execute {
       my $size = $_->{'size'};
       if ( !is_file( $_->{"file"} ) ) {
         Rex::Logger::debug("creating storage disk: \"$_->{file}\"");
-        i_run "$QEMU_IMG create -f $_->{driver_type} $_->{'file'} $size";
+        i_run "$QEMU_IMG create -f $_->{driver_type} $_->{'file'} $size",
+          fail_ok => 1;
         if ( $? != 0 ) {
           die("Error creating storage disk: $_->{'file'}");
         }
@@ -98,7 +99,8 @@ sub execute {
       );
       Rex::Logger::info("Please wait ...");
       i_run
-        "$QEMU_IMG convert -f raw $_->{'template'} -O $_->{driver_type} $_->{'file'}";
+        "$QEMU_IMG convert -f raw $_->{'template'} -O $_->{driver_type} $_->{'file'}",
+        fail_ok => 1;
       if ( $? != 0 ) {
         die(
           "Error building domain: \"$opts->{'name'}\" from template: \"$_->{'template'}\"\n
@@ -119,7 +121,7 @@ sub execute {
 
   file "$file_name", content => $parsed_template;
 
-  i_run "virsh -c $uri define $file_name";
+  i_run "virsh -c $uri define $file_name", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error defining vm $opts->{name}");
   }
@@ -419,6 +421,9 @@ __DATA__
   <name><%= $::name %></name>
   <memory><%= $::memory %></memory>
   <currentMemory><%= $::memory %></currentMemory>
+  <% if(exists $::cpu->{mode}) { %>
+   <cpu mode="<%= $::cpu->{mode} %>" />
+  <% } %>
   <vcpu><%= $::cpus %></vcpu>
   <os>
    <type arch="<%= $::arch %>">hvm</type>

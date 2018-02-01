@@ -26,10 +26,11 @@ use warnings;
 # VERSION
 
 use Rex::Commands -no => [qw/auth/];
-use Rex::Commands::Run;
+use Rex::Helper::Run;
 use Rex::Commands::Fs;
 use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
+use Rex::Helper::IP;
 
 BEGIN {
   LWP::UserAgent->use;
@@ -132,6 +133,18 @@ sub stop {
   vm shutdown => $self->{name};
 }
 
+=head2 destroy()
+
+Destroy the VM.
+
+=cut
+
+sub destroy {
+  my ($self) = @_;
+  $self->info;
+  vm destroy => $self->{name};
+}
+
 =head2 start()
 
 Starts the VM.
@@ -176,7 +189,7 @@ sub provision_vm {
   my ( $self, @tasks ) = @_;
 
   if ( !@tasks ) {
-    @tasks = @{ $self->{__tasks} };
+    @tasks = @{ $self->{__tasks} } if ( exists $self->{__tasks} );
   }
 
   $self->wait_for_ssh();
@@ -188,7 +201,9 @@ sub provision_vm {
     }
 
     $task_o->set_auth( %{ $self->{__auth} } );
+    Rex::Commands::set( "box_object", $self );
     $task_o->run( $self->ip );
+    Rex::Commands::set( "box_object", undef );
   }
 }
 
@@ -298,15 +313,40 @@ Configure the authentication to the VM.
 
 sub auth {
   my ( $self, %auth ) = @_;
-  $self->{__auth} = \%auth;
+  if (%auth) {
+    $self->{__auth} = \%auth;
+  }
+  else {
+    return $self->{__auth};
+  }
+}
+
+=head2 options(%option)
+
+Addition options for boxes
+
+ $box->options(
+   opt1 => $val1,
+   opt2 => $val2,
+ );
+
+=cut
+
+sub options {
+  my ( $self, %opt ) = @_;
+  if (%opt) {
+    $self->{__options} = \%opt;
+  }
+  else {
+    return $self->{__options};
+  }
 }
 
 sub wait_for_ssh {
   my ( $self, $ip, $port ) = @_;
 
   if ( !$ip ) {
-    ( $ip, $port ) = split( /:/, $self->ip );
-    $port ||= 22;
+    ( $ip, $port ) = Rex::Helper::IP::get_server_and_port( $self->ip, 22 );
   }
 
   print "Waiting for SSH to come up on $ip:$port.";
@@ -322,9 +362,10 @@ sub _download {
   my ($self) = @_;
 
   my $filename = basename( $self->{url} );
-  my $force = $self->{force} || FALSE;
+  my $force    = $self->{force} || FALSE;
+  my $fs       = Rex::Interface::Fs->create;
 
-  if ( is_file("./tmp/$filename") ) {
+  if ( $fs->is_file("./tmp/$filename") ) {
     Rex::Logger::info(
       "File already downloaded. Please remove the file ./tmp/$filename if you want to download a fresh copy."
     );
@@ -403,7 +444,7 @@ sub _download {
 
     }
     else {
-      run "wget -c -qO ./tmp/$filename $self->{url}";
+      i_exec "wget", "-c", "-qO", "./tmp/$filename", $self->{url};
 
       if ( $? != 0 ) {
         die(

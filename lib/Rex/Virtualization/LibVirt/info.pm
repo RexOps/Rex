@@ -33,7 +33,7 @@ sub execute {
 
   my $xml;
 
-  my @dominfo = i_run "virsh -c $uri dominfo '$vmname'";
+  my @dominfo = i_run "virsh -c $uri dominfo '$vmname'", fail_ok => 1;
 
   if ( $? != 0 ) {
     die("Error running virsh dominfo '$vmname'");

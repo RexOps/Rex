@@ -86,7 +86,6 @@ sub set_options {
       next;
     }
 
-    push @updated, $question;
     Rex::Logger::debug("Will set option $question: $value (type $type)");
     push @updated, "$pkg $question $type $value";
   }

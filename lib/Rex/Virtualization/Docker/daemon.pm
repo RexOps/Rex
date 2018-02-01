@@ -22,7 +22,7 @@ sub execute {
 
   Rex::Logger::debug("starting docker daemon");
 
-  i_run "docker -d -H $host -ip $bind";
+  i_run "docker -d -H $host -ip $bind", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error starting docker daemon");
   }

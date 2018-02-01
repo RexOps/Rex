@@ -46,26 +46,30 @@ sub get {
         map { /^USERDOMAIN=(.*)$/ } split( /\r?\n/, @env );
     }
     elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
-      ( $hostname, $domain ) = split( /\./, i_run("hostname"), 2 );
+      ( $hostname, $domain ) =
+        split( /\./, ( eval { i_run("hostname") } || "unknown.nodomain" ), 2 );
     }
     elsif ( $os eq "SunOS" ) {
-      ($hostname) = map { /^([^\.]+)$/ } i_run("hostname");
-      ($domain) = i_run("domainname");
+      ($hostname) =
+        map { /^([^\.]+)$/ } ( eval { i_run("hostname"); } || "unknown" );
+      ($domain) = eval { i_run("domainname"); } || ("nodomain");
     }
     elsif ( $os eq "OpenWrt" ) {
-      ($hostname) = i_run("uname -n");
-      ($domain)   = i_run("cat /proc/sys/kernel/domainname");
+      ($hostname) = eval { i_run("uname -n"); } || ("unknown");
+      ($domain) =
+        eval { i_run("cat /proc/sys/kernel/domainname"); } || ("unknown");
     }
     else {
-      my @out = i_run("hostname -f 2>/dev/null");
+      my @out =
+        eval { i_run("hostname -f 2>/dev/null"); } || ("unknown.nodomain");
       ( $hostname, $domain ) =
-        split( /\./, i_run("hostname -f 2>/dev/null"), 2 );
+        split( /\./, $out[0], 2 );
 
       if ( !$hostname || $hostname eq "" ) {
         Rex::Logger::debug(
           "Error getting hostname and domainname. There is something wrong with your /etc/hosts file."
         );
-        $hostname = i_run("hostname");
+        ($hostname) = eval { i_run("hostname"); } || ("unknown");
       }
     }
 
@@ -108,8 +112,11 @@ sub get_operating_system {
 
   if ($is_lsb) {
     if ( my $ret = i_run "lsb_release -s -i" ) {
-      if ( $ret eq "SUSE LINUX" || $ret eq "openSUSE project" ) {
+      if ( $ret =~ m/SUSE/i ) {
         $ret = "SuSE";
+      }
+      elsif ( $ret eq "ManjaroLinux" ) {
+        $ret = "Manjaro";
       }
       return $ret;
     }
@@ -177,6 +184,10 @@ sub get_operating_system {
     return "Arch";
   }
 
+  if ( is_file("/etc/manjaro-release") ) {
+    return "Manjaro";
+  }
+
   my $os_string = i_run("uname -s");
   return $os_string; # return the plain os
 
@@ -218,7 +229,7 @@ sub get_operating_system_version {
 
   }
   elsif ( $op eq "Ubuntu" ) {
-    my @l = i_run "lsb_release -r -s";
+    my @l = i_run "lsb_release -r -s", fail_ok => 1;
     return $l[0];
   }
   elsif ( lc($op) eq "redhat"
@@ -308,7 +319,7 @@ sub get_operating_system_version {
     return $content;
   }
   elsif ( $op eq "Arch" ) {
-    my $available_updates = i_run "checkupdates";
+    my $available_updates = i_run "checkupdates", fail_ok => 1;
     if ( $available_updates eq "" ) {
       return "latest";
     }

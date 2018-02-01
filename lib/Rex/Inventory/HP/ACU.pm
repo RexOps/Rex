@@ -17,8 +17,9 @@ use Rex::Helper::Run;
 sub get {
 
   if ( can_run("hpacucli") ) {
-    my @lines = i_run "/usr/sbin/hpacucli controller all show config detail";
-    my $ret   = parse_config(@lines);
+    my @lines = i_run "/usr/sbin/hpacucli controller all show config detail",
+      fail_ok => 1;
+    my $ret = parse_config(@lines);
     return $ret;
   }
   else {

@@ -28,7 +28,7 @@ sub execute {
     die("VM $dom not found.");
   }
 
-  i_run "docker start \"$dom\"";
+  i_run "docker start \"$dom\"", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error starting container $dom");
   }

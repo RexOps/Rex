@@ -39,7 +39,7 @@ sub execute {
   }
 
   if ( !exists $opts->{"command"} ) {
-    die("You have to define a command.");
+    $opts->{command} = "";
   }
 
   my $options = _format_opts($opts);

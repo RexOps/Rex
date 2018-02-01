@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Commands::Run;
 use Rex::Commands::MD5;
 use Rex::Helper::Run;
 use Rex::Helper::Encode;
@@ -23,7 +22,7 @@ use Rex::Interface::Fs;
 use Rex::Interface::Exec;
 use Rex::User::Linux;
 use Rex::Helper::Path;
-use JSON::XS;
+use JSON::MaybeXS;
 
 use base qw(Rex::User::Linux);
 
@@ -104,7 +103,7 @@ sub create_user {
   $fh->write("$cmd -n $user\nexit \$?\n");
   $fh->close;
 
-  i_run "/bin/sh $rnd_file";
+  i_run "/bin/sh $rnd_file", fail_ok => 1;
   my $retval = $?;
   Rex::Interface::Fs->create()->unlink($rnd_file);
 
@@ -126,7 +125,7 @@ sub create_user {
       "echo '" . $data->{password} . "' | pw usermod $user -h 0\nexit \$?\n" );
     $fh->close;
 
-    i_run "/bin/sh $rnd_file";
+    i_run "/bin/sh $rnd_file", fail_ok => 1;
     my $pw_retval = $?;
     Rex::Interface::Fs->create()->unlink($rnd_file);
 
@@ -165,9 +164,11 @@ sub rm_user {
     $cmd .= " -r ";
   }
 
-  i_run $cmd . " -n " . $user;
-  if ( $? != 0 ) {
-    die("Error deleting user $user");
+  my $output = i_run $cmd . " -n " . $user, fail_ok => 1;
+  if ( $? == 67 ) {
+    Rex::Logger::info("Cannot delete user $user (no such user)", "warn");
+  } elsif ( $? != 0 ) {
+    die("Error deleting user $user ($output)");
   }
 
 }
@@ -194,7 +195,7 @@ sub get_user {
   $fh->write( func_to_json() );
   $fh->close;
 
-  my $data_str = i_run "perl $rnd_file $user";
+  my $data_str = i_run "perl $rnd_file $user", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting  user information for $user");
   }
@@ -229,7 +230,7 @@ sub create_group {
       $cmd .= " -g " . $data->{gid};
     }
 
-    i_run $cmd . " -n " . $group;
+    i_run $cmd . " -n " . $group, fail_ok => 1;
     if ( $? != 0 ) {
       die("Error creating/modifying group $group");
     }
@@ -284,7 +285,7 @@ sub get_group {
   $fh->write( func_to_json() );
   $fh->close;
 
-  my $data_str = i_run "perl $rnd_file $group";
+  my $data_str = i_run "perl $rnd_file $group", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error getting group information");
   }
@@ -305,7 +306,7 @@ sub get_group {
 sub rm_group {
   my ( $self, $group ) = @_;
 
-  i_run "pw groupdel $group";
+  i_run "pw groupdel $group", fail_ok => 1;
   if ( $? != 0 ) {
     die("Error deleting group $group");
   }

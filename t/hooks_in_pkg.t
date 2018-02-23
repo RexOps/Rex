@@ -14,21 +14,27 @@ $::QUIET = 1;
 
 my $task_list = Rex::TaskList->create;
 
-my @task_names = $task_list->get_tasks;
-cmp_deeply
-  \@task_names,
-  [qw/t:tasks:chicken:cross_road/],
-  "found task";
+my ($task_name) = $task_list->get_tasks;
+is( $task_name, "t:tasks:chicken:cross_road", "found_task" );
+my $task = $task_list->get_task($task_name);
 
-for my $tn (@task_names) {
-  require Data::Dumper;
-  Data::Dumper->import;
-  diag(Dumper($task_list->get_task($tn)->get_data));
-  my $before_task_start =
-    $task_list->get_task($tn)->get_data->{before_task_start};
-  is( ( scalar @$before_task_start ), 1, $tn );
-  is( $before_task_start->[0]->(), 'checked for traffic', $tn )
-    if (@$before_task_start);
-}
+my $bts = $task->{before_task_start};
+
+is( @$bts, 2, "found 2 before_task_start hooks" );
+is( ref $bts->[0] eq "CODE" ? $bts->[0]->() : undef,
+  "look left", "first before_task_start hook executes" );
+is( ref $bts->[1] eq "CODE" ? $bts->[1]->() : undef,
+  "look right", "second before_task_start hook executes" );
+
+my $atf = $task->{after_task_finished};
+
+is( @$atf, 2, "found 2 after_task_finished hooks" );
+is(
+  ref $atf->[0] eq "CODE" ? $atf->[0]->() : undef,
+  "got to the other side",
+  "first after_task_finished hook executes"
+);
+is( ref $atf->[1] eq "CODE" ? $atf->[1]->() : undef,
+  "celebrate!", "second after_task_finished hook executes" );
 
 done_testing();

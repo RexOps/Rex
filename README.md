@@ -45,4 +45,4 @@ If you need commercial support for (R)?ex, check out the [Support](http://www.re
 
 All contributions are welcome: documentation, patches, bug reports, ideas, promoting (R)?ex at conferences and meetups, or anything else you can think of.
 
-For more details, see the [Contributing guide](https://github.com/RexOps/Rex/blob/contributing/CONTRIBUTING.md) in the repo and the [Help (R)?ex](http://www.rexify.org/care/help__r__ex.html) page on the website.
+For more details, see the [Contributing guide](https://github.com/RexOps/Rex/blob/master/CONTRIBUTING.md) in the repo and the [Help (R)?ex](http://www.rexify.org/care/help__r__ex.html) page on the website.

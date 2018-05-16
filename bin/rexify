@@ -590,8 +590,8 @@ if ( exists $opts->{bundle} ) {
 
   # build the perl and application
   if ( -d '/usr/lib/rex/lib' ) {
-    system "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex"
-      ;
+    system
+      "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex";
   }
   else {
     system

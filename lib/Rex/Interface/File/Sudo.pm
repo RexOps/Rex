@@ -53,15 +53,21 @@ sub open {
   if ( $self->_fs->is_file($file) ) {
 
     # resolving symlinks
-    while ( my $link = $self->_fs->readlink($file) ) {
-      if ( $link !~ m/^\// ) {
-        $file = dirname($file) . "/" . $link;
+    if($self->_fs->is_symlink($file)) {
+      while ( my $link = $self->_fs->readlink($file) ) {
+        $self->{is_link} = 1;
+        if ( $link !~ m/^\// ) {
+          $file = dirname($file) . "/" . $link;
+        }
+        else {
+          $file = $link;
+        }
+        $link = $self->_fs->readlink($link);
       }
-      else {
-        $file = $link;
-      }
-      $link = $self->_fs->readlink($link);
+      $self->{is_link} = 1;
+      $self->{file} = $file;
     }
+    
     $self->{file_stat} = { $self->_fs->stat( $self->{file} ) };
 
     $self->_fs->cp( $file, $self->{rndfile} );

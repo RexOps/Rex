@@ -81,6 +81,8 @@ if ( !$Rex::VERSION ) {
   $Rex::VERSION = "9999.99.99_99";
 }
 
+use MooseX::Singleton;
+
 BEGIN {
   use Rex::Logger;
   use Rex::Interface::Cache;

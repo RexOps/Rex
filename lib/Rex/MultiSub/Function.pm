@@ -29,28 +29,18 @@ has test_wantarray => (
 override call => sub {
   my ( $self, $code, @args ) = @_;
 
-  # TODO check for common parameters like
-  # * timeout
-  # * only_notified
-  # * only_if
-  # * unless
-  # * creates
-  # * on_change
-  # * ensure
-
-  # TODO migrate reporting and error handling from Rex::Resource
-  # TODO remove Rex::Resource class
-
   my $ret = $code->(@args);
 
-  return unless $ret->{value};
+  if (exists $ret->{value}) {
+    if ( $self->test_wantarray && wantarray ) {
+      return split( /\n/, $ret->{value} );
+    }
+    else {
+      return $ret->{value};
+    }
+  }
 
-  if ( $self->test_wantarray && wantarray ) {
-    return split( /\n/, $ret->{value} );
-  }
-  else {
-    return $ret->{value};
-  }
+  return undef;
 };
 
 1;

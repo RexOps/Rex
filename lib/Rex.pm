@@ -96,6 +96,7 @@ BEGIN {
   use Rex::Require;
   use File::Basename;
   use File::Spec;
+  use Rex::Output;
   eval { Net::SSH2->require; };
 }
 
@@ -691,12 +692,15 @@ sub import {
       Rex::Resource::firewall->import( register_in => $register_to );
 
       # new command code structure
-      require Rex::Function::run;
-      Rex::Function::run->import( register_in => $register_to );
+      require Rex::Resource::run;
+      Rex::Resource::run->import( register_in => $register_to );
 
       # new command code structure
       require Rex::Function::Fs::is_file;
       Rex::Function::Fs::is_file->import( register_in => $register_to );
+
+      $what = '-feature';
+      $addition1 = ['2.0'];
   }
 
   if ( $what eq "-feature" || $what eq "feature" ) {

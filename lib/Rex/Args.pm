@@ -34,7 +34,6 @@ sub args_spec {
     w => {},
     S => { type => "string" },
     E => { type => "string" },
-    o => { type => "string" },
     f => { type => "string" },
     M => { type => "string" },
     b => { type => "string" },

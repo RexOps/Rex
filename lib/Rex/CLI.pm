@@ -172,11 +172,6 @@ FORCE_SERVER: {
     }
   }
 
-  if ( $opts{'o'} ) {
-    Rex::Output->require;
-    Rex::Output->get( $opts{'o'} );
-  }
-
   handle_lock_file($::rexfile);
 
   Rex::Config->set_environment( $opts{"E"} ) if ( $opts{"E"} );
@@ -791,11 +786,6 @@ sub exit_rex {
   unlink("$::rexfile.lock") if !exists $opts{'F'};
 
   select STDOUT;
-
-  if ( !$signal && $opts{'o'} && defined( Rex::Output->get ) ) {
-    Rex::Output->get->write();
-    IPC::Shareable->clean_up_all();
-  }
 
   for my $exit_hook (@exit) {
     $exit_hook->( $exit_code_override, $signal );

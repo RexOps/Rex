@@ -77,7 +77,6 @@ Rex can be used to:
     -d     Show debug output
     -ddd   Show more debug output (includes profiling output)
     -m     Monochrome output: no colors
-    -o     Output format
     -q     Quiet mode: no log output
     -qw    Quiet mode: only output warnings and errors
     -Q     Really quiet: output nothing

@@ -417,7 +417,6 @@ sub __help__ {
   printf $fmt, "-d",   "Show debug output";
   printf $fmt, "-ddd", "Show more debug output (includes profiling output)";
   printf $fmt, "-m",   "Monochrome output: no colors";
-  printf $fmt, "-o",   "Output format";
   printf $fmt, "-q",   "Quiet mode: no log output";
   printf $fmt, "-qw",  "Quiet mode: only output warnings and errors";
   printf $fmt, "-Q",   "Really quiet: output nothing";
@@ -434,6 +433,7 @@ sub __help__ {
   printf $fmt, "-h", "Display this help message";
   printf $fmt, "-M", "Load this module instead of Rexfile";
   printf $fmt, "-O", "Pass additional options, like CMDB path";
+  printf $fmt, "-i", "Load inventory from custom ini file path";
   printf $fmt, "-s", "Use sudo for every command";
   printf $fmt, "-S", "Password for sudo";
   printf $fmt, "-t", "Number of threads to use (aka 'parallelism' param)";

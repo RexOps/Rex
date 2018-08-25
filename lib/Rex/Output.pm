@@ -9,62 +9,24 @@ package Rex::Output;
 use strict;
 use warnings;
 
-my $handle;
-use vars qw($output_object);
-
-BEGIN { IPC::Shareable->use; }
-END   { IPC::Shareable->clean_up_all; }
-
-use base 'Rex::Output::Base';
-
 # VERSION
 
-sub get {
-  my ( $class, $output_module ) = @_;
+use Moose;
 
-  return $output_object if ($output_object);
+sub create {
+  my ( $class, $type ) = @_;
 
-  return unless ($output_module);
+  $type ||= "Rex::Output::Base";
 
-  $handle = tie $output_object, 'IPC::Shareable', undef, { destroy => 1 }
-    unless $handle;
+  $type->require;
 
-  eval "use Rex::Output::$output_module;";
-  if ($@) {
-    die("Output Module ,,$output_module'' not found.");
-  }
-
-  my $output_class = "Rex::Output::$output_module";
-  $output_object = $output_class->new;
-
-  return $class;
+  my $c = $type->new;
+  return $c;
 }
 
-sub _action {
-  my ( $class, $action, @args ) = @_;
-
-  return unless ( defined $output_object );
-  $handle->shlock();
-  $output_object->$action(@args);
-  $handle->shunlock();
-}
-
-sub add {
-  my $class = shift;
-
-  return $class->_action( 'add', @_ );
-}
-
-sub error {
-  my $class = shift;
-
-  return $class->_action( 'error', @_ );
-}
-
-sub write {
-  my $class = shift;
-
-  return $class->_action( 'write', @_ );
+sub stash {
+  my ( $self, $key, $value ) = @_;
+  $self->{__data__}->{$key} = $value;
 }
 
 1;

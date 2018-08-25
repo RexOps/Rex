@@ -107,6 +107,27 @@ $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 
 my $cur_dir;
 
+has feature_flags => (
+  is  => 'ro',
+  isa => 'ArrayRef',
+);
+
+has run_stages => (
+  is      => 'ro',
+  isa     => 'ArrayRef',
+  default => sub { [] },
+  writer  => '_set_run_stages',
+);
+
+has output => (
+  is      => 'ro',
+  isa     => 'Rex::Output',
+  lazy    => 1,
+  default => sub {
+    return Rex::Output->create;
+  },
+);
+
 BEGIN {
 
   sub generate_inc {

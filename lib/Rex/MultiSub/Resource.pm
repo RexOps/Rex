@@ -17,6 +17,7 @@ use Rex::MultiSub::LookupTable;
 
 use Data::Dumper;
 use Carp;
+use Clone qw(clone);
 
 extends qw(Rex::MultiSub::ValidatedHash);
 
@@ -26,7 +27,7 @@ override validate => sub {
   my $name          = shift @modified_args;
 
   # some defaults maybe a coderef, so we need to execute this now
-  my @_x = @{ $func_opts->{params_list} };
+  my @_x = @{ clone($func_opts->{params_list}) };
   my %_x = @_x;
   for my $k ( keys %_x ) {
     if ( ref $_x{$k}->{default} eq "CODE" ) {
@@ -70,7 +71,11 @@ override call => sub {
     }
   }
   else {
-    $code->(@args);
+    my $ret = $code->(@args);
+    if(wantarray) {
+      return split(/\n/, $ret->{value});
+    }
+    return $ret->{value};
   }
 };
 

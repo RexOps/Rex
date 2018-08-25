@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use Carp;
 use Rex::Helper::Run;
+use Rex::Interface::Shell;
 
 # VERSION
 

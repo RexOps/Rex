@@ -12,11 +12,13 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
 use Data::Dumper;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
 
-use base qw(Rex::Resource::firewall::Provider::base);
+extends qw(Rex::Resource::firewall::Provider::base);
 
 my %__action_map = (
   accept => "allow",
@@ -26,16 +28,6 @@ my %__action_map = (
   reject => "reject", ## -j REJECT
   limit  => "limit",
 );
-
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = $proto->SUPER::new(@_);
-
-  bless( $self, $proto );
-
-  return $self;
-}
 
 sub present {
   my ( $self, $rule_config ) = @_;
@@ -236,7 +228,7 @@ sub _ufw_exec {
   $cmd = "ufw $cmd";
 
   if ( can_run("ufw") ) {
-    my ( $output, $err ) = i_run $cmd, sub { @_ }, fail_ok => 1;
+    my ( $output, $err ) = i_run $cmd, sub { @_ };
 
     if ( $? != 0 ) {
       Rex::Logger::info( "Error running ufw command: $cmd, received $err",

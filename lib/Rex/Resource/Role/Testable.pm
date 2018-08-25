@@ -4,17 +4,15 @@
 # vim: set ts=2 sw=2 tw=0:
 # vim: set expandtab:
 
-package Rex::Resource::firewall::Provider::base;
+package Rex::Resource::Role::Testable;
 
 use strict;
 use warnings;
 
 # VERSION
 
-use Data::Dumper;
+use Moose::Role;
 
-use Moose;
-
-extends qw(Rex::Resource::Provider);
+requires qw(test);
 
 1;

@@ -75,76 +75,88 @@ my $__provider = { default => "Rex::Resource::firewall::Provider::iptables", };
 
 =cut
 
-resource "firewall", { export => 1 }, sub {
-  my $rule_name = resource_name;
-
-  my $rule_config = {
-    action      => param_lookup("action"),
-    ensure      => param_lookup( "ensure", "present" ),
-    proto       => param_lookup( "proto", undef ),
-    source      => param_lookup( "source", undef ),
-    destination => param_lookup( "destination", undef ),
-    port        => param_lookup( "port", undef ),
-    app         => param_lookup( "app", undef ),
-    sport       => param_lookup( "sport", undef ),
-    sapp        => param_lookup( "sapp", undef ),
-    dport       => param_lookup( "dport", undef ),
-    dapp        => param_lookup( "dapp", undef ),
-    tcp_flags   => param_lookup( "tcp_falgs", undef ),
-    chain       => param_lookup( "chain", "input" ),
-    table       => param_lookup( "table", "filter" ),
-    iniface     => param_lookup( "iniface", undef ),
-    outiface    => param_lookup( "outiface", undef ),
-    reject_with => param_lookup( "reject_with", undef ),
-    logging     => param_lookup( "logging", undef ),    # overall logging
-    log         => param_lookup( "log", undef ),        # logging for rule
-    log_level   => param_lookup( "log_level", undef ),  # logging for rule
-    log_prefix  => param_lookup( "log_prefix", undef ),
-    state       => param_lookup( "state", undef ),
-    ip_version  => param_lookup( "ip_version", -4 ),
-  };
+resource "firewall", {
+  export      => 1,
+  params_list => [
+    name => {
+      isa     => 'Str',
+      default => sub { shift }
+    },
+    ensure => {
+      isa     => 'Str',
+      default => sub { "present" }
+    },
+    action      => { isa => 'Str', },
+    proto       => { isa => 'Str | Undef', default => "tcp" },
+    source      => { isa => 'Str | Undef', default => undef },
+    destination => { isa => 'Str | Undef', default => undef },
+    port        => { isa => 'Int | Undef', default => undef },
+    source      => { isa => 'Str | Undef', default => undef },
+    app         => { isa => 'Str | Undef', default => undef },
+    sport       => { isa => 'Int | Undef', default => undef },
+    dport => {
+      isa     => 'Int | Undef',
+      default => sub { my ( $name, %p ) = @_; return $p{port}; },
+    },
+    dapp        => { isa => 'Str | Undef',      default => undef },
+    tcp_flags   => { isa => 'ArrayRef | Undef', default => undef },
+    chain       => { isa => 'Str | Undef',      default => "INPUT" },
+    table       => { isa => 'Str | Undef',      default => undef },
+    iniface     => { isa => 'Str | Undef',      default => undef },
+    outiface    => { isa => 'Str | Undef',      default => undef },
+    reject_with => { isa => 'Str | Undef',      default => undef },
+    logging     => { isa => 'Str | Undef',      default => undef },
+    log         => { isa => 'Str | Undef',      default => undef },
+    log_level   => { isa => 'Str | Undef',      default => undef },
+    log_prefix  => { isa => 'Str | Undef',      default => undef },
+    state       => { isa => 'Str | Undef',      default => undef },
+    ip_version  => { isa => 'Str | Undef',      default => "-4" },
+  ],
+  },
+  sub {
+  my ( $name, %args ) = @_;
 
   my $provider =
-    param_lookup( "provider", case ( lc(operating_system), $__provider ) );
+    $args{provider} || case ( lc(operating_system), $__provider );
 
-  if ( $provider !~ m/::/ ) {
-    $provider = "Rex::Resource::firewall::Provider::$provider";
-  }
-
+  # TODO define provider type automatically.
   $provider->require;
-  my $provider_o = $provider->new();
+  my $provider_o =
+    $provider->new( type => "firewall", name => $name, config => \%args );
+  $provider_o->process;
 
-  my $changed = 0;
-  if ( my $logging = $rule_config->{logging} ) {
-    if ( $provider_o->logging($logging) ) {
-      emit changed, "Firewall logging updated.";
-    }
-  }
-  elsif ( $rule_config->{ensure} eq "present" ) {
-    if ( $provider_o->present($rule_config) ) {
-      emit created, "Firewall rule created.";
-    }
-  }
-  elsif ( $rule_config->{ensure} eq "absent" ) {
-    if ( $provider_o->absent($rule_config) ) {
-      emit removed, "Firewall rule removed.";
-    }
-  }
-  elsif ( $rule_config->{ensure} eq "disabled" ) {
-    if ( $provider_o->disable($rule_config) ) {
-      emit changed, "Firewall disabled.";
-    }
-  }
-  elsif ( $rule_config->{ensure} eq "enabled" ) {
-    if ( $provider_o->enable($rule_config) ) {
-      emit changed, "Firewall enabled.";
-    }
-  }
-  else {
-    die "Error: $rule_config->{ensure} not a valid option for 'ensure'.";
-  }
+  #  return ( $provider, $c->params );
 
-};
+  #  if ( my $logging = $rule_config->{logging} ) {
+  #    if ( $provider_o->logging($logging) ) {
+  #      emit changed, "Firewall logging updated.";
+  #    }
+  #  }
+  #  elsif ( $rule_config->{ensure} eq "present" ) {
+  #    if ( $provider_o->present($rule_config) ) {
+  #      emit created, "Firewall rule created.";
+  #    }
+  #  }
+  #  elsif ( $rule_config->{ensure} eq "absent" ) {
+  #    if ( $provider_o->absent($rule_config) ) {
+  #      emit removed, "Firewall rule removed.";
+  #    }
+  #  }
+  #  elsif ( $rule_config->{ensure} eq "disabled" ) {
+  #    if ( $provider_o->disable($rule_config) ) {
+  #      emit changed, "Firewall disabled.";
+  #    }
+  #  }
+  #  elsif ( $rule_config->{ensure} eq "enabled" ) {
+  #    if ( $provider_o->enable($rule_config) ) {
+  #      emit changed, "Firewall enabled.";
+  #    }
+  #  }
+  #  else {
+  #    die "Error: $rule_config->{ensure} not a valid option for 'ensure'.";
+  #  }
+
+  };
 
 =back
 

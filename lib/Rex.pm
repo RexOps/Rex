@@ -683,6 +683,22 @@ sub import {
     Rex::Resource::firewall->import( register_in => $register_to );
   }
 
+  if($what eq "-future" || $what eq "future") {
+      require Rex::Resource::kernel;
+      Rex::Resource::kernel->import( register_in => $register_to );
+
+      require Rex::Resource::firewall;
+      Rex::Resource::firewall->import( register_in => $register_to );
+
+      # new command code structure
+      require Rex::Function::run;
+      Rex::Function::run->import( register_in => $register_to );
+
+      # new command code structure
+      require Rex::Function::Fs::is_file;
+      Rex::Function::Fs::is_file->import( register_in => $register_to );
+  }
+
   if ( $what eq "-feature" || $what eq "feature" ) {
 
     if ( !ref($addition1) ) {

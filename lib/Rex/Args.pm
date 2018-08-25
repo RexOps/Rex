@@ -48,6 +48,7 @@ sub args_spec {
     z => { type => "string" },
     O => { type => "string" },
     t => { type => "string" },
+    i => { type => "string" },
   );
 }
 

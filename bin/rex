@@ -92,6 +92,7 @@ Rex can be used to:
     -F     Force: disregard lock file
     -h     Display this help message
     -M     Load this module instead of Rexfile
+    -i     Custom inventory file
     -O     Pass additional options, like CMDB path
     -s     Use sudo for every command
     -S     Password for sudo

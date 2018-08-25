@@ -189,7 +189,7 @@ FORCE_SERVER: {
     }
   }
 
-  load_server_ini_file($::rexfile);
+  load_server_ini_file($::rexfile, ($opts{'i'} || undef));
   load_rexfile($::rexfile);
 
   #### check if some parameters should be overwritten from the command line
@@ -652,12 +652,17 @@ sub handle_lock_file {
 
 sub load_server_ini_file {
   my $rexfile = shift;
+  my $custom_file = shift;
 
   # load server ini file
   my $env             = environment;
   my $ini_dir         = dirname($rexfile);
   my $server_ini_file = "$ini_dir/server.$env.ini";
   $server_ini_file = "$ini_dir/server.ini" unless -f $server_ini_file;
+
+  if($custom_file && -f $custom_file) {
+    $server_ini_file = $custom_file;
+  }
 
   if ( -f $server_ini_file && Rex::Group::Lookup::INI->is_loadable ) {
     Rex::Logger::debug("Loading $server_ini_file");

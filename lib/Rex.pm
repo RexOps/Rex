@@ -622,7 +622,7 @@ sub import {
     Rex::Helper::Rexfile::ParamLookup->import( register_in => $register_to );
   }
 
-  if ( $what eq "-base" || $what eq "base" || $what eq "-feature" ) {
+  if ( $what eq "-base" || $what eq "base" || $what eq "-feature" || $what eq "-future" || $what eq "future") {
     require Rex::Commands;
     Rex::Commands->import( register_in => $register_to );
 
@@ -695,9 +695,11 @@ sub import {
       require Rex::Resource::run;
       Rex::Resource::run->import( register_in => $register_to );
 
-      # new command code structure
       require Rex::Function::Fs::is_file;
       Rex::Function::Fs::is_file->import( register_in => $register_to );
+
+      require Rex::Function::can_run;
+      Rex::Function::can_run->import( register_in => $register_to );
 
       $what = '-feature';
       $addition1 = ['2.0'];

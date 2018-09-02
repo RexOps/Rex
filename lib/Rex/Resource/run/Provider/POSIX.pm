@@ -37,7 +37,7 @@ sub test {
   return 0;
 }
 
-sub process {
+sub present {
   my ($self) = @_;
 
   my $exec = Rex::Interface::Exec->create;
@@ -89,6 +89,7 @@ sub process {
   my $ret = {};
   $ret->{value}     = $out;
   $ret->{exit_code} = $?;
+  $ret->{changed}   = 1;
 
   return $ret;
 }

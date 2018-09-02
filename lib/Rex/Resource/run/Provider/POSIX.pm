@@ -69,6 +69,10 @@ sub process {
     $options->{env} = $self->config->{env};
   }
 
+  if($self->config->{cwd}) {
+    $options->{cwd} = $self->config->{cwd};
+  }
+
   my ( $out, $err ) = $exec->exec( $cmd, $path, $options );
 
   chomp $out if $out;
@@ -90,3 +94,4 @@ sub process {
 }
 
 1;
+

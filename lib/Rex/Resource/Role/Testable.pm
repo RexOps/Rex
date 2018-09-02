@@ -23,10 +23,31 @@ sub process {
   # only if test returns false (which means resource is not deployed) we run the resource code.
   my $res_available = $self->test;
   if ( !$res_available ) {
-    return $self->execute_resource_code('present');
+    my $ret = $self->execute_resource_code('present');
+    return $ret;
   }
 }
 
+#
+# this around() also gets called by roles that overrides
+# the base process function.
+around process => sub {
+  my $orig = shift;
+  my $self = shift;
+
+  my $ret = $self->$orig();
+
+  if(exists $self->config->{auto_die} && $self->config->{auto_die}) {
+    if($ret->{exit_code} != 0) {
+      die "Calling autodie for " . $self->type . "[" . $self->name . "]";
+    }
+  }
+
+  return $ret;
+};
+
+#
+# this code gets only called if the resource must be deployed.
 sub execute_resource_code {
   my ($self, $code) = @_;
 
@@ -46,21 +67,8 @@ sub execute_resource_code {
   # This code handles the timeout of a resource.
   # timeout is now a global resource option and not limited to
   # the run() resource anymore.
-  if(exists $self->config->{timeout}) {
-    my $ret = timeout $self->config->{timeout}, sub {
-      return $self->$code;
-    };
-
-    if($ret && ref $ret eq "HASH") {
-      $return_data = $ret;
-    }
-    else {
-      $return_data = {
-        value => $@,
-        exit_code => $?,
-        changed => 0,
-      };
-    }
+  if(exists $self->config->{timeout} && $self->config->{timeout} > 0) {
+    $return_data = $self->_execute_timeout($code);
   }
 
 
@@ -84,6 +92,24 @@ sub execute_resource_code {
   #
   # return all the gathered data
   return $return_data;
+}
+
+sub _execute_timeout {
+  my ($self, $code) = @_;
+
+    my $ret = timeout $self->config->{timeout}, sub {
+      return $self->$code;
+    };
+
+    if($ret && ref $ret eq "HASH") {
+      return $ret;
+    }
+
+    return {
+      value => $@,
+      exit_code => $?,
+      changed => 0,
+    };
 }
 
 1;

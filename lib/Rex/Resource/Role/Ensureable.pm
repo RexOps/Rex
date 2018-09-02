@@ -43,20 +43,7 @@ sub process {
     || ( $ensure_func eq "absent"  && $res_available )
     || ( $ensure_func ne "present" && $ensure_func ne "absent" ) )
   {
-    #### check and run before_change hook
-    Rex::Hook::run_hook(
-      $self->type => "before_change",
-      $self->name, %{ $self->config }
-    );
-    ##############################
-    $self->$ensure_func;
-
-    #### check and run after_change hook
-    Rex::Hook::run_hook(
-      $self->type => "after_change",
-      $self->name, %{ $self->config }
-    );
-    ##############################
+    return $self->execute_resource_code($ensure_func);
   }
 }
 

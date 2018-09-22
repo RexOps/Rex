@@ -390,6 +390,12 @@ Passing an anonymous I<coderef> to C<sudo> allows for running the commands in th
      say run 'id';
  };
 
+B<Note> that some users receive the error C<sudo: sorry, you must have a tty
+to run sudo>. In this case you have to disable C<requiretty> for this user.
+You can do this in your sudoers file with the following code:
+
+   Defaults:$username !requiretty
+
 =cut
 
 sub sudo {

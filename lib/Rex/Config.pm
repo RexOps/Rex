@@ -572,6 +572,14 @@ sub get_openssh_opt {
   return %openssh_opt;
 }
 
+sub get_rex_openssh_opt {
+  if ( exists $ENV{REX_OPENSSH_OPTS} ) {
+    my @opts = split / /, $ENV{REX_OPENSSH_OPTS};
+    return @opts;
+  }
+  return 0;
+}
+
 =head2 set_sudo_without_locales
 
 =head2 get_sudo_without_locales

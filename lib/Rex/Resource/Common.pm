@@ -26,7 +26,8 @@ use Carp;
 
 @EXPORT =
   qw(emit resource resource_name changed created removed get_resource_provider
-    state_good state_changed state_created state_removed
+    state_good state_changed state_created state_removed state_failed
+    resolve_resource_provider
   );
 
 sub changed { return "changed"; }
@@ -34,6 +35,7 @@ sub created { return "created"; }
 sub removed { return "removed"; }
 
 sub state_good { return "good"; }
+sub state_failed { return "failed"; }
 sub state_changed { return "changed"; }
 sub state_created { return "created"; }
 sub state_removed { return "removed"; }
@@ -161,6 +163,16 @@ sub get_resource_provider {
   );
 
   return $provider_pkg;
+}
+
+sub resolve_resource_provider {
+  my ($provider) = @_;
+
+  if($provider =~ m/^::/) {
+    return "Rex::Resource::kernel::Provider$provider";
+  }
+
+  return $provider;
 }
 
 =back

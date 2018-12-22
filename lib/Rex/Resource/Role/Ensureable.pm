@@ -27,7 +27,6 @@ requires qw(present absent);
 
 sub process {
   my ($self) = @_;
-
   my $ensure_func =
     first { $_ eq $self->config->{ensure} } @{ $self->ensure_options };
 
@@ -44,6 +43,15 @@ sub process {
     || ( $ensure_func ne "present" && $ensure_func ne "absent" ) )
   {
     return $self->execute_resource_code($ensure_func);
+  }
+  else {
+    # resource is already deployed
+    return {
+      value     => "",
+      changed   => 0,
+      status    => state_good,
+      exit_code => 0,
+    }
   }
 }
 

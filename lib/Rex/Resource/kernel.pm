@@ -70,8 +70,8 @@ resource "kmod", {
   # here we define the provider the resource should use. If someone want to use
   # a custom provider we will use this. Otherwise we try to detect the provider
   # automatically.
-  my $provider = $args{provider}
-    || get_resource_provider( kernelname(), operating_system() );
+  my $provider = resolve_resource_provider($args{provider}
+    || get_resource_provider( kernelname(), operating_system() ));
 
   # TODO define provider type automatically.
   $provider->require;

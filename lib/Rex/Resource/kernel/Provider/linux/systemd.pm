@@ -76,6 +76,7 @@ sub enabled {
   my $mod_name = $self->name;
   my $mod_md5 = md5_hex($mod_name);
   my $remote_md5 = eval { Rex::Commands::MD5::md5("/etc/modules-load.d/$mod_name.conf"); } // "";
+  my $exit_code = 0;
 
   if($mod_md5 eq $remote_md5) {
     # nothing todo
@@ -85,21 +86,48 @@ sub enabled {
   my $fs   = Rex::Interface::Fs->create;
 
   if(! $fs->is_dir( "/etc/modules-load.d" )) {
-    $fs->mkdir( "/etc/modules-load.d" );
-    $fs->chown( "root", "/etc/modules-load.d" );
-    $fs->chgrp( "root", "/etc/modules-load.d" );
-    $fs->chmod( "0700", "/etc/modules-load.d" );
+    eval {
+      $fs->mkdir( "/etc/modules-load.d" );
+      $fs->chown( "root", "/etc/modules-load.d" );
+      $fs->chgrp( "root", "/etc/modules-load.d" );
+      $fs->chmod( "0700", "/etc/modules-load.d" );
+    } or do {
+      $exit_code = 1;
+    };
+
+    if($exit_code) {
+      return {
+        value => "",
+        exit_code => $exit_code,
+        changed => 0,
+        status => state_failed,
+      };
+    }
   }
 
-  $fs->file_put_contents("/etc/modules-load.d/$mod_name.conf", $mod_name,
-    owner => "root",
-    group => "root",
-    mode  => "0600"
-  );
+  eval {
+    $fs->file_put_contents("/etc/modules-load.d/$mod_name.conf", $mod_name,
+      owner => "root",
+      group => "root",
+      mode  => "0600"
+    );
+    1;
+  } or do {
+    $exit_code = 1;
+  };
+
+  if($exit_code) {
+    return {
+      value => "",
+      exit_code => $exit_code,
+      changed => 0,
+      status => state_failed,
+    };
+  }
 
   return {
     value => "",
-    exit_code => 0,
+    exit_code => $exit_code,
     changed => 1,
     status => state_changed
   };

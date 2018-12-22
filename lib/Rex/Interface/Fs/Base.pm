@@ -174,8 +174,10 @@ sub file_put_contents {
   my ($self, $file, $content, %options) = @_;
 
   my $fh = Rex::Interface::File->create;
+
+  my $mode = ($options{append} ? ">>" : ">");
   
-  if ( !$fh->open( ">", $file ) ) {
+  if ( !$fh->open( $mode, $file ) ) {
     Rex::Logger::debug("Can't open $file for writing.");
     die("Can't open $file for writing.");
   }

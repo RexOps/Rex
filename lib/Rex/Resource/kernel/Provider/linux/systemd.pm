@@ -59,8 +59,11 @@ use Rex::Resource::Common;
 use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Data::Dumper;
+use Digest::MD5 qw(md5_hex);
+
 require Rex::Commands::File;
 require Rex::Commands::Fs;
+require Rex::Commands::MD5;
 
 extends qw(Rex::Resource::kernel::Provider::linux);
 with qw(Rex::Resource::Role::Persistable);
@@ -68,44 +71,68 @@ with qw(Rex::Resource::Role::Persistable);
 sub enabled {
   my ($self) = @_;
 
-  my $mod_name = $self->name;
-
   my $changed = $self->present;
-  my $os_ver  = operating_system_release();
 
-  # TODO migrate to something like Rex::Interface::Fs->file()
-  Rex::Commands::File::file(
-    "/etc/modules-load.d/$mod_name.conf",
-    ensure    => "present",
-    content   => $mod_name,
-    user      => "root",
-    group     => "root",
-    mode      => "0600",
-    on_change => sub { $changed = 1; },
+  my $mod_name = $self->name;
+  my $mod_md5 = md5_hex($mod_name);
+  my $remote_md5 = eval { Rex::Commands::MD5::md5("/etc/modules-load.d/$mod_name.conf"); } // "";
+
+  if($mod_md5 eq $remote_md5) {
+    # nothing todo
+    return $changed;
+  }
+
+  my $fs   = Rex::Interface::Fs->create;
+
+  if(! $fs->is_dir( "/etc/modules-load.d" )) {
+    $fs->mkdir( "/etc/modules-load.d" );
+    $fs->chown( "root", "/etc/modules-load.d" );
+    $fs->chgrp( "root", "/etc/modules-load.d" );
+    $fs->chmod( "0700", "/etc/modules-load.d" );
+  }
+
+  $fs->file_put_contents("/etc/modules-load.d/$mod_name.conf", $mod_name,
+    owner => "root",
+    group => "root",
+    mode  => "0600"
   );
 
-  $self->_set_status(created);
-
-  return $changed;
+  return {
+    value => "",
+    exit_code => 0,
+    changed => 1,
+    status => state_changed
+  };
 }
 
 sub disabled {
   my ($self) = @_;
 
   my $mod_name = $self->name;
-
   my $changed = $self->absent;
-  my $os_ver  = operating_system_release();
 
-  Rex::Commands::File::file(
-    "/etc/modules-load.d/$mod_name.conf",
-    ensure    => "absent",
-    on_change => sub { $changed = 1; },
-  );
+  my $fs = Rex::Interface::Fs->create;
 
-  $self->_set_status(removed);
+  if($fs->is_file("/etc/modules-load.d/$mod_name.conf")) {
+    $fs->unlink("/etc/modules-load.d/$mod_name.conf");
 
-  return $changed;
+    return {
+      value => "",
+      exit_code => 0,
+      changed => 1,
+      status => state_changed
+    };
+  }
+  else {
+    return $changed;
+  }
+
+  return {
+    value => "",
+    exit_code => 0,
+    changed => 1,
+    status => state_changed
+  };
 }
 
 sub _is_enabled {

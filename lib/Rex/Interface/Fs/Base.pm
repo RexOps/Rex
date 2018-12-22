@@ -169,6 +169,33 @@ sub cp {
   die("Error copying $source -> $dest") if ( Rex::Config->get_autodie );
 }
 
+
+sub file_put_contents {
+  my ($self, $file, $content, %options) = @_;
+
+  my $fh = Rex::Interface::File->create;
+  
+  if ( !$fh->open( ">", $file ) ) {
+    Rex::Logger::debug("Can't open $file for writing.");
+    die("Can't open $file for writing.");
+  }
+
+  my $o_fh = Rex::FS::File->new( fh => $fh );
+  $o_fh->write($content);
+  $o_fh->close;
+
+  if(exists $options{owner}) {
+    $self->chown($options{owner}, $file);
+  }
+  if(exists $options{group}) {
+    $self->chgrp($options{group}, $file);
+  }
+  if(exists $options{mode}) {
+    $self->chmod($options{mode}, $file);
+  }
+}
+
+
 sub _normalize_path {
   my ( $self, @dirs ) = @_;
 

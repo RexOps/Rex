@@ -25,11 +25,18 @@ use vars qw(@EXPORT);
 use Carp;
 
 @EXPORT =
-  qw(emit resource resource_name changed created removed get_resource_provider);
+  qw(emit resource resource_name changed created removed get_resource_provider
+    state_good state_changed state_created state_removed
+  );
 
 sub changed { return "changed"; }
 sub created { return "created"; }
 sub removed { return "removed"; }
+
+sub state_good { return "good"; }
+sub state_changed { return "changed"; }
+sub state_created { return "created"; }
+sub state_removed { return "removed"; }
 
 sub emit {
   my ( $type, $message ) = @_;
@@ -119,13 +126,14 @@ sub get_resource_provider {
     $os_name = "redhat";
   }
 
+  elsif ( is_ubuntu($os_name) ) {
+    $os_name = "ubuntu";
+  }
+
   elsif ( is_debian($os_name) ) {
     $os_name = "debian";
   }
 
-  elsif ( is_ubuntu($os_name) ) {
-    $os_name = "ubuntu";
-  }
 
   my $try_load = sub {
     my @mods = @_;

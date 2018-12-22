@@ -60,14 +60,14 @@ sub present {
 
   my $mod_name = $self->name;
 
-  my $output = i_run "modprobe -v $mod_name 2>&1";
-  if ( $? != 0 ) {
-    die "Error loading module $mod_name:\n$output.";
-  }
+  my $output = i_run "modprobe -v $mod_name 2>&1", fail_ok => 1;
 
-  $self->_set_status(created);
-
-  return 1;
+  return {
+    value => $output,
+    exit_code => $?,
+    changed => 1,
+    status => changed
+  };
 }
 
 sub absent {
@@ -75,14 +75,14 @@ sub absent {
 
   my $mod_name = $self->name;
 
-  my $output = i_run "rmmod $mod_name 2>&1";
-  if ( $? != 0 ) {
-    die "Error unloading module $mod_name:\n$output.";
-  }
+  my $output = i_run "rmmod $mod_name 2>&1", fail_ok => 1;
 
-  $self->_set_status(removed);
-
-  return 1;
+  return {
+    value => $output,
+    exit_code => $?,
+    changed => 1,
+    status => removed
+  };
 }
 
 sub _list_loaded_modules {

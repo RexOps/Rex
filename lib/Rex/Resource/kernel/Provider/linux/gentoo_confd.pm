@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Resource::kernel::Provider::linux::gentoo - Kernel functions for Gentoo Linux.
+Rex::Resource::kernel::Provider::linux::gentoo_confd - Kernel functions for Gentoo Linux.
 
 =head1 DESCRIPTION
 
@@ -48,7 +48,7 @@ Unload the module if module is loaded and ensure that the module isn't loaded on
 
 =cut
 
-package Rex::Resource::kernel::Provider::linux::gentoo;
+package Rex::Resource::kernel::Provider::linux::gentoo_confd;
 
 use strict;
 use warnings;
@@ -64,8 +64,12 @@ use Data::Dumper;
 require Rex::Commands::File;
 require Rex::Commands::Fs;
 
-extends qw(Rex::Resource::kernel::Provider::linux::systemd);
+extends qw(Rex::Resource::kernel::Provider::linux::debian_legacy);
 with qw(Rex::Resource::Role::Persistable);
 
+sub BUILD {
+  my ($self) = @_;
+  $self->_set_modules_file("/etc/conf.d/modules");
+}
 
 1;

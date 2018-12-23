@@ -60,22 +60,48 @@ override call => sub {
   # TODO remove Rex::Resource class
   # TODO add default values for $args[1] if $args[0] is hash
 
+  my @status_return;
+
   if ( ref $args[0] eq "HASH" ) {
+    my @status = ();
     for my $k_name ( keys %{ $args[0] } ) {
-      $code->( $k_name, %{ $args[0]->{$k_name} } );
+      my $ret = $code->( $k_name, %{ $args[0]->{$k_name} } );
+      push @status, $ret;
     }
+    @status_return = @status;
   }
   elsif ( ref $args[0] eq "ARRAY" ) {
+    my @status = ();
     for my $v_name ( @{ $args[0] } ) {
-      $code->( $v_name, @args[ 1 .. $#args ] );
+      my $ret = $code->( $v_name, @args[ 1 .. $#args ] );
+      push @status, $ret;
     }
+    @status_return = @status;
   }
   else {
     my $ret = $code->(@args);
-    if(wantarray) {
-      return split(/\n/, $ret->{value});
+    push @status_return, $ret;
+  }
+
+  # test if on_change needed
+  for my $status (@status_return) {
+    if($status->{status} && $status->{status} eq "changed") {
+      my %opts = @args[1..scalar(@args)-1];
+      if($opts{on_change}) {
+        $opts{on_change}(\@args);
+      }
     }
-    return $ret->{value};
+  }
+
+  if(scalar(@status_return) == 1 && wantarray) {
+    return split(/\n/, $status_return[0]->{value});
+  }
+
+  if(scalar(@status_return) == 1) {
+    return $status_return[0]->{value};
+  }
+  else {
+    return @status_return;
   }
 };
 

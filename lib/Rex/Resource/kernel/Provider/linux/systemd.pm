@@ -60,6 +60,7 @@ use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Data::Dumper;
 use Digest::MD5 qw(md5_hex);
+use Text::Sprintf::Named qw(named_sprintf);
 
 require Rex::Commands::File;
 require Rex::Commands::Fs;
@@ -68,14 +69,35 @@ require Rex::Commands::MD5;
 extends qw(Rex::Resource::kernel::Provider::linux);
 with qw(Rex::Resource::Role::Persistable);
 
+has modules_dir => (
+  is => 'ro',
+  isa => 'Str',
+  default => sub { "/etc/modules-load.d" },
+  writer => '_set_modules_dir'
+);
+
+has module_template => (
+  is => 'ro',
+  isa => 'Str',
+  default => sub { '%(mod_name)s' },
+  writer => '_set_module_template',
+);
+
+has module_filename => (
+  is => 'ro',
+  isa => 'Str',
+  default => sub { '%(mod_name)s.conf' },
+  writer => '_set_module_filename',
+);
+
 sub enabled {
   my ($self) = @_;
 
   my $changed = $self->present;
 
   my $mod_name = $self->name;
-  my $mod_md5 = md5_hex($mod_name);
-  my $remote_md5 = eval { Rex::Commands::MD5::md5("/etc/modules-load.d/$mod_name.conf"); } // "";
+  my $mod_md5 = md5_hex(named_sprintf($self->module_template, { mod_name => $mod_name }));
+  my $remote_md5 = eval { Rex::Commands::MD5::md5($self->modules_dir . "/" . named_sprintf($self->module_filename, { mod_name => $mod_name })); } // "";
   my $exit_code = 0;
 
   if($mod_md5 eq $remote_md5) {
@@ -85,12 +107,12 @@ sub enabled {
 
   my $fs   = Rex::Interface::Fs->create;
 
-  if(! $fs->is_dir( "/etc/modules-load.d" )) {
+  if(! $fs->is_dir( $self->modules_dir )) {
     eval {
-      $fs->mkdir( "/etc/modules-load.d" );
-      $fs->chown( "root", "/etc/modules-load.d" );
-      $fs->chgrp( "root", "/etc/modules-load.d" );
-      $fs->chmod( "0700", "/etc/modules-load.d" );
+      $fs->mkdir( $self->modules_dir );
+      $fs->chown( "root", $self->modules_dir );
+      $fs->chgrp( "root", $self->modules_dir );
+      $fs->chmod( "0700", $self->modules_dir );
     } or do {
       $exit_code = 1;
     };
@@ -106,7 +128,7 @@ sub enabled {
   }
 
   eval {
-    $fs->file_put_contents("/etc/modules-load.d/$mod_name.conf", $mod_name,
+    $fs->file_put_contents($self->modules_dir . "/" . named_sprintf($self->module_filename, { mod_name => $mod_name }), named_sprintf($self->module_template, {mod_name => $mod_name}),
       owner => "root",
       group => "root",
       mode  => "0600"
@@ -141,8 +163,8 @@ sub disabled {
 
   my $fs = Rex::Interface::Fs->create;
 
-  if($fs->is_file("/etc/modules-load.d/$mod_name.conf")) {
-    $fs->unlink("/etc/modules-load.d/$mod_name.conf");
+  if($fs->is_file($self->modules_dir . "/" . named_sprintf($self->module_filename, {mod_name => $mod_name}))) {
+    $fs->unlink($self->modules_dir . "/" . named_sprintf($self->module_filename, {mod_name => $mod_name}));
 
     return {
       value => "",
@@ -169,7 +191,7 @@ sub _is_enabled {
   my $mod_name = $self->name;
   my $fs       = Rex::Interface::Fs->create;
 
-  return $fs->is_file("/etc/modules-load.d/$mod_name.conf");
+  return $fs->is_file($self->modules_dir . "/" . named_sprintf($self->module_filename, {mod_name => $mod_name}));
 }
 
 1;

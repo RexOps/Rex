@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Resource::kernel::Provider::linux::redhat - Kernel functions for Redhat Linux and clones.
+Rex::Resource::kernel::Provider::linux::redhat_5 - Kernel functions for Redhat Linux and clones.
 
 =head1 DESCRIPTION
 
@@ -38,10 +38,6 @@ Load the module if it is not loaded and ensure that it is loaded on startup.
 
 On Redhat 4 and 5 it will add line to I</etc/rc.modules>. 
 
-On Redhat 6 it will add a file into I</etc/sysconfig/modules/>.
-
-If the system has systemd it will add a file to I</etc/modules-load.d/>.
-
 =item disabled.
 
 Unload the module if module is loaded and ensure that the module isn't loaded on startup.
@@ -52,7 +48,7 @@ Unload the module if module is loaded and ensure that the module isn't loaded on
 
 =cut
 
-package Rex::Resource::kernel::Provider::linux::redhat;
+package Rex::Resource::kernel::Provider::linux::redhat_5;
 
 use strict;
 use warnings;
@@ -68,8 +64,12 @@ use Data::Dumper;
 require Rex::Commands::File;
 require Rex::Commands::Fs;
 
-extends qw(Rex::Resource::kernel::Provider::linux::systemd);
+extends qw(Rex::Resource::kernel::Provider::linux::debian_legacy);
 with qw(Rex::Resource::Role::Persistable);
 
+sub BUILD {
+  my ($self) = @_;
+  $self->_set_modules_file("/etc/rc.modules");
+}
 
 1;

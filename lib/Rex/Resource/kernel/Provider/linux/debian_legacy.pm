@@ -67,6 +67,13 @@ require Rex::Commands::Fs;
 extends qw(Rex::Resource::kernel::Provider::linux);
 with qw(Rex::Resource::Role::Persistable);
 
+has modules_file => (
+  is => 'ro',
+  isa => 'Str',
+  default => sub { "/etc/modules" },
+  writer  => '_set_modules_file',
+);
+
 sub enabled {
   my ( $self ) = @_;
 
@@ -79,9 +86,9 @@ sub enabled {
   my $my_changed = 0;
   my $exit_code = 0;
 
-  if($fs->is_file("/etc/modules")) {
+  if($fs->is_file($self->modules_file)) {
     eval {
-      Rex::Commands::File::append_if_no_such_line( "/etc/modules", $mod_name,
+      Rex::Commands::File::append_if_no_such_line( $self->modules_file, $mod_name,
         on_change => sub { $my_changed = 1; } );
       1;
     } or do {
@@ -90,7 +97,7 @@ sub enabled {
   }
   else {
     eval {
-      $fs->file_put_contents("/etc/modules", "$mod_name\n",
+      $fs->file_put_contents($self->modules_file, "$mod_name\n",
         owner => "root",
         group => "root",
         mode  => "0644",
@@ -123,10 +130,10 @@ sub disabled {
 
   my $fs = Rex::Interface::Fs->create;
 
-  if($fs->is_file("/etc/modules")) {
+  if($fs->is_file($self->modules_file)) {
     eval {
       Rex::Commands::File::delete_lines_according_to( qr{^\Q$mod_name\E$},
-        "/etc/modules", on_change => sub { $my_changed = 1; } );
+        $self->modules_file, on_change => sub { $my_changed = 1; } );
       1;
     } or do {
       $exit_code = 1;
@@ -146,7 +153,7 @@ sub _is_enabled {
 
   my $mod_name = $self->name;
 
-  my ($enabled) = grep { m/^\Q$mod_name\E$/ } i_run "cat /etc/modules";
+  my ($enabled) = eval { grep { m/^\Q$mod_name\E$/ } i_run "cat " . $self->modules_file; };
   return $enabled;
 };
 

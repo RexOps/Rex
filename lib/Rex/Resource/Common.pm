@@ -136,6 +136,33 @@ sub get_resource_provider {
     $os_name = "debian";
   }
 
+  elsif ( is_gentoo($os_name) ) {
+    $os_name = "gentoo";
+  }
+
+  elsif ( is_suse($os_name) ) {
+    $os_name = "suse";
+  }
+
+  elsif ( is_alt($os_name) ) {
+    $os_name = "alt";
+  }
+
+  elsif ( is_mageia($os_name) ) {
+    $os_name = "mageia";
+  }
+
+  elsif ( is_arch($os_name) ) {
+    $os_name = "arch";
+  }
+
+  elsif ( is_openwrt($os_name) ) {
+    $os_name = "openwrt";
+  }
+
+  else {
+    die "No module found for $os_name.";
+  }
 
   my $try_load = sub {
     my @mods = @_;

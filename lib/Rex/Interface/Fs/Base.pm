@@ -197,6 +197,55 @@ sub file_put_contents {
   }
 }
 
+sub _split_dir {
+  my ($self, $dir) = @_;
+
+  my @splitted_dir;
+
+  if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
+
+    # special case for local windows runs
+    @splitted_dir = map { "\\$_"; } split( /[\\\/]/, $dir );
+    if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
+      $splitted_dir[0] = "$1:\\";
+    }
+    else {
+      $splitted_dir[0] =~ s/^\\//;
+    }
+  }
+  else {
+    @splitted_dir = map { "/$_"; } split( /\//, $dir );
+
+    unless ( $splitted_dir[0] eq "/" ) {
+      $splitted_dir[0] = "." . $splitted_dir[0];
+    }
+    else {
+      shift @splitted_dir;
+    }
+  }
+
+  return @splitted_dir;
+}
+
+sub mkdir_p {
+  my ($self, $dir) = @_;
+
+  my @splitted_dir = $self->_split_dir($dir);
+
+  my $str_part = "";
+  for my $part (@splitted_dir) {
+    $str_part .= "$part";
+
+    if ( !$self->is_dir($str_part) && !$self->is_file($str_part) ) {
+      if ( !$self->mkdir($str_part) ) {
+        Rex::Logger::debug("Can't create directory $dir");
+        die("Can't create directory $dir");
+      }
+    }
+  }
+
+  $self->mkdir($dir);
+}
 
 sub _normalize_path {
   my ( $self, @dirs ) = @_;

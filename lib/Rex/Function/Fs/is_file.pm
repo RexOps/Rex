@@ -45,6 +45,9 @@ function "is_file", {
   # a function must return a hash reference
   # the return value that the function call should return to the "enduser"
   # is stored in "value"
+  
+  # normalize values from Fs interfaces
+  $ret = undef unless($ret);
   return { value => $ret, };
   };
 

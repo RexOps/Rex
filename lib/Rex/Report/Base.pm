@@ -15,6 +15,7 @@ use Data::Dumper;
 use Rex::Logger;
 use Time::HiRes qw(time);
 use Carp;
+use UUID::Tiny ':std';
 
 sub new {
   my $that  = shift;
@@ -45,6 +46,9 @@ sub report {
   for my $res ( @{ $self->{__current_resource__} } ) {
     $self->{__reports__}->{$res}->{changed} ||= $option{changed} || 0;
   }
+
+  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{name} = $option{name};
+  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{resource} = $option{resource};
 
   push
     @{ $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{messages}
@@ -99,7 +103,7 @@ sub write_report {
 
 sub _gen_res_name {
   my ( $self, %option ) = @_;
-  return $option{type} . "[" . $option{name} . "]";
+  return $option{type} . "[" . $option{name} . " (" . create_uuid_as_string(UUID_V4) . ")]";
 }
 
 1;

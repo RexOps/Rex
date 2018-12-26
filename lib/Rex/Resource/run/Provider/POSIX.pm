@@ -90,6 +90,7 @@ sub present {
   $ret->{value}     = $out;
   $ret->{exit_code} = $?;
   $ret->{changed}   = 1;
+  $ret->{status}    = state_changed;
 
   return $ret;
 }

@@ -73,6 +73,12 @@ has message => (
   default => sub { '' },
 );
 
+sub BUILD {
+  my ($self) = @_;
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => $self->type, name => $self->name );
+}
+
 sub DEMOLISH {
   my ($self) = @_;
   $self->report;
@@ -81,7 +87,8 @@ sub DEMOLISH {
 sub report {
   my ($self) = @_;
 
-  # TODO reporting
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => $self->type, name => $self->name );
 }
 
 1;

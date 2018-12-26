@@ -69,6 +69,7 @@ with qw(Rex::Resource::Role::Persistable);
 
 sub BUILD {
   my ($self) = @_;
+  super();
   $self->_set_modules_file("/etc/rc.modules");
 }
 

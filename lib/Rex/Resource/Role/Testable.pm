@@ -37,6 +37,20 @@ around process => sub {
 
   my $ret = $self->$orig();
 
+  if(exists $ret->{status} && exists $ret->{changed}) {
+    $self->_set_status($ret->{status});
+
+    Rex::get_current_connection()->{reporter}->report(
+      changed => $ret->{changed},
+      resource => $self->type,
+      name => $self->name,
+      message => "Resource " . $self->type . " status changed to " . ($self->config->{ensure} || 'present') . ".",
+    );
+  }
+  else {
+    die "There is no status or changed return-proeprty for this resource: " . $self->type . "\n";
+  }
+
   if(exists $self->config->{auto_die} && $self->config->{auto_die}) {
     if($ret->{exit_code} != 0) {
       die "Calling autodie for " . $self->type . "[" . $self->name . "]";

@@ -69,6 +69,7 @@ with qw(Rex::Resource::Role::Persistable);
 
 sub BUILD {
   my ($self) = @_;
+  super();
   $self->_set_modules_dir("/etc/sysconfig/modules");
   $self->_set_module_template("#!/bin/sh\nexec /sbin/modprobe \%(mod_name)s");
   $self->_set_module_filename("\%(mod_name)s.modules");

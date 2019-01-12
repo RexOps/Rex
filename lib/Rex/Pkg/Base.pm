@@ -11,7 +11,7 @@ use warnings;
 use Rex::Helper::Run;
 use Rex::Interface::Exec;
 
-# VERSION
+our $VERSION = '1.6.0'; # VERSION
 
 sub new {
   my $that  = shift;
@@ -63,6 +63,7 @@ sub update {
   my ( $self, $pkg, $option ) = @_;
 
   my $version = $option->{'version'} || '';
+  my $env     = $option->{'env'}     || ();
 
   Rex::Logger::debug( "Installing $pkg" . ( $version ? "-$version" : "" ) );
   my $cmd = sprintf $self->{commands}->{install}, $pkg;
@@ -72,7 +73,7 @@ sub update {
       $option->{version};
   }
 
-  my $f = i_run $cmd, fail_ok => 1;
+  my $f = i_run $cmd, fail_ok => 1, env => $env;
 
   unless ( $? == 0 ) {
     Rex::Logger::info( "Error installing $pkg.", "warn" );

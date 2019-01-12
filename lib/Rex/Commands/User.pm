@@ -39,7 +39,7 @@ package Rex::Commands::User;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '1.6.0'; # VERSION
 
 require Rex::Exporter;
 use Rex::Commands::Fs;
@@ -67,6 +67,7 @@ Manage user account.
    comment        => 'User Account',
    expire         => '2011-05-30',
    groups         => [ 'root', '...' ],
+   login_class    => 'staff',   # on OpenBSD
    password       => 'blahblah',
    crypt_password => '*', # on Linux, OpenBSD and NetBSD
    system         => 1,
@@ -273,7 +274,7 @@ sub delete_user {
 =head2 lock_password($user)
 
 Lock the password of a user account. Currently this is only
-available on Linux (see passwd --lock).
+available on Linux (see passwd --lock) and OpenBSD.
 
 =cut
 
@@ -284,7 +285,7 @@ sub lock_password {
 =head2 unlock_password($user)
 
 Unlock the password of a user account. Currently this is only
-available on Linux (see passwd --unlock).
+available on Linux (see passwd --unlock) and OpenBSD.
 
 =cut
 

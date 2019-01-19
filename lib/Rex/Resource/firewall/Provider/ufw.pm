@@ -12,11 +12,15 @@ use warnings;
 
 # VERSION
 
+use Moose;
+
 use Data::Dumper;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
+use Rex::Resource::Common;
 
-use base qw(Rex::Resource::firewall::Provider::base);
+extends qw(Rex::Resource::firewall::Provider::base);
+with qw(Rex::Resource::Role::EnableDisable);
 
 my %__action_map = (
   accept => "allow",
@@ -27,41 +31,118 @@ my %__action_map = (
   limit  => "limit",
 );
 
-sub new {
-  my $that  = shift;
-  my $proto = ref($that) || $that;
-  my $self  = $proto->SUPER::new(@_);
+sub test {
+  my ($self) = @_;
 
-  bless( $self, $proto );
+  # currently we don't have detection if the rule already exists
+  # todo: detect if rule exists
 
-  return $self;
+  return 0;
 }
 
 sub present {
-  my ( $self, $rule_config ) = @_;
+  my ($self) = @_;
+
+  my $rule_config = $self->config;
 
   my @ufw_params = $self->_generate_rule_array($rule_config);
 
-  return $self->_ufw_rule( grep { defined } @ufw_params );
+  my $changed   = 0;
+  my $exit_code = 0;
+  my $error     = "";
+
+  eval {
+    $changed = $self->_ufw_rule( grep { defined } @ufw_params );
+    1;
+  } or do {
+    $exit_code = 1;
+    $error     = $@;
+  };
+
+  return {
+    value     => $error,
+    exit_code => $exit_code,
+    changed   => $changed,
+    status    => ( $exit_code == 0 ? state_changed : state_failed ),
+  };
 }
 
 sub absent {
-  my ( $self, $rule_config ) = @_;
+  my ($self) = @_;
+
+  my $rule_config = $self->config;
 
   $rule_config->{delete} = 1;
   my @ufw_params = $self->_generate_rule_array($rule_config);
 
-  return $self->_ufw_rule( grep { defined } @ufw_params );
+  my $changed   = 0;
+  my $exit_code = 0;
+  my $error     = "";
+
+  eval {
+    $changed = $self->_ufw_rule( grep { defined } @ufw_params );
+    1;
+  } or do {
+    $exit_code = 1;
+    $error     = $@;
+  };
+
+  return {
+    value     => $error,
+    exit_code => $exit_code,
+    changed   => $changed,
+    status    => ( $exit_code == 0 ? state_changed : state_failed ),
+  };
 }
 
 sub enable {
-  my ( $self, $rule_config ) = @_;
-  return $self->_ufw_disable_enable("enable");
+  my ($self) = @_;
+
+  my $rule_config = $self->config;
+
+  my $changed   = 0;
+  my $exit_code = 0;
+  my $error     = "";
+
+  eval {
+    $changed = $self->_ufw_disable_enable("enable");
+    1;
+  } or do {
+    $exit_code = 1;
+    $error     = $@;
+  };
+
+  return {
+    value     => $error,
+    exit_code => $exit_code,
+    changed   => $changed,
+    status    => ( $exit_code == 0 ? state_changed : state_failed ),
+  };
 }
 
 sub disable {
-  my ( $self, $rule_config ) = @_;
-  return $self->_ufw_disable_enable("disable");
+  my ($self) = @_;
+
+  my $rule_config = $self->config;
+
+  my $changed   = 0;
+  my $exit_code = 0;
+  my $error     = "";
+
+  eval {
+    $changed = $self->_ufw_disable_enable("disable");
+    1;
+  } or do {
+    $exit_code = 1;
+    $error     = $@;
+  };
+
+  return {
+    value     => $error,
+    exit_code => $exit_code,
+    changed   => $changed,
+    status    => ( $exit_code == 0 ? state_changed : state_failed ),
+  };
 }
 
 sub logging {
@@ -236,7 +317,7 @@ sub _ufw_exec {
   $cmd = "ufw $cmd";
 
   if ( can_run("ufw") ) {
-    my ( $output, $err ) = i_run $cmd, sub { @_ }, fail_ok => 1;
+    my ( $output, $err ) = i_run $cmd, sub { @_ };
 
     if ( $? != 0 ) {
       Rex::Logger::info( "Error running ufw command: $cmd, received $err",
@@ -254,6 +335,8 @@ sub _ufw_exec {
 
 sub _generate_rule_array {
   my ( $self, $rule_config ) = @_;
+
+  print STDERR Dumper($rule_config);
 
   my $action = $__action_map{ $rule_config->{action} }
     or die qq(Unknown action "$rule_config->{action}" for UFW provider);

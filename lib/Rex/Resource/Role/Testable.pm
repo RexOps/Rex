@@ -45,7 +45,8 @@ around process => sub {
       changed => $ret->{changed},
       resource => $self->type,
       name => $self->name,
-      message => "Resource " . $self->type . " status changed to " . ($self->config->{ensure} || 'present') . ".",
+      status => $ret->{status},
+      message => "Resource " . $self->type . " status changed to " . ($ret->{status} || 'present') . ".",
     );
   }
   else {

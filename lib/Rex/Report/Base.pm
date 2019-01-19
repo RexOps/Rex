@@ -49,6 +49,7 @@ sub report {
 
   $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{name} = $option{name};
   $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{resource} = $option{resource};
+  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{status} = $option{status};
 
   push
     @{ $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{messages}
@@ -67,6 +68,7 @@ sub report_resource_start {
   push @{ $self->{__current_resource__} }, $self->_gen_res_name(%option);
   $self->{__reports__}->{ $self->{__current_resource__}->[-1] } = {
     changed    => 0,
+    status     => 'unknown',
     messages   => [],
     start_time => time,
   };
@@ -103,7 +105,7 @@ sub write_report {
 
 sub _gen_res_name {
   my ( $self, %option ) = @_;
-  return $option{type} . "[" . $option{name} . " (" . create_uuid_as_string(UUID_V4) . ")]";
+  return $option{type} . "[" . $option{name} . "]";
 }
 
 1;

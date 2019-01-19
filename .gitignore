@@ -26,3 +26,4 @@ vars.db.lock
 .includepath
 .project
 tmp/
+*.disabled.*

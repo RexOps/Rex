@@ -26,7 +26,7 @@ use Carp;
 
 @EXPORT =
   qw(emit resource resource_name changed created removed get_resource_provider
-    state_good state_changed state_created state_removed state_failed
+    state_good state_changed state_created state_removed state_failed state_timeout
     resolve_resource_provider
   );
 
@@ -39,6 +39,7 @@ sub state_failed { return "failed"; }
 sub state_changed { return "changed"; }
 sub state_created { return "created"; }
 sub state_removed { return "removed"; }
+sub state_timeout { return "timeout"; }
 
 sub emit {
   my ( $type, $message ) = @_;

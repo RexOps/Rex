@@ -701,6 +701,12 @@ sub import {
       require Rex::Function::can_run;
       Rex::Function::can_run->import( register_in => $register_to );
 
+      require Rex::Resource::file;
+      Rex::Resource::file->import( register_in => $register_to );
+
+      require Rex::Resource::pkg;
+      Rex::Resource::pkg->import( register_in => $register_to );
+
       $what = '-feature';
       $addition1 = ['2.0'];
   }

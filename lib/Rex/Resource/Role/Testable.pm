@@ -9,6 +9,7 @@ package Rex::Resource::Role::Testable;
 use strict;
 use warnings;
 use Time::Out qw(timeout);
+use Rex::Resource::Common;
 
 # VERSION
 
@@ -48,7 +49,7 @@ around process => sub {
     );
   }
   else {
-    die "There is no status or changed return-proeprty for this resource: " . $self->type . "\n";
+    die "There is no status or changed return-property for this resource: " . $self->type . "\n";
   }
 
   if(exists $self->config->{auto_die} && $self->config->{auto_die}) {
@@ -123,7 +124,9 @@ sub _execute_timeout {
       value => $@,
       exit_code => $?,
       changed => 0,
+      status => state_timeout,
     };
+
 }
 
 1;

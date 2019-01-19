@@ -46,6 +46,13 @@ sub report {
     $self->{__reports__}->{$res}->{changed} ||= $option{changed} || 0;
   }
 
+  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{name} =
+    $option{name};
+  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{resource} =
+    $option{resource};
+  $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{status} =
+    $option{status};
+
   push
     @{ $self->{__reports__}->{ $self->{__current_resource__}->[-1] }->{messages}
     },
@@ -63,6 +70,7 @@ sub report_resource_start {
   push @{ $self->{__current_resource__} }, $self->_gen_res_name(%option);
   $self->{__reports__}->{ $self->{__current_resource__}->[-1] } = {
     changed    => 0,
+    status     => 'unknown',
     messages   => [],
     start_time => time,
   };

@@ -11,7 +11,7 @@ use warnings;
 use Rex::Helper::Run;
 use Rex::Interface::Exec;
 
-our $VERSION = '1.6.0'; # VERSION
+# VERSION
 
 sub new {
   my $that  = shift;

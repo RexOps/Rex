@@ -9,7 +9,7 @@ package Rex::User::OpenBSD;
 use strict;
 use warnings;
 
-our $VERSION = '1.6.0'; # VERSION
+# VERSION
 
 use Rex::Logger;
 use Rex::Commands::MD5;

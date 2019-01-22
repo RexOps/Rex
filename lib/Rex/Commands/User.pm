@@ -39,7 +39,7 @@ package Rex::Commands::User;
 use strict;
 use warnings;
 
-our $VERSION = '1.6.0'; # VERSION
+# VERSION
 
 require Rex::Exporter;
 use Rex::Commands::Fs;

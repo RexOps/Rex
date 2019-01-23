@@ -173,7 +173,7 @@ sub delete_host {
     my @content = $fh->read_all;
     $fh->close;
 
-    my @new_content = grep { !/\s$host\s?/ } @content;
+    my @new_content = grep { !/\s\Q$host\E\b/ } @content;
 
     $fh = file_write $file;
     $fh->write(@new_content);

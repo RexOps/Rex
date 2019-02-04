@@ -72,12 +72,18 @@ sub create_user {
     $cmd = "usermod ";
   }
 
-  if ( exists $data->{uid} ) {
+  if ( defined $user_info{uid} ) {
+    if ( exists $data->{uid} ) {
 
-    # On OpenBSD, "usermod -u n login" fails when the user login
-    # has already n as userid. So skip it from the command arg
-    # when the uid is already correct.
-    $cmd .= " -u " . $data->{uid} unless $data->{uid} == $user_info{uid};
+      # On OpenBSD, "usermod -u n login" fails when the user login
+      # has already n as userid. So skip it from the command arg
+      # when the uid is already correct.
+      $cmd .= " -u " . $data->{uid} unless $data->{uid} == $user_info{uid};
+    }
+  }
+  else {
+      # the user does not exist yet.
+      $cmd .= " -u " . $data->{uid};
   }
 
   if ( exists $data->{home} ) {

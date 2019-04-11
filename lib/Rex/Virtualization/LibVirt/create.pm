@@ -444,7 +444,15 @@ __DATA__
 
    <% for my $disk (@{$::storage}) { %>
    <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
-    <driver name="qemu" type="<%= $disk->{driver_type} %>"/>
+    <driver name="qemu" type="<%= $disk->{driver_type} %>"
+      <% if(exists $disk->{driver_cache}) { %>
+        cache="<%= $disk->{driver_cache} %>"
+      <% } %>
+      <% if(exists $disk->{driver_discard}) { %>
+        discard="<%= $disk->{driver_discard} %>"
+      <% } %>
+    />
+
     <% if ($disk->{type} eq "file") { %>
     <source file="<%= $disk->{file} %>"/>
     <% } elsif ($disk->{file} eq "block") { %>

@@ -5,6 +5,9 @@ BEGIN {
   use Test::More;
   use Data::Dumper;
 
+  plan skip_all => "Testing with database connections explicitly disabled"
+       if $ENV{NO_DB_TESTING} = 1;
+
   eval "use DBI; 1" or plan skip_all => "Could not load DBI module";
 
   eval "use Rex::Commands::DB; 1"

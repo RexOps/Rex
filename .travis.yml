@@ -1,0 +1,13 @@
+language: perl
+perl:
+  - "5.30"
+sudo: false
+before_install:
+  - cpanm --quiet --notest Perl::Critic
+install:
+  - dzil authordeps --missing | cpanm --quiet --notest
+  - dzil listdeps --missing | cpanm --quiet --notest
+  - cpanm --quiet --notest DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1 String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Test::mysqld
+  - dzil build --in build --notgz
+script:
+  - cd build && RELEASE_TESTING=1 AUTHOR_TESTING=1 NO_DB_TESTING=1 prove --timer --lib --recurse --jobs 2 --shuffle t/

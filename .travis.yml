@@ -4,6 +4,7 @@ perl:
 sudo: false
 before_install:
   - cpanm --quiet --notest Perl::Critic
+  - cpanm --quiet --notest Perl::Tidy@20171214
 install:
   - dzil authordeps --missing | cpanm --quiet --notest
   - dzil listdeps --missing | cpanm --quiet --notest

@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Config;
+use Module::Runtime qw(use_module);
 
 my %VM_PROVIDER;
 
@@ -58,12 +59,9 @@ sub create {
     $klass = $VM_PROVIDER{$wanted_provider};
   }
 
-  eval "use $klass";
-
-  if ($@) {
-    die
+  eval { use_module( $klass ) }
+      or die
       "Failed loading given virtualization module.\nTried to load <$klass>.\nError: $@\n";
-  }
 
   Rex::Logger::debug("Using $klass for virtualization");
 

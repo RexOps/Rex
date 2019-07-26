@@ -13,6 +13,7 @@ use warnings;
 
 use Rex;
 use Data::Dumper;
+use Module::Runtime qw(use_module);
 
 sub create {
   my ( $class, $type ) = @_;
@@ -35,8 +36,8 @@ sub create {
   }
 
   my $class_name = "Rex::Interface::Fs::$type";
-  eval "use $class_name;";
-  if ($@) { die("Error loading Fs interface $type.\n$@"); }
+  eval { use_module( $class_name ) }
+      or die("Error loading Fs interface $type.\n$@");
 
   return $class_name->new;
 }

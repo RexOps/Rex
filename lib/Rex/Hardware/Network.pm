@@ -15,6 +15,7 @@ use Data::Dumper;
 
 use Rex::Commands::Gather;
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 require Rex::Hardware;
 
@@ -64,12 +65,11 @@ sub _get_class {
   $os_type = "Solaris" if Rex::Commands::Gather::is_solaris();
 
   my $hw_class = "Rex::Hardware::Network::$os_type";
-  eval "use $hw_class;";
-
-  if ($@) {
+  eval { use_module($hw_class) }
+      or do {
     Rex::Logger::debug("No network information on $os_type");
     return;
-  }
+  };
 
   return $hw_class;
 }

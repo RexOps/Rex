@@ -14,6 +14,7 @@ use warnings;
 use vars qw(%rex_opts);
 use Rex::Logger;
 use Data::Dumper;
+use Module::Runtime qw(use_module);
 
 our $CLEANUP = 1;
 
@@ -111,10 +112,8 @@ sub parse_rex_opts {
         }
 
         my $c = "Rex::Args::\u$type";
-        eval "use $c";
-        if ($@) {
-          die("No Argumentclass $type found!");
-        }
+        eval { use_module($c) }
+            or die("No Argumentclass $type found!");
 
         if ( exists $rex_opts{$name_param} && $type eq "Single" ) {
           $rex_opts{$name_param}++;

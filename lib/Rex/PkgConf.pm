@@ -16,6 +16,7 @@ use Rex::Commands::Gather;
 use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 my %PKG_PROVIDER;
 
@@ -54,9 +55,8 @@ sub get {
   }
 
   Rex::Logger::debug("Using $class for package management");
-  eval "use $class";
-
-  if ($@) {
+  eval { use_module( $class ) }
+      or do {
 
     if ($provider) {
       Rex::Logger::info( "Provider not supported (" . $provider . ")" );
@@ -67,7 +67,7 @@ sub get {
     }
     die("OS/Provider not supported");
 
-  }
+  };
 
   return $class->new;
 

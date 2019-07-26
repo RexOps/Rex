@@ -33,6 +33,7 @@ use warnings;
 require Rex::Exporter;
 use Net::OpenSSH::ShellQuoter;
 use Data::Dumper;
+use Module::Runtime qw(use_module);
 use Rex;
 use Rex::Logger;
 use Rex::Helper::SSH2;
@@ -44,7 +45,7 @@ use Rex::Interface::Fs;
 
 BEGIN {
   if ( $^O !~ m/^MSWin/ ) {
-    eval "use Expect";
+    eval { use_module "Expect"; };
   }
   else {
     # this fails sometimes on windows...

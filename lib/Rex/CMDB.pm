@@ -41,6 +41,7 @@ use warnings;
 
 # VERSION
 
+use Module::Runtime qw(use_module);
 use Rex::Commands;
 use Rex::Value;
 
@@ -143,10 +144,8 @@ sub cmdb {
     $klass = "Rex::CMDB::$klass";
   }
 
-  eval "use $klass";
-  if ($@) {
-    die("CMDB provider ($klass) not found: $@");
-  }
+  eval { use_module( $klass ) }
+      or die("CMDB provider ($klass) not found: $@");
 
   my $cmdb = $klass->new( %{$CMDB_PROVIDER} );
   return Rex::Value->new( value => ( $cmdb->get( $item, $server ) || undef ) );

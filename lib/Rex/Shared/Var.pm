@@ -33,6 +33,7 @@ use warnings;
 require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
+use Module::Runtime qw(use_module);
 
 @EXPORT = qw(share);
 
@@ -66,17 +67,17 @@ sub share {
       $sym = "${package}::$sym";
 
       if ( $sigil eq "\$" ) {
-        eval "use Rex::Shared::Var::Scalar;";
+        eval { use_module "Rex::Shared::Var::Scalar"; };
         tie $$sym, "Rex::Shared::Var::Scalar", $sym;
         *$sym = \$$sym;
       }
       elsif ( $sigil eq "\@" ) {
-        eval "use Rex::Shared::Var::Array;";
+        eval { use_module "Rex::Shared::Var::Array"; };
         tie @$sym, "Rex::Shared::Var::Array", $sym;
         *$sym = \@$sym;
       }
       elsif ( $sigil eq "\%" ) {
-        eval "use Rex::Shared::Var::Hash;";
+        eval { use_module "Rex::Shared::Var::Hash"; };
         tie %$sym, "Rex::Shared::Var::Hash", $sym;
         *$sym = \%$sym;
       }

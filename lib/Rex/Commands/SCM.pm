@@ -59,6 +59,7 @@ use warnings;
 
 # VERSION
 
+use Module::Runtime qw(use_module);
 use Rex::Logger;
 use Rex::Config;
 
@@ -93,11 +94,11 @@ sub checkout {
     delete $data{"path"};
   }
 
-  eval "use $class;";
-  if ($@) {
+  eval { use_module( $class) }
+      or do {
     Rex::Logger::info( "Error loading SCM: $@\n", "warn" );
     die("Error loading SCM: $@");
-  }
+  };
 
   my $scm = $class->new;
 

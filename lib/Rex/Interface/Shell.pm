@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 my %SHELL_PROVIDER = (
   ash   => "Rex::Interface::Shell::Ash",
@@ -40,8 +41,8 @@ sub create {
   $shell =~ s/[\r\n]//gms; # sometimes there are some wired things...
 
   my $klass = "Rex::Interface::Shell::\u$shell";
-  eval "use $klass";
-  if ($@) {
+  eval { use_module( $klass ) }
+      or do {
     Rex::Logger::info(
       "Can't load wanted shell: '$shell' ('$klass'). Using default shell.",
       "warn" );
@@ -50,8 +51,8 @@ sub create {
       "warn"
     );
     $klass = "Rex::Interface::Shell::Default";
-    eval "use $klass";
-  }
+    use_module( $klass );
+  };
 
   return $klass->new;
 }

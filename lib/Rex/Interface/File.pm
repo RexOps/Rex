@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Rex;
+use Module::Runtime qw(use_module);
 
 sub create {
   my ( $class, $type ) = @_;
@@ -34,8 +35,8 @@ sub create {
   }
 
   my $class_name = "Rex::Interface::File::$type";
-  eval "use $class_name;";
-  if ($@) { die("Error loading file interface $type.\n$@"); }
+  eval { use_module( $class_name ) }
+      or die("Error loading file interface $type.\n$@");
 
   return $class_name->new;
 }

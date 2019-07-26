@@ -33,17 +33,19 @@ package Rex::Logger;
 use strict;
 use warnings;
 
+use Module::Runtime qw(use_module);
+
 # VERSION
 
 #use Rex;
 
 our $no_color = 0;
-eval "use Term::ANSIColor";
-if ($@) { $no_color = 1; }
+eval { use_module( "Term::ANSIColor" ) }
+    or do { $no_color = 1; };
 
 if ( $^O =~ m/MSWin/ ) {
-  eval "use Win32::Console::ANSI";
-  if ($@) { $no_color = 1; }
+    eval { use_module( "Win32::Console::ANSI" ) }
+        or do { $no_color = 1; };
 }
 
 my $has_syslog = 0;

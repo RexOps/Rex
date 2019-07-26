@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Config;
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 my %BOX_PROVIDER;
 
@@ -35,12 +36,11 @@ sub create {
   }
 
   Rex::Logger::debug("Using $klass as box provider");
-  eval "use $klass;";
-
-  if ($@) {
+  eval { use_module( $klass ) }
+      or do {
     Rex::Logger::info("Box Class $klass not found.");
     die("Box Class $klass not found.");
-  }
+  };
 
   return $klass->new( @opts, options => $options );
 }

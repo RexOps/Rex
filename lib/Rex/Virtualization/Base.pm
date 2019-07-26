@@ -9,6 +9,8 @@ package Rex::Virtualization::Base;
 use strict;
 use warnings;
 
+use Module::Runtime qw(use_module);
+
 # VERSION
 
 sub new {
@@ -25,12 +27,11 @@ sub execute {
   my ( $self, $action, $vmname, @opt ) = @_;
 
   my $mod = ref($self) . "::$action";
-  eval "use $mod;";
-
-  if ($@) {
+  eval { use_module( $mod ) }
+      or do {
     Rex::Logger::info("No action $action available.");
     die("No action $action available.");
-  }
+  };
 
   return $mod->execute( $vmname, @opt );
 

@@ -16,6 +16,7 @@ use base qw(Exporter);
 use vars qw(@EXPORT);
 
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 @EXPORT = qw(get_cloud_service);
 
@@ -37,19 +38,18 @@ sub get_cloud_service {
   my ($service) = @_;
 
   if ( exists $CLOUD_SERVICE{"\L$service"} ) {
-    eval "use " . $CLOUD_SERVICE{"\L$service"};
+    use_module $CLOUD_SERVICE{"\L$service"};
 
     my $mod = $CLOUD_SERVICE{"\L$service"};
     return $mod->new;
   }
   else {
-    eval "use Rex::Cloud::$service";
-
-    if ($@) {
+    eval { use_module( "Rex::Cloud::$service") }
+      or do {
       Rex::Logger::info("Cloud Service $service not supported.");
       Rex::Logger::info($@);
       return 0;
-    }
+    };
 
     my $mod = "Rex::Cloud::$service";
     return $mod->new;

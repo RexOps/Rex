@@ -31,6 +31,7 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 require Rex::Args;
 
@@ -98,13 +99,12 @@ sub get {
     }
 
     Rex::Logger::debug("Loading $mod");
-    eval "use $mod";
-
-    if ($@) {
+    eval { use_module( $mod ) }
+        or do {
       Rex::Logger::info("$mod not found.");
       Rex::Logger::debug("$@");
       next;
-    }
+    };
 
     $hardware_information{$mod_string} = $mod->get();
 

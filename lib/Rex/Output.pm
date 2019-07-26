@@ -16,7 +16,7 @@ BEGIN { IPC::Shareable->use; }
 END   { IPC::Shareable->clean_up_all; }
 
 use base 'Rex::Output::Base';
-
+use Module::Runtime qw(use_module);
 # VERSION
 
 sub get {
@@ -29,10 +29,8 @@ sub get {
   $handle = tie $output_object, 'IPC::Shareable', undef, { destroy => 1 }
     unless $handle;
 
-  eval "use Rex::Output::$output_module;";
-  if ($@) {
-    die("Output Module ,,$output_module'' not found.");
-  }
+  eval { use_module( "Rex::Output::$output_module") }
+      or die("Output Module ,,$output_module'' not found.");
 
   my $output_class = "Rex::Output::$output_module";
   $output_object = $output_class->new;

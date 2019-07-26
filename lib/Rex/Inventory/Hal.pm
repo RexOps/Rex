@@ -14,6 +14,7 @@ use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 # VERSION
 
@@ -98,12 +99,12 @@ sub get_object_by_cat_and_udi {
   $rex_class ||= $cat;
 
   my $class_name = "Rex::Inventory::Hal::Object::\u$rex_class";
-  eval "use $class_name";
-  if ($@) {
+  eval { use_module( $class_name ) }
+      or do {
     Rex::Logger::debug(
       "This Hal Object isn't supported yet. Falling back to Base Object.");
     $class_name = "Rex::Inventory::Hal::Object";
-  }
+  };
 
   return $class_name->new( %{ $self->{'__hal'}->{$cat}->{$udi} },
     hal => $self );

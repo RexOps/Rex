@@ -15,6 +15,7 @@ use Data::Dumper;
 use Rex::Config;
 use Rex::Logger;
 use Rex::Interface::Executor;
+use Module::Runtime qw(use_module);
 
 use vars qw(%tasks);
 
@@ -36,10 +37,8 @@ sub create {
 
   my $class_name = "Rex::TaskList::$type";
 
-  eval "use $class_name";
-  if ($@) {
-    die("TaskList module not found: $@");
-  }
+  eval { use_module( $class_name ) }
+      or die("TaskList module not found: $@");
 
   $task_list = $class_name->new;
 

@@ -63,6 +63,7 @@ require Rex::Commands;
 use Rex::Commands::Box;
 use Data::Dumper;
 use Carp;
+use Module::Runtime qw(use_module);
 
 require Exporter;
 use base qw(Exporter);
@@ -306,10 +307,8 @@ sub AUTOLOAD {
   }
 
   my $pkg = __PACKAGE__ . "::$real_method";
-  eval "use $pkg";
-  if ($@) {
-    confess "Error loading $pkg. No such test method.";
-  }
+  eval { use_module( $pkg ) }
+      or confess "Error loading $pkg. No such test method.";
 
   my $p = $pkg->new;
   if ($is_not) {

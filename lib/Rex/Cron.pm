@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Commands::Gather;
 use List::Util qw'first';
+use Module::Runtime qw(use_module);
 
 sub create {
   my ($class) = @_;
@@ -33,10 +34,8 @@ sub create {
   }
 
   my $klass = "Rex::Cron::$type";
-  eval "use $klass;";
-  if ($@) {
-    die("Error creating cron class: $klass\n$@");
-  }
+  eval { use_module( $klass ) }
+      or die("Error creating cron class: $klass\n$@");
 
   return $klass->new;
 }

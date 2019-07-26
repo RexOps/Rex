@@ -17,6 +17,7 @@ use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Helper::Run;
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 my %SERVICE_PROVIDER;
 
@@ -83,14 +84,11 @@ sub get {
   }
 
   Rex::Logger::debug("service using class: $class");
-  eval "use $class";
-
-  if ($@) {
-
+  eval { use_module($class) }
+      or do {
     Rex::Logger::info("OS ($operatingsystem) not supported");
     exit 1;
-
-  }
+  };
 
   return $class->new;
 

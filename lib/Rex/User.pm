@@ -13,6 +13,7 @@ use warnings;
 
 use Rex::Commands::Gather;
 use Rex::Logger;
+use Module::Runtime qw(use_module);
 
 sub get {
 
@@ -34,14 +35,13 @@ sub get {
   }
 
   my $class = "Rex::User::" . $user_o;
-  eval "use $class";
-
-  if ($@) {
+  eval { use_module( $class ) }
+      or do {
 
     Rex::Logger::info("OS not supported");
     die("OS not supported");
 
-  }
+  };
 
   return $class->new;
 

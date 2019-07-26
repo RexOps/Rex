@@ -9,6 +9,7 @@ package Rex::Report;
 use strict;
 use warnings;
 use Data::Dumper;
+use Module::Runtime qw(use_module);
 
 # VERSION
 
@@ -21,11 +22,8 @@ sub create {
   $type ||= "Base";
 
   my $c = "Rex::Report::$type";
-  eval "use $c";
-
-  if ($@) {
-    die("No reporting class $type found.");
-  }
+  eval { use_module( $c ) }
+      or die("No reporting class $type found.");
 
   $report = $c->new;
   return $report;

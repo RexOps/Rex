@@ -9,6 +9,8 @@ package Rex::Interface::Connection;
 use strict;
 use warnings;
 
+use Module::Runtime qw(use_module);
+
 # VERSION
 
 sub create {
@@ -19,8 +21,8 @@ sub create {
   }
 
   my $class_name = "Rex::Interface::Connection::$type";
-  eval "use $class_name;";
-  if ($@) { die("Error loading connection interface $type.\n$@"); }
+  eval { use_module( $class_name ) }
+      or die("Error loading connection interface $type.\n$@");
 
   return $class_name->new;
 }

@@ -1,6 +1,15 @@
 theme = core
 severity = 5
+
+# We have a separate test for tidy code
+[-CodeLayout::RequireTidyCode]
+
+# Policies to be enabled / discussed:
+
+[-Subroutines::ProhibitExplicitReturnUndef]
 [-BuiltinFunctions::ProhibitStringyEval]
-allow_includes = 1
-[CodeLayout::RequireTidyCode]
-severity = 5
+[-TestingAndDebugging::ProhibitNoStrict]
+[-TestingAndDebugging::ProhibitNoWarnings]
+[-ControlStructures::ProhibitMutatingListFunctions]
+[-BuiltinFunctions::ProhibitSleepViaSelect]
+[-Subroutines::ProhibitSubroutinePrototypes]

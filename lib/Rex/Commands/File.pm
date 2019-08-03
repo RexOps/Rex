@@ -852,6 +852,8 @@ sub delete_lines_matching {
 
   my $fs = Rex::Interface::Fs->create;
 
+  my %stat = $fs->stat($file);
+
   if ( !$fs->is_file($file) ) {
     Rex::Logger::info("File: $file not found.");
     die("$file not found");
@@ -868,10 +870,7 @@ sub delete_lines_matching {
   my $old_md5 = "";
   eval { $old_md5 = md5($file); };
 
-  my $fh = file_write $file;
-  unless ($fh) {
-    die("Can't open $file for writing");
-  }
+  my @new_content;
 
 OUT:
   for my $line (@content) {
@@ -882,9 +881,14 @@ OUT:
       }
     }
 
-    $fh->write( $line . $nl );
+    push @new_content, $line;
   }
-  $fh->close;
+
+  file $file,
+    content => join( $nl, @new_content ),
+    owner   => $stat{uid},
+    group   => $stat{gid},
+    mode    => $stat{mode};
 
   my $new_md5 = "";
   eval { $new_md5 = md5($file); };
@@ -1046,6 +1050,8 @@ sub _append_or_update {
 
   my $fs = Rex::Interface::Fs->create;
 
+  my %stat = $fs->stat($file);
+
   my ( $old_md5, $ret );
   $old_md5 = md5($file);
 
@@ -1078,29 +1084,11 @@ sub _append_or_update {
 
   push @$content, "$new_line" unless $found;
 
-  eval {
-    my $fh = file_write $file;
-    unless ($fh) {
-      die("can't open file for writing");
-    }
-    $fh->write( join( "\n", @$content ) );
-    $fh->write("\n");
-    $fh->close;
-    $ret = 0;
-    1;
-  } or do {
-    $ret = 3;
-  };
-
-  if ( $ret == 1 ) {
-    die("Can't open $file for reading");
-  }
-  elsif ( $ret == 2 ) {
-    die("Can't open temp file for writing");
-  }
-  elsif ( $ret == 3 ) {
-    die("Can't open $file for writing");
-  }
+  file $file,
+    content => join( "\n", @$content ),
+    owner   => $stat{uid},
+    group   => $stat{gid},
+    mode    => $stat{mode};
 
   my $new_md5 = md5($file);
 

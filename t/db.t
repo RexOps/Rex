@@ -6,7 +6,7 @@ BEGIN {
   use Data::Dumper;
 
   plan skip_all => "Testing with database connections explicitly disabled"
-       if $ENV{NO_DB_TESTING} = 1;
+       if $ENV{NO_DB_TESTING};
 
   eval "use DBI; 1" or plan skip_all => "Could not load DBI module";
 

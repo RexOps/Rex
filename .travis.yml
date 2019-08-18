@@ -8,8 +8,10 @@ cache:
     - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/lib
     - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/bin
 before_install:
+  - cpanm Perl::Critic
+  - perlcritic --quiet --single-policy=RequireTidyCode bin
   - dzil authordeps --missing | cpanm
-  - dzil listdeps --missing | cpanm
+  - dzil listdeps --author --missing | cpanm
   - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
   - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Test::mysqld
 install:

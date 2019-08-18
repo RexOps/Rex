@@ -28,7 +28,7 @@ sub execute {
   my @blocks = split /\n\n/m, $result;
   for my $block (@blocks) {
 
-    my $if = {};
+    my $if    = {};
     my @lines = split /\n/, $block;
     for my $line (@lines) {
       if ( $line =~ /^Name:\s+(.+?)$/ ) {

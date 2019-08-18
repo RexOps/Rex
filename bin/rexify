@@ -252,7 +252,7 @@ sub download_recipe_local_tar_gz {
 sub upload_rexfile {
   my (%option) = @_;
 
-  my $tmp_dir = File::Spec->tmpdir;
+  my $tmp_dir  = File::Spec->tmpdir;
   my $tmp_file = File::Spec->catfile( $tmp_dir, basename(getcwd) . ".tar.gz" );
 
   my $login_url = $option{server} . "/login";
@@ -491,7 +491,7 @@ sub resolve_deps {
         }
 
         my $curdir = getcwd;
-        my $path = File::Spec->catdir( File::Spec->tmpdir, "tmp-build-$$" );
+        my $path   = File::Spec->catdir( File::Spec->tmpdir, "tmp-build-$$" );
 
         my $lib_path =
           File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),

@@ -42,7 +42,7 @@ ok -e $filename, 'file was created';
   my $read_fh = Rex::Interface::File->create('Local');
   $read_fh->open( '<', $filename );
   my $read_object = Rex::FS::File->new( fh => $read_fh );
-  my @read_lines = $read_object->read_all;
+  my @read_lines  = $read_object->read_all;
   is_deeply \@read_lines, [qw/this is a test/], 'read lines from fh';
 }
 
@@ -70,7 +70,7 @@ ok -e $filename, 'file was created';
   my $read_fh = Rex::Interface::File->create('Local');
   $read_fh->open( '<', $filename );
   my $read_object = Rex::FS::File->new( fh => $read_fh );
-  my @read_lines = $read_object->read_all;
+  my @read_lines  = $read_object->read_all;
   is_deeply \@read_lines, [qw/this is a test/], 'read lines from fh';
 }
 
@@ -98,6 +98,6 @@ ok -e $filename, 'file was created';
   $file_object->close;
 
   my $read_object = Rex::FS::File->new( filename => $filename, mode => 'r' );
-  my @read_lines = $read_object->read_all;
+  my @read_lines  = $read_object->read_all;
   is_deeply \@read_lines, [qw/this is a test/], 'read lines from fh';
 }

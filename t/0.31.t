@@ -32,7 +32,7 @@ is( $servers[5], "serv06", "get_group with evaluation" );
 
 task( "authtest1", group => "foo", sub { } );
 task( "authtest2", group => "bar", sub { } );
-task( "authtest3", "srv001", sub { } );
+task( "authtest3", "srv001",           sub { } );
 task( "authtest4", group => "latebar", sub { } );
 group( "latebar", "server[01..03]" );
 

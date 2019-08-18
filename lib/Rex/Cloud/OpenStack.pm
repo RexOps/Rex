@@ -73,7 +73,7 @@ sub _authenticate {
 
   my $auth_data = {
     auth => {
-      tenantName => $self->{auth}{tenant_name} || '',
+      tenantName          => $self->{auth}{tenant_name} || '',
       passwordCredentials => {
         username => $self->{auth}{username},
         password => $self->{auth}{password},
@@ -323,7 +323,7 @@ sub create_volume {
 
   my $request_data = {
     volume => {
-      size => $data{size} || 1,
+      size              => $data{size} || 1,
       availability_zone => $data{zone},
     }
   };

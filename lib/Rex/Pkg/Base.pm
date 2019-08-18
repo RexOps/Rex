@@ -103,7 +103,7 @@ sub update_system {
 
   if ( $option{update_packages} ) {
     my $cmd = $self->{commands}->{update_system};
-    my $f = i_run $cmd, fail_ok => 1;
+    my $f   = i_run $cmd, fail_ok => 1;
 
     unless ( $? == 0 ) {
       Rex::Logger::debug($f);
@@ -117,7 +117,7 @@ sub update_system {
     }
     else {
       my $cmd = $self->{commands}->{dist_update_system};
-      my $f = i_run $cmd, fail_ok => 1;
+      my $f   = i_run $cmd, fail_ok => 1;
 
       unless ( $? == 0 ) {
         Rex::Logger::debug($f);

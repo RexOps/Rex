@@ -78,7 +78,7 @@ sub new {
   $self->{"__shell"}->shell;
 
   $self->{"__log_stdout"} = $Rex::Helper::SSH2::Expect::Log_Stdout;
-  $self->{"__log_to"} = sub { };
+  $self->{"__log_to"}     = sub { };
 
   return $self;
 }

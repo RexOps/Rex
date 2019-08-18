@@ -98,7 +98,7 @@ sub execute {
 
   for (@network) {
     $_->{type} ||= "network";
-    $_->{type} = "bridge" if ( $_->{type} && $_->{type} eq "bridged" );
+    $_->{type} = "bridge"  if ( $_->{type} && $_->{type} eq "bridged" );
     $_->{type} = "network" if ( $_->{type} eq "nat" );
     if ( $_->{type} eq "network" && !exists $_->{network} ) {
       $_->{network} = "default";

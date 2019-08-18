@@ -485,9 +485,10 @@ sub _list_tasks {
   Rex::Logger::debug("Listing Tasks");
 
   my @tasks;
-  if($opts{'a'}) {
+  if ( $opts{'a'} ) {
     @tasks = sort Rex::TaskList->create()->get_all_tasks(qr/.*/);
-  } else {
+  }
+  else {
     @tasks = Rex::TaskList->create()->get_tasks;
   }
 
@@ -543,7 +544,7 @@ sub _list_batches {
 
   _print_color( "Batches\n", 'yellow' );
   my $max_batch_len = max map { length } @batchs;
-  my $fmt = " %-" . $max_batch_len . "s  %s\n";
+  my $fmt           = " %-" . $max_batch_len . "s  %s\n";
 
   for my $batch ( sort @batchs ) {
     my $description = Rex::Batch->get_desc($batch);
@@ -569,7 +570,7 @@ sub _list_envs {
 
   _print_color( "Environments\n", "yellow" ) if scalar @envs;
   my $max_env_len = max map { length $_->{name} } @envs;
-  my $fmt = " %-" . $max_env_len . "s  %s\n";
+  my $fmt         = " %-" . $max_env_len . "s  %s\n";
 
   for my $e ( sort @envs ) {
     my $output = sprintf $fmt, $e->{name}, $e->{description};
@@ -588,10 +589,10 @@ sub _list_groups {
 
   _print_color( "Server Groups\n", "yellow" );
   my $max_group_len = max map { length } @group_names;
-  my $fmt = " %-" . $max_group_len . "s  %s\n";
+  my $fmt           = " %-" . $max_group_len . "s  %s\n";
 
   for my $group_name (@group_names) {
-    my $hosts = join( ", ", sort @{ $groups{$group_name} } );
+    my $hosts  = join( ", ", sort @{ $groups{$group_name} } );
     my $output = sprintf $fmt, $group_name, $hosts;
     my $indent = " " x $max_group_len . "   ";
     print wrap( "", $indent, $output );
@@ -765,7 +766,7 @@ sub load_rexfile {
     if ($stderr) {
       my @lines = split( $/, $stderr );
       Rex::Logger::info( "You have some code warnings:", 'warn' );
-      Rex::Logger::info( "\t$_", 'warn' ) for @lines;
+      Rex::Logger::info( "\t$_",                         'warn' ) for @lines;
     }
 
     1;
@@ -782,7 +783,7 @@ sub load_rexfile {
     my @lines = split( $/, $e );
 
     Rex::Logger::info( "Compile time errors:", 'error' );
-    Rex::Logger::info( "\t$_", 'error' ) for @lines;
+    Rex::Logger::info( "\t$_",                 'error' ) for @lines;
 
     exit 1;
   }

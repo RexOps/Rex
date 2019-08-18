@@ -24,6 +24,7 @@ use Rex::Commands;
 }
 
 {
+
   package Nested::Module;
 
   use strict;
@@ -38,6 +39,7 @@ use Rex::Commands;
 }
 
 {
+
   package Rex::Module;
 
   use strict;

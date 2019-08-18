@@ -31,7 +31,7 @@ sub new {
 sub run_test {
   my ( $self, $user, $key, $value, $count ) = @_;
 
-  my @crons = cron list => $user;
+  my @crons         = cron list => $user;
   my @matched_crons = grep { $_->{$key} eq $value } @crons;
 
   if ($count) {
@@ -46,7 +46,7 @@ sub run_test {
 sub run_not_test {
   my ( $self, $user, $key, $value, $count ) = @_;
 
-  my @crons = cron list => $user;
+  my @crons         = cron list => $user;
   my @matched_crons = grep { $_->{$key} eq $value } @crons;
 
   if ($count) {

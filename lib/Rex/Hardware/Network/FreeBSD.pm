@@ -35,14 +35,14 @@ sub get_network_configuration {
     my $ifconfig = i_run("ifconfig $dev");
 
     $device_info->{$dev} = {
-      ip => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
+      ip      => [ ( $ifconfig =~ m/inet (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
       netmask => $ifconfig =~ m/(?:netmask 0x|netmask )([a-f0-9]+)/
       ? sprintf( "%d.%d.%d.%d", unpack "C4", pack "H*", $1 )
       : undef,
       broadcast => [ ( $ifconfig =~ m/broadcast (\d+\.\d+\.\d+\.\d+)/ ) ]->[0],
-      mac => [
+      mac       => [
         ( $ifconfig =~ m/(ether|address:|lladdr) (..?:..?:..?:..?:..?:..?)/ )
-        ]->[1],
+      ]->[1],
       is_bridge => 0,
     };
 

@@ -56,22 +56,27 @@ sub is_installed {
   my $version = $option->{version};
 
   # Determine slot.
-  my $slot_idx = index($pkg, ':');
+  my $slot_idx = index( $pkg, ':' );
   if ( $slot_idx != -1 ) {
-    die "Illegal package spec. `$pkg-$version': Both package and version has SLOT" if $version && index($version, ':') != -1;
-    $slot = substr($pkg, $slot_idx + 1);
-    substr($pkg, $slot_idx) = '';
-  } elsif ( $version ) {
-    $slot_idx = index($version, ':');
+    die
+      "Illegal package spec. `$pkg-$version': Both package and version has SLOT"
+      if $version && index( $version, ':' ) != -1;
+    $slot = substr( $pkg, $slot_idx + 1 );
+    substr( $pkg, $slot_idx ) = '';
+  }
+  elsif ($version) {
+    $slot_idx = index( $version, ':' );
     if ( $slot_idx != -1 ) {
-      $slot = substr($version, $slot_idx + 1);
-      substr($version, $slot_idx) = '';
+      $slot = substr( $version, $slot_idx + 1 );
+      substr( $version, $slot_idx ) = '';
     }
   }
 
   $self->{short} = 0;
-  Rex::Logger::debug(
-    "Checking if $pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is installed" );
+  Rex::Logger::debug( "Checking if $pkg"
+      . ( $version ? "-$version" : "" )
+      . ( $slot    ? ":$slot"    : '' )
+      . " is installed" );
 
   my @pkg_info = grep { $_->{name} eq $pkg } $self->get_installed();
   @pkg_info = grep { $_->{version} eq $version } @pkg_info if defined $version;
@@ -87,8 +92,10 @@ sub is_installed {
   }
 
   unless (@pkg_info) {
-    Rex::Logger::debug(
-      "$pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is NOT installed." );
+    Rex::Logger::debug( "$pkg"
+        . ( $version ? "-$version" : "" )
+        . ( $slot    ? ":$slot"    : '' )
+        . " is NOT installed." );
     return 0;
   }
 
@@ -96,29 +103,34 @@ sub is_installed {
   my $pkg_atom;
 
   if ( defined $slot ) {
-      my $slot_ok;
+    my $slot_ok;
 
-      for my $info (@pkg_info) {
-          $pkg_atom = "$info->{name}-$info->{version}$info->{suffix}$info->{release}";
+    for my $info (@pkg_info) {
+      $pkg_atom =
+        "$info->{name}-$info->{version}$info->{suffix}$info->{release}";
 
-          my $fh = file_read("/var/db/pkg/$pkg_atom/SLOT");
-          chomp( my $slot_installed = $fh->read_all );
-          $fh->close;
+      my $fh = file_read("/var/db/pkg/$pkg_atom/SLOT");
+      chomp( my $slot_installed = $fh->read_all );
+      $fh->close;
 
-          if ( $slot eq $slot_installed ) {
-              $pkg_atom .= ":$slot";
-              $slot_ok = 1;
-              last;
-          }
+      if ( $slot eq $slot_installed ) {
+        $pkg_atom .= ":$slot";
+        $slot_ok = 1;
+        last;
       }
+    }
 
-      unless ( $slot_ok ) {
-        Rex::Logger::debug(
-          "$pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is NOT installed." );
-        return 0;
-      }
-  } else {
-      $pkg_atom = "$pkg_info[0]->{name}-$pkg_info[0]->{version}$pkg_info[0]->{suffix}$pkg_info[0]->{release}";
+    unless ($slot_ok) {
+      Rex::Logger::debug( "$pkg"
+          . ( $version ? "-$version" : "" )
+          . ( $slot    ? ":$slot"    : '' )
+          . " is NOT installed." );
+      return 0;
+    }
+  }
+  else {
+    $pkg_atom =
+      "$pkg_info[0]->{name}-$pkg_info[0]->{version}$pkg_info[0]->{suffix}$pkg_info[0]->{release}";
   }
 
   # Check for any USE flag changes.
@@ -130,13 +142,15 @@ sub is_installed {
 
     Rex::Logger::debug( "$pkg"
         . ( $version ? "-$version" : "" )
-        . ( $slot ? ":$slot" : '')
+        . ( $slot    ? ":$slot"    : '' )
         . " is installed but USE flags have changed." );
     return 0;
   }
 
-  Rex::Logger::debug(
-    "$pkg" . ( $version ? "-$version" : "" ) . ( $slot ? ":$slot" : '') . " is installed." );
+  Rex::Logger::debug( "$pkg"
+      . ( $version ? "-$version" : "" )
+      . ( $slot    ? ":$slot"    : '' )
+      . " is installed." );
   return 1;
 
 }
@@ -179,21 +193,25 @@ sub get_installed {
 sub add_repository {
   my ( $self, %data ) = @_;
 
-  my $name = $data{"name"};
+  my $name  = $data{"name"};
   my $readd = $data{"readd"} // 0;
 
   if ( can_run("layman") ) {
     my $op;
 
     i_run "layman -lqnN | grep -q '$name'", fail_ok => 1;
-    if ($? == 0) {
+    if ( $? == 0 ) {
       if ($readd) {
         $op = 'r'; # --readd
-      } else {
-        Rex::Logger::info("Repository $name is present, use `readd' option to re-add from scratch.");
       }
-    } else {
-      $op = 'a'; # --add
+      else {
+        Rex::Logger::info(
+          "Repository $name is present, use `readd' option to re-add from scratch."
+        );
+      }
+    }
+    else {
+      $op = 'a';   # --add
     }
     i_run "layman -$op $name" if defined $op;
   }

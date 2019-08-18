@@ -1059,7 +1059,7 @@ sub mount {
         die("Can't open /etc/fstab for reading.");
       }
 
-      my $f = Rex::FS::File->new( fh => $fh );
+      my $f       = Rex::FS::File->new( fh => $fh );
       my @content = $f->read_all;
       $f->close;
 

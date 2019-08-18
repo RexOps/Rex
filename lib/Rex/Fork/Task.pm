@@ -28,7 +28,7 @@ sub start {
   my ($self) = @_;
 
   $self->{'running'} = 1;
-  $self->{pid} = fork;
+  $self->{pid}       = fork;
 
   if ( !$self->{pid} ) {
     $self->{coderef}->($self);

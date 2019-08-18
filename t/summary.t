@@ -72,7 +72,7 @@ SKIP: {
         task3 => { server => '<local>', task => 'task3', exit_code => 1 },
       );
     };
-    }
+  }
 }
 
 sub create_tasks {

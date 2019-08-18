@@ -52,9 +52,9 @@ sub set_sudo_env {
 sub detect {
   my ( $self, $con ) = @_;
 
-  my $shell_class = ref $self || $self; # $self might be only the classname
-  my @parts = split /::/, $shell_class;
-  my $last_part = lc( $parts[-1] || "" );
+  my $shell_class = ref $self || $self;      # $self might be only the classname
+  my @parts       = split /::/, $shell_class;
+  my $last_part   = lc( $parts[-1] || "" );
 
   my ($shell_path) = $con->_exec("echo \$SHELL");
   if ( !$shell_path ) {

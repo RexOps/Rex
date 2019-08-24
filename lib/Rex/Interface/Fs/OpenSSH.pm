@@ -72,7 +72,7 @@ sub is_dir {
 
   defined $attr
     ? return Rex::Helper::File::Stat->S_ISDIR( $attr->perm )
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return 0;
 }
 
 sub is_file {
@@ -92,7 +92,7 @@ sub is_file {
       || Rex::Helper::File::Stat->S_ISCHR( $attr->perm )
       || Rex::Helper::File::Stat->S_ISFIFO( $attr->perm )
       || Rex::Helper::File::Stat->S_ISSOCK( $attr->perm ) )
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return 0;
 }
 
 sub unlink {

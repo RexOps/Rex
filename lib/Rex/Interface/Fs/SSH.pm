@@ -68,7 +68,7 @@ sub is_dir {
 
   defined $stat && defined $stat->{mode}
     ? return Rex::Helper::File::Stat->S_ISDIR( $stat->{mode} )
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return 0;
 }
 
 sub is_file {
@@ -87,7 +87,7 @@ sub is_file {
       || Rex::Helper::File::Stat->S_ISCHR( $stat->{mode} )
       || Rex::Helper::File::Stat->S_ISFIFO( $stat->{mode} )
       || Rex::Helper::File::Stat->S_ISSOCK( $stat->{mode} ) )
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return 0;
 }
 
 sub unlink {

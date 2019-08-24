@@ -132,7 +132,7 @@ sub stat {
     return %ret;
   }
 
-  return undef; ## no critic ProhibitExplicitReturnUndef
+  return;
 }
 
 sub is_readable {

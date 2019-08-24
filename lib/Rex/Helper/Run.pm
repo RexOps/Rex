@@ -146,7 +146,7 @@ sub i_exec {
   my $exec   = Rex::Interface::Exec->create;
   my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
 
-  my $_cmd_str = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @args ); ## no critic ProhibitMutatingListFunctions
+  my $_cmd_str = "$cmd " . join( " ", map { $quoter->quote($_) } @args );
 
   i_run $_cmd_str;
 }
@@ -157,7 +157,7 @@ sub i_exec_nohup {
   my $exec   = Rex::Interface::Exec->create;
   my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
 
-  my $_cmd_str = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @args ); ## no critic ProhibitMutatingListFunctions
+  my $_cmd_str = "$cmd " . join( " ", map { $quoter->quote($_) } @args );
   i_run $_cmd_str, nohup => 1;
 }
 

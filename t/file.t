@@ -35,7 +35,7 @@ like( $c, qr/bar/,  "file with content (2)" );
 
 Rex::Commands::Fs::unlink($filename);
 
-is( is_file($filename), undef, "file removed" );
+is( is_file($filename), 0, "file removed" );
 
 file(
   $filename,
@@ -229,7 +229,7 @@ $c = cat "file with space-$$.txt";
 like( $c, qr/file with space/m, "found content of file with space" );
 
 Rex::Commands::Fs::unlink("file with space-$$.txt");
-is( is_file("file with space-$$.txt"), undef, "file with space removed" );
+is( is_file("file with space-$$.txt"), 0, "file with space removed" );
 
 file "file_with_\@-$$.txt", content => "file with at sign\n";
 
@@ -240,10 +240,10 @@ $c = cat "file_with_\@-$$.txt";
 like( $c, qr/file with at sign/m, "found content of file with at sign" );
 
 Rex::Commands::Fs::unlink("file_with_\@-$$.txt");
-is( is_file("file_with_\@-$$.txt"), undef, "file with at sign removed" );
+is( is_file("file_with_\@-$$.txt"), 0, "file with at sign removed" );
 
 Rex::Commands::Fs::unlink($filename);
-is( is_file($filename), undef, "test.txt removed" );
+is( is_file($filename), 0, "test.txt removed" );
 
 $filename = "$tmp_dir/test-sed-$$.txt";
 

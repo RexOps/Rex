@@ -54,7 +54,7 @@ sub _request {
   Rex::Logger::debug("  $_ => $params{$_}") for keys %params;
 
   {
-    no strict 'refs';
+    no strict 'refs'; ## no critic ProhibitNoStrict
     $response = $self->{_agent}->request( $method->( $url, %params ) );
   }
 

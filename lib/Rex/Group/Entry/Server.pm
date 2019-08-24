@@ -31,7 +31,7 @@ use attributes;
 sub function {
   my ( $class, $name, $code ) = @_;
 
-  no strict "refs";
+  no strict "refs"; ## no critic ProhibitNoStrict
   *{ $class . "::" . $name } = $code;
   use strict;
 }

@@ -1073,7 +1073,7 @@ sub import {
   read_config_file();
 }
 
-no strict 'refs';
+no strict 'refs'; ## no critic ProhibitNoStrict
 __PACKAGE__->register_config_handler(
   base => sub {
     my ($param) = @_;

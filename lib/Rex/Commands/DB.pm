@@ -211,7 +211,7 @@ sub import {
 
   my ( $ns_register_to, $file, $line ) = caller;
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   for my $func_name (@EXPORT) {
     *{"${ns_register_to}::$func_name"} = \&$func_name;
   }

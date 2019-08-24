@@ -149,7 +149,7 @@ sub base_vm {
   $self->{vm} = $vm;
 }
 
-sub test(&) {
+sub test(&) { ## no critic ProhibitSubroutinePrototypes
   my $code = shift;
   my $test = __PACKAGE__->new;
   $code->($test);

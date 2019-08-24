@@ -15,7 +15,7 @@ use Data::Dumper;
 
 our @EXPORT;
 
-no strict 'refs';
+no strict 'refs'; ## no critic ProhibitNoStrict
 
 sub import {
   my ( $mod_to_register, %option ) = @_;

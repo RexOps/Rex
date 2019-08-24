@@ -38,7 +38,7 @@ our $BE_LOCAL = 1;
 sub function {
   my ( $class, $name, $code ) = @_;
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   *{ $class . "::" . $name } = $code;
   use strict;
 }
@@ -117,8 +117,8 @@ sub parse {
   );
 
   eval {
-    no strict 'refs';
-    no strict 'vars';
+    no strict 'refs'; ## no critic ProhibitNoStrict
+    no strict 'vars'; ## no critic ProhibitNoStrict
 
     for my $var ( keys %{$vars} ) {
       Rex::Logger::debug("Registering: $var");

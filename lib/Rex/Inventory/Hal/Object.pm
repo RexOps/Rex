@@ -29,7 +29,7 @@ sub has {
     my $accessor  = $k->{accessor};
     my $overwrite = $k->{overwrite};
 
-    no strict 'refs';
+    no strict 'refs'; ## no critic ProhibitNoStrict
     if ( !$overwrite ) {
       *{"${class}::get_$accessor"} = sub {
         my ($self) = @_;
@@ -88,7 +88,7 @@ sub get_all {
 
   my $r = ref($self);
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   my @items = @{"${r}::items"};
   use strict;
 

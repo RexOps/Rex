@@ -317,7 +317,7 @@ sub task {
     push( @_, "" );
   }
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   no warnings;
   push( @{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
   use strict;
@@ -329,7 +329,7 @@ sub task {
   if (!$class->can($task_name_save)
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
-    no strict 'refs';
+    no strict 'refs'; ## no critic ProhibitNoStrict
     Rex::Logger::debug("Registering task: $task_name");
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
@@ -1087,7 +1087,7 @@ sub needs {
   }
 
   if ( $caller_pkg && ( $caller_pkg eq "Rex::CLI" || $caller_pkg eq "main" ) ) {
-    no strict 'refs';
+    no strict 'refs'; ## no critic ProhibitNoStrict
     *{"main::needs"} = \&needs;
     use strict;
   }

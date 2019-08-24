@@ -83,14 +83,14 @@ sub rmdir {
 
 sub is_dir {
   my ( $self, $path ) = @_;
-  ( -d $path ) ? return 1 : return undef; ## no critic ProhibitExplicitReturnUndef
+  ( -d $path ) ? return 1 : return 0;
 }
 
 sub is_file {
   my ( $self, $file ) = @_;
   ( -f $file || -l $file || -b $file || -c $file || -p $file || -S $file )
     ? return 1
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return 0;
 }
 
 sub unlink {

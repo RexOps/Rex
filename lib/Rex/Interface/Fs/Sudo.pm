@@ -172,7 +172,7 @@ sub stat {
   );
 
   if ( !$out ) {
-    return undef; ## no critic ProhibitExplicitReturnUndef
+    return;
   }
 
   my $tmp = decode_json($out);

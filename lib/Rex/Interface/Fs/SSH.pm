@@ -135,7 +135,7 @@ sub stat {
   my $sftp = Rex::get_sftp();
   my %ret  = $sftp->stat($file);
 
-  if ( !%ret ) { return undef; } ## no critic ProhibitExplicitReturnUndef
+  if ( !%ret ) { return; }
 
   $ret{'mode'} =
     sprintf( "%04o", Rex::Helper::File::Stat->S_IMODE( $ret{'mode'} ) );

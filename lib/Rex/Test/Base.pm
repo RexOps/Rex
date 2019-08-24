@@ -216,7 +216,7 @@ sub run_task {
   );
 }
 
-sub ok($;$) { ## no critic ProhibitSubroutinePrototypes
+sub ok() {
   my ( $self, $test, $msg ) = @_;
   my $tb = Rex::Test::Base->builder;
   $tb->ok( $test, $msg );

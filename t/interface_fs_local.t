@@ -19,7 +19,7 @@ $fs->mkdir("foo");
 is( $fs->is_dir("foo"), 1, "mkdir" );
 
 $fs->rmdir("foo");
-is( $fs->is_dir("foo"), undef, "rmdir" );
+is( $fs->is_dir("foo"), 0, "rmdir" );
 
 is( $fs->stat("some_file_that_does_not_exist"),
   undef, "stat should return undef for non-existent files" );

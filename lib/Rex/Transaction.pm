@@ -72,7 +72,7 @@ Start a transaction for $codeRef. If $codeRef dies it will rollback the transact
 
 =cut
 
-sub transaction(&) {
+sub transaction(&) { ## no critic ProhibitSubroutinePrototypes
   my ($code) = @_;
   my $ret = 1;
 
@@ -119,7 +119,7 @@ See I<transaction>.
 
 =cut
 
-sub on_rollback(&) {
+sub on_rollback(&) { ## no critic ProhibitSubroutinePrototypes
   my ($code) = @_;
 
   push(

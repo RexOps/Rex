@@ -13,16 +13,33 @@ use warnings;
 
 require Exporter;
 require Rex::Config;
+use Rex::Commands::Gather;
 use Rex::Resource;
 use Data::Dumper;
+use MooseX::Params::Validate;
+use Hash::Merge qw/merge/;
+use Rex::MultiSub::Resource;
+
 use base qw(Exporter);
 use vars qw(@EXPORT);
+use Carp;
 
-@EXPORT = qw(emit resource resource_name changed created removed);
+@EXPORT =
+  qw(emit resource resource_name changed created removed get_resource_provider
+  state_good state_changed state_created state_removed state_failed state_timeout
+  resolve_resource_provider
+);
 
 sub changed { return "changed"; }
 sub created { return "created"; }
 sub removed { return "removed"; }
+
+sub state_good    { return "good"; }
+sub state_failed  { return "failed"; }
+sub state_changed { return "changed"; }
+sub state_created { return "created"; }
+sub state_removed { return "removed"; }
+sub state_timeout { return "timeout"; }
 
 sub emit {
   my ( $type, $message ) = @_;
@@ -57,6 +74,8 @@ sub emit {
 
 =cut
 
+my $__lookup_table;
+
 sub resource {
   my ( $name, $options, $function ) = @_;
   my $name_save = $name;
@@ -77,54 +96,15 @@ sub resource {
     die "Wrong resource name syntax.";
   }
 
-  my ( $class, $file, @tmp ) = caller;
-  my $res = Rex::Resource->new(
-    type         => "${class}::$name",
-    name         => $name,
-    display_name => (
-      $options->{name}
-        || ( $options->{export} ? $name : "${caller_pkg}::${name}" )
-    ),
-    cb => $function
+  my $sub = Rex::MultiSub::Resource->new(
+    name        => $name_save,
+    function    => $function,
+    params_list => $options->{params_list},
   );
 
-  my $func = sub {
-    $res->call(@_);
-  };
+  my ( $class, $file, @tmp ) = caller;
 
-  if (!$class->can($name)
-    && $name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
-  {
-    no strict 'refs';
-    Rex::Logger::debug("Registering resource: ${class}::$name_save");
-
-    my $code = $_[-2];
-    *{"${class}::$name_save"} = $func;
-    use strict;
-  }
-  elsif ( ( $class ne "main" && $class ne "Rex::CLI" )
-    && !$class->can($name_save)
-    && $name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
-  {
-    # if not in main namespace, register the task as a sub
-    no strict 'refs';
-    Rex::Logger::debug(
-      "Registering resource (not main namespace): ${class}::$name_save");
-    my $code = $_[-2];
-    *{"${class}::$name_save"} = $func;
-
-    use strict;
-  }
-
-  if ( exists $options->{export} && $options->{export} ) {
-    no strict 'refs';
-
-    # register in caller namespace
-    push @{ $caller_pkg . "::ISA" }, "Rex::Exporter"
-      unless ( grep { $_ eq "Rex::Exporter" } @{ $caller_pkg . "::ISA" } );
-    push @{ $caller_pkg . "::EXPORT" }, $name_save;
-    use strict;
-  }
+  $sub->export( $class, $options->{export} );
 }
 
 sub resource_name {
@@ -139,6 +119,89 @@ sub resource_ensure {
 
 sub current_resource {
   return $Rex::Resource::CURRENT_RES[-1];
+}
+
+sub get_resource_provider {
+  my ( $os, $os_name ) = @_;
+  my ($pkg) = caller;
+
+  if ( is_redhat($os_name) ) {
+    $os_name = "redhat";
+  }
+
+  elsif ( is_ubuntu($os_name) ) {
+    $os_name = "ubuntu";
+  }
+
+  elsif ( is_debian($os_name) ) {
+    $os_name = "debian";
+  }
+
+  elsif ( is_gentoo($os_name) ) {
+    $os_name = "gentoo";
+  }
+
+  elsif ( is_suse($os_name) ) {
+    $os_name = "suse";
+  }
+
+  elsif ( is_alt($os_name) ) {
+    $os_name = "alt";
+  }
+
+  elsif ( is_mageia($os_name) ) {
+    $os_name = "mageia";
+  }
+
+  elsif ( is_arch($os_name) ) {
+    $os_name = "arch";
+  }
+
+  elsif ( is_openwrt($os_name) ) {
+    $os_name = "openwrt";
+  }
+
+  else {
+    die "No module found for $os_name.";
+  }
+
+  my $try_load = sub {
+    my @mods = @_;
+
+    my $ret;
+    for my $mod (@mods) {
+      Rex::Logger::debug("Try to load provider: $mod");
+      eval {
+        $mod->require;
+        $ret = $mod;
+        1;
+      } or do {
+        Rex::Logger::debug("Failed loading provider: $mod\n$@");
+        $ret = undef;
+      };
+
+      return $ret if ($ret);
+    }
+  };
+
+  my $provider_pkg = $try_load->(
+    "${pkg}::Provider::" . lc("${os}::${os_name}"),
+    "${pkg}::Provider::" . lc("${os}::default"),
+    "${pkg}::Provider::" . lc($os)
+  );
+
+  return $provider_pkg;
+}
+
+sub resolve_resource_provider {
+  my ($provider) = @_;
+
+  if ( $provider =~ m/^::/ ) {
+    my @call = caller;
+    return $call[0] . "::Provider$provider";
+  }
+
+  return $provider;
 }
 
 =back

@@ -25,6 +25,7 @@ package Rex::Template;
 
 use strict;
 use warnings;
+use Symbol;
 
 # VERSION
 
@@ -38,9 +39,8 @@ our $BE_LOCAL = 1;
 sub function {
   my ( $class, $name, $code ) = @_;
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-  *{ $class . "::" . $name } = $code;
-  use strict;
+  my $ref_to_name = qualify_to_ref( 'name', $class );
+  *{$ref_to_name} = $code;
 }
 
 sub new {
@@ -117,16 +117,18 @@ sub parse {
   );
 
   eval {
-    no strict 'refs'; ## no critic ProhibitNoStrict
     no strict 'vars'; ## no critic ProhibitNoStrict
 
     for my $var ( keys %{$vars} ) {
       Rex::Logger::debug("Registering: $var");
+
+      my $ref_to_var = qualify_to_ref($var);
+
       unless ( ref( $vars->{$var} ) ) {
-        $$var = \$vars->{$var};
+        $ref_to_var = \$vars->{$var};
       }
       else {
-        $$var = $vars->{$var};
+        $ref_to_var = $vars->{$var};
       }
     }
 

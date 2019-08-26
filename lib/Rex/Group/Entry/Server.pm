@@ -17,6 +17,7 @@ use Rex::Config;
 use Rex::Interface::Exec;
 use Data::Dumper;
 use Sort::Naturally;
+use Symbol;
 
 use List::MoreUtils qw(uniq);
 
@@ -31,9 +32,8 @@ use attributes;
 sub function {
   my ( $class, $name, $code ) = @_;
 
-  no strict "refs"; ## no critic ProhibitNoStrict
-  *{ $class . "::" . $name } = $code;
-  use strict;
+  my $ref_to_function = qualify_to_ref( $name, $class );
+  *{$ref_to_function} = $code;
 }
 
 sub new {

@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 require Exporter;
+use Symbol;
 use base qw(Exporter);
 use vars qw($SECTION @EXPORT);
 
@@ -41,20 +42,18 @@ sub has {
     $item = [$_tmp];
   }
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-
   for my $itm ( @{$item} ) {
     my $o_itm = $itm;
     $itm =~ s/[^a-zA-Z0-9_]+/_/g;
-    *{"${class}::get_\L$itm"} = sub {
+    my $ref_to_item_getter = qualify_to_ref( "get_\L$itm", $class );
+    *{$ref_to_item_getter} = sub {
       my $self = shift;
       return $self->get( $o_itm, $is_array );
     };
 
-    push( @{"${class}::items"}, "\L$itm" );
+    my $ref_to_items = qualify_to_ref( 'items', $class );
+    push( @{ *{$ref_to_items} }, "\L$itm" );
   }
-
-  use strict;
 }
 
 sub dmi {
@@ -78,9 +77,8 @@ sub get_all {
   use Data::Dumper;
   my $r = ref($self);
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-  my @items = @{"${r}::items"};
-  use strict;
+  my $ref_to_items = qualify_to_ref( 'items', $r );
+  my @items        = @{$ref_to_items};
 
   my $ret = {};
   for my $itm (@items) {

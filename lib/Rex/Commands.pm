@@ -122,6 +122,7 @@ use Rex::Report;
 use Rex;
 use Rex::Helper::Misc;
 use Rex::RunList;
+use Symbol;
 
 use Carp;
 
@@ -317,11 +318,8 @@ sub task {
     push( @_, "" );
   }
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
-  no warnings;
-  push( @{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
-  use strict;
-  use warnings;
+  my $ref_to_tasks = qualify_to_ref( 'tasks', $class );
+  push( @{ *{$ref_to_tasks} }, { name => $task_name_save, code => $_[-2] } );
 
   $options->{'dont_register'} ||= $dont_register_tasks;
   my $task_o = Rex::TaskList->create()->create_task( $task_name, @_, $options );
@@ -329,10 +327,10 @@ sub task {
   if (!$class->can($task_name_save)
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
-    no strict 'refs'; ## no critic ProhibitNoStrict
     Rex::Logger::debug("Registering task: $task_name");
-    my $code = $_[-2];
-    *{"${class}::$task_name_save"} = sub {
+    my $code        = $_[-2];
+    my $ref_to_task = qualify_to_ref( $task_name_save, $class );
+    *{$ref_to_task} = sub {
       Rex::Logger::info("Running task $task_name on current connection");
       my $param;
 
@@ -1089,9 +1087,8 @@ sub needs {
   }
 
   if ( $caller_pkg && ( $caller_pkg eq "Rex::CLI" || $caller_pkg eq "main" ) ) {
-    no strict 'refs'; ## no critic ProhibitNoStrict
-    *{"main::needs"} = \&needs;
-    use strict;
+    my $ref_to_needs = qualify_to_ref( 'needs', 'main' );
+    *{$ref_to_needs} = \&needs;
   }
 };
 

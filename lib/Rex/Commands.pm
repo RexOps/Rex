@@ -122,6 +122,7 @@ use Rex::Report;
 use Rex;
 use Rex::Helper::Misc;
 use Rex::RunList;
+use Symbol;
 
 use Carp;
 
@@ -1087,9 +1088,8 @@ sub needs {
   }
 
   if ( $caller_pkg && ( $caller_pkg eq "Rex::CLI" || $caller_pkg eq "main" ) ) {
-    no strict 'refs'; ## no critic ProhibitNoStrict
-    *{"main::needs"} = \&needs;
-    use strict;
+    my $ref = qualify_to_ref( 'needs', 'main' );
+    *{$ref} = \&needs;
   }
 };
 

@@ -83,6 +83,7 @@ Rex can be used to:
     -Q     Really quiet: output nothing
   
     -T     List tasks
+    -Ta    List all tasks, including hidden
     -Tm    List tasks in machine-readable format
     -Tv    List tasks verbosely
     -Ty    List tasks in YAML format

@@ -50,7 +50,7 @@ sub execute {
   }
 
   my @columns = split( ',', $format );
-  my @ret = ();
+  my @ret     = ();
   for my $line (@containers) {
     next
       if $line =~ m/NAME|AUTOSTART|STATE|IPV4|IPV6|AUTOSTART|PID|RAM|SWAP\s/;

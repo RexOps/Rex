@@ -573,7 +573,7 @@ sub auth {
   if ( !$group ) {
     Rex::Logger::debug("No group $entity found, looking for a task.");
     if ( ref($entity) eq "Regexp" ) {
-      my @tasks = Rex::TaskList->create()->get_tasks;
+      my @tasks          = Rex::TaskList->create()->get_tasks;
       my @selected_tasks = grep { m/$entity/ } @tasks;
       for my $t (@selected_tasks) {
         auth( $_d, $t, %data );
@@ -1016,7 +1016,7 @@ sub needs {
 
   my $tl = Rex::TaskList->create();
   my @maybe_tasks_to_run;
-  if($self) {
+  if ($self) {
     @maybe_tasks_to_run = $tl->get_all_tasks(qr{^\Q$self\E:[A-Za-z0-9_\-]+$});
   }
   else {
@@ -1026,7 +1026,7 @@ sub needs {
   if ( !@args && !@maybe_tasks_to_run ) {
     @args = ($self);
     ($self) = caller;
-    $self = "" if($self =~ m/^(Rex::CLI|main)$/);
+    $self = "" if ( $self =~ m/^(Rex::CLI|main)$/ );
   }
 
   if ( ref( $args[0] ) eq "ARRAY" ) {
@@ -1039,7 +1039,7 @@ sub needs {
   $self =~ s/::/:/g;
 
   my @tasks_to_run;
-  if($self) {
+  if ($self) {
     @tasks_to_run = $tl->get_all_tasks(qr{^\Q$self\E:[A-Za-z0-9_\-]+$});
   }
   else {
@@ -1051,16 +1051,16 @@ sub needs {
   my %task_opts    = $current_task->get_opts;
   my @task_args    = $current_task->get_args;
 
-  if($self) {
+  if ($self) {
     my $suffix = $self;
     $suffix =~ s/::/:/g;
     @args = map { $_ = "$suffix:$_" } @args;
   }
 
   for my $task (@tasks_to_run) {
-    my $task_o = $tl->get_task($task);
+    my $task_o    = $tl->get_task($task);
     my $task_name = $task_o->name;
-    my $suffix = $self . ":";
+    my $suffix    = $self . ":";
     if ( @args && grep ( /^\Q$task_name\E$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task_o->name );
       $task_o->run( "<func>", params => \@task_args, args => \%task_opts );
@@ -1500,7 +1500,7 @@ sub profiler {
   my $c_profiler = Rex::get_current_connection()->{"profiler"};
   unless ($c_profiler) {
     $c_profiler = $profiler || Rex::Profiler->new;
-    $profiler = $c_profiler;
+    $profiler   = $c_profiler;
   }
 
   return $c_profiler;

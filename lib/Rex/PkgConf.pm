@@ -36,7 +36,8 @@ sub get {
 
   if ( is_redhat() ) {
     $host->{"operatingsystem"} = "Redhat";
-  } elsif ( is_debian() ) {
+  }
+  elsif ( is_debian() ) {
     $host->{"operatingsystem"} = "Debian";
   }
 

@@ -626,7 +626,7 @@ sub _get_executable {
   my $cache_key_name = "iptables.$ip_version.executable";
   return $cache->get($cache_key_name) if $cache->valid($cache_key_name);
 
-  my $binary = $ip_version == -6 ? "ip6tables" : "iptables";
+  my $binary     = $ip_version == -6 ? "ip6tables" : "iptables";
   my $executable = can_run($binary);
   die "Can't find $binary in PATH" if $executable eq '';
   $cache->set( $cache_key_name, $executable );
@@ -643,7 +643,7 @@ sub _iptables_version {
     if $cache->valid($cache_key_name);
 
   my $iptables = _get_executable( \@params );
-  my $out = i_run( "$iptables -V", fail_ok => 1 );
+  my $out      = i_run( "$iptables -V", fail_ok => 1 );
   if ( $out =~ /v([.\d]+)/ms ) {
     my $version = version->parse($1);
     $cache->set( $cache_key_name, "$version" );

@@ -31,7 +31,7 @@ sub new {
 sub run_test {
   my ( $self, $user, $key, $value, $count ) = @_;
 
-  my @envs = cron env => $user => "list";
+  my @envs         = cron env => $user => "list";
   my @matched_envs = grep { $_->{name} eq $key && $_->{value} eq $value } @envs;
 
   if ($count) {
@@ -47,7 +47,7 @@ sub run_test {
 sub run_not_test {
   my ( $self, $user, $key, $value, $count ) = @_;
 
-  my @envs = cron env => $user => "list";
+  my @envs         = cron env => $user => "list";
   my @matched_envs = grep { $_->{name} eq $key && $_->{value} eq $value } @envs;
 
   if ($count) {

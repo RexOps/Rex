@@ -69,7 +69,7 @@ is( $c->{'other'}->{'port'}, '3306' );
 is( $c->{'hosts'}->{'port'}, '3306' );
 
 my @lines = eval { local (@ARGV) = ("t/ssh_config.1"); <>; };
-my %data = Rex::Config::_parse_ssh_config(@lines);
+my %data  = Rex::Config::_parse_ssh_config(@lines);
 
 ok( exists $data{"*"}, "Host * exists" );
 ok(

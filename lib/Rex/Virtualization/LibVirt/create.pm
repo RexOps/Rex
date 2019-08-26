@@ -68,10 +68,10 @@ sub execute {
     die("Hypervisor not supported.");
   }
 
-  my $fp = Rex::File::Parser::Data->new( data => \@data );
+  my $fp         = Rex::File::Parser::Data->new( data => \@data );
   my $create_xml = $fp->read("create-${virt_type}.xml");
 
-  my $template = Rex::Template->new;
+  my $template        = Rex::Template->new;
   my $parsed_template = $template->parse( $create_xml, $opts );
 
   Rex::Logger::debug($parsed_template);

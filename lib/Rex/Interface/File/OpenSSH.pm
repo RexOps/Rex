@@ -59,7 +59,7 @@ sub read {
   my ( $self, $len ) = @_;
 
   my $sftp = Rex::get_sftp();
-  my $buf = $sftp->read( $self->{fh}, $len );
+  my $buf  = $sftp->read( $self->{fh}, $len );
   return $buf;
 }
 

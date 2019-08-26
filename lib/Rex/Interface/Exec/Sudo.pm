@@ -75,7 +75,7 @@ sub exec {
 
   if ($sudo_password) {
     my $random_string = get_random( length($sudo_password), 'a' .. 'z' );
-    my $crypt = $sudo_password ^ $random_string;
+    my $crypt         = $sudo_password ^ $random_string;
 
     $random_file = get_tmp_file;
 

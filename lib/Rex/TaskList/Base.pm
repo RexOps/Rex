@@ -346,7 +346,7 @@ sub build_child_coderef {
       die $@ if $@;
     }
     else {
-      my $e = $@;
+      my $e         = $@;
       my $exit_code = $@ ? ( $? || 1 ) : 0;
 
       push @SUMMARY,
@@ -424,7 +424,7 @@ sub get_exit_codes {
 
 sub get_thread_count {
   my ( $self, $task ) = @_;
-  my $threads = $task->parallelism || Rex::Config->get_parallelism;
+  my $threads      = $task->parallelism || Rex::Config->get_parallelism;
   my $server_count = scalar @{ $task->server };
 
   return $1                                if $threads =~ /^(\d+)$/;

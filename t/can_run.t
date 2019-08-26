@@ -7,7 +7,7 @@ use Rex::Commands::Run;
 
 {
   my $command_to_check = $^O =~ /^MSWin/ ? 'where' : 'which';
-  my $result = can_run($command_to_check);
+  my $result           = can_run($command_to_check);
   ok( $result, 'Found checker command' );
 }
 

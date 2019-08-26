@@ -78,7 +78,7 @@ sub parse {
       if ($code) {
         my $pcmd = substr( $text, -1 );
         if ( $pcmd eq "-" ) {
-          $text = substr( $text, 0, -1 );
+          $text     = substr( $text, 0, -1 );
           $do_chomp = 1;
         }
 

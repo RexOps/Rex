@@ -102,7 +102,7 @@ sub checkout {
         . ( $checkout_to ? $checkout_to : "." ) );
 
     my $rebase = $checkout_opt->{"rebase"} ? '--rebase' : '';
-    my $out = i_run "git pull $rebase origin $branch",
+    my $out    = i_run "git pull $rebase origin $branch",
       cwd     => $checkout_to,
       fail_ok => 1,
       %run_opt;
@@ -117,7 +117,7 @@ sub checkout {
     }
 
     if ( exists $checkout_opt->{"tag"} ) {
-      my $tag = $checkout_opt->{tag};
+      my $tag          = $checkout_opt->{tag};
       my $checkout_cmd = sprintf( $CHECKOUT_TAG_COMMAND, $tag, $tag );
       Rex::Logger::info( "Switching to tag " . $tag );
       $out = i_run "git fetch origin",

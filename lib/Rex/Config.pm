@@ -1006,7 +1006,7 @@ sub _parse_ssh_config {
 
     if ( $line =~ m/^Host(?:\s*=\s*|\s+)(.*)$/i ) {
       my $host_tmp = $1;
-      @host = split( /\s+/, $host_tmp );
+      @host    = split( /\s+/, $host_tmp );
       $in_host = 1;
       for my $h (@host) {
         $ret{$h} = {};

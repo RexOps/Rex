@@ -107,7 +107,7 @@ sub cron_entry {
     %option = $c->_create_defaults(%option);
 
     my @crons = &cron( list => $user );
-    my $i = 0;
+    my $i     = 0;
     my $cron_id;
     for my $cron (@crons) {
       if ( $cron->{minute} eq $option{minute}

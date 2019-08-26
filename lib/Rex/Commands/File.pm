@@ -407,7 +407,7 @@ sub file {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "file", name => $file );
 
-  my $need_md5 = ( $option->{"on_change"} && !$is_directory ? 1 : 0 );
+  my $need_md5  = ( $option->{"on_change"} && !$is_directory ? 1 : 0 );
   my $on_change = $option->{"on_change"} || sub { };
 
   my $fs = Rex::Interface::Fs->create;
@@ -442,7 +442,7 @@ sub file {
       : $file_name
     );
 
-    my $fh = file_write($tmp_file_name);
+    my $fh    = file_write($tmp_file_name);
     my @lines = split( qr{$/}, $option->{"content"} );
     for my $line (@lines) {
       $fh->write( $line . $/ );
@@ -862,7 +862,7 @@ sub delete_lines_matching {
     die("$file not writable");
   }
 
-  my $nl = $/;
+  my $nl      = $/;
   my @content = split( /$nl/, cat($file) );
 
   my $old_md5 = "";
@@ -922,7 +922,7 @@ sub delete_lines_according_to {
   my ( $search, $file, @options ) = @_;
   $file = resolv_path($file);
 
-  my $option = {@options};
+  my $option    = {@options};
   my $on_change = $option->{on_change} || undef;
 
   my ( $old_md5, $new_md5 );

@@ -679,8 +679,8 @@ sub get_ssh_config_hostname {
     && exists $SSH_CONFIG_FOR{ $param->{server} }
     && exists $SSH_CONFIG_FOR{ $param->{server} }->{hostname} )
   {
-    if ( $SSH_CONFIG_FOR{ $param->{server} }->{hostname} =~ m/^\%h\.(.*)/ ) {
-      return $param->{server} . "." . $1;
+    if ( $SSH_CONFIG_FOR{ $param->{server} }->{hostname} =~ m/^\%h(\.(.*))?/ ) {
+      return $param->{server} . $1;
     }
     else {
       return $SSH_CONFIG_FOR{ $param->{server} }->{hostname};

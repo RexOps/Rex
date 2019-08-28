@@ -108,8 +108,9 @@ Supported options are:
   creates       => $file_to_create
     tries to create $file_to_create upon execution
     skips execution if the file already exists
-  continuous_read => $command_to_run
-    executes $command_to_run for each line of the output of the command
+  continuous_read => $callback
+    calls $callback subroutine reference for each line of the command's output,
+    passing the line as an argument
 
 Examples:
 

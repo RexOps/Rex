@@ -82,8 +82,8 @@ sub create_user {
     }
   }
   else {
-      # the user does not exist yet.
-      $cmd .= " -u " . $data->{uid};
+    # the user does not exist yet.
+    $cmd .= " -u " . $data->{uid};
   }
 
   if ( exists $data->{home} ) {

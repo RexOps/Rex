@@ -759,8 +759,9 @@ sub run_task {
   my ( $task_name, %option ) = @_;
 
   my $task = Rex::TaskList->create()->get_task($task_name);
-  if(!$task) {
-    Rex::Logger::info( "Task $task_name not found, perhaps the name contains a typo?", "warn" );
+  if ( !$task ) {
+    Rex::Logger::info(
+      "Task $task_name not found, perhaps the name contains a typo?", "warn" );
     die("Error run_task $task_name");
   }
 

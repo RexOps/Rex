@@ -123,6 +123,8 @@ use Rex;
 use Rex::Helper::Misc;
 use Rex::RunList;
 
+use Carp;
+
 use vars
   qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler %auth_late);
 use base qw(Rex::Exporter);
@@ -760,7 +762,7 @@ sub run_task {
 
   my $task = Rex::TaskList->create()->get_task($task_name);
   if ( !$task ) {
-    die("No task named '$task_name' found.");
+    croak("No task named '$task_name' found.");
   }
 
   if ( exists $option{on} ) {

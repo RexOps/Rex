@@ -95,7 +95,9 @@ END_READ:
   my $wait_max = $rex_int_conf->{ssh2_channel_closewait_max} || 500;
   while ( !$chan->eof ) {
     Rex::Logger::debug("Waiting for eof on ssh channel.");
+    ## no critic ProhibitSleepViaSelect
     select undef, undef, undef, 0.002; # wait a little for retry
+    ## use critic
     $wait_c++;
     if ( $wait_c >= $wait_max ) {
 

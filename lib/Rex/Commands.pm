@@ -1059,7 +1059,7 @@ sub needs {
   if ($self) {
     my $suffix = $self;
     $suffix =~ s/::/:/g;
-    @args = map { $_ = "$suffix:$_" } @args;
+    @args = map { $_ = "$suffix:$_" } @args; ## no critic ProhibitMutatingListFunctions
   }
 
   for my $task (@tasks_to_run) {

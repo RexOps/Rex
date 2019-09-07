@@ -255,7 +255,7 @@ sub run {
 
     if ( $args && ref($args) eq "ARRAY" ) {
       my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
-      $cmd = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @{$args} );
+      $cmd = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @{$args} ); ## no critic ProhibitMutatingListFunctions
     }
 
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {

@@ -104,7 +104,7 @@ sub is_dir {
   $self->_exec("test -d $path");
   my $ret = $?;
 
-  $ret == 0 ? return 1 : return undef;
+  $ret == 0 ? return 1 : return undef; ## no critic ProhibitExplicitReturnUndef
 }
 
 sub is_file {
@@ -118,7 +118,7 @@ sub is_file {
   $self->_exec("test -d $file");
   my $is_dir = $?;
 
-  ( $is_file == 0 && $is_dir != 0 ) ? return 1 : return undef;
+  ( $is_file == 0 && $is_dir != 0 ) ? return 1 : return undef; ## no critic ProhibitExplicitReturnUndef
 }
 
 sub unlink {
@@ -172,7 +172,7 @@ sub stat {
   );
 
   if ( !$out ) {
-    return undef;
+    return undef; ## no critic ProhibitExplicitReturnUndef
   }
 
   my $tmp = decode_json($out);

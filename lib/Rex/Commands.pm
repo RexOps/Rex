@@ -123,6 +123,8 @@ use Rex;
 use Rex::Helper::Misc;
 use Rex::RunList;
 
+use Carp;
+
 use vars
   qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler %auth_late);
 use base qw(Rex::Exporter);
@@ -758,8 +760,12 @@ If you want to add custom parameters for the task you can do it this way.
 sub run_task {
   my ( $task_name, %option ) = @_;
 
+  my $task = Rex::TaskList->create()->get_task($task_name);
+  if ( !$task ) {
+    croak("No task named '$task_name' found.");
+  }
+
   if ( exists $option{on} ) {
-    my $task = Rex::TaskList->create()->get_task($task_name);
     if ( exists $option{params} ) {
       $task->run( $option{on}, params => $option{params} );
     }
@@ -768,7 +774,6 @@ sub run_task {
     }
   }
   else {
-    my $task = Rex::TaskList->create()->get_task($task_name);
     if ( exists $option{params} ) {
       $task->run( "<local>", params => $option{params} );
     }

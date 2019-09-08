@@ -760,9 +760,6 @@ sub run_task {
 
   my $task = Rex::TaskList->create()->get_task($task_name);
   if ( !$task ) {
-    Rex::Logger::info(
-      "No task named '$task_name' found. Perhaps the name contains a typo?",
-      "warn" );
     die("No task named '$task_name' found.");
   }
 

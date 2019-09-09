@@ -86,7 +86,7 @@ sub exec {
 
   if ( $self->{source_profile} ) {
     $complete_cmd =
-      "[ \\! -r ~/.profile ] || . ~/.profile >/dev/null 2>&1 ; $complete_cmd";
+      "[ -r ~/.profile ] && . ~/.profile >/dev/null 2>&1 ; $complete_cmd";
   }
 
   if ( $self->{source_global_profile} ) {

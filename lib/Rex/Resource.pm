@@ -15,7 +15,7 @@ use Rex::Constants;
 
 our @CURRENT_RES;
 
-sub is_inside_resource   { ref $CURRENT_RES[-1] ? 1 : 0 }
+sub is_inside_resource { ref $CURRENT_RES[-1] ? 1 : 0 }
 sub get_current_resource { $CURRENT_RES[-1] }
 
 sub new {

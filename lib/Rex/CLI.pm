@@ -783,7 +783,7 @@ sub load_rexfile {
     my @lines = split( $/, $e );
 
     Rex::Logger::info( "Compile time errors:", 'error' );
-    Rex::Logger::info( "\t$_",                 'error' ) for @lines;
+    Rex::Logger::info( "\t$_", 'error' ) for @lines;
 
     exit 1;
   }

@@ -113,7 +113,7 @@ sub get {
     if ( -f $file ) {
 
       my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
-      my $t       = Rex::Config->get_template_function();
+      my $t = Rex::Config->get_template_function();
       $content .= "\n"; # for safety
       $content = $t->( $content, \%template_vars );
 

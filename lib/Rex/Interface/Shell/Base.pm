@@ -23,9 +23,9 @@ sub new {
 }
 
 sub name {
-  my ($self) = @_;
+  my ($self)     = @_;
   my $class_name = ref $self;
-  my @parts = split( /::/, $class_name );
+  my @parts      = split( /::/, $class_name );
   return lc( $parts[-1] );
 }
 

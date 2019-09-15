@@ -407,7 +407,7 @@ sub file {
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "file", name => $file );
 
-  my $need_md5  = ( $option->{"on_change"} && !$is_directory ? 1 : 0 );
+  my $need_md5 = ( $option->{"on_change"} && !$is_directory ? 1 : 0 );
   my $on_change = $option->{"on_change"} || sub { };
 
   my $fs = Rex::Interface::Fs->create;

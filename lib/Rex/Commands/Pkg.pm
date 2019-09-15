@@ -337,7 +337,7 @@ sub install {
     }
     else {
 
-      my $source  = Rex::Helper::Path::get_file_path( $source, caller() );
+      my $source = Rex::Helper::Path::get_file_path( $source, caller() );
       my $content = eval { local ( @ARGV, $/ ) = ($source); <>; };
 
       my $local_md5 = "";

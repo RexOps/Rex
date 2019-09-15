@@ -331,7 +331,7 @@ sub mkdir {
 
     &chown( $owner, $dir ) if $owner;
     &chgrp( $group, $dir ) if $group;
-    &chmod( $mode, $dir ) if $mode;
+    &chmod( $mode, $dir )  if $mode;
   }
   else {
     my @splitted_dir;
@@ -370,7 +370,7 @@ sub mkdir {
 
         &chown( $owner, $str_part ) if $owner;
         &chgrp( $group, $str_part ) if $group;
-        &chmod( $mode, $str_part ) if $mode;
+        &chmod( $mode, $str_part )  if $mode;
       }
     }
   }

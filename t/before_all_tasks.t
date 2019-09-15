@@ -23,8 +23,8 @@ cmp_deeply
 for my $tn (@task_names) {
   my $before = $task_list->get_task($tn)->get_data->{before};
   ok($before);
-  is( ( scalar @$before ), 1,    $tn );
-  is( $before->[0]->(),    'yo', $tn ) if (@$before);
+  is( ( scalar @$before ), 1, $tn );
+  is( $before->[0]->(), 'yo', $tn ) if (@$before);
 }
 
 done_testing();

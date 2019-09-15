@@ -26,7 +26,7 @@ __PACKAGE__->has(
     { key => "storage.size", accessor => "size", overwrite => 1, },
     { key => "info.product", accessor => "product" },
     { key => [ "storage.vendor", "info.vendor" ], accessor => "vendor" },
-    { key => "storage.bus", accessor => "bus" },
+    { key => "storage.bus",                       accessor => "bus" },
 
   ]
 );

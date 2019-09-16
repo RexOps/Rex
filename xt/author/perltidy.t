@@ -11,6 +11,6 @@ run_tests(
   exclude => [
     'Makefile.PL', '.build/',
     'blib/',       'misc/',
-    qr{t/(author|release)-.*\.t},
+    qr{xt/author/(?!perltidy\.t$)},
   ],
 );

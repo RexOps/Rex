@@ -17,4 +17,4 @@ before_install:
 install:
   - dzil build --in build --notgz
 script:
-  - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+  - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/

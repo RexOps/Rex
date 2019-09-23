@@ -373,9 +373,10 @@ sub modify {
 
       #do we need to detect for base -Rex ?
       $package =~ s/^Rex:://;
-      $package =~ s/::/:/g;
     }
   }
+
+  $package =~ s/::/:/g;
 
   my @all_tasks = map { $self->get_task($_); } grep {
     if ( $package ne "main" && $package ne "Rex::CLI" ) {

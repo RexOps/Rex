@@ -24,8 +24,9 @@ use Rex::Commands;
 require Rex::Config;
 
 use Rex::Interface::Exec;
+use Rex::Interface::Fs;
 
-@EXPORT = qw(get_file_path get_tmp_file resolv_path parse_path);
+@EXPORT = qw(get_file_path get_tmp_file resolv_path parse_path resolve_symlink);
 
 set "path_map", {};
 
@@ -215,6 +216,27 @@ sub parse_path {
   }
 
   return $path;
+}
+
+sub resolve_symlink {
+  my $path = shift;
+  my $fs   = Rex::Interface::Fs::create();
+  my $resolution;
+
+  if ( $fs->is_symlink($path) ) {
+    while ( my $link = $fs->readlink($path) ) {
+      if ( $link !~ m/^\// ) {
+        $path = dirname($path) . "/" . $link;
+      }
+      else {
+        $path = $link;
+      }
+      $link = $fs->readlink($link);
+    }
+    $resolution = $path;
+  }
+
+  return $resolution;
 }
 
 1;

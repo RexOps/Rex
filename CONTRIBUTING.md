@@ -35,6 +35,8 @@ On top of the supported minimum version of Perl, the goal is to support the late
  - 5.22.4
  - 5.24.3
  - 5.26.1
+ - 5.28.2
+ - 5.30.0
 
 ### Backwards compatibility
 
@@ -52,7 +54,7 @@ Rex uses perltidy to format its codebase according to the rules described in `.p
 
 Rex has two major test suites:
 
- - the _unit tests_ included with the code, which are exercising various moduls and features
+ - the _unit tests_ included with the code, which are exercising various modules and features
  - the _functional tests_ in the [RexOps/rex-build](https://github.com/RexOps/rex-build) repo, which are making sure Rex can manage actual VMs running various OSes
 
 In general, when adding a new feature or when changing behaviour, tests should be added too, and all tests should still pass.
@@ -73,10 +75,8 @@ The code and examples use [`cpanm`](https://metacpan.org/pod/App::cpanminus) to 
 
 Rex uses [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla) as an authoring tool. With that, installing dependencies can be done by the following commands after cloning the source code:
 
-```
-dzil authordeps --missing | cpanm
-dzil listdeps --missing | cpanm
-```
+    dzil authordeps --missing | cpanm
+    dzil listdeps --missing | cpanm
 
 [Perltidy](https://metacpan.org/pod/distribution/Perl-Tidy/bin/perltidy) takes care of maintaining a consistent source code formatting.
 
@@ -84,15 +84,12 @@ dzil listdeps --missing | cpanm
 
 The test suite included with the source code of Rex can be executed with `prove`:
 
-```
-prove --lib --recurse t/
-```
+    prove --lib --recurse t/
 
-Extended, author and release tests can be executed with `dzil`:
+Extended, author and release tests may need further dependencies, before being executed with `dzil`:
 
-```
-dzil test
-```
+    dzil listdeps --author --missing | cpanm
+    dzil test
 
 ## Git workflow
 
@@ -110,14 +107,13 @@ It is generally fine to:
 
 ## Contribute to this guide
 
-If you think some of the information here is outdated, not clear enough, or have bugs, feel free to contribute it too!
+If you think some of the information here is outdated, not clear enough, or have bugs, feel free to contribute to it too!
 
 ## Useful resources
 
  - [Rex website](https://www.rexify.org)
- - [API documentation](https://www.rexify.org/docs/api.html)
- - [GitHub](https://github.com/RexOps/Rex)
  - [MetaCPAN](https://metacpan.org/pod/Rex)
+ - [GitHub](https://github.com/RexOps/Rex)
  - [Issue tracker](https://github.com/RexOps/Rex/issues)
  - [Google Groups](https://groups.google.com/forum/#!forum/rex-users)
  - [IRC](https://webchat.freenode.net/?channels=rex)

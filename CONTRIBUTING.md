@@ -111,9 +111,8 @@ If you think some of the information here is outdated, not clear enough, or have
 ## Useful resources
 
  - [Rex website](https://www.rexify.org)
- - [API documentation](https://www.rexify.org/docs/api.html)
- - [GitHub](https://github.com/RexOps/Rex)
  - [MetaCPAN](https://metacpan.org/pod/Rex)
+ - [GitHub](https://github.com/RexOps/Rex)
  - [Issue tracker](https://github.com/RexOps/Rex/issues)
  - [Google Groups](https://groups.google.com/forum/#!forum/rex-users)
  - [IRC](https://webchat.freenode.net/?channels=rex)

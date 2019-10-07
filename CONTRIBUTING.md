@@ -75,10 +75,8 @@ The code and examples use [`cpanm`](https://metacpan.org/pod/App::cpanminus) to 
 
 Rex uses [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla) as an authoring tool. With that, installing dependencies can be done by the following commands after cloning the source code:
 
-```
-dzil authordeps --missing | cpanm
-dzil listdeps --missing | cpanm
-```
+    dzil authordeps --missing | cpanm
+    dzil listdeps --missing | cpanm
 
 [Perltidy](https://metacpan.org/pod/distribution/Perl-Tidy/bin/perltidy) takes care of maintaining a consistent source code formatting.
 
@@ -86,15 +84,11 @@ dzil listdeps --missing | cpanm
 
 The test suite included with the source code of Rex can be executed with `prove`:
 
-```
-prove --lib --recurse t/
-```
+    prove --lib --recurse t/
 
 Extended, author and release tests can be executed with `dzil`:
 
-```
-dzil test
-```
+    dzil test
 
 ## Git workflow
 

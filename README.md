@@ -13,25 +13,21 @@ There are several methods to install (R)?ex: use your distro's package manager, 
 ### Build from source
 
 To build (R)?ex from source, you need to install [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla):
-```
-cpanm Dist::Zilla
-```
+
+    cpanm Dist::Zilla
 
 Dist::Zilla provides the *dzil* command, which you can use to install (R)?ex dependencies:
-```
-dzil authordeps --missing | cpanm
-dzil listdeps --missing | cpanm
-```
+
+    dzil authordeps --missing | cpanm
+    dzil listdeps --missing | cpanm
 
 Then to install (R)?ex:
-```
-dzil install
-```
+
+    dzil install
 
 Or to build a .tar.gz release file:
-```
-dzil build
-```
+
+    dzil build
 
 ## Need help?
 

@@ -8,7 +8,7 @@ We have a [Getting started guide](http://www.rexify.org/docs/guides/start_using_
 
 ## Installation
 
-There are several methods to install (R)?ex: use your distro's package manager, download it from CPAN or build it from source. Check out the [Get Rex](http://www.rexify.org/get.html) page on the website for the different options, and choose the one that fits you best.
+There are several methods to install (R)?ex: use your distro's package manager, download it from CPAN or build it from source. Check out the [Get Rex](https://www.rexify.org/get/index.html) page on the website for the different options, and choose the one that fits you best.
 
 ### Build from source
 

@@ -86,8 +86,9 @@ The test suite included with the source code of Rex can be executed with `prove`
 
     prove --lib --recurse t/
 
-Extended, author and release tests can be executed with `dzil`:
+Extended, author and release tests may need further dependencies, before being executed with `dzil`:
 
+    dzil listdeps --author --missing | cpanm
     dzil test
 
 ## Git workflow

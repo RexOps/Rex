@@ -54,7 +54,7 @@ Rex uses perltidy to format its codebase according to the rules described in `.p
 
 Rex has two major test suites:
 
- - the _unit tests_ included with the code, which are exercising various moduls and features
+ - the _unit tests_ included with the code, which are exercising various modules and features
  - the _functional tests_ in the [RexOps/rex-build](https://github.com/RexOps/rex-build) repo, which are making sure Rex can manage actual VMs running various OSes
 
 In general, when adding a new feature or when changing behaviour, tests should be added too, and all tests should still pass.
@@ -112,7 +112,7 @@ It is generally fine to:
 
 ## Contribute to this guide
 
-If you think some of the information here is outdated, not clear enough, or have bugs, feel free to contribute it too!
+If you think some of the information here is outdated, not clear enough, or have bugs, feel free to contribute to it too!
 
 ## Useful resources
 

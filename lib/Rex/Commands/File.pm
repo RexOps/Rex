@@ -388,6 +388,18 @@ sub file {
     $option->{source} = resolv_path( $option->{source} );
   }
 
+  # default: ensure = present
+  $option->{ensure} ||= "present";
+
+  my $fs = Rex::Interface::Fs->create;
+
+  if ( $option->{ensure} ne 'absent' && $fs->is_symlink($file) ) {
+    my $original_file = $file;
+    $file = resolve_symlink($file);
+    Rex::Logger::info(
+      "$original_file is a symlink, operating on $file instead", 'warn' );
+  }
+
   #### check and run before hook
   eval {
     my @new_args = Rex::Hook::run_hook( file => "before", @_ );
@@ -401,16 +413,11 @@ sub file {
   };
   ##############################
 
-  # default: ensure = present
-  $option->{ensure} ||= "present";
-
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "file", name => $file );
 
   my $need_md5 = ( $option->{"on_change"} && !$is_directory ? 1 : 0 );
   my $on_change = $option->{"on_change"} || sub { };
-
-  my $fs = Rex::Interface::Fs->create;
 
   my $__ret = { changed => 0 };
 

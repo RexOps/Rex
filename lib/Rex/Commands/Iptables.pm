@@ -489,43 +489,38 @@ sub _iptables_list {
 
 Returns true if a chain exists in a table, false otherwise.
 
+
+ chain_exists 'foo'; # $table defaulting to 'filter'
+ chain_exists 'foo', table => 'filter';
+ chain_exists -6, 'foo'; # IPv6
+
+
 In this example we create a chain unless it already exists.
 
  task "create_chain", sub {
-   iptables(t => 'filter', N => 'FOO')
-     unless chain_exists('filter','FOO');
+   iptables(t => 'filter', N => 'foo')
+     unless chain_exists('foo');
  };
 
 
 =cut
 
 sub chain_exists {
-  my ( $table, $chain, @params ) = @_;
-  my $iptables = _get_executable( \@params );
-  my @lines    = run "$iptables-save";
+  my @params = @_;
+  my $ipt_version = _get_ip_version( \@params );
+  my ( $chain, %args ) = @params;
 
-  return _chain_exists( $table, $chain, @lines );
-}
+  my $table = (delete $args{table} or 'filter');
 
-sub _chain_exists {
-  my ( $table, $chain, @lines ) = @_;
-  my ($current_table);
-  for my $line (@lines) {
-    chomp $line;
+  eval {
+    iptables($ipt_version, list => $chain);
+  };
 
-    next if ( $line eq "COMMIT" );
-    next if ( $line =~ m/^#/ );
-    if ( $line =~ m/^:(\w+)/ ) {
-      return 1 if $current_table eq $table && $chain eq $1;
-      next;
-    }
+  return 0  if $@ && $@ =~ /No chain/;
+  die $@    if $@;
 
-    if ( $line =~ m/^\*([a-z]+)$/ ) {
-      $current_table = $1;
-      next;
-    }
-  }
-  return 0;
+  return 1;
+
 }
 
 =head2 iptables_clear

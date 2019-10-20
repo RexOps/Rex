@@ -181,9 +181,8 @@ sub sync {
 
   if ( $auth_type eq "pass" ) {
     $cmd = sprintf( $cmd,
-      'ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p '
-        . "$port",
-      $port );
+      "ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p $port",
+    );
     push(
       @expect_options,
       [

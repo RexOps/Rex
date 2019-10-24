@@ -151,8 +151,29 @@ sub cmdb {
 
   return if !cmdb_active();
 
-  return Rex::Value->new(
-    value => ( $CMDB_PROVIDER->get( $item, $server ) || undef ) );
+  my $value;
+  my $cache     = Rex::get_cache();
+  my $cache_key = "cmdb/$CMDB_PROVIDER/$server";
+
+  if ( $cache->valid($cache_key) ) {
+    $value = $cache->get($cache_key);
+  }
+  else {
+    $value = $CMDB_PROVIDER->get( undef, $server ) || undef;
+    $cache->set( $cache_key, $value );
+  }
+
+  if ($item) {
+    $value = $value->{$item};
+  }
+
+  if ( defined $value ) {
+    return Rex::Value->new( value => $value );
+  }
+  else {
+    Rex::Logger::debug("CMDB - no item ($item) found");
+    return;
+  }
 }
 
 sub cmdb_active {

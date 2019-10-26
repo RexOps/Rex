@@ -123,16 +123,7 @@ sub get {
     }
   }
 
-  if ( !$item ) {
-    return $all;
-  }
-  else {
-    return $all->{$item};
-  }
-
-  Rex::Logger::debug("CMDB - no item ($item) found");
-
-  return;
+  return $all;
 }
 
 1;

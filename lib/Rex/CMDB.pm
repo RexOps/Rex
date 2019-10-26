@@ -112,7 +112,25 @@ Rex::Config->register_set_handler(
       }
     }
 
-    $CMDB_PROVIDER = $option;
+    my $klass = $option->{type};
+
+    if ( !$klass ) {
+
+      # no cmdb set
+      return;
+    }
+
+    if ( $klass !~ m/::/ ) {
+      $klass = "Rex::CMDB::$klass";
+    }
+
+    eval "use $klass";
+
+    if ($@) {
+      die("CMDB provider ($klass) not found: $@");
+    }
+
+    $CMDB_PROVIDER = $klass->new( %{$option} );
   }
 );
 
@@ -131,25 +149,31 @@ sub cmdb {
   my ( $item, $server ) = @_;
   $server ||= connection->server;
 
-  my $klass = $CMDB_PROVIDER->{type};
+  return if !cmdb_active();
 
-  if ( !$klass ) {
+  my $value;
+  my $cache     = Rex::get_cache();
+  my $cache_key = "cmdb/$CMDB_PROVIDER/$server";
 
-    # no cmdb set
+  if ( $cache->valid($cache_key) ) {
+    $value = $cache->get($cache_key);
+  }
+  else {
+    $value = $CMDB_PROVIDER->get( undef, $server ) || undef;
+    $cache->set( $cache_key, $value );
+  }
+
+  if ($item) {
+    $value = $value->{$item};
+  }
+
+  if ( defined $value ) {
+    return Rex::Value->new( value => $value );
+  }
+  else {
+    Rex::Logger::debug("CMDB - no item ($item) found");
     return;
   }
-
-  if ( $klass !~ m/::/ ) {
-    $klass = "Rex::CMDB::$klass";
-  }
-
-  eval "use $klass";
-  if ($@) {
-    die("CMDB provider ($klass) not found: $@");
-  }
-
-  my $cmdb = $klass->new( %{$CMDB_PROVIDER} );
-  return Rex::Value->new( value => ( $cmdb->get( $item, $server ) || undef ) );
 }
 
 sub cmdb_active {

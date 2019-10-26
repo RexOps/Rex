@@ -1,3 +1,67 @@
+2019-10-26 Ferenc Erki <erkiferenc@gmail.com> (1.6.0_01)
+  * Cache CMDB lookups (fix #1239) - Ferenc Erki
+  * Test CMDB both with and without caching - Ferenc Erki
+  * Instantiate CMDB object during initialization - Ferenc Erki
+  * Remove redundant argument to rsync command - Steve Dondley
+  * Detect upstart (fix #1190) - Ferenc Erki
+  * Simplify quoting (close #1206) - Ferenc Erki
+  * Better message and remove unused variable (ref #1206) - Roy Storey
+  * Quote parameters that might have spaces (fix #807) - Roy Storey
+  * Resolve symlinks for file management commands (fix #1195, close #1199) - Ferenc Erki
+  * Add resolve_symlink helper - Ferenc Erki
+  * Add symlink tests for file management commands - Ferenc Erki
+  * Update link of installation intructions - Ferenc Erki
+  * Update testing instructions - Ferenc Erki
+  * Update list of useful resources - Ferenc Erki
+  * Fix typos - Ferenc Erki
+  * Update supported Perl versions - Ferenc Erki
+  * Convert namespace separators from module to task (fix #1193) - Ferenc Erki
+  * Add tests for package hooks (ref #1194) - Mitch Broadhead
+  * create_host: drop useless get_host invocation (close #1181) - Ali Polatel
+  * Run extra tests on Travis - Ferenc Erki
+  * Ignore tidyness checks for generated extra tests - Ferenc Erki
+  * Rename perltidy test - Ferenc Erki
+  * Replace [ExtraTests] with [RunExtraTests] (fix #964) - Kent Fredric
+  * Use file command for file operations - Ferenc Erki
+  * Fix fallback method for getting username - Ferenc Erki
+  * Return username for local connections - Ferenc Erki
+  * only source ~/.profile if it really exists - Joachim Bargsten
+  * Accept critic for ProhibitExplicitReturnUndef - Ferenc Erki
+  * Accept critic for ProhibitNoStrict - Ferenc Erki
+  * Accept critic for ProhibitSubroutinePrototypes - Ferenc Erki
+  * Remove unnecessary subroutine prototype - Ferenc Erki
+  * Fix critic for ProhibitMutatingListFunctions - Ferenc Erki
+  * Fix critic for ProhibitSleepViaSelect - Erik Huelsmann
+  * Disable tidyness checks in perlcritic - Ferenc Erki
+  * improved error handling in run_task if task does not exist - Joachim Bargsten
+  * Fixes virtualization type,role for Digital Ocean Droplets (close #1192) - Mitch Broadhead
+  * Fix UID handling for OpenBSD (fix #1213) - Olivier Cherrier
+  * Added the Option 'continuous_read' to the documentation - elisdg
+  * Test for code tidyness - Ferenc Erki
+  * Fix placeholder matching for %h in ssh config. (#1214) - Max E. Aubrey
+  * Set minimum required Perl version to 5.10.1 - Ferenc Erki
+  * Use Travis CI for testing - Ferenc Erki
+  * added option to list all tasks, including hidden - Joachim Bargsten
+  * errorless git checkout if on checkout branch - Joachim Bargsten
+  * added clone_args as extra option for git checkout - Joachim Bargsten
+  * git checkout also supports environment settings for e.g. proxies - Joachim Bargsten
+  * added ssh as possible protocols for git-based rex modules - Joachim Bargsten
+  * Improve package handling on OpenBSD - Olivier Cherrier
+  * Enhance the OpenBSD User handling support - Olivier Cherrier
+  * Document the 'requiretty' setting with the sudo command - Erik Huelsmann
+  * delete_host: fix regex so it does not match on prefixes - Ali Polatel
+  * Added Oracle Linux (fix #1168, close #1174) - labbeduddel
+  * Ignore YAML-1.25 (fix #1197) - Ferenc Erki
+  * Adds SLE 15 / Leap 15.0 support - LeMerP
+  * Use virsh connect URI from config - Ferenc Erki
+  * Update README about contributing guide - Ferenc Erki
+  * Initial version of the contributing guide - Ferenc Erki
+  * Convert namespace separators from module to task (fix #1188) - Ferenc Erki
+  * Add test for using needs with nested modules (ref #1188) - Ferenc Erki
+  * Added Virtuozzo as Red Hat clone. - iblinder
+  * Print warning instead of dying when delete_user called on non existing user - Crimson Thompson
+  * Fix Pkgconf for Debian - Andy Beverley
+
 2017-12-03 Jan Gehring <jfried@rexify.org> (1.6.0)
   * Check brctl command is available (resolves #1115) - perlancar
   * fixed path bug in git scm checkout - Joachim Bargsten

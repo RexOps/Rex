@@ -29,12 +29,7 @@ subtest "distributor => 'Base'" => sub {
     Rex::Config->set_distributor('Base');
     test_summary(
       task0 => { server => '<local>', task => 'task0', exit_code => 1 },
-      task1 => {
-        server => '<local>',
-        task   => 'task1',
-        exit_code =>
-          ( $^O =~ m/^(MSWin|freebsd|darwin|netbsd|openbsd)/ ? 1 : 2 )
-      },
+      task1 => { server => '<local>', task => 'task1', exit_code => 1 },
       task2 => { server => '<local>', task => 'task2', exit_code => 0 },
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
     );
@@ -62,12 +57,7 @@ SKIP: {
       Rex::Config->set_distributor('Parallel_ForkManager');
       test_summary(
         task0 => { server => '<local>', task => 'task0', exit_code => 1 },
-        task1 => {
-          server => '<local>',
-          task   => 'task1',
-          exit_code =>
-            ( $^O =~ m/^(MSWin|freebsd|darwin|netbsd|openbsd)/ ? 1 : 2 )
-        },
+        task1 => { server => '<local>', task => 'task1', exit_code => 1 },
         task2 => { server => '<local>', task => 'task2', exit_code => 0 },
         task3 => { server => '<local>', task => 'task3', exit_code => 1 },
       );
@@ -83,7 +73,7 @@ sub create_tasks {
 
   desc "desc 1";
   task "task1" => sub {
-    my $cmd = $^O =~ /MSWin32/ ? "dir" : "ls";
+    my $cmd = $^O =~ /MSWin32/ ? "type" : "cat";
     run "$cmd asdfxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
   };
 

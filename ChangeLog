@@ -1,9 +1,7 @@
-2019-10-30 Ferenc Erki <erkiferenc@gmail.com> (1.6.0_02)
+2019-11-05 Ferenc Erki <erkiferenc@gmail.com> (1.7.0)
   * Fix test dependency - Ferenc Erki
   * Use perl to query environment - Ferenc Erki
   * Test run failures with alternative commands - Ferenc Erki
-
-2019-10-26 Ferenc Erki <erkiferenc@gmail.com> (1.6.0_01)
   * Cache CMDB lookups (fix #1239) - Ferenc Erki
   * Test CMDB both with and without caching - Ferenc Erki
   * Instantiate CMDB object during initialization - Ferenc Erki

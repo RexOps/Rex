@@ -18,3 +18,37 @@ install:
   - dzil build --in build --notgz
 script:
   - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/
+
+jobs:
+  include:
+    - stage: Windows
+      os: windows
+      language: shell
+      before_install:
+        - perl -E 'say @INC'
+        - which perl
+        - perl -v
+        - rm /bin/perl
+        - cinst -y strawberryperl
+        - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
+        - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
+        - echo $PATH
+        - which perl
+        - ln -s /c/Strawberry/perl/bin/perl /bin/perl
+        - ls -l /bin/perl
+        - perl -v
+        - perl -E 'say @INC'
+        - cpanm Perl::Critic
+        - perlcritic --quiet --single-policy=RequireTidyCode bin
+        - cpanm --reinstall --verbose Module::Pluggable::Object
+        - cpanm Dist::Zilla
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign Test::mysqld
+        - cpanm --reinstall --verbose App::Prove
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build
+        - prove --timer --lib --recurse --jobs 9 --shuffle t/

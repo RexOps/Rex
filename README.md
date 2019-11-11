@@ -1,6 +1,27 @@
-# Rex [![Build Status](https://travis-ci.org/RexOps/Rex.svg?branch=master)](https://travis-ci.org/RexOps/Rex)
+# Rex, the friendly automation framework [![Build Status](https://travis-ci.org/RexOps/Rex.svg?branch=master)](https://travis-ci.org/RexOps/Rex)
 
-With (R)?ex you can manage all your boxes from a central point through the complete process of configuration management and software deployment.
+The main ideas behind Rex are:
+
+1. Puts _you_ in charge
+
+    Rex acknowledges that instead of silver bullets, there is more than one way to manage it.
+
+    It's friendly to any combinations of local and remote execution, push and pull style of management, or imperative and declarative approach.
+    Instead of forcing any specific model on you, it trusts you to be in the best position to decide what to automate and how, allowing you to build the automation tool _your_ situation requires.
+
+1. Easy to get on board
+
+    Automate what you are doing today, and add more tomorrow.
+
+    Rex runs locally, even if managing remotes via SSH. This means it's instantly usable, without big rollout processes or anyone else to convince, making it ideal and friendly for incremental automation.
+
+1. It's just Perl
+
+    Perl is a battle-tested, mature language, and Rex code is just Perl code.
+
+    This means whenever you reach the limitations of the built-in Rex features, a powerful programming language and module ecosystem is always at your fingertips to seamlessly extend it with modules from [CPAN](https://metacpan.org) or with your own code.
+    As a bonus, you can also use the usual well-established tools and workflows, like IDE integration for syntax highlighting, linting and formatting, or authoring and publishing [Rex modules on CPAN](https://metacpan.org/search?q=rex).
+    With the use of Inline modules, it's friendly to code written in other languages too. So after all, it's not just Perl.
 
 ## Getting started
 

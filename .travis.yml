@@ -29,8 +29,9 @@ jobs:
         - cinst -y strawberryperl
         - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
         - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
-        - echo $PATH
-        - which perl
+        - export "AUTHOR_TESTING=1"
+        - export "RELEASE_TESTING=1"
+        - export "PERL_CPANM_OPT='--quiet --notest'"
         - ln -s /c/Strawberry/perl/bin/perl /bin/perl
         - cpanm Perl::Critic
         - perlcritic --quiet --single-policy=RequireTidyCode bin

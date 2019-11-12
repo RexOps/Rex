@@ -10,7 +10,7 @@ use Rex::Helper::Path;
 
 $::QUIET = 1;
 
-my $tmp_dir        = tempdir( CLEANUP => 1 );
+my $tmp_dir = tempdir( CLEANUP => 1 );
 my $file           = File::Spec->catfile( $tmp_dir, 'file' );
 my $symlink        = File::Spec->catfile( $tmp_dir, 'symlink' );
 my $nested_symlink = File::Spec->catfile( $tmp_dir, 'nested_symlink' );
@@ -31,79 +31,83 @@ sub check_still_symlink {
   is( resolve_symlink($symlink), $file, 'symlink is still resolved to file' );
 }
 
-subtest 'resolve symlinks' => sub {
-  setup();
+SKIP: {
+  skip 'No symlink support on Windows', 7 if $^O =~ m/^MSWin/;
 
-  is( resolve_symlink($symlink), $file, 'symlink is resolved to file' );
-  is( resolve_symlink($nested_symlink),
-    $file, 'nested symlink is resolved to file' );
-  is( resolve_symlink('not a symlink'),
-    undef, 'non-existing symlink is unresolved' );
-};
+  subtest 'resolve symlinks' => sub {
+    setup();
 
-subtest 'file command with symlinks' => sub {
-  setup();
+    is( resolve_symlink($symlink), $file, 'symlink is resolved to file' );
+    is( resolve_symlink($nested_symlink),
+      $file, 'nested symlink is resolved to file' );
+    is( resolve_symlink('not a symlink'),
+      undef, 'non-existing symlink is unresolved' );
+  };
 
-  file $symlink, content => '1';
+  subtest 'file command with symlinks' => sub {
+    setup();
 
-  is( cat($file), "1\n", 'file content written' );
-  check_still_symlink();
+    file $symlink, content => '1';
 
-  file $symlink, ensure => 'absent';
+    is( cat($file), "1\n", 'file content written' );
+    check_still_symlink();
 
-  is( is_file($file), TRUE, 'file is still present' );
-  ok( !-e $symlink, 'symlink is gone' );
-};
+    file $symlink, ensure => 'absent';
 
-subtest 'delete_lines_matching with symlinks' => sub {
-  setup();
+    is( is_file($file), TRUE, 'file is still present' );
+    ok( !-e $symlink, 'symlink is gone' );
+  };
 
-  delete_lines_matching $symlink, '1';
+  subtest 'delete_lines_matching with symlinks' => sub {
+    setup();
 
-  is( cat($file), "", 'line deleted' );
-  check_still_symlink();
-};
+    delete_lines_matching $symlink, '1';
 
-subtest 'append_or_amend_line with symlinks' => sub {
-  setup();
+    is( cat($file), "", 'line deleted' );
+    check_still_symlink();
+  };
 
-  append_or_amend_line $symlink,
-    line   => '2',
-    regexp => qr{1};
+  subtest 'append_or_amend_line with symlinks' => sub {
+    setup();
 
-  is( cat($file), "2\n", 'line updated' );
-  check_still_symlink();
-};
+    append_or_amend_line $symlink,
+      line   => '2',
+      regexp => qr{1};
 
-subtest 'sed with symlinks' => sub {
-  setup();
+    is( cat($file), "2\n", 'line updated' );
+    check_still_symlink();
+  };
 
-  sed qr{1}, '2', $symlink;
+  subtest 'sed with symlinks' => sub {
+    setup();
 
-  is( cat($file), "2\n", 'line updated' );
-  check_still_symlink();
-};
+    sed qr{1}, '2', $symlink;
 
-subtest 'file_write with symlinks' => sub {
-  setup();
+    is( cat($file), "2\n", 'line updated' );
+    check_still_symlink();
+  };
 
-  my $fh = file_write $symlink;
-  $fh->write('');
-  $fh->close;
+  subtest 'file_write with symlinks' => sub {
+    setup();
 
-  is( cat($file), '', 'file is empty' );
-  check_still_symlink();
-};
+    my $fh = file_write $symlink;
+    $fh->write('');
+    $fh->close;
 
-subtest 'file_append with symlinks' => sub {
-  setup();
+    is( cat($file), '', 'file is empty' );
+    check_still_symlink();
+  };
 
-  my $fh = file_append $symlink;
-  $fh->write("1\n");
-  $fh->close;
+  subtest 'file_append with symlinks' => sub {
+    setup();
 
-  is( cat($file), "1\n", 'file has been appended' );
-  check_still_symlink();
-};
+    my $fh = file_append $symlink;
+    $fh->write("1\n");
+    $fh->close;
+
+    is( cat($file), "1\n", 'file has been appended' );
+    check_still_symlink();
+  };
+}
 
 done_testing();

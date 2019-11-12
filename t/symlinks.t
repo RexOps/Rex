@@ -10,7 +10,7 @@ use Rex::Helper::Path;
 
 $::QUIET = 1;
 
-my $tmp_dir = tempdir( CLEANUP => 1 );
+my $tmp_dir        = tempdir( CLEANUP => 1 );
 my $file           = File::Spec->catfile( $tmp_dir, 'file' );
 my $symlink        = File::Spec->catfile( $tmp_dir, 'symlink' );
 my $nested_symlink = File::Spec->catfile( $tmp_dir, 'nested_symlink' );

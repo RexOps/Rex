@@ -8,6 +8,10 @@ use File::Temp qw(tempdir);
 use Rex -base;
 use Rex::Helper::Path;
 
+if ( $^O =~ m/^MSWin/ ) {
+  plan skip_all => 'No symlink support on Windows';
+}
+
 $::QUIET = 1;
 
 my $tmp_dir        = tempdir( CLEANUP => 1 );

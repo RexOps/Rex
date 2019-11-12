@@ -103,8 +103,6 @@ our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
 $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 @FEATURE_FLAGS    = ();
 
-my $cur_dir;
-
 BEGIN {
 
   sub generate_inc {
@@ -237,7 +235,7 @@ sub search_module_path {
       close $fh_t if $fh_t;
       my ($path) = ( $file =~ m/^(.*)\/.+?$/ );
       if ( $path !~ m/\// ) {
-        $path = $cur_dir . "/$path";
+        $path = getcwd() . "/$path";
       }
 
       # module found, register path

@@ -25,9 +25,6 @@ jobs:
       os: windows
       language: shell
       before_install:
-        - perl -E 'say @INC'
-        - which perl
-        - perl -v
         - rm /bin/perl
         - cinst -y strawberryperl
         - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
@@ -35,9 +32,6 @@ jobs:
         - echo $PATH
         - which perl
         - ln -s /c/Strawberry/perl/bin/perl /bin/perl
-        - ls -l /bin/perl
-        - perl -v
-        - perl -E 'say @INC'
         - cpanm Perl::Critic
         - perlcritic --quiet --single-policy=RequireTidyCode bin
         - cpanm --reinstall --verbose Module::Pluggable::Object

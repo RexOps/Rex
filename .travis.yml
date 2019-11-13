@@ -1,6 +1,6 @@
 jobs:
   include:
-    - stage: Linux
+    - stage: test
       language: perl
       perl:
         - "5.30"
@@ -21,7 +21,7 @@ jobs:
         - dzil build --in build --notgz
       script:
         - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/
-    - stage: Windows
+    - stage: test
       os: windows
       language: shell
       env:

@@ -25,16 +25,15 @@ jobs:
       os: windows
       language: shell
       env:
-        - AUTHOR_TESTING=1 RELEASE_TESTING=1 PERL_CPANM_OPT="--quiet --notest"
+        - PERL_CPANM_OPT="--quiet --notest"
       cache:
         directories:
           - /c/Strawberry
       before_install:
-        - rm /bin/perl
         - cinst -y strawberryperl
         - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
         - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
-        - ln -s /c/Strawberry/perl/bin/perl /bin/perl
+        - ln -snf /c/Strawberry/perl/bin/perl /bin/perl
         - cpanm Perl::Critic
         - perlcritic --quiet --single-policy=RequireTidyCode bin
         - cpanm --reinstall Module::Pluggable::Object
@@ -42,7 +41,7 @@ jobs:
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign Test::mysqld
+        - cpanm String::Escape XML::LibXML
         - cpanm --reinstall App::Prove
       install:
         - dzil build --in build --notgz

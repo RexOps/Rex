@@ -26,6 +26,9 @@ jobs:
       language: shell
       env:
         - AUTHOR_TESTING=1 RELEASE_TESTING=1 PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - /c/Strawberry
       before_install:
         - rm /bin/perl
         - cinst -y strawberryperl

@@ -47,4 +47,4 @@ jobs:
         - dzil build --in build --notgz
       script:
         - cd build
-        - prove --timer --lib --recurse --jobs 9 --shuffle t/
+        - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/

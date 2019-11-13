@@ -34,13 +34,13 @@ jobs:
         - ln -s /c/Strawberry/perl/bin/perl /bin/perl
         - cpanm Perl::Critic
         - perlcritic --quiet --single-policy=RequireTidyCode bin
-        - cpanm --reinstall --verbose Module::Pluggable::Object
+        - cpanm --reinstall Module::Pluggable::Object
         - cpanm Dist::Zilla
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
         - cpanm String::Escape XML::LibXML Net::SFTP::Foreign Test::mysqld
-        - cpanm --reinstall --verbose App::Prove
+        - cpanm --reinstall App::Prove
       install:
         - dzil build --in build --notgz
       script:

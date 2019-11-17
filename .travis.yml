@@ -48,3 +48,32 @@ jobs:
       script:
         - cd build
         - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+    - stage: test
+      os: osx
+      osx_image: xcode11.2
+      language: shell
+      env:
+        - PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - /usr/local/Cellar/perl
+      addons:
+        homebrew:
+          packages:
+            - perl
+            - cpanminus
+            - openssl
+      before_install:
+        - export "PATH=/usr/local/Cellar/perl/5.30.0/bin:${PATH}"
+        - cpanm Perl::Critic
+        - perlcritic --quiet --single-policy=RequireTidyCode bin
+        - cpanm Dist::Zilla
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build
+        - prove --timer --lib --recurse --jobs $(sysctl -n hw.ncpu) --shuffle t/

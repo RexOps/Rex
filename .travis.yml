@@ -1,20 +1,50 @@
-language: perl
-perl:
-  - "5.30"
-env:
-  - AUTHOR_TESTING=1 RELEASE_TESTING=1 PERL_CPANM_OPT="--quiet --notest"
-cache:
-  directories:
-    - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/lib
-    - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/bin
-before_install:
-  - cpanm Perl::Critic
-  - perlcritic --quiet --single-policy=RequireTidyCode bin
-  - dzil authordeps --missing | cpanm
-  - dzil listdeps --author --missing | cpanm
-  - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-  - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Test::mysqld
-install:
-  - dzil build --in build --notgz
-script:
-  - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/
+jobs:
+  include:
+    - stage: test
+      language: perl
+      perl:
+        - "5.30"
+      env:
+        - AUTHOR_TESTING=1 RELEASE_TESTING=1 PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/lib
+          - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/bin
+      before_install:
+        - cpanm Perl::Critic
+        - perlcritic --quiet --single-policy=RequireTidyCode bin
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Test::mysqld
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/
+    - stage: test
+      os: windows
+      language: shell
+      env:
+        - PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - /c/Strawberry
+      before_install:
+        - cinst -y strawberryperl
+        - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
+        - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
+        - ln -snf /c/Strawberry/perl/bin/perl /bin/perl
+        - cpanm Perl::Critic
+        - perlcritic --quiet --single-policy=RequireTidyCode bin
+        - cpanm --reinstall Module::Pluggable::Object
+        - cpanm Dist::Zilla
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML
+        - cpanm --reinstall App::Prove
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build
+        - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/

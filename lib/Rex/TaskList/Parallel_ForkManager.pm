@@ -35,6 +35,7 @@ sub run {
   }
 
   my $fm = Parallel::ForkManager->new( $self->get_thread_count($task) );
+  $fm->set_waitpid_blocking_sleep(0.1);
   my $all_servers = $task->server;
 
   $fm->run_on_finish(

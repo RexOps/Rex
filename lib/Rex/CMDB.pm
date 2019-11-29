@@ -26,8 +26,8 @@ This module exports a function to access a CMDB via a common interface.
  };
  
  task "prepare", "server1", sub {
-   my $virtual_host = cmdb("vhost");
-   my %all_information = cmdb;
+   my $virtual_host = get cmdb("vhost");
+   my %all_information = get cmdb;
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -139,8 +139,8 @@ Rex::Config->register_set_handler(
 Function to query a CMDB. If this function is called without $item it should return a hash containing all the information for the requested server. If $item is given it should return only the value for $item.
 
  task "prepare", "server1", sub {
-   my $virtual_host = cmdb("vhost");
-   my %all_information = cmdb;
+   my $virtual_host = get cmdb("vhost");
+   my %all_information = get cmdb;
  };
 
 =cut

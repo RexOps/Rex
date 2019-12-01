@@ -41,7 +41,7 @@ XML::LibXML->require;
 
 With this function you can read groups from xml files.
 
-File Example:
+File example:
 
  <configuration>
    <group name="database">
@@ -56,15 +56,13 @@ File Example:
    </group>
  </configuration>
  
- groups_xml($file);
- 
-The XML file is validated against the following DTD schema:
+The XML file is validated against the DTD schema stored in C<Rex::Group::Lookup::XML::$schema_file> as string.
  
 =cut
 
 =head2 $schema_file
 
-A global that defines the XSD schema for which the XML is check against.
+A variable that contains the XSD schema for which the XML is validated against.
 
 =cut
 

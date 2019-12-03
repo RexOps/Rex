@@ -41,9 +41,8 @@ use Rex::Helper::DBI;
 
 =head2 groups_dbi($dsn, $user, $password, $sql)
 
- With this function you can read groups from DBI source.
+With this function you can read groups from DBI source. Example:
 
-=head2 Example:
  groups_dbi( 'DBI:mysql:rex;host=db01',
    user             => 'username',
    password         => 'password',

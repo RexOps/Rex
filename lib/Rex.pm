@@ -27,20 +27,20 @@ See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more informatio
 =head1 SYNOPSIS
 
     # In a Rexfile:
-    use Rex -feature => [qw/1.3/];
+    use Rex -feature => [qw/1.4/];
    
     user "root";
     password "ch4ngem3";
    
-    desc "Show Unix version";
-    task "uname", sub {
+    desc "Show system information";
+    task "sysinfo", sub {
        say run "uname -a";
     };
 
     1;
    
     # On the command line:
-    bash# rex -H server[01..10] uname
+    $ rex -H server[01..10] sysinfo
 
 =head1 CLASS METHODS
 

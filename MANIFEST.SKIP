@@ -26,7 +26,6 @@ vars\..*
 .*\.data
 .*\.lock
 passwd
-.*\.md
 upload
 .*\.conf
 .*\.log

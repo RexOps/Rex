@@ -8,40 +8,21 @@
 
 =head1 NAME
 
-Rex - Remote Execution
+Rex - the friendly automation framework
 
 =head1 DESCRIPTION
 
-Rex is a command line tool which executes commands on remote servers.  Define
-tasks in Perl and execute them on remote servers or groups of servers.
+Rex is an automation framework that is friendly to any combinations of local
+and remote execution, push and pull style of management, or imperative and
+declarative approach.
 
-Rex can be used to:
+Its flexibility makes it a great fit for many different use cases, but most
+commonly Rex is used to automate application deployment and data center
+infrastructure management tasks.
 
-=over 4
+See L<Rex::Commands> for a starting point of available built-in commands.
 
-=item * Deploy web applications to servers sequentially or in parallel.
-
-=item * Automate common tasks.
-
-=item * Provision servers using Rex's builtin tools.
-
-=back
-
-You can find examples and howtos on L<http://rexify.org/>
-
-=head1 GETTING HELP
-
-=over 4
-
-=item * Web Site: L<http://rexify.org/>
-
-=item * IRC: irc.freenode.net #rex
-
-=item * Bug Tracker: L<https://github.com/RexOps/Rex/issues>
-
-=item * Twitter: L<http://twitter.com/jfried83>
-
-=back
+See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more information about how to use rex on the command line.
 
 =head1 SYNOPSIS
 
@@ -60,10 +41,6 @@ You can find examples and howtos on L<http://rexify.org/>
    
     # On the command line:
     bash# rex -H server[01..10] uname
-
-See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more information about how to use rex on the command line.
-
-See L<Rex::Commands> for a list of all commands you can use.
 
 =head1 CLASS METHODS
 

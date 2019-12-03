@@ -1,3 +1,13 @@
+2019-12-03 Ferenc Erki <erkiferenc@gmail.com> (1.7.0_01)
+  * Clarify POD - Ferenc Erki
+  * Fix POD formatting - Ferenc Erki
+  * Fix CMDB examples (fix #1151) - Ferenc Erki
+  * Test on OS X with Travis CI - Ferenc Erki
+  * Fix getting current directory in Windows - Ferenc Erki
+  * Skip symlink tests on Windows - Ferenc Erki
+  * Test on Windows with Travis CI - Ferenc Erki
+  * Update description - Ferenc Erki
+
 2019-11-05 Ferenc Erki <erkiferenc@gmail.com> (1.7.0)
   * Fix test dependency - Ferenc Erki
   * Use perl to query environment - Ferenc Erki

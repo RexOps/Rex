@@ -1,4 +1,9 @@
-2019-12-03 Ferenc Erki <erkiferenc@gmail.com> (1.7.0_01)
+2019-12-05 Ferenc Erki <erkiferenc@gmail.com> (1.7.1)
+  * Update supported Perl versions - Ferenc Erki
+  * Don't skip all markdown files - Ferenc Erki
+  * Update synopsis - Ferenc Erki
+  * Update CPAN metadata - Ferenc Erki
+  * Update name and description in POD - Ferenc Erki
   * Clarify POD - Ferenc Erki
   * Fix POD formatting - Ferenc Erki
   * Fix CMDB examples (fix #1151) - Ferenc Erki

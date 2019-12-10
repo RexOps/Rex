@@ -13,7 +13,7 @@ my @cron = $c->list;
 
 is( $cron[0]->{type}, "comment", "first line is a comment" );
 
-is( $cron[1]->{type}, "comment", "second line is comment" );
+is( $cron[1]->{type}, "comment",                   "second line is comment" );
 is( $cron[1]->{line}, "# Shell variable for cron", "got the line content #2" );
 
 is( $cron[2]->{type},  "env",       "3rd line is a env variable" );

@@ -29,7 +29,7 @@ our $LOCK_FILE =
 
 sub __lock {
   sysopen( my $dblock, $LOCK_FILE, O_RDONLY | O_CREAT ) or die($!);
-  flock( $dblock, LOCK_EX ) or die($!);
+  flock( $dblock, LOCK_EX )                             or die($!);
 
   my $ret = $_[0]->();
 

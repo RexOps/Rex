@@ -284,7 +284,7 @@ CHECK_OVERWRITE: {
 
     Rex::global_sudo(0);
     Rex::Logger::debug("Removing lockfile") if ( !exists $opts{'F'} );
-    CORE::unlink("$::rexfile.lock") if ( !exists $opts{'F'} );
+    CORE::unlink("$::rexfile.lock")         if ( !exists $opts{'F'} );
     CORE::exit 0;
   }
 
@@ -783,7 +783,7 @@ sub load_rexfile {
     my @lines = split( $/, $e );
 
     Rex::Logger::info( "Compile time errors:", 'error' );
-    Rex::Logger::info( "\t$_", 'error' ) for @lines;
+    Rex::Logger::info( "\t$_",                 'error' ) for @lines;
 
     exit 1;
   }
@@ -796,7 +796,7 @@ sub exit_rex {
 
   Rex::global_sudo(0);
   Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
-  unlink("$::rexfile.lock") if !exists $opts{'F'};
+  unlink("$::rexfile.lock")               if !exists $opts{'F'};
 
   select STDOUT;
 

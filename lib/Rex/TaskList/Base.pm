@@ -238,7 +238,7 @@ sub create_task {
 sub get_tasks {
   my $self = shift;
   return grep { $self->{tasks}->{$_}->hidden() == 0 }
-    sort      { $a cmp $b } keys %{ $self->{tasks} };
+    sort { $a cmp $b } keys %{ $self->{tasks} };
 }
 
 sub get_all_tasks {

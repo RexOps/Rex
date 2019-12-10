@@ -34,8 +34,6 @@ jobs:
         - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
         - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
         - ln -snf /c/Strawberry/perl/bin/perl /bin/perl
-        - cpanm Perl::Critic
-        - perlcritic --quiet --single-policy=RequireTidyCode bin
         - cpanm --reinstall Module::Pluggable::Object
         - cpanm Dist::Zilla
         - dzil authordeps --missing | cpanm
@@ -65,8 +63,6 @@ jobs:
             - openssl
       before_install:
         - export "PATH=/usr/local/Cellar/perl/5.30.0/bin:${PATH}"
-        - cpanm Perl::Critic
-        - perlcritic --quiet --single-policy=RequireTidyCode bin
         - cpanm Dist::Zilla
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm

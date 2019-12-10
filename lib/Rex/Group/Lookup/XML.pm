@@ -115,7 +115,7 @@ sub groups_xml {
   foreach my $server_node ( $xmldoc->findnodes('/configuration/group/server') )
   {
     my ($group) =
-      map  { $_->getValue() }
+      map { $_->getValue() }
       grep { $_->nodeName eq 'name' } $server_node->parentNode->attributes();
     my %atts =
       map { $_->nodeName => $_->getValue() } $server_node->attributes();

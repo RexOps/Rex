@@ -60,7 +60,7 @@ sub connect {
 
   my $proxy_command = Rex::Config->get_proxy_command( server => $server );
 
-  $port ||= Rex::Config->get_port( server => $server ) || 22;
+  $port    ||= Rex::Config->get_port( server => $server )    || 22;
   $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
 
   $server =

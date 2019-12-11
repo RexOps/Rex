@@ -61,7 +61,7 @@ our (
   $set_no_append,            $use_net_openssh_if_present,
   $use_template_ng,          $use_rex_kvm_agent,
   $autodie,                  $task_chaining_cmdline_args,
-
+  $waitpid_blocking_sleep_time,
 );
 
 # some defaults
@@ -1068,6 +1068,14 @@ sub get_use_server_auth {
   return 0;
 }
 
+sub set_waitpid_blocking_sleep_time {
+  my ( $self, $waitpid_blocking_sleep_time ) = @_;
+}
+
+sub get_waitpid_blocking_sleep_time {
+  return $waitpid_blocking_sleep_time // 0.1;
+}
+
 sub import {
   read_ssh_config_file();
   read_config_file();
@@ -1103,7 +1111,7 @@ __PACKAGE__->register_config_handler(
 my @set_handler =
   qw/user password private_key public_key -keyauth -passwordauth -passauth
   parallelism sudo_password connection ca cert key distributor
-  template_function port/;
+  template_function port waitpid_blocking_sleep_time/;
 for my $hndl (@set_handler) {
   __PACKAGE__->register_set_handler(
     $hndl => sub {

@@ -21,7 +21,7 @@ The main ideas behind Rex are:
 
     This means whenever you reach the limitations of the built-in Rex features, a powerful programming language and module ecosystem is always at your fingertips to seamlessly extend it with modules from [CPAN](https://metacpan.org) or with your own code.
     As a bonus, you can also use the usual well-established tools and workflows, like IDE integration for syntax highlighting, linting and formatting, or authoring and publishing [Rex modules on CPAN](https://metacpan.org/search?q=rex).
-    With the use of Inline modules, it's friendly to code written in other languages too. So after all, it's not just Perl.
+    With the use of [Inline](https://metacpan.org/pod/Inline) and [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) modules, it's friendly to code written in other languages too. So after all, it's not just Perl.
 
 ## Getting started
 

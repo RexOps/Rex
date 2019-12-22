@@ -86,7 +86,7 @@ sub wait_for {
 
         return 1 unless $all;
       }
-      sleep 0.1;
+      sleep Rex::Config->get_waitpid_blocking_sleep_time;
     }
   } until $self->{'running'} == 0;
 }

@@ -1,3 +1,16 @@
+2020-01-01 Ferenc Erki <erkiferenc@gmail.com> (1.7.1_01)
+  * Map commit authors to their canonical name and email - Ferenc Erki
+  * Add contributors without commits on master branch - Ferenc Erki
+  * Generate CONTRIBUTORS file - Ferenc Erki
+  * Added Rex::Pkg::VoidLinux using XBPS - Leah Neukirchen
+  * Added Rex::Service::VoidLinux using runit - Leah Neukirchen
+  * Added Void Linux - Leah Neukirchen
+  * Make waitpid blocking sleep time configurable - Ferenc Erki
+  * Match waitpid blocking sleep between fork managers - Ferenc Erki
+  * Add Kwalitee tests - Ferenc Erki
+  * Update Perl::Tidy on each Travis build - Ferenc Erki
+  * Skip bin tidiness check on Windows and Mac - Ferenc Erki
+
 2019-12-05 Ferenc Erki <erkiferenc@gmail.com> (1.7.1)
   * Update supported Perl versions - Ferenc Erki
   * Don't skip all markdown files - Ferenc Erki

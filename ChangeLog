@@ -1,4 +1,4 @@
-2020-01-01 Ferenc Erki <erkiferenc@gmail.com> (1.7.1_01)
+2020-01-05 Ferenc Erki <erkiferenc@gmail.com> (1.8.0)
   * Map commit authors to their canonical name and email - Ferenc Erki
   * Add contributors without commits on master branch - Ferenc Erki
   * Generate CONTRIBUTORS file - Ferenc Erki

@@ -16,6 +16,9 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+ - Reformat changelog to match CPAN specifications
+ - Use NextRelease to update release info
+ - Use NextVersion::Semantic for versioning
 
 1.8.0 2020-01-05 Ferenc Erki <erkiferenc@gmail.com>
  - Map commit authors to their canonical name and email - Ferenc Erki

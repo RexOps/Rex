@@ -98,6 +98,35 @@ use vars qw(%file_handles);
 
 Parse a template and return the content.
 
+=head3 Embedded templates
+
+Use C<__DATA__> to embed templates at the end of the file. Prefix embedded template names with C<@>. If embedding multiple templates, mark their end with C<@end>.
+
+=head4 Single template
+
+ my $content = template( '@hello', name => 'world' ); # Hello, world!
+ __DATA__
+ @hello
+ Hello, <%= $name -%>!
+
+=head4 Multiple templates
+
+Use C<@end> to separate multiple templates inside C<__DATA__>.
+
+ my $content     = template( '@hello', name => 'world' ); # Hello, world!
+ my $alternative = template( '@hi',    name => 'world' ); # Hi, world!
+
+ __DATA__
+ @hello
+ Hello, <%= $name -%>!
+ @end
+
+ @hi
+ Hi, <%= $name -%>!
+ @end
+
+=head3 File templates
+
  my $content = template("/files/templates/vhosts.tpl",
               name => "test.lan",
               webmaster => 'webmaster@test.lan');

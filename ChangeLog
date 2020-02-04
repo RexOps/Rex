@@ -1,1483 +1,1689 @@
-2020-01-05 Ferenc Erki <erkiferenc@gmail.com> (1.8.0)
-  * Map commit authors to their canonical name and email - Ferenc Erki
-  * Add contributors without commits on master branch - Ferenc Erki
-  * Generate CONTRIBUTORS file - Ferenc Erki
-  * Added Rex::Pkg::VoidLinux using XBPS - Leah Neukirchen
-  * Added Rex::Service::VoidLinux using runit - Leah Neukirchen
-  * Added Void Linux - Leah Neukirchen
-  * Make waitpid blocking sleep time configurable - Ferenc Erki
-  * Match waitpid blocking sleep between fork managers - Ferenc Erki
-  * Add Kwalitee tests - Ferenc Erki
-  * Update Perl::Tidy on each Travis build - Ferenc Erki
-  * Skip bin tidiness check on Windows and Mac - Ferenc Erki
-
-2019-12-05 Ferenc Erki <erkiferenc@gmail.com> (1.7.1)
-  * Update supported Perl versions - Ferenc Erki
-  * Don't skip all markdown files - Ferenc Erki
-  * Update synopsis - Ferenc Erki
-  * Update CPAN metadata - Ferenc Erki
-  * Update name and description in POD - Ferenc Erki
-  * Clarify POD - Ferenc Erki
-  * Fix POD formatting - Ferenc Erki
-  * Fix CMDB examples (fix #1151) - Ferenc Erki
-  * Test on OS X with Travis CI - Ferenc Erki
-  * Fix getting current directory in Windows - Ferenc Erki
-  * Skip symlink tests on Windows - Ferenc Erki
-  * Test on Windows with Travis CI - Ferenc Erki
-  * Update description - Ferenc Erki
-
-2019-11-05 Ferenc Erki <erkiferenc@gmail.com> (1.7.0)
-  * Fix test dependency - Ferenc Erki
-  * Use perl to query environment - Ferenc Erki
-  * Test run failures with alternative commands - Ferenc Erki
-  * Cache CMDB lookups (fix #1239) - Ferenc Erki
-  * Test CMDB both with and without caching - Ferenc Erki
-  * Instantiate CMDB object during initialization - Ferenc Erki
-  * Remove redundant argument to rsync command - Steve Dondley
-  * Detect upstart (fix #1190) - Ferenc Erki
-  * Simplify quoting (close #1206) - Ferenc Erki
-  * Better message and remove unused variable (ref #1206) - Roy Storey
-  * Quote parameters that might have spaces (fix #807) - Roy Storey
-  * Resolve symlinks for file management commands (fix #1195, close #1199) - Ferenc Erki
-  * Add resolve_symlink helper - Ferenc Erki
-  * Add symlink tests for file management commands - Ferenc Erki
-  * Update link of installation intructions - Ferenc Erki
-  * Update testing instructions - Ferenc Erki
-  * Update list of useful resources - Ferenc Erki
-  * Fix typos - Ferenc Erki
-  * Update supported Perl versions - Ferenc Erki
-  * Convert namespace separators from module to task (fix #1193) - Ferenc Erki
-  * Add tests for package hooks (ref #1194) - Mitch Broadhead
-  * create_host: drop useless get_host invocation (close #1181) - Ali Polatel
-  * Run extra tests on Travis - Ferenc Erki
-  * Ignore tidyness checks for generated extra tests - Ferenc Erki
-  * Rename perltidy test - Ferenc Erki
-  * Replace [ExtraTests] with [RunExtraTests] (fix #964) - Kent Fredric
-  * Use file command for file operations - Ferenc Erki
-  * Fix fallback method for getting username - Ferenc Erki
-  * Return username for local connections - Ferenc Erki
-  * only source ~/.profile if it really exists - Joachim Bargsten
-  * Accept critic for ProhibitExplicitReturnUndef - Ferenc Erki
-  * Accept critic for ProhibitNoStrict - Ferenc Erki
-  * Accept critic for ProhibitSubroutinePrototypes - Ferenc Erki
-  * Remove unnecessary subroutine prototype - Ferenc Erki
-  * Fix critic for ProhibitMutatingListFunctions - Ferenc Erki
-  * Fix critic for ProhibitSleepViaSelect - Erik Huelsmann
-  * Disable tidyness checks in perlcritic - Ferenc Erki
-  * improved error handling in run_task if task does not exist - Joachim Bargsten
-  * Fixes virtualization type,role for Digital Ocean Droplets (close #1192) - Mitch Broadhead
-  * Fix UID handling for OpenBSD (fix #1213) - Olivier Cherrier
-  * Added the Option 'continuous_read' to the documentation - elisdg
-  * Test for code tidyness - Ferenc Erki
-  * Fix placeholder matching for %h in ssh config. (#1214) - Max E. Aubrey
-  * Set minimum required Perl version to 5.10.1 - Ferenc Erki
-  * Use Travis CI for testing - Ferenc Erki
-  * added option to list all tasks, including hidden - Joachim Bargsten
-  * errorless git checkout if on checkout branch - Joachim Bargsten
-  * added clone_args as extra option for git checkout - Joachim Bargsten
-  * git checkout also supports environment settings for e.g. proxies - Joachim Bargsten
-  * added ssh as possible protocols for git-based rex modules - Joachim Bargsten
-  * Improve package handling on OpenBSD - Olivier Cherrier
-  * Enhance the OpenBSD User handling support - Olivier Cherrier
-  * Document the 'requiretty' setting with the sudo command - Erik Huelsmann
-  * delete_host: fix regex so it does not match on prefixes - Ali Polatel
-  * Added Oracle Linux (fix #1168, close #1174) - labbeduddel
-  * Ignore YAML-1.25 (fix #1197) - Ferenc Erki
-  * Adds SLE 15 / Leap 15.0 support - LeMerP
-  * Use virsh connect URI from config - Ferenc Erki
-  * Update README about contributing guide - Ferenc Erki
-  * Initial version of the contributing guide - Ferenc Erki
-  * Convert namespace separators from module to task (fix #1188) - Ferenc Erki
-  * Add test for using needs with nested modules (ref #1188) - Ferenc Erki
-  * Added Virtuozzo as Red Hat clone. - iblinder
-  * Print warning instead of dying when delete_user called on non existing user - Crimson Thompson
-  * Fix Pkgconf for Debian - Andy Beverley
-
-2017-12-03 Jan Gehring <jfried@rexify.org> (1.6.0)
-  * Check brctl command is available (resolves #1115) - perlancar
-  * fixed path bug in git scm checkout - Joachim Bargsten
-  * add Rexfile path to @INC, fixes bug with perl >=5.26 fixes #1170 - Jan Gehring
-  * Added support for Devuan as clone of Debian. - Christophe Wolfhugel
-  * fix bug with before => ALL in modules - Joachim Bargsten
-  * fixed syntax bug and crash on windows - Jan Gehring
-  * catch exception if version command failed. detect() method must return true/false not throw exception. - fix #1152 - Jan Gehring
-  * replace JSON::XS with JSON::MaybeXS - fix #1153 - Jan Gehring
-  * added initial docker box support - Jan Gehring
-  * indent code to be properly formatted - Yanick Champoux
-  * Allow connection config to be altered in before hook - Andy Beverley
-  * fix #1134 - redirect stderr to dev/null or to stdout - Jan Gehring
-  * fix #1066 - use Task::run() method to call the task code. - Jan Gehring
-  * fix #1117 - run after hook after connection poped from connection stack - Jan Gehring
-  * restore old current task object. - fix #1150 - Jan Gehring
-  * mkfs for lvm volumes is optional - Samuele Tognini
-  * Get PkgConf working with Debian clones like Ubuntu - James D Bearden
-  * Use fail_ok in cron - Daniel Dico
-  * VirtInfo: check dmi sys_vendor for qemu - Ali Polatel
-  * Gentoo/layman: check repo exists for add_repo & add readd option - Ali Polatel
-  * Libvirt: support to select cpu mode for KVM guests - Ali Polatel
-  * Libvirt: vm destroy must not die() for not-running VMs - Ali Polatel
-  * set_auth used before creating the task object - NDZ Prajith
-  * fix exit code on failed logins. we need to bitshift the return value of a fork - Jan Gehring
-  * clearpart: fix partition regex for nvme - Ali Polatel
-
-2016-10-09 Jan Gehring <jfried@rexify.org> (1.5.0)
-  * Rex::Pkg::Gentoo: Add support for slotted package specs - Ali Polatel
-  * only use srand() once. this caused a bug with sudo file writing. sometimes it generated two identical files - Jan Gehring
-  * fix problem with locks when Rexfile is on a nfs share #1130 - Jan Gehring
-  * fix running sudo on local connections - Jan Gehring
-  * don't format a partition which is part of vg - Jan Gehring
-  * Fix Rsync.pm paths and ports. - necrophcodr
-  * Fix uninitialized value warnings when using Augeas module - Andy Beverley
-  * fixed #1116 - detect suse systems by regex - Jan Gehring
-  * load project libraries before system libraries. fix RexOps/Rex#1108 - Jan Gehring
-  * fixed systemctl detection #1026 - Jan Gehring
-  * Service.pm: Fix service class for Gentoo & non-systemd - Ali Polatel
-  * Rex::Pkg::Gentoo: Smarter installed check to reinstall on USE updates - Ali Polatel
-  * Handle different md5 styles on BSDs (fix #1099) - Ferenc Erki
-  * Catch exceptions when trying to run dmidecode - Ferenc Erki
-  * don't use is_ip function, so that it also works with older Data::Validate::IP module - Jan Gehring
-  * Added some more tests to Rex::Box::Test - Jan Gehring
-  * Refactored Rex::Box to be able to programmatically load box definitions. - Jan Gehring
-  * Die if undefined line is found during _append_or_update (fix #1044) - Ferenc Erki
-  * fix a problem with creating boxes. catch errors - Jan Gehring
-  * Fix for  #1051 - Logger.pm - uninitialized value - Tamas Molnar
-  * reload sysctl if file changed - Jan Gehring
-  * use ensure or persistent for persistance - Jan Gehring
-  * fix an extra define on a hash - Solène Rapenne
-  * Detect Manjaro correctly (fix #993) - Ferenc Erki
-  * Don't warn on missing Rexfile when -e is used (fix #1032, ref #1010) - Ferenc Erki
-  * Specify XenServer as RedHat (CentOS) clone - Walery Wysotsky
-  * added i_exec and i_exec_nohup function for better parameter quoting - #872 - Jan Gehring
-  * refactored calls to run() function to use i_run() - Jan Gehring
-  * test for ipv4 - Jan Gehring
-  * don't set_connection if current task is the only one - Jan Gehring
-  * load Helper::Run module - Jan Gehring
-  * Give the kernel time to get informed of partition changes - Robert Abraham
-  * Trying to fix #791 Now get_ssh_config_hostname sub returns a good hosntame. - Paco Esteban
-  * also exclude directories - fix RexOps/Rex#904 - Jan Gehring
-  * push connection information to the new task - fix #1091 - Jan Gehring
-  * Add checking for ensure parameter and an error if ensure parameter isn't present/absent - solene rapenne
-  * sysctl supports remove and keyword changed to ensure - solene rapenne
-  * Create Rexfile-example2 - alx542
-  * callback and options can both be used - Andrew Solomon
-  * Add an option to save a sysctl key/value in /etc/sysctl.conf - Solène Rapenne
-  * Using OpenBSD rcctl tool for managing services - Solène Rapenne
-  * Add OpenBSD compatibility to test - solene rapenne
-  * Implemented LXC container support - Oleg Hardt
-  * try to add same update_system behaviour for as many systems as possible. Fix for RexOps/Rex#546 - Jan Gehring
-  * backported has_feature_version functions - Jan Gehring
-  * Escape backquotes when run command via sudo in the remote host - Nikolay A. Fetisov
-
-2016-07-16 Jan Gehring <jfried@rexify.org> (1.4.1)
-  * bug with get_cloud_instances_as_group - Pierrick DINTRAT
-  * Adds 64bit module path to @INC for linux - Mitch Broadhead
-  * set ls quoting for fedora 24 which magically quotes filenames - Jan Gehring
-  * added cache for can_run - Jan Gehring
-  * removed space from line ending. fixed test on centos 6 - Jan Gehring
-  * Don't add duplicates env variable in crontab - Rapenne Solène
-  * quote source and destination, so spaces in directory names are possible - Jan Gehring
-  * fixed summary tests for netbsd - Jan Gehring
-  * run hooks before push_connection - Jan Gehring
-  * Don't hardcode LibXML dependency - Jan Gehring
-  * workaround for wrong behaviour with -f and windows symlinks - Jan Gehring
-  * it seems that the channel sometimes doesn't get closed in time. so we need an option to force close it after command run. - Jan Gehring
-  * fixed reporting for named resource - Jan Gehring
-  * pass cli parameters to tasks for pre 1.4 feature flags. fix #1039 - Jan Gehring
-  * fixed old style Rex::Args->get when called from outside a task - Jan Gehring
-  * Fix for #1054 - get_private_key() to check the private key file - Tamas Molnar
-  * Fix for #1052 - mask sudo_password in debug log - Tamas Molnar
-  * exit rex with an exitcode of 1 if some tests failed. fix #989 - Jan Gehring
-  * show how to assign a user with a non-default shell - Andrew Solomon
-  * Fix example code (fix #1034) - Ferenc Erki
-  * Update example tasknames - Ferenc Erki
-  * Add possible root cause to authentication error message (fix #671) - Ferenc Erki
-  * Correct message for authentication problems - Ferenc Erki
-  * Avoid hardcoded path - Ferenc Erki
-  * Refactor calls to reporting - Ferenc Erki
-  * Refactor reporting message handling - Ferenc Erki
-  * Simplify detection of pkg change type - Ferenc Erki
-  * Refactor pkg on_change handling - Ferenc Erki
-  * Report each pkg modification (fix #838) - Ferenc Erki
-  * Revert "report all packages" - Ferenc Erki
-  * Timeout value should be passed in milliseconds - Ferenc Erki
-  * Fix compatibility with recent Net::SSH2 (fix #1023) - Ferenc Erki
-  * Only log masked password if one is being used - Ferenc Erki
-  * Avoid logging undefined host during connection - Ferenc Erki
-  * Refactor do_task - Ferenc Erki
-  * Backport task existence check for do_task from #1010 (fix #992) - Ferenc Erki
-  * Initial tests for do_task - Ferenc Erki
-  * fix hardcoded git tag command - Kirill Babikhin
-  * Document perlcritic violations - Ferenc Erki
-  * Integer with leading zeros - Ferenc Erki
-  * Add S_IMODE - Ferenc Erki
-  * Variable declared in conditional statement - Ferenc Erki
-  * "require" statement with library name as string - Ferenc Erki
-  * "select" used to emulate "sleep" - Ferenc Erki
-  * Don't modify $_ in list functions - Ferenc Erki
-  * removed hard coded qemu-img create format and added use of driver_type option. fix #948 - Jan Gehring
-  * added understandable error message when no virtualization module is given. fix #949 - Jan Gehring
-  * print right error message if run_task is calling a task that is not available. fix #970 - Jan Gehring
-  * on windows test for SSH connection type. fix #965 - Jan Gehring
-  * Add more tests for shared arrays - Ferenc Erki
-  * Add unshift for shared arrays - Ferenc Erki
-  * Add tests for unshift to shared arrays - Ferenc Erki
-  * Add pop for shared arrays - Ferenc Erki
-  * Add tests for pop from shared arrays - Ferenc Erki
-  * Add shift for shared arrays (fix #921) - Ferenc Erki
-  * Add tests for shift from shared arrays (ref #921) - Ferenc Erki
-  * Fix #967 - Harm Müller
-  * Add META.json to CPAN release - Kent Fredric
-
-2016-03-06 Ferenc Erki <ferki@cpan.org> (1.4.0)
-  * Normalize EOL characters earlier (fix #957) - Ferenc Erki
-  * fixed variable usage - Jan
-  * remove chr(13) everywhere - fix #957 - Jan
-  * cleanup newline(s) at the end. fix for #957 - Jan
-  * Increase timeout for read_buffer test (fix #954) - Ferenc Erki
-  * Test with a bit less output - Ferenc Erki
-  * Update read_buffer test for Windows - Ferenc Erki
-  * removed read_buffer reduction - Jan Gehring
-  * Handle partial last chunks from STDOUT and STDERR - Ferenc Erki
-  * Fix draining IO - Ferenc Erki
-  * Add initial tests for draining IO - Ferenc Erki
-  * fix continuous read bug - RexOps/#951 - Jan
-  * Reopen STDERR after loading Rexfile - Dmitry Kopytov
-  * Let service tests be silent - Ferenc Erki
-  * Don't confess upon failure of a non-resource (fix #936) - Ferenc Erki
-  * iptables_clear should clear only loaded tables - Dmitry Kopytov
-  * Fix copy-pasta POD errors - Ferenc Erki
-  * Make CPAN Testers happy for unsupported OSes - Ferenc Erki
-  * fixed issue of calling Rex::Args->get inside before_task_start - RexOps/Rex#934 - krimdomu
-  * can't connect message must be ::info logging - krimdomu
-  * check if task is no object, and get the task object then - Jan Gehring
-  * removed connecting to mesages (change to debug level) - Jan Gehring
-  * added parameters to do_task and fixed LOCAL block - Jan Gehring
-  * fixed calling of exit hooks after summary - Jan Gehring
-  * Update docs for Rex::Task - Ferenc Erki
-  * Add docs for Rex::Shared::Var (fix #920) - Ferenc Erki
-  * Update sudo docs (fix #918) - Ferenc Erki
-  * Fix summary tests for Mac OS X - Ferenc Erki
-  * Add tests for task hooks - Ferenc Erki
-  * don't clone task object. When cloned before_task_start/after_task_finished hooks doesn't work - fix #919 - krimdomu
-  * debug output now gets displayed again. - fix RexOps/Rex#910 - krimdomu
-  * fix loading of Rexfile on perl 5.8.9 - RexOps/Rex#922 - krimdomu
-  * fixed loading of resource module in perl 5.8 - RexOps/Rex#917 - krimdomu
-  * try to fix failing tests on freebsd - #901 - krimdomu
-  * Fix POD - Ferenc Erki
-  * Unbundle AWS::Signature4 - Ferenc Erki
-  * Fix rendering of false values in templates - Ferenc Erki
-  * Test rendering of false values in templates - Ferenc Erki
-  * Avoid __Rexfile__ as dependency - Ferenc Erki
-  * Enable more feature flags for development releases - Ferenc Erki
-  * Use development versioning - Ferenc Erki
-  * Pass options to mkfs (#fix 905) - Ferenc Erki
-  * Don't fail mkfs if label is undefined - Ferenc Erki
-  * Skip creating filesystems for some reserved words - Ferenc Erki
-  * Check for fstype existence at the start - Ferenc Erki
-  * Update docs for partition command - Ferenc Erki
-  * Remove purge package action on arch (fix #867) - Ferenc Erki
-  * Use sysread for local exec interface too (fix #887) - Ferenc Erki
-  * Avoid bitshifting error code twice (fix #901) - Ferenc Erki
-  * add default values for cpu and memory - krimdomu
-  * some windows fixes for rexify command - krimdomu
-  * run shell detection a second time if first time failed - krimdomu
-  * remove unnecessary new lines - krimdomu
-  * moved detect method to base, because it is everywhere the same, created direct_exec method for all interfaces - krimdomu
-  * remove error message, we don't need it for the tests - krimdomu
-  * fixed inheritance problem, moved shell() method to base class. - krimdomu
-  * return always shell object - krimdomu
-  * load right cron module if os is *bsd and shell is csh - #883 - krimdomu
-  * use sysread to read from filehandle. fixes #887 - krimdomu
-  * Read STDOUT and STDERR in parallel (fix #756) - Ferenc Erki
-  * fix error code in $? after a run command which was introduced by 6c8441 - krimdomu
-  * print the error message in the summary when a task die()d - krimdomu
-  * readd close of stderr - krimdomu
-  * only update chained resource when the upper resource wasn't changed before. Also removed 'inside resource check' because this is not needed anymore due to stacked resources - krimdomu
-  * fix loading of libraries in lib directory when use -f path/to/Rexfile - krimdomu
-  * fixed loading of rexfiles with -f - krimdomu
-  * load a rexfile also if it doesn't return a true value. This fixes a regression - RexOps/Rex#513 - krimdomu
-  * fixed reporting of nested resources (changed resource) - krimdomu
-  * fixed firewall resource to work with ipv6 patch - krimdomu
-  * added Rex::Args->get method again. fixes #860 - krimdomu
-  * Refactor Rex::TaskList.  No functional change. - Eric Johnson
-  * fixed tests for windows - krimdomu
-  * added tmp to gitignore - krimdomu
-  * Add Rex::Commands::Mkfs to rexify and pp.args - Ferenc Erki
-  * The after hook now runs even if the ssh connection fails. - Eric Johnson
-  * added archlinux support - Harm Müller
-  * support key_url and key_file also on redhat systems - krimdomu
-  * also lookup task name in cmdb - krimdomu
-  * Fix regression in deprecated static call to Rex::Task->run() - Eric Johnson
-  * Fix links in README (fix #853) - Ferenc Erki
-  * Output full task names (fix #825, close #842) - Daniel Cesario
-  * use empty string to prevent uninitialized warning messages - krimdomu
-  * make environment available inside cmdb template - krimdomu
-  * color for windows - krimdomu
-  * defaults for cpus and memory - krimdomu
-  * call after task hook, even if connection to system failed - krimdomu
-  * fix after hook call for connections that wasn't successfull - krimdomu
-  * Fix passing memory/cpus options to constructor - Ferenc Erki
-  * Allow tests so set Box memory and cpus (close #839) - Patrick Lauer
-  * Exit with an error message when a bad task name is used. - Eric Johnson
-  * Exit codes now work when using 'rex -e' (fix #761, close #840) - Eric Johnson
-  * Fix indentation - Eric Johnson
-  * Refactor out some code into handle_lock_file() - Eric Johnson
-  * Refactor out logic for loading server ini file into load_server_ini_file(). - Eric Johnson
-  * Put Rexfile exists check inside load_rexfile() - Eric Johnson
-  * Simplify loading the Rexfile and improve error handling. - Eric Johnson
-  * Add missing Data::Dumper import - Ken Crowell
-  * Tests for needs() were not useful.  Now they are. - Eric Johnson
-  * allow mix of modules.rexify.org modules and git modules - Jan
-  * Fix summary test tasks for Windows - Ferenc Erki
-  * Add support for ip6tables (close #795) - Dmitry Kopytov
-  * Prefer uid over getlogin as fallback username (close #793, fix #792) - Ferenc Erki
-  * Sort failure list - Ferenc Erki
-  * Further simplify summary output - Ferenc Erki
-  * Refactor summary output - Ferenc Erki
-  * Use error level output in the summary if some tasks failed - Ferenc Erki
-  * added AWS::Signature4 directly to code, due to problems with Centos5 dependencies (#737) - Jan
-  * ignore eclipse files - Jan
-  * fixed call of task as functions with normal parameters, #827 - Jan
-  * allow config (set) vars in cmdb templates - Jan
-  * Fix template handling in YAML CMDB files - Ferenc Erki
-  * YAML cmdb can now contain template code - Jan
-  * don't concat caller package anymore - Jan
-  * fixed some unitialized warnings - Jan
-  * fixed lookup path for arp command - Jan
-  * report all packages - Jan
-  * allow nested resources in reports - Jan
-  * use md5 binary if perl module is not available - fix for #834 - Jan
-  * default to empty task list - Jan
-  * don't print summary on rex -T - Jan
-  * use can_run to detect arp command - Jan Gehring
-  * Custom storage path for kvm - Prajithp
-  * give server configuration precedence - Jan
-  * detect iptables version and choose syntax for ip adresses - Jan
-  * fixed a logic bug, that prevents batch creation - Jan
-  * fixed a bug that was introduced by b0416b1710611b900284ba5a2d9d74991fc4351b - Jan
-  * Ensuring that labels can be added to swap partitions - Peter H. Ezetta
-  * Ensure proper test-time connection type (fix #821) - Ferenc Erki
-  * Fix examples - Ferenc Erki
-  * Slightly reword synopsis - Ferenc Erki
-  * Updated pod in bin/rex and lib/Rex.pm - Eric Johnson
-  * Fix static side comments - Ferenc Erki
-  * Use static comments to avoid alignment change later - Ferenc Erki
-  * Checking for a running rex process failed if the pidfile contains a pid that partially matches a running process. - petersonchen
-  * Updated documentation in bin/rex (pod/man page) - Eric Johnson
-  * fixed loading of Rex::Commands via require. RexOps/Rex#789 - Jan Gehring
-  * Recognize Raspbian as a Debian clone - Ferenc Erki
-  * Mute noisy tests - Ferenc Erki
-  * Added option for rebase during pull. - Eivin Giske Skaaren
-  * added feature flag for 1.4 and removed deprecated warning of Rex::RunList - Jan
-  * Added a firewall module to manage different firewall models with one interface. - Jan
-  * resource and task now have own namespace for template variables - Jan
-  * Exit codes need to be bit shifted by 8.  Do it in one place. - Eric Johnson
-  * Summary tests for all permutations of Parallel::ForkManager, Base, and exec_autodie - Eric Johnson
-  * Summarize success/failure at the end of a run - Eric Johnson
-  * added ParamLookup and registering task parameter as template variables. - Jan
-  * Suppress STDERR during crontab listings - Ferenc Erki
-  * Fix managing a user's own crontab via cron_entry - Ferenc Erki
-  * Add _whoami to determine remote effective username - Ferenc Erki
-  * Add docs on glob usage with file command (close #712, fix #738) - Jose Luis Perez Diez
-  * Map Debian clones correctly - Ferenc Erki
-  * Recognize LinuxMint as a Debian clone (close #506) - Ferenc Erki
-  * Fix GetRex link url - hiroraba
-  * Avoid unnecessary package rebuilds on Gentoo (close #809) - Patrick Lauer
-  * Don't parse @ARGV on import. - Eric Johnson
-  * Refactor child/parent pid logic + comments to be more readable - Eric Johnson
-  * Avoid race condition when doing IPC. - Eric Johnson
-  * Test for race condition problem in Rex::Shared::Var. - Eric Johnson
-  * Refactoring LVM.pm to use mkfs(); - Peter H. Ezetta
-  * refactor Partition.pm, fix $lv_name in Mkfs.pm - Peter H. Ezetta
-  * refactoring swap logic into mkfs logic, silly to separate. - Peter H. Ezetta
-  * code cleanup and addition of POD - Peter H. Ezetta
-  * error checking on $lvname - Peter H. Ezetta
-  * setting up logic for lvm vs raw disk - Peter H. Ezetta
-  * starting to add option parsing - Peter H. Ezetta
-  * start of refactor mkfs/mkswap into their own pm - Peter H. Ezetta
-  * Fix undef warnings if calling get() without param - Andy Beverley
-  * lower exitecode to less than 255 because some os have problems with larger ones - Jan
-  * Fatal exceptions if git switching fail - alex1line
-  * fix for Net::OpenSSH can't set initialize_options for the constructor - #796 - Jan Gehring
-  * fixes the problem of run_task connecting to the wrong host #788 - Jan Gehring
-
-2015-09-04 Ferenc Erki <ferki@rexify.org> (1.3.3)
-  * Catch another way to manage services on FreeBSD (close #773) - timp87
-  * Fix generated links for Commands modules (fix #776) - Ferenc Erki
-  * Fix code block output when there's no space before closing tag - Ferenc Erki
-  * Escape curly braces in template content - Ferenc Erki
-  * Force syncing package information on FreeBSD - Ferenc Erki
-  * Take service name and rcvar mapping into account on FreeBSD (close #770) - timp87
-  * Check if systemctl is functional before using it (fix #753) - Ferenc Erki
-  * Rearrange dist.ini - Ferenc Erki
-  * Fail early on unsupported Windows versions (fix #751) - Ferenc Erki
-  * Warn about missing environment instead of panicking (fix #742) - Ferenc Erki
-  * Document alias of get_operating_system() - Ferenc Erki
-  * Fix perlcritic warnings about modifying list elements - Ferenc Erki
-  * Fix perlcritic warnings about two-argument open - Ferenc Erki
-  * Update auth docs - Ferenc Erki
-  * Fix docs for transaction (fix #686, close #766) - Elmer Quintanilla
-  * Fix ensure option for NetBSD services (close #759) - timp87
-  * Do not silently fail on update errors (close #758) - Andrew Beverley
-  * Fix ensure option for FreeBSD services (close #752) - timp87
-  * Enable Rex to manage system services on FreeBSD (#752) - timp87
-  * Recognize multi-arch packages on Debian (fix #748, close #755) - Erik Huelsmann
-  * Fix Gentoo service detection (fix #747) - Ferenc Erki
-  * force apt-listchanges to not run - Anders Ossowicki
-  * Added doc about using regex for auth - Eivin Giske Skaaren
-  * Fixes #760 timeout for OpenSSH - Eivin Giske Skaaren
-  * Use the correct class for managing forks (fix #743) - Ferenc Erki
-  * Support key files for Debian repositories + add docs (close #736) - John Karr
-  * Don't recreate connection during rethink_connection (fix #694, close #727) - Mitch Broadhead
-  * Pass exception to on_rollback (fix #687, close #732) - Mitch Broadhead
-  * Document hostname expressions support in INI files - Ferenc Erki
-  * Support hostname expressions in INI files (close #713) - okaoka
-  * Document -O CLI option - Ferenc Erki
-  * Revert "Remove unused CLI option" (fix RexOps/rex-jobcontrol#10) - Ferenc Erki
-  * make Fcntl calls os independent - Jan
-  * added a wrapper module for File::Spec - Jan
-  * Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
-  * Add function for checkout of Git tags - Eivin Giske Skaaren
-
-2015-06-17 Ferenc Erki <ferki@rexify.org> (1.3.2)
-  * Use binmode as a function - Jan
-  * Use raw Rex::Interface::Exec to call can_run - Jan
-  * Remove md5sum usage - Ferenc Erki
-  * Fix for filenames with at sign in them - Ferenc Erki
-  * Add test case for filenames with at sign - Ferenc Erki
-  * Add initial MD5 test - Ferenc Erki
-  * Fix check for environment-specific filenames - Ferenc Erki
-  * Use OS-agnostic perl executable detection - Ferenc Erki
-  * Fix RC version handling - Ferenc Erki
-  * Refactor MD5 checksum calculation (fix #719) - Ferenc Erki
-  * Add missing test names - Ferenc Erki
-  * Only display diagnostic message if something went wrong - Ferenc Erki
-  * Explicitly test for optional dependencies - Ferenc Erki
-  * Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
-
-2015-06-08 <ferki, rexify.org> (1.3.1)
-  * Cleanup db tests (fix #714) - Ferenc Erki
-  * Update parallelism docs - Ferenc Erki
-
-2015-06-03 <jfried, rexify.org> (1.3.0)
-  * Fix regex pattern for perl-5.22.0 - Ferenc Erki
-  * Filter changelogger output - Ferenc Erki
-  * Cleanup group command POD - Ferenc Erki
-  * Convert POD directives of methods and DSL functions (fix #685, close #705) - Brian Manning
-  * pass cmdb() arguments to callback - fixed #709 - Jan
-  * allow creation of inherited Rex::Group::Entry::Server objects - fixed #708 - Jan
-  * Reuse VM name as image filename when importing - Ferenc Erki
-  * Recognize CloudLinux as Red Hat clone (close #699) - Dmitry Kopytov
-  * Fix auth test when REX_USER env is present - Dmitry Kopytov
-  * Remove unused CLI option - Ferenc Erki
-  * More helpful/verbose help message (close #698) - Eric Johnson
-  * Cleanup a file used during testing - Ferenc Erki
-  * Cleanup tests with optional dependencies - Ferenc Erki
-  * Use explicit test plans everywhere - Ferenc Erki
-  * Cleanup test imports - Ferenc Erki
-  * Remove tests doing nothing else than use_ok() - Ferenc Erki
-  * Automatically use all modules during testing - Ferenc Erki
-  * Remove redundant hostname evaluation tests - Ferenc Erki
-  * Remove unused Data::Dumper from tests - Ferenc Erki
-  * Add CMDB docs - Ferenc Erki
-  * Don't run into an endless loop: fix for #692 - Jan Gehring
-  * Iptables.pm: add long-form iptables examples to POD - Brian Manning
-  * Iptables.pm: show error from iptables on non-zero exit status - Brian Manning
-  * ignore backfiles from editors - Jan
-  * Log STDERR on errors where auto_die is enabled - Dmitry Kopytov
-  * Set parallelism automatically (fix #491) - Ferenc Erki
-  * added template_ng tests - Jan
-  * fixed a problem when one template object was used twice - Jan
-  * new template engine for 1.3 - Jan
-  * Fix checking of virsh command result upon VM creation - Ferenc Erki
-  * Update clearpart command documentation - Ferenc Erki
-  * Add bios_boot option to GPT initialization - Ferenc Erki
-  * make report filename configurable. don't sleep in test - Jan
-  * Check for CLI argument definedness (fix #668) - Ferenc Erki
-  * this commit fixes #667. this bug was introduced with the fix for #629 - Jan
-  * first detect if uname and md5sum can be run, then use it. fixed #665 - Jan
-  * fix warning if local file is not given. fixed #647 - Jan
-  * Include provided modules in META.yml - Ferenc Erki
-  * added systemd support for debian. fixes #659 - Jan
-  * this prevents the stderr output of perl to get send over the wire. fixes #658 - Jan
-
-2015-05-04 <jfried@rexify.org> (1.2.1)
-  * first detect if uname and md5sum can be run, then use it. fixed #665 - Jan
-
-2015-05-02 <jfried@rexify.org> (1.2.0)
-  * Set version to 9999.99.99 if version is not present (e.g. during development) - Jan
-  * Fix Rexfile parsing (fix #629) - Jan
-  * Refactor tasklist output (fix #631, #653) - Eric Johnson
-  * Remove -w from shebang (fix #650) - Eric Johnson
-  * Add tab completion (fix #636, #652) - Eric Johnson
-  * Update modules listed in POD - Brian Manning
-  * Add another Red Hat synonym for RHWS version 3 - Brian Manning
-  * Fix file manipulation when using Net::OpenSSH and sudo (fix #640) - Jan
-  * Check if requested environment is defined (fix #639) - Ferenc Erki
-  * Use normal DSL for internal task - Ferenc Erki
-  * Fix SCM documentation - Ferenc Erki
-  * Sort server names naturally - Ferenc Erki
-  * Sort tasklist output (fix #633) - Ferenc Erki
-  * Add YAML CMDB merging support (fix #499) - Ferenc Erki
-  * Add CMDB merge tests - Ferenc Erki
-  * Update list of contributors - Ferenc Erki
-  * Check number of elements returned by stat - Ferenc Erki
-  * Rex::Commands::Fs::stat() should return a hash or throw an exception. - Mitch Broadhead
-  * Allow single-character tasknames (fix #621) - Ferenc Erki
-  * Fix reporting for umount - Ferenc Erki
-
-2015-03-29 <jan.gehring, gmail.com> (1.1.0)
-  * Fix dependencies for openssh + pass_auth - Ferenc Erki
-  * prevent faulty debug message - Jan
-  * fixed merge_auth() method for #615 -Jan
-  * Update task tests (fix #614) - Jan
-  * Recognize usable SSH modules separately - Ferenc Erki
-  * Describe platform-specific dependencies - Ferenc Erki
-  * Only check for iDrac signature if there was an output - Ferenc Erki
-  * added a prototype, this will prevent failures like RexOps/Rex#584 - references: RexOps/Rex#608 - Jan
-  * we need to do an explicit return undef. if we only use 'return' and the return of is_file/is_dir is passed to an array, this will not appear in the array. reference: RexOps/Rex#608 - Jan
-  * updated tests to use is() instead of ok(). reference: RexOps/Rex#608 - Jan
-  * changed return code to undef if file/dir not found. fix for RexOps/Rex#608 - Jan
-  * Add initial iDrac shell support - Ferenc Erki
-  * Allow can_run method to accept command to do the check with - Jan
-  * Check if a command can be run before its execution (fix #514) - Ferenc Erki
-  * Refactor can_run - Ferenc Erki
-  * Support can_run command on Windows - Ferenc Erki
-  * Move can_run to Rex::Interface::Exec - Ferenc Erki
-  * Add can_run tests - Ferenc Erki
-  * Create target directory before extracting an archive (fix #600, close #604) - Arnold Bechtoldt
-  * Update POD (close #598) - Ferenc Erki
-  * added a Rex::Logger::masq() function that can masq sensitiv data for logging output. (fix for RexOps/Rex#554) - Jan
-  * added code to make shells pluggable. - RexOps/Rex#602 - Jan
-  * Avoid noisy test output - Ferenc Erki
-  * added support to export resources to main namespace and added more events - Jan
-  * added possibility to use auth(for => task) before a task is created - fixed #402 - Jan
-  * Fix handling of symbolic links (fix #591, close #592) - Jan
-  * this adds a new method to the server objects called group() - Jan
-  * fixed setting of path environment variable - #583 - Jan
-  * Add preferred type option for mount command (fix #469) - Ferenc Erki
-  * Reword has_{dir,file} test outputs - Ferenc Erki
-  * Add has_dir test - Ferenc Erki
-  * Print explicit PASS or FAIL output upon finishing a test suite - Ferenc Erki
-  * Fix has_stat test for non-existing UIDs and GIDs - Ferenc Erki
-  * Allow has_stat test to handle directories (fix #582) - Ferenc Erki
-  * Add diag method for Rex::Test::Base - Ferenc Erki
-  * Ensure proper return values for is_{dir,file} functions (fix #584) - Ferenc Erki
-  * Drop potentially dangerous --force-yes option (fix #559) - Ferenc Erki
-  * Generate docs for Rex::Test (fix #483) - Ferenc Erki
-
-2015-03-08 <jan.gehring, gmail.com> (1.0.0)
-  * Remove hardcoded connection type (fix #579) - Ferenc Erki
-  * fixed systemd status query - Jan
-  * test output of tmpdir gathering before working with it. - Jan
-  * fixed removing some tmp files - Jan
-  * fixed some warnings for netstat listing if reading an unknown transport layer - Jan
-  * added no_autodie feature flag - Jan
-  * fixed is_file() for files with spaces - Jan
-  * Fix POD - Ferenc Erki
-  * don't redirect stdout 2 times. freebsd don't like it - Jan
-  * added tty feature flag and sorted the flags - Jan
-  * added some defaults for kvm boxes (network) - Jan
-  * fixed autodie bug for is_symlink function - Jan
-  * added reconnect tries to Net::OpenSSH connections - Jan
-  * Allow spaces in Augeas values - Andrew Beverley
-  * Warn if Augeas command fails - Andrew Beverley
-  * fixed a problem if a server group was empty - Jan
-  * dist.ini: Add Twitter and IRC links to metaresources block - Brian Manning
-  * Rex::Commands::MD5: Make Rex use the /sbin/md5 binary on OS X - Brian Manning
-  * Rex::Commands::User: fix typo in POD (user_group -> user_groups) - Brian Manning
-  * Rex::Helper:Run->i_run: check no_path_cleanup before calling get_path - Brian Manning
-  * stop 'profile' before returning from a subroutine. - Andrej Zverev
-  * Speed up connecting to Boxes - Ferenc Erki
-  * allow call of run() command with arrayRef - Jan
-  * fixed sync_up/sync_down with Text::Glob - Jan
-  * fixed authentication, failing if try password auth without mentioning pass_auth directly - Jan
-  * fixed line endings with openssh and pty - Jan
-  * Added possibility to use group() also as a resource function - Jan
-  * added possibility to define task parameters multiple times from cli. - #516 - Jan
-  * fixed windows tests - #514 - Jan
-  * fixed #555 - default for Net::OpenSSH now also spawn a pty. Can be disabled with feature no_tty - Jan
-  * Die if trying to run augeas without augtool installed (close #547) - Andrew Beverley
-  * Skip db tests if there are missing dependencies (fix #548, close #549) - Volker Kroll (vkroll)
-  * Restore perl-5.8.9 compatibility - Ferenc Erki
-  * Add test for minimum perl version required - Ferenc Erki
-  * Be more explicit about required perl version - Ferenc Erki
-  * Stop append_or_amend_line inserting extra blank lines - Andrew Beverley
-  * Add tests for append_or_amend_line - Andrew Beverley
-  * fixed Rex::Box with Net::OpenSSH - Jan
-  * rex/CLI.pm: update docs for Rex options - Brian Manning
-  * CLI.pm: throw error if -T used with task arg, but no matching task found - Brian Manning
-  * fixed #539 - detect primary network address - Jan
-  * Add append_or_amend_line function to File command - Andrew Beverley
-  * Drop Rex::Helper::Glob - Ferenc Erki
-  * Suppress noisy test output - Ferenc Erki
-  * Suppress warning about a variable being used only once - Ferenc Erki
-  * Tidy up all the tests - Ferenc Erki
-  * Use more helpful test functions - Ferenc Erki
-  * use more appropriate functions from Test::More in tests - reneeb
-  * some class inherit cleanup - Jan
-  * Use correct path when using augeas insert - Andrew Beverley
-  * Return correct output from augtool - Andrew Beverley
-  * Fix false positive when using "augeas exists" - Andrew Beverley
-  * Optimise Rex::Commands::Augeas - Andrew Beverley
-  * Add user base class for those calls not supported in all OS - Andrew Beverley
-  * Add password lock/unlock functions (Linux only) - Andrew Beverley
-  * fixed resource end - Jan
-  * Add PkgConf command to configure packages - Andrew Beverley
-  * fixed set_openssh_opt() function to allow multiple options - Jan
-  * fixed #527 - Rex::Output leaks semaphores and shared memory - Jan
-  * improved continous_read option for Net::SSH2 connection mode - Jan
-  * tail now also works with sudo also fixed #530 - Jan
-  * use Net::OpenSSH is now default. don't need feature flag 0.55 - Jan
-  * fixed line based operation with OpenSSH connection mode - Jan
-  * migrated augeas module into Rex core - #532 - Jan
-  * added partial sudo support for rsync command - Jan
-  * fixed #529 - odd number of elements - Jan
-  * fixed #528 -Amazon list_services, doesn't get all ec2 instances - thanks to David Golovan - Jan
-  * fixed an issue that causes the parser to think the rexfile has an error - Jan
-  * start of unit-test for Rex::Commands::DB - Volker Kroll (vkroll)
-  * better fix for #521, don't print all servers by rex -T. Also fixed group authentication. - Jan
-  * patch from twitter/@tekcurmudgeon to allow setting of gpgkey for a repository - Jan
-  * fixed late group lookup - #521 - Jan
-  * if the evaluation of the Rexfile was without syntax errors, but don't return a true value, try to evaluate it manually. so is is not needed to return a true value at the end. - fix for #513 - Jan
-  * fixed path resolution for private_key and public_key when used a ~ (tilde) sign. #517 - Jan
-  * fix rsync with port definition - #520 - Jan
-  * added parse_templates option to sync_up function, so that template parsing can be prevented - #519 - Jan
-  * Rex::FS::File accepts filenames now - reneeb
-  * Add initial version of changelog generator - Ferenc Erki
-
-2015-01-11 Jan Gehring <jan.gehring, rexify.org> (0.57.0)
-  * allow definition of gpgkey for redhat/yum repositories - #522 - tekcurmudgeon
-  * fixed Group defined after task definition - #521
-  * fixed rsync will execute failed when use -H 127.0.0.1:2222 - #520
-  * added new sync_up/down option for sync_up function will replace template variable of *.tpl - #519
-  * fixed failed authentication when used ~ symbol - #517
-  * fixed before_task_start() fails with an ambiguous error when your Rexfile does not return a true value - #513
-
-2015-01-06 Jan Gehring <jan.gehring, rexify.org> (0.56.1)
-  * tasks doesn't return a value when called as a sub (#523) - Jan
-
-2014-12-26 Jan Gehring <jan.gehring, rexify.org> (0.56.0)
-  * Extend documentation of run() options (#466) - Ferenc Erki
-  * New template engine with better error reporting. - Jan
-  * Only try to run umount if mount point is already mounted - Ferenc Erki
-  * Set changed flag for umount after the command has been run - Ferenc Erki
-  * Fix error when only grow option was given to partition() - Ferenc Erki
-  * Fix regex to find end of partition instead of size - Ferenc Erki
-  * Use kB as unit when determining partition boundaries - Ferenc Erki
-  * Fix missing `strict` and `warnings` pragmas - Ferenc Erki
-  * Add LICENSE section to POD - Ferenc Erki
-  * Replace defined-or operator to restore perl-5.8.0 compatibility - Ferenc Erki
-  * Fix test for Parallel::ForkManager - Ferenc Erki
-  * Fix test for Amazon Cloud Module - Ferenc Erki
-  * Add rex_kvm_agent feature flag - Ferenc Erki
-  * Allow multiple tasks to run with Rex::Test::Base (fix #476) - Robert Abraham
-  * Improve evaluation of hostnames (fix #479, close #480) - Renee Bäcker
-  * Fix POD (close #488) - Brian Manning
-  * Fixed some deprecated docker calls - Jan
-  * Fix mode option for mkdir command - Ferenc Erki
-  * Fixed needs function - Jan
-  * Added before_execute and after_execute task hooks - Jan
-  * Add basic tests for Rex::Logger (close #484) - Renee Bäcker
-  * Clarify/correct documentation (close #486) - Sascha Askani
-  * Check versions of installed packages - Ferenc Erki
-  * Refactor has_package test for simpler version matching - Ferenc Erki
-  * Use OurPkgVersion for automatic module versioning - Ferenc Erki
-  * Add has_stat to Rex::Test - Robert Abraham
-  * Add documentation for has_stat (close #474) - Ferenc Erki
-  * fix for #473 - download root restricted files in sudo mode - Jan
-  * fix for #498 - added autodie feature flag - Jan
-  * fixed local mkdir return code - Jan
-  * fixed path quoting for #512 - Jan
-  * added glob_to_regex function (Text::Glob) - fix for #495 - Jan
-  * use test binary instead of '[ ... ]' for file tests - Jan
-
-2014-11-02 Ferenc Erki <ferki, rexify.org> (0.55.3)
-  * Fix @INC compilation for Windows - Ferenc Erki
-
-2014-11-01 Ferenc Erki <ferki, rexify.org> (0.55.2)
-  * Don't return leading ./ on pathes - Ferenc Erki
-  * Make helper_path tests OS-agnostic - Ferenc Erki
-  * Convert ok() tests to is() - Ferenc Erki
-  * Remove unnecessary variable assignment - Ferenc Erki
-  * Update installation instructions - Ferenc Erki
-  * Use ChangeLog file in tests - Ferenc Erki
-  * Fix typo - Ferenc Erki
-
-2014-10-25 Jan Gehring <jan.gehring, rexify.org> (0.55.1)
-  * status call for services with upstart and systemd may not work properly - #460 - Jan
-  * sudo with -e cli flag doesn't work - #461 - Jan
-  * Cannot pass an argument with the value zero to a task - #463 - Jan
-  * Issue tracker not in META.yml - #464 - Ferenc Erki
-  * Allow specifying which tests to run as a parameter for Test:run #462 - Ferenc Erki
-
-2014-10-19 Ferenc Erki <ferki, rexify.org> (0.55.0)
-  * vm names in quote. so they can contain spaces - Jan
-  * fallback to arp query if no answer from rex-kvm-agent - #454 - Jan
-  * Print out error messages during Test:run (fix #450) - Ferenc Erki
-  * Clarify error message during image download - Ferenc Erki
-  * Remove explicit setting of VERSION - Ferenc Erki
-  * return 0 if no swap given - #452 - Jan
-  * fixed windows crashing on multiple connects - #448 - Jan
-  * Work when swap in not enabled and values are undefined. FreeBSD only for now. - Graham Todd
-  * possibility to modify Net::OpenSSH constructor - Jan
-  * Revert use Rex::Group (#447) - Ferenc Erki
-  * added late-group lookup, if group is not defined yet. fixed #447 - Jan
-  * Make PkgVersion happy - Ferenc Erki
-  * Fix typo - Ferenc Erki
-  * removed unlink - Jan
-  * Added possibility to query rex-kvm-agent. fixed #436 - Jan
-  * dont throw error with multiple test files - Robert Abraham
-  * Add ROSA systems support - Denis Silakov
-  * fixed get_installed and is_installed functions Rex::Pkg::Gentoo - Robert Abraham
-  * create binary installers from Rexfiles - Jan
-  * Correct ChangeLog - Ferenc Erki
-  * use Net::OpenSSH as default when available - #435 - Jan
-  * removed executable bit - Jan
-  * Added possibility to pack rex with PAR - Jan
-
-2014-10-03 Jan Gehring <jan.gehring, rexify.org> (0.54.3)
-  * added possibility to clone an jiffybox image - #439 - Peter Manthey
-  * only execute testfiles which end on .t - #434 - Robert Abraham
-  * close last used ssh connection after test - #433 - Robert Abraham
-  * Add error message when attempting to run a non-existing task - FErki
-  * Check if file exists before checking contents - fix #432 - FErki
-  * refactored the behaviour of set() function to do what it is saying.
-    So with feature 0.54 enabled set is always overwriting the existing values. (#425)
-  * Add service_exists for Gentoo - FErki
-  * fixing nested sudo operations. - #423
-  * added check if service exists - #407
-  * Handle hostgroup members with leading numeric ranges - FErki
-  * redirect nohup output to /dev/null
-  * fixed return value for flavors function - #406 - exzz
-  * make apt-listchanges non-interactive - #417 - aowi
-  * added path_map function - Erik Huelsmann
-  * don't try to run dmidecode if it is not in PATH - Andrej Zverev
-  * enhanced support for pkgng (FreeBSD) - Andrej Zverev
-  * fixed Rex::Commands::MD5::md5() to obey path settings
-  * Add documentation for run() function. - #440 - Erik Huelsmann
-
-2014-09-13 Jan Gehring <jan.gehring, rexify.org> (0.53.1)
-  * added Rex::JobControl functions
-  * fixed hanging VBox with CentOS 7 and delayed dhcp ip lease
-  * fixed on_change hook for file() resource when file was removed
-  * added cmdb variables to template with feature flag - #420
-  * export Rex::Config variables to all template variants - #419
-  * fixed chkconfig bug for Mageia, Redhat and SuSE - chenryn
-  * added resource() function, to define own resources.
-
-2014-08-30 Jan Gehring <jan.gehring, rexify.org> (0.52.0)
-  * fixed #381 - file NAME, ensure => 'absent' for a directory
-  * fixed #392 - run conditional options with exec_autodie
-  * added on_change hook for update_system function. fixed #401
-  * Added support for end_if_matched option to run command
-  * Rex::Output to persist across different processes (forks)
-  * Add floating ip support for openstack provider - #398
-  * Auto upload ssh key to openstack cloud provider
-  * Implement feature to tie server.ini to specified -E environment (server.$environment.ini).
-  * #409 - added before_task_start and after_task_finished hooks
-  * [#408] - define fallback authentication
-  * [#416] - fixed pkg with ensure => 'ver.si.on'
-
-2014-07-29 Jan Gehring <jan.gehring, rexify.org> (0.51.2)
-  * Fixed #394 - export of is_symlink function
-  * Fixed #395 - is_file compatibility bug, doesn't detect symlinks anymore
-  * Added "." in the allowed char of lvm create #393 - samuelet
-  * possibility to call tasks as a method (prettier dsl)
-  * load cmdb by default
-  * load ini group module by default, if server.ini exists
-
-2014-07-20 Jan Gehring <jan.gehring, rexify.org> (0.50.0)
-  * Use stat() output for directory and file tests (fix #391) - FErki
-  * added Paralell::ForkManager as optional component - #295
-  * fixed Problem with failed conditionals in Rex::Command::Run - #389
-  * activate exit_status feature by default for non parallel task execution
-  * added proxy_command support - fixed #380
-
-2014-07-12 Jan Gehring <jan.gehring, rexify.org> (0.49.0)
-  * Added FreeBSD 10 Support for pkgng. #280
-
-2014-07-10 Jan Gehring <jan.gehring, rexify.org> (0.48.0)
-  * Added CentOS 7 support
-
-2014-07-05 Jan Gehring <jan.gehring, gmail.com> (0.47.0)
-  * Rex::Test now also working with KVM - FErki
-  * Update default VNC listen address for KVM machines - FErki
-  * added pkgng commands for FreeBSD 10
-  * A module which allows to read configuration files from an XML file. - nathanIL
-  * Fixed a problem with auth_type try for rsync
-  * Fixed using -G cli switch with a non existing group it will run localy #379
-  * added Darwin (MacOSX) network module
-  * documentation updates - FErki
-  * Ident task description when running -T - Nathan Abu
-  * use https to communicate with amazon
-  * allow set callback and environment together #374  (run command) - alex1line
-  * added exclude option to sync commands - Cameron Daniel
-  * General tasks before/after sub #353
-  * shell_path variable is not checked for empty value before use #376 - Ilya Evseev
-  * verbose_run feature flag #375
-  * Syntax enhancement of "group" command #369 - Jens Berthold
-  * extend service() function, so that it knows how to get a status for a service if the init script doesn't have a status call
-  * Avoid warning if there's nothing to upgrade (update_system) - FErki
-  * Possible precedence issue with control flow operator with perl-5.20.0 - FErki
-  * added Rex::Constants library
-  * don't use shadow file if not present - user module
-  * detect amazon system and use redhat classes
-  * fixed inline templates for modules
-
-2014-05-22 Jan Gehring <jan.gehring, gmail.com> (0.46.2)
-  * fixed tmp_dir configuration
-  * load Rex::Commands::Box if Rex::Test is loaded, so that set(box => '') work
-  * fixed a problem with Test:run
-
-2014-05-19 Jan Gehring <jan.gehring, gmail.com> (0.46.1)
-  * fixed a dependency problem
-  * fixed a problem detecting the temporary directory
-  * 'set port' ignored in Rexfile - #366
-  * update_system / better error message - #367
-  * set sudo auth for a special server in a group causes endless loops - #368
-
-2014-05-01 Jan Gehring <jan.gehring, gmail.com> (0.46.0)
-  * Rex::Box, added kvm support - #174
-  * core: allow passing template content to template command - #345 - reneeb
-  * core/report: refactored report generation. This change break backward compat. because the report format changed.
-  * core: added groups_dbi() function to generate server groups from sql - #346 - Jean-Marie RENOUARD
-  * core: added groups_yaml() function to generate server groups from yaml file - Jean-Marie RENOUARD
-  * core: add support for df on a given mount point - Simon Bertrang
-  * cloud/amazon: fixed a case where amazon returns instance item in an array - Kasim Tuman
-  * core: added authentication to download() function. - #340
-  * core: refactored tmp dir generation - FErki
-  * cloud: added cloud_volume detach/attach function
-  * cloud/amazon: fixed multiple tags - David Golovan
-  * core: added description to environments - #274
-  * refactored README.pod to README.md, added build badge - eduardoj
-  * core: extended rexify command to work with git
-  * core/test: Added Rex::Test - Framework to run tests
-  * core: Connect failure reports "Error running task/batch: Wrong username/password or wrong key"  - #359 - eduardoj
-  * core/cmdb: path can now have variables / can be extended
-  * core/user: refactored handling of home directory creation. This might break compat. because we are following the system default now. (added create_home option) - #270 - FErki
-  * core: added a special load path for perl libraries, so that we don't mix up perl and rex modules.
-  * core/service: using nohup to work around a bug in Net::SSH2/libssh2
-  * core: the caching is now enabled by default. this might break backward compat. if you are using chroot() to another system inside a task.
-  * core: added 'no_cache' feature.
-
-2014-04-13 Jan Gehring <jan.gehring, gmail.com> (0.45.3)
-  * fixed jiffybox endless loop on creating instances. #344 - reneeb
-
-2014-04-12 Jan Gehring <jan.gehring, gmail.com> (0.45.2)
-  * fixed special mkdir() case on local windows runs.
-
-2014-04-11 Jan Gehring <jan.gehring, gmail.com> (0.45.1)
-  * no_overwrite option for file() function
-  * ensure 'directory' option for file() function
-  * added notifications
-  * pkg resource (replacement for install function)
-  * allow array for file() function
-  * check if iptables rule already exists
-  * creates option for run() resource
-  * only_if and unless option for run() resrouce
-  * added notification for service() resource
-  * added account() resource (as replacement for create_user)
-  * fixed SCM::Git to work with sudo
-  * update _parse_ip subroutine. be possible to parse ppp0. #328 - Tomohiro Hosaka
-  * support -g to supply group name - #330 - fanyeren
-  * added openstack cloud support - Ferenc Erki
-  * run() resource support customized environments - #316 andrejzverev
-  * can_run() now returns the first command found as string - #193
-  * read cpu information out of /proc/cpuinfo if dmidecode is not available - #306
-  * Handles the case where rsync is missing, and that makes Rex wait forever - #331 - Joris DE POOTER
-  * fixed $Rex::Logger::format does not apply. - #335
-  * fixed download() command on windows - #271
-  * added cloud_image_list function()
-  * fixed debian system_update - #339 - Niklas Larsson
-
-2014-03-02 Jan Gehring <jan.gehring, gmail.com> (0.44.6)
-  * fixed wrong expansion of home paths #324
-  * fixed return code on failed connects is wrong #317
-  * get as much output from ps(1) as possible #323 - sbertrang
-
-2014-02-25 Jan Gehring <jan.gehring, gmail.com> (0.44.5)
-  * fixed shell gathering
-
-2014-02-17 Jan Gehring <jan.gehring, gmail.com> (0.44.4)
-  * fixed manifest file
-
-2014-02-14 Jan Gehring <jan.gehring, gmail.com> (0.44.3)
-  * do not call sprintf on undefined values to prevent warnings - #312 - sbertrang
-  * add ksh to shells - #310 - sbertrang
-  * only pass actual option strings to prevent ssh crashes - #309 - sbertrang
-  * rexify does not create projects due to missing file error - #318
-  * sed command changes mode of target file - #314
-
-2014-02-08 Jan Gehring <jan.gehring, gmail.com> (0.44.2)
-  * fixed sudo_without_sh - #305
-  * added warning if no perl interpreter was found on the remote system - #302
-
-2014-02-02 Jan Gehring <jan.gehring, gmail.com> (0.44.1)
-  * fixed detection of openSUSE with lsb-release installed - #297
-  * use Makefile.PL for tests. fixed #300
-  * Support for DBI \%attr hashref - #296 - stefb69
-  * Make quiet mode not mute warnings and errors. - #294 - slashbeast
-  * new cli parameter -qw for quiet with warnings - #294
-
-2014-01-25 Jan Gehring <jan.gehring, gmail.com> (0.44.0)
-  * docker support (experimental) - #278 - chenryn
-  * format the output of say() - #155
-  * userdefined columns for ps() command - #175 - dirkcjelli
-  * using tilde (~) sign for directories - #198 - gnouc, krimdomu
-  * SCM::Git, now uses cwd option of run() command, so it works also remote. - #211 - atrodo
-  * Box default pkg update - #217 - endyman
-  * run_batch() command to run batches on demand - #222 - jorisd
-  * Allow "sed" function to work on multiple lines. - #227 - davidolrik, krimdomu
-  * Added bulk_install() method for packages installing - #229 - jorisd
-  * Enable bulk_install for Gentoo and OpenWrt - #231 - ferki
-  * Added some hooks at central points in rex, so that it is possible to control the behaviour of rex in some points.
-  * added on_change hook for sync_up/sync_down - #232
-  * Rex::Group::Lookup::Command - read hostnames from a command. - #233 - fanyeren
-  * Improve user and group management on OpenWrt - #242 - ferki
-  * Add kernel module (un)loading support for OpenWrt - #243 - ferki
-  * Add service status support for OpenWrt - #246 - ferki
-  * make ssh read buffer configurable (for Net::SSH2 connections) - #247 this will speedup the connection, but may break on older systems!
-  * Add systemd service provider support for Gentoo - #250 - ferki
-  * Add systemd service provider support for Mageia - #282
-  * feature flag to deactivate path cleanup - #261
-  * feature flag to parse $HOME/.profile - #262
-  * Cloud::Amazon Check to make sure it is HASH before key look up - #263 - oneness
-  * autodie feature if run() fail - #265
-  * added support for tcsh shell - #284
-  * Fix guestinfo for Gentoo - #236 - ferki
-  * get_host can't find aliases - #239, #240 - jorisd, ferki
-  * rsync get wrong user if using "auth for $task" - #252
-  * Flag existing feature sudo_without_sh as found - #253 - gittex
-  * Cleaned-Up Data module dependence - #254
-  * iptables arguments needs quote if they are whitespaced - #257 - jorisd
-  * add Pod encoding marker - #259 - sergeyromanov
-  * "needs" doesn't know how to call tasks from the main Rexfile - #260
-  * gathering alias network interfaces like eth0:0 - #264
-  * Cron: Jobs can be duplicated - #269 - jorisd
-  * FreeBSD: store netmask in dotted decimal format - #287 - andrejzverev
-  * Uninitialized value in OpenSSH.pm - #290 - samuelet
-
-2013-10-03 Jan Gehring <jan.gehring, gmail.com> (0.43.7)
-  * fixed problem with unconfigured network devices
-  * fixed return of complete cmdb
-  * fixed bug with the reporting initialization
-
-2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.3)
-  * fixed return of string '0' on stdout
-  * fixed loading of report via env variable
-  * fixed manifest
-
-2013-09-17 Jan Gehring <jan.gehring, gmail.com> (0.43.2)
-  * #234 - Silent yum operations - Chris Steigmeier
-
-2013-09-16 Jan Gehring <jan.gehring, gmail.com> (0.43.0)
-  * #223 - generating reports of changed things on the remote system (report infrastructure)
-  * #220 - atomic uploads
-  * #219 - df function doesnt parse errors - jorisd
-  * #218 - problems with escaping of special characters, reverted back to old behaviour (pre 0.42)
-  * #215 - input validation for rexify to prevent creation of invalid module names
-  * #214 - yum operations should be silent
-  * #213, #231 - rexify to use proxy settings - Chris Steigmeier
-  * #231 - Another Red Hat Enterprise flavor - Chris Steigmeier
-  * #200 - Refactor OpenWrt user module - Ferenc Erki
-  * #195 - Fix a typo in example code - Boris Däppen
-  * #194 - Prefer ip command over ifconfig - Ferenc Erki
-  * #189 - Zero values in crontab fields - Ferenc Erki
-  * #186 - Turn "eval your Rexfile" into a debug message - Anders Ossowicki
-  * #210 - zypper --no-gpg-checks option
-  * #208 - Cache inventory of servers for faster execution
-  * #206 - sync_up function doesn't work in modules.
-  * #196 - Support port with ranged hostnamed
-  * #180 - support of other shells than bash for the PATH / environment variable - Cuong Manh Le
-  * #177 - if a feature can't be satisfied, die()
-  * #166 - tmp directory now configurable
-
-2013-07-04 Jan Gehring <jan.gehring, gmail.com> (0.42.4)
-  * fixed an issue with append_if_no_such_line when searching for a string
-    containing a quote.
-
-2013-06-29 Jan Gehring <jan.gehring, gmail.com> (0.42.3)
-  * #189 fixed zero values in crontab - ferki
-  * fixed ownership problem with sudo mode and file manipulation
-
-2013-06-23 Jan Gehring <jan.gehring, gmail.com> (0.42.2)
-  * fixed local run of run_with helper command
-
-2013-06-22 Jan Gehring <jan.gehring, gmail.com> (0.42.1)
-  * #178 - no_ssh option doesn't work with OpenSSH connection
-  * #181 - ssh ports doesn't work with Net::OpenSSH
-  * #182 - addition parameters doesn't work for ini files
-  * #183 - fqdn doesn't work in ini files
-  * #184 - hostname evaluation and additional parameters doesn't work together
-
-2013-06-15 Jan Gehring <jan.gehring, gmail.com> (0.42.0)
-  * added Net::OpenSSH support - chenryn, jfried
-  * custom user for sudo command
-  * new function: delete_lines_according_to
-  * new feature flag use_server_auth
-  * improved ini file parsing
-  * support for custom server parameters
-  * cwd option for run command
-  * speed improvements: #123, #133, #135, #136, #137, #143 - liedekef
-  * removed blastwave package capabilities from solaris, because blastwave doesn't exists anymore
-  * #129 - removed an unnecessary opendir call - liedekef
-  * #148 - use equery for Rex::Pkg::Gentoo in get_installed, later replaced by #165 - tianon
-  * #149 - updated most of Rsync with server-specific auth - tianon
-  * #159 - don't execute a task if the defined group doesn't contain servers. There is a feature flag to disable this behavior (empty_groups)
-  * #163 - Rex::Pkg::Gentoo: Fix separator character between package name and version
-  * #165 - Rex::Pkg::Gentoo: Replace get_installed checking method
-
-2013-05-03 Jan Gehring <jan.gehring, gmail.com> (0.41.3)
-  * fixed using -c flag with Rex::Box - #160
-  * fixed parsing ssh/config file - #158
-  * get_box() : better error message - #157
-  * fixed PATH variable for run() with multiple commands - #156
-
-2013-04-19 Jan Gehring <jan.gehring, gmail.com> (0.41.2)
-  * fixed exit status code for some situations where it fails
-  * fixed rexify --use=module command
-  * fixinig 'unititialized value' output of inspect() function. returning now 'no value'. - #152
-  * added check if template result is empty. if so - die() - #152
-  * fixing problem with invalid variable names in templates - #152
-
-2013-03-30 Jan Gehring <jan.gehring, gmail.com> (0.41.1)
-  * fixed a parsing bug in df output
-  * fixed mount command with persistend option
-
-2013-03-30 Jan Gehring <jan.gehring, gmail.com> (0.41.0)
-  * Function to get the last output of a command that uses run() #104
-  * Refactores Cron module, added environment variable support to cron
-  * New sync module
-  * added Hardware::VirtInfo module #119 - Franky Van Liedekerke
-  * new keyword "case"
-  * Refactored net_ssh2_exec() function - Peter H. Ezetta
-  * Refactored local command execution to use IPC::Open3
-  * Changed the Debian is_installed function to use the more accurate
-    get_installed function. - Samuele Tognini
-  * '-t' option should work with '-e' option. rex -t 2 -H "hostA hostB"
-     -e 'run "sleep 10"; say run "uptime"' should run in parallel.
-     - Tokuhiro Matsuno
-  * Fixed loading of modules in $HOME/.rex/recipes
-  * Don't calculate md5 sums if there is no on_change hook for file() function - Franky Van Liedekerke
-  * Better understandable error messages for authentication - Franky Van Liedekerke
-  * Cloud/Amazon: support multiple security groups - RenatoCRON
-  * Fix Pod about pubkey authentication - Joris
-  * Rex/Gearman: Fixed get_exit_codes use flag
-  * Rex/Boxes: Creation order of VMs can now be defined in YAML file
-
-2013-03-10 Jan Gehring <jan.gehring, gmail.com> (0.40.4)
-  * fixed get_box() command if task is run on a remote host
-  * fixed sudo without password
-
-2013-03-09 Jan Gehring <jan.gehring, gmail.com> (0.40.3)
-  * fixed loading of files in lib directory
-    @INC sometime got populated too late
-
-2013-03-02 Jan Gehring <jan.gehring, gmail.com> (0.40.2)
-  * fixed #117 - encode everything except a-z, 0-9 and _
-
-2013-02-27 Jan Gehring <jan.gehring, gmail.com> (0.40.1)
-  * fixed #114 - used only once warnings
-  * fixed #115 - passwordless sudo didn't work
-
-2013-02-23 Jan Gehring <jan.gehring, gmail.com> (0.40.0)
-  * fixed bug and refactored file path calculation #103 and #102
-  * added ini style groups #99 - Franky Van Liedekerke
-  * VirtualBox Headless mode #105
-  * added default environment "default"
-  * basic cmdb via YAML #107
-  * crypt sudo password
-  * sudo without locales and password #98 - Dominik Schulz
-  * fixed dmidecode on openbsd
-  * export update_system sub - Ferenc Erki
-  * fixing regex which gets name interfaces - Fran Rodriguez
-
-2013-02-07 Jan Gehring <jan.gehring, gmail.com> (0.39.0)
-  * don't need PERL5LIB env any more, fixed bug #95
-  * match comments better - Naveed Massjouni
-  * more allowed characters in lvname - Samuele Tognini
-  * new feature flag: exit_status - rex will now return a number higher than 0
-    if a task execution fails.
-  * new function: is_installed - Daniel Baeurer
-  * optimized lookup_file function - Franky Van Liedekerke
-  * rexify command now allows usage of private module server
-
-2013-01-27 Jan Gehring <jan.gehring, gmail.com> (0.38.0)
-  * added security groups to amazon cloud - Jonathan Delgado
-  * updated pod documentation - jorisd
-  * fixed a problem with do_task() and lost ssh connections
-  * rexify command now allows usage of local templates
-  * added architecture and apt key to Pkg::Debian - Daniel Baeurer
-  * added updated_system command to update a system
-  * box: added function to list all vms
-  * box: amazon support
-  * box: describe boxes with an YAML file
-
-2013-01-15 Jan Gehring <jan.gehring, gmail.com> (0.37.1)
-  * fixed template bug in modules
-
-2013-01-05 Jan Gehring <jan.gehring, gmail.com> (0.37.0)
-  * box module is now plugable
-  * run_task now accepts additional parameters
-  * virtualization module is now plugable
-  * hardware provider now plugable
-  * package provider now plugable
-  * service provider now plugable
-  * fixed zypper ref call for SuSE on unsigned repositories
-
-2012-12-22 Jan Gehring <jan.gehring, gmail.com> (0.36.0)
-  * added run_task a new function to run tasks on specific hosts
-  * added feature to install perl dependencies via cpanm/cpan with rexify
-    command
-  * get private IP of amazon ec2 instances - jdelgado7
-  * added possibility to extend cloud api with external modules
-  * spawn a pty to execute commands #80. this fixes the requiretty thing.
-
-2012-12-22 Jan Gehring <jan.gehring, gmail.com> (0.35.1)
-  * VirtualBox support for virtualization module
-  * new command - Rex::Commands::Box
-  * auth for - supports regular expresions
-  * repository function now supports multiple distributions in one call
-  * Unwrapped double looping over files and regexes and adding $new_line
-    if not present in absence of regexes - Mario Domgoergen
-  * Better handling of $option parameter for 'install' - joris
-
-2012-12-14 Jan Gehring <jan.gehring, gmail.com> (0.34.2)
-  * fixed login for Rex::connect
-
-2012-11-25 Jan Gehring <jan.gehring, gmail.com> (0.34.1)
-  * fixed #77. added iptables tests - Dominik Danter
-  * Relax ssh config file parsing - Dominik Schulz
-
-2012-11-02 Jan Gehring <jan.gehring, gmail.com> (0.34.0)
-  * Use Storable module for shared variables
-  * Enhanced lookup_file function. Comments (#) and empty lines are now skipped. (chenryn)
-  * get_network_devices now detects ppp devices (under linux). (bokutin)
-  * Fixed pkg_info execution on FreeBSD (bokutin)
-  * Set $? to match effective command return value (joris)
-  * If a task is defined multiple times it will now print out a warning.
-  * Fixed mount bug #75
-  * Fixed Redhat Repo bug #73
-  * Fixed a bug with profiling and http endpoint
-
-2012-10-04 Jan Gehring <jan.gehring, gmail.com> (0.33.3)
-  * fixed rename() bug, #67
-
-2012-10-02 Jan Gehring <jan.gehring, gmail.com> (0.33.2)
-  * fixed windows bug
-
-2012-09-22 Jan Gehring <jan.gehring, gmail.com> (0.33.1)
-  * speed improvements
-  * profiler class
-  * mounts can now be persisted in /etc/fstab - Laird Liu
-  * the partition command accepts a mount parameter to mount the partition
-    after creation - Laird Liu
-  * new keyword "make"
-  * some usability improvements - Anders Ossowicki
-  * create_user got a new option "no_create_home"
-  * it is now possible to use other template engines.
-  * it is now easier to write independant modules
-  * fixed expire date for create_user
-  * check shell before executing things
-
-2012-08-30 Jan Gehring <jan.gehring, gmail.com> (0.32.1)
-  * fixed a bug in the transaction module
-
-2012-08-21 Jan Gehring <jan.gehring, gmail.com> (0.32.0)
-  * made the worker model exchangeable
-  * added a reporting base class
-  * replaced Getops::Std with Rex::Args
-  * added start command to amazon cloud module
-  * fixed stop command in amazon cloud module
-
-2012-08-16 Jan Gehring <jan.gehring, gmail.com> (0.31.5)
-  * fixed cli parameter bug (-G)
-  * fixed logging bug with %h
-
-2012-08-04 Jan Gehring <jan.gehring, gmail.com> (0.31.0)
-  * fixed a bug for task with the no_ssh attribute
-  * added http transport layer
-  * added possibility to modify task and server authentication
-
-2012-07-21 Jan Gehring <jan.gehring, gmail.com> (0.30.1)
-  * fixed a cli parameter bug for custom user authentication
-  * fixed a batch display bug
-
-2012-06-15 Jan Gehring <jan.gehring, gmail.com> (0.30.0)
-  * rex -T now show the server groups as well
-  * new option "type" for the extract function - Sven Dowideit
-  * Added user_list and user_groups - Jean Charles Passard
-  * fixed the problem with pass_auth and rsync (#30)
-  * Better Error Messages for compile failures in modules
-  * Added support for task specific parallelism
-  * fixed upload and download to work in sudo environments
-  * add mode to extract function
-  * Added the on_change support to the append_if_no_such_line - Samuele Tognini
-
-2012-05-17 Jan Gehring <jan.gehring, gmail.com> (0.29.0)
-  * Fixed wrong error message in LibVirt/create.pm - Sven Dowideit
-  * Added dumpxml command (LibVirt) - Sven Dowideit
-  * Updated docs - Sven Dowideit
-  * Default listening on all ip's for vnc (LibVirt) - Sven Dowideit
-  * Added more colorized output options - Samuele Tognini
-  * Fixed a logging bug - Samuele Tognini
-  * -Tv command line option output information about requested task - Samuele Tognini
-  * -Tv command line option output information about batches and environments - Samuele Tognini
-  * Updated some error messages output - Samuele Tognini
-  * Added iflist command (LibVirt) - Jean Charles Passard
-  * Added blklist command (LibVirt) - Jean Charles Passard
-  * Added vncdisplay command (LibVirt) - Sven Dowideit
-  * Fixed a bug with hooks and packages #41 - Jan Gehring
-  * Refactored Task Module. Task is now an object - Jan Gehring
-  * Added module to parse cli parameters - Jan Gehring
-  * Added driver_type for kvm disks
-  * fixed a md5 check bug for 'install file =>'
-  * fixed bug #50 (extract function)
-  * if no rexfile is in the current path try to guess the rexfile from the taskname - Sven Dowideit
-  * added experimental feature: shared variables - Jan Gehring
-
-
-2012-05-08 Jan Gehring <jan.gehring, gmail.com> (0.28.0)
-  * fixed a bug with relative source file names inside external modules
-  * new parameter -Tv to display more information about tasks
-  * allow additional parameters for rsync
-  * more code refactoring
-  * fixed a bug in the libvirt module (thanks to SvenDowideit for reporting
-    and testing)
-
-
-2012-05-04 Jan Gehring <jan.gehring, gmail.com> (0.27.0)
-  * added callback parameter to run command
-  * added logformat function to define custom logging
-  * reworked the output classes for better jenkins integration
-  * code refactoring
-  * added coloriszed output if Term::ANSIColor is available
-  * fixed a bug with older lvm versions
-  * added on_change option to sed command, thanks to Samuele Tognini
-
-2012-04-26 Jan Gehring <jan.gehring, gmail.com> (0.26.3)
-  * fixed a notification bug in the on_change event of the file function.
-  * fixed a cli parameter bug in the rexify command.
-
-2012-03-28 Jan Gehring <jan.gehring, gmail.com> (0.26.2)
-  * fixed a cli parameter bug (-G)
-
-2012-03-13 Jan Gehring <jan.gehring, gmail.com> (0.26.1)
-  * fixed a bug in the libvirt module
-
-2012-02-19 Jan Gehring <jan.gehring, gmail.com> (0.26.0)
-  * changed license to Apache 2.0
-  * added sudo compatibility
-  * added support for custom init commands
-  * added rex-agent compatibility
-  * added overmind compatibility
-  * added lvm support to libvirt module
-  * allow package installation with "install $pkg"
-  * added sed function
-  * added chdir parameter to extract function
-  * added include function to include Rex recipes without registering the tasks
-  * Specify the sudo password prompt to avoid different prompts in different locales. thanks to Hiroaki Nakamura
-  * Sync exclude option now takes a string or an array of strings. thanks to Hiroaki Nakamura
-
-2012-02-16 Jan Gehring <jan.gehring, gmail.com> (0.25.3)
-  * fixed a display bug in rexify --search command
-  * fixed a bug in the libvirt module if it gets executed local
-  * fixed a bug in the service module for ubuntu
-
-2012-02-15 Jan Gehring <jan.gehring, gmail.com> (0.25.2)
-  * display the correct module name in rexify --search command
-
-2012-02-15 Jan Gehring <jan.gehring, gmail.com> (0.25.1)
-  * don't use github for recipes query
-
-2012-02-15 Jan Gehring <jan.gehring, gmail.com> (0.25.0)
-  * added public repository commands to rexify
-  * added patch from JEEN Lee for gpgcheck on yum repositories
-
-2012-02-13 Jan Gehring <jan.gehring, gmail.com> (0.24.1)
-  * fixed a dependeny bug
-
-2012-02-10 Jan Gehring <jan.gehring, gmail.com> (0.24.0)
-  * Added patches from Alexandr Ciornii for Makefile.PL and home-directory detection
-  * it is now possible to use Rex as a library
-  * fixed/simplified SCM module
-  * added iptables flush command
-  * added a simple tcp alive test
-  * allow inline templates
-  * cloud_instance returns vm info after create
-  * added cli parameters to before/around hooks
-  * fixed before/around/after hooks for lokal tasks
-  * added lvm create functions
-
-2012-01-14 Jan Gehring <jan.gehring, gmail.com> (0.23.0)
-  * Redhat Enterprise Linux Support (5/6)
-  * read ssh_config file
-  * rsync now automatically accept keys
-
-2012-01-04 Jan Gehring <jan.gehring, gmail.com> (0.22.0)
-  * systemd service provider (for redhat and suse)
-  * before, around and after hooks for tasks
-  * curl: Allow connections to SSL sites without certs
-  * don't override db config if no import options given
-  * fixed suse detection bug
-  * user: set crypted passwords
-  * added OpenSuSE 12.1 compatibility
-  * fixed redhat versiond detection
-  * automatically use systemd service class if opensuse >= 12.1
-  * added fusioninventory-agent output to the inventory module (if available)
-
-2011-10-28 Jan Gehring <jan.gehring, gmail.com> (0.21.1)
-  * fix for #8 - HOME environment variable on Windows
-  * fix for #5 - hostname evaluation with ips
-
-2011-10-10 Jan Gehring <jan.gehring, gmail.com> (0.21.0)
-  * fixed running of multiple tasks by do_task
-  * allow multiple groups for a task
-  * every task can have its own auth information
-  * user module: add ssh key
-  * ssh port isn't fix anymore (patch from Jose Luis Martinez)
-  * use generic auth method from Net::SSH2 (patch from Jose Luis Martinez)
-  * add SCM module (Subversion and Git)
-  * file and upload now scans for environment specifiy files first
-  * added a file lookup function to build groups from
-  * fixed windows syslog bug #6, thanks to aero
-  * added -nolog parameter to logging function to disable logging at all
-  * added posibility to evaluate perl code within the -H cli parameter
-
-2011-09-16 Jan Gehring <jan.gehring, gmail.com> (0.20.0)
-  * added virtualization module (from Sascha Guenther)
-  * added extract function
-  * flattend hardware gather template variables
-  * fixed set_path and get_path
-  * fixed get_random to return not 1 char too much
-  * added set and get commands to set config values
-
-2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.19.0)
-  * added JUnit output module
-  * added environment support
-  * load Rex::Commands::Process as default
-
-2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.18.1)
-  * fixed a bug registering tasks as functions
-
-2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.18)
-  * added network support for Solaris, NetBSD, FreeBSD and OpenBSD
-  * added is_solaris, is_bsd and is_linux function
-
-2011-09-01 Jan Gehring <jan.gehring, gmail.com> (0.17)
-  * added solaris 11 support
-  * added solaris 10 support
-  * added a caching module
-  * added a clear task function (for rex-swarm)
-  * added a function to get os release
-  * fixed local copy error handling
-
-2011-08-28 Jan Gehring <jan.gehring, gmail.com> (0.16)
-  * added NetBSD support
-  * added OpenBSD support
-  * fixed a bug in the gentoo pkg management module
-
-2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.15)
-  * new function to detect a redhat system (or clone like CentOS, Scientific
-  Linux)
-  * increased timeouts for jiffybox
-  * fixed template bug with $ signs
-  * added support for scientific linux
-  * added support for gentoo
-
-2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.14.0)
-  * Extended API to allow passing of arguments to Rex::Task->run
-  * FreeBSD support
-  * Ubuntu support
-
-2011-08-07 Jan Gehring <jan.gehring, gmail.com> (0.13.0)
-  * cache sftp object - for speed
-  * added function to update package database
-  * added windows support
-  * license changed to GPL3
-  * added an alias for unlink (rm)
-  * added functions to manage repositories
-  * revised error handling
-  * added jiffybox support, a german cloudservice from domainfactory
-  * fixed template parsing bug (port from 0.12.1)
-  * fixed bug with too long content in file function (port from 0.12.2)
-
-2011-07-23 Jan Gehring <jan.gehring, gmail.com> (0.12.0)
-  * allow array refs for Pkg::remove
-  * register every task as a sub if not in main package
-  * use lsb_release if available as default to detect operating system/version
-  * added sudo command
-  * allow to manage multiple services at once
-  * added possibility to add and remove services from runlevels
-  * added iptables module for basic iptables commands
-  * added cloud layer and support for amazon ec2 instances
-
-2011-07-26 Jan Gehring <jan.gehring, gmail.com> (0.11.1)
-  * fixed output of netstat (reported by Thomas Biege)
-  * fixed inclusion of some modules in Run.pm that causes errors under
-    some circumstances (reported by Thomas Biege)
-
-2011-07-22 Jan Gehring <jan.gehring, gmail.com> (0.11.0)
-  * added lvm module
-  * added lvm to inventory
-  * fixed <OUT OF SPEC> inventory string
-  * fixed multiplicator for GB and TB
-  * added order key to selects
-  * added support for hpacucli
-  * added centos 6 support
-
-2011-07-17 Jan Gehring <jan.gehring, gmail.com> (0.10.1)
-  * fixed db disconnect on forks
-  * fixed some typos
-
-2011-07-12 Jan Gehring <jan.gehring, gmail.com> (0.10.0)
-  * added network module for route, default gateway and netstat
-  * added mount and umount function
-  * added cron module
-  * added more information (basic system information) to the inventor function
-  * added installed_packages function to get all the installed packages
-
-2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.9.0)
-  * register tasks as function if possible
-  * add "lib" to INC if exists
-  * added function get_operating_system
-  * added transactions
-  * deprecated "package file =>"
-  * added hal module to access hardware information detected by hal
-  * added dmidecode module to access bios information
-  * added inventory function "inventor"
-  * added ubuntu support (tested with lts 10.04)
-  * added can_run function, to test if a command is present
-
-2011-07-03 Jan Gehring <jan.gehring, gmail.com> (0.8.1)
-  * fixed mageia detection
-  * fixed bug if dnsdomainname returns no domainname
-  * fixed mkdir bug on setting permissions, caused by a wrong merge
-
-2011-06-26 Jan Gehring <jan.gehring, gmail.com> (0.8.0)
-  * added mageia support for services and packages
-  * added chown, chgrp and chmod functions
-  * mkdir, added possibility to specify the permission, the user and the group
-  * added function delete_lines_matching
-  * added function append_if_no_such_line
-  * added reload action for services
-  * extended db module to support insert, delete, update
-
-2011-06-25 Jan Gehring <jan.gehring, gmail.com> (0.7.1)
-  * restored the backward compatibility with perl 5.8.x
-  * suppress warning if no parameter is given
-  * fixed mkdir function
-
-2011-06-23 Jan Gehring <jan.gehring, gmail.com> (0.7.0)
-  * preload a lot more default modules
-  * added new functions (df, du, cp)
-  * added some aliases (ln, cp, cd, ls)
-  * added process management functions (kill, killall, nice, ps)
-  * splitted out rex-agent and rex-master.
-
-2011-06-19 Jan Gehring <jan.gehring, gmail.com> (0.6.1)
-  * fixed documentation bugs (thanks to djill)
-  * fixed #68827, rewrote is_readable/is_writable
-  * handle auth failure correctly
-  * mkdir now created directories recursive
+Revision history for Rex
+
+{{$NEXT}}
+ [API CHANGES]
+
+ [BUG FIXES]
+
+ [DOCUMENTATION]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+
+ [NEW FEATURES]
+
+ [REVISION]
+ - Reformat changelog to match CPAN specifications
+ - Use NextRelease to update release info
+ - Use NextVersion::Semantic for versioning
+
+1.8.0 2020-01-05 Ferenc Erki <erkiferenc@gmail.com>
+ - Map commit authors to their canonical name and email - Ferenc Erki
+ - Add contributors without commits on master branch - Ferenc Erki
+ - Generate CONTRIBUTORS file - Ferenc Erki
+ - Added Rex::Pkg::VoidLinux using XBPS - Leah Neukirchen
+ - Added Rex::Service::VoidLinux using runit - Leah Neukirchen
+ - Added Void Linux - Leah Neukirchen
+ - Make waitpid blocking sleep time configurable - Ferenc Erki
+ - Match waitpid blocking sleep between fork managers - Ferenc Erki
+ - Add Kwalitee tests - Ferenc Erki
+ - Update Perl::Tidy on each Travis build - Ferenc Erki
+ - Skip bin tidiness check on Windows and Mac - Ferenc Erki
+
+1.7.1 2019-12-05 Ferenc Erki <erkiferenc@gmail.com>
+ - Update supported Perl versions - Ferenc Erki
+ - Don't skip all markdown files - Ferenc Erki
+ - Update synopsis - Ferenc Erki
+ - Update CPAN metadata - Ferenc Erki
+ - Update name and description in POD - Ferenc Erki
+ - Clarify POD - Ferenc Erki
+ - Fix POD formatting - Ferenc Erki
+ - Fix CMDB examples (fix #1151) - Ferenc Erki
+ - Test on OS X with Travis CI - Ferenc Erki
+ - Fix getting current directory in Windows - Ferenc Erki
+ - Skip symlink tests on Windows - Ferenc Erki
+ - Test on Windows with Travis CI - Ferenc Erki
+ - Update description - Ferenc Erki
+
+1.7.0 2019-11-05 Ferenc Erki <erkiferenc@gmail.com>
+ - Fix test dependency - Ferenc Erki
+ - Use perl to query environment - Ferenc Erki
+ - Test run failures with alternative commands - Ferenc Erki
+ - Cache CMDB lookups (fix #1239) - Ferenc Erki
+ - Test CMDB both with and without caching - Ferenc Erki
+ - Instantiate CMDB object during initialization - Ferenc Erki
+ - Remove redundant argument to rsync command - Steve Dondley
+ - Detect upstart (fix #1190) - Ferenc Erki
+ - Simplify quoting (close #1206) - Ferenc Erki
+ - Better message and remove unused variable (ref #1206) - Roy Storey
+ - Quote parameters that might have spaces (fix #807) - Roy Storey
+ - Resolve symlinks for file management commands (fix #1195, close #1199) -
+   Ferenc Erki
+ - Add resolve_symlink helper - Ferenc Erki
+ - Add symlink tests for file management commands - Ferenc Erki
+ - Update link of installation intructions - Ferenc Erki
+ - Update testing instructions - Ferenc Erki
+ - Update list of useful resources - Ferenc Erki
+ - Fix typos - Ferenc Erki
+ - Update supported Perl versions - Ferenc Erki
+ - Convert namespace separators from module to task (fix #1193) - Ferenc
+   Erki
+ - Add tests for package hooks (ref #1194) - Mitch Broadhead
+ - create_host: drop useless get_host invocation (close #1181) - Ali
+   Polatel
+ - Run extra tests on Travis - Ferenc Erki
+ - Ignore tidyness checks for generated extra tests - Ferenc Erki
+ - Rename perltidy test - Ferenc Erki
+ - Replace [ExtraTests] with [RunExtraTests] (fix #964) - Kent Fredric
+ - Use file command for file operations - Ferenc Erki
+ - Fix fallback method for getting username - Ferenc Erki
+ - Return username for local connections - Ferenc Erki
+ - only source ~/.profile if it really exists - Joachim Bargsten
+ - Accept critic for ProhibitExplicitReturnUndef - Ferenc Erki
+ - Accept critic for ProhibitNoStrict - Ferenc Erki
+ - Accept critic for ProhibitSubroutinePrototypes - Ferenc Erki
+ - Remove unnecessary subroutine prototype - Ferenc Erki
+ - Fix critic for ProhibitMutatingListFunctions - Ferenc Erki
+ - Fix critic for ProhibitSleepViaSelect - Erik Huelsmann
+ - Disable tidyness checks in perlcritic - Ferenc Erki
+ - improved error handling in run_task if task does not exist - Joachim
+   Bargsten
+ - Fixes virtualization type,role for Digital Ocean Droplets (close #1192)
+   - Mitch Broadhead
+ - Fix UID handling for OpenBSD (fix #1213) - Olivier Cherrier
+ - Added the Option 'continuous_read' to the documentation - elisdg
+ - Test for code tidyness - Ferenc Erki
+ - Fix placeholder matching for %h in ssh config. (#1214) - Max E. Aubrey
+ - Set minimum required Perl version to 5.10.1 - Ferenc Erki
+ - Use Travis CI for testing - Ferenc Erki
+ - added option to list all tasks, including hidden - Joachim Bargsten
+ - errorless git checkout if on checkout branch - Joachim Bargsten
+ - added clone_args as extra option for git checkout - Joachim Bargsten
+ - git checkout also supports environment settings for e.g. proxies -
+   Joachim Bargsten
+ - added ssh as possible protocols for git-based rex modules - Joachim
+   Bargsten
+ - Improve package handling on OpenBSD - Olivier Cherrier
+ - Enhance the OpenBSD User handling support - Olivier Cherrier
+ - Document the 'requiretty' setting with the sudo command - Erik Huelsmann
+ - delete_host: fix regex so it does not match on prefixes - Ali Polatel
+ - Added Oracle Linux (fix #1168, close #1174) - labbeduddel
+ - Ignore YAML-1.25 (fix #1197) - Ferenc Erki
+ - Adds SLE 15 / Leap 15.0 support - LeMerP
+ - Use virsh connect URI from config - Ferenc Erki
+ - Update README about contributing guide - Ferenc Erki
+ - Initial version of the contributing guide - Ferenc Erki
+ - Convert namespace separators from module to task (fix #1188) - Ferenc
+   Erki
+ - Add test for using needs with nested modules (ref #1188) - Ferenc Erki
+ - Added Virtuozzo as Red Hat clone. - iblinder
+ - Print warning instead of dying when delete_user called on non existing
+   user - Crimson Thompson
+ - Fix Pkgconf for Debian - Andy Beverley
+
+1.6.0 2017-12-03 Jan Gehring <jfried@rexify.org>
+ - Check brctl command is available (resolves #1115) - perlancar
+ - fixed path bug in git scm checkout - Joachim Bargsten
+ - add Rexfile path to @INC, fixes bug with perl >=5.26 fixes #1170 - Jan
+   Gehring
+ - Added support for Devuan as clone of Debian. - Christophe Wolfhugel
+ - fix bug with before => ALL in modules - Joachim Bargsten
+ - fixed syntax bug and crash on windows - Jan Gehring
+ - catch exception if version command failed. detect() method must return
+   true/false not throw exception. - fix #1152 - Jan Gehring
+ - replace JSON::XS with JSON::MaybeXS - fix #1153 - Jan Gehring
+ - added initial docker box support - Jan Gehring
+ - indent code to be properly formatted - Yanick Champoux
+ - Allow connection config to be altered in before hook - Andy Beverley
+ - fix #1134 - redirect stderr to dev/null or to stdout - Jan Gehring
+ - fix #1066 - use Task::run() method to call the task code. - Jan Gehring
+ - fix #1117 - run after hook after connection poped from connection stack
+   - Jan Gehring
+ - restore old current task object. - fix #1150 - Jan Gehring
+ - mkfs for lvm volumes is optional - Samuele Tognini
+ - Get PkgConf working with Debian clones like Ubuntu - James D Bearden
+ - Use fail_ok in cron - Daniel Dico
+ - VirtInfo: check dmi sys_vendor for qemu - Ali Polatel
+ - Gentoo/layman: check repo exists for add_repo & add readd option - Ali
+   Polatel
+ - Libvirt: support to select cpu mode for KVM guests - Ali Polatel
+ - Libvirt: vm destroy must not die() for not-running VMs - Ali Polatel
+ - set_auth used before creating the task object - NDZ Prajith
+ - fix exit code on failed logins. we need to bitshift the return value of
+   a fork - Jan Gehring
+ - clearpart: fix partition regex for nvme - Ali Polatel
+
+1.5.0 2016-10-09 Jan Gehring <jfried@rexify.org>
+ - Rex::Pkg::Gentoo: Add support for slotted package specs - Ali Polatel
+ - only use srand() once. this caused a bug with sudo file writing.
+   sometimes it generated two identical files - Jan Gehring
+ - fix problem with locks when Rexfile is on a nfs share #1130 - Jan
+   Gehring
+ - fix running sudo on local connections - Jan Gehring
+ - don't format a partition which is part of vg - Jan Gehring
+ - Fix Rsync.pm paths and ports. - necrophcodr
+ - Fix uninitialized value warnings when using Augeas module - Andy
+   Beverley
+ - fixed #1116 - detect suse systems by regex - Jan Gehring
+ - load project libraries before system libraries. fix RexOps/Rex#1108 -
+   Jan Gehring
+ - fixed systemctl detection #1026 - Jan Gehring
+ - Service.pm: Fix service class for Gentoo & non-systemd - Ali Polatel
+ - Rex::Pkg::Gentoo: Smarter installed check to reinstall on USE updates -
+   Ali Polatel
+ - Handle different md5 styles on BSDs (fix #1099) - Ferenc Erki
+ - Catch exceptions when trying to run dmidecode - Ferenc Erki
+ - don't use is_ip function, so that it also works with older
+   Data::Validate::IP module - Jan Gehring
+ - Added some more tests to Rex::Box::Test - Jan Gehring
+ - Refactored Rex::Box to be able to programmatically load box definitions.
+   - Jan Gehring
+ - Die if undefined line is found during _append_or_update (fix #1044) -
+   Ferenc Erki
+ - fix a problem with creating boxes. catch errors - Jan Gehring
+ - Fix for  #1051 - Logger.pm - uninitialized value - Tamas Molnar
+ - reload sysctl if file changed - Jan Gehring
+ - use ensure or persistent for persistance - Jan Gehring
+ - fix an extra define on a hash - Solène Rapenne
+ - Detect Manjaro correctly (fix #993) - Ferenc Erki
+ - Don't warn on missing Rexfile when -e is used (fix #1032, ref #1010) -
+   Ferenc Erki
+ - Specify XenServer as RedHat (CentOS) clone - Walery Wysotsky
+ - added i_exec and i_exec_nohup function for better parameter quoting -
+   #872 - Jan Gehring
+ - refactored calls to run() function to use i_run() - Jan Gehring
+ - test for ipv4 - Jan Gehring
+ - don't set_connection if current task is the only one - Jan Gehring
+ - load Helper::Run module - Jan Gehring
+ - Give the kernel time to get informed of partition changes - Robert
+   Abraham
+ - Trying to fix #791 Now get_ssh_config_hostname sub returns a good
+   hosntame. - Paco Esteban
+ - also exclude directories - fix RexOps/Rex#904 - Jan Gehring
+ - push connection information to the new task - fix #1091 - Jan Gehring
+ - Add checking for ensure parameter and an error if ensure parameter isn't
+   present/absent - solene rapenne
+ - sysctl supports remove and keyword changed to ensure - solene rapenne
+ - Create Rexfile-example2 - alx542
+ - callback and options can both be used - Andrew Solomon
+ - Add an option to save a sysctl key/value in /etc/sysctl.conf - Solène
+   Rapenne
+ - Using OpenBSD rcctl tool for managing services - Solène Rapenne
+ - Add OpenBSD compatibility to test - solene rapenne
+ - Implemented LXC container support - Oleg Hardt
+ - try to add same update_system behaviour for as many systems as possible.
+   Fix for RexOps/Rex#546 - Jan Gehring
+ - backported has_feature_version functions - Jan Gehring
+ - Escape backquotes when run command via sudo in the remote host - Nikolay
+   A. Fetisov
+
+1.4.1 2016-07-16 Jan Gehring <jfried@rexify.org>
+ - bug with get_cloud_instances_as_group - Pierrick DINTRAT
+ - Adds 64bit module path to @INC for linux - Mitch Broadhead
+ - set ls quoting for fedora 24 which magically quotes filenames - Jan
+   Gehring
+ - added cache for can_run - Jan Gehring
+ - removed space from line ending. fixed test on centos 6 - Jan Gehring
+ - Don't add duplicates env variable in crontab - Rapenne Solène
+ - quote source and destination, so spaces in directory names are possible
+   - Jan Gehring
+ - fixed summary tests for netbsd - Jan Gehring
+ - run hooks before push_connection - Jan Gehring
+ - Don't hardcode LibXML dependency - Jan Gehring
+ - workaround for wrong behaviour with -f and windows symlinks - Jan
+   Gehring
+ - it seems that the channel sometimes doesn't get closed in time. so we
+   need an option to force close it after command run. - Jan Gehring
+ - fixed reporting for named resource - Jan Gehring
+ - pass cli parameters to tasks for pre 1.4 feature flags. fix #1039 - Jan
+   Gehring
+ - fixed old style Rex::Args->get when called from outside a task - Jan
+   Gehring
+ - Fix for #1054 - get_private_key() to check the private key file - Tamas
+   Molnar
+ - Fix for #1052 - mask sudo_password in debug log - Tamas Molnar
+ - exit rex with an exitcode of 1 if some tests failed. fix #989 - Jan
+   Gehring
+ - show how to assign a user with a non-default shell - Andrew Solomon
+ - Fix example code (fix #1034) - Ferenc Erki
+ - Update example tasknames - Ferenc Erki
+ - Add possible root cause to authentication error message (fix #671) -
+   Ferenc Erki
+ - Correct message for authentication problems - Ferenc Erki
+ - Avoid hardcoded path - Ferenc Erki
+ - Refactor calls to reporting - Ferenc Erki
+ - Refactor reporting message handling - Ferenc Erki
+ - Simplify detection of pkg change type - Ferenc Erki
+ - Refactor pkg on_change handling - Ferenc Erki
+ - Report each pkg modification (fix #838) - Ferenc Erki
+ - Revert "report all packages" - Ferenc Erki
+ - Timeout value should be passed in milliseconds - Ferenc Erki
+ - Fix compatibility with recent Net::SSH2 (fix #1023) - Ferenc Erki
+ - Only log masked password if one is being used - Ferenc Erki
+ - Avoid logging undefined host during connection - Ferenc Erki
+ - Refactor do_task - Ferenc Erki
+ - Backport task existence check for do_task from #1010 (fix #992) - Ferenc
+   Erki
+ - Initial tests for do_task - Ferenc Erki
+ - fix hardcoded git tag command - Kirill Babikhin
+ - Document perlcritic violations - Ferenc Erki
+ - Integer with leading zeros - Ferenc Erki
+ - Add S_IMODE - Ferenc Erki
+ - Variable declared in conditional statement - Ferenc Erki
+ - "require" statement with library name as string - Ferenc Erki
+ - "select" used to emulate "sleep" - Ferenc Erki
+ - Don't modify $_ in list functions - Ferenc Erki
+ - removed hard coded qemu-img create format and added use of driver_type
+   option. fix #948 - Jan Gehring
+ - added understandable error message when no virtualization module is
+   given. fix #949 - Jan Gehring
+ - print right error message if run_task is calling a task that is not
+   available. fix #970 - Jan Gehring
+ - on windows test for SSH connection type. fix #965 - Jan Gehring
+ - Add more tests for shared arrays - Ferenc Erki
+ - Add unshift for shared arrays - Ferenc Erki
+ - Add tests for unshift to shared arrays - Ferenc Erki
+ - Add pop for shared arrays - Ferenc Erki
+ - Add tests for pop from shared arrays - Ferenc Erki
+ - Add shift for shared arrays (fix #921) - Ferenc Erki
+ - Add tests for shift from shared arrays (ref #921) - Ferenc Erki
+ - Fix #967 - Harm Müller
+ - Add META.json to CPAN release - Kent Fredric
+
+1.4.0 2016-03-06 Ferenc Erki <ferki@cpan.org>
+ - Normalize EOL characters earlier (fix #957) - Ferenc Erki
+ - fixed variable usage - Jan
+ - remove chr(13) everywhere - fix #957 - Jan
+ - cleanup newline(s) at the end. fix for #957 - Jan
+ - Increase timeout for read_buffer test (fix #954) - Ferenc Erki
+ - Test with a bit less output - Ferenc Erki
+ - Update read_buffer test for Windows - Ferenc Erki
+ - removed read_buffer reduction - Jan Gehring
+ - Handle partial last chunks from STDOUT and STDERR - Ferenc Erki
+ - Fix draining IO - Ferenc Erki
+ - Add initial tests for draining IO - Ferenc Erki
+ - fix continuous read bug - RexOps/#951 - Jan
+ - Reopen STDERR after loading Rexfile - Dmitry Kopytov
+ - Let service tests be silent - Ferenc Erki
+ - Don't confess upon failure of a non-resource (fix #936) - Ferenc Erki
+ - iptables_clear should clear only loaded tables - Dmitry Kopytov
+ - Fix copy-pasta POD errors - Ferenc Erki
+ - Make CPAN Testers happy for unsupported OSes - Ferenc Erki
+ - fixed issue of calling Rex::Args->get inside before_task_start -
+   RexOps/Rex#934 - krimdomu
+ - can't connect message must be ::info logging - krimdomu
+ - check if task is no object, and get the task object then - Jan Gehring
+ - removed connecting to mesages (change to debug level) - Jan Gehring
+ - added parameters to do_task and fixed LOCAL block - Jan Gehring
+ - fixed calling of exit hooks after summary - Jan Gehring
+ - Update docs for Rex::Task - Ferenc Erki
+ - Add docs for Rex::Shared::Var (fix #920) - Ferenc Erki
+ - Update sudo docs (fix #918) - Ferenc Erki
+ - Fix summary tests for Mac OS X - Ferenc Erki
+ - Add tests for task hooks - Ferenc Erki
+ - don't clone task object. When cloned
+   before_task_start/after_task_finished hooks doesn't work - fix #919 -
+   krimdomu
+ - debug output now gets displayed again. - fix RexOps/Rex#910 - krimdomu
+ - fix loading of Rexfile on perl 5.8.9 - RexOps/Rex#922 - krimdomu
+ - fixed loading of resource module in perl 5.8 - RexOps/Rex#917 - krimdomu
+ - try to fix failing tests on freebsd - #901 - krimdomu
+ - Fix POD - Ferenc Erki
+ - Unbundle AWS::Signature4 - Ferenc Erki
+ - Fix rendering of false values in templates - Ferenc Erki
+ - Test rendering of false values in templates - Ferenc Erki
+ - Avoid __Rexfile__ as dependency - Ferenc Erki
+ - Enable more feature flags for development releases - Ferenc Erki
+ - Use development versioning - Ferenc Erki
+ - Pass options to mkfs (#fix 905) - Ferenc Erki
+ - Don't fail mkfs if label is undefined - Ferenc Erki
+ - Skip creating filesystems for some reserved words - Ferenc Erki
+ - Check for fstype existence at the start - Ferenc Erki
+ - Update docs for partition command - Ferenc Erki
+ - Remove purge package action on arch (fix #867) - Ferenc Erki
+ - Use sysread for local exec interface too (fix #887) - Ferenc Erki
+ - Avoid bitshifting error code twice (fix #901) - Ferenc Erki
+ - add default values for cpu and memory - krimdomu
+ - some windows fixes for rexify command - krimdomu
+ - run shell detection a second time if first time failed - krimdomu
+ - remove unnecessary new lines - krimdomu
+ - moved detect method to base, because it is everywhere the same, created
+   direct_exec method for all interfaces - krimdomu
+ - remove error message, we don't need it for the tests - krimdomu
+ - fixed inheritance problem, moved shell() method to base class. -
+   krimdomu
+ - return always shell object - krimdomu
+ - load right cron module if os is *bsd and shell is csh - #883 - krimdomu
+ - use sysread to read from filehandle. fixes #887 - krimdomu
+ - Read STDOUT and STDERR in parallel (fix #756) - Ferenc Erki
+ - fix error code in $? after a run command which was introduced by 6c8441
+   - krimdomu
+ - print the error message in the summary when a task die()d - krimdomu
+ - readd close of stderr - krimdomu
+ - only update chained resource when the upper resource wasn't changed
+   before. Also removed 'inside resource check' because this is not needed
+   anymore due to stacked resources - krimdomu
+ - fix loading of libraries in lib directory when use -f path/to/Rexfile -
+   krimdomu
+ - fixed loading of rexfiles with -f - krimdomu
+ - load a rexfile also if it doesn't return a true value. This fixes a
+   regression - RexOps/Rex#513 - krimdomu
+ - fixed reporting of nested resources (changed resource) - krimdomu
+ - fixed firewall resource to work with ipv6 patch - krimdomu
+ - added Rex::Args->get method again. fixes #860 - krimdomu
+ - Refactor Rex::TaskList.  No functional change. - Eric Johnson
+ - fixed tests for windows - krimdomu
+ - added tmp to gitignore - krimdomu
+ - Add Rex::Commands::Mkfs to rexify and pp.args - Ferenc Erki
+ - The after hook now runs even if the ssh connection fails. - Eric Johnson
+ - added archlinux support - Harm Müller
+ - support key_url and key_file also on redhat systems - krimdomu
+ - also lookup task name in cmdb - krimdomu
+ - Fix regression in deprecated static call to Rex::Task->run() - Eric
+   Johnson
+ - Fix links in README (fix #853) - Ferenc Erki
+ - Output full task names (fix #825, close #842) - Daniel Cesario
+ - use empty string to prevent uninitialized warning messages - krimdomu
+ - make environment available inside cmdb template - krimdomu
+ - color for windows - krimdomu
+ - defaults for cpus and memory - krimdomu
+ - call after task hook, even if connection to system failed - krimdomu
+ - fix after hook call for connections that wasn't successfull - krimdomu
+ - Fix passing memory/cpus options to constructor - Ferenc Erki
+ - Allow tests so set Box memory and cpus (close #839) - Patrick Lauer
+ - Exit with an error message when a bad task name is used. - Eric Johnson
+ - Exit codes now work when using 'rex -e' (fix #761, close #840) - Eric
+   Johnson
+ - Fix indentation - Eric Johnson
+ - Refactor out some code into handle_lock_file() - Eric Johnson
+ - Refactor out logic for loading server ini file into
+   load_server_ini_file(). - Eric Johnson
+ - Put Rexfile exists check inside load_rexfile() - Eric Johnson
+ - Simplify loading the Rexfile and improve error handling. - Eric Johnson
+ - Add missing Data::Dumper import - Ken Crowell
+ - Tests for needs() were not useful.  Now they are. - Eric Johnson
+ - allow mix of modules.rexify.org modules and git modules - Jan
+ - Fix summary test tasks for Windows - Ferenc Erki
+ - Add support for ip6tables (close #795) - Dmitry Kopytov
+ - Prefer uid over getlogin as fallback username (close #793, fix #792) -
+   Ferenc Erki
+ - Sort failure list - Ferenc Erki
+ - Further simplify summary output - Ferenc Erki
+ - Refactor summary output - Ferenc Erki
+ - Use error level output in the summary if some tasks failed - Ferenc Erki
+ - added AWS::Signature4 directly to code, due to problems with Centos5
+   dependencies (#737) - Jan
+ - ignore eclipse files - Jan
+ - fixed call of task as functions with normal parameters, #827 - Jan
+ - allow config (set) vars in cmdb templates - Jan
+ - Fix template handling in YAML CMDB files - Ferenc Erki
+ - YAML cmdb can now contain template code - Jan
+ - don't concat caller package anymore - Jan
+ - fixed some unitialized warnings - Jan
+ - fixed lookup path for arp command - Jan
+ - report all packages - Jan
+ - allow nested resources in reports - Jan
+ - use md5 binary if perl module is not available - fix for #834 - Jan
+ - default to empty task list - Jan
+ - don't print summary on rex -T - Jan
+ - use can_run to detect arp command - Jan Gehring
+ - Custom storage path for kvm - Prajithp
+ - give server configuration precedence - Jan
+ - detect iptables version and choose syntax for ip adresses - Jan
+ - fixed a logic bug, that prevents batch creation - Jan
+ - fixed a bug that was introduced by
+   b0416b1710611b900284ba5a2d9d74991fc4351b - Jan
+ - Ensuring that labels can be added to swap partitions - Peter H. Ezetta
+ - Ensure proper test-time connection type (fix #821) - Ferenc Erki
+ - Fix examples - Ferenc Erki
+ - Slightly reword synopsis - Ferenc Erki
+ - Updated pod in bin/rex and lib/Rex.pm - Eric Johnson
+ - Fix static side comments - Ferenc Erki
+ - Use static comments to avoid alignment change later - Ferenc Erki
+ - Checking for a running rex process failed if the pidfile contains a pid
+   that partially matches a running process. - petersonchen
+ - Updated documentation in bin/rex (pod/man page) - Eric Johnson
+ - fixed loading of Rex::Commands via require. RexOps/Rex#789 - Jan Gehring
+ - Recognize Raspbian as a Debian clone - Ferenc Erki
+ - Mute noisy tests - Ferenc Erki
+ - Added option for rebase during pull. - Eivin Giske Skaaren
+ - added feature flag for 1.4 and removed deprecated warning of
+   Rex::RunList - Jan
+ - Added a firewall module to manage different firewall models with one
+   interface. - Jan
+ - resource and task now have own namespace for template variables - Jan
+ - Exit codes need to be bit shifted by 8.  Do it in one place. - Eric
+   Johnson
+ - Summary tests for all permutations of Parallel::ForkManager, Base, and
+   exec_autodie - Eric Johnson
+ - Summarize success/failure at the end of a run - Eric Johnson
+ - added ParamLookup and registering task parameter as template variables.
+   - Jan
+ - Suppress STDERR during crontab listings - Ferenc Erki
+ - Fix managing a user's own crontab via cron_entry - Ferenc Erki
+ - Add _whoami to determine remote effective username - Ferenc Erki
+ - Add docs on glob usage with file command (close #712, fix #738) - Jose
+   Luis Perez Diez
+ - Map Debian clones correctly - Ferenc Erki
+ - Recognize LinuxMint as a Debian clone (close #506) - Ferenc Erki
+ - Fix GetRex link url - hiroraba
+ - Avoid unnecessary package rebuilds on Gentoo (close #809) - Patrick
+   Lauer
+ - Don't parse @ARGV on import. - Eric Johnson
+ - Refactor child/parent pid logic + comments to be more readable - Eric
+   Johnson
+ - Avoid race condition when doing IPC. - Eric Johnson
+ - Test for race condition problem in Rex::Shared::Var. - Eric Johnson
+ - Refactoring LVM.pm to use mkfs(); - Peter H. Ezetta
+ - refactor Partition.pm, fix $lv_name in Mkfs.pm - Peter H. Ezetta
+ - refactoring swap logic into mkfs logic, silly to separate. - Peter H.
+   Ezetta
+ - code cleanup and addition of POD - Peter H. Ezetta
+ - error checking on $lvname - Peter H. Ezetta
+ - setting up logic for lvm vs raw disk - Peter H. Ezetta
+ - starting to add option parsing - Peter H. Ezetta
+ - start of refactor mkfs/mkswap into their own pm - Peter H. Ezetta
+ - Fix undef warnings if calling get() without param - Andy Beverley
+ - lower exitecode to less than 255 because some os have problems with
+   larger ones - Jan
+ - Fatal exceptions if git switching fail - alex1line
+ - fix for Net::OpenSSH can't set initialize_options for the constructor -
+   #796 - Jan Gehring
+ - fixes the problem of run_task connecting to the wrong host #788 - Jan
+   Gehring
+
+1.3.3 2015-09-04 Ferenc Erki <ferki@rexify.org>
+ - Catch another way to manage services on FreeBSD (close #773) - timp87
+ - Fix generated links for Commands modules (fix #776) - Ferenc Erki
+ - Fix code block output when there's no space before closing tag - Ferenc
+   Erki
+ - Escape curly braces in template content - Ferenc Erki
+ - Force syncing package information on FreeBSD - Ferenc Erki
+ - Take service name and rcvar mapping into account on FreeBSD (close #770)
+   - timp87
+ - Check if systemctl is functional before using it (fix #753) - Ferenc
+   Erki
+ - Rearrange dist.ini - Ferenc Erki
+ - Fail early on unsupported Windows versions (fix #751) - Ferenc Erki
+ - Warn about missing environment instead of panicking (fix #742) - Ferenc
+   Erki
+ - Document alias of get_operating_system() - Ferenc Erki
+ - Fix perlcritic warnings about modifying list elements - Ferenc Erki
+ - Fix perlcritic warnings about two-argument open - Ferenc Erki
+ - Update auth docs - Ferenc Erki
+ - Fix docs for transaction (fix #686, close #766) - Elmer Quintanilla
+ - Fix ensure option for NetBSD services (close #759) - timp87
+ - Do not silently fail on update errors (close #758) - Andrew Beverley
+ - Fix ensure option for FreeBSD services (close #752) - timp87
+ - Enable Rex to manage system services on FreeBSD (#752) - timp87
+ - Recognize multi-arch packages on Debian (fix #748, close #755) - Erik
+   Huelsmann
+ - Fix Gentoo service detection (fix #747) - Ferenc Erki
+ - force apt-listchanges to not run - Anders Ossowicki
+ - Added doc about using regex for auth - Eivin Giske Skaaren
+ - Fixes #760 timeout for OpenSSH - Eivin Giske Skaaren
+ - Use the correct class for managing forks (fix #743) - Ferenc Erki
+ - Support key files for Debian repositories + add docs (close #736) - John
+   Karr
+ - Don't recreate connection during rethink_connection (fix #694, close
+   #727) - Mitch Broadhead
+ - Pass exception to on_rollback (fix #687, close #732) - Mitch Broadhead
+ - Document hostname expressions support in INI files - Ferenc Erki
+ - Support hostname expressions in INI files (close #713) - okaoka
+ - Document -O CLI option - Ferenc Erki
+ - Revert "Remove unused CLI option" (fix RexOps/rex-jobcontrol#10) -
+   Ferenc Erki
+ - make Fcntl calls os independent - Jan
+ - added a wrapper module for File::Spec - Jan
+ - Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
+ - Add function for checkout of Git tags - Eivin Giske Skaaren
+
+1.3.2 2015-06-17 Ferenc Erki <ferki@rexify.org>
+ - Use binmode as a function - Jan
+ - Use raw Rex::Interface::Exec to call can_run - Jan
+ - Remove md5sum usage - Ferenc Erki
+ - Fix for filenames with at sign in them - Ferenc Erki
+ - Add test case for filenames with at sign - Ferenc Erki
+ - Add initial MD5 test - Ferenc Erki
+ - Fix check for environment-specific filenames - Ferenc Erki
+ - Use OS-agnostic perl executable detection - Ferenc Erki
+ - Fix RC version handling - Ferenc Erki
+ - Refactor MD5 checksum calculation (fix #719) - Ferenc Erki
+ - Add missing test names - Ferenc Erki
+ - Only display diagnostic message if something went wrong - Ferenc Erki
+ - Explicitly test for optional dependencies - Ferenc Erki
+ - Fix LEFT_PRECEDENCE typo - Dmitry Kopytov
+
+1.3.1 2015-06-08 <ferki, rexify.org>
+ - Cleanup db tests (fix #714) - Ferenc Erki
+ - Update parallelism docs - Ferenc Erki
+
+1.3.0 2015-06-03 <jfried, rexify.org>
+ - Fix regex pattern for perl-5.22.0 - Ferenc Erki
+ - Filter changelogger output - Ferenc Erki
+ - Cleanup group command POD - Ferenc Erki
+ - Convert POD directives of methods and DSL functions (fix #685, close
+   #705) - Brian Manning
+ - pass cmdb() arguments to callback - fixed #709 - Jan
+ - allow creation of inherited Rex::Group::Entry::Server objects - fixed
+   #708 - Jan
+ - Reuse VM name as image filename when importing - Ferenc Erki
+ - Recognize CloudLinux as Red Hat clone (close #699) - Dmitry Kopytov
+ - Fix auth test when REX_USER env is present - Dmitry Kopytov
+ - Remove unused CLI option - Ferenc Erki
+ - More helpful/verbose help message (close #698) - Eric Johnson
+ - Cleanup a file used during testing - Ferenc Erki
+ - Cleanup tests with optional dependencies - Ferenc Erki
+ - Use explicit test plans everywhere - Ferenc Erki
+ - Cleanup test imports - Ferenc Erki
+ - Remove tests doing nothing else than use_ok() - Ferenc Erki
+ - Automatically use all modules during testing - Ferenc Erki
+ - Remove redundant hostname evaluation tests - Ferenc Erki
+ - Remove unused Data::Dumper from tests - Ferenc Erki
+ - Add CMDB docs - Ferenc Erki
+ - Don't run into an endless loop: fix for #692 - Jan Gehring
+ - Iptables.pm: add long-form iptables examples to POD - Brian Manning
+ - Iptables.pm: show error from iptables on non-zero exit status - Brian
+   Manning
+ - ignore backfiles from editors - Jan
+ - Log STDERR on errors where auto_die is enabled - Dmitry Kopytov
+ - Set parallelism automatically (fix #491) - Ferenc Erki
+ - added template_ng tests - Jan
+ - fixed a problem when one template object was used twice - Jan
+ - new template engine for 1.3 - Jan
+ - Fix checking of virsh command result upon VM creation - Ferenc Erki
+ - Update clearpart command documentation - Ferenc Erki
+ - Add bios_boot option to GPT initialization - Ferenc Erki
+ - make report filename configurable. don't sleep in test - Jan
+ - Check for CLI argument definedness (fix #668) - Ferenc Erki
+ - this commit fixes #667. this bug was introduced with the fix for #629 -
+   Jan
+ - first detect if uname and md5sum can be run, then use it. fixed #665 -
+   Jan
+ - fix warning if local file is not given. fixed #647 - Jan
+ - Include provided modules in META.yml - Ferenc Erki
+ - added systemd support for debian. fixes #659 - Jan
+ - this prevents the stderr output of perl to get send over the wire. fixes
+   #658 - Jan
+
+1.2.1 2015-05-04 <jfried@rexify.org>
+ - first detect if uname and md5sum can be run, then use it. fixed #665 -
+   Jan
+
+1.2.0 2015-05-02 <jfried@rexify.org>
+ - Set version to 9999.99.99 if version is not present (e.g. during
+   development) - Jan
+ - Fix Rexfile parsing (fix #629) - Jan
+ - Refactor tasklist output (fix #631, #653) - Eric Johnson
+ - Remove -w from shebang (fix #650) - Eric Johnson
+ - Add tab completion (fix #636, #652) - Eric Johnson
+ - Update modules listed in POD - Brian Manning
+ - Add another Red Hat synonym for RHWS version 3 - Brian Manning
+ - Fix file manipulation when using Net::OpenSSH and sudo (fix #640) - Jan
+ - Check if requested environment is defined (fix #639) - Ferenc Erki
+ - Use normal DSL for internal task - Ferenc Erki
+ - Fix SCM documentation - Ferenc Erki
+ - Sort server names naturally - Ferenc Erki
+ - Sort tasklist output (fix #633) - Ferenc Erki
+ - Add YAML CMDB merging support (fix #499) - Ferenc Erki
+ - Add CMDB merge tests - Ferenc Erki
+ - Update list of contributors - Ferenc Erki
+ - Check number of elements returned by stat - Ferenc Erki
+ - Rex::Commands::Fs::stat() should return a hash or throw an exception. -
+   Mitch Broadhead
+ - Allow single-character tasknames (fix #621) - Ferenc Erki
+ - Fix reporting for umount - Ferenc Erki
+
+1.1.0 2015-03-29 <jan.gehring, gmail.com>
+ - Fix dependencies for openssh + pass_auth - Ferenc Erki
+ - prevent faulty debug message - Jan
+ - fixed merge_auth() method for #615 -Jan
+ - Update task tests (fix #614) - Jan
+ - Recognize usable SSH modules separately - Ferenc Erki
+ - Describe platform-specific dependencies - Ferenc Erki
+ - Only check for iDrac signature if there was an output - Ferenc Erki
+ - added a prototype, this will prevent failures like RexOps/Rex#584 -
+   references: RexOps/Rex#608 - Jan
+ - we need to do an explicit return undef. if we only use 'return' and the
+   return of is_file/is_dir is passed to an array, this will not appear in
+   the array. reference: RexOps/Rex#608 - Jan
+ - updated tests to use is() instead of ok(). reference: RexOps/Rex#608 -
+   Jan
+ - changed return code to undef if file/dir not found. fix for
+   RexOps/Rex#608 - Jan
+ - Add initial iDrac shell support - Ferenc Erki
+ - Allow can_run method to accept command to do the check with - Jan
+ - Check if a command can be run before its execution (fix #514) - Ferenc
+   Erki
+ - Refactor can_run - Ferenc Erki
+ - Support can_run command on Windows - Ferenc Erki
+ - Move can_run to Rex::Interface::Exec - Ferenc Erki
+ - Add can_run tests - Ferenc Erki
+ - Create target directory before extracting an archive (fix #600, close
+   #604) - Arnold Bechtoldt
+ - Update POD (close #598) - Ferenc Erki
+ - added a Rex::Logger::masq() function that can masq sensitiv data for
+   logging output. (fix for RexOps/Rex#554) - Jan
+ - added code to make shells pluggable. - RexOps/Rex#602 - Jan
+ - Avoid noisy test output - Ferenc Erki
+ - added support to export resources to main namespace and added more
+   events - Jan
+ - added possibility to use auth(for => task) before a task is created -
+   fixed #402 - Jan
+ - Fix handling of symbolic links (fix #591, close #592) - Jan
+ - this adds a new method to the server objects called group() - Jan
+ - fixed setting of path environment variable - #583 - Jan
+ - Add preferred type option for mount command (fix #469) - Ferenc Erki
+ - Reword has_{dir,file} test outputs - Ferenc Erki
+ - Add has_dir test - Ferenc Erki
+ - Print explicit PASS or FAIL output upon finishing a test suite - Ferenc
+   Erki
+ - Fix has_stat test for non-existing UIDs and GIDs - Ferenc Erki
+ - Allow has_stat test to handle directories (fix #582) - Ferenc Erki
+ - Add diag method for Rex::Test::Base - Ferenc Erki
+ - Ensure proper return values for is_{dir,file} functions (fix #584) -
+   Ferenc Erki
+ - Drop potentially dangerous --force-yes option (fix #559) - Ferenc Erki
+ - Generate docs for Rex::Test (fix #483) - Ferenc Erki
+
+1.0.0 2015-03-08 <jan.gehring, gmail.com>
+ - Remove hardcoded connection type (fix #579) - Ferenc Erki
+ - fixed systemd status query - Jan
+ - test output of tmpdir gathering before working with it. - Jan
+ - fixed removing some tmp files - Jan
+ - fixed some warnings for netstat listing if reading an unknown transport
+   layer - Jan
+ - added no_autodie feature flag - Jan
+ - fixed is_file() for files with spaces - Jan
+ - Fix POD - Ferenc Erki
+ - don't redirect stdout 2 times. freebsd don't like it - Jan
+ - added tty feature flag and sorted the flags - Jan
+ - added some defaults for kvm boxes (network) - Jan
+ - fixed autodie bug for is_symlink function - Jan
+ - added reconnect tries to Net::OpenSSH connections - Jan
+ - Allow spaces in Augeas values - Andrew Beverley
+ - Warn if Augeas command fails - Andrew Beverley
+ - fixed a problem if a server group was empty - Jan
+ - dist.ini: Add Twitter and IRC links to metaresources block - Brian
+   Manning
+ - Rex::Commands::MD5: Make Rex use the /sbin/md5 binary on OS X - Brian
+   Manning
+ - Rex::Commands::User: fix typo in POD (user_group -> user_groups) - Brian
+   Manning
+ - Rex::Helper:Run->i_run: check no_path_cleanup before calling get_path -
+   Brian Manning
+ - stop 'profile' before returning from a subroutine. - Andrej Zverev
+ - Speed up connecting to Boxes - Ferenc Erki
+ - allow call of run() command with arrayRef - Jan
+ - fixed sync_up/sync_down with Text::Glob - Jan
+ - fixed authentication, failing if try password auth without mentioning
+   pass_auth directly - Jan
+ - fixed line endings with openssh and pty - Jan
+ - Added possibility to use group() also as a resource function - Jan
+ - added possibility to define task parameters multiple times from cli. -
+   #516 - Jan
+ - fixed windows tests - #514 - Jan
+ - fixed #555 - default for Net::OpenSSH now also spawn a pty. Can be
+   disabled with feature no_tty - Jan
+ - Die if trying to run augeas without augtool installed (close #547) -
+   Andrew Beverley
+ - Skip db tests if there are missing dependencies (fix #548, close #549) -
+   Volker Kroll (vkroll)
+ - Restore perl-5.8.9 compatibility - Ferenc Erki
+ - Add test for minimum perl version required - Ferenc Erki
+ - Be more explicit about required perl version - Ferenc Erki
+ - Stop append_or_amend_line inserting extra blank lines - Andrew Beverley
+ - Add tests for append_or_amend_line - Andrew Beverley
+ - fixed Rex::Box with Net::OpenSSH - Jan
+ - rex/CLI.pm: update docs for Rex options - Brian Manning
+ - CLI.pm: throw error if -T used with task arg, but no matching task found
+   - Brian Manning
+ - fixed #539 - detect primary network address - Jan
+ - Add append_or_amend_line function to File command - Andrew Beverley
+ - Drop Rex::Helper::Glob - Ferenc Erki
+ - Suppress noisy test output - Ferenc Erki
+ - Suppress warning about a variable being used only once - Ferenc Erki
+ - Tidy up all the tests - Ferenc Erki
+ - Use more helpful test functions - Ferenc Erki
+ - use more appropriate functions from Test::More in tests - reneeb
+ - some class inherit cleanup - Jan
+ - Use correct path when using augeas insert - Andrew Beverley
+ - Return correct output from augtool - Andrew Beverley
+ - Fix false positive when using "augeas exists" - Andrew Beverley
+ - Optimise Rex::Commands::Augeas - Andrew Beverley
+ - Add user base class for those calls not supported in all OS - Andrew
+   Beverley
+ - Add password lock/unlock functions (Linux only) - Andrew Beverley
+ - fixed resource end - Jan
+ - Add PkgConf command to configure packages - Andrew Beverley
+ - fixed set_openssh_opt() function to allow multiple options - Jan
+ - fixed #527 - Rex::Output leaks semaphores and shared memory - Jan
+ - improved continous_read option for Net::SSH2 connection mode - Jan
+ - tail now also works with sudo also fixed #530 - Jan
+ - use Net::OpenSSH is now default. don't need feature flag 0.55 - Jan
+ - fixed line based operation with OpenSSH connection mode - Jan
+ - migrated augeas module into Rex core - #532 - Jan
+ - added partial sudo support for rsync command - Jan
+ - fixed #529 - odd number of elements - Jan
+ - fixed #528 -Amazon list_services, doesn't get all ec2 instances - thanks
+   to David Golovan - Jan
+ - fixed an issue that causes the parser to think the rexfile has an error
+   - Jan
+ - start of unit-test for Rex::Commands::DB - Volker Kroll (vkroll)
+ - better fix for #521, don't print all servers by rex -T. Also fixed group
+   authentication. - Jan
+ - patch from twitter/@tekcurmudgeon to allow setting of gpgkey for a
+   repository - Jan
+ - fixed late group lookup - #521 - Jan
+ - if the evaluation of the Rexfile was without syntax errors, but don't
+   return a true value, try to evaluate it manually. so is is not needed to
+   return a true value at the end. - fix for #513 - Jan
+ - fixed path resolution for private_key and public_key when used a ~
+   (tilde) sign. #517 - Jan
+ - fix rsync with port definition - #520 - Jan
+ - added parse_templates option to sync_up function, so that template
+   parsing can be prevented - #519 - Jan
+ - Rex::FS::File accepts filenames now - reneeb
+ - Add initial version of changelog generator - Ferenc Erki
+
+0.18 2011-09-01 Jan Gehring <jan.gehring, gmail.com>
+ - added network support for Solaris, NetBSD, FreeBSD and OpenBSD
+ - added is_solaris, is_bsd and is_linux function
+
+0.17 2011-09-01 Jan Gehring <jan.gehring, gmail.com>
+ - added solaris 11 support
+ - added solaris 10 support
+ - added a caching module
+ - added a clear task function (for rex-swarm)
+ - added a function to get os release
+ - fixed local copy error handling
+
+0.16 2011-08-28 Jan Gehring <jan.gehring, gmail.com>
+ - added NetBSD support
+ - added OpenBSD support
+ - fixed a bug in the gentoo pkg management module
+
+0.15 2011-08-07 Jan Gehring <jan.gehring, gmail.com>
+ - new function to detect a redhat system (or clone like CentOS, Scientific
+ - Linux)
+ - increased timeouts for jiffybox
+ - fixed template bug with $ signs
+ - added support for scientific linux
+ - added support for gentoo
+
+0.57.0 2015-01-11 Jan Gehring <jan.gehring, rexify.org>
+ - allow definition of gpgkey for redhat/yum repositories - #522 -
+   tekcurmudgeon
+ - fixed Group defined after task definition - #521
+ - fixed rsync will execute failed when use -H 127.0.0.1:2222 - #520
+ - added new sync_up/down option for sync_up function will replace template
+   variable of *.tpl - #519
+ - fixed failed authentication when used ~ symbol - #517
+ - fixed before_task_start() fails with an ambiguous error when your
+   Rexfile does not return a true value - #513
+
+0.56.1 2015-01-06 Jan Gehring <jan.gehring, rexify.org>
+ - tasks doesn't return a value when called as a sub (#523) - Jan
+
+0.56.0 2014-12-26 Jan Gehring <jan.gehring, rexify.org>
+ - Extend documentation of run() options (#466) - Ferenc Erki
+ - New template engine with better error reporting. - Jan
+ - Only try to run umount if mount point is already mounted - Ferenc Erki
+ - Set changed flag for umount after the command has been run - Ferenc Erki
+ - Fix error when only grow option was given to partition() - Ferenc Erki
+ - Fix regex to find end of partition instead of size - Ferenc Erki
+ - Use kB as unit when determining partition boundaries - Ferenc Erki
+ - Fix missing `strict` and `warnings` pragmas - Ferenc Erki
+ - Add LICENSE section to POD - Ferenc Erki
+ - Replace defined-or operator to restore perl-5.8.0 compatibility - Ferenc
+   Erki
+ - Fix test for Parallel::ForkManager - Ferenc Erki
+ - Fix test for Amazon Cloud Module - Ferenc Erki
+ - Add rex_kvm_agent feature flag - Ferenc Erki
+ - Allow multiple tasks to run with Rex::Test::Base (fix #476) - Robert
+   Abraham
+ - Improve evaluation of hostnames (fix #479, close #480) - Renee Bäcker
+ - Fix POD (close #488) - Brian Manning
+ - Fixed some deprecated docker calls - Jan
+ - Fix mode option for mkdir command - Ferenc Erki
+ - Fixed needs function - Jan
+ - Added before_execute and after_execute task hooks - Jan
+ - Add basic tests for Rex::Logger (close #484) - Renee Bäcker
+ - Clarify/correct documentation (close #486) - Sascha Askani
+ - Check versions of installed packages - Ferenc Erki
+ - Refactor has_package test for simpler version matching - Ferenc Erki
+ - Use OurPkgVersion for automatic module versioning - Ferenc Erki
+ - Add has_stat to Rex::Test - Robert Abraham
+ - Add documentation for has_stat (close #474) - Ferenc Erki
+ - fix for #473 - download root restricted files in sudo mode - Jan
+ - fix for #498 - added autodie feature flag - Jan
+ - fixed local mkdir return code - Jan
+ - fixed path quoting for #512 - Jan
+ - added glob_to_regex function (Text::Glob) - fix for #495 - Jan
+ - use test binary instead of '[ ... ]' for file tests - Jan
+
+0.55.3 2014-11-02 Ferenc Erki <ferki, rexify.org>
+ - Fix @INC compilation for Windows - Ferenc Erki
+
+0.55.2 2014-11-01 Ferenc Erki <ferki, rexify.org>
+ - Don't return leading ./ on pathes - Ferenc Erki
+ - Make helper_path tests OS-agnostic - Ferenc Erki
+ - Convert ok() tests to is() - Ferenc Erki
+ - Remove unnecessary variable assignment - Ferenc Erki
+ - Update installation instructions - Ferenc Erki
+ - Use ChangeLog file in tests - Ferenc Erki
+ - Fix typo - Ferenc Erki
+
+0.55.1 2014-10-25 Jan Gehring <jan.gehring, rexify.org>
+ - status call for services with upstart and systemd may not work properly
+   - #460 - Jan
+ - sudo with -e cli flag doesn't work - #461 - Jan
+ - Cannot pass an argument with the value zero to a task - #463 - Jan
+ - Issue tracker not in META.yml - #464 - Ferenc Erki
+ - Allow specifying which tests to run as a parameter for Test:run #462 -
+   Ferenc Erki
+
+0.55.0 2014-10-19 Ferenc Erki <ferki, rexify.org>
+ - vm names in quote. so they can contain spaces - Jan
+ - fallback to arp query if no answer from rex-kvm-agent - #454 - Jan
+ - Print out error messages during Test:run (fix #450) - Ferenc Erki
+ - Clarify error message during image download - Ferenc Erki
+ - Remove explicit setting of VERSION - Ferenc Erki
+ - return 0 if no swap given - #452 - Jan
+ - fixed windows crashing on multiple connects - #448 - Jan
+ - Work when swap in not enabled and values are undefined. FreeBSD only for
+   now. - Graham Todd
+ - possibility to modify Net::OpenSSH constructor - Jan
+ - Revert use Rex::Group (#447) - Ferenc Erki
+ - added late-group lookup, if group is not defined yet. fixed #447 - Jan
+ - Make PkgVersion happy - Ferenc Erki
+ - Fix typo - Ferenc Erki
+ - removed unlink - Jan
+ - Added possibility to query rex-kvm-agent. fixed #436 - Jan
+ - dont throw error with multiple test files - Robert Abraham
+ - Add ROSA systems support - Denis Silakov
+ - fixed get_installed and is_installed functions Rex::Pkg::Gentoo - Robert
+   Abraham
+ - create binary installers from Rexfiles - Jan
+ - Correct ChangeLog - Ferenc Erki
+ - use Net::OpenSSH as default when available - #435 - Jan
+ - removed executable bit - Jan
+ - Added possibility to pack rex with PAR - Jan
+
+0.54.3 2014-10-03 Jan Gehring <jan.gehring, rexify.org>
+ - added possibility to clone an jiffybox image - #439 - Peter Manthey
+ - only execute testfiles which end on .t - #434 - Robert Abraham
+ - close last used ssh connection after test - #433 - Robert Abraham
+ - Add error message when attempting to run a non-existing task - FErki
+ - Check if file exists before checking contents - fix #432 - FErki
+ - refactored the behaviour of set() function to do what it is saying. So
+   with feature 0.54 enabled set is always overwriting the existing values.
+   (#425)
+ - Add service_exists for Gentoo - FErki
+ - fixing nested sudo operations. - #423
+ - added check if service exists - #407
+ - Handle hostgroup members with leading numeric ranges - FErki
+ - redirect nohup output to /dev/null
+ - fixed return value for flavors function - #406 - exzz
+ - make apt-listchanges non-interactive - #417 - aowi
+ - added path_map function - Erik Huelsmann
+ - don't try to run dmidecode if it is not in PATH - Andrej Zverev
+ - enhanced support for pkgng (FreeBSD) - Andrej Zverev
+ - fixed Rex::Commands::MD5::md5() to obey path settings
+ - Add documentation for run() function. - #440 - Erik Huelsmann
+
+0.53.1 2014-09-13 Jan Gehring <jan.gehring, rexify.org>
+ - added Rex::JobControl functions
+ - fixed hanging VBox with CentOS 7 and delayed dhcp ip lease
+ - fixed on_change hook for file() resource when file was removed
+ - added cmdb variables to template with feature flag - #420
+ - export Rex::Config variables to all template variants - #419
+ - fixed chkconfig bug for Mageia, Redhat and SuSE - chenryn
+ - added resource() function, to define own resources.
+
+0.52.0 2014-08-30 Jan Gehring <jan.gehring, rexify.org>
+ - fixed #381 - file NAME, ensure => 'absent' for a directory
+ - fixed #392 - run conditional options with exec_autodie
+ - added on_change hook for update_system function. fixed #401
+ - Added support for end_if_matched option to run command
+ - Rex::Output to persist across different processes (forks)
+ - Add floating ip support for openstack provider - #398
+ - Auto upload ssh key to openstack cloud provider
+ - Implement feature to tie server.ini to specified -E environment
+   (server.$environment.ini).
+ - #409 - added before_task_start and after_task_finished hooks
+ - [#408] - define fallback authentication
+ - [#416] - fixed pkg with ensure => 'ver.si.on'
+
+0.51.2 2014-07-29 Jan Gehring <jan.gehring, rexify.org>
+ - Fixed #394 - export of is_symlink function
+ - Fixed #395 - is_file compatibility bug, doesn't detect symlinks anymore
+ - Added "." in the allowed char of lvm create #393 - samuelet
+ - possibility to call tasks as a method (prettier dsl)
+ - load cmdb by default
+ - load ini group module by default, if server.ini exists
+
+0.50.0 2014-07-20 Jan Gehring <jan.gehring, rexify.org>
+ - Use stat() output for directory and file tests (fix #391) - FErki
+ - added Paralell::ForkManager as optional component - #295
+ - fixed Problem with failed conditionals in Rex::Command::Run - #389
+ - activate exit_status feature by default for non parallel task execution
+ - added proxy_command support - fixed #380
+
+0.49.0 2014-07-12 Jan Gehring <jan.gehring, rexify.org>
+ - Added FreeBSD 10 Support for pkgng. #280
+
+0.48.0 2014-07-10 Jan Gehring <jan.gehring, rexify.org>
+ - Added CentOS 7 support
+
+0.47.0 2014-07-05 Jan Gehring <jan.gehring, gmail.com>
+ - Rex::Test now also working with KVM - FErki
+ - Update default VNC listen address for KVM machines - FErki
+ - added pkgng commands for FreeBSD 10
+ - A module which allows to read configuration files from an XML file. -
+   nathanIL
+ - Fixed a problem with auth_type try for rsync
+ - Fixed using -G cli switch with a non existing group it will run localy
+   #379
+ - added Darwin (MacOSX) network module
+ - documentation updates - FErki
+ - Ident task description when running -T - Nathan Abu
+ - use https to communicate with amazon
+ - allow set callback and environment together #374  (run command) -
+   alex1line
+ - added exclude option to sync commands - Cameron Daniel
+ - General tasks before/after sub #353
+ - shell_path variable is not checked for empty value before use #376 -
+   Ilya Evseev
+ - verbose_run feature flag #375
+ - Syntax enhancement of "group" command #369 - Jens Berthold
+ - extend service() function, so that it knows how to get a status for a
+   service if the init script doesn't have a status call
+ - Avoid warning if there's nothing to upgrade (update_system) - FErki
+ - Possible precedence issue with control flow operator with perl-5.20.0 -
+   FErki
+ - added Rex::Constants library
+ - don't use shadow file if not present - user module
+ - detect amazon system and use redhat classes
+ - fixed inline templates for modules
+
+0.46.2 2014-05-22 Jan Gehring <jan.gehring, gmail.com>
+ - fixed tmp_dir configuration
+ - load Rex::Commands::Box if Rex::Test is loaded, so that set(box => '')
+   work
+ - fixed a problem with Test:run
+
+0.46.1 2014-05-19 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a dependency problem
+ - fixed a problem detecting the temporary directory
+ - 'set port' ignored in Rexfile - #366
+ - update_system / better error message - #367
+ - set sudo auth for a special server in a group causes endless loops -
+   #368
+
+0.46.0 2014-05-01 Jan Gehring <jan.gehring, gmail.com>
+ - Rex::Box, added kvm support - #174
+ - core: allow passing template content to template command - #345 - reneeb
+ - core/report: refactored report generation. This change break backward
+   compat. because the report format changed.
+ - core: added groups_dbi() function to generate server groups from sql -
+   #346 - Jean-Marie RENOUARD
+ - core: added groups_yaml() function to generate server groups from yaml
+   file - Jean-Marie RENOUARD
+ - core: add support for df on a given mount point - Simon Bertrang
+ - cloud/amazon: fixed a case where amazon returns instance item in an
+   array - Kasim Tuman
+ - core: added authentication to download() function. - #340
+ - core: refactored tmp dir generation - FErki
+ - cloud: added cloud_volume detach/attach function
+ - cloud/amazon: fixed multiple tags - David Golovan
+ - core: added description to environments - #274
+ - refactored README.pod to README.md, added build badge - eduardoj
+ - core: extended rexify command to work with git
+ - core/test: Added Rex::Test - Framework to run tests
+ - core: Connect failure reports "Error running task/batch: Wrong
+   username/password or wrong key"  - #359 - eduardoj
+ - core/cmdb: path can now have variables / can be extended
+ - core/user: refactored handling of home directory creation. This might
+   break compat. because we are following the system default now. (added
+   create_home option) - #270 - FErki
+ - core: added a special load path for perl libraries, so that we don't mix
+   up perl and rex modules.
+ - core/service: using nohup to work around a bug in Net::SSH2/libssh2
+ - core: the caching is now enabled by default. this might break backward
+   compat. if you are using chroot() to another system inside a task.
+ - core: added 'no_cache' feature.
+
+0.45.3 2014-04-13 Jan Gehring <jan.gehring, gmail.com>
+ - fixed jiffybox endless loop on creating instances. #344 - reneeb
+
+0.45.2 2014-04-12 Jan Gehring <jan.gehring, gmail.com>
+ - fixed special mkdir() case on local windows runs.
+
+0.45.1 2014-04-11 Jan Gehring <jan.gehring, gmail.com>
+ - no_overwrite option for file() function
+ - ensure 'directory' option for file() function
+ - added notifications
+ - pkg resource (replacement for install function)
+ - allow array for file() function
+ - check if iptables rule already exists
+ - creates option for run() resource
+ - only_if and unless option for run() resrouce
+ - added notification for service() resource
+ - added account() resource (as replacement for create_user)
+ - fixed SCM::Git to work with sudo
+ - update _parse_ip subroutine. be possible to parse ppp0. #328 - Tomohiro
+   Hosaka
+ - support -g to supply group name - #330 - fanyeren
+ - added openstack cloud support - Ferenc Erki
+ - run() resource support customized environments - #316 andrejzverev
+ - can_run() now returns the first command found as string - #193
+ - read cpu information out of /proc/cpuinfo if dmidecode is not available
+   - #306
+ - Handles the case where rsync is missing, and that makes Rex wait forever
+   - #331 - Joris DE POOTER
+ - fixed $Rex::Logger::format does not apply. - #335
+ - fixed download() command on windows - #271
+ - added cloud_image_list function()
+ - fixed debian system_update - #339 - Niklas Larsson
+
+0.44.6 2014-03-02 Jan Gehring <jan.gehring, gmail.com>
+ - fixed wrong expansion of home paths #324
+ - fixed return code on failed connects is wrong #317
+ - get as much output from ps(1) as possible #323 - sbertrang
+
+0.44.5 2014-02-25 Jan Gehring <jan.gehring, gmail.com>
+ - fixed shell gathering
+
+0.44.4 2014-02-17 Jan Gehring <jan.gehring, gmail.com>
+ - fixed manifest file
+
+0.44.3 2014-02-14 Jan Gehring <jan.gehring, gmail.com>
+ - do not call sprintf on undefined values to prevent warnings - #312 -
+   sbertrang
+ - add ksh to shells - #310 - sbertrang
+ - only pass actual option strings to prevent ssh crashes - #309 -
+   sbertrang
+ - rexify does not create projects due to missing file error - #318
+ - sed command changes mode of target file - #314
+
+0.44.2 2014-02-08 Jan Gehring <jan.gehring, gmail.com>
+ - fixed sudo_without_sh - #305
+ - added warning if no perl interpreter was found on the remote system -
+   #302
+
+0.44.1 2014-02-02 Jan Gehring <jan.gehring, gmail.com>
+ - fixed detection of openSUSE with lsb-release installed - #297
+ - use Makefile.PL for tests. fixed #300
+ - Support for DBI \%attr hashref - #296 - stefb69
+ - Make quiet mode not mute warnings and errors. - #294 - slashbeast
+ - new cli parameter -qw for quiet with warnings - #294
+
+0.44.0 2014-01-25 Jan Gehring <jan.gehring, gmail.com>
+ - docker support (experimental) - #278 - chenryn
+ - format the output of say() - #155
+ - userdefined columns for ps() command - #175 - dirkcjelli
+ - using tilde (~) sign for directories - #198 - gnouc, krimdomu
+ - SCM::Git, now uses cwd option of run() command, so it works also remote.
+   - #211 - atrodo
+ - Box default pkg update - #217 - endyman
+ - run_batch() command to run batches on demand - #222 - jorisd
+ - Allow "sed" function to work on multiple lines. - #227 - davidolrik,
+   krimdomu
+ - Added bulk_install() method for packages installing - #229 - jorisd
+ - Enable bulk_install for Gentoo and OpenWrt - #231 - ferki
+ - Added some hooks at central points in rex, so that it is possible to
+   control the behaviour of rex in some points.
+ - added on_change hook for sync_up/sync_down - #232
+ - Rex::Group::Lookup::Command - read hostnames from a command. - #233 -
+   fanyeren
+ - Improve user and group management on OpenWrt - #242 - ferki
+ - Add kernel module (un)loading support for OpenWrt - #243 - ferki
+ - Add service status support for OpenWrt - #246 - ferki
+ - make ssh read buffer configurable (for Net::SSH2 connections) - #247
+   this will speedup the connection, but may break on older systems!
+ - Add systemd service provider support for Gentoo - #250 - ferki
+ - Add systemd service provider support for Mageia - #282
+ - feature flag to deactivate path cleanup - #261
+ - feature flag to parse $HOME/.profile - #262
+ - Cloud::Amazon Check to make sure it is HASH before key look up - #263 -
+   oneness
+ - autodie feature if run() fail - #265
+ - added support for tcsh shell - #284
+ - Fix guestinfo for Gentoo - #236 - ferki
+ - get_host can't find aliases - #239, #240 - jorisd, ferki
+ - rsync get wrong user if using "auth for $task" - #252
+ - Flag existing feature sudo_without_sh as found - #253 - gittex
+ - Cleaned-Up Data module dependence - #254
+ - iptables arguments needs quote if they are whitespaced - #257 - jorisd
+ - add Pod encoding marker - #259 - sergeyromanov
+ - "needs" doesn't know how to call tasks from the main Rexfile - #260
+ - gathering alias network interfaces like eth0:0 - #264
+ - Cron: Jobs can be duplicated - #269 - jorisd
+ - FreeBSD: store netmask in dotted decimal format - #287 - andrejzverev
+ - Uninitialized value in OpenSSH.pm - #290 - samuelet
+
+0.43.7 2013-10-03 Jan Gehring <jan.gehring, gmail.com>
+ - fixed problem with unconfigured network devices
+ - fixed return of complete cmdb
+ - fixed bug with the reporting initialization
+
+0.43.3 2013-09-17 Jan Gehring <jan.gehring, gmail.com>
+ - fixed return of string '0' on stdout
+ - fixed loading of report via env variable
+ - fixed manifest
+
+0.43.2 2013-09-17 Jan Gehring <jan.gehring, gmail.com>
+ - #234 - Silent yum operations - Chris Steigmeier
+
+0.43.0 2013-09-16 Jan Gehring <jan.gehring, gmail.com>
+ - #223 - generating reports of changed things on the remote system (report
+   infrastructure)
+ - #220 - atomic uploads
+ - #219 - df function doesnt parse errors - jorisd
+ - #218 - problems with escaping of special characters, reverted back to
+   old behaviour (pre 0.42)
+ - #215 - input validation for rexify to prevent creation of invalid module
+   names
+ - #214 - yum operations should be silent
+ - #213, #231 - rexify to use proxy settings - Chris Steigmeier
+ - #231 - Another Red Hat Enterprise flavor - Chris Steigmeier
+ - #200 - Refactor OpenWrt user module - Ferenc Erki
+ - #195 - Fix a typo in example code - Boris Däppen
+ - #194 - Prefer ip command over ifconfig - Ferenc Erki
+ - #189 - Zero values in crontab fields - Ferenc Erki
+ - #186 - Turn "eval your Rexfile" into a debug message - Anders Ossowicki
+ - #210 - zypper --no-gpg-checks option
+ - #208 - Cache inventory of servers for faster execution
+ - #206 - sync_up function doesn't work in modules.
+ - #196 - Support port with ranged hostnamed
+ - #180 - support of other shells than bash for the PATH / environment
+   variable - Cuong Manh Le
+ - #177 - if a feature can't be satisfied, die()
+ - #166 - tmp directory now configurable
+
+0.42.4 2013-07-04 Jan Gehring <jan.gehring, gmail.com>
+ - fixed an issue with append_if_no_such_line when searching for a string
+   containing a quote.
+
+0.42.3 2013-06-29 Jan Gehring <jan.gehring, gmail.com>
+ - #189 fixed zero values in crontab - ferki
+ - fixed ownership problem with sudo mode and file manipulation
+
+0.42.2 2013-06-23 Jan Gehring <jan.gehring, gmail.com>
+ - fixed local run of run_with helper command
+
+0.42.1 2013-06-22 Jan Gehring <jan.gehring, gmail.com>
+ - #178 - no_ssh option doesn't work with OpenSSH connection
+ - #181 - ssh ports doesn't work with Net::OpenSSH
+ - #182 - addition parameters doesn't work for ini files
+ - #183 - fqdn doesn't work in ini files
+ - #184 - hostname evaluation and additional parameters doesn't work
+   together
+
+0.42.0 2013-06-15 Jan Gehring <jan.gehring, gmail.com>
+ - added Net::OpenSSH support - chenryn, jfried
+ - custom user for sudo command
+ - new function: delete_lines_according_to
+ - new feature flag use_server_auth
+ - improved ini file parsing
+ - support for custom server parameters
+ - cwd option for run command
+ - speed improvements: #123, #133, #135, #136, #137, #143 - liedekef
+ - removed blastwave package capabilities from solaris, because blastwave
+   doesn't exists anymore
+ - #129 - removed an unnecessary opendir call - liedekef
+ - #148 - use equery for Rex::Pkg::Gentoo in get_installed, later replaced
+   by #165 - tianon
+ - #149 - updated most of Rsync with server-specific auth - tianon
+ - #159 - don't execute a task if the defined group doesn't contain
+   servers. There is a feature flag to disable this behavior (empty_groups)
+ - #163 - Rex::Pkg::Gentoo: Fix separator character between package name
+   and version
+ - #165 - Rex::Pkg::Gentoo: Replace get_installed checking method
+
+0.41.3 2013-05-03 Jan Gehring <jan.gehring, gmail.com>
+ - fixed using -c flag with Rex::Box - #160
+ - fixed parsing ssh/config file - #158
+ - get_box() : better error message - #157
+ - fixed PATH variable for run() with multiple commands - #156
+
+0.41.2 2013-04-19 Jan Gehring <jan.gehring, gmail.com>
+ - fixed exit status code for some situations where it fails
+ - fixed rexify --use=module command
+ - fixinig 'unititialized value' output of inspect() function. returning
+   now 'no value'. - #152
+ - added check if template result is empty. if so - die() - #152
+ - fixing problem with invalid variable names in templates - #152
+
+0.41.1 2013-03-30 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a parsing bug in df output
+ - fixed mount command with persistend option
+
+0.41.0 2013-03-30 Jan Gehring <jan.gehring, gmail.com>
+ - Function to get the last output of a command that uses run() #104
+ - Refactores Cron module, added environment variable support to cron
+ - New sync module
+ - added Hardware::VirtInfo module #119 - Franky Van Liedekerke
+ - new keyword "case"
+ - Refactored net_ssh2_exec() function - Peter H. Ezetta
+ - Refactored local command execution to use IPC::Open3
+ - Changed the Debian is_installed function to use the more accurate
+   get_installed function. - Samuele Tognini
+ - '-t' option should work with '-e' option. rex -t 2 -H "hostA hostB" -e
+   'run "sleep 10"; say run "uptime"' should run in parallel. - Tokuhiro
+   Matsuno
+ - Fixed loading of modules in $HOME/.rex/recipes
+ - Don't calculate md5 sums if there is no on_change hook for file()
+   function - Franky Van Liedekerke
+ - Better understandable error messages for authentication - Franky Van
+   Liedekerke
+ - Cloud/Amazon: support multiple security groups - RenatoCRON
+ - Fix Pod about pubkey authentication - Joris
+ - Rex/Gearman: Fixed get_exit_codes use flag
+ - Rex/Boxes: Creation order of VMs can now be defined in YAML file
+
+0.40.4 2013-03-10 Jan Gehring <jan.gehring, gmail.com>
+ - fixed get_box() command if task is run on a remote host
+ - fixed sudo without password
+
+0.40.3 2013-03-09 Jan Gehring <jan.gehring, gmail.com>
+ - fixed loading of files in lib directory @INC sometime got populated too
+   late
+
+0.40.2 2013-03-02 Jan Gehring <jan.gehring, gmail.com>
+ - fixed #117 - encode everything except a-z, 0-9 and _
+
+0.40.1 2013-02-27 Jan Gehring <jan.gehring, gmail.com>
+ - fixed #114 - used only once warnings
+ - fixed #115 - passwordless sudo didn't work
+
+0.40.0 2013-02-23 Jan Gehring <jan.gehring, gmail.com>
+ - fixed bug and refactored file path calculation #103 and #102
+ - added ini style groups #99 - Franky Van Liedekerke
+ - VirtualBox Headless mode #105
+ - added default environment "default"
+ - basic cmdb via YAML #107
+ - crypt sudo password
+ - sudo without locales and password #98 - Dominik Schulz
+ - fixed dmidecode on openbsd
+ - export update_system sub - Ferenc Erki
+ - fixing regex which gets name interfaces - Fran Rodriguez
+
+0.39.0 2013-02-07 Jan Gehring <jan.gehring, gmail.com>
+ - don't need PERL5LIB env any more, fixed bug #95
+ - match comments better - Naveed Massjouni
+ - more allowed characters in lvname - Samuele Tognini
+ - new feature flag: exit_status - rex will now return a number higher than
+   0 if a task execution fails.
+ - new function: is_installed - Daniel Baeurer
+ - optimized lookup_file function - Franky Van Liedekerke
+ - rexify command now allows usage of private module server
+
+0.38.0 2013-01-27 Jan Gehring <jan.gehring, gmail.com>
+ - added security groups to amazon cloud - Jonathan Delgado
+ - updated pod documentation - jorisd
+ - fixed a problem with do_task() and lost ssh connections
+ - rexify command now allows usage of local templates
+ - added architecture and apt key to Pkg::Debian - Daniel Baeurer
+ - added updated_system command to update a system
+ - box: added function to list all vms
+ - box: amazon support
+ - box: describe boxes with an YAML file
+
+0.37.1 2013-01-15 Jan Gehring <jan.gehring, gmail.com>
+ - fixed template bug in modules
+
+0.37.0 2013-01-05 Jan Gehring <jan.gehring, gmail.com>
+ - box module is now plugable
+ - run_task now accepts additional parameters
+ - virtualization module is now plugable
+ - hardware provider now plugable
+ - package provider now plugable
+ - service provider now plugable
+ - fixed zypper ref call for SuSE on unsigned repositories
+
+0.36.0 2012-12-22 Jan Gehring <jan.gehring, gmail.com>
+ - added run_task a new function to run tasks on specific hosts
+ - added feature to install perl dependencies via cpanm/cpan with rexify
+   command
+ - get private IP of amazon ec2 instances - jdelgado7
+ - added possibility to extend cloud api with external modules
+ - spawn a pty to execute commands #80. this fixes the requiretty thing.
+
+0.35.1 2012-12-22 Jan Gehring <jan.gehring, gmail.com>
+ - VirtualBox support for virtualization module
+ - new command - Rex::Commands::Box
+ - auth for - supports regular expresions
+ - repository function now supports multiple distributions in one call
+ - Unwrapped double looping over files and regexes and adding $new_line if
+   not present in absence of regexes - Mario Domgoergen
+ - Better handling of $option parameter for 'install' - joris
+
+0.34.2 2012-12-14 Jan Gehring <jan.gehring, gmail.com>
+ - fixed login for Rex::connect
+
+0.34.1 2012-11-25 Jan Gehring <jan.gehring, gmail.com>
+ - fixed #77. added iptables tests - Dominik Danter
+ - Relax ssh config file parsing - Dominik Schulz
+
+0.34.0 2012-11-02 Jan Gehring <jan.gehring, gmail.com>
+ - Use Storable module for shared variables
+ - Enhanced lookup_file function. Comments (#) and empty lines are now
+   skipped. (chenryn)
+ - get_network_devices now detects ppp devices (under linux). (bokutin)
+ - Fixed pkg_info execution on FreeBSD (bokutin)
+ - Set $? to match effective command return value (joris)
+ - If a task is defined multiple times it will now print out a warning.
+ - Fixed mount bug #75
+ - Fixed Redhat Repo bug #73
+ - Fixed a bug with profiling and http endpoint
+
+0.33.3 2012-10-04 Jan Gehring <jan.gehring, gmail.com>
+ - fixed rename() bug, #67
+
+0.33.2 2012-10-02 Jan Gehring <jan.gehring, gmail.com>
+ - fixed windows bug
+
+0.33.1 2012-09-22 Jan Gehring <jan.gehring, gmail.com>
+ - speed improvements
+ - profiler class
+ - mounts can now be persisted in /etc/fstab - Laird Liu
+ - the partition command accepts a mount parameter to mount the partition
+   after creation - Laird Liu
+ - new keyword "make"
+ - some usability improvements - Anders Ossowicki
+ - create_user got a new option "no_create_home"
+ - it is now possible to use other template engines.
+ - it is now easier to write independant modules
+ - fixed expire date for create_user
+ - check shell before executing things
+
+0.32.1 2012-08-30 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a bug in the transaction module
+
+0.32.0 2012-08-21 Jan Gehring <jan.gehring, gmail.com>
+ - made the worker model exchangeable
+ - added a reporting base class
+ - replaced Getops::Std with Rex::Args
+ - added start command to amazon cloud module
+ - fixed stop command in amazon cloud module
+
+0.31.5 2012-08-16 Jan Gehring <jan.gehring, gmail.com>
+ - fixed cli parameter bug (-G)
+ - fixed logging bug with %h
+
+0.31.0 2012-08-04 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a bug for task with the no_ssh attribute
+ - added http transport layer
+ - added possibility to modify task and server authentication
+
+0.30.1 2012-07-21 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a cli parameter bug for custom user authentication
+ - fixed a batch display bug
+
+0.30.0 2012-06-15 Jan Gehring <jan.gehring, gmail.com>
+ - rex -T now show the server groups as well
+ - new option "type" for the extract function - Sven Dowideit
+ - Added user_list and user_groups - Jean Charles Passard
+ - fixed the problem with pass_auth and rsync (#30)
+ - Better Error Messages for compile failures in modules
+ - Added support for task specific parallelism
+ - fixed upload and download to work in sudo environments
+ - add mode to extract function
+ - Added the on_change support to the append_if_no_such_line - Samuele
+   Tognini
+
+0.29.0 2012-05-17 Jan Gehring <jan.gehring, gmail.com>
+ - Fixed wrong error message in LibVirt/create.pm - Sven Dowideit
+ - Added dumpxml command (LibVirt) - Sven Dowideit
+ - Updated docs - Sven Dowideit
+ - Default listening on all ip's for vnc (LibVirt) - Sven Dowideit
+ - Added more colorized output options - Samuele Tognini
+ - Fixed a logging bug - Samuele Tognini
+ - -Tv command line option output information about requested task -
+   Samuele Tognini
+ - -Tv command line option output information about batches and
+   environments - Samuele Tognini
+ - Updated some error messages output - Samuele Tognini
+ - Added iflist command (LibVirt) - Jean Charles Passard
+ - Added blklist command (LibVirt) - Jean Charles Passard
+ - Added vncdisplay command (LibVirt) - Sven Dowideit
+ - Fixed a bug with hooks and packages #41 - Jan Gehring
+ - Refactored Task Module. Task is now an object - Jan Gehring
+ - Added module to parse cli parameters - Jan Gehring
+ - Added driver_type for kvm disks
+ - fixed a md5 check bug for 'install file =>'
+ - fixed bug #50 (extract function)
+ - if no rexfile is in the current path try to guess the rexfile from the
+   taskname - Sven Dowideit
+ - added experimental feature: shared variables - Jan Gehring
+
+0.28.0 2012-05-08 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a bug with relative source file names inside external modules
+ - new parameter -Tv to display more information about tasks
+ - allow additional parameters for rsync
+ - more code refactoring
+ - fixed a bug in the libvirt module (thanks to SvenDowideit for reporting
+   and testing)
+
+0.27.0 2012-05-04 Jan Gehring <jan.gehring, gmail.com>
+ - added callback parameter to run command
+ - added logformat function to define custom logging
+ - reworked the output classes for better jenkins integration
+ - code refactoring
+ - added coloriszed output if Term::ANSIColor is available
+ - fixed a bug with older lvm versions
+ - added on_change option to sed command, thanks to Samuele Tognini
+
+0.26.3 2012-04-26 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a notification bug in the on_change event of the file function.
+ - fixed a cli parameter bug in the rexify command.
+
+0.26.2 2012-03-28 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a cli parameter bug (-G)
+
+0.26.1 2012-03-13 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a bug in the libvirt module
+
+0.26.0 2012-02-19 Jan Gehring <jan.gehring, gmail.com>
+ - changed license to Apache 2.0
+ - added sudo compatibility
+ - added support for custom init commands
+ - added rex-agent compatibility
+ - added overmind compatibility
+ - added lvm support to libvirt module
+ - allow package installation with "install $pkg"
+ - added sed function
+ - added chdir parameter to extract function
+ - added include function to include Rex recipes without registering the
+   tasks
+ - Specify the sudo password prompt to avoid different prompts in different
+   locales. thanks to Hiroaki Nakamura
+ - Sync exclude option now takes a string or an array of strings. thanks to
+   Hiroaki Nakamura
+
+0.25.3 2012-02-16 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a display bug in rexify --search command
+ - fixed a bug in the libvirt module if it gets executed local
+ - fixed a bug in the service module for ubuntu
+
+0.25.2 2012-02-15 Jan Gehring <jan.gehring, gmail.com>
+ - display the correct module name in rexify --search command
+
+0.25.1 2012-02-15 Jan Gehring <jan.gehring, gmail.com>
+ - don't use github for recipes query
+
+0.25.0 2012-02-15 Jan Gehring <jan.gehring, gmail.com>
+ - added public repository commands to rexify
+ - added patch from JEEN Lee for gpgcheck on yum repositories
+
+0.24.1 2012-02-13 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a dependeny bug
+
+0.24.0 2012-02-10 Jan Gehring <jan.gehring, gmail.com>
+ - Added patches from Alexandr Ciornii for Makefile.PL and home-directory
+   detection
+ - it is now possible to use Rex as a library
+ - fixed/simplified SCM module
+ - added iptables flush command
+ - added a simple tcp alive test
+ - allow inline templates
+ - cloud_instance returns vm info after create
+ - added cli parameters to before/around hooks
+ - fixed before/around/after hooks for lokal tasks
+ - added lvm create functions
+
+0.23.0 2012-01-14 Jan Gehring <jan.gehring, gmail.com>
+ - Redhat Enterprise Linux Support (5/6)
+ - read ssh_config file
+ - rsync now automatically accept keys
+
+0.22.0 2012-01-04 Jan Gehring <jan.gehring, gmail.com>
+ - systemd service provider (for redhat and suse)
+ - before, around and after hooks for tasks
+ - curl: Allow connections to SSL sites without certs
+ - don't override db config if no import options given
+ - fixed suse detection bug
+ - user: set crypted passwords
+ - added OpenSuSE 12.1 compatibility
+ - fixed redhat versiond detection
+ - automatically use systemd service class if opensuse >= 12.1
+ - added fusioninventory-agent output to the inventory module (if
+   available)
+
+0.21.1 2011-10-28 Jan Gehring <jan.gehring, gmail.com>
+ - fix for #8 - HOME environment variable on Windows
+ - fix for #5 - hostname evaluation with ips
+
+0.21.0 2011-10-10 Jan Gehring <jan.gehring, gmail.com>
+ - fixed running of multiple tasks by do_task
+ - allow multiple groups for a task
+ - every task can have its own auth information
+ - user module: add ssh key
+ - ssh port isn't fix anymore (patch from Jose Luis Martinez)
+ - use generic auth method from Net::SSH2 (patch from Jose Luis Martinez)
+ - add SCM module (Subversion and Git)
+ - file and upload now scans for environment specifiy files first
+ - added a file lookup function to build groups from
+ - fixed windows syslog bug #6, thanks to aero
+ - added -nolog parameter to logging function to disable logging at all
+ - added posibility to evaluate perl code within the -H cli parameter
+
+0.20.0 2011-09-16 Jan Gehring <jan.gehring, gmail.com>
+ - added virtualization module (from Sascha Guenther)
+ - added extract function
+ - flattend hardware gather template variables
+ - fixed set_path and get_path
+ - fixed get_random to return not 1 char too much
+ - added set and get commands to set config values
+
+0.19.0 2011-09-01 Jan Gehring <jan.gehring, gmail.com>
+ - added JUnit output module
+ - added environment support
+ - load Rex::Commands::Process as default
+
+0.18.1 2011-09-01 Jan Gehring <jan.gehring, gmail.com>
+ - fixed a bug registering tasks as functions
+
+0.14.0 2011-08-07 Jan Gehring <jan.gehring, gmail.com>
+ - Extended API to allow passing of arguments to Rex::Task->run
+ - FreeBSD support
+ - Ubuntu support
+
+0.13.0 2011-08-07 Jan Gehring <jan.gehring, gmail.com>
+ - cache sftp object - for speed
+ - added function to update package database
+ - added windows support
+ - license changed to GPL3
+ - added an alias for unlink (rm)
+ - added functions to manage repositories
+ - revised error handling
+ - added jiffybox support, a german cloudservice from domainfactory
+ - fixed template parsing bug (port from 0.12.1)
+ - fixed bug with too long content in file function (port from 0.12.2)
+
+0.12.0 2011-07-23 Jan Gehring <jan.gehring, gmail.com>
+ - allow array refs for Pkg::remove
+ - register every task as a sub if not in main package
+ - use lsb_release if available as default to detect operating
+   system/version
+ - added sudo command
+ - allow to manage multiple services at once
+ - added possibility to add and remove services from runlevels
+ - added iptables module for basic iptables commands
+ - added cloud layer and support for amazon ec2 instances
+
+0.11.1 2011-07-26 Jan Gehring <jan.gehring, gmail.com>
+ - fixed output of netstat (reported by Thomas Biege)
+ - fixed inclusion of some modules in Run.pm that causes errors under some
+   circumstances (reported by Thomas Biege)
+
+0.11.0 2011-07-22 Jan Gehring <jan.gehring, gmail.com>
+ - added lvm module
+ - added lvm to inventory
+ - fixed <OUT OF SPEC> inventory string
+ - fixed multiplicator for GB and TB
+ - added order key to selects
+ - added support for hpacucli
+ - added centos 6 support
+
+0.10.1 2011-07-17 Jan Gehring <jan.gehring, gmail.com>
+ - fixed db disconnect on forks
+ - fixed some typos
+
+0.10.0 2011-07-12 Jan Gehring <jan.gehring, gmail.com>
+ - added network module for route, default gateway and netstat
+ - added mount and umount function
+ - added cron module
+ - added more information (basic system information) to the inventor
+   function
+ - added installed_packages function to get all the installed packages
+
+0.9.0 2011-07-03 Jan Gehring <jan.gehring, gmail.com>
+ - register tasks as function if possible
+ - add "lib" to INC if exists
+ - added function get_operating_system
+ - added transactions
+ - deprecated "package file =>"
+ - added hal module to access hardware information detected by hal
+ - added dmidecode module to access bios information
+ - added inventory function "inventor"
+ - added ubuntu support (tested with lts 10.04)
+ - added can_run function, to test if a command is present
+
+0.8.1 2011-07-03 Jan Gehring <jan.gehring, gmail.com>
+ - fixed mageia detection
+ - fixed bug if dnsdomainname returns no domainname
+ - fixed mkdir bug on setting permissions, caused by a wrong merge
+
+0.8.0 2011-06-26 Jan Gehring <jan.gehring, gmail.com>
+ - added mageia support for services and packages
+ - added chown, chgrp and chmod functions
+ - mkdir, added possibility to specify the permission, the user and the
+   group
+ - added function delete_lines_matching
+ - added function append_if_no_such_line
+ - added reload action for services
+ - extended db module to support insert, delete, update
+
+0.7.1 2011-06-25 Jan Gehring <jan.gehring, gmail.com>
+ - restored the backward compatibility with perl 5.8.x
+ - suppress warning if no parameter is given
+ - fixed mkdir function
+
+0.7.0 2011-06-23 Jan Gehring <jan.gehring, gmail.com>
+ - preload a lot more default modules
+ - added new functions (df, du, cp)
+ - added some aliases (ln, cp, cd, ls)
+ - added process management functions (kill, killall, nice, ps)
+ - splitted out rex-agent and rex-master.
+
+0.6.1 2011-06-19 Jan Gehring <jan.gehring, gmail.com>
+ - fixed documentation bugs (thanks to djill)
+ - fixed #68827, rewrote is_readable/is_writable
+ - handle auth failure correctly
+ - mkdir now created directories recursive

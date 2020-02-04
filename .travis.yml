@@ -13,6 +13,10 @@ jobs:
       before_install:
         - cpanm Perl::Critic Perl::Tidy
         - perlcritic --quiet --single-policy=RequireTidyCode bin
+        - mkdir ~/.dzil
+        - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
+        - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
+        - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
@@ -36,6 +40,10 @@ jobs:
         - ln -snf /c/Strawberry/perl/bin/perl /bin/perl
         - cpanm --reinstall Module::Pluggable::Object
         - cpanm Dist::Zilla
+        - mkdir ~/.dzil
+        - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
+        - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
+        - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
@@ -64,6 +72,10 @@ jobs:
       before_install:
         - export "PATH=/usr/local/Cellar/perl/5.30.0/bin:${PATH}"
         - cpanm Dist::Zilla
+        - mkdir ~/.dzil
+        - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
+        - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
+        - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1

@@ -128,8 +128,8 @@ Use C<@end> to separate multiple templates inside C<__DATA__>.
 =head3 File templates
 
  my $content = template("/files/templates/vhosts.tpl",
-              name => "test.lan",
-              webmaster => 'webmaster@test.lan');
+               name      => "test.lan",
+               webmaster => 'webmaster@test.lan');
 
 The file name specified is subject to "path_map" processing as documented
 under the file() function to resolve to a physical file name.
@@ -144,16 +144,13 @@ exists. E.g. if rex is started as:
 then in task1 defined as:
 
  task "task1", sub {
-
     say template("files/etc/ntpd.conf");
-
  };
 
 will print the content of 'files/etc/ntpd.conf.prod' if it exists.
 
 Note: the appended environment mechanism is always applied, after
 the 'path_map' mechanism, if that is configured.
-
 
 =cut
 

@@ -6,7 +6,6 @@ Revision history for Rex
  [BUG FIXES]
 
  [DOCUMENTATION]
- - Document embedded templates
 
  [ENHANCEMENTS]
 
@@ -15,6 +14,12 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+
+ [REVISION]
+
+1.8.1 2020-02-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Document embedded templates
 
  [REVISION]
  - Reformat changelog to match CPAN specifications

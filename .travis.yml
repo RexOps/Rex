@@ -69,6 +69,7 @@ jobs:
             - perl
             - cpanminus
             - openssl
+          update: true
       before_install:
         - export "PATH=/usr/local/Cellar/perl/5.30.0/bin:${PATH}"
         - cpanm Dist::Zilla

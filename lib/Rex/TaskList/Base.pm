@@ -379,7 +379,7 @@ sub modify {
   $package =~ s/::/:/g;
 
   my @all_tasks = map { $self->get_task($_); } grep {
-    if ( $package ne "main" && $package ne "Rex::CLI" ) {
+    if ( $package ne "main" && $package ne "Rex:CLI" ) {
       $_ =~ m/^\Q$package\E:/;
     }
     else {

@@ -19,6 +19,7 @@ my %SHELL_PROVIDER = (
   bash  => "Rex::Interface::Shell::Bash",
   csh   => "Rex::Interface::Shell::Csh",
   idrac => "Rex::Interface::Shell::Idrac",
+  idrac4 => "Rex::Interface::Shell::Idrac4",
   ksh   => "Rex::Interface::Shell::Ksh",
   sh    => "Rex::Interface::Shell::Sh",
   tcsh  => "Rex::Interface::Shell::Tcsh",

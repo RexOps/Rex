@@ -32,36 +32,36 @@ use Data::Dumper;
 use Rex::Require;
 
 our (
-  $user,                     $password,
-  $port,                     $timeout,
-  $max_connect_fails,        $password_auth,
-  $key_auth,                 $krb5_auth,
-  $public_key,               $private_key,
-  $parallelism,              $log_filename,
-  $log_facility,             $sudo_password,
-  $ca_file,                  $ca_cert,
-  $ca_key,                   $path,
-  $no_path_cleanup,          $set_param,
-  $environment,              $connection_type,
-  $distributor,              $template_function,
-  $SET_HANDLER,              $HOME_CONFIG,
-  $HOME_CONFIG_YAML,         %SSH_CONFIG_FOR,
-  $sudo_without_locales,     $sudo_without_sh,
-  $no_tty,                   $source_global_profile,
-  $source_profile,           %executor_for,
-  $allow_empty_groups,       $use_server_auth,
-  $tmp_dir,                  %openssh_opt,
-  $use_cache,                $cache_type,
-  $use_sleep_hack,           $report_type,
-  $do_reporting,             $say_format,
-  $exec_autodie,             $verbose_run,
-  $disable_taskname_warning, $proxy_command,
-  $task_call_by_method,      $fallback_auth,
-  $register_cmdb_template,   $check_service_exists,
-  $set_no_append,            $use_net_openssh_if_present,
-  $use_template_ng,          $use_rex_kvm_agent,
-  $autodie,                  $task_chaining_cmdline_args,
-  $waitpid_blocking_sleep_time,
+  $user,                        $password,
+  $port,                        $timeout,
+  $max_connect_fails,           $password_auth,
+  $key_auth,                    $krb5_auth,
+  $public_key,                  $private_key,
+  $parallelism,                 $log_filename,
+  $log_facility,                $sudo_password,
+  $ca_file,                     $ca_cert,
+  $ca_key,                      $path,
+  $no_path_cleanup,             $set_param,
+  $environment,                 $connection_type,
+  $distributor,                 $template_function,
+  $SET_HANDLER,                 $HOME_CONFIG,
+  $HOME_CONFIG_YAML,            %SSH_CONFIG_FOR,
+  $sudo_without_locales,        $sudo_without_sh,
+  $no_tty,                      $source_global_profile,
+  $source_profile,              %executor_for,
+  $allow_empty_groups,          $use_server_auth,
+  $tmp_dir,                     %openssh_opt,
+  $use_cache,                   $cache_type,
+  $use_sleep_hack,              $report_type,
+  $do_reporting,                $say_format,
+  $exec_autodie,                $verbose_run,
+  $disable_taskname_warning,    $proxy_command,
+  $task_call_by_method,         $fallback_auth,
+  $register_cmdb_template,      $check_service_exists,
+  $set_no_append,               $use_net_openssh_if_present,
+  $use_template_ng,             $use_rex_kvm_agent,
+  $autodie,                     $task_chaining_cmdline_args,
+  $waitpid_blocking_sleep_time, $file_write_encoding,
 );
 
 # some defaults
@@ -1076,6 +1076,14 @@ sub get_waitpid_blocking_sleep_time {
   return $waitpid_blocking_sleep_time // 0.1;
 }
 
+sub set_file_write_encoding {
+  my ( $self, $file_write_encoding ) = @_;
+}
+
+sub get_file_write_encoding {
+  return $file_write_encoding;
+}
+
 sub import {
   read_ssh_config_file();
   read_config_file();
@@ -1111,7 +1119,7 @@ __PACKAGE__->register_config_handler(
 my @set_handler =
   qw/user password private_key public_key -keyauth -passwordauth -passauth
   parallelism sudo_password connection ca cert key distributor
-  template_function port waitpid_blocking_sleep_time/;
+  template_function port waitpid_blocking_sleep_time file_write_encoding/;
 for my $hndl (@set_handler) {
   __PACKAGE__->register_set_handler(
     $hndl => sub {

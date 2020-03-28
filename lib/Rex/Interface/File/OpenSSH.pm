@@ -11,6 +11,7 @@ use warnings;
 
 # VERSION
 
+use Encode;
 use Fcntl;
 use Rex::Interface::Fs;
 use Rex::Interface::File::Base;
@@ -65,6 +66,10 @@ sub read {
 
 sub write {
   my ( $self, $buf ) = @_;
+
+  $buf = Encode::encode( $self->get_file_write_encoding, $buf )
+    if defined $self->get_file_write_encoding;
+
   my $sftp = Rex::get_sftp();
   $sftp->write( $self->{fh}, $buf );
 }

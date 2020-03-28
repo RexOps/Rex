@@ -11,6 +11,7 @@ use warnings;
 
 # VERSION
 
+use Encode;
 use Rex::Interface::File::Base;
 use base qw(Rex::Interface::File::Base);
 
@@ -44,6 +45,9 @@ sub read {
 
 sub write {
   my ( $self, $buf ) = @_;
+
+  $buf = Encode::encode( $self->get_file_write_encoding, $buf )
+    if defined $self->get_file_write_encoding;
 
   my $fh = $self->{fh};
   print $fh $buf;

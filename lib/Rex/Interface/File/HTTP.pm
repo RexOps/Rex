@@ -12,6 +12,7 @@ use warnings;
 # VERSION
 
 use Data::Dumper;
+use Encode;
 
 BEGIN {
   use Rex::Require;
@@ -75,6 +76,9 @@ sub read {
 
 sub write {
   my ( $self, $buf ) = @_;
+
+  $buf = Encode::encode( $self->get_file_write_encoding, $buf )
+    if defined $self->get_file_write_encoding;
 
   my $resp = connection->post(
     "/file/write_fh",

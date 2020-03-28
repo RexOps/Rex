@@ -18,6 +18,8 @@ sub new {
 
   bless( $self, $proto );
 
+  $self->{file_write_encoding} = Rex::Config->get_file_write_encoding;
+
   return $self;
 }
 
@@ -26,5 +28,10 @@ sub read  { die("Must be implemented by Interface Class."); }
 sub write { die("Must be implemented by Interface Class."); }
 sub close { die("Must be implemented by Interface Class."); }
 sub seek  { die("Must be implemented by Interface Class."); }
+
+sub get_file_write_encoding {
+  my $self = shift;
+  return $self->{file_write_encoding};
+}
 
 1;

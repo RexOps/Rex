@@ -915,6 +915,18 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq "write_utf8_files" ) {
+        Rex::Logger::debug("Enabling write_utf8_files feature");
+        Rex::Config->set_write_utf8_files(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "no_write_utf8_files" ) {
+        Rex::Logger::debug("Disabling write_utf8_files feature");
+        Rex::Config->set_write_utf8_files(0);
+        $found_feature = 1;
+      }
+
       if ( $found_feature == 0 ) {
         Rex::Logger::info(
           "You tried to load a feature ($add) that doesn't exists in your Rex version. Please update.",

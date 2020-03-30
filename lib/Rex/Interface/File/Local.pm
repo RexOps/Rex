@@ -45,6 +45,9 @@ sub read {
 sub write {
   my ( $self, $buf ) = @_;
 
+  utf8::encode($buf)
+    if Rex::Config->get_write_utf8_files && utf8::is_utf8($buf);
+
   my $fh = $self->{fh};
   print $fh $buf;
 }

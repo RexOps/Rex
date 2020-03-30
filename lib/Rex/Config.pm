@@ -1069,7 +1069,8 @@ sub get_use_server_auth {
 }
 
 sub set_waitpid_blocking_sleep_time {
-  my ( $self, $waitpid_blocking_sleep_time ) = @_;
+  my $self = shift;
+  $waitpid_blocking_sleep_time = shift;
 }
 
 sub get_waitpid_blocking_sleep_time {

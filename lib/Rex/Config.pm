@@ -269,14 +269,6 @@ sub get_use_cache {
   return $use_cache;
 }
 
-sub get_sudo_without_locales {
-  return $sudo_without_locales;
-}
-
-sub get_sudo_without_sh {
-  return $sudo_without_sh;
-}
-
 sub set_openssh_opt {
   my ( $class, %opt ) = @_;
 
@@ -300,9 +292,17 @@ sub set_sudo_without_locales {
   $sudo_without_locales = shift;
 }
 
+sub get_sudo_without_locales {
+  return $sudo_without_locales;
+}
+
 sub set_sudo_without_sh {
   my $class = shift;
   $sudo_without_sh = shift;
+}
+
+sub get_sudo_without_sh {
+  return $sudo_without_sh;
 }
 
 sub set_executor_for {
@@ -391,9 +391,43 @@ sub set_user {
   $user = shift;
 }
 
+sub has_user {
+  my $class = shift;
+  return $user;
+}
+
+sub get_user {
+  my $class = shift;
+
+  if ( exists $ENV{REX_USER} ) {
+    return $ENV{REX_USER};
+  }
+
+  if ($user) {
+    return $user;
+  }
+
+  if ( $^O =~ m/^MSWin/ ) {
+    return getlogin;
+  }
+  else {
+    return scalar getpwuid($<);
+  }
+}
+
 sub set_password {
   my $class = shift;
   $password = shift;
+}
+
+sub get_password {
+  my $class = shift;
+
+  if ( exists $ENV{REX_PASSWORD} ) {
+    return $ENV{REX_PASSWORD};
+  }
+
+  return $password;
 }
 
 sub set_port {
@@ -401,9 +435,43 @@ sub set_port {
   $port = shift;
 }
 
+sub get_port {
+  my $class = shift;
+  my $param = {@_};
+
+  if ( exists $param->{server}
+    && exists $SSH_CONFIG_FOR{ $param->{server} }
+    && exists $SSH_CONFIG_FOR{ $param->{server} }->{port} )
+  {
+    return $SSH_CONFIG_FOR{ $param->{server} }->{port};
+  }
+
+  return $port;
+}
+
 sub set_sudo_password {
   my $class = shift;
   $sudo_password = shift;
+}
+
+sub get_sudo_password {
+  my $class = shift;
+
+  if ( exists $ENV{REX_SUDO_PASSWORD} ) {
+    return $ENV{REX_SUDO_PASSWORD};
+  }
+
+  if ($sudo_password) {
+    return $sudo_password;
+  }
+  elsif ( !defined $sudo_password ) {
+    return "";
+  }
+  else {
+    return $password;
+  }
+
+  return "";
 }
 
 sub set_source_global_profile {
@@ -434,54 +502,6 @@ sub get_max_connect_fails {
   return $max_connect_fails || 3;
 }
 
-sub has_user {
-  my $class = shift;
-  return $user;
-}
-
-sub get_user {
-  my $class = shift;
-
-  if ( exists $ENV{REX_USER} ) {
-    return $ENV{REX_USER};
-  }
-
-  if ($user) {
-    return $user;
-  }
-
-  if ( $^O =~ m/^MSWin/ ) {
-    return getlogin;
-  }
-  else {
-    return scalar getpwuid($<);
-  }
-}
-
-sub get_password {
-  my $class = shift;
-
-  if ( exists $ENV{REX_PASSWORD} ) {
-    return $ENV{REX_PASSWORD};
-  }
-
-  return $password;
-}
-
-sub get_port {
-  my $class = shift;
-  my $param = {@_};
-
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{port} )
-  {
-    return $SSH_CONFIG_FOR{ $param->{server} }->{port};
-  }
-
-  return $port;
-}
-
 sub set_proxy_command {
   my $class = shift;
   $proxy_command = shift;
@@ -499,26 +519,6 @@ sub get_proxy_command {
   }
 
   return $proxy_command;
-}
-
-sub get_sudo_password {
-  my $class = shift;
-
-  if ( exists $ENV{REX_SUDO_PASSWORD} ) {
-    return $ENV{REX_SUDO_PASSWORD};
-  }
-
-  if ($sudo_password) {
-    return $sudo_password;
-  }
-  elsif ( !defined $sudo_password ) {
-    return "";
-  }
-  else {
-    return $password;
-  }
-
-  return "";
 }
 
 sub set_timeout {
@@ -547,20 +547,6 @@ sub set_password_auth {
   $password_auth = shift || 1;
 }
 
-sub set_key_auth {
-  my $class = shift;
-  $password_auth = 0;
-  $krb5_auth     = 0;
-  $key_auth      = shift || 1;
-}
-
-sub set_krb5_auth {
-  my $class = shift;
-  $password_auth = 0;
-  $key_auth      = 0;
-  $krb5_auth     = shift || 1;
-}
-
 sub get_password_auth {
   if ( exists $ENV{REX_AUTH_TYPE} && $ENV{REX_AUTH_TYPE} eq "pass" ) {
     return 1;
@@ -568,11 +554,25 @@ sub get_password_auth {
   return $password_auth;
 }
 
+sub set_key_auth {
+  my $class = shift;
+  $password_auth = 0;
+  $krb5_auth     = 0;
+  $key_auth      = shift || 1;
+}
+
 sub get_key_auth {
   if ( exists $ENV{REX_AUTH_TYPE} && $ENV{REX_AUTH_TYPE} eq "key" ) {
     return 1;
   }
   return $key_auth;
+}
+
+sub set_krb5_auth {
+  my $class = shift;
+  $password_auth = 0;
+  $key_auth      = 0;
+  $krb5_auth     = shift || 1;
 }
 
 sub get_krb5_auth {
@@ -859,6 +859,60 @@ sub get_no_tty {
   return $no_tty;
 }
 
+sub set_allow_empty_groups {
+  my ( $class, $set ) = @_;
+  if ($set) {
+    $allow_empty_groups = 1;
+  }
+  else {
+    $allow_empty_groups = 0;
+  }
+}
+
+sub get_allow_empty_groups {
+  if ($allow_empty_groups) {
+    return 1;
+  }
+
+  return 0;
+}
+
+sub set_use_server_auth {
+  my ( $class, $set ) = @_;
+  if ($set) {
+    $use_server_auth = 1;
+  }
+  else {
+    $use_server_auth = 0;
+  }
+}
+
+sub get_use_server_auth {
+  if ($use_server_auth) {
+    return 1;
+  }
+
+  return 0;
+}
+
+sub set_waitpid_blocking_sleep_time {
+  my $self = shift;
+  $waitpid_blocking_sleep_time = shift;
+}
+
+sub get_waitpid_blocking_sleep_time {
+  return $waitpid_blocking_sleep_time // 0.1;
+}
+
+sub set_write_utf8_files {
+  my $self = shift;
+  $write_utf8_files = shift;
+}
+
+sub get_write_utf8_files {
+  return $write_utf8_files;
+}
+
 =head2 register_set_handler($handler_name, $code)
 
 Register a handler that gets called by I<set>.
@@ -1030,60 +1084,6 @@ sub _parse_ssh_config {
   }
 
   return %ret;
-}
-
-sub set_allow_empty_groups {
-  my ( $class, $set ) = @_;
-  if ($set) {
-    $allow_empty_groups = 1;
-  }
-  else {
-    $allow_empty_groups = 0;
-  }
-}
-
-sub get_allow_empty_groups {
-  if ($allow_empty_groups) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub set_use_server_auth {
-  my ( $class, $set ) = @_;
-  if ($set) {
-    $use_server_auth = 1;
-  }
-  else {
-    $use_server_auth = 0;
-  }
-}
-
-sub get_use_server_auth {
-  if ($use_server_auth) {
-    return 1;
-  }
-
-  return 0;
-}
-
-sub set_waitpid_blocking_sleep_time {
-  my $self = shift;
-  $waitpid_blocking_sleep_time = shift;
-}
-
-sub get_waitpid_blocking_sleep_time {
-  return $waitpid_blocking_sleep_time // 0.1;
-}
-
-sub set_write_utf8_files {
-  my $self = shift;
-  $write_utf8_files = shift;
-}
-
-sub get_write_utf8_files {
-  return $write_utf8_files;
 }
 
 sub import {

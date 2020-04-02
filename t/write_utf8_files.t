@@ -3,15 +3,28 @@ use warnings;
 
 use Test::More;
 use File::Temp qw(tempfile);
+use Carp;
 
 use Rex -base;
 use Rex::Interface::File;
 
-if ( $^O =~ m/^MSWin/ ) {
-  plan skip_all => 'No encoding tests on Windows';
+my $command = 'file --brief --mime-encoding';
+
+my $file_libmagic_is_available = eval 'use File::LibMagic; 1';
+my $file_command_is_compatible = eval "run qq($command $0), auto_die => 1; 1";
+
+if ( $file_libmagic_is_available || $file_command_is_compatible ) {
+  plan tests => 2;
 }
 else {
-  plan tests => 2;
+  plan skip_all =>
+    'Could not load File::LibMagic module or find a compatible file command';
+}
+
+my $magic;
+
+if ($file_libmagic_is_available) {
+  $magic = File::LibMagic->new();
 }
 
 subtest 'no_write_utf8_files' => sub {
@@ -63,7 +76,19 @@ sub write_file {
 }
 
 sub get_encoding {
-  my $file     = shift;
-  my $encoding = run qq(file --brief --mime-encoding $file);
+  my $file = shift;
+  my $encoding;
+
+  if ($magic) {
+    my $info = $magic->info_from_filename($file);
+    $encoding = $info->{encoding};
+  }
+  elsif ($file_command_is_compatible) {
+    $encoding = run qq($command $file);
+  }
+  else {
+    croak 'no magic, no command - better bail out';
+  }
+
   return $encoding;
 }

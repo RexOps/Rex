@@ -10,6 +10,10 @@ jobs:
         directories:
           - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/lib
           - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/bin
+      addons:
+        apt:
+          packages:
+            - libmagic-dev
       before_install:
         - cpanm Perl::Critic Perl::Tidy
         - perlcritic --quiet --single-policy=RequireTidyCode bin
@@ -20,7 +24,8 @@ jobs:
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Test::mysqld
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
+        - cpanm File::LibMagic Test::mysqld
       install:
         - dzil build --in build --notgz
       script:

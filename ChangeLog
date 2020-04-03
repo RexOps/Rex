@@ -8,6 +8,7 @@ Revision history for Rex
  - Fix autodie feature for local unlink commands
 
  [DOCUMENTATION]
+ - Categorize file system commands based on ability to change contents
 
  [ENHANCEMENTS]
  - Add write_utf8_files feature flag to control encoding of files written by Rex

@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix setting custom waitpid_blocking_sleep_time
+ - Fix autodie feature for local unlink commands
 
  [DOCUMENTATION]
 

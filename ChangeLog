@@ -9,6 +9,7 @@ Revision history for Rex
 
  [DOCUMENTATION]
  - Categorize file system commands based on ability to change contents
+ - Clarify documentation of file system commands
 
  [ENHANCEMENTS]
  - Add write_utf8_files feature flag to control encoding of files written by Rex

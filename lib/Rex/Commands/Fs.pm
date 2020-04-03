@@ -76,38 +76,6 @@ use base qw(Rex::Exporter);
 
 use vars qw(%file_handles);
 
-=head2 list_files("/path");
-
-This function list all entries (files, directories, ...) in a given directory and returns a array.
-
- task "ls-etc", "server01", sub {
-   my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
- };
-
-This command will not be reported.
-
-=cut
-
-sub list_files {
-  my $path = shift;
-  $path = resolv_path($path);
-
-  my $fs  = Rex::Interface::Fs->create;
-  my @ret = $fs->ls($path);
-
-  return @ret;
-}
-
-=head2 ls($path)
-
-Just an alias for I<list_files>
-
-=cut
-
-sub ls {
-  return list_files(@_);
-}
-
 =head2 symlink($from, $to)
 
 This function will create a symlink from $from to $to.
@@ -480,6 +448,146 @@ sub chmod {
   $fs->chmod( $mode, $file, @opts ) or die("Can't chmod $file");
 }
 
+=head2 rename($old, $new)
+
+This function will rename $old to $new. Will return 1 on success and 0 on failure.
+
+ task "rename", "server01", sub {
+   rename("/tmp/old", "/tmp/new");
+ };
+
+=cut
+
+sub rename {
+  my ( $old, $new ) = @_;
+  $old = resolv_path($old);
+  $new = resolv_path($new);
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "rename", name => "$old -> $new" );
+
+  my $fs = Rex::Interface::Fs->create;
+
+  my $old_present = 0;
+  if ( $fs->is_file($old) || $fs->is_dir($old) || $fs->is_symlink($old) ) {
+    $old_present = 1;
+  }
+
+  Rex::Logger::debug("Renaming $old to $new");
+
+  if ( !$fs->rename( $old, $new ) ) {
+    Rex::Logger::info("Rename failed ($old -> $new)");
+    die("Rename failed $old -> $new");
+  }
+
+  my $new_present = 0;
+  if ( $fs->is_file($new) || $fs->is_dir($new) || $fs->is_symlink($new) ) {
+    $new_present = 1;
+  }
+
+  my $old_absent = 0;
+  if ( !( $fs->is_file($old) || $fs->is_dir($old) || $fs->is_symlink($old) ) ) {
+    $old_absent = 1;
+  }
+
+  if ( $old_present == 1 && $new_present == 1 && $old_absent == 1 ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 1 );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0 );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "rename", name => "$old -> $new" );
+}
+
+=head2 mv($old, $new)
+
+mv is an alias for I<rename>.
+
+=cut
+
+sub mv {
+  return &rename(@_);
+}
+
+=head2 cp($source, $destination)
+
+cp will copy $source to $destination (it is recursive)
+
+ task "cp", "server01", sub {
+    cp("/var/www", "/var/www.old");
+ };
+
+=cut
+
+sub cp {
+  my ( $source, $dest ) = @_;
+
+  $source = resolv_path($source);
+  $dest   = resolv_path($dest);
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "cp", name => "$source -> $dest" );
+
+  my $fs = Rex::Interface::Fs->create;
+
+  my $new_present = 0;
+  if ( $fs->is_file($source) && $fs->is_dir($dest) ) {
+    $dest = "$dest/" . basename $source;
+  }
+
+  if ( $fs->is_file($dest) || $fs->is_dir($dest) || $fs->is_symlink($dest) ) {
+    $new_present = 1;
+  }
+
+  if ( !$fs->cp( $source, $dest ) ) {
+    die("Copy failed from $source to $dest");
+  }
+
+  if ( $new_present == 0 ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 1, );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "cp", name => "$source -> $dest" );
+}
+
+=head2 list_files("/path");
+
+This function list all entries (files, directories, ...) in a given directory and returns a array.
+
+ task "ls-etc", "server01", sub {
+   my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
+ };
+
+This command will not be reported.
+
+=cut
+
+sub list_files {
+  my $path = shift;
+  $path = resolv_path($path);
+
+  my $fs  = Rex::Interface::Fs->create;
+  my @ret = $fs->ls($path);
+
+  return @ret;
+}
+
+=head2 ls($path)
+
+Just an alias for I<list_files>
+
+=cut
+
+sub ls {
+  return list_files(@_);
+}
+
 =head2 stat($file)
 
 This function will return a hash with the following information about a file or directory.
@@ -706,69 +814,6 @@ sub readlink {
   return $link;
 }
 
-=head2 rename($old, $new)
-
-This function will rename $old to $new. Will return 1 on success and 0 on failure.
-
- task "rename", "server01", sub {
-   rename("/tmp/old", "/tmp/new");
- };
-
-=cut
-
-sub rename {
-  my ( $old, $new ) = @_;
-  $old = resolv_path($old);
-  $new = resolv_path($new);
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => "rename", name => "$old -> $new" );
-
-  my $fs = Rex::Interface::Fs->create;
-
-  my $old_present = 0;
-  if ( $fs->is_file($old) || $fs->is_dir($old) || $fs->is_symlink($old) ) {
-    $old_present = 1;
-  }
-
-  Rex::Logger::debug("Renaming $old to $new");
-
-  if ( !$fs->rename( $old, $new ) ) {
-    Rex::Logger::info("Rename failed ($old -> $new)");
-    die("Rename failed $old -> $new");
-  }
-
-  my $new_present = 0;
-  if ( $fs->is_file($new) || $fs->is_dir($new) || $fs->is_symlink($new) ) {
-    $new_present = 1;
-  }
-
-  my $old_absent = 0;
-  if ( !( $fs->is_file($old) || $fs->is_dir($old) || $fs->is_symlink($old) ) ) {
-    $old_absent = 1;
-  }
-
-  if ( $old_present == 1 && $new_present == 1 && $old_absent == 1 ) {
-    Rex::get_current_connection()->{reporter}->report( changed => 1 );
-  }
-  else {
-    Rex::get_current_connection()->{reporter}->report( changed => 0 );
-  }
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "rename", name => "$old -> $new" );
-}
-
-=head2 mv($old, $new)
-
-mv is an alias for I<rename>.
-
-=cut
-
-sub mv {
-  return &rename(@_);
-}
-
 =head2 chdir($newdir)
 
 This function will change the current workdirectory to $newdir. This function currently only works local.
@@ -884,51 +929,6 @@ sub du {
   my ($du)  = ( $lines[0] =~ m/^(\d+)/ );
 
   return $du;
-}
-
-=head2 cp($source, $destination)
-
-cp will copy $source to $destination (it is recursive)
-
- task "cp", "server01", sub {
-    cp("/var/www", "/var/www.old");
- };
-
-=cut
-
-sub cp {
-  my ( $source, $dest ) = @_;
-
-  $source = resolv_path($source);
-  $dest   = resolv_path($dest);
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => "cp", name => "$source -> $dest" );
-
-  my $fs = Rex::Interface::Fs->create;
-
-  my $new_present = 0;
-  if ( $fs->is_file($source) && $fs->is_dir($dest) ) {
-    $dest = "$dest/" . basename $source;
-  }
-
-  if ( $fs->is_file($dest) || $fs->is_dir($dest) || $fs->is_symlink($dest) ) {
-    $new_present = 1;
-  }
-
-  if ( !$fs->cp( $source, $dest ) ) {
-    die("Copy failed from $source to $dest");
-  }
-
-  if ( $new_present == 0 ) {
-    Rex::get_current_connection()->{reporter}->report( changed => 1, );
-  }
-  else {
-    Rex::get_current_connection()->{reporter}->report( changed => 0, );
-  }
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "cp", name => "$source -> $dest" );
 }
 
 =head2 mount($device, $mount_point, @options)

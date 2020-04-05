@@ -4,13 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix setting custom waitpid_blocking_sleep_time
- - Fix autodie feature for local unlink commands
 
  [DOCUMENTATION]
- - Categorize file system commands based on ability to change contents
- - Clarify documentation of file system commands
- - Document configuration methods
 
  [ENHANCEMENTS]
 
@@ -19,9 +14,22 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
- - Add write_utf8_files feature flag to control encoding of files written by Rex
 
  [REVISION]
+
+1.9.0 2020-04-05 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix setting custom waitpid_blocking_sleep_time
+ - Fix autodie feature for local unlink commands
+
+ [DOCUMENTATION]
+ - Categorize file system commands based on ability to change contents
+ - Clarify documentation of file system commands
+ - Document configuration methods
+
+ [NEW FEATURES]
+ - Add write_utf8_files feature flag to control encoding of files written
+   by Rex
 
 1.8.2 2020-03-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

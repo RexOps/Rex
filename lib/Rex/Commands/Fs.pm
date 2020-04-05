@@ -6,11 +6,11 @@
 
 =head1 NAME
 
-Rex::Commands::Fs - Filesystem commands
+Rex::Commands::Fs - File system commands
 
 =head1 DESCRIPTION
 
-With this module you can do file system tasks like creating a directory, deleting files, moving files, and more.
+With this module you can do file system tasks like creating directories, deleting or moving files, and more.
 
 =head1 SYNOPSIS
 
@@ -76,41 +76,13 @@ use base qw(Rex::Exporter);
 
 use vars qw(%file_handles);
 
-=head2 list_files("/path");
+=head2 Changing content
 
-This function list all entries (files, directories, ...) in a given directory and returns a array.
+These commands are supposed to change the contents of the file system.
 
- task "ls-etc", "server01", sub {
-   my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
- };
+=head3 symlink($from, $to)
 
-This command will not be reported.
-
-=cut
-
-sub list_files {
-  my $path = shift;
-  $path = resolv_path($path);
-
-  my $fs  = Rex::Interface::Fs->create;
-  my @ret = $fs->ls($path);
-
-  return @ret;
-}
-
-=head2 ls($path)
-
-Just an alias for I<list_files>
-
-=cut
-
-sub ls {
-  return list_files(@_);
-}
-
-=head2 symlink($from, $to)
-
-This function will create a symlink from $from to $to.
+This function will create a symbolic link from C<$from> to C<$to>.
 
  task "symlink", "server01", sub {
    symlink("/var/www/versions/1.0.0", "/var/www/html");
@@ -142,9 +114,9 @@ sub symlink {
   return 1;
 }
 
-=head2 ln($from, $to)
+=head3 ln($from, $to)
 
-ln is an alias for I<symlink>
+C<ln> is an alias for C<symlink>
 
 =cut
 
@@ -152,9 +124,9 @@ sub ln {
   &symlink(@_);
 }
 
-=head2 unlink($file)
+=head3 unlink($file)
 
-This function will remove the given file.
+This function will remove the given C<$file>.
 
  task "unlink", "server01", sub {
    unlink("/tmp/testfile");
@@ -202,9 +174,9 @@ sub unlink {
 
 }
 
-=head2 rm($file)
+=head3 rm($file)
 
-This is an alias for unlink.
+This is an alias for C<unlink>.
 
 =cut
 
@@ -212,7 +184,7 @@ sub rm {
   &unlink(@_);
 }
 
-=head2 rmdir($dir)
+=head3 rmdir($dir)
 
 This function will remove the given directory.
 
@@ -221,7 +193,7 @@ This function will remove the given directory.
  };
 
 
-Since: 0.45 Please use the file() resource instead.
+With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resource instead.
 
  task "prepare", sub {
    file "/tmp",
@@ -269,11 +241,11 @@ sub rmdir {
   }
 }
 
-=head2 mkdir($newdir)
+=head3 mkdir($newdir)
 
 This function will create a new directory.
 
-Since: 0.45 Please use the file() resource instead.
+With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resource instead.
 
  task "prepare", sub {
    file "/tmp",
@@ -408,7 +380,7 @@ sub mkdir {
   return 1;
 }
 
-=head2 chown($owner, $file)
+=head3 chown($owner, $path)
 
 Change the owner of a file or a directory.
 
@@ -420,7 +392,7 @@ Change the owner of a file or a directory.
 
 This command will not be reported.
 
-If you want to use reports, please use the file() resource instead.
+If you want to use reports, please use the L<file|Rex::Commands::File#file> resource instead.
 
 =cut
 
@@ -432,7 +404,7 @@ sub chown {
   $fs->chown( $user, $file, @opts ) or die("Can't chown $file");
 }
 
-=head2 chgrp($group, $file)
+=head3 chgrp($group, $path)
 
 Change the group of a file or a directory.
 
@@ -444,7 +416,7 @@ Change the group of a file or a directory.
 
 This command will not be reported.
 
-If you want to use reports, please use the file() resource instead.
+If you want to use reports, please use the L<file|Rex::Commands::File#file> resource instead.
 
 =cut
 
@@ -456,7 +428,7 @@ sub chgrp {
   $fs->chgrp( $group, $file, @opts ) or die("Can't chgrp $file");
 }
 
-=head2 chmod($mode, $file)
+=head3 chmod($mode, $path)
 
 Change the permissions of a file or a directory.
 
@@ -468,7 +440,7 @@ Change the permissions of a file or a directory.
 
 This command will not be reported.
 
-If you want to use reports, please use the file() resource instead.
+If you want to use reports, please use the L<file|Rex::Commands::File#file> resource instead.
 
 =cut
 
@@ -480,235 +452,9 @@ sub chmod {
   $fs->chmod( $mode, $file, @opts ) or die("Can't chmod $file");
 }
 
-=head2 stat($file)
+=head3 rename($old, $new)
 
-This function will return a hash with the following information about a file or directory.
-
-=over 4
-
-=item mode
-
-=item size
-
-=item uid
-
-=item gid
-
-=item atime
-
-=item mtime
-
-=back
-
- task "stat", "server01", sub {
-   my %file_stat = stat("/etc/passwd");
- };
-
-
-This command will not be reported.
-
-=cut
-
-sub stat {
-  my ($file) = @_;
-  $file = resolv_path($file);
-  my %ret;
-
-  Rex::Logger::debug("Getting fs stat from $file");
-
-  my $fs = Rex::Interface::Fs->create;
-
-  # may return undef, so capture into a list first.
-  my @stat = $fs->stat($file);
-  die("Can't stat $file") if ( !defined $stat[0] && scalar @stat == 1 );
-
-  if ( scalar @stat % 2 ) {
-    Rex::Logger::debug( 'stat output: ' . join ', ', @stat );
-    die('stat returned odd number of elements');
-  }
-
-  %ret = @stat;
-
-  return %ret;
-}
-
-=head2 is_file($file)
-
-This function tests if $file is a file. Returns 1 if true. 0 if false.
-
- task "isfile", "server01", sub {
-   if( is_file("/etc/passwd") ) {
-     say "it is a file.";
-   }
-   else {
-     say "hm, this is not a file.";
-   }
- };
-
-This command will not be reported.
-
-=cut
-
-sub is_file {
-  my ($file) = @_;
-  $file = resolv_path($file);
-
-  my $fs = Rex::Interface::Fs->create;
-  return $fs->is_file($file);
-}
-
-=head2 is_dir($dir)
-
-This function tests if $dir is a directory. Returns 1 if true. 0 if false.
-
- task "isdir", "server01", sub {
-   if( is_dir("/etc") ) {
-     say "it is a directory.";
-   }
-   else {
-     say "hm, this is not a directory.";
-   }
- };
-
-This command will not be reported.
-
-=cut
-
-sub is_dir {
-  my ($path) = @_;
-  $path = resolv_path($path);
-
-  my $fs = Rex::Interface::Fs->create;
-  return $fs->is_dir($path);
-
-}
-
-=head2 is_symlink($file)
-
-This function tests if $file is a symlink. Returns 1 if true. 0 if false.
-
- task "issym", "server01", sub {
-   if( is_symlink("/etc/foo.txt") ) {
-     say "it is a symlink.";
-   }
-   else {
-     say "hm, this is not a symlink.";
-   }
- };
-
-This command will not be reported.
-
-=cut
-
-sub is_symlink {
-  my ($path) = @_;
-  $path = resolv_path($path);
-
-  my $fs = Rex::Interface::Fs->create;
-  return $fs->is_symlink($path);
-}
-
-=head2 is_readable($file)
-
-This function tests if $file is readable. It returns 1 if true. 0 if false.
-
- task "readable", "server01", sub {
-   if( is_readable("/etc/passwd") ) {
-     say "passwd is readable";
-   }
-   else {
-     say "not readable.";
-   }
- };
-
-This command will not be reported.
-
-=cut
-
-sub is_readable {
-  my ($file) = @_;
-  $file = resolv_path($file);
-  Rex::Logger::debug("Checking if $file is readable");
-
-  my $fs = Rex::Interface::Fs->create;
-  return $fs->is_readable($file);
-}
-
-=head2 is_writable($file)
-
-This function tests if $file is writable. It returns 1 if true. 0 if false.
-
- task "writable", "server01", sub {
-   if( is_writable("/etc/passwd") ) {
-     say "passwd is writable";
-   }
-   else {
-     say "not writable.";
-   }
- };
-
-This command will not be reported.
-
-=cut
-
-sub is_writable {
-  my ($file) = @_;
-  $file = resolv_path($file);
-  Rex::Logger::debug("Checking if $file is writable");
-
-  my $fs = Rex::Interface::Fs->create;
-  return $fs->is_writable($file);
-}
-
-=head2 is_writeable($file)
-
-This is only an alias for I<is_writable>.
-
-This command will not be reported.
-
-=cut
-
-sub is_writeable {
-  is_writable(@_);
-}
-
-=head2 readlink($link)
-
-This function returns the link endpoint if $link is a symlink. If $link is not a symlink it will die.
-
-
- task "islink", "server01", sub {
-   my $link;
-   eval {
-     $link = readlink("/tmp/testlink");
-   };
- 
-   say "this is a link" if($link);
- };
-
-This command will not be reported.
-
-=cut
-
-sub readlink {
-  my ($file) = @_;
-  $file = resolv_path($file);
-  Rex::Logger::debug("Reading link of $file");
-
-  my $fs   = Rex::Interface::Fs->create;
-  my $link = $fs->readlink($file);
-
-  unless ($link) {
-    Rex::Logger::debug("readlink: $file is not a link.");
-    die("readlink: $file is not a link.");
-  }
-
-  return $link;
-}
-
-=head2 rename($old, $new)
-
-This function will rename $old to $new. Will return 1 on success and 0 on failure.
+This function will rename C<$old> to C<$new>. Will return 1 on success and 0 on failure.
 
  task "rename", "server01", sub {
    rename("/tmp/old", "/tmp/new");
@@ -759,9 +505,9 @@ sub rename {
     ->report_resource_end( type => "rename", name => "$old -> $new" );
 }
 
-=head2 mv($old, $new)
+=head3 mv($old, $new)
 
-mv is an alias for I<rename>.
+C<mv> is an alias for C<rename>.
 
 =cut
 
@@ -769,9 +515,313 @@ sub mv {
   return &rename(@_);
 }
 
-=head2 chdir($newdir)
+=head3 cp($source, $destination)
 
-This function will change the current workdirectory to $newdir. This function currently only works local.
+C<cp> will copy C<$source> to C<$destination> recursively.
+
+ task "cp", "server01", sub {
+    cp("/var/www", "/var/www.old");
+ };
+
+=cut
+
+sub cp {
+  my ( $source, $dest ) = @_;
+
+  $source = resolv_path($source);
+  $dest   = resolv_path($dest);
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_start( type => "cp", name => "$source -> $dest" );
+
+  my $fs = Rex::Interface::Fs->create;
+
+  my $new_present = 0;
+  if ( $fs->is_file($source) && $fs->is_dir($dest) ) {
+    $dest = "$dest/" . basename $source;
+  }
+
+  if ( $fs->is_file($dest) || $fs->is_dir($dest) || $fs->is_symlink($dest) ) {
+    $new_present = 1;
+  }
+
+  if ( !$fs->cp( $source, $dest ) ) {
+    die("Copy failed from $source to $dest");
+  }
+
+  if ( $new_present == 0 ) {
+    Rex::get_current_connection()->{reporter}->report( changed => 1, );
+  }
+  else {
+    Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+
+  Rex::get_current_connection()->{reporter}
+    ->report_resource_end( type => "cp", name => "$source -> $dest" );
+}
+
+=head2 Not changing content
+
+These commands should not change the contents of the file system.
+
+=head3 list_files("/path");
+
+This function lists all entries (files, directories, ...) in a given directory and returns them as an array.
+
+ task "ls-etc", "server01", sub {
+   my @tmp_files = grep { /\.tmp$/ } list_files("/etc");
+ };
+
+This command will not be reported.
+
+=cut
+
+sub list_files {
+  my $path = shift;
+  $path = resolv_path($path);
+
+  my $fs  = Rex::Interface::Fs->create;
+  my @ret = $fs->ls($path);
+
+  return @ret;
+}
+
+=head3 ls($path)
+
+Just an alias for C<list_files>.
+
+=cut
+
+sub ls {
+  return list_files(@_);
+}
+
+=head3 stat($file)
+
+This function will return a hash with the following information about a file or directory:
+
+=over 4
+
+=item mode
+
+=item size
+
+=item uid
+
+=item gid
+
+=item atime
+
+=item mtime
+
+=back
+
+ task "stat", "server01", sub {
+   my %file_stat = stat("/etc/passwd");
+ };
+
+
+This command will not be reported.
+
+=cut
+
+sub stat {
+  my ($file) = @_;
+  $file = resolv_path($file);
+  my %ret;
+
+  Rex::Logger::debug("Getting fs stat from $file");
+
+  my $fs = Rex::Interface::Fs->create;
+
+  # may return undef, so capture into a list first.
+  my @stat = $fs->stat($file);
+  die("Can't stat $file") if ( !defined $stat[0] && scalar @stat == 1 );
+
+  if ( scalar @stat % 2 ) {
+    Rex::Logger::debug( 'stat output: ' . join ', ', @stat );
+    die('stat returned odd number of elements');
+  }
+
+  %ret = @stat;
+
+  return %ret;
+}
+
+=head3 is_file($path)
+
+This function tests if C<$path> is a file. Returns 1 if true, 0 if false.
+
+ task "isfile", "server01", sub {
+   if( is_file("/etc/passwd") ) {
+     say "it is a file.";
+   }
+   else {
+     say "hm, this is not a file.";
+   }
+ };
+
+This command will not be reported.
+
+=cut
+
+sub is_file {
+  my ($file) = @_;
+  $file = resolv_path($file);
+
+  my $fs = Rex::Interface::Fs->create;
+  return $fs->is_file($file);
+}
+
+=head3 is_dir($path)
+
+This function tests if C<$path> is a directory. Returns 1 if true, 0 if false.
+
+ task "isdir", "server01", sub {
+   if( is_dir("/etc") ) {
+     say "it is a directory.";
+   }
+   else {
+     say "hm, this is not a directory.";
+   }
+ };
+
+This command will not be reported.
+
+=cut
+
+sub is_dir {
+  my ($path) = @_;
+  $path = resolv_path($path);
+
+  my $fs = Rex::Interface::Fs->create;
+  return $fs->is_dir($path);
+
+}
+
+=head3 is_symlink($path)
+
+This function tests if C<$path> is a symbolic link. Returns 1 if true, 0 if false.
+
+ task "issym", "server01", sub {
+   if( is_symlink("/etc/foo.txt") ) {
+     say "it is a symlink.";
+   }
+   else {
+     say "hm, this is not a symlink.";
+   }
+ };
+
+This command will not be reported.
+
+=cut
+
+sub is_symlink {
+  my ($path) = @_;
+  $path = resolv_path($path);
+
+  my $fs = Rex::Interface::Fs->create;
+  return $fs->is_symlink($path);
+}
+
+=head3 is_readable($path)
+
+This function tests if C<$path> is readable. It returns 1 if true, 0 if false.
+
+ task "readable", "server01", sub {
+   if( is_readable("/etc/passwd") ) {
+     say "passwd is readable";
+   }
+   else {
+     say "not readable.";
+   }
+ };
+
+This command will not be reported.
+
+=cut
+
+sub is_readable {
+  my ($file) = @_;
+  $file = resolv_path($file);
+  Rex::Logger::debug("Checking if $file is readable");
+
+  my $fs = Rex::Interface::Fs->create;
+  return $fs->is_readable($file);
+}
+
+=head3 is_writable($path)
+
+This function tests if C<$path> is writable. It returns 1 if true, 0 if false.
+
+ task "writable", "server01", sub {
+   if( is_writable("/etc/passwd") ) {
+     say "passwd is writable";
+   }
+   else {
+     say "not writable.";
+   }
+ };
+
+This command will not be reported.
+
+=cut
+
+sub is_writable {
+  my ($file) = @_;
+  $file = resolv_path($file);
+  Rex::Logger::debug("Checking if $file is writable");
+
+  my $fs = Rex::Interface::Fs->create;
+  return $fs->is_writable($file);
+}
+
+=head3 is_writeable($file)
+
+This is only an alias for C<is_writable>.
+
+=cut
+
+sub is_writeable {
+  is_writable(@_);
+}
+
+=head3 readlink($link)
+
+If C<$link> is a symbolic link, returns the path it resolves to, and C<die()>s otherwise.
+
+ task "islink", "server01", sub {
+   my $link;
+   eval {
+     $link = readlink("/tmp/testlink");
+   };
+ 
+   say "this is a link" if($link);
+ };
+
+This command will not be reported.
+
+=cut
+
+sub readlink {
+  my ($file) = @_;
+  $file = resolv_path($file);
+  Rex::Logger::debug("Reading link of $file");
+
+  my $fs   = Rex::Interface::Fs->create;
+  my $link = $fs->readlink($file);
+
+  unless ($link) {
+    Rex::Logger::debug("readlink: $file is not a link.");
+    die("readlink: $file is not a link.");
+  }
+
+  return $link;
+}
+
+=head3 chdir($newdir)
+
+This function will change the working directory to C<$newdir>. This function currently works only locally.
 
  task "chdir", "server01", sub {
    chdir("/tmp");
@@ -786,9 +836,9 @@ sub chdir {
   CORE::chdir( $_[0] );
 }
 
-=head2 cd($newdir)
+=head3 cd($newdir)
 
-This is an alias of I<chdir>.
+This is an alias of C<chdir>.
 
 =cut
 
@@ -796,9 +846,9 @@ sub cd {
   &chdir( $_[0] );
 }
 
-=head2 df([$device])
+=head3 df([$device])
 
-This function returns a hashRef reflecting the output of I<df>
+This function returns a hash reference which reflects the output of C<df>.
 
  task "df", "server01", sub {
     my $df = df();
@@ -863,9 +913,9 @@ sub _parse_df {
   return $ret;
 }
 
-=head2 du($path)
+=head3 du($path)
 
-Returns the disk usage of $path.
+Returns the disk usage of C<$path>.
 
  task "du", "server01", sub {
    say "size of /var/www: " . du("/var/www");
@@ -886,52 +936,7 @@ sub du {
   return $du;
 }
 
-=head2 cp($source, $destination)
-
-cp will copy $source to $destination (it is recursive)
-
- task "cp", "server01", sub {
-    cp("/var/www", "/var/www.old");
- };
-
-=cut
-
-sub cp {
-  my ( $source, $dest ) = @_;
-
-  $source = resolv_path($source);
-  $dest   = resolv_path($dest);
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_start( type => "cp", name => "$source -> $dest" );
-
-  my $fs = Rex::Interface::Fs->create;
-
-  my $new_present = 0;
-  if ( $fs->is_file($source) && $fs->is_dir($dest) ) {
-    $dest = "$dest/" . basename $source;
-  }
-
-  if ( $fs->is_file($dest) || $fs->is_dir($dest) || $fs->is_symlink($dest) ) {
-    $new_present = 1;
-  }
-
-  if ( !$fs->cp( $source, $dest ) ) {
-    die("Copy failed from $source to $dest");
-  }
-
-  if ( $new_present == 0 ) {
-    Rex::get_current_connection()->{reporter}->report( changed => 1, );
-  }
-  else {
-    Rex::get_current_connection()->{reporter}->report( changed => 0, );
-  }
-
-  Rex::get_current_connection()->{reporter}
-    ->report_resource_end( type => "cp", name => "$source -> $dest" );
-}
-
-=head2 mount($device, $mount_point, @options)
+=head3 mount($device, $mount_point, @options)
 
 Mount devices.
 
@@ -957,7 +962,7 @@ Mount devices.
  
  };
 
-In order to be more aligned with `mount` terminology, the previously used `fs` option has been deprecated in favor of the `type` option. The `fs` option is still supported and works as previously, but Rex prints a warning if it is being used. There's also a warning if both `fs` and `type` options are specified, and in this case `type` will be used.
+In order to be more aligned with C<mount> terminology, the previously used C<fs> option has been deprecated in favor of the C<type> option. The C<fs> option is still supported and works as previously, but Rex prints a warning if it is being used. There's also a warning if both C<fs> and C<type> options are specified, and in this case C<type> will be used.
 
 =cut
 
@@ -1122,7 +1127,7 @@ sub mount {
     ->report_resource_end( type => "mount", name => "$mount_point" );
 }
 
-=head2 umount($mount_point)
+=head3 umount($mount_point)
 
 Unmount device.
 
@@ -1176,7 +1181,9 @@ sub umount {
     ->report_resource_end( type => "umount", name => "$mount_point" );
 }
 
-=head2 glob($glob)
+=head3 glob($glob)
+
+Returns the list of filename expansions for C<$glob> as L<Perl's built-in glob|https://perldoc.perl.org/functions/glob.html> would do.
 
  task "glob", "server1", sub {
    my @files_with_p = grep { is_file($_) } glob("/etc/p*");

@@ -13,13 +13,13 @@ Revision history for Rex
  - Document configuration methods
 
  [ENHANCEMENTS]
- - Add write_utf8_files feature flag to control encoding of files written by Rex
 
  [MAJOR]
 
  [MINOR]
 
  [NEW FEATURES]
+ - Add write_utf8_files feature flag to control encoding of files written by Rex
 
  [REVISION]
 

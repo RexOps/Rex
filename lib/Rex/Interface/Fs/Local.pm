@@ -95,7 +95,14 @@ sub is_file {
 
 sub unlink {
   my ( $self, @files ) = @_;
-  CORE::unlink(@files);
+  for my $file (@files) {
+    if ( CORE::unlink($file) == 0 ) {
+      die "Error unlinking file: $file" if ( Rex::Config->get_autodie );
+      return 0;
+    }
+  }
+
+  return 1;
 }
 
 sub mkdir {

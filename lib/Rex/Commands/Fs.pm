@@ -182,9 +182,6 @@ sub unlink {
 
     if ( $fs->is_file($file) || $fs->is_symlink($file) ) {
       $fs->unlink($file);
-      if ( $fs->is_file($file) || $fs->is_symlink($file) ) {
-        die "Can't remove $file.";
-      }
 
       my $tmp_path = Rex::Config->get_tmp_dir;
       if ( $file !~ m/^\Q$tmp_path\E[\/\\][a-z]+\.tmp$/ ) { # skip tmp rex files

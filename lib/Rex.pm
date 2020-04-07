@@ -757,7 +757,7 @@ sub import {
       # remove default task auth
       if ( $add =~ m/^\d+\.\d+$/ && $add >= 0.31 ) {
         Rex::Logger::debug("activating featureset >= 0.31");
-        Rex::TaskList->create()->set_default_auth(0);
+        Rex::Config->set_default_auth(0);
         $found_feature = 1;
       }
 

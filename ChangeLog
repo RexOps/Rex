@@ -17,6 +17,8 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+ - Add new configuration option to control attaching default authentication
+ info to tasks
 
  [REVISION]
 

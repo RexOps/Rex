@@ -392,6 +392,11 @@ Passing an anonymous I<coderef> to C<sudo> allows for running the commands in th
      service 'nginx' => 'restart';
      say run 'id';
  };
+ # or running multiple commands with sudo as different user
+ sudo { user => 'different', command => sub {
+     say run 'id';
+     say run 'pwd', cwd => '/home/different';
+ }};
 
 B<Note> that some users receive the error C<sudo: sorry, you must have a tty
 to run sudo>. In this case you have to disable C<requiretty> for this user.

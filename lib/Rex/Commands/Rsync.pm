@@ -237,8 +237,7 @@ sub sync {
       $cmd = sprintf( $cmd,
         'ssh -i '
           . $server->get_private_key
-          . " -o StrictHostKeyChecking=no -p " . "$port",
-        $port );
+          . " -o StrictHostKeyChecking=no -p $port" );
     }
     else {
       $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no -p ' . "$port" );

@@ -162,6 +162,7 @@ sub sync {
 
   if (Rex::is_sudo) {
     push @rsync_cmd, "--rsync-path='sudo rsync'";
+    unshift @rsync_cmd, 'sudo';
   }
 
   $cmd = join( " ", @rsync_cmd );

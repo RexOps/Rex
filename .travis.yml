@@ -76,7 +76,8 @@ jobs:
             - openssl
           update: true
       before_install:
-        - export "PATH=/usr/local/Cellar/perl/5.30.1/bin:${PATH}"
+        - export PERL_VERSION="$(brew list --versions perl | cut -d' ' -f 2)"
+        - export "PATH=/usr/local/Cellar/perl/${PERL_VERSION}/bin:${PATH}"
         - cpanm Dist::Zilla
         - mkdir ~/.dzil
         - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"

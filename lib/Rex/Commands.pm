@@ -123,6 +123,8 @@ use Rex;
 use Rex::Helper::Misc;
 use Rex::RunList;
 
+use Carp;
+
 use vars
   qw(@EXPORT $current_desc $global_no_ssh $environments $dont_register_tasks $profiler %auth_late);
 use base qw(Rex::Exporter);
@@ -315,7 +317,7 @@ sub task {
     push( @_, "" );
   }
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   no warnings;
   push( @{"${class}::tasks"}, { name => $task_name_save, code => $_[-2] } );
   use strict;
@@ -327,7 +329,7 @@ sub task {
   if (!$class->can($task_name_save)
     && $task_name_save =~ m/^[a-zA-Z_][a-zA-Z0-9_]+$/ )
   {
-    no strict 'refs';
+    no strict 'refs'; ## no critic ProhibitNoStrict
     Rex::Logger::debug("Registering task: $task_name");
     my $code = $_[-2];
     *{"${class}::$task_name_save"} = sub {
@@ -573,7 +575,7 @@ sub auth {
   if ( !$group ) {
     Rex::Logger::debug("No group $entity found, looking for a task.");
     if ( ref($entity) eq "Regexp" ) {
-      my @tasks = Rex::TaskList->create()->get_tasks;
+      my @tasks          = Rex::TaskList->create()->get_tasks;
       my @selected_tasks = grep { m/$entity/ } @tasks;
       for my $t (@selected_tasks) {
         auth( $_d, $t, %data );
@@ -758,8 +760,12 @@ If you want to add custom parameters for the task you can do it this way.
 sub run_task {
   my ( $task_name, %option ) = @_;
 
+  my $task = Rex::TaskList->create()->get_task($task_name);
+  if ( !$task ) {
+    croak("No task named '$task_name' found.");
+  }
+
   if ( exists $option{on} ) {
-    my $task = Rex::TaskList->create()->get_task($task_name);
     if ( exists $option{params} ) {
       $task->run( $option{on}, params => $option{params} );
     }
@@ -768,7 +774,6 @@ sub run_task {
     }
   }
   else {
-    my $task = Rex::TaskList->create()->get_task($task_name);
     if ( exists $option{params} ) {
       $task->run( "<local>", params => $option{params} );
     }
@@ -1016,7 +1021,7 @@ sub needs {
 
   my $tl = Rex::TaskList->create();
   my @maybe_tasks_to_run;
-  if($self) {
+  if ($self) {
     @maybe_tasks_to_run = $tl->get_all_tasks(qr{^\Q$self\E:[A-Za-z0-9_\-]+$});
   }
   else {
@@ -1026,7 +1031,7 @@ sub needs {
   if ( !@args && !@maybe_tasks_to_run ) {
     @args = ($self);
     ($self) = caller;
-    $self = "" if($self =~ m/^(Rex::CLI|main)$/);
+    $self = "" if ( $self =~ m/^(Rex::CLI|main)$/ );
   }
 
   if ( ref( $args[0] ) eq "ARRAY" ) {
@@ -1039,7 +1044,7 @@ sub needs {
   $self =~ s/::/:/g;
 
   my @tasks_to_run;
-  if($self) {
+  if ($self) {
     @tasks_to_run = $tl->get_all_tasks(qr{^\Q$self\E:[A-Za-z0-9_\-]+$});
   }
   else {
@@ -1051,16 +1056,16 @@ sub needs {
   my %task_opts    = $current_task->get_opts;
   my @task_args    = $current_task->get_args;
 
-  if($self) {
+  if ($self) {
     my $suffix = $self;
     $suffix =~ s/::/:/g;
-    @args = map { $_ = "$suffix:$_" } @args;
+    @args = map { "$suffix:$_" } @args;
   }
 
   for my $task (@tasks_to_run) {
-    my $task_o = $tl->get_task($task);
+    my $task_o    = $tl->get_task($task);
     my $task_name = $task_o->name;
-    my $suffix = $self . ":";
+    my $suffix    = $self . ":";
     if ( @args && grep ( /^\Q$task_name\E$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task_o->name );
       $task_o->run( "<func>", params => \@task_args, args => \%task_opts );
@@ -1082,7 +1087,7 @@ sub needs {
   }
 
   if ( $caller_pkg && ( $caller_pkg eq "Rex::CLI" || $caller_pkg eq "main" ) ) {
-    no strict 'refs';
+    no strict 'refs'; ## no critic ProhibitNoStrict
     *{"main::needs"} = \&needs;
     use strict;
   }
@@ -1197,7 +1202,7 @@ With the LOCAL function you can do local commands within a task that is defined 
 
 =cut
 
-sub LOCAL (&) {
+sub LOCAL (&) { ## no critic ProhibitSubroutinePrototypes
   my $cur_conn      = Rex::get_current_connection();
   my $local_connect = Rex::Interface::Connection->create("Local");
 
@@ -1500,7 +1505,7 @@ sub profiler {
   my $c_profiler = Rex::get_current_connection()->{"profiler"};
   unless ($c_profiler) {
     $c_profiler = $profiler || Rex::Profiler->new;
-    $profiler = $c_profiler;
+    $profiler   = $c_profiler;
   }
 
   return $c_profiler;
@@ -1933,7 +1938,7 @@ sub FALSE {
   return 0;
 }
 
-sub make(&) {
+sub make(&) { ## no critic ProhibitSubroutinePrototypes
   return $_[0];
 }
 

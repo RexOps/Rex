@@ -258,7 +258,7 @@ sub create_volume {
 
   my $xml = $self->_request(
     "CreateVolume",
-    "Size" => $data{"size"} || 1,
+    "Size"             => $data{"size"} || 1,
     "AvailabilityZone" => $data{"zone"},
   );
 

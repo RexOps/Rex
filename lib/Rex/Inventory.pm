@@ -110,7 +110,7 @@ sub get {
             push(
               @raid_logical_drives,
               {
-                status => ( $l_drive_data->{"status"} eq "OK" ? 1 : 0 ),
+                status     => ( $l_drive_data->{"status"} eq "OK" ? 1 : 0 ),
                 raid_level => $l_drive_data->{"fault_tolerance"},
                 size       => sprintf( "%i", $size * $multi ),
                 dev        => $l_drive_data->{"disk_name"},
@@ -152,8 +152,8 @@ sub get {
   }
 
   return {
-    base_board => ( $base_board ? $base_board->get_all() : {} ),
-    bios => $bios->get_all(),
+    base_board  => ( $base_board ? $base_board->get_all() : {} ),
+    bios        => $bios->get_all(),
     system_info => $sys_info->get_all(),
     cpus        => sub {
       my $ret = [];

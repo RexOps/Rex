@@ -98,7 +98,7 @@ sub kmod {
 
     $unload_command = sub {
       my @mod_split = split( /\//, $module );
-      my $mod = $mod_split[-1];
+      my $mod       = $mod_split[-1];
 
       my ($mod_id) = map { /^\s*(\d+)\s+.*$mod/ } i_run "modinfo";
       my $cmd = "modunload -i $mod_id";

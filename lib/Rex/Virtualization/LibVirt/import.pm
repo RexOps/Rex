@@ -51,10 +51,10 @@ sub execute {
     Rex::Logger::debug("Importing ova file. Try to convert with qemu-img");
     $file =~ s/\.[a-z]+$//;
 
-    my @vmdk = grep { m/\.vmdk$/ } i_run "tar -C $dir -vxf $opt{file}";
+    my @vmdk = grep { m/\.vmdk$/ } i_run "tar -C '$dir' -vxf '$opt{file}'";
 
-    Rex::Logger::debug("converting $cwd/tmp/$vmdk[0] -> $file.qcow2");
-    i_run "qemu-img convert -O qcow2 $cwd/tmp/$vmdk[0] $file.qcow2",
+    Rex::Logger::debug("converting '$cwd/tmp/$vmdk[0]' -> '$file.qcow2'");
+    i_run "qemu-img convert -O qcow2 '$cwd/tmp/$vmdk[0]' '$file.qcow2'",
       fail_ok => 1;
 
     if ( $? != 0 ) {
@@ -74,12 +74,12 @@ sub execute {
     cp $opt{file}, $file;
     if ( $file =~ m/\.gz$/ ) {
       Rex::Logger::debug("Extracting gzip'ed file $file");
-      i_run "gunzip -q -f $file";
+      i_run "gunzip -q -f '$file'";
       $file =~ s/\.gz$//;
     }
   }
 
-  my ($format_out) = grep { m/^file format:/ } i_run "qemu-img info $file",
+  my ($format_out) = grep { m/^file format:/ } i_run "qemu-img info '$file'",
     fail_ok => 1;
   if ( $format_out =~ m/^file format: (.*)$/i ) {
     $format = $1;
@@ -98,7 +98,7 @@ sub execute {
 
   for (@network) {
     $_->{type} ||= "network";
-    $_->{type} = "bridge" if ( $_->{type} && $_->{type} eq "bridged" );
+    $_->{type} = "bridge"  if ( $_->{type} && $_->{type} eq "bridged" );
     $_->{type} = "network" if ( $_->{type} eq "nat" );
     if ( $_->{type} eq "network" && !exists $_->{network} ) {
       $_->{network} = "default";

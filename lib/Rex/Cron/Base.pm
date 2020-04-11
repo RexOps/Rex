@@ -44,8 +44,8 @@ sub list_jobs {
 
 sub list_envs {
   my ($self) = @_;
-  my @jobs = @{ $self->{cron} };
-  my @ret = grep { $_->{type} eq "env" } @jobs;
+  my @jobs   = @{ $self->{cron} };
+  my @ret    = grep { $_->{type} eq "env" } @jobs;
 }
 
 sub add {
@@ -253,8 +253,8 @@ sub parse_cron {
 
     elsif ( $line =~ m/=/ ) {
       my ( $name, $value ) = split( /=/, $line, 2 );
-      $name =~ s/^\s+//;
-      $name =~ s/\s+$//;
+      $name  =~ s/^\s+//;
+      $name  =~ s/\s+$//;
       $value =~ s/^\s+//;
       $value =~ s/\s+$//;
 

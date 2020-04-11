@@ -166,8 +166,9 @@ sub rm_user {
 
   my $output = i_run $cmd . " -n " . $user, fail_ok => 1;
   if ( $? == 67 ) {
-    Rex::Logger::info("Cannot delete user $user (no such user)", "warn");
-  } elsif ( $? != 0 ) {
+    Rex::Logger::info( "Cannot delete user $user (no such user)", "warn" );
+  }
+  elsif ( $? != 0 ) {
     die("Error deleting user $user ($output)");
   }
 
@@ -245,7 +246,7 @@ sub create_group {
     if ( exists $data->{gid} ) {
       eval {
         my @content = split( /\n/, cat("/etc/group") );
-        my $gid = $data->{gid};
+        my $gid     = $data->{gid};
         for (@content) {
           s/^$group:([^:]+):(\d+):/$group:$1:$gid:/;
         }

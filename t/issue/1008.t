@@ -37,12 +37,12 @@ is( $p, 2222,             "got port from v4 ip with slash" );
 ( $s, $p ) = ( undef, undef );
 ( $s, $p ) = Rex::Helper::IP::get_server_and_port($ipv6);
 is( $s, "fe80::a00:27ff:fe36:9377", "got v6 ip" );
-is( $p, undef, "got no port from v6 ip" );
+is( $p, undef,                      "got no port from v6 ip" );
 
 ( $s, $p ) = ( undef, undef );
 ( $s, $p ) = Rex::Helper::IP::get_server_and_port($ipv6_port);
 is( $s, "fe80::a00:27ff:fe36:9377", "got v6 ip with port" );
-is( $p, 3333, "got port from v6 ip with colon" );
+is( $p, 3333,                       "got port from v6 ip with colon" );
 
 ( $s, $p ) = Rex::Helper::IP::get_server_and_port($hostname);
 is( $s, "blah01", "got hostname" );

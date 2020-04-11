@@ -42,7 +42,7 @@ sub end {
   return unless ( $self->{__data}->{$info}->[-1] );
 
   my $data = $self->{__data}->{$info}->[-1];
-  $data->{end} = [gettimeofday];
+  $data->{end}      = [gettimeofday];
   $data->{duration} = tv_interval( $data->{start}, $data->{end} );
 
   $self->{__data}->{$info}->[-1] = $data;

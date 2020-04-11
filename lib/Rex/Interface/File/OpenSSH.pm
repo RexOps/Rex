@@ -59,12 +59,16 @@ sub read {
   my ( $self, $len ) = @_;
 
   my $sftp = Rex::get_sftp();
-  my $buf = $sftp->read( $self->{fh}, $len );
+  my $buf  = $sftp->read( $self->{fh}, $len );
   return $buf;
 }
 
 sub write {
   my ( $self, $buf ) = @_;
+
+  utf8::encode($buf)
+    if Rex::Config->get_write_utf8_files && utf8::is_utf8($buf);
+
   my $sftp = Rex::get_sftp();
   $sftp->write( $self->{fh}, $buf );
 }

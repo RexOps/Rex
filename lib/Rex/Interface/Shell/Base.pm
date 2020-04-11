@@ -23,9 +23,9 @@ sub new {
 }
 
 sub name {
-  my ($self) = @_;
+  my ($self)     = @_;
   my $class_name = ref $self;
-  my @parts = split( /::/, $class_name );
+  my @parts      = split( /::/, $class_name );
   return lc( $parts[-1] );
 }
 
@@ -52,9 +52,9 @@ sub set_sudo_env {
 sub detect {
   my ( $self, $con ) = @_;
 
-  my $shell_class = ref $self || $self; # $self might be only the classname
-  my @parts = split /::/, $shell_class;
-  my $last_part = lc( $parts[-1] || "" );
+  my $shell_class = ref $self || $self;      # $self might be only the classname
+  my @parts       = split /::/, $shell_class;
+  my $last_part   = lc( $parts[-1] || "" );
 
   my ($shell_path) = $con->_exec("echo \$SHELL");
   if ( !$shell_path ) {

@@ -87,27 +87,30 @@ in the $? variable.
 
 Supported options are:
 
-  cwd           => $path
+  cwd             => $path
     sets the working directory of the executed command to $path
-  only_if       => $condition_command
+  only_if         => $condition_command
     executes the command only if $condition_command completes successfully
-  unless        => $condition_command
+  unless          => $condition_command
     executes the command unless $condition_command completes successfully
-  only_notified => TRUE
+  only_notified   => TRUE
     queues the command, to be executed upon notification (see below)
-  env           => { var1 => $value1, ..., varN => $valueN }
+  env             => { var1 => $value1, ..., varN => $valueN }
     sets environment variables in the environment of the command
-  timeout       => value
+  timeout         => value
     sets the timeout for the command to be run
-  auto_die      => TRUE
+  auto_die        => TRUE
     die if the command returns with a non-zero exit code
     it can be set globally via the exec_autodie feature flag
-  command       => $command_to_run
+  command         => $command_to_run
     if set, run tries to execute the specified command and the first argument
     becomes an identifier for the run block (e.g. to be triggered with notify)
-  creates       => $file_to_create
+  creates         => $file_to_create
     tries to create $file_to_create upon execution
     skips execution if the file already exists
+  continuous_read => $callback
+    calls $callback subroutine reference for each line of the command's output,
+    passing the line as an argument
 
 Examples:
 
@@ -252,7 +255,7 @@ sub run {
 
     if ( $args && ref($args) eq "ARRAY" ) {
       my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
-      $cmd = "$cmd " . join( " ", map { $_ = $quoter->quote($_) } @{$args} );
+      $cmd = "$cmd " . join( " ", map { $quoter->quote($_) } @{$args} );
     }
 
     if ( exists $option->{timeout} && $option->{timeout} > 0 ) {
@@ -389,6 +392,12 @@ Passing an anonymous I<coderef> to C<sudo> allows for running the commands in th
      service 'nginx' => 'restart';
      say run 'id';
  };
+
+B<Note> that some users receive the error C<sudo: sorry, you must have a tty
+to run sudo>. In this case you have to disable C<requiretty> for this user.
+You can do this in your sudoers file with the following code:
+
+   Defaults:$username !requiretty
 
 =cut
 

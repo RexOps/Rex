@@ -2,6 +2,7 @@
 .DS_Store
 *.sw*
 Makefile
+Rex-*/
 *.tar*
 blib
 *-stamp
@@ -26,3 +27,4 @@ vars.db.lock
 .includepath
 .project
 tmp/
+cover_db

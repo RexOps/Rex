@@ -35,7 +35,7 @@ sub execute {
     exists $opts->{format}
     ? $opts->{format}
     : 'name,state,autostart,groups,ipv4,ipv6,pid';
-  my $fancy = exists $opts->{fancy} ? '-f' : '';
+  my $fancy  = exists $opts->{fancy}  ? '-f'                   : '';
   my $groups = exists $opts->{groups} ? '-g' . $opts->{groups} : '';
 
   # When using not fancy output, lxc-ls defaults to outputting only name.
@@ -50,7 +50,7 @@ sub execute {
   }
 
   my @columns = split( ',', $format );
-  my @ret = ();
+  my @ret     = ();
   for my $line (@containers) {
     next
       if $line =~ m/NAME|AUTOSTART|STATE|IPV4|IPV6|AUTOSTART|PID|RAM|SWAP\s/;

@@ -252,7 +252,7 @@ sub download_recipe_local_tar_gz {
 sub upload_rexfile {
   my (%option) = @_;
 
-  my $tmp_dir = File::Spec->tmpdir;
+  my $tmp_dir  = File::Spec->tmpdir;
   my $tmp_file = File::Spec->catfile( $tmp_dir, basename(getcwd) . ".tar.gz" );
 
   my $login_url = $option{server} . "/login";
@@ -343,7 +343,7 @@ sub dispatch_execute_job {
 sub download_recipe {
   my ($name) = @_;
 
-  if ( $name =~ m/^(https|git):\/\// ) {
+  if ( $name =~ m/^(ssh|https|git):\/\// ) {
 
     # seems to be a git link
     download_recipe_git($name);
@@ -491,7 +491,7 @@ sub resolve_deps {
         }
 
         my $curdir = getcwd;
-        my $path = File::Spec->catdir( File::Spec->tmpdir, "tmp-build-$$" );
+        my $path   = File::Spec->catdir( File::Spec->tmpdir, "tmp-build-$$" );
 
         my $lib_path =
           File::Spec->catdir( File::Spec->rel2abs( File::Spec->curdir() ),
@@ -590,8 +590,8 @@ if ( exists $opts->{bundle} ) {
 
   # build the perl and application
   if ( -d '/usr/lib/rex/lib' ) {
-    system "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex"
-      ;
+    system
+      "pp -I /usr/lib/rex/lib \@$tmp_args_file -o rex.payload/rex.bin $rex";
   }
   else {
     system

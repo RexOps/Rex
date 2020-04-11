@@ -41,7 +41,7 @@ sub has {
     $item = [$_tmp];
   }
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
 
   for my $itm ( @{$item} ) {
     my $o_itm = $itm;
@@ -78,7 +78,7 @@ sub get_all {
   use Data::Dumper;
   my $r = ref($self);
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   my @items = @{"${r}::items"};
   use strict;
 

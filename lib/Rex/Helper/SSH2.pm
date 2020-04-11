@@ -14,6 +14,7 @@ use warnings;
 require Exporter;
 use Data::Dumper;
 require Rex::Commands;
+use Time::HiRes qw(sleep);
 
 use base qw(Exporter);
 
@@ -43,7 +44,7 @@ sub net_ssh2_exec {
   my $in_err = "";
 
   my $rex_int_conf = Rex::Commands::get("rex_internals") || {};
-  my $buffer_size = 1024;
+  my $buffer_size  = 1024;
   if ( exists $rex_int_conf->{read_buffer_size} ) {
     $buffer_size = $rex_int_conf->{read_buffer_size};
   }
@@ -91,11 +92,11 @@ sub net_ssh2_exec {
 END_READ:
   $chan->send_eof;
 
-  my $wait_c = 0;
+  my $wait_c   = 0;
   my $wait_max = $rex_int_conf->{ssh2_channel_closewait_max} || 500;
   while ( !$chan->eof ) {
     Rex::Logger::debug("Waiting for eof on ssh channel.");
-    select undef, undef, undef, 0.002; # wait a little for retry
+    sleep 0.002; # wait a little for retry
     $wait_c++;
     if ( $wait_c >= $wait_max ) {
 
@@ -112,7 +113,7 @@ END_READ:
 
   # if used with $chan->pty() we have to remove \r
   if ( !Rex::Config->get_no_tty ) {
-    $in =~ s/\r//g     if $in;
+    $in     =~ s/\r//g if $in;
     $in_err =~ s/\r//g if $in_err;
   }
 

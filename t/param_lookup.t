@@ -10,7 +10,7 @@ $::QUIET = 1;
 task(
   "test1",
   sub {
-    my $x = param_lookup( "name", "foo" );
+    my $x  = param_lookup( "name", "foo" );
     my $tp = template( \'<%= $name %>' );
 
     is( $x,  "foo", "got default value" );
@@ -21,7 +21,7 @@ task(
 task(
   "test2",
   sub {
-    my $x = param_lookup( "name", "foo" );
+    my $x  = param_lookup( "name", "foo" );
     my $tp = template( \'<%= $name %>' );
 
     is( $x,  "rex", "got parameter value" );
@@ -34,7 +34,7 @@ task(
   sub {
     test1();
 
-    my $x = param_lookup( "name", "foo" );
+    my $x  = param_lookup( "name", "foo" );
     my $tp = template( \'<%= $name %>' );
 
     is( $x,  "xer", "got parameter value" );

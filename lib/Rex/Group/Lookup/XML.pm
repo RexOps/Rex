@@ -41,9 +41,9 @@ XML::LibXML->require;
 
 With this function you can read groups from xml files.
 
-File Example:
+File example:
 
-<configuration>
+ <configuration>
    <group name="database">
        <server name="machine01" user="root" password="foob4r" sudo="true" hdd="300" loc="/opt" />
    </group>
@@ -54,19 +54,15 @@ File Example:
    <group name="profiler">
        <server name="machine03" user="root" password="blue123"/>
    </group>
-</configuration>
+ </configuration>
  
- 
- C<groups_xml($file);>
- 
- The XML file is validated against the following DTD schema:
- 
+The XML file is validated against the DTD schema stored in C<Rex::Group::Lookup::XML::$schema_file> as string.
  
 =cut
 
 =head2 $schema_file
 
-A global that defines the XSD schema for which the XML is check against.
+A variable that contains the XSD schema for which the XML is validated against.
 
 =cut
 
@@ -119,7 +115,7 @@ sub groups_xml {
   foreach my $server_node ( $xmldoc->findnodes('/configuration/group/server') )
   {
     my ($group) =
-      map  { $_->getValue() }
+      map { $_->getValue() }
       grep { $_->nodeName eq 'name' } $server_node->parentNode->attributes();
     my %atts =
       map { $_->nodeName => $_->getValue() } $server_node->attributes();

@@ -41,7 +41,7 @@ sub run_test {
   }
 
   if ( defined( $stats->{'owner'} ) ) {
-    my $uid = get_uid( $stats->{'owner'} );
+    my $uid    = get_uid( $stats->{'owner'} );
     my $result = defined $uid ? $uid == $stat{'uid'} : 0;
 
     $self->ok( $result, "Owner of $path is $stats->{'owner'}" );
@@ -50,7 +50,7 @@ sub run_test {
   }
 
   if ( defined( $stats->{'group'} ) ) {
-    my $gid = get_gid( $stats->{'group'} );
+    my $gid    = get_gid( $stats->{'group'} );
     my $result = defined $gid ? $gid == $stat{'gid'} : 0;
 
     $self->ok( $result, "Group of $path is $stats->{'group'}" );

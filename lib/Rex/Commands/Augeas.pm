@@ -298,7 +298,7 @@ Check if an item exists.
     my $file = shift @options;
 
     my $aug_key = $file;
-    my $val = $options[0] || "";
+    my $val     = $options[0] || "";
 
     if ( $is_ssh || !$has_config_augeas ) {
       my @paths;

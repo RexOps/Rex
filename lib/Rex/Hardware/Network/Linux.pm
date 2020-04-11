@@ -51,7 +51,7 @@ sub get_bridge_devices {
 sub get_network_devices {
 
   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
-  my @output = i_run( "$command", fail_ok => 1 );
+  my @output  = i_run( "$command", fail_ok => 1 );
 
   my $devices =
     ( $command eq 'ip addr show' )
@@ -67,7 +67,7 @@ sub get_network_configuration {
   my $device_info = {};
 
   my $command = can_run('ip') ? 'ip addr show' : 'ifconfig -a';
-  my @output = i_run( "$command", fail_ok => 1 );
+  my @output  = i_run( "$command", fail_ok => 1 );
 
   my $br_data = get_bridge_devices();
 
@@ -387,7 +387,7 @@ sub netstat {
 
       $state =~ s/^\s|\s$//g if ($state);
       $flags =~ s/\s+$//     if ($flags);
-      $cmd =~ s/\s+$//;
+      $cmd   =~ s/\s+$//;
 
       my $data = {
         proto   => $proto,
@@ -414,7 +414,7 @@ sub _convert_cidr_prefix {
   my ($cidr_prefix) = @_;
 
   # convert CIDR prefix to dotted decimal notation
-  my $binary_mask = '1' x $cidr_prefix . '0' x ( 32 - $cidr_prefix );
+  my $binary_mask         = '1' x $cidr_prefix . '0' x ( 32 - $cidr_prefix );
   my $dotted_decimal_mask = join '.', unpack 'C4', pack 'B32', $binary_mask;
 
   return $dotted_decimal_mask;

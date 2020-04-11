@@ -3,7 +3,7 @@ use Test::More tests => 30;
 use Rex::Inventory::DMIDecode;
 
 my @lines = eval { local (@ARGV) = ("t/dmi.linux.out"); <>; };
-my $dmi = Rex::Inventory::DMIDecode->new( lines => \@lines );
+my $dmi   = Rex::Inventory::DMIDecode->new( lines => \@lines );
 
 isa_ok( $dmi, "Rex::Inventory::DMIDecode", "dmi object" );
 
@@ -64,7 +64,7 @@ $bios    = undef;
 $sysinfo = undef;
 
 @lines = eval { local (@ARGV) = ("t/dmi.obsd.out"); <>; };
-$dmi = Rex::Inventory::DMIDecode->new( lines => \@lines );
+$dmi   = Rex::Inventory::DMIDecode->new( lines => \@lines );
 
 isa_ok( $dmi, "Rex::Inventory::DMIDecode", "dmi object (obsd)" );
 
@@ -125,7 +125,7 @@ $bios    = undef;
 $sysinfo = undef;
 
 @lines = eval { local (@ARGV) = ("t/dmi.fbsd.out"); <>; };
-$dmi = Rex::Inventory::DMIDecode->new( lines => \@lines );
+$dmi   = Rex::Inventory::DMIDecode->new( lines => \@lines );
 
 isa_ok( $dmi, "Rex::Inventory::DMIDecode", "dmi object (fbsd)" );
 

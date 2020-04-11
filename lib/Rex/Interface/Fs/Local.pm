@@ -83,19 +83,26 @@ sub rmdir {
 
 sub is_dir {
   my ( $self, $path ) = @_;
-  ( -d $path ) ? return 1 : return undef;
+  ( -d $path ) ? return 1 : return undef; ## no critic ProhibitExplicitReturnUndef
 }
 
 sub is_file {
   my ( $self, $file ) = @_;
   ( -f $file || -l $file || -b $file || -c $file || -p $file || -S $file )
     ? return 1
-    : return undef;
+    : return undef; ## no critic ProhibitExplicitReturnUndef
 }
 
 sub unlink {
   my ( $self, @files ) = @_;
-  CORE::unlink(@files);
+  for my $file (@files) {
+    if ( CORE::unlink($file) == 0 ) {
+      die "Error unlinking file: $file" if ( Rex::Config->get_autodie );
+      return 0;
+    }
+  }
+
+  return 1;
 }
 
 sub mkdir {
@@ -132,7 +139,7 @@ sub stat {
     return %ret;
   }
 
-  return undef;
+  return undef; ## no critic ProhibitExplicitReturnUndef
 }
 
 sub is_readable {

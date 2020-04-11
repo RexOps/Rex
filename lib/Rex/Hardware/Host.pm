@@ -271,18 +271,19 @@ sub get_operating_system_version {
     return [ split( /\s+/, $content ) ]->[-1];
   }
 
-elsif ( $op eq "SuSE" ) {
+  elsif ( $op eq "SuSE" ) {
 
     my ( $version, $release );
 
     my $release_file;
     if ( is_file("/etc/os-release") ) {
       $release_file = "/etc/os-release";
-    } else {
+    }
+    else {
       $release_file = "/etc/SuSE-release";
     }
 
-    my $fh = file_read($release_file);
+    my $fh      = file_read($release_file);
     my $content = $fh->read_all;
     $fh->close;
 

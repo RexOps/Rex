@@ -35,7 +35,7 @@ sub execute {
 
     # Trim white spaces.
     $column =~ s/^\s+|\s+$//g;
-    $value =~ s/^\s+|\s+$//g;
+    $value  =~ s/^\s+|\s+$//g;
 
     $ret{$column} = $value;
   }

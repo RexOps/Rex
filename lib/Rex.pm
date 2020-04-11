@@ -8,62 +8,39 @@
 
 =head1 NAME
 
-Rex - Remote Execution
+Rex - the friendly automation framework
 
 =head1 DESCRIPTION
 
-Rex is a command line tool which executes commands on remote servers.  Define
-tasks in Perl and execute them on remote servers or groups of servers.
+Rex is an automation framework that is friendly to any combinations of local
+and remote execution, push and pull style of management, or imperative and
+declarative approach.
 
-Rex can be used to:
+Its flexibility makes it a great fit for many different use cases, but most
+commonly Rex is used to automate application deployment and data center
+infrastructure management tasks.
 
-=over 4
+See L<Rex::Commands> for a starting point of available built-in commands.
 
-=item * Deploy web applications to servers sequentially or in parallel.
-
-=item * Automate common tasks.
-
-=item * Provision servers using Rex's builtin tools.
-
-=back
-
-You can find examples and howtos on L<http://rexify.org/>
-
-=head1 GETTING HELP
-
-=over 4
-
-=item * Web Site: L<http://rexify.org/>
-
-=item * IRC: irc.freenode.net #rex
-
-=item * Bug Tracker: L<https://github.com/RexOps/Rex/issues>
-
-=item * Twitter: L<http://twitter.com/jfried83>
-
-=back
+See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more information about how to use rex on the command line.
 
 =head1 SYNOPSIS
 
     # In a Rexfile:
-    use Rex -feature => [qw/1.3/];
+    use Rex -feature => [qw/1.4/];
    
     user "root";
     password "ch4ngem3";
    
-    desc "Show Unix version";
-    task "uname", sub {
+    desc "Show system information";
+    task "sysinfo", sub {
        say run "uname -a";
     };
 
     1;
    
     # On the command line:
-    bash# rex -H server[01..10] uname
-
-See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more information about how to use rex on the command line.
-
-See L<Rex::Commands> for a list of all commands you can use.
+    $ rex -H server[01..10] sysinfo
 
 =head1 CLASS METHODS
 
@@ -102,8 +79,6 @@ our ( @EXPORT, @CONNECTION_STACK, $GLOBAL_SUDO, $MODULE_PATHS,
 
 $WITH_EXIT_STATUS = 1; # since 0.50 activated by default
 @FEATURE_FLAGS    = ();
-
-my $cur_dir;
 
 BEGIN {
 
@@ -237,7 +212,7 @@ sub search_module_path {
       close $fh_t if $fh_t;
       my ($path) = ( $file =~ m/^(.*)\/.+?$/ );
       if ( $path !~ m/\// ) {
-        $path = $cur_dir . "/$path";
+        $path = getcwd() . "/$path";
       }
 
       # module found, register path
@@ -937,6 +912,18 @@ sub import {
       if ( $add eq "task_chaining_cmdline_args" ) {
         Rex::Logger::debug("Enabling task_chaining_cmdline_args feature");
         Rex::Config->set_task_chaining_cmdline_args(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "write_utf8_files" ) {
+        Rex::Logger::debug("Enabling write_utf8_files feature");
+        Rex::Config->set_write_utf8_files(1);
+        $found_feature = 1;
+      }
+
+      if ( $add eq "no_write_utf8_files" ) {
+        Rex::Logger::debug("Disabling write_utf8_files feature");
+        Rex::Config->set_write_utf8_files(0);
         $found_feature = 1;
       }
 

@@ -360,7 +360,7 @@ sub old_service {
 
     if ( $srvc->ensure( $service, { ensure => $options } ) ) {
       $changed = 0;
-      $return = 1 if !$is_multiple;
+      $return  = 1 if !$is_multiple;
     }
     else {
       $return = 0 if !$is_multiple;

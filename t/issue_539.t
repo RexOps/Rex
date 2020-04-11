@@ -2,7 +2,7 @@ use Test::More tests => 16;
 use Rex::Hardware::Network::Linux;
 use Rex::Helper::Hash;
 
-my @in = eval { local (@ARGV) = ("t/ip.out_issue_539"); <>; };
+my @in   = eval { local (@ARGV) = ("t/ip.out_issue_539"); <>; };
 my $info = Rex::Hardware::Network::Linux::_parse_ip(@in);
 
 is( $info->{eth0}->{broadcast}, "192.168.178.255", "eth0 primary / broadcast" );

@@ -1,0 +1,93 @@
+jobs:
+  include:
+    - stage: test
+      language: perl
+      perl:
+        - "5.30"
+      env:
+        - AUTHOR_TESTING=1 RELEASE_TESTING=1 PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/lib
+          - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/bin
+      addons:
+        apt:
+          packages:
+            - libmagic-dev
+      before_install:
+        - cpanm Perl::Critic Perl::Tidy
+        - perlcritic --quiet --single-policy=RequireTidyCode bin
+        - mkdir ~/.dzil
+        - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
+        - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
+        - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
+        - cpanm File::LibMagic Test::mysqld
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/
+    - stage: test
+      os: windows
+      language: shell
+      env:
+        - PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - /c/Strawberry
+      before_install:
+        - cinst -y strawberryperl
+        - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
+        - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
+        - ln -snf /c/Strawberry/perl/bin/perl /bin/perl
+        - cpanm --reinstall Module::Pluggable::Object
+        - cpanm Dist::Zilla
+        - mkdir ~/.dzil
+        - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
+        - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
+        - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML
+        - cpanm --reinstall App::Prove
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build
+        - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+    - stage: test
+      os: osx
+      osx_image: xcode11.2
+      language: shell
+      env:
+        - PERL_CPANM_OPT="--quiet --notest"
+      cache:
+        directories:
+          - /usr/local/Cellar/perl
+      addons:
+        homebrew:
+          packages:
+            - perl
+            - cpanminus
+            - openssl
+          update: true
+      before_install:
+        - export "PATH=/usr/local/Cellar/perl/5.30.1/bin:${PATH}"
+        - cpanm Dist::Zilla
+        - mkdir ~/.dzil
+        - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
+        - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
+        - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
+        - dzil authordeps --missing | cpanm
+        - dzil listdeps --author --missing | cpanm
+        - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
+      install:
+        - dzil build --in build --notgz
+      script:
+        - cd build
+        - prove --timer --lib --recurse --jobs $(sysctl -n hw.ncpu) --shuffle t/

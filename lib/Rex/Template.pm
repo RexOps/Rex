@@ -38,7 +38,7 @@ our $BE_LOCAL = 1;
 sub function {
   my ( $class, $name, $code ) = @_;
 
-  no strict 'refs';
+  no strict 'refs'; ## no critic ProhibitNoStrict
   *{ $class . "::" . $name } = $code;
   use strict;
 }
@@ -78,7 +78,7 @@ sub parse {
       if ($code) {
         my $pcmd = substr( $text, -1 );
         if ( $pcmd eq "-" ) {
-          $text = substr( $text, 0, -1 );
+          $text     = substr( $text, 0, -1 );
           $do_chomp = 1;
         }
 
@@ -117,8 +117,8 @@ sub parse {
   );
 
   eval {
-    no strict 'refs';
-    no strict 'vars';
+    no strict 'refs'; ## no critic ProhibitNoStrict
+    no strict 'vars'; ## no critic ProhibitNoStrict
 
     for my $var ( keys %{$vars} ) {
       Rex::Logger::debug("Registering: $var");

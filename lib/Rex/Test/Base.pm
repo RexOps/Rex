@@ -149,7 +149,7 @@ sub base_vm {
   $self->{vm} = $vm;
 }
 
-sub test(&) {
+sub test(&) { ## no critic ProhibitSubroutinePrototypes
   my $code = shift;
   my $test = __PACKAGE__->new;
   $code->($test);
@@ -216,7 +216,7 @@ sub run_task {
   );
 }
 
-sub ok($;$) {
+sub ok() {
   my ( $self, $test, $msg ) = @_;
   my $tb = Rex::Test::Base->builder;
   $tb->ok( $test, $msg );

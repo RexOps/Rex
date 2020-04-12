@@ -245,6 +245,18 @@ sub rmdir {
 
 This function will create a new directory.
 
+The following options are supported:
+
+=over 4
+
+=item * owner
+
+=item * group
+
+=item * mode
+
+=back
+
 With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resource instead.
 
  task "prepare", sub {
@@ -254,6 +266,8 @@ With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resourc
      group  => "root",
      mode   => 1777;
  };
+
+Direct usage:
  
  task "mkdir", "server01", sub {
    mkdir "/tmp";

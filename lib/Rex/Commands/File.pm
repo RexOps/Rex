@@ -623,7 +623,7 @@ sub file {
         $dir_option{mode} = $option->{mode};
       }
 
-      Rex::Commands::Fs::mkdir( $file, %dir_option );
+      Rex::Commands::Fs::mkdir( $file, %dir_option, on_change => $on_change );
     }
   }
 

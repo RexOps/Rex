@@ -1,4 +1,4 @@
-# Rex, the friendly automation framework [![Build Status](https://travis-ci.org/RexOps/Rex.svg?branch=master)](https://travis-ci.org/RexOps/Rex)
+# Rex, the friendly automation framework [![Build Status](https://travis-ci.com/RexOps/Rex.svg?branch=master)](https://travis-ci.com/RexOps/Rex)
 
 The main ideas behind Rex are:
 

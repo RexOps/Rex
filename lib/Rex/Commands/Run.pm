@@ -386,17 +386,22 @@ To run only a specific command with sudo, use :
  # running a single command with sudo as different user, and `cd` to another directory too
  say sudo { command => 'id', user => 'different', cwd => '/home/different' };
 
-Passing an anonymous I<coderef> to C<sudo> allows for running the commands in the sub with sudo:
+To run multiple commands with C<sudo>, either use an anonymous code reference directly:
 
  sudo sub {
      service 'nginx' => 'restart';
      say run 'id';
  };
- # or running multiple commands with sudo as different user
- sudo { user => 'different', command => sub {
-     say run 'id';
-     say run 'pwd', cwd => '/home/different';
- }};
+
+or pass it via C<command> (optionally along a different user):
+
+ sudo {
+     command => sub {
+         say run 'id';
+         say run 'pwd', cwd => '/home/different';
+     },
+     user => 'different',
+ };
 
 B<Note> that some users receive the error C<sudo: sorry, you must have a tty
 to run sudo>. In this case you have to disable C<requiretty> for this user.

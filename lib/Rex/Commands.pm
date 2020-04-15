@@ -1298,13 +1298,16 @@ sub get {
 
 =head2 before($task => sub {})
 
-Run code before executing the specified task. The special taskname 'ALL' can be used to run code before all tasks.
+Run code before executing the specified task.
+
+The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can also be used to run code before all tasks.
+
 If called repeatedly, each sub will be appended to a list of 'before' functions.
 
 In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
 server object that will be used for the connection.
 
-Note: must come after the definition of the specified task
+Please note, this must come after the definition of the specified task.
 
  before mytask => sub {
   my ($server, $server_ref, $cli_args) = @_;
@@ -1327,10 +1330,13 @@ sub before {
 
 =head2 after($task => sub {})
 
-Run code after the task is finished. The special taskname 'ALL' can be used to run code after all tasks.
+Run code after executing the specified task.
+
+The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can be used to run code after all tasks.
+
 If called repeatedly, each sub will be appended to a list of 'after' functions.
 
-Note: must come after the definition of the specified task
+Please note, this must come after the definition of the specified task.
 
  after mytask => sub {
   my ($server, $failed, $cli_args) = @_;
@@ -1356,13 +1362,16 @@ sub after {
 
 =head2 around($task => sub {})
 
-Run code before and after the task is finished. The special taskname 'ALL' can be used to run code around all tasks.
+Run code around the specified task (that is both before and after executing it).
+
+The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can be used to run code around all tasks.
+
 If called repeatedly, each sub will be appended to a list of 'around' functions.
 
 In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
 server object that will be used for the connection.
 
-Note: must come after the definition of the specified task
+Please note, this must come after the definition of the specified task.
 
  around mytask => sub {
   my ($server, $server_ref, $cli_args, $position) = @_;
@@ -1392,10 +1401,13 @@ sub around {
 
 =head2 before_task_start($task => sub {})
 
-Run code before executing the specified task. This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
+Run code before executing the specified task. This gets executed only once for a task.
+
+The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can be used to run code before all tasks.
+
 If called repeatedly, each sub will be appended to a list of 'before_task_start' functions.
 
-Note: must come after the definition of the specified task
+Please note, this must come after the definition of the specified task.
 
  before_task_start mytask => sub {
    # do some things
@@ -1417,10 +1429,13 @@ sub before_task_start {
 
 =head2 after_task_finished($task => sub {})
 
-Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task. The special taskname 'ALL' can be used to run code before all tasks.
+Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task.
+
+The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can be used to run code before all tasks.
+
 If called repeatedly, each sub will be appended to a list of 'after_task_finished' functions.
 
-Note: must come after the definition of the specified task
+Please note, this must come after the definition of the specified task.
 
  after_task_finished mytask => sub {
    # do some things

@@ -10,6 +10,7 @@ Revision history for Rex
 
  [DOCUMENTATION]
  - Clarify sudo usage for multiple commands
+ - Clarify task hooks documentation
 
  [ENHANCEMENTS]
 

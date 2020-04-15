@@ -4,6 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix warning about redundant arguments when using sync with key
+ authentication
 
  [DOCUMENTATION]
  - Clarify sudo usage for multiple commands

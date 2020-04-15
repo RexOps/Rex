@@ -235,10 +235,9 @@ sub sync {
   else {
     if ( $auth_type eq "key" ) {
       $cmd = sprintf( $cmd,
-        'ssh -i '
+            'ssh -i '
           . $server->get_private_key
-          . " -o StrictHostKeyChecking=no -p " . "$port",
-        $port );
+          . " -o StrictHostKeyChecking=no -p $port" );
     }
     else {
       $cmd = sprintf( $cmd, 'ssh -o StrictHostKeyChecking=no -p ' . "$port" );

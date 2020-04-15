@@ -4,6 +4,7 @@ use warnings;
 use Test::More tests => 95;
 
 use Rex -feature => '0.31';
+use Rex::Group;
 
 delete $ENV{REX_USER};
 

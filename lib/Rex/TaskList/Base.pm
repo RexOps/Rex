@@ -35,7 +35,7 @@ sub new {
   bless( $self, $proto );
 
   $self->{IN_TRANSACTION} = 0;
-  $self->{DEFAULT_AUTH}   = 1;
+  $self->{DEFAULT_AUTH}   = Rex::Config->get_default_auth();
   $self->{tasks}          = {};
 
   return $self;

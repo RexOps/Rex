@@ -60,6 +60,7 @@ our (
   $use_template_ng,             $use_rex_kvm_agent,
   $autodie,                     $task_chaining_cmdline_args,
   $waitpid_blocking_sleep_time, $write_utf8_files,
+  $default_auth,
 );
 
 # some defaults
@@ -1589,6 +1590,27 @@ sub set_write_utf8_files {
 
 sub get_write_utf8_files {
   return $write_utf8_files;
+}
+
+=head2 set_default_auth
+
+=head2 get_default_auth
+
+Sets and gets the value of the C<$default_auth> configuration variable.
+
+This controls whether Rex should attach default authentication info to tasks.
+
+Default is C<1>.
+
+=cut
+
+sub set_default_auth {
+  my $self = shift;
+  $default_auth = shift;
+}
+
+sub get_default_auth {
+  return $default_auth // 1;
 }
 
 =head2 register_set_handler($handler_name, $code)

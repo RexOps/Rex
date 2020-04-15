@@ -6,6 +6,7 @@ Revision history for Rex
  [BUG FIXES]
  - Fix warning about redundant arguments when using sync with key
  authentication
+ - Fix setting distributor when versioned feature flags are active
 
  [DOCUMENTATION]
  - Clarify sudo usage for multiple commands
@@ -17,6 +18,8 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+ - Add new configuration option to control attaching default authentication
+ info to tasks
 
  [REVISION]
 

@@ -8,9 +8,23 @@
 
 Rex::Config - Handles Rex configuration
 
+=head1 SYNOPSIS
+
+ use Rex::Config;
+
+ # set a config option
+ Rex::Config->set_exec_autodie(TRUE);
+
+ # get value of a config option
+ my $user = Rex::Config->get_user();
+
 =head1 DESCRIPTION
 
-This module holds all configuration parameters for Rex, and also allows you to specify your own configuration parameters for your modules.
+This module holds all configuration options for Rex, and also allows you to specify your own ones for your modules.
+
+Please take a look at L<Rex::Commands> first, which provides convenience wrappers for many of these options.
+
+While it's possible to use the methods below to set a configuration option directly, their main intended purpose is to be used as internal plumbing, and to provide an escape hatch in case there are no better alternatives.
 
 =head1 EXPORTED METHODS
 

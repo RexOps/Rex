@@ -15,6 +15,7 @@ use Rex::Helper::Run;
 use Rex::Commands::File;
 use Rex::Pkg::Base;
 use base qw(Rex::Pkg::Base);
+use Net::OpenSSH::ShellQuoter;
 
 sub new {
   my $that  = shift;
@@ -31,8 +32,10 @@ sub new {
 
   $self->{commands} = {
     install           => 'pkg install -q -y %s',
+    install_glob      => 'pkg install -q -y -g %s',
     install_version   => 'pkg install -q -y %s',
     remove            => 'pkg remove -q -y %s',
+    remove_glob       => 'pkg remove -q -y -g %s',
     query             => 'pkg info',
     update_package_db => 'pkg update -q -f',
 
@@ -56,10 +59,14 @@ sub bulk_install {
 sub remove {
   my ( $self, $pkg ) = @_;
 
-  my ($pkg_found) = grep { $_->{"name"} eq "$pkg" } $self->get_installed();
-  my $pkg_version = $pkg_found->{"version"};
+  my $pkg_version = '';
 
-  return $self->SUPER::remove("$pkg-$pkg_version");
+  if ( $pkg !~ /\*/ ) {
+    my ($pkg_found) = grep { $_->{"name"} eq "$pkg" } $self->get_installed();
+    $pkg_version = '-' . $pkg_found->{"version"};
+  }
+
+  return $self->SUPER::remove("$pkg$pkg_version");
 }
 
 sub is_installed {
@@ -69,9 +76,23 @@ sub is_installed {
   Rex::Logger::debug(
     "Checking if $pkg" . ( $version ? "-$version" : "" ) . " is installed" );
 
+  # only need -g if pkg is a glob
+  my $extra_args = '';
+  if ( $pkg =~ /\*/ ) {
+
+    # quote the pkg glob so it will work
+    my $exec   = Rex::Interface::Exec->create;
+    my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+    $pkg        = $quoter->quote($pkg);
+    $extra_args = $extra_args . ' -g ';
+  }
+
   # pkg info -e allow get quick answer about is pkg installed or not.
   my $command =
-    $self->{commands}->{query} . " -e $pkg" . ( $version ? "-$version" : "" );
+      $self->{commands}->{query}
+    . $extra_args
+    . " -e $pkg"
+    . ( $version ? "-$version" : "" );
   i_run $command, fail_ok => 1;
 
   if ( $? != 0 ) {

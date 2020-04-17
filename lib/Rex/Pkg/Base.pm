@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use Rex::Helper::Run;
 use Rex::Interface::Exec;
+use Net::OpenSSH::ShellQuoter;
 
 # VERSION
 
@@ -66,11 +67,25 @@ sub update {
   my $env     = $option->{'env'}     || ();
 
   Rex::Logger::debug( "Installing $pkg" . ( $version ? "-$version" : "" ) );
-  my $cmd = sprintf $self->{commands}->{install}, $pkg;
+  my $cmd;
+  if ( ( $pkg =~ /\*/ )
+    && defined( $self->{commands}->{install_glob} ) )
+  {
 
-  if ( exists $option->{version} ) {
-    $cmd = sprintf $self->{commands}->{install_version}, $pkg,
-      $option->{version};
+    # quote the pkg name so it won't error when ran
+    my $exec   = Rex::Interface::Exec->create;
+    my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+    $pkg = $quoter->quote($pkg);
+    $cmd = sprintf $self->{commands}->{install_glob}, $pkg;
+  }
+  else {
+    $cmd = sprintf $self->{commands}->{install}, $pkg;
+
+    # not compatible with globs, so skip over this
+    if ( exists $option->{version} ) {
+      $cmd = sprintf $self->{commands}->{install_version}, $pkg,
+        $option->{version};
+    }
   }
 
   my $f = i_run $cmd, fail_ok => 1, env => $env;
@@ -135,7 +150,20 @@ sub remove {
   my ( $self, $pkg ) = @_;
 
   Rex::Logger::debug("Removing $pkg");
-  my $cmd = sprintf $self->{commands}->{remove}, $pkg;
+  my $cmd;
+  if ( ( $pkg =~ /\*/ )
+    && defined( $self->{commands}->{remove_glob} ) )
+  {
+
+    # quote the pkg name so it won't error when ran
+    my $exec   = Rex::Interface::Exec->create;
+    my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+    $pkg = $quoter->quote($pkg);
+    $cmd = sprintf $self->{commands}->{remove_glob}, $pkg;
+  }
+  else {
+    $cmd = sprintf $self->{commands}->{remove}, $pkg;
+  }
 
   my $f = i_run $cmd, fail_ok => 1;
 

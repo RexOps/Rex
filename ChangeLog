@@ -12,8 +12,10 @@ Revision history for Rex
  - Clarify sudo usage for multiple commands
  - Clarify task hooks documentation
  - Clarify usage and purpose of configuration methods
+ - Clarify mkdir usage
 
  [ENHANCEMENTS]
+ - Add on_change option for mkdir
 
  [MAJOR]
 

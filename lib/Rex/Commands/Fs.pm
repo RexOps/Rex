@@ -245,6 +245,20 @@ sub rmdir {
 
 This function will create a new directory.
 
+The following options are supported:
+
+=over 4
+
+=item * owner
+
+=item * group
+
+=item * mode
+
+=item * on_change
+
+=back
+
 With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resource instead.
 
  task "prepare", sub {
@@ -254,6 +268,8 @@ With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resourc
      group  => "root",
      mode   => 1777;
  };
+
+Direct usage:
  
  task "mkdir", "server01", sub {
    mkdir "/tmp";
@@ -272,6 +288,8 @@ sub mkdir {
   $dir = resolv_path($dir);
 
   my $options = {@_};
+
+  $options->{on_change} //= sub { };
 
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => "mkdir", name => $dir );
@@ -372,6 +390,9 @@ sub mkdir {
 
   if ( $changed == 0 ) {
     Rex::get_current_connection()->{reporter}->report( changed => 0, );
+  }
+  else {
+    $options->{on_change}->($dir);
   }
 
   Rex::get_current_connection()->{reporter}

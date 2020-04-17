@@ -4,7 +4,7 @@ use warnings;
 use Cwd 'getcwd';
 my $cwd = getcwd;
 
-use Test::More tests => 55;
+use Test::More tests => 57;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -314,6 +314,17 @@ unlink "$tmp_dir/multiline-$$.txt";
 
 file "$tmp_dir/test.d-$$", ensure => "directory";
 
+ok( -d "$tmp_dir/test.d-$$", "created directory with file()" );
+rmdir "$tmp_dir/test.d-$$";
+
+$changed = 0;
+file "$tmp_dir/test.d-$$",
+  ensure    => "directory",
+  on_change => sub {
+  $changed = 1;
+  };
+
+ok( $changed,                "on_change hook with directory" );
 ok( -d "$tmp_dir/test.d-$$", "created directory with file()" );
 rmdir "$tmp_dir/test.d-$$";
 

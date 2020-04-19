@@ -383,7 +383,7 @@ sub modify {
       $_ =~ m/^\Q$package\E:/;
     }
     else {
-      $_ !~ m/:/;
+      $_;
     }
   } $self->get_all_tasks($task);
 

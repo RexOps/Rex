@@ -7,6 +7,7 @@ Revision history for Rex
  - Fix warning about redundant arguments when using sync with key
  authentication
  - Fix setting distributor when versioned feature flags are active
+ - Remove default host of test tasks
 
  [DOCUMENTATION]
  - Clarify sudo usage for multiple commands

@@ -15,7 +15,7 @@ $::QUIET = 1;
 
 timeout 1;
 
-task foo => "asdfsadfasdf" => sub { return "yo" };
+task foo => sub { return "yo" };
 
 before_task_start ALL => sub { $before_task_start_all += 1 };
 before_task_start foo => sub { $before_task_start     += 1 };

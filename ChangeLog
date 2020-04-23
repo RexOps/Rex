@@ -8,6 +8,7 @@ Revision history for Rex
  authentication
  - Fix setting distributor when versioned feature flags are active
  - Remove default host of test tasks
+ - Fix task hooks specified in Rexfile for tasks defined in modules
 
  [DOCUMENTATION]
  - Clarify sudo usage for multiple commands

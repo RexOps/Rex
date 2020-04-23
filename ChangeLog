@@ -16,6 +16,7 @@ Revision history for Rex
 
  [ENHANCEMENTS]
  - Add on_change option for mkdir
+ - Support package globs on FreeBSD
 
  [MAJOR]
 
@@ -24,6 +25,7 @@ Revision history for Rex
  [NEW FEATURES]
  - Add new configuration option to control attaching default authentication
  info to tasks
+ - Initial support for package globs
 
  [REVISION]
 

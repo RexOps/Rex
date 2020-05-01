@@ -112,7 +112,7 @@ sub get_autodie {
 
 Sets and gets the value of the C<$use_net_openssh_if_present> configuration variable.
 
-This controls whether Rex should use L<Net::OpenSSH> for connections if that is available. 
+This controls whether Rex should use L<Net::OpenSSH> for connections if that is available.
 
 Default is C<undef>.
 
@@ -540,9 +540,15 @@ sub get_use_cache {
 
 =head2 get_openssh_opt
 
-Sets and gets the value of the C<$openssh_opt> configuration variable.
+Sets/gets the value of the C<$openssh_opt> configuration variable used to set the
+"-o" switch options in the ssh command. See the ssh man page for more details.
 
-This sets the hash containing OpenSSH options Rex should use when using L<Net::OpenSSH> for SSH connections.
+This variable can also be used to pass initialization options to the OpenSSH
+object, like so:
+
+  Rex::Config->set_openssh_opt(initialize_options => { key => value, ... });
+
+See L<Net::OpenSSH> for a listing of its initialization options.
 
 Default is C<undef>.
 

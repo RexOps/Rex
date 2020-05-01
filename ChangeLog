@@ -11,6 +11,7 @@ Revision history for Rex
  - Fix task hooks specified in Rexfile for tasks defined in modules
 
  [DOCUMENTATION]
+ - Add documentation for setting OpenSSH initializer options
  - Clarify sudo usage for multiple commands
  - Clarify task hooks documentation
  - Clarify usage and purpose of configuration methods

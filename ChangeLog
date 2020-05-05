@@ -5,7 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix warning about redundant arguments when using sync with key
- authentication
+   authentication
  - Fix setting distributor when versioned feature flags are active
  - Remove default host of test tasks
  - Fix task hooks specified in Rexfile for tasks defined in modules

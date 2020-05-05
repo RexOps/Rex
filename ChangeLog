@@ -26,7 +26,7 @@ Revision history for Rex
 
  [NEW FEATURES]
  - Add new configuration option to control attaching default authentication
- info to tasks
+   info to tasks
  - Initial support for package globs
 
  [REVISION]

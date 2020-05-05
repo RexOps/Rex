@@ -4,6 +4,21 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+
+ [DOCUMENTATION]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+
+ [NEW FEATURES]
+
+ [REVISION]
+
+1.10.0 2020-05-05 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
  - Fix warning about redundant arguments when using sync with key
    authentication
  - Fix setting distributor when versioned feature flags are active
@@ -20,16 +35,10 @@ Revision history for Rex
  - Add on_change option for mkdir
  - Support package globs on FreeBSD
 
- [MAJOR]
-
- [MINOR]
-
  [NEW FEATURES]
  - Add new configuration option to control attaching default authentication
    info to tasks
  - Initial support for package globs
-
- [REVISION]
 
 1.9.0 2020-04-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

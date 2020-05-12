@@ -379,7 +379,9 @@ Or with the expression syntax:
 
  group "servergroup", "www[1..3]", "memcache[01..03]";
 
-You can also specify server options after a server name with a hash reference:
+If the C<use_server_auth> feature flag is enabled, you can also specify server options after a server name with a hash reference:
+
+ use Rex -feature => ['use_server_auth'];
 
  group "servergroup", "www1" => { user => "other" }, "www2";
 

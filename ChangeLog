@@ -6,6 +6,8 @@ Revision history for Rex
  [BUG FIXES]
 
  [DOCUMENTATION]
+ - Clarify auth documentation
+ - Clarify setting per-host authentication details within a group
 
  [ENHANCEMENTS]
 

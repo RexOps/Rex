@@ -311,11 +311,17 @@ sub group_resource {
     Rex::get_current_connection()->{reporter}
       ->report_resource_start( type => "group", name => $group_name );
 
+    my $gid = get_gid($group_name);
+
     if ( $option{ensure} eq "present" ) {
-      Rex::Commands::User::create_group( $group_name, %option );
+      if ( !defined $gid ) {
+        Rex::Commands::User::create_group( $group_name, %option );
+      }
     }
     elsif ( $option{ensure} eq "absent" ) {
-      Rex::Commands::User::delete_group($group_name);
+      if ( defined $gid ) {
+        Rex::Commands::User::delete_group($group_name);
+      }
     }
     else {
       die "Unknown 'ensure' value. Valid values are 'present' and 'absent'.";

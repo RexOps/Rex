@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Make group resource idempotent
 
  [DOCUMENTATION]
  - Clarify auth documentation

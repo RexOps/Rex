@@ -70,30 +70,34 @@ With ensure => "present", if the key already exists in the file, it will be upda
 
 sub sysctl_save {
   my ( $key, $value ) = @_;
+  my $sysctl = get_sysctl_command();
+
   append_or_amend_line "/etc/sysctl.conf",
     line      => "$key=$value",
     regexp    => qr{\Q$key=},
-    on_change => sub { i_run '/sbin/sysctl -p' };
+    on_change => sub { i_run "$sysctl -p" };
 }
 
 sub sysctl_remove {
   my ( $key, $value ) = @_;
+  my $sysctl = get_sysctl_command();
 
   delete_lines_according_to "$key=$value", "/etc/sysctl.conf",
-    on_change => sub { i_run '/sbin/sysctl -p' };
+    on_change => sub { i_run "$sysctl -p" };
 }
 
 sub sysctl {
 
   my ( $key, $val, %options ) = @_;
+  my $sysctl = get_sysctl_command();
 
   if ($val) {
 
     Rex::Logger::debug("Setting sysctl key $key to $val");
-    my $ret = i_run "/sbin/sysctl -n $key";
+    my $ret = i_run "$sysctl -n $key";
 
     if ( $ret ne $val ) {
-      i_run "/sbin/sysctl -w $key=$val", fail_ok => 1;
+      i_run "$sysctl -w $key=$val", fail_ok => 1;
       if ( $? != 0 ) {
         die("Sysctl failed $key -> $val");
       }
@@ -120,7 +124,7 @@ sub sysctl {
   }
   else {
 
-    my $ret = i_run "/sbin/sysctl -n $key", fail_ok => 1;
+    my $ret = i_run "$sysctl -n $key", fail_ok => 1;
     if ( $? == 0 ) {
       return $ret;
     }
@@ -131,6 +135,18 @@ sub sysctl {
 
   }
 
+}
+
+sub get_sysctl_command {
+  my $sysctl = can_run('/sbin/sysctl');
+
+  if ( !defined $sysctl ) {
+    my $message = q(Couldn't find sysctl executable);
+    Rex::Logger::info( $message, 'error' );
+    die($message);
+  }
+
+  return $sysctl;
 }
 
 1;

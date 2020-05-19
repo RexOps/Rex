@@ -91,7 +91,7 @@ sub sysctl {
   my ( $key, $val, %options ) = @_;
   my $sysctl = get_sysctl_command();
 
-  if ($val) {
+  if ( defined $val ) {
 
     Rex::Logger::debug("Setting sysctl key $key to $val");
     my $ret = i_run "$sysctl -n $key";

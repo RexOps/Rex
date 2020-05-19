@@ -5,12 +5,14 @@ Revision history for Rex
 
  [BUG FIXES]
  - Make group resource idempotent
+ - Fix sysctl detection for Gentoo
 
  [DOCUMENTATION]
  - Clarify auth documentation
  - Clarify setting per-host authentication details within a group
 
  [ENHANCEMENTS]
+ - Check availability of sysctl command
 
  [MAJOR]
 

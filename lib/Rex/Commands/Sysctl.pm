@@ -138,7 +138,7 @@ sub sysctl {
 }
 
 sub get_sysctl_command {
-  my $sysctl = can_run('/sbin/sysctl');
+  my $sysctl = can_run( '/sbin/sysctl', '/usr/sbin/sysctl' );
 
   if ( !defined $sysctl ) {
     my $message = q(Couldn't find sysctl executable);

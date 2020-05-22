@@ -540,9 +540,13 @@ sub get_use_cache {
 
 =head2 get_openssh_opt
 
-Sets and gets the value of the C<$openssh_opt> configuration variable.
+Sets and gets the value of the C<$openssh_opt> configuration variable, which holds a hash of the SSH configuration options used for the connection. See the L<ssh_config(5) man page|http://man.openbsd.org/OpenBSD-current/man5/ssh_config.5> for the available options.
 
-This sets the hash containing OpenSSH options Rex should use when using L<Net::OpenSSH> for SSH connections.
+  Rex::Config->set_openssh_opt( $option => $value, );
+
+There is a custom option named C<initialize_options> specific to Rex, which can be used to pass a hash reference describing the L<constructor parameters|https://metacpan.org/pod/Net::OpenSSH#Net::OpenSSH-E<gt>new($host,-%opts)> for the underlying L<Net::OpenSSH> object:
+
+ Rex::Config->set_openssh_opt( initialize_options => { $parameter => $value, } );
 
 Default is C<undef>.
 

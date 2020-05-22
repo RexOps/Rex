@@ -11,6 +11,7 @@ Revision history for Rex
  [DOCUMENTATION]
  - Clarify auth documentation
  - Clarify setting per-host authentication details within a group
+ - Clarify documentation of configuring OpenSSH options
 
  [ENHANCEMENTS]
  - Check availability of sysctl command

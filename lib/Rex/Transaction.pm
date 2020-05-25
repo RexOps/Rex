@@ -6,7 +6,7 @@
 
 =head1 NAME
 
-Rex::Transaction - Transaction support.
+Rex::Transaction - Transaction support
 
 =head1 DESCRIPTION
 
@@ -14,16 +14,18 @@ With this module you can define transactions and rollback scenarios on failure.
 
 =head1 SYNOPSIS
 
- task "do-something", "server01", sub {
+ use Rex::Transaction;
+ 
+ task 'do-something', 'server01', sub {
    transaction {
      on_rollback {
-       rmdir "/tmp/mydata";
+       rmdir '/tmp/mydata';
      };
  
-     mkdir "/tmp/mydata";
-     upload "files/myapp.tar.gz", "/tmp/mydata";
-     run "cd /tmp/mydata; tar xzf myapp.tar.gz";
-     if($? != 0) { die("Error extracting myapp.tar.gz"); }
+     mkdir '/tmp/mydata';
+     upload 'files/myapp.tar.gz', '/tmp/mydata';
+     run 'tar xzf myapp.tar.gz -C /tmp/mydata';
+     if ( $? != 0 ) { die('Error extracting myapp.tar.gz'); }
    };
  };
 
@@ -51,23 +53,24 @@ use Data::Dumper;
 
 =head2 transaction($codeRef)
 
-Start a transaction for $codeRef. If $codeRef dies it will rollback the transaction.
+Start a transaction for C<$codeRef>. If C<$codeRef> dies, Rex will run the L<on_rollback|https://metacpan.org/pod/Rex::Transaction#on_rollback> code to roll back the transaction.
 
- task "deploy", group => "frontend", sub {
-    on_rollback {
-      rmdir "...";
-    };
-    deploy "myapp.tar.gz";
+ task 'deploy', group => 'frontend', sub {
+   on_rollback {
+     rmdir '...';
+   };
+
+   deploy 'myapp.tar.gz';
  };
-  
- task "restart_server", group => "frontend", sub {
-    run "/etc/init.d/apache2 restart";
+ 
+ task 'restart_server', group => 'frontend', sub {
+   service apache2 => 'restart';
  };
-  
- task "all", group => "frontend", sub {
-    transaction {
-      do_task [qw/deploy restart_server/];
-    };
+ 
+ task 'all', group => 'frontend', sub {
+   transaction {
+     do_task [qw/deploy restart_server/];
+   };
  };
 
 =cut
@@ -113,9 +116,7 @@ sub transaction(&) { ## no critic ProhibitSubroutinePrototypes
 
 =head2 on_rollback($codeRef)
 
-This code will be executed if one step in the transaction fails.
-
-See I<transaction>.
+This will execute C<$codeRef> if a step in the L<transaction|https://metacpan.org/pod/Rex::Transaction#transaction> fails.
 
 =cut
 

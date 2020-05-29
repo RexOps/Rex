@@ -19,6 +19,28 @@ Share variables across Rex tasks with the help of Storable, using a C<vars.db.$P
    share qw($scalar @array %hash); # share the listed variables
  }
 
+=head1 LIMITATIONS
+
+Currently nesting data structures works only if the assignment is made on the top level of the structure, or when the nested structures are also shared variables. For example:
+
+ BEGIN {
+   use Rex::Shared::Var;
+   share qw(%hash %nested);
+ }
+ 
+ # this doesn't work as expected
+ $hash{key} = { nested_key => 42 };
+ $hash{key}->{nested_key} = -1; # $hash{key}->{nested_key} still returns 42
+ 
+ # workaround 1 - top level assignments
+ $hash{key} = { nested_key => 42 };
+ $hash{key} = { nested_key => -1 };
+ 
+ # workaround 2 - nesting shared variables
+ $nested{nested_key}      = 42;
+ $hash{key}               = \%nested;
+ $hash{key}->{nested_key} = -1;
+
 =head1 METHODS
 
 =cut

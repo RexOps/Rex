@@ -14,6 +14,7 @@ Revision history for Rex
  - Clarify documentation of configuring OpenSSH options
  - Clarify Rex::Transaction documentation
  - Fix typos
+ - Document limitations of nesting shared variables
 
  [ENHANCEMENTS]
  - Check availability of sysctl command

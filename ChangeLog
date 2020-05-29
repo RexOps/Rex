@@ -13,6 +13,7 @@ Revision history for Rex
  - Clarify setting per-host authentication details within a group
  - Clarify documentation of configuring OpenSSH options
  - Clarify Rex::Transaction documentation
+ - Fix typos
 
  [ENHANCEMENTS]
  - Check availability of sysctl command

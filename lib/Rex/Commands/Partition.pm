@@ -151,7 +151,7 @@ If C<TRUE>, try to mount the partition after creating it, and also register it i
 
 =item vg
 
-Creates an LVM PV, then creates the specifed LVM VG (or extends it, if the VG already exists). Needs C<ondisk>.
+Creates an LVM PV, then creates the specified LVM VG (or extends it, if the VG already exists). Needs C<ondisk>.
 
 =back
 

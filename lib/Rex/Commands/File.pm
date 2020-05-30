@@ -363,25 +363,31 @@ you use Perl packages.
 All the possible variables ('{environment}', '{hostname}', ...) are documented
 in the CMDB YAML documentation.
 
-This function supports the following hooks:
+This function supports the following L<hooks|Rex::Hook>:
 
-=over 8
+=over 4
 
 =item before
 
-This gets executed before everything is done. The return value of this hook overwrite the original parameters of the function-call.
+This gets executed before anything is done. All original parameters are passed to it.
+
+The return value of this hook overwrites the original parameters of the function-call.
 
 =item before_change
 
-This gets executed right before the new file is written. Only with I<content> parameter. For the I<source> parameter the hook of the upload function is used.
+This gets executed right before the new file is written. All original parameters are passed to it.
+
+Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after_change
 
-This gets executed right after the file was written. Only with I<content> parameter. For the I<source> parameter the hook of the upload function is used.
+This gets executed right after the file is written. All original parameters, and any returned results are passed to it.
+
+Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after
 
-This gets executed right before the file() function returns.
+This gets executed right before the C<file()> function returns. All original parameters, and any returned results are passed to it.
 
 =back
 

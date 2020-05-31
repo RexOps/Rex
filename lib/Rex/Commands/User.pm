@@ -126,6 +126,20 @@ sub account {
 
 Create or update a user.
 
+This function supports the following L<hooks|Rex::Hook>:
+
+=over 4
+
+=item before
+
+This gets executed before the user is created. All original parameters are passed to it.
+
+=item after
+
+This gets executed after the user is created. All original parameters, and the user's C<UID> are passed to it.
+
+=back
+
 =cut
 
 sub create_user {

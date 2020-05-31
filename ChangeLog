@@ -15,6 +15,8 @@ Revision history for Rex
  - Clarify Rex::Transaction documentation
  - Fix typos
  - Document limitations of nesting shared variables
+ - Add initial documentation for Rex::Hook
+ - Clarify hooks documentation
 
  [ENHANCEMENTS]
  - Check availability of sysctl command

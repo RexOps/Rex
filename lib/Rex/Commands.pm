@@ -1433,7 +1433,7 @@ sub before_task_start {
 
 Run code after the task is finished (and after the ssh connection is terminated). This gets executed only once for a task.
 
-The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can be used to run code before all tasks.
+The task name is a regular expression to find all tasks with a matching name. The special task name C<'ALL'> can be used to run code after all tasks.
 
 If called repeatedly, each sub will be appended to a list of 'after_task_finished' functions.
 

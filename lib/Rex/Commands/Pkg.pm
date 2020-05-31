@@ -240,25 +240,31 @@ This is deprecated since 0.9. Please use L<File> I<file> instead.
 
 =back
 
-This function supports the following hooks:
+This function supports the following L<hooks|Rex::Hook>:
 
-=over 8
+=over 4
 
 =item before
 
-This gets executed before everything is done. The return value of this hook overwrite the original parameters of the function-call.
+This gets executed before anything is done. All original parameters are passed to it.
+
+The return value of this hook overwrites the original parameters of the function-call.
 
 =item before_change
 
-This gets executed right before the new package is installed. This hook is only available for package installations. If you need file hooks, you have to use the file() function.
+This gets executed right before the new package is installed. All original parameters are passed to it.
+
+This hook is only available for package installations. If you need file hooks, you have to use the L<file()|Rex::Commands::File#file> function.
 
 =item after_change
 
-This gets executed right after the new package was installed. This hook is only available for package installations. If you need file hooks, you have to use the file() function.
+This gets executed right after the new package was installed. All original parameters, and the fact of change (C<{ changed => TRUE|FALSE }>) are passed to it.
+
+This hook is only available for package installations. If you need file hooks, you have to use the L<file()|Rex::Commands::File#file> function.
 
 =item after
-
-This gets executed right before the install() function returns.
+ 
+This gets executed right before the C<install()> function returns. All original parameters, and any returned results are passed to it.
 
 =back
 

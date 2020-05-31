@@ -124,22 +124,21 @@ If you need to define a custom command for start, stop, restart, reload or statu
      reload  => "killall httpd && /usr/local/bin/httpd -f /etc/my/httpd.conf";
  };
 
-This function supports the following hooks:
+This function supports the following L<hooks|Rex::Hook>:
 
-=over 8
+=over 4
 
+=item before_${action}
 
-=item before_I<action>
+For example: C<before_start>, C<before_stop>, C<before_restart>
 
-For example: before_start, before_stop, before_restart
+This gets executed right before the given service action. All original parameters are passed to it.
 
-This gets executed right before the service action.
+=item after_${action}
 
-=item after_I<action>
+For example: C<after_start>, C<after_stop>, C<after_restart>
 
-For example: after_start, after_stop, after_restart
-
-This gets executed right after the service action.
+This gets executed right after the given service action. All original parameters, and any returned results are passed to it.
 
 =back
 

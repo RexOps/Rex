@@ -17,6 +17,7 @@ Revision history for Rex
  - Document limitations of nesting shared variables
  - Add initial documentation for Rex::Hook
  - Clarify hooks documentation
+ - Clarify synopsis and code example for Rex::Commands::MD5
 
  [ENHANCEMENTS]
  - Check availability of sysctl command

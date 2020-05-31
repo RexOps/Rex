@@ -21,6 +21,7 @@ Revision history for Rex
 
  [ENHANCEMENTS]
  - Check availability of sysctl command
+ - Checksum file only when content is managed
 
  [MAJOR]
 

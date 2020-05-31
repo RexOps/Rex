@@ -454,9 +454,11 @@ sub file {
   my $__ret = { changed => 0 };
 
   my ( $new_md5, $old_md5 );
-  eval { $old_md5 = md5($file); };
 
-  if ( exists $option->{no_overwrite} && $option->{no_overwrite} && $old_md5 ) {
+  if ( exists $option->{no_overwrite}
+    && $option->{no_overwrite}
+    && $fs->is_file($file) )
+  {
     Rex::Logger::debug(
       "File already exists and no_overwrite option given. Doing nothing.");
     $__ret = { changed => 0 };
@@ -489,6 +491,7 @@ sub file {
     $fh->close;
 
     # now get md5 sums
+    eval { $old_md5 = md5($file); };
     $new_md5 = md5($tmp_file_name);
 
     if ( $new_md5 && $old_md5 && $new_md5 eq $old_md5 ) {

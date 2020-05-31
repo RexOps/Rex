@@ -94,8 +94,9 @@ sub connect {
 
   my @connection_props = ( "" . $server ); # stringify server object, so that a dumper don't print out passwords.
   push @connection_props, ( user => $user, port => $port );
-  push @connection_props, master_opts      => \@ssh_opts_line if @ssh_opts_line
-    && !($net_openssh_constructor_options{external_master});
+  push @connection_props, master_opts => \@ssh_opts_line
+    if @ssh_opts_line
+    && !( $net_openssh_constructor_options{external_master} );
   push @connection_props, default_ssh_opts => \@ssh_opts_line if @ssh_opts_line;
   push @connection_props, proxy_command    => $proxy_command  if $proxy_command;
 

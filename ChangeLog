@@ -7,6 +7,7 @@ Revision history for Rex
  - Make group resource idempotent
  - Fix sysctl detection for Gentoo
  - Fix setting false values as sysctl parameters
+ - Fix passing external_master as Net::OpenSSH constructor parameter
 
  [DOCUMENTATION]
  - Clarify auth documentation

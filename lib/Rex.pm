@@ -647,7 +647,7 @@ sub import {
       if ( $add =~ m/^(\d+\.\d+)$/ ) {
         my $vers = $1;
         my ( $major, $minor, $patch, $dev_release ) =
-          $Rex::VERSION =~ m/^(\d+)\.(\d+)\.(\d+)_?(\d+)?$/;
+          $Rex::VERSION =~ m/^(\d+)\.(\d+)\.(\d+)[_.]?(\d+)?$/;
 
         my ( $c_major, $c_minor ) = split( /\./, $vers );
 

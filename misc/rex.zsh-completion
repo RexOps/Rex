@@ -1,0 +1,78 @@
+#compdef rex
+
+# zsh completions for 'rex'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+# added feature to complete task names from Rexfile or file defined via -f flag
+# Automatically look for Groups (-g) in hosts.ini file
+# look for available hosts (-H) in _hosts
+
+local curcontext="$curcontext" state state_descr line context ret=1
+typeset -A opt_args
+_hostgroups(){
+	grpsfile='hosts.ini'
+	if [[ -e $grpsfile ]]; then
+		hostgroups=(${(f)"$(perl -ne 's/^\[(.*)\].*/$1/g && print' $grpsfile)"})
+		_wanted hostgroups expl "available host group" compadd -a hostgroups
+	fi
+}
+
+local arguments
+arguments=(
+	'-b[run batch]'
+	'-e[run the given code fragment]'
+	'-E[execute a task on the given environment]'
+	'-G[|-g  Execute a task on the given server groups]:hosts group:_hostgroups'
+	'-H[execute a task on the given hosts (space delimited)]:host:_hosts'
+	'-z[execute a task on hosts from this commands output]'
+	'-K[public key file for the ssh connection]'
+	'-P[private key file for the ssh connection]'
+	'-p[password for the ssh connection]'
+	'-u[username for the ssh connection]'
+	'-d[show debug output]'
+	'-ddd[show more debug output (includes profiling output)]'
+	'-m[monochrome output: no colors]'
+	'-o[output format]'
+	'-q[quiet mode: no log output]'
+	'-qw[quiet mode: only output warnings and errors]'
+	'-Q[really quiet: output nothing]'
+	'-T[list tasks]'
+	'-Ta[List all tasks, including hidden]'
+	'-Tm[list tasks in machine-readable format]'
+	'-Tv[list tasks verbosely]'
+	'-Ty[list tasks in YAML format]'
+	'-c[turn cache ON]'
+	'-C[turn cache OFF]'
+	'-f[use this file instead of Rexfile]:filename:_files'
+	'-F[force: disregard lock file]'
+	'-h[display this help message]'
+	'-M[load this module instead of Rexfile]'
+	'-O[pass additional options, like CMDB path]'
+	'-s[use sudo for every command]'
+	'-S[password for sudo]'
+	'-t[number of threads to use (aka parallelism param)]'
+	'-v[display (R)?ex version]'
+	'*:options:->vary'
+)
+
+_arguments -C -s -A "*" $arguments  && ret=0
+
+case "$state" in
+	vary)
+		integer i
+		local optsfile
+		# default filename
+		optsfile='Rexfile'
+		for (( i = 1; i <= $#words - 1; i++ )); do
+			if [[ $words[$i] == -f ]]; then
+				optsfile=$words[$((i+1))]
+				break
+			fi
+		done
+		if [[ -e $optsfile ]]; then
+			tasks=(${(f)"$(perl -ne 's/task\s+\"([\w\d_]+)\"\,.*/$1/g && print' $optsfile)"})
+			_wanted tasks expl "Tasks in $optsfile" compadd -a tasks
+		fi
+		;;
+esac
+
+return $ret

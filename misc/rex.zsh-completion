@@ -69,7 +69,7 @@ case "$state" in
 			fi
 		done
 		if [[ -e $optsfile ]]; then
-			tasks=(${(f)"$(perl -ne 's/task\s+\"([\w\d_]+)\"\,.*/$1/g && print' $optsfile)"})
+			tasks=(${(f)"$(rex -f $optsfile -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
 			_wanted tasks expl "Tasks in $optsfile" compadd -a tasks
 		fi
 		;;

@@ -11,7 +11,7 @@ typeset -A opt_args
 _hostgroups(){
 	grpsfile='hosts.ini'
 	if [[ -e $grpsfile ]]; then
-		hostgroups=(${(f)"$(perl -ne 's/^\[(.*)\].*/$1/g && print' $grpsfile)"})
+		hostgroups=(${(f)"$(perl -ne 's/^\[(.*)\].*/$1/g && print' "$grpsfile")"})
 		_wanted hostgroups expl "available host group" compadd -a hostgroups
 	fi
 }
@@ -64,12 +64,12 @@ case "$state" in
 		optsfile='Rexfile'
 		for (( i = 1; i <= $#words - 1; i++ )); do
 			if [[ $words[$i] == -f ]]; then
-				optsfile=$words[$((i+1))]
+				optsfile="$words[$((i+1))]"
 				break
 			fi
 		done
-		if [[ -e $optsfile ]]; then
-			tasks=(${(f)"$(rex -f $optsfile -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
+		if [[ -e "$optsfile" ]]; then
+			tasks=(${(f)"$(rex -f "$optsfile" -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
 			_wanted tasks expl "Tasks in $optsfile" compadd -a tasks
 		fi
 		;;

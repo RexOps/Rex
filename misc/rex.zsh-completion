@@ -3,8 +3,9 @@
 # zsh completions for 'rex'
 # automatically generated with http://github.com/RobSis/zsh-completion-generator
 # added feature to complete task names from Rexfile or file defined via -f flag
-# Automatically look for Groups (-g) in hosts.ini file
-# look for available hosts (-H) in _hosts
+# Automatically look for Groups (-g) in rex -Ty output
+# Look for Environments (-E) in rex -Ty output
+# look for available hosts (-H) in rex and in _hosts
 
 local curcontext="$curcontext" state state_descr line context ret=1
 

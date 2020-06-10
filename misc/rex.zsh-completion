@@ -7,20 +7,23 @@
 # look for available hosts (-H) in _hosts
 
 local curcontext="$curcontext" state state_descr line context ret=1
+
 typeset -A opt_args
 _hostgroups(){
-	grpsfile='hosts.ini'
-	if [[ -e $grpsfile ]]; then
-		hostgroups=(${(f)"$(perl -ne 's/^\[(.*)\].*/$1/g && print' "$grpsfile")"})
-		_wanted hostgroups expl "available host group" compadd -a hostgroups
-	fi
+		groups=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $groups = Load(join "", <>)->{groups}; print "$_\n" for keys %$groups;')"})
+		_wanted hostgroups expl "available host group" compadd -a groups
+}
+
+_envs(){
+		envs=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $envs = Load(join "", <>)->{envs}; print "$_\n" for @$envs;')"})
+		_wanted environments expl "available environments" compadd -a envs
 }
 
 local arguments
 arguments=(
 	'-b[run batch]'
 	'-e[run the given code fragment]'
-	'-E[execute a task on the given environment]'
+	'-E[execute a task on the given environment]:environments:_envs'
 	'-G[|-g  Execute a task on the given server groups]:hosts group:_hostgroups'
 	'-H[execute a task on the given hosts (space delimited)]:host:_hosts'
 	'-z[execute a task on hosts from this commands output]'

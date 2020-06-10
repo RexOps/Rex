@@ -10,13 +10,19 @@ local curcontext="$curcontext" state state_descr line context ret=1
 
 typeset -A opt_args
 _hostgroups(){
-		groups=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $groups = Load(join "", <>)->{groups}; print "$_\n" for keys %$groups;')"})
-		_wanted hostgroups expl "available host group" compadd -a groups
+	groups=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $groups = Load(join "", <>)->{groups}; print "$_\n" for keys %$groups;')"})
+	_wanted hostgroups expl "available host group" compadd -a groups
 }
 
 _envs(){
-		envs=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $envs = Load(join "", <>)->{envs}; print "$_\n" for @$envs;')"})
-		_wanted environments expl "available environments" compadd -a envs
+	envs=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $envs = Load(join "", <>)->{envs}; print "$_\n" for @$envs;')"})
+	_wanted environments expl "available environments" compadd -a envs
+}
+
+# return hosts managed by rex or any other host availabe via zsh's _hosts function
+_rex_hosts() {
+	rexhosts=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -MList::MoreUtils=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups')"})
+	_wanted hosts expl "rex managed hosts" compadd -a rexhosts || _hosts
 }
 
 local arguments
@@ -25,7 +31,7 @@ arguments=(
 	'-e[run the given code fragment]'
 	'-E[execute a task on the given environment]:environments:_envs'
 	'-G[|-g  Execute a task on the given server groups]:hosts group:_hostgroups'
-	'-H[execute a task on the given hosts (space delimited)]:host:_hosts'
+	'-H[execute a task on the given hosts (space delimited)]:host:_rex_hosts'
 	'-z[execute a task on hosts from this commands output]'
 	'-K[public key file for the ssh connection]'
 	'-P[private key file for the ssh connection]'

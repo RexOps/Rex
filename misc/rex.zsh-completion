@@ -12,7 +12,7 @@ local curcontext="$curcontext" state state_descr line context ret=1
 typeset -A opt_args
 _hostgroups(){
 	groups=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -e 'my $groups = Load(join "", <>)->{groups}; print "$_\n" for keys %$groups;')"})
-	_wanted hostgroups expl "available host group" compadd -a groups
+	_wanted hostgroups expl "available host groups" compadd -a groups
 }
 
 _envs(){
@@ -68,20 +68,8 @@ _arguments -C -s -A "*" $arguments  && ret=0
 
 case "$state" in
 	vary)
-		integer i
-		local optsfile
-		# default filename
-		optsfile='Rexfile'
-		for (( i = 1; i <= $#words - 1; i++ )); do
-			if [[ $words[$i] == -f ]]; then
-				optsfile="$words[$((i+1))]"
-				break
-			fi
-		done
-		if [[ -e "$optsfile" ]]; then
-			tasks=(${(f)"$(rex -f "$optsfile" -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
-			_wanted tasks expl "Tasks in $optsfile" compadd -a tasks
-		fi
+		tasks=(${(f)"$(rex -f -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
+		_wanted tasks expl "available tasks" compadd -a tasks
 		;;
 esac
 

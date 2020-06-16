@@ -68,8 +68,12 @@ _arguments -C -s -A "*" $arguments  && ret=0
 
 case "$state" in
 	vary)
-		tasks=(${(f)"$(rex -f -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
-		_wanted tasks expl "available tasks" compadd -a tasks
+		local optsfile
+		optsfile='Rexfile'
+		if [[ -e $optsfile ]]; then
+			tasks=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;')"})
+			_wanted tasks expl "available tasks" compadd -a tasks
+		fi
 		;;
 esac
 

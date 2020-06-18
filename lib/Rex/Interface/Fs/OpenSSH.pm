@@ -142,7 +142,7 @@ sub upload {
   Rex::Commands::profiler()->start("upload: $source -> $target");
 
   my $sftp = Rex::get_sftp();
-  unless ( $sftp->put( $source, $target ) ) {
+  unless ( $sftp->put( $source, $target, best_effort => 1) ) {
     Rex::Logger::debug("upload: $target is not writable");
 
     Rex::Commands::profiler()->end("upload: $source -> $target");

@@ -12,6 +12,7 @@ Revision history for Rex
  [MAJOR]
 
  [MINOR]
+ - Use author tests to check tidiness of bin files
 
  [NEW FEATURES]
 

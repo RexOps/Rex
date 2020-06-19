@@ -1,1 +1,7 @@
-die 'OS unsupported' if ( $^O eq 'MSWin32' && scalar((Win32::GetOSVersion())[1]) < 6 );
+if ( $^O eq 'MSWin32' ) {
+  my ( undef, $major ) = Win32::GetOSVersion();
+
+  if ( $major < 6 ) {
+    die 'OS unsupported';
+  }
+}

@@ -12,11 +12,11 @@ Revision history for Rex
  [MAJOR]
 
  [MINOR]
- - Use author tests to check tidiness of bin files
 
  [NEW FEATURES]
 
  [REVISION]
+ - Use author tests to check tidiness of bin files
 
 1.11.0 2020-06-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

@@ -42,6 +42,7 @@ use Rex::Logger;
 use YAML;
 use Data::Dumper;
 use Rex::Require;
+use Symbol;
 
 our (
   $user,                        $password,
@@ -1809,7 +1810,6 @@ sub import {
   read_config_file();
 }
 
-no strict 'refs'; ## no critic ProhibitNoStrict
 __PACKAGE__->register_config_handler(
   base => sub {
     my ($param) = @_;
@@ -1831,7 +1831,10 @@ __PACKAGE__->register_config_handler(
         next;
       }
 
-      $$key = $param->{$key};
+      my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
+      my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
+
+      ${$ref_to_key_scalar} = $param->{key};
     }
   }
 );
@@ -1857,12 +1860,13 @@ for my $hndl (@set_handler) {
       if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
       if ( $hndl eq "key" )        { $hndl = "ca_key"; }
 
-      $$hndl = $val;
+      my $ref_to_hndl        = qualify_to_ref( $hndl, __PACKAGE__ );
+      my $ref_to_hndl_scalar = *{$ref_to_hndl}{SCALAR};
+
+      ${$ref_to_hndl_scalar} = $val;
     }
   );
 }
-
-use strict;
 
 sub _home_dir {
   if ( $^O =~ m/^MSWin/ ) {

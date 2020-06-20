@@ -68,6 +68,7 @@ BEGIN {
 
 use Rex::Logger;
 use Data::Dumper;
+use Symbol;
 
 use vars qw(@EXPORT $dbh);
 
@@ -211,11 +212,10 @@ sub import {
 
   my ( $ns_register_to, $file, $line ) = caller;
 
-  no strict 'refs'; ## no critic ProhibitNoStrict
   for my $func_name (@EXPORT) {
-    *{"${ns_register_to}::$func_name"} = \&$func_name;
+    my $ref_to_function = qualify_to_ref( $func_name, $ns_register_to );
+    *{$ref_to_function} = \&$func_name;
   }
-  use strict;
 
 }
 

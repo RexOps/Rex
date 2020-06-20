@@ -33,10 +33,10 @@ On top of the supported minimum version of Perl, the goal is to support the late
  - 5.18.4
  - 5.20.3
  - 5.22.4
- - 5.24.3
- - 5.26.1
- - 5.28.2
- - 5.30.2
+ - 5.24.4
+ - 5.26.3
+ - 5.28.3
+ - 5.30.3
 
 ### Backwards compatibility
 

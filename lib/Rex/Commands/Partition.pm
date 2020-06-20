@@ -191,7 +191,7 @@ sub partition {
   # info:
   # disk size, partition start, partition end is in MB
 
-  unless ( ( defined $option{grow} ) xor( defined $option{size} ) ) {
+  unless ( ( defined $option{grow} ) xor ( defined $option{size} ) ) {
     die('You have to specify exactly one of grow or size options.');
   }
 

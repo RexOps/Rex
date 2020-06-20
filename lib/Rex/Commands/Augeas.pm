@@ -169,7 +169,7 @@ Remove an entry.
       $changed = $result->{changed};
     }
     else {
-      $ret = $aug->save;
+      $ret     = $aug->save;
       $changed = 1 if $ret && $aug->get('/augeas/events/saved'); # Any files changed?
     }
 
@@ -256,7 +256,7 @@ Insert an item into the file. Here, the order of the options is important. If th
         $aug->set( $_key, $val );
       }
 
-      $ret = $aug->save();
+      $ret     = $aug->save();
       $changed = 1 if $ret && $aug->get('/augeas/events/saved'); # Any files changed?
     }
   }

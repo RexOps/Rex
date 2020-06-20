@@ -29,9 +29,9 @@ sub new {
 
   if ( Rex::has_feature_version('1.5') ) {
     $self->{commands} = {
-      install => 'xbps-install -y %s',
-      install_version => 'xbps-install -y %s', # makes no sense to specify the package version
-      update_system   => 'xbps-install -yu',
+      install            => 'xbps-install -y %s',
+      install_version    => 'xbps-install -y %s', # makes no sense to specify the package version
+      update_system      => 'xbps-install -yu',
       dist_update_system => 'xbps-install -yu',
       remove             => 'xbps-remove -Ry %s',
       update_package_db  => 'xbps-install -S',
@@ -39,9 +39,9 @@ sub new {
   }
   else {
     $self->{commands} = {
-      install => 'xbps-install -y %s',
-      install_version => 'xbps-install -y %s', # makes no sense to specify the package version
-      update_system   => 'xbps-install -Syu',
+      install            => 'xbps-install -y %s',
+      install_version    => 'xbps-install -y %s', # makes no sense to specify the package version
+      update_system      => 'xbps-install -Syu',
       dist_update_system => 'xbps-install -Syu',
       remove             => 'xbps-remove -Ry %s',
       update_package_db  => 'xbps-install -S',

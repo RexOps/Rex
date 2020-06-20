@@ -16,7 +16,6 @@ jobs:
             - libmagic-dev
       before_install:
         - cpanm Perl::Critic Perl::Tidy
-        - perlcritic --quiet --single-policy=RequireTidyCode bin
         - mkdir ~/.dzil
         - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"
         - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"

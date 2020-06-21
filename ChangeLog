@@ -4,7 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Discontinue support for Windows 7, Windows Server 2018 R2, and older
+ - Discontinue support for Windows 7, Windows Server 2008 R2, and older
  - Avoid caching of Bash completion options to support multiple Rexfiles
 
  [DOCUMENTATION]

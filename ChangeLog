@@ -5,16 +5,19 @@ Revision history for Rex
 
  [BUG FIXES]
  - Discontinue support for Windows 7, Windows Server 2018 R2, and older
+ - Avoid caching of Bash completion options to support multiple Rexfiles
 
  [DOCUMENTATION]
 
  [ENHANCEMENTS]
+ - Extend Bash completion with known hosts
 
  [MAJOR]
 
  [MINOR]
 
  [NEW FEATURES]
+ - Enable Bash completion of available CLI options
 
  [REVISION]
  - Use author tests to check tidiness of bin files

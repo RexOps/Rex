@@ -122,7 +122,7 @@ sub sync {
   if ( !exists $opt->{download} && $source !~ m/^\// ) {
 
     # relative path, calculate from module root
-    $source = Rex::Helper::Path::get_file_path( $source, caller() );
+    $source = Rex::Helper::Path::get_file_path($source);
   }
 
   Rex::Logger::debug("Syncing $source -> $dest with rsync.");

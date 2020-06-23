@@ -7,7 +7,6 @@ _rex()
     COMPREPLY=()
     _get_comp_words_by_ref -n : cur prev
 
-
     if [[ "$cur" == -* ]]; then
         COMPREPLY=( $(compgen -W '$(_parse_help "$1" -h)' -- "$cur") )
         return
@@ -20,7 +19,7 @@ _rex()
         -H)
             if [ -f Rexfile ]; then
                 hosts=( $(rex -Ty 2>/dev/null | perl -MYAML -MList::MoreUtils=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups') )
-                COMPREPLY=( $( compgen -W '${hosts[@]}' -- "$cur" ) ) ||  _known_hosts_real -a "$cur"
+                COMPREPLY=( $( compgen -W '${hosts[@]}' -- "$cur" ) ) || _known_hosts_real -a "$cur"
             fi
             ;;
         -E)

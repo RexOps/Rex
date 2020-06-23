@@ -1,4 +1,3 @@
-#!/bin/bash
 # bash completion for rex
 
 _rex()
@@ -8,8 +7,9 @@ _rex()
     COMPREPLY=()
     _get_comp_words_by_ref -n : cur prev
 
-    if [[ -z $_rex_yaml ]]; then
-        _rex_yaml=$(rex -Ty 2>/dev/null)
+    if [[ "$cur" == -* ]]; then
+        COMPREPLY=( $(compgen -W '$(_parse_help "$1" -h)' -- "$cur") )
+        return
     fi
 
     case "$prev" in
@@ -18,26 +18,26 @@ _rex()
             ;;
         -H)
             if [ -f Rexfile ]; then
-                hosts=( $(echo "$_rex_yaml" | perl -MYAML -MList::MoreUtils=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups') )
-                COMPREPLY=( $( compgen -W '${hosts[@]}' -- "$cur" ) )
+                hosts=( $(rex -Ty 2>/dev/null | perl -MYAML -MList::MoreUtils=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups') )
+                COMPREPLY=( $( compgen -W '${hosts[@]}' -- "$cur" ) ) || _known_hosts_real -a "$cur"
             fi
             ;;
         -E)
             if [ -f Rexfile ]; then
-                envs=( $(echo "$_rex_yaml" | perl -MYAML -e 'my $envs = Load(join "", <>)->{envs}; print "$_\n" for @$envs;') )
+                envs=( $(rex -Ty 2>/dev/null | perl -MYAML -e 'my $envs = Load(join "", <>)->{envs}; print "$_\n" for @$envs;') )
                 COMPREPLY=( $( compgen -W '${envs[@]}' -- "$cur" ) )
             fi
             ;;
         -G)
             if [ -f Rexfile ]; then
-                groups=( $(echo "$_rex_yaml" | perl -MYAML -e 'my $groups = Load(join "", <>)->{groups}; print "$_\n" for keys %$groups;') )
+                groups=( $(rex -Ty 2>/dev/null | perl -MYAML -e 'my $groups = Load(join "", <>)->{groups}; print "$_\n" for keys %$groups;') )
                 COMPREPLY=( $( compgen -W '${groups[@]}' -- "$cur" ) )
             fi
             ;;
 
         *)
             if [ -f Rexfile ]; then
-                tasks=( $(echo "$_rex_yaml" | perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;') )
+                tasks=( $(rex -Ty 2>/dev/null | perl -MYAML -E 'my $tasks = Load(join "", <>)->{tasks}; say $_ for @$tasks;') )
                 COMPREPLY=( $( compgen -W '${tasks[@]}' -- "$cur" ) )
             fi
             ;;

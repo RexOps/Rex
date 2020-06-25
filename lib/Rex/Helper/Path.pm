@@ -65,6 +65,10 @@ sub get_file_path {
 
   $::rexfile ||= $0;
 
+  if ( $caller_file =~ m|^/loader/[^/]+/__Rexfile__.pm$| ) {
+    $caller_file = $::rexfile;
+  }
+
   my @path_parts;
   if ( $^O =~ m/^MSWin/ && !Rex::is_ssh() ) {
     @path_parts = split( /\//, $::rexfile );

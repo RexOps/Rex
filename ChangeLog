@@ -19,6 +19,7 @@ Revision history for Rex
  [NEW FEATURES]
  - Enable Bash completion of available CLI options
  - Add tab completion for Zsh
+ - Enable local rsync operations
 
  [REVISION]
  - Use author tests to check tidiness of bin files

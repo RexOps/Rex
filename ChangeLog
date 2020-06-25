@@ -7,6 +7,7 @@ Revision history for Rex
  - Discontinue support for Windows 7, Windows Server 2008 R2, and older
  - Avoid caching of Bash completion options to support multiple Rexfiles
  - Fix calling get_file_path from Rexfile
+ - Fix quoting of rsync parameters
 
  [DOCUMENTATION]
 

@@ -24,7 +24,7 @@ jobs:
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
         - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
-        - cpanm File::LibMagic Test::mysqld
+        - cpanm File::LibMagic Test::mysqld Expect
       install:
         - dzil build --in build --notgz
       script:
@@ -85,7 +85,7 @@ jobs:
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
+        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Expect
       install:
         - dzil build --in build --notgz
       script:

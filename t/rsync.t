@@ -16,7 +16,6 @@ use Cwd qw(getcwd);
 use File::Find;
 use File::Spec::Functions qw(catfile rel2abs);
 use File::Temp qw(tempdir);
-use Rex::Task;
 
 plan tests => 2;
 
@@ -73,9 +72,6 @@ subtest 'local rsync with absolute path' => sub {
   my $source = catfile( $cwd, 't/sync' );
   my $target = setup();
 
-  my $task = Rex::Task->new( name => 'local_rsync' );
-  isa_ok( $task, 'Rex::Task', 'task exists' );
-
   sync $source, $target;
 
   test_results( $source, $target );
@@ -86,9 +82,6 @@ subtest 'local rsync with relative path' => sub {
 
   my $source = 't/sync';
   my $target = setup();
-
-  my $task = Rex::Task->new( name => 'local_rsync' );
-  isa_ok( $task, 'Rex::Task', 'task exists' );
 
   sync $source, $target;
 

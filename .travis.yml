@@ -72,7 +72,6 @@ jobs:
           packages:
             - perl
             - cpanminus
-            - openssl
           update: true
       before_install:
         - export PERL_VERSION="$(brew list --versions perl | cut -d' ' -f 2)"

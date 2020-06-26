@@ -25,6 +25,7 @@ Revision history for Rex
  - Use author tests to check tidiness of bin files
  - Use Symbol to manipulate Perl symbols
  - Add initial rsync tests
+ - Test rsync with spaces in source path
 
 1.11.0 2020-06-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

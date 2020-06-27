@@ -12,9 +12,8 @@ BEGIN {
     or plan skip_all => 'Could not load Rex::Commands::Rsync module';
 }
 
-use Cwd qw(getcwd);
+use Cwd qw(realpath);
 use File::Find;
-use File::Spec::Functions qw(catfile rel2abs);
 use File::Temp qw(tempdir);
 
 plan tests => 2;
@@ -66,10 +65,8 @@ sub test_results {
   is_deeply( \@result, \@expected, 'synced dir matches' );
 }
 
-subtest 'local rsync with absolute path' => sub {
-  my $cwd = getcwd();
-
-  my $source = catfile( $cwd, 't/sync' );
+subtest 'rsync with absolute path' => sub {
+  my $source = realpath('t/sync');
   my $target = setup();
 
   sync $source, $target;
@@ -77,9 +74,7 @@ subtest 'local rsync with absolute path' => sub {
   test_results( $source, $target );
 };
 
-subtest 'local rsync with relative path' => sub {
-  my $cwd = getcwd();
-
+subtest 'rsync with relative path' => sub {
   my $source = 't/sync';
   my $target = setup();
 

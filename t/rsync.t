@@ -16,69 +16,64 @@ use Cwd qw(realpath);
 use File::Find;
 use File::Temp qw(tempdir);
 
-plan tests => 2;
+my %source_for = (
+  'rsync with absolute path' => realpath('t/sync'),
+  'rsync with relative path' => 't/sync',
+);
 
-sub setup {
-  my $target_dir = tempdir( CLEANUP => 1 );
+plan tests => scalar keys %source_for;
 
-  ok( -d $target_dir, "$target_dir is a directory" );
-
-  opendir( my $DIR, $target_dir );
-  my @contents = readdir $DIR;
-  closedir $DIR;
-
-  my @empty = qw(. ..);
-
-  is_deeply( \@contents, \@empty, "$target_dir is empty" );
-
-  return $target_dir;
+for my $scenario ( sort keys %source_for ) {
+  test_rsync( $scenario, $source_for{$scenario} );
 }
 
-sub test_results {
-  my ( $source, $target ) = @_;
-  my ( @expected, @result );
+sub test_rsync {
+  my ( $scenario, $source ) = @_;
 
-  # expected results
-  find(
-    {
-      wanted => sub {
-        s:^(t|.*/t)(?=/)::;
-        push @expected, $_;
+  subtest $scenario => sub {
+    my $target = tempdir( CLEANUP => 1 );
+
+    # test target directory
+    ok( -d $target, "$target is a directory" );
+
+    opendir( my $DIR, $target );
+    my @contents = readdir $DIR;
+    closedir $DIR;
+
+    my @empty = qw(. ..);
+
+    is_deeply( \@contents, \@empty, "$target is empty" );
+
+    # sync contents
+    sync $source, $target;
+
+    # test sync results
+    my ( @expected, @result );
+
+    # expected results
+    find(
+      {
+        wanted => sub {
+          s:^(t|.*/t)(?=/)::;
+          push @expected, $_;
+        },
+        no_chdir => 1
       },
-      no_chdir => 1
-    },
-    $source
-  );
+      $source
+    );
 
-  # actual results
-  find(
-    {
-      wanted => sub {
-        s/$target//;
-        push @result, $_ if length($_);
+    # actual results
+    find(
+      {
+        wanted => sub {
+          s/$target//;
+          push @result, $_ if length($_);
+        },
+        no_chdir => 1
       },
-      no_chdir => 1
-    },
-    $target
-  );
+      $target
+    );
 
-  is_deeply( \@result, \@expected, 'synced dir matches' );
+    is_deeply( \@result, \@expected, 'synced dir matches' );
+  }
 }
-
-subtest 'rsync with absolute path' => sub {
-  my $source = realpath('t/sync');
-  my $target = setup();
-
-  sync $source, $target;
-
-  test_results( $source, $target );
-};
-
-subtest 'rsync with relative path' => sub {
-  my $source = 't/sync';
-  my $target = setup();
-
-  sync $source, $target;
-
-  test_results( $source, $target );
-};

@@ -117,7 +117,7 @@ sub sync {
 
   if ( defined $server->to_s ) {
     ( $servername, $port ) =
-      Rex::Helper::IP::get_server_and_port( $servername, 22 );
+      Rex::Helper::IP::get_server_and_port( $server->to_s, 22 );
   }
 
   my $local_connection = defined $servername ? FALSE : TRUE;

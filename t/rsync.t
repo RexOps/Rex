@@ -18,10 +18,12 @@ use File::Find;
 use File::Temp qw(tempdir);
 
 my %source_for = (
-  'rsync with absolute path'           => realpath('t/sync'),
-  'rsync with relative path'           => 't/sync',
-  'rsync with spaces in absolute path' => realpath('t/sync/dir with spaces'),
-  'rsync with spaces in relative path' => 't/sync/dir with spaces',
+  'rsync with absolute path'             => realpath('t/sync'),
+  'rsync with relative path'             => 't/sync',
+  'rsync with spaces in absolute path'   => realpath('t/sync/dir with spaces'),
+  'rsync with spaces in relative path'   => 't/sync/dir with spaces',
+  'rsync with wildcard in absolute path' => realpath('t/sync/*'),
+  'rsync with wildcard in relative path' => 't/sync/*',
 );
 
 plan tests => scalar keys %source_for;

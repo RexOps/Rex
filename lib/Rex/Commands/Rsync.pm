@@ -60,10 +60,12 @@ require Rex::Exporter;
 use base qw(Rex::Exporter);
 use vars qw(@EXPORT);
 
+use Net::OpenSSH::ShellQuoter;
 use Rex::Commands qw(FALSE TRUE);
 use Rex::Helper::IP;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
+use Rex::Interface::Shell;
 
 @EXPORT = qw(sync);
 
@@ -150,37 +152,37 @@ sub sync {
 
   my @rsync_cmd = ();
 
+  my $exec   = Rex::Interface::Exec->create;
+  my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     $dest = resolv_path($dest);
     Rex::Logger::debug("Downloading $source -> $dest");
     push @rsync_cmd, "rsync -rl --verbose --stats $params ";
 
+    $source = $auth->{user} . "\@$servername:$source";
+
     if ( !$local_connection ) {
       push @rsync_cmd, "-e '\%s'";
-      push @rsync_cmd,
-        "'" . $auth->{user} . "\@" . $servername . ":" . $source . "'";
     }
-    else {
-      push @rsync_cmd, "'$source'";
-    }
-
-    push @rsync_cmd, "'$dest'";
   }
   else {
     $source = resolv_path($source);
     Rex::Logger::debug("Uploading $source -> $dest");
+
     push @rsync_cmd, "rsync -rl --verbose --stats $params";
 
     if ( !$local_connection ) {
       push @rsync_cmd, "-e '\%s'";
-      push @rsync_cmd, "'$source'";
-      push @rsync_cmd, "'" . $auth->{user} . "\@$servername:$dest" . "'";
-    }
-    else {
-      push @rsync_cmd, "'$source'";
-      push @rsync_cmd, "'$dest'";
+      $dest = $auth->{user} . "\@$servername:$dest";
     }
   }
+
+  $source = $quoter->quote_glob($source);
+  $dest   = $quoter->quote_glob($dest);
+
+  push @rsync_cmd, $source;
+  push @rsync_cmd, $dest;
 
   if (Rex::is_sudo) {
     push @rsync_cmd, "--rsync-path='sudo rsync'";

@@ -13,12 +13,17 @@ BEGIN {
 }
 
 use Cwd qw(realpath);
+use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);
 
 my %source_for = (
-  'rsync with absolute path' => realpath('t/sync'),
-  'rsync with relative path' => 't/sync',
+  'rsync with absolute path'             => realpath('t/sync'),
+  'rsync with relative path'             => 't/sync',
+  'rsync with spaces in absolute path'   => realpath('t/sync/dir with spaces'),
+  'rsync with spaces in relative path'   => 't/sync/dir with spaces',
+  'rsync with wildcard in absolute path' => realpath('t/sync/*'),
+  'rsync with wildcard in relative path' => 't/sync/*',
 );
 
 plan tests => scalar keys %source_for;
@@ -50,12 +55,23 @@ sub test_rsync {
     # test sync results
     my ( @expected, @result );
 
+    my $prefix;
+
+    if ( basename($source) =~ qr{\*} ) {
+      $source = dirname($source);
+      $prefix = $source;
+    }
+    else {
+      $prefix = dirname($source);
+    }
+
     # expected results
     find(
       {
-        wanted => sub {
-          s:^(t|.*/t)(?=/)::;
-          push @expected, $_;
+        preprocess => sub { sort @_ },
+        wanted     => sub {
+          s/$prefix//;
+          push @expected, $_ if length($_);
         },
         no_chdir => 1
       },
@@ -65,7 +81,8 @@ sub test_rsync {
     # actual results
     find(
       {
-        wanted => sub {
+        preprocess => sub { sort @_ },
+        wanted     => sub {
           s/$target//;
           push @result, $_ if length($_);
         },

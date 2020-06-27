@@ -12,7 +12,7 @@ use warnings;
 # VERSION
 
 use Rex::Helper::File::Spec;
-use File::Basename qw(dirname);
+use File::Basename qw(basename dirname);
 require Exporter;
 
 use base qw(Exporter);
@@ -44,9 +44,22 @@ sub get_file_path {
     $ends_with_slash = 1;
   }
 
+  my $has_wildcard = 0;
+  my $base_name    = basename($file_name);
+
+  if ( $base_name =~ qr{\*} ) {
+    $has_wildcard = 1;
+    $file_name    = dirname($file_name);
+  }
+
   my $fix_path = sub {
     my ($path) = @_;
     $path =~ s:^\./::;
+
+    if ($has_wildcard) {
+      $path = Rex::Helper::File::Spec->catfile( $path, $base_name );
+    }
+
     if ($ends_with_slash) {
       if ( $path !~ m/\/$/ ) {
         return "$path/";

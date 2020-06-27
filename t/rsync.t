@@ -13,7 +13,7 @@ BEGIN {
 }
 
 use Cwd qw(realpath);
-use File::Basename qw(dirname);
+use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);
 
@@ -55,7 +55,15 @@ sub test_rsync {
     # test sync results
     my ( @expected, @result );
 
-    my $prefix = dirname($source);
+    my $prefix;
+
+    if ( basename($source) =~ qr{\*} ) {
+      $source = dirname($source);
+      $prefix = $source;
+    }
+    else {
+      $prefix = dirname($source);
+    }
 
     # expected results
     find(

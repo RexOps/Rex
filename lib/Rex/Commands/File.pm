@@ -71,6 +71,7 @@ use Rex::FS::File;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
+use Rex::Helper::File::Spec;
 use Rex::Helper::System;
 use Rex::Helper::Path;
 use Rex::Hook;
@@ -749,13 +750,13 @@ sub file {
 sub get_tmp_file_name {
   my $file = shift;
 
-  my @splitted_file = split( /[\/\\]/, $file );
-  my $file_name     = ".rex.tmp." . pop(@splitted_file);
-  my $tmp_file_name = (
-    $#splitted_file != -1
-    ? ( join( "/", @splitted_file ) . "/" . $file_name )
-    : $file_name
-  );
+  my $dirname  = dirname($file);
+  my $filename = ".rex.tmp." . basename($file);
+
+  my $tmp_file_name =
+      $dirname eq '.'
+    ? $filename
+    : Rex::Helper::File::Spec->catfile( $dirname, $filename );
 
   return $tmp_file_name;
 }

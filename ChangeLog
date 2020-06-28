@@ -14,6 +14,7 @@ Revision history for Rex
  [ENHANCEMENTS]
  - Extend Bash completion with known hosts
  - Support wildcards in get_file_path
+ - Split out temp file naming logic
 
  [MAJOR]
 

@@ -152,5 +152,8 @@ You can also set a default server group:
         say run "uptime";
     };
 
-=cut
+=head1 TAB COMPLETION
 
+Tab completion scripts are provided for Bash and Zsh in the L<share|https://metacpan.org/release/Rex/source/share> directory. They provide completions for the available CLI options, hosts, groups, environments and tasks.
+
+=cut

@@ -69,7 +69,8 @@ use Rex::Helper::Run;
 
 =head2 sync($source, $dest, $opts)
 
-This function executes rsync to sync $source and $dest.
+This function executes rsync to sync $source and $dest. The C<rsync> command is
+invoked with the C<--recursive --links --verbose --stats> options set.
 
 If you want to use sudo, you need to disable I<requiretty> option for this user. You can do this with the following snippet in your sudoers configuration.
 

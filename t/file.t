@@ -3,8 +3,9 @@ use warnings;
 
 use Cwd 'getcwd';
 my $cwd = getcwd;
+use File::Spec;
 
-use Test::More tests => 57;
+use Test::More tests => 58;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -341,3 +342,17 @@ is(
   "overwrite keys from Rex::Config"
 );
 
+subtest 'get temp file name' => sub {
+  my $testfile          = "temp-$$";
+  my $testfile_absolute = File::Spec->catfile( $tmp_dir, $testfile );
+
+  my %temp_file_for = (
+    $testfile          => ".rex.tmp.$testfile",
+    $testfile_absolute => File::Spec->catfile( $tmp_dir, ".rex.tmp.$testfile" ),
+  );
+
+  for my $filename ( sort keys %temp_file_for ) {
+    my $tempfile = Rex::Commands::File::get_tmp_file_name($filename);
+    is( $tempfile, $temp_file_for{$filename}, 'temp file name matches' );
+  }
+};

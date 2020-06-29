@@ -71,6 +71,7 @@ use Rex::FS::File;
 use Rex::Commands::Upload;
 use Rex::Commands::MD5;
 use Rex::File::Parser::Data;
+use Rex::Helper::File::Spec;
 use Rex::Helper::System;
 use Rex::Helper::Path;
 use Rex::Hook;
@@ -475,13 +476,7 @@ sub file {
     # first upload file to tmp location, to get md5 sum.
     # than we can decide if we need to replace the current (old) file.
 
-    my @splitted_file = split( /[\/\\]/, $file );
-    my $file_name     = ".rex.tmp." . pop(@splitted_file);
-    my $tmp_file_name = (
-      $#splitted_file != -1
-      ? ( join( "/", @splitted_file ) . "/" . $file_name )
-      : $file_name
-    );
+    my $tmp_file_name = get_tmp_file_name($file);
 
     my $fh    = file_write($tmp_file_name);
     my @lines = split( qr{$/}, $option->{"content"} );
@@ -750,6 +745,20 @@ sub file {
     ->report_resource_end( type => "file", name => $file );
 
   return $__ret->{changed};
+}
+
+sub get_tmp_file_name {
+  my $file = shift;
+
+  my $dirname  = dirname($file);
+  my $filename = ".rex.tmp." . basename($file);
+
+  my $tmp_file_name =
+      $dirname eq '.'
+    ? $filename
+    : Rex::Helper::File::Spec->catfile( $dirname, $filename );
+
+  return $tmp_file_name;
 }
 
 =head2 file_write($file_name)

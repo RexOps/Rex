@@ -14,6 +14,7 @@ Revision history for Rex
  [ENHANCEMENTS]
  - Extend Bash completion with known hosts
  - Support wildcards in get_file_path
+ - Split out temp file naming logic
 
  [MAJOR]
 
@@ -30,6 +31,8 @@ Revision history for Rex
  - Add initial rsync tests
  - Test rsync with spaces in source path
  - Test rsync with wildcard in source path
+ - Add initial test for temp file names
+ - Simplify temp file naming logic
 
 1.11.0 2020-06-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

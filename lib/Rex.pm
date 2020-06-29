@@ -954,7 +954,7 @@ sub import {
 
 =head1 CONTRIBUTORS
 
-Many thanks to the contributors for their work. Please see L<CONTRIBUTORS|https://github.com/RexOps/Rex/blob/master/CONTRIBUTORS> file for a complete list.
+Many thanks to the contributors for their work. Please see L<CONTRIBUTORS|https://metacpan.org/release/Rex/source/CONTRIBUTORS> file for a complete list.
 
 =head1 LICENSE
 

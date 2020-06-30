@@ -16,6 +16,7 @@ use Cwd qw(realpath);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);
+use Test::Deep;
 
 my %source_for = (
   'rsync with absolute path'             => realpath('t/sync'),
@@ -47,7 +48,7 @@ sub test_rsync {
 
     my @empty = qw(. ..);
 
-    is_deeply( \@contents, \@empty, "$target is empty" );
+    cmp_deeply( \@contents, set(@empty), "$target is empty" );
 
     # sync contents
     sync $source, $target;
@@ -68,8 +69,7 @@ sub test_rsync {
     # expected results
     find(
       {
-        preprocess => sub { sort @_ },
-        wanted     => sub {
+        wanted => sub {
           s/$prefix//;
           push @expected, $_ if length($_);
         },
@@ -81,8 +81,7 @@ sub test_rsync {
     # actual results
     find(
       {
-        preprocess => sub { sort @_ },
-        wanted     => sub {
+        wanted => sub {
           s/$target//;
           push @result, $_ if length($_);
         },
@@ -91,6 +90,6 @@ sub test_rsync {
       $target
     );
 
-    is_deeply( \@result, \@expected, 'synced dir matches' );
+    cmp_deeply( \@result, set(@expected), 'synced dir matches' );
   }
 }

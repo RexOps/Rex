@@ -129,28 +129,16 @@ sub get {
   }
   else {
     # linux as default
+    my $free_str = '';
     if ( !can_run("free") ) {
-      $data = {
-        total   => 0,
-        used    => 0,
-        free    => 0,
-        shared  => 0,
-        buffers => 0,
-        cached  => 0,
-      };
-    }
-
-    my $free_str = [ grep { /^Swap:/ } i_run( "free -m", fail_ok => 1 ) ]->[0];
-    if ( !$free_str ) {
       $data = {
         total => 0,
         used  => 0,
         free  => 0,
       };
     }
-
     else {
-
+      $free_str = [ grep { /^Swap:/ } i_run( "free -m", fail_ok => 1 ) ]->[0];
       $free_str =~ s/\r//g;
       $free_str =~ s/^\s+|\s+$//g;
 

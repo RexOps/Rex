@@ -179,6 +179,7 @@ sub get {
   }
   else {
     # default for linux
+    my $free_str = '';
     if ( !can_run("free") ) {
       $data = {
         total   => 0,
@@ -189,21 +190,8 @@ sub get {
         cached  => 0,
       };
     }
-
-    my $free_str = [ grep { /^Mem:/ } i_run( "free -m", fail_ok => 1 ) ]->[0];
-
-    if ( !$free_str ) {
-      $data = {
-        total   => 0,
-        used    => 0,
-        free    => 0,
-        shared  => 0,
-        buffers => 0,
-        cached  => 0,
-      };
-    }
-
     else {
+      $free_str = [ grep { /^Mem:/ } i_run( "free -m", fail_ok => 1 ) ]->[0];
 
       my ( $total, $used, $free, $shared, $buffers, $cached ) = ( $free_str =~
           m/^Mem:\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/ );

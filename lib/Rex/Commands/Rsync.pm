@@ -161,7 +161,7 @@ sub sync {
     Rex::Logger::debug("Downloading $source -> $dest");
     push @rsync_cmd, "rsync -rl --verbose --stats $params ";
 
-    $source = $auth->{user} . "\@$servername:$source";
+    $source = $auth->{user} . "\@$servername:$source" if $auth;
 
     if ( !$local_connection ) {
       push @rsync_cmd, "-e '\%s'";
@@ -175,7 +175,7 @@ sub sync {
 
     if ( !$local_connection ) {
       push @rsync_cmd, "-e '\%s'";
-      $dest = $auth->{user} . "\@$servername:$dest";
+      $dest = $auth->{user} . "\@$servername:$dest" if $auth;
     }
   }
 
@@ -192,11 +192,13 @@ sub sync {
   $cmd = join( " ", @rsync_cmd );
 
   if ( !$local_connection ) {
-    my $pass           = $auth->{password};
+    my $pass;
+    $pass = $auth->{password} if $auth;
     my @expect_options = ();
 
-    my $auth_type = $auth->{auth_type};
-    if ( $auth_type eq "try" ) {
+    my $auth_type;
+    $auth_type = $auth->{auth_type} if $auth;
+    if ( $auth && $auth_type eq "try" ) {
       if ( $server->get_private_key && -f $server->get_private_key ) {
         $auth_type = "key";
       }
@@ -205,7 +207,7 @@ sub sync {
       }
     }
 
-    if ( $auth_type eq "pass" ) {
+    if ( $auth && $auth_type eq "pass" ) {
       $cmd = sprintf( $cmd,
         "ssh -o StrictHostKeyChecking=no -o PubkeyAuthentication=no -p $port",
       );
@@ -259,7 +261,7 @@ sub sync {
       );
     }
     else {
-      if ( $auth_type eq "key" ) {
+      if ( $auth && $auth_type eq "key" ) {
         $cmd = sprintf( $cmd,
               'ssh -i '
             . $server->get_private_key

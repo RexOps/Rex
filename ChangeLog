@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Allow sync() function work for local rsync operations
  - Discontinue support for Windows 7, Windows Server 2008 R2, and older
  - Avoid caching of Bash completion options to support multiple Rexfiles
  - Fix calling get_file_path from Rexfile

@@ -66,6 +66,8 @@ use Rex::Helper::IP;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
 use Rex::Interface::Shell;
+use Getopt::Long
+  qw(GetOptionsFromString :config gnu_compat :config pass_through);
 
 @EXPORT = qw(sync);
 
@@ -159,7 +161,7 @@ sub sync {
   if ( $opt && exists $opt->{'download'} && $opt->{'download'} == 1 ) {
     $dest = resolv_path($dest);
     Rex::Logger::debug("Downloading $source -> $dest");
-    push @rsync_cmd, "rsync -rl --verbose --stats $params ";
+    push @rsync_cmd, "rsync -rl --verbose --stats";
 
     $source = $auth->{user} . "\@$servername:$source";
 
@@ -171,7 +173,7 @@ sub sync {
     $source = resolv_path($source);
     Rex::Logger::debug("Uploading $source -> $dest");
 
-    push @rsync_cmd, "rsync -rl --verbose --stats $params";
+    push @rsync_cmd, "rsync -rl --verbose --stats";
 
     if ( !$local_connection ) {
       push @rsync_cmd, "-e '\%s'";
@@ -185,9 +187,23 @@ sub sync {
   push @rsync_cmd, $source;
   push @rsync_cmd, $dest;
 
+  # if running under sudo, create or modify --rsync-path as necessary
   if (Rex::is_sudo) {
-    push @rsync_cmd, "--rsync-path='sudo rsync'";
+    my $has_rsync_path_param = $params =~ /--rsync-path/;
+
+    # simple case: add --rysnc-path
+    if ( !$has_rsync_path_param ) {
+      push @rsync_cmd, "--rsync-path='sudo rsync'";
+    }
+
+    # complex case: modify existing --rsync-path
+    else {
+      $params = _rsync_path_helper($params);
+    }
   }
+
+  # modify command with use supplied $params
+  $rsync_cmd[0] =~ s/^rsync/rsync$params /i;
 
   $cmd = join( " ", @rsync_cmd );
 
@@ -375,6 +391,38 @@ sub sync {
     Rex::Logger::info($@);
   }
 
+}
+
+# helper function to modify user-supplied --rsync-path parameter value when running sync as sudo
+# will change rsync-path='blah rsync' to --rsync-path='sudo blah rsync'
+sub _rsync_path_helper {
+  my $params = shift;
+
+  # determine value of --rsync-path
+  $params =~ s/(--rsync-path)\s*=\s*/$1=/; # remove spaces from around equal sign
+  my $rsync_path;
+  my ( $ret, $args ) =
+    GetOptionsFromString( $params, 'rsync-path=s' => \$rsync_path, );
+
+  # only add 'sudo' to value if it's not already there
+  if ( $rsync_path !~ /^sudo / ) {
+
+    # substitute old value with a new value preceded by 'sudo'
+
+    # for quoted values (e.g. --rsync-path='stuff')
+    if ( $params =~ /(['"])$rsync_path['"]/ ) {
+      my $d = $1; # delimiter
+      $params =~
+        s/--rsync-path=$d$rsync_path$d/--rsync-path=${d}sudo $rsync_path$d/i;
+    }
+
+    # for non-quoted values (e.g --rsync-path=/bin/rsync)
+    else {
+      $params =~ s/--rsync-path=$rsync_path/--rsync-path='sudo $rsync_path'/i;
+    }
+  }
+
+  return $params;
 }
 
 1;

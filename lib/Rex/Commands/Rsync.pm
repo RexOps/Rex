@@ -123,7 +123,11 @@ sub sync {
       Rex::Helper::IP::get_server_and_port( $server->to_s, 22 );
   }
 
-  my $local_connection = defined $servername ? FALSE : TRUE;
+  my $local_connection = TRUE;
+
+  if ( defined $servername && $servername ne '<local>' ) {
+    $local_connection = FALSE;
+  }
 
   my $auth = $current_connection->{conn}->get_auth;
 

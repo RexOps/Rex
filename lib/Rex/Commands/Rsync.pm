@@ -161,10 +161,9 @@ sub sync {
     Rex::Logger::debug("Downloading $source -> $dest");
     push @rsync_cmd, "rsync -rl --verbose --stats $params ";
 
-    $source = $auth->{user} . "\@$servername:$source";
-
     if ( !$local_connection ) {
       push @rsync_cmd, "-e '\%s'";
+      $source = $auth->{user} . "\@$servername:$source";
     }
   }
   else {

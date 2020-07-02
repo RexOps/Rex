@@ -8,6 +8,7 @@ Revision history for Rex
  - Avoid caching of Bash completion options to support multiple Rexfiles
  - Fix calling get_file_path from Rexfile
  - Fix quoting of rsync parameters
+ - Fix local download rsync operations
 
  [DOCUMENTATION]
 

@@ -16,6 +16,7 @@ use Cwd qw(realpath);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);
+use Rex::Task;
 use Test::Deep;
 
 my %source_for = (
@@ -52,7 +53,12 @@ sub test_rsync {
     cmp_deeply( \@contents, set(@empty), "$target is empty" );
 
     # sync contents
-    sync $source, $target, $options;
+    my $task = Rex::Task->new(
+      name => 'rsync_test',
+      func => sub { sync $source, $target, $options },
+    );
+
+    $task->run('<local>');
 
     # test sync results
     my ( @expected, @result );

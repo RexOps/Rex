@@ -27,14 +27,15 @@ my %source_for = (
   'rsync with wildcard in relative path' => 't/sync/*',
 );
 
-plan tests => scalar keys %source_for;
+plan tests => 2 * scalar keys %source_for;
 
 for my $scenario ( sort keys %source_for ) {
   test_rsync( $scenario, $source_for{$scenario} );
+  test_rsync( $scenario, $source_for{$scenario}, { download => 1 } );
 }
 
 sub test_rsync {
-  my ( $scenario, $source ) = @_;
+  my ( $scenario, $source, $options ) = @_;
 
   subtest $scenario => sub {
     my $target = tempdir( CLEANUP => 1 );
@@ -51,7 +52,7 @@ sub test_rsync {
     cmp_deeply( \@contents, set(@empty), "$target is empty" );
 
     # sync contents
-    sync $source, $target;
+    sync $source, $target, $options;
 
     # test sync results
     my ( @expected, @result );

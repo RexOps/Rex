@@ -16,6 +16,7 @@ use Cwd qw(realpath);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);
+use Rex::Task;
 use Test::Deep;
 
 my %source_for = (
@@ -27,14 +28,15 @@ my %source_for = (
   'rsync with wildcard in relative path' => 't/sync/*',
 );
 
-plan tests => scalar keys %source_for;
+plan tests => 2 * scalar keys %source_for;
 
 for my $scenario ( sort keys %source_for ) {
   test_rsync( $scenario, $source_for{$scenario} );
+  test_rsync( $scenario, $source_for{$scenario}, { download => 1 } );
 }
 
 sub test_rsync {
-  my ( $scenario, $source ) = @_;
+  my ( $scenario, $source, $options ) = @_;
 
   subtest $scenario => sub {
     my $target = tempdir( CLEANUP => 1 );
@@ -51,7 +53,12 @@ sub test_rsync {
     cmp_deeply( \@contents, set(@empty), "$target is empty" );
 
     # sync contents
-    sync $source, $target;
+    my $task = Rex::Task->new(
+      name => 'rsync_test',
+      func => sub { sync $source, $target, $options },
+    );
+
+    $task->run('<local>');
 
     # test sync results
     my ( @expected, @result );

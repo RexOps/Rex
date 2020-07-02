@@ -16,6 +16,7 @@ use Cwd qw(realpath);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);
+use Rex::Task;
 use Test::Deep;
 
 my %source_for = (
@@ -27,15 +28,24 @@ my %source_for = (
   'rsync with wildcard in relative path' => 't/sync/*',
 );
 
-plan tests => 2 * scalar keys %source_for;
+plan tests => 4 * scalar keys %source_for;
 
 for my $scenario ( sort keys %source_for ) {
   test_rsync( $scenario, $source_for{$scenario} );
   test_rsync( $scenario, $source_for{$scenario}, { download => 1 } );
+
+  test_rsync( $scenario, $source_for{$scenario}, { task => 1 } );
+  test_rsync( $scenario, $source_for{$scenario}, { task => 1, download => 1 } );
 }
 
 sub test_rsync {
   my ( $scenario, $source, $options ) = @_;
+
+  my $use_task;
+
+  if ( defined $options and $options->{task} ) {
+    $use_task = delete $options->{task};
+  }
 
   subtest $scenario => sub {
     my $target = tempdir( CLEANUP => 1 );
@@ -52,7 +62,14 @@ sub test_rsync {
     cmp_deeply( \@contents, set(@empty), "$target is empty" );
 
     # sync contents
-    sync $source, $target, $options;
+    if ($use_task) {
+      my $task = Rex::Task->new( name => 'rsync_test' );
+      $task->set_code( sub { sync $source, $target, $options } );
+      $task->run('<local>');
+    }
+    else {
+      sync $source, $target, $options;
+    }
 
     # test sync results
     my ( @expected, @result );

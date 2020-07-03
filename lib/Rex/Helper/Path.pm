@@ -214,12 +214,12 @@ sub resolv_path {
 }
 
 sub parse_path {
-  my ($path) = @_;
+  my ( $path, $server ) = @_;
   my %hw;
 
   require Rex::Commands::Gather;
 
-  $hw{server}      = Rex::Commands::connection()->server;
+  $hw{server}      = $server || Rex::Commands::connection()->server;
   $hw{environment} = Rex::Commands::environment();
 
   $path =~ s/\{(server|environment)\}/$hw{$1}/gms;

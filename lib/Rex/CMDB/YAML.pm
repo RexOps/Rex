@@ -93,7 +93,7 @@ sub get {
     @files = @{ $self->{path} };
   }
 
-  @files = map { $self->_parse_path($_) } @files;
+  @files = map { $self->_parse_path( $_, $server ) } @files;
 
   my $all = {};
   Rex::Logger::debug( Dumper( \@files ) );

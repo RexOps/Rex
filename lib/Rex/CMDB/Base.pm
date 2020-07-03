@@ -24,9 +24,9 @@ sub new {
 }
 
 sub _parse_path {
-  my ( $self, $path ) = @_;
+  my ( $self, $path, $server ) = @_;
 
-  return parse_path($path);
+  return parse_path( $path, $server );
 }
 
 1;

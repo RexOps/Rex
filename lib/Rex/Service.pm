@@ -78,6 +78,9 @@ sub get {
   elsif ( is_arch($operatingsystem) && $can_run_systemctl ) {
     $class = "Rex::Service::Arch::systemd";
   }
+  elsif ( is_slackware($operatingsystem) ) {
+    $class = "Rex::Service::Slackware";
+  }
 
   my $provider_for = Rex::Config->get("service_provider") || {};
   my $provider;

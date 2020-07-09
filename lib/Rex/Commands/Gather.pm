@@ -45,7 +45,7 @@ use vars qw(@EXPORT);
 
 @EXPORT = qw(operating_system_is network_interfaces memory
   get_operating_system operating_system operating_system_version operating_system_release
-  is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora is_arch is_void
+  is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora is_arch is_void is_slackware
   get_system_information dump_system_information kernelname);
 
 =head2 get_operating_system
@@ -568,6 +568,23 @@ Returns true if the target system is a Void Linux system.
 sub is_void {
   my $os = get_operating_system();
   if ( $os =~ m/VoidLinux/i ) {
+    return 1;
+  }
+
+}
+
+=head2 is_slackware
+
+Returns true if the target system is a Slackware system.
+
+=cut
+
+sub is_slackware {
+  my $os = @_ ? shift : get_operating_system();
+
+  my @slackware_clones = ("Slackware");
+
+  if ( grep { /$os/i } @slackware_clones ) {
     return 1;
   }
 

@@ -188,6 +188,10 @@ sub get_operating_system {
     return "Manjaro";
   }
 
+  if ( is_file("/etc/slackware-version") ) {
+    return "Slackware";
+  }
+
   my $os_string = i_run("uname -s");
   return $os_string; # return the plain os
 
@@ -332,6 +336,17 @@ sub get_operating_system_version {
     else {
       return "outdated";
     }
+  }
+  elsif ( $op eq "Slackware" ) {
+    my $fh      = file_read("/etc/slackware-version");
+    my $content = $fh->read_all;
+    $fh->close;
+
+    chomp $content;
+
+    my ($version) = $content =~ m/(\d+(\.\d+)*\+?)$/;
+
+    return $version;
   }
 
   return [ i_run("uname -r") ]->[0];

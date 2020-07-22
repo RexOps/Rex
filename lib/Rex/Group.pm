@@ -17,7 +17,7 @@ use attributes;
 use Rex::Group::Entry::Server;
 
 use vars qw(%groups);
-use List::MoreUtils qw(uniq);
+use List::Util qw(uniqstr);
 use Data::Dumper;
 
 sub new {
@@ -39,7 +39,7 @@ sub get_servers {
   my @servers = map { ref( $_->to_s ) eq "CODE" ? &{ $_->to_s } : $_ }
     @{ $self->{servers} };
 
-  return uniq @servers;
+  return uniqstr @servers;
 }
 
 sub set_auth {
@@ -66,7 +66,7 @@ sub get_auth {
 sub create_group {
   my $class      = shift;
   my $group_name = shift;
-  my @server     = uniq grep { defined } @_;
+  my @server     = uniqstr grep { defined } @_;
 
   my @server_obj;
   for ( my $i = 0 ; $i <= $#server ; $i++ ) {

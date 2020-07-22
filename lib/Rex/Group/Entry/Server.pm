@@ -19,7 +19,7 @@ use Data::Dumper;
 use Sort::Naturally;
 use Symbol;
 
-use List::MoreUtils qw(uniq);
+use List::Util qw(uniqstr);
 
 use overload
   'eq'  => sub { shift->is_eq(@_); },
@@ -98,7 +98,7 @@ sub new {
 
 sub get_servers {
   my ($self) = @_;
-  return uniq map {
+  return uniqstr map {
     if ( ref $_ && $_->isa("Rex::Group::Entry::Server") ) {
       $_;
     }

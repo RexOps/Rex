@@ -83,31 +83,31 @@ If it is set to C<true>, the group I<all>, including all hosts, will also be cre
 =cut
 
 sub groups_yaml {
-    my ( $file, %option ) = @_;
-    my ( %hash, %all_hosts );
+  my ( $file, %option ) = @_;
+  my ( %hash, %all_hosts );
 
-    my $hash =
-        exists $option{load_string} && $option{load_string}
-        ? Load($file)
-        : LoadFile($file);
+  my $hash =
+    exists $option{load_string} && $option{load_string}
+    ? Load($file)
+    : LoadFile($file);
 
-    for my $k ( keys %{$hash} ) {
-        my @servers;
-        for my $servername ( @{ $hash->{$k} } ) {
-            my $add = {};
+  for my $k ( keys %{$hash} ) {
+    my @servers;
+    for my $servername ( @{ $hash->{$k} } ) {
+      my $add = {};
 
-            my $obj = Rex::Group::Entry::Server->new( name => $servername, %{$add} );
+      my $obj = Rex::Group::Entry::Server->new( name => $servername, %{$add} );
 
-            $all_hosts{$servername} = $obj;
-            push @servers, $obj;
-        }
-
-        group( "$k" => @servers );
+      $all_hosts{$servername} = $obj;
+      push @servers, $obj;
     }
 
-    if ( exists $option{create_all_group} && $option{create_all_group} ) {
-        group( "all", values %all_hosts );
-    }
+    group( "$k" => @servers );
+  }
+
+  if ( exists $option{create_all_group} && $option{create_all_group} ) {
+    group( "all", values %all_hosts );
+  }
 }
 
 1;

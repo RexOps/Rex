@@ -13,7 +13,6 @@ use warnings;
 
 use Rex::Logger;
 use Rex::Helper::Run;
-use Rex::Helper::Array;
 use Rex::Hardware::Network::FreeBSD;
 
 sub get_network_devices {

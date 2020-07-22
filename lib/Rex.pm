@@ -65,7 +65,6 @@ BEGIN {
   use Rex::Interface::Connection;
   use Cwd qw(getcwd);
   use Rex::Config;
-  use Rex::Helper::Array;
   use Rex::Report;
   use Rex::Notify;
   use Rex::Require;

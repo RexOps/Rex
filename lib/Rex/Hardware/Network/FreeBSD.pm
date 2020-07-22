@@ -11,15 +11,15 @@ use warnings;
 
 # VERSION
 
+use List::Util 'uniqstr';
 use Rex::Logger;
 use Rex::Helper::Run;
-use Rex::Helper::Array;
 
 sub get_network_devices {
 
   my @device_list = map { /^([a-z0-9]+)\:/i } i_run "ifconfig -a";
 
-  @device_list = array_uniq(@device_list);
+  @device_list = uniqstr(@device_list);
   return \@device_list;
 
 }

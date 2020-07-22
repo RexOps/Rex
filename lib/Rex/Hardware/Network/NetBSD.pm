@@ -12,7 +12,6 @@ use warnings;
 # VERSION
 
 use Rex::Logger;
-use Rex::Helper::Array;
 use Rex::Hardware::Network::OpenBSD;
 
 sub get_network_devices {

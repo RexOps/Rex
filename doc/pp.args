@@ -265,7 +265,6 @@
 -M Rex::Helper::SSH2
 -M Rex::Helper::DBI
 -M Rex::Helper::Encode
--M Rex::Helper::Array
 -M Rex::Helper::INI
 -M Rex::Helper::Misc
 -M Rex::Helper::SSH2::Expect

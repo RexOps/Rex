@@ -15,16 +15,16 @@ This module exports a function to access a CMDB via a common interface.
 =head1 SYNOPSIS
 
  use Rex::CMDB;
- 
+
  set cmdb => {
      type => 'YAML',
-     path => [ 
+     path => [
          'cmdb/{hostname}.yml',
          'cmdb/default.yml',
      ],
      merge_behavior => 'LEFT_PRECEDENT',
  };
- 
+
  task "prepare", "server1", sub {
    my $virtual_host = get cmdb("vhost");
    my %all_information = get cmdb;
@@ -147,9 +147,9 @@ Function to query a CMDB. If this function is called without $item it should ret
 
 sub cmdb {
   my ( $item, $server ) = @_;
-  $server ||= connection->server;
-
   return if !cmdb_active();
+
+  $server ||= connection->server;
 
   my $value;
   my $cache     = Rex::get_cache();
@@ -163,17 +163,24 @@ sub cmdb {
     $cache->set( $cache_key, $value );
   }
 
-  if ($item) {
-    $value = $value->{$item};
-  }
+  return $CMDB_PROVIDER->can('get_value')
+    ? $CMDB_PROVIDER->get_value( $item, $value )
+    : get_value( $item, $value );
+}
 
-  if ( defined $value ) {
-    return Rex::Value->new( value => $value );
-  }
-  else {
-    Rex::Logger::debug("CMDB - no item ($item) found");
-    return;
-  }
+=head2 get_value([$item, $server])
+
+Function to extract a named item from an CMDB value returned by cmdb.
+
+=cut
+
+sub get_value {
+  my ( $item, $value ) = @_;
+
+  $value = $value->{$item} if $item;
+  return defined $value
+    ? Rex::Value->new( value => $value )
+    : Rex::Logger::debug("CMDB - no item ($item) found");
 }
 
 sub cmdb_active {

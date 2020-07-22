@@ -35,15 +35,16 @@ require Exporter;
 use base qw(Exporter);
 use vars qw(@EXPORT);
 
-use YAML qw/LoadFile/;
+use YAML qw(LoadFile Load);
 
 @EXPORT = qw(groups_yaml);
 
-=head2 groups_yaml($file, create_all_group => $boolean )
+=head2 groups_yaml($file, create_all_group => $boolean, load_string => $boolean )
 
-With this function you can read groups from yaml files. The optional C<create_all_group> option can be passed. 
+With this function you can read groups from yaml files or strings. The optional C<create_all_group> option can be passed.
 If it is set to C<true>, the group I<all>, including all hosts, will also be created.
 
+  # load from file
   # in my_groups.yml
   webserver:
    - fe01
@@ -53,23 +54,41 @@ If it is set to C<true>, the group I<all>, including all hosts, will also be cre
    - be01
    - be02
    - f03
-   
-  # in Rexfile
 
+  # in Rexfile
   groups_yaml('my_groups.yml');
- 
+
   # or
   groups_yaml('my_groups.yml', create_all_group => TRUE);
+
+  # load from string
+  # in Rexfile
+  my $my_groups = <<'...';
+  webserver:
+   - fe01
+   - fe02
+   - f03
+  backends:
+   - be01
+   - be02
+   - f03
+  ...
+
+  groups_yaml($my_groups, load_string => TRUE);
+  # or
+  groups_yaml($my_groups, create_all_group => TRUE, load_string => TRUE);
+
+
 
 =cut
 
 sub groups_yaml {
   my ( $file, %option ) = @_;
-  my %hash;
+  my ( %hash, %all_hosts );
 
-  my $hash = LoadFile($file);
-
-  my %all_hosts;
+  my $hash = exists $option{load_string} && $option{load_string}
+    ? Load($file)
+    : LoadFile($file);
 
   for my $k ( keys %{$hash} ) {
     my @servers;

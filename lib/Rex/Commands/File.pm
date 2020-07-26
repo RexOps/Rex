@@ -970,7 +970,7 @@ OUT:
 
 =head2 delete_lines_according_to($search, $file, @options)
 
-This is the successor of the delete_lines_matching() function. This function also allows the usage of an on_change hook.
+This is the successor of the delete_lines_matching() function. This function also allows the usage of on_change and on_no_change hooks.
 
 It will search for $search in $file and remove the found lines. If on_change hook is present it will execute this if the file was changed.
 
@@ -987,8 +987,9 @@ sub delete_lines_according_to {
   my ( $search, $file, @options ) = @_;
   $file = resolv_path($file);
 
-  my $option    = {@options};
-  my $on_change = $option->{on_change} || undef;
+  my $option       = {@options};
+  my $on_change    = $option->{on_change} || undef;
+  my $on_no_change = $option->{on_no_change} || undef;
 
   my ( $old_md5, $new_md5 );
 
@@ -998,11 +999,14 @@ sub delete_lines_according_to {
 
   delete_lines_matching( $file, $search );
 
-  if ($on_change) {
+  if ( $on_change || $on_no_change ) {
     $new_md5 = md5($file);
 
     if ( $old_md5 ne $new_md5 ) {
-      &$on_change($file);
+      &$on_change($file) if $on_change;
+    }
+    else {
+      &$on_no_change($file) if $on_no_change;
     }
   }
 

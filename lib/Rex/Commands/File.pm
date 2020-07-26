@@ -1324,7 +1324,8 @@ sub sed {
     $options = {@option};
   }
 
-  my $on_change = $options->{"on_change"} || undef;
+  my $on_change    = $options->{"on_change"}    || undef;
+  my $on_no_change = $options->{"on_no_change"} || undef;
 
   my @content;
 
@@ -1344,11 +1345,12 @@ sub sed {
 
   my $ret = file(
     $file,
-    content   => join( "\n", @content ),
-    on_change => $on_change,
-    owner     => $stat{uid},
-    group     => $stat{gid},
-    mode      => $stat{mode}
+    content      => join( "\n", @content ),
+    on_change    => $on_change,
+    on_no_change => $on_no_change,
+    owner        => $stat{uid},
+    group        => $stat{gid},
+    mode         => $stat{mode}
   );
 
   Rex::get_current_connection()->{reporter}

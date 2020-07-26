@@ -1071,7 +1071,7 @@ sub _append_or_update {
   my ( $new_line, @m );
 
   # check if parameters are in key => value format
-  my ( $option, $on_change );
+  my ( $option, $on_change, $on_no_change );
 
   Rex::get_current_connection()->{reporter}
     ->report_resource_start( type => $action, name => $file );
@@ -1092,17 +1092,22 @@ sub _append_or_update {
     elsif ( ref $option->{regexp} eq "ARRAY" ) {
       @m = @{ $option->{regexp} };
     }
-    $on_change = $option->{on_change} || undef;
+    $on_change    = $option->{on_change}    || undef;
+    $on_no_change = $option->{on_no_change} || undef;
     1;
   } or do {
     ( $new_line, @m ) = @_;
 
-    # check if something in @m (the regexpes) is named on_change
-    for ( my $i = 0 ; $i < $#m ; $i++ ) {
-      if ( $m[$i] eq "on_change" && ref( $m[ $i + 1 ] ) eq "CODE" ) {
-        $on_change = $m[ $i + 1 ];
-        splice( @m, $i, 2 );
-        last;
+    # check if something in @m (the regexpes) is named on_change or on_no_change
+    for my $option ( [ on_change => \$on_change ],
+      [ on_no_change => \$on_no_change ] )
+    {
+      for ( my $i = 0 ; $i < $#m ; $i++ ) {
+        if ( $m[$i] eq $option->[0] && ref( $m[ $i + 1 ] ) eq "CODE" ) {
+          ${ $option->[1] } = $m[ $i + 1 ];
+          splice( @m, $i, 2 );
+          last;
+        }
       }
     }
   };
@@ -1140,32 +1145,46 @@ sub _append_or_update {
         $match = qr{$match};
       }
       if ( $content->[$line] =~ $match ) {
-        return 0 if $action eq 'append_if_no_such_line';
-        $content->[$line] = "$new_line";
         $found = 1;
+        last if $action eq 'append_if_no_such_line';
+        $content->[$line] = "$new_line";
       }
     }
   }
 
-  push @$content, "$new_line" unless $found;
+  my $new_md5;
+  if ( $action eq 'append_if_no_such_line' && $found ) {
+    $new_md5 = $old_md5;
+  }
+  else {
+    push @$content, "$new_line" unless $found;
 
-  file $file,
-    content => join( "\n", @$content ),
-    owner   => $stat{uid},
-    group   => $stat{gid},
-    mode    => $stat{mode};
+    file $file,
+      content => join( "\n", @$content ),
+      owner   => $stat{uid},
+      group   => $stat{gid},
+      mode    => $stat{mode};
+    $new_md5 = md5($file);
+  }
 
-  my $new_md5 = md5($file);
-
-  if ($on_change) {
+  if ( $on_change || $on_no_change ) {
     if ( $old_md5 && $new_md5 && $old_md5 ne $new_md5 ) {
-      $old_md5 ||= "";
+      if ($on_change) {
+        $old_md5 ||= "";
+        $new_md5 ||= "";
+
+        Rex::Logger::debug("File $file has been changed... Running on_change");
+        Rex::Logger::debug("old: $old_md5");
+        Rex::Logger::debug("new: $new_md5");
+        &$on_change($file);
+      }
+    }
+    elsif ($on_no_change) {
       $new_md5 ||= "";
 
-      Rex::Logger::debug("File $file has been changed... Running on_change");
-      Rex::Logger::debug("old: $old_md5");
-      Rex::Logger::debug("new: $new_md5");
-      &$on_change($file);
+      Rex::Logger::debug(
+        "File $file has been changed (md5 $new_md5)... Running on_no_change");
+      &$on_no_change($file);
     }
   }
 

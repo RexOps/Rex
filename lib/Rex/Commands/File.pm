@@ -49,7 +49,8 @@ With this module you can manipulate files.
    owner  => "root",
    group  => "root",
    mode  => 400,
-   on_change => sub { say "File was changed."; };
+   on_change => sub { say shift, " was changed."; },
+   on_no_change => sub { say shift, " wasn't changed."; };
 
 
 =head1 EXPORTED FUNCTIONS
@@ -739,6 +740,11 @@ sub file {
 
   if ( $__ret->{changed} == 1 && $on_change_done == 0 ) {
     &$on_change($file);
+  }
+  elsif ( $__ret->{changed} == 0 ) {
+    Rex::Logger::debug(
+      "File $file has not been changed... Running on_no_change");
+    ( $option->{on_no_change} || sub { } )->($file);
   }
 
   #### check and run after hook

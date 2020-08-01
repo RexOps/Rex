@@ -954,206 +954,204 @@ sub import {
 
 =head1 FEATURE FLAGS
 
-=head2 A word on backward compatibility
-
 Everyone knows the pain if something gets deprecated and one has to
 port his old (and stable) code to a new version of a library or a
 framework. There is enough work to do instead of fixing code to work
 with newer versions of them.
 
-So there is one premise new versions of Rex has to fulfill. They must
+So there is one promise new versions of Rex has to fulfill. They must
 be backward compatible.
 
-I know this might be impossible in the one or other way, but to minimize
+I know this might be impossible in one way or another, but to minimize
 this danger there is a thing called feature flags. If there is the need
 to break backward compatibility in favor of a new feature there will be
 a feature flag for this change. And only if this feature flag gets
 enabled in the Rexfile it will break compatibility.
 
-So the default is always to be compatible.
+So the default is always to remain compatible.
 
 If you have a problem that occurs after an update, it is considered as
 a bug. Please report this bug in our issue tracker.
 
-Also see the L<backwards compatibility|https://github.com/RexOps/Rex/blob/master/CONTRIBUTING.md#backwards-compatibility>
+Also see the L<backwards compatibility|https://metacpan.org/release/Rex/source/CONTRIBUTING.md#backwardscompatibility>
 section of the CONTRIBUTING guide.
 
-=head2 How to enable Feature Flags
+=head2 How to enable feature flags
 
 You can enable feature flags in your Rexfile with the following code:
 
-    # Rexfile
     use Rex -feature => ['0.31'];
 
 or even multiple ones like this:
 
-    # Rexfile
     use Rex -feature => [qw(exec_autodie source_profile)];
 
-=head2 Feature flags
-
-This is the current list of feature flags:
+=head2 List of feature flags
 
 =over 4
 
-=item no_task_chaining_cmdline_args (Since 1.4)
+=item 1.4
 
-Disable per-task argument parsing
+Enable per-task argument parsing (L<task_chaining_cmdline_args|#task_chaining_cmdline_args>). Furthermore, all features from earlier versions are activated. Available since version 1.3.
 
-=item task_chaining_cmdline_args (Since 1.4)
+=item no_task_chaining_cmdline_args
+
+Disable per-task argument parsing. Available since version 1.4.
+
+=item task_chaining_cmdline_args
 
 Enable per-task argument parsing: C<rex --rex --args task1 --task1arg=value task2 --task2arg>
-so task1 only gets C<task1arg> and task2 only gets C<task2arg>.
+so task1 only gets C<task1arg> and task2 only gets C<task2arg>. Available since version 1.4.
 
-=item 1.3 (Since 1.3)
+=item 1.3
 
-Activating the new template engine by default.
+Activating the new template engine by default. Furthermore, all features from earlier versions are activated. Available since version 1.3.
 
-=item no_template_ng (Since 1.3)
+=item no_template_ng
 
-Disabling the new template engine.
+Disabling the new template engine. Available since version 1.3.
 
-=item 1.0 (Since 1.0)
+=item 1.0
 
 Disabling usage of a tty. This increases compatibility for remote
 execution. Furthermore, all features from earlier versions are
-activated.
+activated. Available since version 1.0.
 
-=item no_autodie (Since 1.0)
+=item no_autodie
 
-Will disable autodie feature.
+Will disable autodie feature. Available since version 1.0.
 
-=item tty (Since 1.0)
+=item tty
 
-Enable pty usage for ssh connections. (Default)
+Enable pty usage for ssh connections. Available since version 1.0.
 
-=item template_ng (Since 0.56)
+=item template_ng
 
-Enabling the new template engine (better error reporting, etc.)
+Enabling the new template engine (better error reporting, etc.). Available since version 0.56.
 
-=item 0.56 (Since 0.56)
+=item 0.56
 
 Will activate autodie feature. Furthermore, all features from earlier
-versions are activated.
+versions are activated. Available since version 0.56.
 
-=item autodie (Since 0.56)
+=item autodie
 
-Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>
+Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 0.56.
 
-=item 0.55 (Since 0.55)
+=item 0.55
 
 Will activate using L<Net::OpenSSH> by default if present. Furthermore,
-all features from earlier versions are activated.
+all features from earlier versions are activated. Available since version 0.55.
 
-=item 0.54 (Since 0.54)
+=item 0.54
 
 Will activate checking services for existence before trying to
 manipulate them, and C<set()> will overwrite already existing values
 (instead of concatenating). Furthermore, all features from earlier
-versions are activated.
+versions are activated. Available since version 0.54.
 
-=item 0.53 (Since 0.53)
+=item 0.53
 
 Will activate register_cmdb_top_scope. And all things 0.51 and down
-activated.
+activated. Available since version 0.53.
 
-=item register_cmdb_top_scope (Since 0.53)
+=item register_cmdb_top_scope
 
 Will register all cmdb top scope variables automatically in the
-templates.
+templates. Available since version 0.53.
 
-=item 0.51 (Since 0.51)
+=item 0.51
 
 Will load L<Rex::Constants> and the CMDB by default. And all things 0.47
-and down activated.
+and down activated. Available since version 0.51.
 
-=item disable_taskname_warning (Since 0.47)
+=item disable_taskname_warning
 
 Disable warning about invalid task names (they should match
-C</^[a-zA-Z_][a-zA-Z0-9_]*$/>)
+C</^[a-zA-Z_][a-zA-Z0-9_]*$/>). Available since version 0.47.
 
-=item verbose_run (Since 0.47)
+=item verbose_run
 
 Explicitly output "Successfully executed" or "Error executing" messages
-for C<run()> commands.
+for C<run()> commands. Available since version 0.47.
 
-=item no_cache (Since 0.46)
+=item no_cache
 
 Disable caching (like discovery results of remote OS, hardware, shell,
-etc.)
+etc.). Available since version 0.46.
 
-=item no_path_cleanup (Since 0.44)
+=item no_path_cleanup
 
 Rex cleans the path before executing a command. With this feature Rex
-doesn't cleanup the path.
+doesn't cleanup the path. Available since version 0.44.
 
-=item source_profile (Since 0.44)
+=item source_profile
 
-Source C<$HOME/.profile> before running a command.
+Source C<$HOME/.profile> before running a command. Available since version 0.44.
 
-=item source_global_profile (Since 0.44)
+=item source_global_profile
 
-Source C</etc/profile> before running a command.
+Source C</etc/profile> before running a command. Available since version 0.44.
 
-=item exec_autodie (Since 0.44)
+=item exec_autodie
 
 If you execute a command with C<run()> Rex will C<die()> if the command
-returns a C<RETVAL != 0>.
+returns a C<RETVAL != 0>. Available since version 0.44.
 
-=item exec_and_sleep (Since 0.43)
+=item exec_and_sleep
 
 Sometimes some commands that fork away didn't keep running. With this
-flag rex will wait a few ms before exiting the shell.
+flag rex will wait a few ms before exiting the shell. Available since version 0.43.
 
-=item disable_strict_host_key_checking (Since 0.43)
+=item disable_strict_host_key_checking
 
-Disabling strict host key checking for openssh connection mode.
+Disabling strict host key checking for openssh connection mode. Available since version 0.43.
 
-=item reporting (Since 0.43)
+=item reporting
 
-Enable reporting
+Enable reporting. Available since version 0.43.
 
-=item empty_groups (Since 0.42)
+=item empty_groups
 
-Enable usage of empty groups.
+Enable usage of empty groups. Available since version 0.42.
 
-=item use_server_auth (Since 0.42)
+=item use_server_auth
 
-Enable the usage of special authentication options for servers.
+Enable the usage of special authentication options for servers. Available since version 0.42.
 
-=item no_tty (Since 0.41)
+=item no_tty
 
-Disable pty usage for ssh connections.
+Disable pty usage for ssh connections. Available since version 0.41.
 
-=item no_local_template_vars (Since 0.40)
+=item no_local_template_vars
 
-Use global variables in templates
+Use global variables in templates. Available since version 0.40.
 
-=item sudo_without_sh (Since 0.40)
+=item sudo_without_sh
 
 Run sudo commands directly without the use of 'sh'. This might break
-things.
+things. Available since version 0.40.
 
-=item sudo_without_locales (Since 0.40)
+=item sudo_without_locales
 
 Run sudo commands without locales. This will break things if you don't
-use English locales.
+use English locales. Available since version 0.40.
 
-=item exit_status (Since 0.39)
+=item exit_status
 
 This option tells Rex to return a non zero value on exit if a task
-fails.
+fails. Available since version 0.39.
 
-=item 0.35 (Since 0.35)
+=item 0.35
 
 This option enables the features of 0.31 and the possibility to call
 tasks as a functions without the need to use a hash reference for the
-parameters.
+parameters. Available since version 0.35.
 
-=item 0.31 (Since 0.31)
+=item 0.31
 
 To enable special authentication options for a server group. This will
-overwrite the default authentication options for a task.
+overwrite the default authentication options for a task. Available since version 0.31.
 
 =back
 

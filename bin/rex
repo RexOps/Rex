@@ -29,17 +29,11 @@ __END__
 
 =head1 NAME
 
-Rex - the friendly automation framework
+rex - execute tasks defined in a Rexfile
 
 =head1 DESCRIPTION
 
-Rex is an automation framework that is friendly to any combinations of local
-and remote execution, push and pull style of management, or imperative and
-declarative approach.
-
-Its flexibility makes it a great fit for many different use cases, but most
-commonly Rex is used to automate application deployment and data center
-infrastructure management tasks.
+The C<rex> script can be used to execute tasks defined in a Rexfile from the command line.
 
 =head1 SYNOPSIS
 

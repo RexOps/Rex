@@ -17,6 +17,7 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+ - Gather only files tracked by git
 
 1.12.0 2020-07-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

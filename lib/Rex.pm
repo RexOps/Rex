@@ -980,11 +980,11 @@ section of the CONTRIBUTING guide.
 
 You can enable feature flags in your Rexfile with the following code:
 
-    use Rex -feature => ['0.31'];
+    use Rex -feature => ['1.4'];
 
 or even multiple ones like this:
 
-    use Rex -feature => [qw(exec_autodie source_profile)];
+    use Rex -feature => [qw(1.4 exec_autodie)];
 
 =head2 List of feature flags
 

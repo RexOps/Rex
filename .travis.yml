@@ -1,9 +1,11 @@
+dist: bionic
+os: linux
+language: perl
+perl:
+  - "5.30"
 jobs:
   include:
     - stage: test
-      language: perl
-      perl:
-        - "5.30"
       env:
         - AUTHOR_TESTING=1 RELEASE_TESTING=1 PERL_CPANM_OPT="--quiet --notest"
       cache:

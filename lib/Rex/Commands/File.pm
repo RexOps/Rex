@@ -543,6 +543,10 @@ sub file {
 
   }
   elsif ( exists $option->{"source"} && !$is_directory ) {
+    if ($need_md5) {
+      eval { $old_md5 = md5($file); };
+    }
+
     $option->{source} =
       Rex::Helper::Path::get_file_path( $option->{source}, caller() );
 

@@ -25,7 +25,7 @@ The main ideas behind Rex are:
 
 ## Getting started
 
-We have a [Getting started guide](http://www.rexify.org/docs/guides/start_using__r__ex.html) on the website that should help you with the first steps.
+We have a [Getting started guide](https://www.rexify.org/docs/guides/start_using__r__ex.html) on the website that should help you with the first steps.
 
 ## Installation
 
@@ -56,10 +56,10 @@ If a new user has difficulties to get on board, then it's a bug. Let us know!
 
 Feel free to join us on irc.freenode.net in the #rex channel, ask us on the [Rex Users](https://groups.google.com/group/rex-users/) on Google Groups, or browse and open [issues on GitHub](https://github.com/RexOps/Rex/issues).
 
-If you need commercial support for (R)?ex, check out the [Support](http://www.rexify.org/support.html) page on the website.
+If you need commercial support for (R)?ex, check out the [Support](https://www.rexify.org/support/index.html) page on the website.
 
 ## Contributing
 
 All contributions are welcome: documentation, patches, bug reports, ideas, promoting (R)?ex at conferences and meetups, or anything else you can think of.
 
-For more details, see the [Contributing guide](https://github.com/RexOps/Rex/blob/master/CONTRIBUTING.md) in the repo and the [Help (R)?ex](http://www.rexify.org/care/help__r__ex.html) page on the website.
+For more details, see the [Contributing guide](https://github.com/RexOps/Rex/blob/master/CONTRIBUTING.md) in the repo and the [Help (R)?ex](https://www.rexify.org/care/help__r__ex.html) page on the website.

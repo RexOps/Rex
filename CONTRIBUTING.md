@@ -16,6 +16,14 @@ For both community and commercial support, please see our [support](https://www.
 
 Please don't use the issue tracker for support questions (“how do I…?”, “why does it…?”, etc.).
 
+### GitHub issues and pull requests
+
+The first step of any change proposal is to open an issue about it. This gives a chance to discuss the details, and to design potential solutions before spending effort on the implementation in a follow-up pull request.
+
+To cover the vast majority of typical discussion points in advance, there are predefined templates for issues and pull requests. Please make sure to use them in order to streamline the workflow.
+
+If something comes up that is not a good fit for the templates, that's probably already an early indicator that it should be discussed more closely. In this case please contact us first, or at least provide a reasoning about why the template had to be ignored in that specific case.
+
 ### Cross platform support
 
 Rex is expected to be able to _run_ wherever Perl can run. This includes Linux, BSDs, Mac OS X, Windows and possibly others. Patches and guides about how to run Rex on even more platforms are more than welcome! As a general rule, running Rex is only supported on platforms which are actively maintained by their respective upstream teams.

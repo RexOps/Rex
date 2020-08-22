@@ -114,17 +114,18 @@ Extended, author and release tests may need further dependencies, before being e
 
 ## Git workflow
 
-The preferred way for sending contributions is to fork the repository on GitHub, and send pull requests against the `master` branch.
+The preferred way for sending contributions is to [fork](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-forks) the repository on GitHub, and send [pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests) against the default branch of the repository.
 
-It is recommended to use feature branches when working on contributions, which makes it easy to keep together the commits related to a specific changeset.
+It is recommended to use feature [branches](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-branches) when working on contributions. This makes it easy to separate the commits related to a specific changeset from the main line of development, while still keeping them together in one place.
 
-Ideally, one commit represents a single logical change, has a readable commit message, and passes tests in itself. There are many articles written on the topic, but this is a good example about [how to write a git commit message](https://chris.beams.io/posts/git-commit/).
+Ideally, a single commit represents a single logical change, has a readable commit message, and passes tests in itself. There are many articles written on the topic, but this is a good example about [how to write a git commit message](https://chris.beams.io/posts/git-commit/).
 
-It is generally fine to:
- - break tests when adding new tests before changing the code to fix them
+It is generally recommended to:
+ - add new breaking tests on a first commit before changing the code to fix them on a follow up commit
  - use multiple commits in a single pull request to separate logical steps, and to help understanding the changes as long as the history is still easy to follow and read
- - open and mark pull requests as WIP (Work In Progress) to share and get feedback early
- - use follow up/clean up commits on the same PR, but then please also squash related commits together in the feature branch _before_ merging in order to keep a tidy history
+ - open [draft pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests) to share the idea and ask for feedback early
+ - [rebase](https://docs.github.com/en/github/using-git/about-git-rebase) your feature branch on top of the default branch if there are new commits since the feature branch has been created
+ - use follow up/clean up commits on the same PR, but then please also [squash related commits](https://docs.github.com/en/github/using-git/about-git-rebase) together in the feature branch _before_ merging in order to keep a tidy history (in other words, no "tidy only" or "fix typo" commits are necessary)
 
 ## Contribute to this guide
 

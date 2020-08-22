@@ -2,14 +2,17 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: ''
+labels: 'feature request'
 assignees: ''
 
 ---
 
+<!-- If you decide to leave out some of the information on purpose, -->
+<!-- please mark it with [strikethrough](https://github.github.com/gfm/#strikethrough-extension-) by using `~~` around it. -->
+
 ## User story
 
-**As** <!-- role, (user, contributor, etc.) -->
+**As** <!-- role, (user, contributor, engineer, manager, etc.) -->
 **I would like to** <!-- do something new or better with Rex -->
 **so I can** <!-- reach a specific goal -->.
 

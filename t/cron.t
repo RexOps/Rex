@@ -448,7 +448,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[0]->{hour},         "9-20", "the first job / hour" );
   is( $cron[0]->{day_of_month}, "*",    "the first job / day" );
   is( $cron[0]->{month},        "*",    "the first job / month" );
-  is( $cron[0]->{day_of_week}, "*", "the first job / day_of_month of week" );
+  is( $cron[0]->{day_of_week},  "*", "the first job / day_of_month of week" );
   is(
     $cron[0]->{command},
     "/home/username/script/script1.sh > /dev/null",

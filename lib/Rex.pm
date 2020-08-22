@@ -443,7 +443,7 @@ sub connect {
   my ($param) = {@_};
 
   my $server      = $param->{server};
-  my $port        = $param->{port} || 22;
+  my $port        = $param->{port}    || 22;
   my $timeout     = $param->{timeout} || 5;
   my $user        = $param->{"user"};
   my $pass        = $param->{"password"};

@@ -211,7 +211,7 @@ sub lvs {
 
 sub pvcreate {
   my ($dev) = @_;
-  my $s = i_run "pvcreate $dev", fail_ok => 1, stderr_to_stdout => 1;
+  my $s     = i_run "pvcreate $dev", fail_ok => 1, stderr_to_stdout => 1;
   if ( $? != 0 ) {
     die("Error creating pv.\n$s\n");
   }

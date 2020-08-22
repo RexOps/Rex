@@ -21,9 +21,9 @@ $expected = $file;
 
 is( $path, $file, "got file path if called from Rexfile - absolute path" );
 
-$rexfile = Rex::Helper::File::Spec->join( "this",  "is", "Rexfile" );
-$file    = Rex::Helper::File::Spec->join( "files", "foo.txt" );
-$path    = Rex::Helper::Path::get_file_path( $file, "main", $rexfile );
+$rexfile  = Rex::Helper::File::Spec->join( "this",  "is", "Rexfile" );
+$file     = Rex::Helper::File::Spec->join( "files", "foo.txt" );
+$path     = Rex::Helper::Path::get_file_path( $file, "main", $rexfile );
 $expected = Rex::Helper::File::Spec->join( "this", "is", "files", "foo.txt" );
 
 is( $path, $expected, "got file path if called Rexfile from other directory" );

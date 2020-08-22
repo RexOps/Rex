@@ -121,7 +121,7 @@ CON_SSH:
     $self->{auth_ret} = $self->{ssh}->auth(
       'username'   => $user,
       'password'   => $pass,
-      'publickey'  => $public_key || "",
+      'publickey'  => $public_key  || "",
       'privatekey' => $private_key || ""
     );
   }

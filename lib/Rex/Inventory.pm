@@ -209,7 +209,7 @@ sub get {
       host => {
         name   => [ run "hostname -s" ]->[0],
         domain => [ run "hostname -d" || qw() ]->[0],
-        kernel => [ run "uname -r" || qw() ]->[0],
+        kernel => [ run "uname -r"    || qw() ]->[0],
       },
     },
     fusion_inventory => $fusion_inventory_xmlref,

@@ -116,10 +116,10 @@ sub run_instance {
 
   my $xml = $self->_request(
     "RunInstances",
-    ImageId                      => $data{"image_id"},
-    MinCount                     => 1,
-    MaxCount                     => 1,
-    KeyName                      => $data{"key"},
+    ImageId  => $data{"image_id"},
+    MinCount => 1,
+    MaxCount => 1,
+    KeyName  => $data{"key"},
     InstanceType                 => $data{"type"} || "m1.small",
     "Placement.AvailabilityZone" => $data{"zone"} || "",
     %security_group,

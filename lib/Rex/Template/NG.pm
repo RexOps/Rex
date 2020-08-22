@@ -99,8 +99,8 @@ sub parse {
     my $error = $@;
 
     my ($error_line) = ( $error =~ m/line (\d+)[\.,]/ );
-    my @code_lines = split( /\n/, $code );
-    my @raw_lines  = split( /\n/, $c );
+    my @code_lines   = split( /\n/, $code );
+    my @raw_lines    = split( /\n/, $c );
 
     my $idx = $error_line - 5;
     for my $l ( @code_lines[ $error_line - 5 .. $error_line + 5 ] ) {

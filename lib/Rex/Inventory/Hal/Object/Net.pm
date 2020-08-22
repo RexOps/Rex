@@ -20,7 +20,7 @@ __PACKAGE__->has(
     { key => "net.interface", accessor => "dev", },
     { key => "net.address",   accessor => "mac", },
     { key => "info.product",  accessor => "product", parent => 1, },
-    { key => "info.vendor",   accessor => "vendor", parent => 1, },
+    { key => "info.vendor",   accessor => "vendor",  parent => 1, },
 
   ]
 );

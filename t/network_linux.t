@@ -61,13 +61,13 @@ $info = Rex::Hardware::Network::Linux::_parse_ifconfig(@in);
 is( $info->{eth0}->{broadcast}, "192.168.112.255", "(fc19) eth0 / broadcast" );
 is( $info->{eth0}->{ip},        "192.168.112.182", "(fc19) eth0 / ip" );
 is( $info->{eth0}->{netmask},   "255.255.255.0",   "(fc19) eth0 / netmask" );
-is( $info->{eth0}->{mac}, "52:54:00:37:a8:e1", "(fc19) eth0 / mac" );
+is( $info->{eth0}->{mac},       "52:54:00:37:a8:e1", "(fc19) eth0 / mac" );
 
 is( $info->{"eth0:1"}->{broadcast}, "1.2.255.255",
   "(fc19) eth0:1 / broadcast" );
 is( $info->{"eth0:1"}->{ip},      "1.2.3.4",     "(fc19) eth0:1 / ip" );
 is( $info->{"eth0:1"}->{netmask}, "255.255.0.0", "(fc19) eth0:1 / netmask" );
-is( $info->{"eth0:1"}->{mac}, "52:54:00:37:a8:e1", "(fc19) eth0:1 / mac" );
+is( $info->{"eth0:1"}->{mac},     "52:54:00:37:a8:e1", "(fc19) eth0:1 / mac" );
 
 @in   = eval { local (@ARGV) = ("t/ifconfig.out7"); <>; };
 $info = Rex::Hardware::Network::Linux::_parse_ifconfig(@in);

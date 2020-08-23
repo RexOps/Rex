@@ -27,8 +27,8 @@ jobs:
         # installing OS-specific dependencies
         - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
         # installing optional dependencies
-        - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML
+        - cpanm DBI IPC::Shareable
+        - cpanm XML::LibXML
         - cpanm File::LibMagic Test::mysqld Expect
         - cpanm Devel::Cover::Report::Coveralls
       install:
@@ -63,8 +63,8 @@ jobs:
         # installing OS-specific dependencies
         - cpanm Net::SSH2
         # installing optional dependencies
-        - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML
+        - cpanm DBI
+        - cpanm XML::LibXML
         - cpanm --reinstall App::Prove
       install:
         - dzil build --in build --notgz
@@ -99,8 +99,8 @@ jobs:
         # installing OS-specific dependencies
         - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
         # installing optional dependencies
-        - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML Expect
+        - cpanm DBI IPC::Shareable
+        - cpanm XML::LibXML Expect
       install:
         - dzil build --in build --notgz
       script:

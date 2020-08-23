@@ -62,33 +62,13 @@ sub md5 {
   if ( $fs->is_file($file) ) {
     Rex::Logger::debug("Calculating checksum (MD5) of $file");
 
-    my $command =
-      ( $^O =~ m/^MSWin/i && Rex::is_local() )
-      ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
-      : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
+    my $md5 = _digest_md5($file) // _binary_md5($file);
 
-    my $md5 = i_run( $command, fail_ok => 1 );
-
-    unless ( $? == 0 ) {
-
-      my $exec = Rex::Interface::Exec->create;
-
-      my $os = $exec->exec("uname -s");
-      if ( $os =~ /bsd/i ) {
-        ( undef, $md5 ) = split( / = /, $exec->exec("md5 '$file'") );
-      }
-      else {
-        ($md5) = split( /\s/, $exec->exec("md5sum '$file'") );
-      }
-
-      if ( !$md5 ) {
-        my $message = "Unable to get MD5 checksum of $file: $!";
-        Rex::Logger::info($message);
-        die($message);
-      }
+    if ( !$md5 ) {
+      my $message = "Unable to get MD5 checksum of $file: $!";
+      Rex::Logger::info($message);
+      die($message);
     }
-
-    chomp $md5;
 
     Rex::Logger::debug("MD5 checksum of $file: $md5");
 
@@ -99,6 +79,43 @@ sub md5 {
     Rex::Logger::debug($message);
     die($message);
   }
+}
+
+sub _digest_md5 {
+  my $file = shift;
+  my $md5;
+
+  my $command =
+    ( $^O =~ m/^MSWin/i && Rex::is_local() )
+    ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
+    : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
+
+  my $result = i_run( $command, fail_ok => 1 );
+
+  if ( $? == 0 ) {
+    $md5 = $result;
+  }
+
+  return $md5;
+}
+
+sub _binary_md5 {
+  my $file = shift;
+  my $md5;
+
+  my $exec = Rex::Interface::Exec->create;
+
+  my $os = $exec->exec("uname -s");
+  if ( $os =~ /bsd/i ) {
+    ( undef, $md5 ) = split( / = /, $exec->exec("md5 '$file'") );
+  }
+  else {
+    ($md5) = split( /\s/, $exec->exec("md5sum '$file'") );
+  }
+
+  chomp $md5;
+
+  return $md5;
 }
 
 1;

@@ -18,6 +18,7 @@ Revision history for Rex
 
  [REVISION]
  - Set Travis CI root build job options explicitly
+ - Test internal MD5 checksumming methods
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

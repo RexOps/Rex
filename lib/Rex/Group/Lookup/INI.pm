@@ -6,17 +6,16 @@
 
 =head1 NAME
 
-Rex::Group::Lookup::INI - read hostnames and groups from a INI style file
+Rex::Group::Lookup::INI - read host names and groups from an INI style file
 
 =head1 DESCRIPTION
 
-With this module you can define hostgroups out of an ini style file.
+With this module you can define host groups in an INI style file.
 
 =head1 SYNOPSIS
 
  use Rex::Group::Lookup::INI;
- groups_file "file.ini";
- 
+ groups_file 'file.ini';
 
 =head1 EXPORTED FUNCTIONS
 
@@ -45,16 +44,28 @@ With this function you can read groups from INI style files.
 
 File example:
 
- [webserver]
+ # servers.ini
+ [webservers]
  fe01
  fe02
- f03
     
  [backends]
- be01
- be02
+ be[01..03]
 
-It also supports hostname expressions like [1..3], [1,2,3] and [1..5/2].
+It supports the same expressions as the L<group|Rex::Commands/group> command.
+
+Since 0.42, it also supports custom host properties if the L<use_server_auth|Rex/use_server_auth> feature flag is enabled:
+
+ # servers.ini
+ [webservers]
+ server01 user=root password=foob4r sudo=true services=apache,memcache
+
+ # Rexfile
+ use Rex -feature => ['use_server_auth'];
+
+ task 'list_services', group => 'webservers', sub {
+   say connection->server->option('services');
+ }
 
 =cut
 

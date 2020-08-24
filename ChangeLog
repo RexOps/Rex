@@ -9,6 +9,7 @@ Revision history for Rex
  [DOCUMENTATION]
  - Clarify contributing guide
  - Clarify INI file documentation
+ - Document custom server parameters in INI files
 
  [ENHANCEMENTS]
 

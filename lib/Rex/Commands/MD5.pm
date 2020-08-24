@@ -32,6 +32,7 @@ use warnings;
 
 use Rex::Logger;
 require Rex::Commands;
+require Rex::Commands::Run;
 use Rex::Interface::Exec;
 use Rex::Interface::File;
 use Rex::Interface::Fs;
@@ -105,11 +106,10 @@ sub _binary_md5 {
 
   my $exec = Rex::Interface::Exec->create;
 
-  my $os = $exec->exec("uname -s");
-  if ( $os =~ /bsd/i ) {
+  if ( Rex::Commands::Run::can_run('md5') ) {
     ( undef, $md5 ) = split( / = /, $exec->exec("md5 '$file'") );
   }
-  else {
+  elsif ( Rex::Commands::Run::can_run('md5sum') ) {
     ($md5) = split( /\s/, $exec->exec("md5sum '$file'") );
   }
 

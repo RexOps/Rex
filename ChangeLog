@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix fallback MD5 calculation method on OS X
 
  [DOCUMENTATION]
  - Clarify contributing guide

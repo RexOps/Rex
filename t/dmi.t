@@ -1,4 +1,4 @@
-use Test::More tests => 30;
+use Test::More tests => 31;
 
 use Rex::Inventory::DMIDecode;
 
@@ -13,6 +13,16 @@ my @cpus    = $dmi->get_cpus;
 my @mems    = $dmi->get_memory_modules;
 my @mema    = $dmi->get_memory_arrays;
 my $sysinfo = $dmi->get_system_information;
+
+is_deeply(
+  $bb->get_all,
+  {
+    manufacturer  => "Parallels Software International Inc.",
+    product_name  => "Parallels Virtual Platform",
+    serial_number => "None",
+    version       => "None",
+  }
+);
 
 is(
   $bb->get_product_name,

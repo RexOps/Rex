@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix fallback MD5 calculation method on OS X
+ - Fix dmidecode section getter
 
  [DOCUMENTATION]
  - Clarify contributing guide

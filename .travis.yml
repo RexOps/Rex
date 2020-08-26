@@ -27,10 +27,15 @@ jobs:
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
         - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
         - cpanm File::LibMagic Test::mysqld Expect
+        - cpanm Devel::Cover::Report::Coveralls
       install:
         - dzil build --in build --notgz
       script:
-        - cd build && prove --timer --lib --recurse --jobs $(nproc) --shuffle t/ xt/
+        - cd build
+        - HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+        - prove --timer --lib --recurse --jobs $(nproc) --shuffle xt/
+      after_success:
+        - cover -report coveralls
     - stage: test
       os: windows
       language: shell

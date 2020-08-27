@@ -1839,33 +1839,37 @@ __PACKAGE__->register_config_handler(
   }
 );
 
-my @set_handler =
-  qw/user password private_key public_key -keyauth -passwordauth -passauth
-  parallelism sudo_password connection ca cert key distributor
-  template_function port waitpid_blocking_sleep_time/;
-for my $hndl (@set_handler) {
-  __PACKAGE__->register_set_handler(
-    $hndl => sub {
-      my ($val) = @_;
-      if ( $hndl =~ m/^\-/ ) {
-        $hndl = substr( $hndl, 1 );
-      }
-      if ( $hndl eq "keyauth" ) { $hndl = "key_auth"; $val = 1; }
-      if ( $hndl eq "passwordauth" || $hndl eq "passauth" ) {
-        $hndl = "password_auth";
-        $val  = 1;
-      }
-      if ( $hndl eq "connection" ) { $hndl = "connection_type"; }
-      if ( $hndl eq "ca" )         { $hndl = "ca_file"; }
-      if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
-      if ( $hndl eq "key" )        { $hndl = "ca_key"; }
+_register_set_handlers();
 
-      my $ref_to_hndl        = qualify_to_ref( $hndl, __PACKAGE__ );
-      my $ref_to_hndl_scalar = *{$ref_to_hndl}{SCALAR};
+sub _register_set_handlers {
+  my @set_handler =
+    qw/user password private_key public_key -keyauth -passwordauth -passauth
+    parallelism sudo_password connection ca cert key distributor
+    template_function port waitpid_blocking_sleep_time/;
+  for my $hndl (@set_handler) {
+    __PACKAGE__->register_set_handler(
+      $hndl => sub {
+        my ($val) = @_;
+        if ( $hndl =~ m/^\-/ ) {
+          $hndl = substr( $hndl, 1 );
+        }
+        if ( $hndl eq "keyauth" ) { $hndl = "key_auth"; $val = 1; }
+        if ( $hndl eq "passwordauth" || $hndl eq "passauth" ) {
+          $hndl = "password_auth";
+          $val  = 1;
+        }
+        if ( $hndl eq "connection" ) { $hndl = "connection_type"; }
+        if ( $hndl eq "ca" )         { $hndl = "ca_file"; }
+        if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
+        if ( $hndl eq "key" )        { $hndl = "ca_key"; }
 
-      ${$ref_to_hndl_scalar} = $val;
-    }
-  );
+        my $ref_to_hndl        = qualify_to_ref( $hndl, __PACKAGE__ );
+        my $ref_to_hndl_scalar = *{$ref_to_hndl}{SCALAR};
+
+        ${$ref_to_hndl_scalar} = $val;
+      }
+    );
+  }
 }
 
 sub _home_dir {

@@ -1810,34 +1810,38 @@ sub import {
   read_config_file();
 }
 
-__PACKAGE__->register_config_handler(
-  base => sub {
-    my ($param) = @_;
+_register_config_handlers();
 
-    for my $key ( keys %{$param} ) {
+sub _register_config_handlers {
+  __PACKAGE__->register_config_handler(
+    base => sub {
+      my ($param) = @_;
 
-      if ( $key eq "keyauth" ) {
-        $key_auth = $param->{keyauth};
-        next;
+      for my $key ( keys %{$param} ) {
+
+        if ( $key eq "keyauth" ) {
+          $key_auth = $param->{keyauth};
+          next;
+        }
+
+        if ( $key eq "passwordauth" ) {
+          $password_auth = $param->{passwordauth};
+          next;
+        }
+
+        if ( $key eq "passauth" ) {
+          $password_auth = $param->{passauth};
+          next;
+        }
+
+        my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
+        my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
+
+        ${$ref_to_key_scalar} = $param->{key};
       }
-
-      if ( $key eq "passwordauth" ) {
-        $password_auth = $param->{passwordauth};
-        next;
-      }
-
-      if ( $key eq "passauth" ) {
-        $password_auth = $param->{passauth};
-        next;
-      }
-
-      my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
-      my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
-
-      ${$ref_to_key_scalar} = $param->{key};
     }
-  }
-);
+  );
+}
 
 _register_set_handlers();
 

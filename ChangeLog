@@ -7,6 +7,7 @@ Revision history for Rex
  - Fix fallback MD5 calculation method on OS X
  - Fix dmidecode section getter
  - Fix cpuinfo parsing
+ - Fix registering custom template functions
 
  [DOCUMENTATION]
  - Clarify contributing guide

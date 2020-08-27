@@ -1,8 +1,9 @@
 use strict;
 use warnings;
 
-use Test::More tests => 9;
+use Test::More tests => 10;
 
+use Cwd qw(realpath);
 use Rex::Config;
 
 Rex::Config->set( "test", "foobar" );
@@ -42,5 +43,8 @@ is_deeply(
   'check test_h'
 );
 
-1;
+Rex::Config::read_config_file( realpath('t/config.yml') );
 
+is( Rex::Config->get_user, 'configuser', 'user from config file' );
+
+1;

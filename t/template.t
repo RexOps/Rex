@@ -1,11 +1,12 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 20;
 
 use Rex::Config;
 use Rex::Commands;
 use Rex::Template;
+use Symbol;
 
 my $t = Rex::Template->new;
 
@@ -120,3 +121,13 @@ for my $key ( keys %{$v} ) {
   );
 }
 
+# test custom functions
+
+my $function_name   = 'dummy';
+my $function_result = $function_name . ' result';
+
+ok( $t->function( $function_name, sub { return $function_result } ),
+  'registering custom function' );
+
+my $function_ref = qualify_to_ref( $function_name, $t );
+is( *{$function_ref}->(), $function_result, 'calling custom function' );

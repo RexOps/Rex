@@ -33,6 +33,7 @@ sub get {
   my @ret;
   my $proc = 0;
   for my $line (@cpuinfo) {
+    next if $line =~ qr{^$};
     my ( $key, $val ) = split /\s*:\s*/, $line, 2;
     if ( $key eq "processor" ) {
       $proc = $val;

@@ -5,6 +5,8 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix fallback MD5 calculation method on OS X
+ - Fix dmidecode section getter
+ - Fix cpuinfo parsing
 
  [DOCUMENTATION]
  - Clarify contributing guide
@@ -23,6 +25,7 @@ Revision history for Rex
  - Set Travis CI root build job options explicitly
  - Test internal MD5 checksumming methods
  - Report coverage to Coveralls
+ - Add initial test for proc inventory
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

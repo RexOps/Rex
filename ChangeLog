@@ -8,6 +8,7 @@ Revision history for Rex
  - Fix dmidecode section getter
  - Fix cpuinfo parsing
  - Fix registering custom template functions
+ - Fix handling of configuration file settings
 
  [DOCUMENTATION]
  - Clarify contributing guide

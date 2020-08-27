@@ -1837,7 +1837,7 @@ sub _register_config_handlers {
         my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
         my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
 
-        ${$ref_to_key_scalar} = $param->{key};
+        ${$ref_to_key_scalar} = $param->{$key};
       }
     }
   );

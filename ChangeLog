@@ -30,6 +30,7 @@ Revision history for Rex
  - Add initial test for proc inventory
  - Test custom template functions
  - Add initial config file tests
+ - Test custom server functions
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

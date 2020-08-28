@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 95;
+use Test::More tests => 97;
 
 use Rex -feature => '0.31';
 use Rex::Group;
+use Symbol;
 
 delete $ENV{REX_USER};
 
@@ -58,3 +59,16 @@ is_deeply [ $cleaned_servers[0]->get_servers ], [
     /
   ],
   "duplicated_by_list";
+
+# test custom functions
+
+my $server = $servers[0];
+
+my $function_name   = 'dummy';
+my $function_result = $function_name . ' result';
+
+ok( $server->function( $function_name, sub { return $function_result } ),
+  'registering custom function' );
+
+my $function_ref = qualify_to_ref( $function_name, $server );
+is( *{$function_ref}->(), $function_result, 'calling custom function' );

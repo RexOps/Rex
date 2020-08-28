@@ -7,6 +7,8 @@ Revision history for Rex
  - Fix fallback MD5 calculation method on OS X
  - Fix dmidecode section getter
  - Fix cpuinfo parsing
+ - Fix registering custom template functions
+ - Fix handling of configuration file settings
 
  [DOCUMENTATION]
  - Clarify contributing guide
@@ -26,6 +28,9 @@ Revision history for Rex
  - Test internal MD5 checksumming methods
  - Report coverage to Coveralls
  - Add initial test for proc inventory
+ - Test custom template functions
+ - Add initial config file tests
+ - Test custom server functions
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

@@ -1810,62 +1810,70 @@ sub import {
   read_config_file();
 }
 
-__PACKAGE__->register_config_handler(
-  base => sub {
-    my ($param) = @_;
+_register_config_handlers();
 
-    for my $key ( keys %{$param} ) {
+sub _register_config_handlers {
+  __PACKAGE__->register_config_handler(
+    base => sub {
+      my ($param) = @_;
 
-      if ( $key eq "keyauth" ) {
-        $key_auth = $param->{keyauth};
-        next;
+      for my $key ( keys %{$param} ) {
+
+        if ( $key eq "keyauth" ) {
+          $key_auth = $param->{keyauth};
+          next;
+        }
+
+        if ( $key eq "passwordauth" ) {
+          $password_auth = $param->{passwordauth};
+          next;
+        }
+
+        if ( $key eq "passauth" ) {
+          $password_auth = $param->{passauth};
+          next;
+        }
+
+        my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
+        my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
+
+        ${$ref_to_key_scalar} = $param->{$key};
       }
-
-      if ( $key eq "passwordauth" ) {
-        $password_auth = $param->{passwordauth};
-        next;
-      }
-
-      if ( $key eq "passauth" ) {
-        $password_auth = $param->{passauth};
-        next;
-      }
-
-      my $ref_to_key        = qualify_to_ref( $key, __PACKAGE__ );
-      my $ref_to_key_scalar = *{$ref_to_key}{SCALAR};
-
-      ${$ref_to_key_scalar} = $param->{key};
-    }
-  }
-);
-
-my @set_handler =
-  qw/user password private_key public_key -keyauth -passwordauth -passauth
-  parallelism sudo_password connection ca cert key distributor
-  template_function port waitpid_blocking_sleep_time/;
-for my $hndl (@set_handler) {
-  __PACKAGE__->register_set_handler(
-    $hndl => sub {
-      my ($val) = @_;
-      if ( $hndl =~ m/^\-/ ) {
-        $hndl = substr( $hndl, 1 );
-      }
-      if ( $hndl eq "keyauth" ) { $hndl = "key_auth"; $val = 1; }
-      if ( $hndl eq "passwordauth" || $hndl eq "passauth" ) {
-        $hndl = "password_auth";
-        $val  = 1;
-      }
-      if ( $hndl eq "connection" ) { $hndl = "connection_type"; }
-      if ( $hndl eq "ca" )         { $hndl = "ca_file"; }
-      if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
-      if ( $hndl eq "key" )        { $hndl = "ca_key"; }
-
-      my $ref_to_hndl        = qualify_to_ref( $hndl, __PACKAGE__ );
-      my $ref_to_hndl_scalar = *{$ref_to_hndl}{SCALAR};
-
-      ${$ref_to_hndl_scalar} = $val;
     }
   );
+}
+
+_register_set_handlers();
+
+sub _register_set_handlers {
+  my @set_handler =
+    qw/user password private_key public_key -keyauth -passwordauth -passauth
+    parallelism sudo_password connection ca cert key distributor
+    template_function port waitpid_blocking_sleep_time/;
+  for my $hndl (@set_handler) {
+    __PACKAGE__->register_set_handler(
+      $hndl => sub {
+        my ($val) = @_;
+        if ( $hndl =~ m/^\-/ ) {
+          $hndl = substr( $hndl, 1 );
+        }
+        if ( $hndl eq "keyauth" ) { $hndl = "key_auth"; $val = 1; }
+        if ( $hndl eq "passwordauth" || $hndl eq "passauth" ) {
+          $hndl = "password_auth";
+          $val  = 1;
+        }
+        if ( $hndl eq "connection" ) { $hndl = "connection_type"; }
+        if ( $hndl eq "ca" )         { $hndl = "ca_file"; }
+        if ( $hndl eq "cert" )       { $hndl = "ca_cert"; }
+        if ( $hndl eq "key" )        { $hndl = "ca_key"; }
+
+        my $ref_to_hndl        = qualify_to_ref( $hndl, __PACKAGE__ );
+        my $ref_to_hndl_scalar = *{$ref_to_hndl}{SCALAR};
+
+        ${$ref_to_hndl_scalar} = $val;
+      }
+    );
+  }
 }
 
 sub _home_dir {

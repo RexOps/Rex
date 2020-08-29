@@ -24,8 +24,11 @@ jobs:
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
+        # installing OS-specific dependencies
+        - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
+        # installing optional dependencies
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty
+        - cpanm String::Escape XML::LibXML
         - cpanm File::LibMagic Test::mysqld Expect
         - cpanm Devel::Cover::Report::Coveralls
       install:
@@ -57,6 +60,9 @@ jobs:
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
+        # installing OS-specific dependencies
+        - cpanm Net::SSH2
+        # installing optional dependencies
         - cpanm DBI Parallel::ForkManager Digest::HMAC_SHA1
         - cpanm String::Escape XML::LibXML
         - cpanm --reinstall App::Prove
@@ -90,8 +96,11 @@ jobs:
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps --missing | cpanm
         - dzil listdeps --author --missing | cpanm
+        # installing OS-specific dependencies
+        - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
+        # installing optional dependencies
         - cpanm DBI IPC::Shareable Parallel::ForkManager Digest::HMAC_SHA1
-        - cpanm String::Escape XML::LibXML Net::SFTP::Foreign IO::Pty Expect
+        - cpanm String::Escape XML::LibXML Expect
       install:
         - dzil build --in build --notgz
       script:

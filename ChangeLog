@@ -14,6 +14,7 @@ Revision history for Rex
  - Clarify contributing guide
  - Clarify INI file documentation
  - Document custom server parameters in INI files
+ - Clarify installation of OS-specific dependencies
 
  [ENHANCEMENTS]
 
@@ -31,6 +32,7 @@ Revision history for Rex
  - Test custom template functions
  - Add initial config file tests
  - Test custom server functions
+ - Add test for OS-specific dependencies
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

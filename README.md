@@ -42,11 +42,16 @@ Dist::Zilla provides the *dzil* command, which you can use to install (R)?ex dep
     dzil authordeps --missing | cpanm
     dzil listdeps --missing | cpanm
 
-Then to install (R)?ex:
+Then to install the OS-specific dependencies and (R)?ex itself:
 
     dzil install
 
-Or to build a .tar.gz release file:
+To install the OS-specific dependencies only, run one of these commands depending on your OS:
+
+- Windows: `cpanm Net::SSH2`
+- non-Windows: `cpanm Net::OpenSSH Net::SFTP::Foreign IO::Pty`
+
+If you'd like to build a .tar.gz release file:
 
     dzil build
 

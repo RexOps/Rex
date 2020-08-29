@@ -14,6 +14,7 @@ Revision history for Rex
  - Clarify contributing guide
  - Clarify INI file documentation
  - Document custom server parameters in INI files
+ - Clarify installation of OS-specific dependencies
 
  [ENHANCEMENTS]
 

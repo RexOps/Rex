@@ -105,6 +105,15 @@ Rex uses [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla) as an authoring too
     dzil authordeps --missing | cpanm
     dzil listdeps --missing | cpanm
 
+To install remaining OS-specific dependencies and Rex itself, run:
+
+    dzil install
+
+To install the OS-specific dependencies only, run one of these commands depending on your OS:
+
+- Windows: `cpanm Net::SSH2`
+- non-Windows: `cpanm Net::OpenSSH Net::SFTP::Foreign IO::Pty`
+
 [Perltidy](https://metacpan.org/pod/distribution/Perl-Tidy/bin/perltidy) takes care of maintaining a consistent source code formatting.
 
 [Perlcritic](https://metacpan.org/pod/distribution/Perl-Critic/bin/perlcritic) makes sure the codebase keeps following best practices and minimum quality requirements.

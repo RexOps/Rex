@@ -9,6 +9,7 @@ Revision history for Rex
  - Fix cpuinfo parsing
  - Fix registering custom template functions
  - Fix handling of configuration file settings
+ - Skip MD5 binary test if there's no binary available
 
  [DOCUMENTATION]
  - Clarify contributing guide

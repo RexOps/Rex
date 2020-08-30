@@ -39,17 +39,16 @@ To build (R)?ex from source, you need to install [Dist::Zilla](https://metacpan.
 
 Dist::Zilla provides the *dzil* command, which you can use to install (R)?ex dependencies:
 
-    dzil authordeps --missing | cpanm
-    dzil listdeps --missing | cpanm
+    dzil authordeps | cpanm
+    dzil listdeps | cpanm
+
+Some of the optional dependencies might not be available on all platforms, but to install them as well, use this command:
+
+    dzil listdeps --suggests | cpanm
 
 Then to install the OS-specific dependencies and (R)?ex itself:
 
     dzil install
-
-To install the OS-specific dependencies only, run one of these commands depending on your OS:
-
-- Windows: `cpanm Net::SSH2`
-- non-Windows: `cpanm Net::OpenSSH Net::SFTP::Foreign IO::Pty`
 
 If you'd like to build a .tar.gz release file:
 

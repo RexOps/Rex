@@ -102,8 +102,12 @@ The code and examples use [cpanm](https://metacpan.org/pod/App::cpanminus) to in
 
 Rex uses [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla) as an authoring tool. With that, installing dependencies can be done by the following commands after cloning the source code:
 
-    dzil authordeps --missing | cpanm
-    dzil listdeps --missing | cpanm
+    dzil authordeps | cpanm
+    dzil listdeps | cpanm
+
+Some of the optional dependencies might not be available on all platforms, but to install them as well, use this command:
+
+    dzil listdeps --suggests | cpanm
 
 To install remaining OS-specific dependencies and Rex itself, run:
 

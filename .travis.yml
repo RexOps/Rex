@@ -23,13 +23,11 @@ jobs:
         - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps | cpanm
-        - dzil listdeps --author | cpanm
+        - dzil listdeps --author --suggest | cpanm
         # installing OS-specific dependencies
         - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
         # installing optional dependencies
-        - cpanm DBI IPC::Shareable
-        - cpanm XML::LibXML
-        - cpanm File::LibMagic Test::mysqld Expect
+        - cpanm File::LibMagic Test::mysqld
         - cpanm Devel::Cover::Report::Coveralls
       install:
         - dzil build --in build --notgz
@@ -59,12 +57,11 @@ jobs:
         - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps | cpanm
-        - dzil listdeps --author | cpanm
+        - dzil listdeps | cpanm
         # installing OS-specific dependencies
         - cpanm Net::SSH2
         # installing optional dependencies
-        - cpanm DBI
-        - cpanm XML::LibXML
+        - cpanm DBI XML::LibXML
         - cpanm --reinstall App::Prove
       install:
         - dzil build --in build --notgz
@@ -95,12 +92,9 @@ jobs:
         - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps | cpanm
-        - dzil listdeps --author | cpanm
+        - dzil listdeps --author --suggests | cpanm
         # installing OS-specific dependencies
         - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
-        # installing optional dependencies
-        - cpanm DBI IPC::Shareable
-        - cpanm XML::LibXML Expect
       install:
         - dzil build --in build --notgz
       script:

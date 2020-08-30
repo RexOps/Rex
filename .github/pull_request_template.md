@@ -6,7 +6,7 @@
 <!-- Please open the pull request as a draft first, and wait for automated test results. -->
 <!-- Feel free to work on the PR till tests pass, and the checklist below is complete, then mark it ready for review. -->
 
-This PR fixes #<!-- issue ID --> by <!-- briefly explaining your changes -->.
+This PR is an attempt to fix #<!-- issue ID --> by <!-- briefly explaining your changes -->.
 
 <!-- Ideally, ask for a specific expected course of action, like: -->
 <!-- Please review and merge, or let me know how to improve it further. -->

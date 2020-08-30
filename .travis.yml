@@ -26,8 +26,6 @@ jobs:
         - dzil listdeps --author --suggest | cpanm
         # installing OS-specific dependencies
         - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
-        # installing optional dependencies
-        - cpanm File::LibMagic Test::mysqld
         - cpanm Devel::Cover::Report::Coveralls
       install:
         - dzil build --in build --notgz
@@ -92,9 +90,11 @@ jobs:
         - export AUTHOR_NAME="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aN')"
         - echo -e "[%User]\nname = ${AUTHOR_EMAIL}\nemail = ${AUTHOR_EMAIL}\n" > ~/.dzil/config.ini
         - dzil authordeps | cpanm
-        - dzil listdeps --author --suggests | cpanm
+        - dzil listdeps | cpanm
         # installing OS-specific dependencies
         - cpanm IO::Pty Net::OpenSSH Net::SFTP::Foreign
+        # installing optional dependencies
+        - cpanm DBI Expect IPC::Shareable XML::LibXML
       install:
         - dzil build --in build --notgz
       script:

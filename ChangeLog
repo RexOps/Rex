@@ -34,6 +34,7 @@ Revision history for Rex
  - Test custom server functions
  - Add test for OS-specific dependencies
  - List optional features and their dependencies
+ - List suggested development dependencies
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

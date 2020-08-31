@@ -41,6 +41,7 @@ Revision history for Rex
  - List suggested development dependencies
  - Test cpuinfo inventory
  - Add initial file hook tests
+ - Add file on_change tests for source option
 
 1.12.1 2020-08-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

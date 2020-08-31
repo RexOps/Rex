@@ -550,6 +550,8 @@ sub file {
 
     # HOOKS: for this case you have to use the upload hooks!
     $__ret = upload $option->{"source"}, "$file", force => 1;
+
+    $need_md5 = 0 if $__ret->{changed} == 0;
   }
 
   if ( exists $option->{"ensure"} ) {

@@ -12,6 +12,7 @@ Revision history for Rex
  - Skip MD5 binary test if there's no binary available
  - Warn if cpuinfo is unreadable
  - Fix file hook options
+ - Fix file on_change hook when source option is used
 
  [DOCUMENTATION]
  - Clarify contributing guide

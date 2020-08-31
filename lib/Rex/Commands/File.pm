@@ -370,25 +370,25 @@ This function supports the following L<hooks|Rex::Hook>:
 
 =item before
 
-This gets executed before anything is done. All original parameters are passed to it.
+This gets executed before anything is done. All original parameters are passed to it, including the applied defaults (C<ensure => 'present', resolved path for C<source>).
 
 The return value of this hook overwrites the original parameters of the function-call.
 
 =item before_change
 
-This gets executed right before the new file is written. All original parameters are passed to it.
+This gets executed right before the new file is written. All original parameters are passed to it, including the applied defaults (C<ensure => 'present', resolved path for C<source>).
 
 Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after_change
 
-This gets executed right after the file is written. All original parameters, and any returned results are passed to it.
+This gets executed right after the file is written. All original parameters, including the applied defaults (C<ensure => 'present', resolved path for C<source>), and any returned results are passed to it.
 
 Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after
 
-This gets executed right before the C<file()> function returns. All original parameters, and any returned results are passed to it.
+This gets executed right before the C<file()> function returns. All original parameters, including the applied defaults (C<ensure => 'present', resolved path for C<source>), and any returned results are passed to it.
 
 =back
 
@@ -435,7 +435,7 @@ sub file {
 
   #### check and run before hook
   eval {
-    my @new_args = Rex::Hook::run_hook( file => "before", @_ );
+    my @new_args = Rex::Hook::run_hook( file => "before", $file, %{$option} );
     if (@new_args) {
       ( $file, @options ) = @new_args;
       $option = {@options};
@@ -511,7 +511,7 @@ sub file {
       );
 
       #### check and run before_change hook
-      Rex::Hook::run_hook( file => "before_change", @_ );
+      Rex::Hook::run_hook( file => "before_change", $file, %{$option} );
       ##############################
 
       if (Rex::is_sudo) {
@@ -536,7 +536,7 @@ sub file {
       );
 
       #### check and run after_change hook
-      Rex::Hook::run_hook( file => "after_change", @_, $__ret );
+      Rex::Hook::run_hook( file => "after_change", $file, %{$option}, $__ret );
       ##############################
 
     }
@@ -555,7 +555,7 @@ sub file {
       if ( !$fs->is_file($file) ) {
 
         #### check and run before_change hook
-        Rex::Hook::run_hook( file => "before_change", @_ );
+        Rex::Hook::run_hook( file => "before_change", $file, %{$option} );
         ##############################
 
         my $fh = file_write($file);
@@ -569,7 +569,10 @@ sub file {
         );
 
         #### check and run after_change hook
-        Rex::Hook::run_hook( file => "after_change", @_, $__ret );
+        Rex::Hook::run_hook(
+          file => "after_change",
+          $file, %{$option}, $__ret
+        );
         ##############################
 
       }
@@ -580,12 +583,9 @@ sub file {
     }
     elsif ( $option->{ensure} eq "absent" ) {
       $need_md5 = 0;
-      delete $option->{mode};
-      delete $option->{group};
-      delete $option->{owner};
 
       #### check and run before_change hook
-      Rex::Hook::run_hook( file => "before_change", @_ );
+      Rex::Hook::run_hook( file => "before_change", $file, %{$option} );
       ##############################
 
       if ( $fs->is_file($file) ) {
@@ -610,7 +610,7 @@ sub file {
       }
 
       #### check and run after_change hook
-      Rex::Hook::run_hook( file => "after_change", @_, $__ret );
+      Rex::Hook::run_hook( file => "after_change", $file, %{$option}, $__ret );
       ##############################
 
     }
@@ -640,7 +640,7 @@ sub file {
     if ( !$fs->is_file($file) && !$is_directory ) {
 
       #### check and run before_change hook
-      Rex::Hook::run_hook( file => "before_change", @_ );
+      Rex::Hook::run_hook( file => "before_change", $file, %{$option} );
       ##############################
 
       my $fh = file_write($file);
@@ -658,7 +658,7 @@ sub file {
       );
 
       #### check and run after_change hook
-      Rex::Hook::run_hook( file => "after_change", @_, $__ret );
+      Rex::Hook::run_hook( file => "after_change", $file, %{$option}, $__ret );
       ##############################
 
     }
@@ -738,7 +738,7 @@ sub file {
   }
 
   #### check and run after hook
-  Rex::Hook::run_hook( file => "after", @_, $__ret );
+  Rex::Hook::run_hook( file => "after", $file, %{$option}, $__ret );
   ##############################
 
   Rex::get_current_connection()->{reporter}

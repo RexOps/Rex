@@ -10,6 +10,7 @@ Revision history for Rex
  - Fix registering custom template functions
  - Fix handling of configuration file settings
  - Skip MD5 binary test if there's no binary available
+ - Skip procfs inventory test if /proc is not readable
 
  [DOCUMENTATION]
  - Clarify contributing guide

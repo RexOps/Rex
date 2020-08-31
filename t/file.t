@@ -4,8 +4,9 @@ use warnings;
 use Cwd 'getcwd';
 my $cwd = getcwd;
 use File::Spec;
+use File::Temp;
 
-use Test::More tests => 58;
+use Test::More tests => 59;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -355,4 +356,23 @@ subtest 'get temp file name' => sub {
     my $tempfile = Rex::Commands::File::get_tmp_file_name($filename);
     is( $tempfile, $temp_file_for{$filename}, 'temp file name matches' );
   }
+};
+
+subtest 'on_change hook with source option' => sub {
+  my $testfile1 = File::Temp->new()->filename;
+  my $testfile2 = File::Temp->new()->filename;
+
+  my $changed;
+
+  file $testfile1, content => 'change', on_change => sub { $changed += 1 };
+
+  is( $changed, 1, 'on_change when creating a new file with content' );
+
+  file $testfile2, source => $testfile1, on_change => sub { $changed += 1 };
+
+  is( $changed, 2, 'on_change when creating a new file with source' );
+
+  file $testfile2, source => $testfile1, on_change => sub { $changed += 1 };
+
+  is( $changed, 2, 'on_change when uploading the same file again' );
 };

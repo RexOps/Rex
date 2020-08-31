@@ -364,6 +364,8 @@ you use Perl packages.
 All the possible variables ('{environment}', '{hostname}', ...) are documented
 in the CMDB YAML documentation.
 
+=head3 Hooks
+
 This function supports the following L<hooks|Rex::Hook>:
 
 =over 4
@@ -372,7 +374,7 @@ This function supports the following L<hooks|Rex::Hook>:
 
 This gets executed before anything is done. All original parameters are passed to it, including the applied defaults (C<ensure => 'present', resolved path for C<source>).
 
-The return value of this hook overwrites the original parameters of the function-call.
+The return value of this hook overwrites the original parameters of the function call.
 
 =item before_change
 

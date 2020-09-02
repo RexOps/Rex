@@ -25,7 +25,8 @@ sub new {
 
   bless( $self, $proto );
 
-  my $env = 'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive';
+  my $env =
+    'APT_LISTBUGS_FRONTEND=none APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive';
 
   $self->{commands} = {
     install => "$env apt-get -o Dpkg::Options::=--force-confold -y install %s",

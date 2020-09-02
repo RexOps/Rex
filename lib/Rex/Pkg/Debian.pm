@@ -25,18 +25,17 @@ sub new {
 
   bless( $self, $proto );
 
+  my $env = 'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive';
+
   $self->{commands} = {
-    install =>
-      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -y install %s',
+    install => "$env apt-get -o Dpkg::Options::=--force-confold -y install %s",
     install_version =>
-      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold -y install %s=%s',
-    update_system =>
-      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -y -qq upgrade',
-    dist_update_system =>
-      'APT_LISTCHANGES_FRONTEND=none DEBIAN_FRONTEND=noninteractive apt-get -y -qq dist-upgrade',
-    remove            => 'apt-get -y remove %s',
-    purge             => 'dpkg --purge %s',
-    update_package_db => 'apt-get -y update',
+      "$env apt-get -o Dpkg::Options::=--force-confold -y install %s=%s",
+    update_system      => "$env apt-get -y -qq upgrade",
+    dist_update_system => "$env apt-get -y -qq dist-upgrade",
+    remove             => 'apt-get -y remove %s',
+    purge              => 'dpkg --purge %s',
+    update_package_db  => 'apt-get -y update',
   };
 
   return $self;

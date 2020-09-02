@@ -33,9 +33,9 @@ sub new {
       "$env apt-get -o Dpkg::Options::=--force-confold -y install %s=%s",
     update_system      => "$env apt-get -y -qq upgrade",
     dist_update_system => "$env apt-get -y -qq dist-upgrade",
-    remove             => 'apt-get -y remove %s',
-    purge              => 'dpkg --purge %s',
-    update_package_db  => 'apt-get -y update',
+    remove             => "$env apt-get -y remove %s",
+    purge              => "$env dpkg --purge %s",
+    update_package_db  => "$env apt-get -y update",
   };
 
   return $self;

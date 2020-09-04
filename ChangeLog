@@ -13,6 +13,8 @@ Revision history for Rex
  - Warn if cpuinfo is unreadable
  - Fix file hook options
  - Fix file on_change hook when source option is used
+ - Set uniform environment for Debian package commands
+ - Disable apt-listbugs
 
  [DOCUMENTATION]
  - Clarify contributing guide

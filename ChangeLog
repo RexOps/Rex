@@ -4,6 +4,21 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+
+ [DOCUMENTATION]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+
+ [NEW FEATURES]
+
+ [REVISION]
+
+1.12.2 2020-09-05 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
  - Fix fallback MD5 calculation method on OS X
  - Fix dmidecode section getter
  - Fix cpuinfo parsing
@@ -22,14 +37,6 @@ Revision history for Rex
  - Document custom server parameters in INI files
  - Clarify installation of OS-specific dependencies
  - Clarify installation steps
-
- [ENHANCEMENTS]
-
- [MAJOR]
-
- [MINOR]
-
- [NEW FEATURES]
 
  [REVISION]
  - Set Travis CI root build job options explicitly

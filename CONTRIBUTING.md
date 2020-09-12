@@ -38,18 +38,18 @@ The minimum version of Perl that is supported by Rex is determined by matching t
 
 On top of the supported minimum version of Perl, the goal is to support the latest versions of all minor Perl 5 releases. That makes the full list the following:
 
- - 5.10.1
- - 5.12.5
- - 5.14.4
- - 5.16.3
- - 5.18.4
- - 5.20.3
- - 5.22.4
- - 5.24.4
- - 5.26.3
- - 5.28.3
- - 5.30.3
- - 5.32.0
+- 5.10.1
+- 5.12.5
+- 5.14.4
+- 5.16.3
+- 5.18.4
+- 5.20.3
+- 5.22.4
+- 5.24.4
+- 5.26.3
+- 5.28.3
+- 5.30.3
+- 5.32.0
 
 ### Backwards compatibility
 
@@ -81,8 +81,8 @@ Since `.perlcriticrc` is part of the repo, it can also be the subject of contrib
 
 Rex has two major test suites:
 
- - the _unit tests_ included with the code, which are exercising various modules and features
- - the _functional tests_ in the [RexOps/rex-build](https://github.com/RexOps/rex-build) repo, which are making sure Rex can manage actual VMs running various OSes
+- the _unit tests_ included with the code, which are exercising various modules and features
+- the _functional tests_ in the [RexOps/rex-build](https://github.com/RexOps/rex-build) repo, which are making sure Rex can manage actual VMs running various OSes
 
 In general, when adding a new feature or when changing behavior, tests should be added too, and all previous tests should still pass.
 
@@ -142,11 +142,12 @@ It is recommended to use feature [branches](https://docs.github.com/en/github/co
 Ideally, a single commit represents a single logical change, has a readable commit message, and passes tests in itself. There are many articles written on the topic, but this is a good example about [how to write a git commit message](https://chris.beams.io/posts/git-commit/).
 
 It is generally recommended to:
- - add new breaking tests on a first commit before changing the code to fix them on a follow up commit
- - use multiple commits in a single pull request to separate logical steps, and to help understanding the changes as long as the history is still easy to follow and read
- - open [draft pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests) to share the idea and ask for feedback early
- - [rebase](https://docs.github.com/en/github/using-git/about-git-rebase) your feature branch on top of the default branch if there are new commits since the feature branch has been created
- - use follow up/clean up commits on the same PR, but then please also [squash related commits](https://docs.github.com/en/github/using-git/about-git-rebase) together in the feature branch _before_ merging in order to keep a tidy history (in other words, no "tidy only" or "fix typo" commits are necessary)
+
+- add new breaking tests on a first commit before changing the code to fix them on a follow up commit
+- use multiple commits in a single pull request to separate logical steps, and to help understanding the changes as long as the history is still easy to follow and read
+- open [draft pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests) to share the idea and ask for feedback early
+- [rebase](https://docs.github.com/en/github/using-git/about-git-rebase) your feature branch on top of the default branch if there are new commits since the feature branch has been created
+- use follow up/clean up commits on the same PR, but then please also [squash related commits](https://docs.github.com/en/github/using-git/about-git-rebase) together in the feature branch _before_ merging in order to keep a tidy history (in other words, no "tidy only" or "fix typo" commits are necessary)
 
 ## Contribute to this guide
 
@@ -154,9 +155,9 @@ If you think some of the information here is outdated, not clear enough, or have
 
 ## Useful resources
 
- - [Rex website](https://www.rexify.org)
- - [MetaCPAN](https://metacpan.org/pod/Rex)
- - [GitHub](https://github.com/RexOps/Rex)
- - [Issue tracker](https://github.com/RexOps/Rex/issues)
- - [Google Groups](https://groups.google.com/forum/#!forum/rex-users)
- - [IRC](https://webchat.freenode.net/?channels=rex)
+- [Rex website](https://www.rexify.org)
+- [MetaCPAN](https://metacpan.org/pod/Rex)
+- [GitHub](https://github.com/RexOps/Rex)
+- [Issue tracker](https://github.com/RexOps/Rex/issues)
+- [Google Groups](https://groups.google.com/forum/#!forum/rex-users)
+- [IRC](https://webchat.freenode.net/?channels=rex)

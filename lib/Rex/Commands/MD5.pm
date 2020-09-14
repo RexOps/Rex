@@ -107,7 +107,7 @@ sub _binary_md5 {
   my $exec = Rex::Interface::Exec->create;
 
   if ( Rex::Commands::Run::can_run('md5') ) {
-    ($md5) = $exec->exec("md5 '$file'") =~ qr{\s+=\s+([a-f0-9]{32})};
+    ($md5) = $exec->exec("md5 '$file'") =~ qr{\s+=\s+([a-f0-9]{32})\s*$};
   }
   elsif ( Rex::Commands::Run::can_run('md5sum') ) {
     ($md5) = $exec->exec("md5sum '$file'") =~ qr{^\\?([a-f0-9]{32})\s+};

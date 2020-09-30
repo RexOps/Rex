@@ -6,7 +6,7 @@ my $cwd = getcwd;
 use File::Spec;
 use File::Temp;
 
-use Test::More tests => 59;
+use Test::More tests => 61;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;
@@ -108,26 +108,35 @@ append_if_no_such_line( $filename, 'KEY="VAL"' );
 $content = cat($filename);
 like( $content, qr/KEY="VAL"/ms, "found KEY=VAL" );
 
+my $no_change = 0;
 append_if_no_such_line(
   $filename,
   "change",
   qr{change},
   on_change => sub {
     $changed = 0;
+  },
+  on_no_change => sub {
+    $no_change = 1;
   }
 );
 
-is( $changed, 1, "nothing was changed in the file" );
+is( $changed,   1, "nothing was changed in the file" );
+is( $no_change, 1, "no change handler triggered" );
 
 append_if_no_such_line(
   $filename,
   "change",
   on_change => sub {
     $changed = 0;
+  },
+  on_no_change => sub {
+    $no_change = 2;
   }
 );
 
-is( $changed, 1, "nothing was changed in the file without regexp" );
+is( $changed,   1, "nothing was changed in the file without regexp" );
+is( $no_change, 2, "no change handler triggered" );
 
 $content = cat($filename);
 unlike( $content, qr/foobar/ms, "not found foobar" );

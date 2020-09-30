@@ -15,6 +15,7 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+ - Add on_no_change hook for file commands
 
  [REVISION]
 

@@ -988,7 +988,7 @@ sub delete_lines_according_to {
   $file = resolv_path($file);
 
   my $option       = {@options};
-  my $on_change    = $option->{on_change} || undef;
+  my $on_change    = $option->{on_change}    || undef;
   my $on_no_change = $option->{on_no_change} || undef;
 
   my ( $old_md5, $new_md5 );

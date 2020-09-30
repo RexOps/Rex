@@ -6,9 +6,8 @@ use File::Temp qw(tempfile);
 use Rex::Commands::MD5;
 
 my ( $fh, $test_file ) = tempfile(
-  "XXXXX",
-  SUFFIX => " = 11111111111111111111111111111111",
-  TMPDIR => 1
+  SUFFIX => ' = 11111111111111111111111111111111',
+  UNLINK => 1,
 );
 print $fh "\x00";
 close($fh);

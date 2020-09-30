@@ -298,7 +298,8 @@ This function is the successor of I<install file>. Please use this function to u
      owner  => "user",
      group  => "group",
      mode   => 700,
-     on_change => sub { say "Something was changed." };
+     on_change => sub { say "Something was changed." },
+     on_no_change => sub { say "Nothing has changed." };
  
    file "/etc/motd",
      content => `fortune`;
@@ -1054,8 +1055,11 @@ found, it will be updated. Otherwise, it will be appended.
      line  => "mygroup:*:100:myuser3,myuser4",
      regexp => qr{^mygroup},
      on_change => sub {
-                say "file was changed, do something.";
-              };
+       say "file was changed, do something.";
+     },
+     on_no_change => sub {
+       say "file was not changed, do something.";
+     };
  };
 
 =cut
@@ -1308,6 +1312,8 @@ Search some string in a file and replace it.
    sed qr{search}, "replace", "/var/log/auth.log",
     multiline => TRUE;
  };
+
+Like similar file management commands, it also supports C<on_change> and C<on_no_change> hooks.
 
 =cut
 

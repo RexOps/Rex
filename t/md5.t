@@ -5,6 +5,9 @@ use Test::More tests => 3;
 use File::Temp qw(tempfile);
 use Rex::Commands::MD5;
 
+# the name of the temporary test file is matching the output structure
+# of the md5 command on purpose, see #1429 for details
+
 my ( $fh, $test_file ) = tempfile(
   SUFFIX => ' = 11111111111111111111111111111111',
   UNLINK => 1,

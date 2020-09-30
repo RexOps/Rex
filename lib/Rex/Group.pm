@@ -18,7 +18,7 @@ use attributes;
 use Rex::Group::Entry::Server;
 
 use vars qw(%groups);
-use List::MoreUtils 0.416 qw(uniq);
+use List::Util 1.45 qw(uniq);
 use Data::Dumper;
 
 sub new {

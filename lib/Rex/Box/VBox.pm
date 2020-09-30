@@ -188,7 +188,7 @@ sub import_vm {
           Rex::Logger::debug( "Setting network bridge (dev: $nic_no) to: "
               . ( $option->{$nic_no}->{bridge} || "eth0" ) );
           vm
-            option => $self->{name},
+            option                 => $self->{name},
             "bridgeadapter$nic_no" =>
             ( $option->{$nic_no}->{bridge} || "eth0" );
         }

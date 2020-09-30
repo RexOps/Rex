@@ -1018,7 +1018,7 @@ sub mount {
   if ( $option->{ensure} eq "absent" ) {
     &umount(
       $mount_point,
-      device => $device,
+      device    => $device,
       on_change =>
         ( exists $option->{on_change} ? $option->{on_change} : undef )
     );

@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix MD5 checksumming if filename looks like md5 output
 
  [DOCUMENTATION]
 

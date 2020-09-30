@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix MD5 checksumming if filename looks like md5 output
+ - Fix fallback hostname detection on Linux
 
  [DOCUMENTATION]
 

@@ -60,16 +60,17 @@ sub get {
         eval { i_run("cat /proc/sys/kernel/domainname"); } || ("unknown");
     }
     else {
-      my @out =
-        eval { i_run("hostname -f 2>/dev/null"); } || ("unknown.nodomain");
-      ( $hostname, $domain ) =
-        split( /\./, $out[0], 2 );
+      my @out = i_run "hostname -f 2>/dev/null", fail_ok => 1;
 
-      if ( !$hostname || $hostname eq "" ) {
+      if ( $? == 0 ) {
+        ( $hostname, $domain ) = split( /\./, $out[0], 2 );
+      }
+      else {
         Rex::Logger::debug(
           "Error getting hostname and domainname. There is something wrong with your /etc/hosts file."
         );
-        ($hostname) = eval { i_run("hostname"); } || ("unknown");
+        ($hostname) = eval { i_run("hostname -s"); } || ("unknown");
+        ($domain)   = eval { i_run("hostname -d"); } || ("nodomain");
       }
     }
 

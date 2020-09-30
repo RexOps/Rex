@@ -1184,7 +1184,8 @@ sub _append_or_update {
       $new_md5 ||= "";
 
       Rex::Logger::debug(
-        "File $file has been changed (md5 $new_md5)... Running on_no_change");
+        "File $file has not been changed (md5 $new_md5)... Running on_no_change"
+      );
       &$on_no_change($file);
     }
   }

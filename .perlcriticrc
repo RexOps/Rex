@@ -1,5 +1,2 @@
-theme = core
-severity = 5
-[-BuiltinFunctions::ProhibitStringyEval]
-allow_includes = 1
+severity = brutal
 [-CodeLayout::RequireTidyCode]

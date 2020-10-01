@@ -28,3 +28,4 @@ vars.db.lock
 .project
 tmp/
 cover_db
+xt/author/.perlcritic-history

@@ -34,3 +34,4 @@ projects
 Rex\-\d+.*
 tags
 cover_db
+xt/author/.perlcritic-history

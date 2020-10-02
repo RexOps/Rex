@@ -69,7 +69,7 @@ jobs:
         - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
     - stage: test
       os: osx
-      osx_image: xcode11.2
+      osx_image: xcode11.6
       language: shell
       env:
         - PERL_CPANM_OPT="--quiet --notest"
@@ -81,7 +81,6 @@ jobs:
           packages:
             - perl
             - cpanminus
-          update: true
       before_install:
         - export PERL_VERSION="$(brew list --versions perl | cut -d' ' -f 2)"
         - export "PATH=/usr/local/Cellar/perl/${PERL_VERSION}/bin:${PATH}"

@@ -12,6 +12,7 @@ jobs:
         directories:
           - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/lib
           - ${PERLBREW_ROOT}/perls/${PERLBREW_PERL}/bin
+          - /tmp/cache
       addons:
         apt:
           packages:

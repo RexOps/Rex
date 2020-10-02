@@ -75,7 +75,7 @@ Start a transaction for C<$codeRef>. If C<$codeRef> dies, Rex will run the L<on_
 
 =cut
 
-sub transaction(&) { ## no critic ProhibitSubroutinePrototypes
+sub transaction(&) {
   my ($code) = @_;
   my $ret = 1;
 
@@ -120,7 +120,7 @@ This will execute C<$codeRef> if a step in the L<transaction|https://metacpan.or
 
 =cut
 
-sub on_rollback(&) { ## no critic ProhibitSubroutinePrototypes
+sub on_rollback(&) {
   my ($code) = @_;
 
   push(

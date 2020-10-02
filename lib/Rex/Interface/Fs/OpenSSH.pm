@@ -72,7 +72,7 @@ sub is_dir {
 
   defined $attr
     ? return Rex::Helper::File::Stat->S_ISDIR( $attr->perm )
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return undef;
 }
 
 sub is_file {
@@ -92,7 +92,7 @@ sub is_file {
       || Rex::Helper::File::Stat->S_ISCHR( $attr->perm )
       || Rex::Helper::File::Stat->S_ISFIFO( $attr->perm )
       || Rex::Helper::File::Stat->S_ISSOCK( $attr->perm ) )
-    : return undef; ## no critic ProhibitExplicitReturnUndef
+    : return undef;
 }
 
 sub unlink {
@@ -119,7 +119,7 @@ sub stat {
   my $sftp = Rex::get_sftp();
   my $ret  = $sftp->stat($file);
 
-  if ( !$ret ) { return undef; } ## no critic ProhibitExplicitReturnUndef
+  if ( !$ret ) { return undef; }
 
   my %ret = (
     mode  => sprintf( "%04o", Rex::Helper::File::Stat->S_IMODE( $ret->perm ) ),

@@ -77,7 +77,7 @@ sub can_run {
     return $output[0];
   }
 
-  return undef; ## no critic ProhibitExplicitReturnUndef
+  return undef;
 }
 
 sub direct_exec {

@@ -78,7 +78,7 @@ sub stat {
     return %{ $resp->{stat} };
   }
 
-  return undef; ## no critic ProhibitExplicitReturnUndef
+  return undef;
 }
 
 sub is_readable {

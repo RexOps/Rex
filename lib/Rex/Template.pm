@@ -117,7 +117,7 @@ sub parse {
   );
 
   eval {
-    no strict 'vars'; ## no critic ProhibitNoStrict
+    no strict 'vars';
 
     for my $var ( keys %{$vars} ) {
       Rex::Logger::debug("Registering: $var");

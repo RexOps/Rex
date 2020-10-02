@@ -45,7 +45,7 @@ jobs:
         directories:
           - /c/Strawberry
       before_install:
-        - cinst -y strawberryperl
+        - test -d /c/Strawberry/perl || cinst -y strawberryperl
         - export "PATH=/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"
         - export "PERL5LIB=/c/Strawberry/perl/site/lib:/c/Strawberry/perl/site/lib:/c/Strawberry/perl/vendor/lib:/c/Strawberry/perl/lib"
         - ln -snf /c/Strawberry/perl/bin/perl /bin/perl

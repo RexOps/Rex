@@ -32,8 +32,8 @@ jobs:
         - dzil build --in build --notgz
       script:
         - cd build
-        - HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
         - prove --timer --lib --recurse --jobs $(nproc) --shuffle xt/
+        - HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
       after_success:
         - cover -report coveralls
     - stage: test

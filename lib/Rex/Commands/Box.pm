@@ -147,7 +147,7 @@ With this function you can create a new Rex/Box. The first parameter of this fun
 
 =cut
 
-sub box(&) { ## no critic ProhibitSubroutinePrototypes
+sub box(&) {
   my $code = shift;
 
   #### too much black magic...

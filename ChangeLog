@@ -19,6 +19,8 @@ Revision history for Rex
  - Add on_no_change hook for file commands
 
  [REVISION]
+ - Add progressive perlcritic test
+ - Enable more perlcritic policies
 
 1.12.2 2020-09-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

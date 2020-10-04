@@ -4,9 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix MD5 checksumming if filename looks like md5 output
- - Fix fallback hostname detection on Linux
- - Require minimum version of List::MoreUtils
 
  [DOCUMENTATION]
 
@@ -15,6 +12,16 @@ Revision history for Rex
  [MAJOR]
 
  [MINOR]
+
+ [NEW FEATURES]
+
+ [REVISION]
+
+1.13.0 2020-10-04 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix MD5 checksumming if filename looks like md5 output
+ - Fix fallback hostname detection on Linux
+ - Require minimum version of List::MoreUtils
 
  [NEW FEATURES]
  - Add on_no_change hook for file commands

@@ -182,6 +182,13 @@ sub run {
   $option->{auto_die} = Rex::Config->get_exec_autodie()
     if !exists $option->{auto_die};
 
+#  check if $cmd is an eplicit path 
+   if ( $cmd =~ m"(^(?:\.{1,2}|\~)?/.+/)(.+)" ) {
+     my ($head,$tail) = ($1,$2);
+     my $end = ($tail =~ s/(.+?)( .+)/$1/ )?$2:'';
+     $cmd = '"'.$head.$tail.'"'.$end #quote the path of comand in a compatible way
+   }
+
   my $res_cmd = $cmd;
 
   if ( exists $option->{only_notified} && $option->{only_notified} ) {

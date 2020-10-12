@@ -38,6 +38,7 @@ use Rex::Interface::File;
 use Rex::Interface::Fs;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
+use English qw(-no_match_vars);
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);
@@ -86,10 +87,12 @@ sub _digest_md5 {
   my $file = shift;
   my $md5;
 
+  my $perl = Rex::is_local() ? $EXECUTABLE_NAME : 'perl';
+
   my $command =
     ( $^O =~ m/^MSWin/i && Rex::is_local() )
-    ? qq(perl -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
-    : qq(perl -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
+    ? qq("$perl" -MDigest::MD5 -e "open my \$fh, '<', \$ARGV[0] or die 'Cannot open ' . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;" "$file")
+    : qq('$perl' -MDigest::MD5 -e 'open my \$fh, "<", \$ARGV[0] or die "Cannot open " . \$ARGV[0]; binmode \$fh; print Digest::MD5->new->addfile(\$fh)->hexdigest;' '$file');
 
   my $result = i_run( $command, fail_ok => 1 );
 

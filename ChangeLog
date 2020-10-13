@@ -4,8 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix MD5 checksumming when default perl does not have Digest::MD5 or
-   incompatible with the perl running rex
 
  [DOCUMENTATION]
 
@@ -18,6 +16,11 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.0.1-TRIAL 2020-10-13 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix MD5 checksumming when default perl does not have Digest::MD5 or
+   incompatible with the perl running rex
 
 1.13.0 2020-10-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

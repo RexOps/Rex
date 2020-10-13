@@ -5,7 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix MD5 checksumming when default perl does not have Digest::MD5 or
- incompatible with the perl running rex
+   incompatible with the perl running rex
 
  [DOCUMENTATION]
 

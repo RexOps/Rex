@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::LibVirt::iflist;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -7,6 +7,7 @@
 
 package Rex::Resource::firewall::Provider::ufw;
 
+use 5.010001;
 use strict;
 use warnings;
 

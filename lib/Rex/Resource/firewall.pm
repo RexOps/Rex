@@ -55,6 +55,7 @@ With this module it is easy to manage different firewall systems.
 
 package Rex::Resource::firewall;
 
+use 5.010001;
 use strict;
 use warnings;
 

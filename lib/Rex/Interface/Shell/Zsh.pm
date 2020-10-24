@@ -6,6 +6,7 @@
 
 package Rex::Interface::Shell::Zsh;
 
+use 5.010001;
 use strict;
 use warnings;
 

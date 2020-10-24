@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::VBox::create;
 
+use 5.010001;
 use strict;
 use warnings;
 

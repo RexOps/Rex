@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::Lxc::stop;
 
+use 5.010001;
 use strict;
 use warnings;
 

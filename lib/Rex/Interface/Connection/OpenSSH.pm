@@ -6,6 +6,7 @@
 
 package Rex::Interface::Connection::OpenSSH;
 
+use 5.010001;
 use strict;
 use warnings;
 

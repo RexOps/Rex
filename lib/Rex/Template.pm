@@ -23,6 +23,7 @@ This is a simple template engine for configuration files.
 
 package Rex::Template;
 
+use 5.010001;
 use strict;
 use warnings;
 use Symbol;

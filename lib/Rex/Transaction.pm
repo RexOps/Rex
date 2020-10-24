@@ -35,6 +35,7 @@ With this module you can define transactions and rollback scenarios on failure.
 
 package Rex::Transaction;
 
+use 5.010001;
 use strict;
 use warnings;
 

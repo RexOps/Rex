@@ -64,6 +64,7 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 package Rex::Box::Docker;
 
+use 5.010001;
 use strict;
 use warnings;
 use Data::Dumper;

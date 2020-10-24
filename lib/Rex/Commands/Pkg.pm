@@ -31,6 +31,7 @@ With this module you can install packages and files.
 
 package Rex::Commands::Pkg;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -6,6 +6,7 @@
 
 package Rex::Interface::Connection;
 
+use 5.010001;
 use strict;
 use warnings;
 

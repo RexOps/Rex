@@ -6,6 +6,7 @@
 
 package Rex::Interface::Cache::YAML;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Interface::Cache::Base;

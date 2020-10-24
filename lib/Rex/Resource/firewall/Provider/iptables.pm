@@ -6,6 +6,7 @@
 
 package Rex::Resource::firewall::Provider::iptables;
 
+use 5.010001;
 use strict;
 use warnings;
 

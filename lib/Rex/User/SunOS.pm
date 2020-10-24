@@ -6,6 +6,7 @@
 
 package Rex::User::SunOS;
 
+use 5.010001;
 use strict;
 use warnings;
 

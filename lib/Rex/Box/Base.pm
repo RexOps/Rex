@@ -20,6 +20,7 @@ These methods are shared across all other Rex::Box modules.
 
 package Rex::Box::Base;
 
+use 5.010001;
 use strict;
 use warnings;
 

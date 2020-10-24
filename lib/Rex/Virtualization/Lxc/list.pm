@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::Lxc::list;
 
+use 5.010001;
 use strict;
 use warnings;
 

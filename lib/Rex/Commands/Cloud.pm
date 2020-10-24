@@ -52,6 +52,7 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Cloud;
 
+use 5.010001;
 use strict;
 use warnings;
 

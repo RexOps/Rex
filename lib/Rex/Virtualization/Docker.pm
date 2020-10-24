@@ -49,6 +49,7 @@ With this module you can manage Docker.
 
 package Rex::Virtualization::Docker;
 
+use 5.010001;
 use strict;
 use warnings;
 

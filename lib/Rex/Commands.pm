@@ -108,6 +108,7 @@ This module is the core commands module.
 
 package Rex::Commands;
 
+use 5.010001;
 use strict;
 use warnings;
 

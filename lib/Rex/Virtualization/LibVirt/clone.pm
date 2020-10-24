@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::LibVirt::clone;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -6,6 +6,7 @@
 
 package Rex::Args::String;
 
+use 5.010001;
 use strict;
 use warnings;
 

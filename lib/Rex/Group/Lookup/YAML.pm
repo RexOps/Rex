@@ -24,6 +24,7 @@ With this module you can define hostgroups out of an yaml file.
 
 package Rex::Group::Lookup::YAML;
 
+use 5.010001;
 use strict;
 use warnings;
 

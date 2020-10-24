@@ -24,6 +24,7 @@ With this module you can define hostgroups out of a file.
 
 package Rex::Group::Lookup::File;
 
+use 5.010001;
 use strict;
 use warnings;
 

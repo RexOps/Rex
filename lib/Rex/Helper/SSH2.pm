@@ -6,6 +6,7 @@
 
 package Rex::Helper::SSH2;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -6,6 +6,7 @@
 
 package Rex::Test::Base::has_package;
 
+use 5.010001;
 use strict;
 use warnings;
 

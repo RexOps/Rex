@@ -23,6 +23,7 @@ With this module you can define host groups in an INI style file.
 
 package Rex::Group::Lookup::INI;
 
+use 5.010001;
 use strict;
 use warnings;
 

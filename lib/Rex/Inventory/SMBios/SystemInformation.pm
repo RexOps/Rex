@@ -6,6 +6,7 @@
 
 package Rex::Inventory::SMBios::SystemInformation;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -28,6 +28,7 @@ All these functions will not be reported. These functions don't modify anything.
 
 package Rex::Commands::Inventory;
 
+use 5.010001;
 use strict;
 use warnings;
 

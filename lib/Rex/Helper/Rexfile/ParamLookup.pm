@@ -6,6 +6,7 @@
 
 package Rex::Helper::Rexfile::ParamLookup;
 
+use 5.010001;
 use strict;
 use warnings;
 

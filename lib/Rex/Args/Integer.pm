@@ -6,6 +6,7 @@
 
 package Rex::Args::Integer;
 
+use 5.010001;
 use strict;
 use warnings;
 

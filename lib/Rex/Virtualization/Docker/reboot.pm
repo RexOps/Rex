@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::Docker::reboot;
 
+use 5.010001;
 use strict;
 use warnings;
 

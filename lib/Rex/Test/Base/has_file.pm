@@ -6,6 +6,7 @@
 
 package Rex::Test::Base::has_file;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -63,6 +63,7 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 package Rex::Box::KVM;
 
+use 5.010001;
 use strict;
 use warnings;
 use Data::Dumper;

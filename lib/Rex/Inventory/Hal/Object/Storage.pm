@@ -6,6 +6,7 @@
 
 package Rex::Inventory::Hal::Object::Storage;
 
+use 5.010001;
 use strict;
 use warnings;
 use Data::Dumper;

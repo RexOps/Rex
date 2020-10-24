@@ -24,6 +24,7 @@ With this module you can run a command.
 
 package Rex::Commands::Run;
 
+use 5.010001;
 use strict;
 use warnings;
 

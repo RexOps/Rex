@@ -36,6 +36,7 @@ This is a simple module to manipulate configuration files with the help of augea
 
 package Rex::Commands::Augeas;
 
+use 5.010001;
 use strict;
 use warnings;
 

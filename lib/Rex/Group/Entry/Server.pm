@@ -6,6 +6,7 @@
 
 package Rex::Group::Entry::Server;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -6,6 +6,7 @@
 
 package Rex::Interface::Executor::Default;
 
+use 5.010001;
 use strict;
 use warnings;
 

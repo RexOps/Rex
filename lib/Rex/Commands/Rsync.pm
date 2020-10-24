@@ -44,6 +44,7 @@ the execution of the rsync task.
 
 package Rex::Commands::Rsync;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -53,6 +53,7 @@ L<Net::SSH2>
 
 package Rex::Helper::SSH2::Expect;
 
+use 5.010001;
 use strict;
 use warnings;
 

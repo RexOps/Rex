@@ -6,6 +6,7 @@
 
 package Rex::User::Linux;
 
+use 5.010001;
 use strict;
 use warnings;
 

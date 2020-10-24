@@ -6,6 +6,7 @@
 
 package Rex::CMDB::Base;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -32,6 +32,7 @@ While it's possible to use the methods below to set a configuration option direc
 
 package Rex::Config;
 
+use 5.010001;
 use strict;
 use warnings;
 

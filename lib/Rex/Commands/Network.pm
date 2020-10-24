@@ -31,6 +31,7 @@ With this module you can get information of the routing table, current network c
 
 package Rex::Commands::Network;
 
+use 5.010001;
 use strict;
 use warnings;
 

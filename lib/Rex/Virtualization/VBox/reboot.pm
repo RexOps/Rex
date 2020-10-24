@@ -6,6 +6,7 @@
 
 package Rex::Virtualization::VBox::reboot;
 
+use 5.010001;
 use strict;
 use warnings;
 

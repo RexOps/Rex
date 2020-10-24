@@ -6,6 +6,7 @@
 
 package Rex::Service::SunOS::svcadm;
 
+use 5.010001;
 use strict;
 use warnings;
 

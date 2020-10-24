@@ -27,6 +27,7 @@ With this module you can tail a file.
 
 package Rex::Commands::Tail;
 
+use 5.010001;
 use strict;
 use warnings;
 

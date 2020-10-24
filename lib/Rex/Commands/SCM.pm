@@ -54,6 +54,7 @@ All these functions are not idempotent.
 
 package Rex::Commands::SCM;
 
+use 5.010001;
 use strict;
 use warnings;
 

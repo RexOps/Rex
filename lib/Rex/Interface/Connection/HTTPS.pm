@@ -6,6 +6,7 @@
 
 package Rex::Interface::Connection::HTTPS;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Interface::Connection::HTTP;

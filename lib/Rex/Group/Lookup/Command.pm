@@ -26,6 +26,7 @@ With this module you can define hostgroups out of a command.
 
 package Rex::Group::Lookup::Command;
 
+use 5.010001;
 use strict;
 use warnings;
 

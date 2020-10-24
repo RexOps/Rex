@@ -36,6 +36,7 @@ With this module you can manage Linux services.
 
 package Rex::Commands::Service;
 
+use 5.010001;
 use strict;
 use warnings;
 

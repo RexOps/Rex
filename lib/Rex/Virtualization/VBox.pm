@@ -70,6 +70,7 @@ For VirtualBox memory declaration is always in megabyte.
 
 package Rex::Virtualization::VBox;
 
+use 5.010001;
 use strict;
 use warnings;
 

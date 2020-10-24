@@ -23,6 +23,7 @@ This module exports the notify() function.
 
 package Rex::Commands::Notify;
 
+use 5.010001;
 use strict;
 use warnings;
 

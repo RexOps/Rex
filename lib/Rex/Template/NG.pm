@@ -6,6 +6,7 @@
 
 package Rex::Template::NG;
 
+use 5.010001;
 use strict;
 use warnings;
 

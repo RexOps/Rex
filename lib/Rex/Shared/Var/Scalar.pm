@@ -6,6 +6,7 @@
 
 package Rex::Shared::Var::Scalar;
 
+use 5.010001;
 use strict;
 use warnings;
 

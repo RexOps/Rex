@@ -6,6 +6,7 @@
 
 package Rex::Inventory::Hal::Object::Net;
 
+use 5.010001;
 use strict;
 use warnings;
 

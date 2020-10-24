@@ -35,6 +35,7 @@ With this Module you can manage your cronjobs.
 
 package Rex::Commands::Cron;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -40,6 +40,7 @@ With this module you can configure packages. Currently it only supports Debian
 
 package Rex::Commands::PkgConf;
 
+use 5.010001;
 use strict;
 use warnings;
 

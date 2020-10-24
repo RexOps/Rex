@@ -29,6 +29,7 @@ All these functions are not idempotent.
 
 package Rex::Commands::Partition;
 
+use 5.010001;
 use strict;
 use warnings;
 

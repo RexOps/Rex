@@ -6,6 +6,7 @@
 
 package Rex::Inventory::Proc::Cpuinfo;
 
+use 5.010001;
 use strict;
 use warnings;
 

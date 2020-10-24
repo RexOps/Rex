@@ -6,6 +6,7 @@
 
 package Rex::Test::Base::has_stat;
 
+use 5.010001;
 use strict;
 use warnings;
 

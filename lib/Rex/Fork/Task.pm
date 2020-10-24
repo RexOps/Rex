@@ -6,6 +6,7 @@
 
 package Rex::Fork::Task;
 
+use 5.010001;
 use strict;
 use warnings;
 use POSIX ":sys_wait_h";

@@ -25,6 +25,7 @@ This is just a helper function and will not be reported.
 
 package Rex::Commands::MD5;
 
+use 5.010001;
 use strict;
 use warnings;
 

@@ -8,6 +8,7 @@ Revision history for Rex
  - Fix replacing hostname macro in CMDB paths
  - Fix host information gathering on Windows
  - Fix hostname detection on Windows
+ - Fix CMDB path separators on Windows
 
  [DOCUMENTATION]
 

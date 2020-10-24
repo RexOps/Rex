@@ -113,11 +113,14 @@ sub _get_cmdb_files {
   my @files;
 
   if ( !ref $self->{path} ) {
-    my $env       = Rex::Commands::environment();
-    my $yaml_path = $self->{path};
+    my $env          = Rex::Commands::environment();
+    my $server_file  = "$server.yml";
+    my $default_file = 'default.yml';
     @files = (
-      "$yaml_path/$env/$server.yml", "$yaml_path/$env/default.yml",
-      "$yaml_path/$server.yml",      "$yaml_path/default.yml"
+      File::Spec->join( $self->{path}, $env, $server_file ),
+      File::Spec->join( $self->{path}, $env, $default_file ),
+      File::Spec->join( $self->{path}, $server_file ),
+      File::Spec->join( $self->{path}, $default_file ),
     );
   }
   elsif ( ref $self->{path} eq "CODE" ) {

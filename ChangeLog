@@ -16,6 +16,7 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+ - Add initial CMDB path tests
 
 1.13.0.1-TRIAL 2020-10-13 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

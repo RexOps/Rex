@@ -289,7 +289,7 @@ sub list_boxes {
 
 =head2 url($url)
 
-The URL where to download the Base VM Image. You can use self-made images or prebuild images from http://box.rexify.org/.
+The URL where to download the Base VM Image. You can use self-made images or prebuild images from L<http://box.rexify.org/>.
 
 =cut
 

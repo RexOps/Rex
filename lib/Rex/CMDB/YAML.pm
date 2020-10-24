@@ -72,29 +72,7 @@ sub new {
 sub get {
   my ( $self, $item, $server ) = @_;
 
-  # first open $server.yml
-  # second open $environment/$server.yml
-  # third open $environment/default.yml
-  # forth open default.yml
-
-  my (@files);
-
-  if ( !ref $self->{path} ) {
-    my $env       = environment;
-    my $yaml_path = $self->{path};
-    @files = (
-      "$yaml_path/$env/$server.yml", "$yaml_path/$env/default.yml",
-      "$yaml_path/$server.yml",      "$yaml_path/default.yml"
-    );
-  }
-  elsif ( ref $self->{path} eq "CODE" ) {
-    @files = $self->{path}->( $self, $item, $server );
-  }
-  elsif ( ref $self->{path} eq "ARRAY" ) {
-    @files = @{ $self->{path} };
-  }
-
-  @files = map { $self->_parse_path($_) } @files;
+  my @files = $self->_get_cmdb_files( $item, $server );
 
   my $all = {};
   Rex::Logger::debug( Dumper( \@files ) );
@@ -125,6 +103,33 @@ sub get {
   }
 
   return $all;
+}
+
+sub _get_cmdb_files {
+  my ( $self, $item, $server ) = @_;
+
+  $server //= Rex::get_current_connection()->{conn}->server->to_s;
+
+  my @files;
+
+  if ( !ref $self->{path} ) {
+    my $env       = Rex::Commands::environment();
+    my $yaml_path = $self->{path};
+    @files = (
+      "$yaml_path/$env/$server.yml", "$yaml_path/$env/default.yml",
+      "$yaml_path/$server.yml",      "$yaml_path/default.yml"
+    );
+  }
+  elsif ( ref $self->{path} eq "CODE" ) {
+    @files = $self->{path}->( $self, $item, $server );
+  }
+  elsif ( ref $self->{path} eq "ARRAY" ) {
+    @files = @{ $self->{path} };
+  }
+
+  @files = map { $self->_parse_path($_) } @files;
+
+  return @files;
 }
 
 1;

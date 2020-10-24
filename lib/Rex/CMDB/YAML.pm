@@ -108,7 +108,7 @@ sub get {
 sub _get_cmdb_files {
   my ( $self, $item, $server ) = @_;
 
-  $server //= Rex::get_current_connection()->{conn}->server->to_s;
+  $server = $self->__get_hostname_for($server);
 
   my @files;
 

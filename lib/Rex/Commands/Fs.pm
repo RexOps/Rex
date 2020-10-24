@@ -49,7 +49,7 @@ package Rex::Commands::Fs;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 use Data::Dumper;

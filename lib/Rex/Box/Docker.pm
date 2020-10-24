@@ -74,7 +74,7 @@ use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
 use Rex::Virtualization::Docker::create;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   LWP::UserAgent->use;

@@ -9,7 +9,7 @@ package Rex::Interface::Shell::Zsh;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Interface::Shell::Bash;
 

@@ -9,7 +9,7 @@ package Rex::CLI;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use FindBin;
 use File::Basename qw(basename dirname);

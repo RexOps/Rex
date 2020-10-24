@@ -9,7 +9,7 @@ package Rex::Helper::URI;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 sub encode {
   my ($part) = @_;

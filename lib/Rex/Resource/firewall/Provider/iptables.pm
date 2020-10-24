@@ -9,7 +9,7 @@ package Rex::Resource::firewall::Provider::iptables;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Commands::Iptables;
 use Rex::Helper::Run;

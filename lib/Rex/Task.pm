@@ -38,7 +38,7 @@ use warnings;
 use Data::Dumper;
 use Time::HiRes qw(time);
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Logger;
 use Rex::TaskList;

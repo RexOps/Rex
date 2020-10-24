@@ -9,7 +9,7 @@ package Rex::Helper::INI;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN { String::Escape->use('string2hash'); }
 

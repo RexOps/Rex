@@ -28,7 +28,7 @@ package Rex::Commands::MD5;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Logger;
 require Rex::Commands;

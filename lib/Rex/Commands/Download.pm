@@ -38,7 +38,7 @@ use warnings;
 use Rex::Helper::UserAgent;
 use Carp;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use vars qw($has_wget $has_curl $has_lwp);
 

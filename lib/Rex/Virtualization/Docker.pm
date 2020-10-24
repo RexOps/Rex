@@ -52,7 +52,7 @@ package Rex::Virtualization::Docker;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Virtualization::Base;
 use base qw(Rex::Virtualization::Base);

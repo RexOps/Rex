@@ -9,7 +9,7 @@ package Rex::Interface::Shell::Idrac;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Interface::Shell::Default;
 use base qw(Rex::Interface::Shell::Default);

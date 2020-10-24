@@ -11,7 +11,7 @@ use warnings;
 use Carp;
 use Rex::Helper::Run;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 sub new {
   my $that  = shift;

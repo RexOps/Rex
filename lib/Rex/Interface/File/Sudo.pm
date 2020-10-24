@@ -9,7 +9,7 @@ package Rex::Interface::File::Sudo;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Fcntl;
 use File::Basename;

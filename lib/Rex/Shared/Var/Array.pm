@@ -11,7 +11,7 @@ use warnings;
 
 use Rex::Shared::Var::Common qw/__lock __store __retrieve/;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 sub TIEARRAY {
   my $self = { varname => $_[1], };

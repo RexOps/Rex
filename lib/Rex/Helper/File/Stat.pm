@@ -9,7 +9,7 @@ package Rex::Helper::File::Stat;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Helper::File::Stat::Unix;
 require Rex::Helper::File::Stat::Win32;

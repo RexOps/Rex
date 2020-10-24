@@ -47,7 +47,7 @@ package Rex::Commands::Rsync;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Rex::Require;

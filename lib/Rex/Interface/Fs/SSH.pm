@@ -9,7 +9,7 @@ package Rex::Interface::Fs::SSH;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Helper::File::Stat;
 use Rex::Helper::Encode;

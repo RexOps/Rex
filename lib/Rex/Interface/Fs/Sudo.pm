@@ -9,7 +9,7 @@ package Rex::Interface::Fs::Sudo;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Commands;
 use Rex::Interface::Fs::Base;

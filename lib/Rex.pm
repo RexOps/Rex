@@ -51,12 +51,7 @@ package Rex;
 use strict;
 use warnings;
 
-# VERSION
-
-# development version if this variable is not set
-if ( !$Rex::VERSION ) {
-  $Rex::VERSION = "9999.99.99_99";
-}
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Rex::Logger;

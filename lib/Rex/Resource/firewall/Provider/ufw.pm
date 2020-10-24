@@ -10,7 +10,7 @@ package Rex::Resource::firewall::Provider::ufw;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Data::Dumper;
 use Rex::Commands::Run;

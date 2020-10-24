@@ -9,7 +9,7 @@ package Rex::Require;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Carp;
 require Rex::Logger;

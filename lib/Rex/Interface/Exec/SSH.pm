@@ -9,7 +9,7 @@ package Rex::Interface::Exec::SSH;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Helper::SSH2;
 use File::Basename 'basename';

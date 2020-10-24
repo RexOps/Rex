@@ -23,7 +23,7 @@ package Rex::Box::Base;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Commands -no => [qw/auth/];
 use Rex::Helper::Run;

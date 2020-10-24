@@ -9,7 +9,7 @@ package Rex::Resource::Common;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Exporter;
 require Rex::Config;

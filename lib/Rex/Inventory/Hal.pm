@@ -15,7 +15,7 @@ use Rex::Helper::Run;
 use Rex::Commands::Gather;
 use Rex::Logger;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Data::Dumper;
 

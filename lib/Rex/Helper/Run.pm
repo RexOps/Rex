@@ -9,7 +9,7 @@ package Rex::Helper::Run;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Exporter;
 use base qw(Exporter);

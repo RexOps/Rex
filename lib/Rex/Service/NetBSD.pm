@@ -9,7 +9,7 @@ package Rex::Service::NetBSD;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Commands::File;
 use Rex::Logger;

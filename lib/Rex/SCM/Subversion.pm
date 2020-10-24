@@ -3,7 +3,7 @@ package Rex::SCM::Subversion;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Cwd qw(getcwd);
 use Rex::Commands::Fs;

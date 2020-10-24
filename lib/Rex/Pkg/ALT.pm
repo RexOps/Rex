@@ -7,7 +7,7 @@ package Rex::Pkg::ALT;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Helper::Run;
 use Rex::Commands::File;

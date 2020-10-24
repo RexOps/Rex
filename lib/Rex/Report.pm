@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 my $report;
 

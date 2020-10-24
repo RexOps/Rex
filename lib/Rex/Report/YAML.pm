@@ -9,7 +9,7 @@ package Rex::Report::YAML;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex;
 use Data::Dumper;

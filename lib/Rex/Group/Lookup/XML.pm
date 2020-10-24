@@ -28,7 +28,7 @@ use strict;
 use warnings;
 use Rex -base;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Exporter;
 use base qw(Exporter);

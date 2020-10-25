@@ -17,13 +17,13 @@ SKIP: {
   mkdir $path;
   symlink( '/bin/echo', "$path$tail" ) or die $!;
   $s = run "$path$tail $parm";
-  like( $s, qr/^$parm/, "`$path$tail $parm` didn't work" );
+  like( $s, qr(^$parm), qq($path$tail $parm didn't work) );
 
   $s = run "$path$tail /$parm";
-  like( $s, qr/$path/, "/slash on parms and the comand didn't fail?" );
+  like( $s, qr($path), "/slash on parms and the comand didn't fail?" );
 
-  $s = run "\"$path$tail\" /$parm";
-  like( $s, qr|^/$parm|, "Quotend command failed" );
+  $s = run qq("$path$tail" /$parm);
+  like( $s, qr(^/$parm), "Quoted command failed" );
 
   unlink $path . $tail;
   rmdir $path;

@@ -183,10 +183,14 @@ sub run {
     if !exists $option->{auto_die};
 
   # check if $cmd is an eplicit path
-  if ( $cmd =~ m"(^(?:\.{1,2}|\~)?/.+/)(.+)" ) {
+  if ( $cmd =~ /(^(?:\.{1,2}|\~)?\/.+\/)(.+)/xsm ) {
     my ( $head, $tail ) = ( $1, $2 );
-    my $end = ( $tail =~ s/(.+?)( .+)/$1/ ) ? $2 : '';
-    $cmd = '"' . $head . $tail . '"' . $end # quote the path of comand in a compatible way
+    if ( $tail =~ /(.+?)(\ .*)/sxm ) {
+      $cmd = qq("$head$1"$2);
+    }
+    else {
+      $cmd = qq("$head$tail");
+    }
   }
 
   my $res_cmd = $cmd;

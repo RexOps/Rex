@@ -184,9 +184,9 @@ sub run {
     if !exists $option->{auto_die};
 
   # check if $cmd is an eplicit path
-  if ( $cmd =~ /(^(?:\.{1,2}|\~)?\/.+\/)(.+)/xsm ) {
+  if ( $cmd =~ /(^(?:[.]{1,2}|[~])?[/].+[/])(.+)/xsm ) {
     my ( $head, $tail ) = ( $1, $2 );
-    if ( $tail =~ /(.+?)(\ .*)/sxm ) {
+    if ( $tail =~ /(.+?)([ ].*)/sxm ) {
       $cmd = qq("$head$1"$2);
     }
     else {

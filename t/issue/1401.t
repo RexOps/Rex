@@ -15,7 +15,7 @@ SKIP: {
     "The inexistent path or file is not reported correctly" );
 
   mkdir $path;
-  symlink( '/bin/echo', "$path$tail" ) or die $!;
+  symlink( '/bin/echo', "$path$tail" );
   $s = run "$path$tail $parm";
   like( $s, qr{^$parm}sxm, qq($path$tail $parm didn't work) );
 

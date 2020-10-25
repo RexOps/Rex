@@ -6,6 +6,7 @@
 
 package Rex::Shared::Var::Common;
 
+use 5.010001;
 use strict;
 use warnings;
 
@@ -13,7 +14,7 @@ require Exporter;
 use base qw/Exporter/;
 our @EXPORT_OK = qw/__lock __store __retrieve/;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Fcntl qw(:DEFAULT :flock);
 use Storable;

@@ -64,6 +64,7 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 package Rex::Box::Docker;
 
+use 5.010001;
 use strict;
 use warnings;
 use Data::Dumper;
@@ -74,7 +75,7 @@ use Rex::Commands::Virtualization;
 use Rex::Commands::SimpleCheck;
 use Rex::Virtualization::Docker::create;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   LWP::UserAgent->use;

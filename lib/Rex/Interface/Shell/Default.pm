@@ -6,11 +6,12 @@
 
 package Rex::Interface::Shell::Default;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Interface::Shell::Bash;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use base qw(Rex::Interface::Shell::Bash);
 

@@ -52,12 +52,13 @@ This is a basic test module to test your code with the help of local VMs. You ca
 
 package Rex::Test::Base;
 
+use 5.010001;
 use strict;
 use warnings;
 
 use base 'Test::Builder::Module';
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Commands;
 use Rex::Commands::Box;

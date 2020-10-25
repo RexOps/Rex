@@ -108,10 +108,11 @@ This module is the core commands module.
 
 package Rex::Commands;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 use Rex::TaskList;

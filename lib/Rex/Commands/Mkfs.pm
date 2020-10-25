@@ -18,9 +18,10 @@ With this module you can create filesystems on existing partitions and logical v
 package Rex::Commands::Mkfs;
 
 use warnings;
+use 5.010001;
 use strict;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 use base qw(Rex::Exporter);

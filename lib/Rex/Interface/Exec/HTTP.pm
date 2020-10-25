@@ -6,11 +6,12 @@
 
 package Rex::Interface::Exec::HTTP;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Commands;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 sub new {
   my $that  = shift;

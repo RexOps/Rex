@@ -6,10 +6,11 @@
 
 package Rex::Profiler;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Time::HiRes qw(gettimeofday tv_interval);
 

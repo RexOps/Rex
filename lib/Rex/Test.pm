@@ -6,6 +6,7 @@
 
 package Rex::Test;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex -base;
@@ -13,7 +14,7 @@ use Data::Dumper;
 use Rex::Commands::Box;
 require Rex::CLI;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Rex::Shared::Var;

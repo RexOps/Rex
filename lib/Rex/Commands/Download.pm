@@ -33,12 +33,13 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Download;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Helper::UserAgent;
 use Carp;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use vars qw($has_wget $has_curl $has_lwp);
 

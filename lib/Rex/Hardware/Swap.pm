@@ -6,10 +6,11 @@
 
 package Rex::Hardware::Swap;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Commands::Run;
 use Rex::Helper::Run;

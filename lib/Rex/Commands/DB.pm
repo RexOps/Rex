@@ -56,10 +56,11 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::DB;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Rex::Require;

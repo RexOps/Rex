@@ -6,11 +6,12 @@
 
 package Rex::Inventory::Hal::Object::Storage;
 
+use 5.010001;
 use strict;
 use warnings;
 use Data::Dumper;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Inventory::Hal::Object;
 use Rex::Commands::Gather;

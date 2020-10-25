@@ -25,10 +25,11 @@ This module is the base class for hardware/information gathering.
 
 package Rex::Hardware;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Logger;
 

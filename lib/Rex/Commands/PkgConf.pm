@@ -40,10 +40,11 @@ With this module you can configure packages. Currently it only supports Debian
 
 package Rex::Commands::PkgConf;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::PkgConf;
 use Rex::Logger;

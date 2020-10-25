@@ -25,10 +25,11 @@ All these functions will not be reported. These functions don't modify anything.
 
 package Rex::Commands::Gather;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Data::Dumper;
 use Rex::Hardware;

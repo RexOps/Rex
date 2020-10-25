@@ -6,11 +6,12 @@
 
 package Rex::Inventory::DMIDecode;
 
+use 5.010001;
 use strict;
 use warnings;
 use Data::Dumper;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Inventory::DMIDecode::BaseBoard;
 use Rex::Inventory::DMIDecode::Bios;

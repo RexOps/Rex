@@ -6,10 +6,11 @@
 
 package Rex::Interface::Cache;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 sub create {
   my ( $class, $type ) = @_;

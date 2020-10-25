@@ -23,10 +23,11 @@ This module exports the notify() function.
 
 package Rex::Commands::Notify;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 

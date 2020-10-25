@@ -31,10 +31,11 @@ With this module you can install packages and files.
 
 package Rex::Commands::Pkg;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Pkg;
 use Rex::Logger;

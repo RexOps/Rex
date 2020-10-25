@@ -6,10 +6,11 @@
 
 package Rex::Interface::File::Local;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Interface::File::Base;
 use base qw(Rex::Interface::File::Base);

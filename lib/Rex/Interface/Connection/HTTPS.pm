@@ -6,12 +6,13 @@
 
 package Rex::Interface::Connection::HTTPS;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Interface::Connection::HTTP;
 use base qw(Rex::Interface::Connection::HTTP);
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Logger;
 

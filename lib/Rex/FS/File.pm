@@ -30,11 +30,12 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 package Rex::FS::File;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex::Interface::File;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use constant DEFAULT_READ_LEN => 64;
 

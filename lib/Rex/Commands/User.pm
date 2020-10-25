@@ -36,10 +36,11 @@ With this module you can manage user and groups.
 
 package Rex::Commands::User;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 use Rex::Commands::Fs;

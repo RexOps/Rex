@@ -6,10 +6,11 @@
 
 package Rex::Interface::Exec::OpenSSH;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Helper::SSH2;
 require Rex::Commands;

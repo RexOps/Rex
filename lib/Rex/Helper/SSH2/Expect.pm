@@ -53,10 +53,11 @@ L<Net::SSH2>
 
 package Rex::Helper::SSH2::Expect;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 =head2 new($ssh2)
 

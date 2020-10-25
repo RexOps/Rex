@@ -27,10 +27,11 @@ With this module you can tail a file.
 
 package Rex::Commands::Tail;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 use Data::Dumper;

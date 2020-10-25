@@ -24,11 +24,12 @@ With this module you can define hostgroups out of an xml file.
 
 package Rex::Group::Lookup::XML;
 
+use 5.010001;
 use strict;
 use warnings;
 use Rex -base;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Exporter;
 use base qw(Exporter);

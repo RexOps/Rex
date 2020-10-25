@@ -48,15 +48,11 @@ See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more informatio
 
 package Rex;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
-
-# development version if this variable is not set
-if ( !$Rex::VERSION ) {
-  $Rex::VERSION = "9999.99.99_99";
-}
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Rex::Logger;

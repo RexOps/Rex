@@ -20,10 +20,11 @@ These methods are shared across all other Rex::Box modules.
 
 package Rex::Box::Base;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Commands -no => [qw/auth/];
 use Rex::Helper::Run;
@@ -288,7 +289,7 @@ sub list_boxes {
 
 =head2 url($url)
 
-The URL where to download the Base VM Image. You can use self-made images or prebuild images from http://box.rexify.org/.
+The URL where to download the Base VM Image. You can use self-made images or prebuild images from L<http://box.rexify.org/>.
 
 =cut
 

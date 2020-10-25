@@ -24,10 +24,11 @@ With this module you can define hostgroups out of an yaml file.
 
 package Rex::Group::Lookup::YAML;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex -base;
 

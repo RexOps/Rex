@@ -23,11 +23,12 @@ This is a simple template engine for configuration files.
 
 package Rex::Template;
 
+use 5.010001;
 use strict;
 use warnings;
 use Symbol;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Config;
 use Rex::Logger;

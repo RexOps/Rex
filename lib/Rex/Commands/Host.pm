@@ -27,10 +27,11 @@ With this module you can manage the host entries in /etc/hosts.
 
 package Rex::Commands::Host;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 require Rex::Exporter;
 use Rex::Commands::Fs;

@@ -6,10 +6,11 @@
 
 package Rex::Cron;
 
+use 5.010001;
 use strict;
 use warnings;
 
-# VERSION
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Commands::Gather;
 use List::Util qw'first';

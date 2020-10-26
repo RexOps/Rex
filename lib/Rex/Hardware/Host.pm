@@ -38,11 +38,9 @@ sub get {
 
   my ( $domain, $hostname );
   if ( $os eq "Windows" ) {
-    my @env = i_run("env");
-    ($hostname) =
-      map { /^COMPUTERNAME=(.*)$/ } split( /\r?\n/, @env );
-    ($domain) =
-      map { /^USERDOMAIN=(.*)$/ } split( /\r?\n/, @env );
+    my @env = i_run('set');
+    ($hostname) = map { /^COMPUTERNAME=(.*)$/ } @env;
+    ($domain)   = map { /^USERDOMAIN=(.*)$/ } @env;
   }
   elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
     ( $hostname, $domain ) =

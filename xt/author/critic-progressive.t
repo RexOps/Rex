@@ -18,4 +18,7 @@ if ( $ENV{CI} ) {
   set_history_file($history_file);
 }
 
-progressive_critic_ok();
+my @files       = qw(xt/author/critic-progressive.t xt/author/perltidy.t);
+my @directories = qw(lib bin t);
+
+progressive_critic_ok( @files, @directories );

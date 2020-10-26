@@ -14,6 +14,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Helper::Path;
 use Rex::Hardware;
+use Rex::Hardware::Host;
 
 sub new {
   my $that  = shift;

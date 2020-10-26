@@ -130,7 +130,11 @@ sub _get_cmdb_files {
     @files = @{ $self->{path} };
   }
 
-  @files = map { $self->_parse_path( $_, { hostname => $server } ) } @files;
+  my $os = Rex::Hardware::Host->get_operating_system();
+
+  @files = map {
+    $self->_parse_path( $_, { hostname => $server, operatingsystem => $os, } )
+  } @files;
 
   return @files;
 }

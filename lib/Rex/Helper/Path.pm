@@ -215,8 +215,7 @@ sub resolv_path {
 }
 
 sub parse_path {
-  my ($path_with_macro) = @_;
-  my $replacement_for = {};
+  my ( $path_with_macro, $replacement_for ) = @_;
 
   my $replace_macros = sub {
     my ( $path, $substitution_for ) = @_;

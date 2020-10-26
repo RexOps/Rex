@@ -127,7 +127,7 @@ sub _get_cmdb_files {
     @files = @{ $self->{path} };
   }
 
-  @files = map { $self->_parse_path($_) } @files;
+  @files = map { $self->_parse_path( $_, { hostname => $server } ) } @files;
 
   return @files;
 }

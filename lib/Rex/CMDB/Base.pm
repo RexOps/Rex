@@ -26,9 +26,9 @@ sub new {
 }
 
 sub _parse_path {
-  my ( $self, $path ) = @_;
+  my ( $self, $path, $mapping ) = @_;
 
-  return parse_path($path);
+  return parse_path( $path, $mapping );
 }
 
 sub __get_hostname_for {

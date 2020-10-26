@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix CMDB hostname when Rex is being run locally
+ - Fix replacing hostname macro in CMDB paths
 
  [DOCUMENTATION]
 

@@ -140,3 +140,123 @@ sub _get_cmdb_files {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Rex::CMDB::YAML - YAML-based CMDB provider for Rex
+
+=head1 DESCRIPTION
+
+This module collects and merges data from a set of YAML files to provide configuration management database for Rex.
+
+=head1 SYNOPSIS
+
+ use Rex::CMDB;
+ 
+ set cmdb => {
+   type           => 'YAML',
+   path           => [ 'cmdb/{hostname}.yml', 'cmdb/default.yml', ],
+   merge_behavior => 'LEFT_PRECEDENT',
+ };
+  
+ task 'prepare', 'server1', sub {
+   my %all_information          = get cmdb;
+   my $specific_item            = get cmdb('item');
+   my $specific_item_for_server = get cmdb( 'item', 'server' );
+ };
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+=head2 path
+
+The path used to look for CMDB files. It supports various use cases depending on the type of data passed to it.
+
+=over 4
+
+=item * Scalar
+
+ set cmdb => {
+   type => 'YAML',
+   path => 'path/to/cmdb',
+ };
+
+If a scalar is used, it tries to look up a few files under the given path:
+
+ path/to/cmdb/{environment}/{hostname}.yml
+ path/to/cmdb/{environment}/default.yml
+ path/to/cmdb/{hostname}.yml
+ path/to/cmdb/default.yml
+
+=item * Array reference
+
+ set cmdb => {
+   type => 'YAML',
+   path => [ 'cmdb/{hostname}.yml', 'cmdb/default.yml', ],
+ };
+
+If an array reference is used, it tries to look up the mentioned files in the given order.
+
+=item * Code reference
+
+ set cmdb => {
+   type => 'YAML',
+   path => sub {
+     my ( $provider, $item, $server ) = @_;
+     my @files = ( "$server.yml", "$item.yml" );
+     return @files;
+   },
+ };
+
+If a code reference is passed, it should return a list of files that would be looked up in the same order. The code reference gets the CMDB provider instance, the item, and the server as parameters.
+
+=back
+
+When the L<0.51 feature flag|Rex#0.51> or later is used, the default value of the C<path> option is:
+
+ [qw(
+   cmdb/{operatingsystem}/{hostname}.yml
+   cmdb/{operatingsystem}/default.yml
+   cmdb/{environment}/{hostname}.yml
+   cmdb/{environment}/default.yml
+   cmdb/{hostname}.yml
+   cmdb/default.yml
+ )]
+
+The path specification supports macros enclosed within curly braces, which are dynamically expanded during runtime. By default, the valid macros are L<Rex::Hardware> variables, C<{server}> for the server name of the current connection, and C<{environment}> for the current environment.
+
+Please note that the default environment is, well, C<default>.
+
+You can define additional CMDB paths via the C<-O> command line option by using a semicolon-separated list of C<cmdb_path=$path> key-value pairs:
+
+ rex -O 'cmdb_path=cmdb/{domain}.yml;cmdb_path=cmdb/{domain}/{hostname}.yml;' taskname
+
+Those additional paths will be prepended to the current list of CMDB paths (so the last one specified will get on top, and thus checked first).
+
+=head2 merge_behavior
+
+This CMDB provider looks up the specified files in order, and returns the requested data. If multiple files specify the same data for a given item, then the first instance of the data will be returned by default.
+
+Rex uses L<Hash::Merge> internally to merge the data found on different levels of the CMDB hierarchy. Any merge strategy supported by that module can be specified to override the default one. For example one of the built-in strategies:
+
+ set cmdb => {
+   type           => 'YAML',
+   path           => 'cmdb',
+   merge_behavior => 'LEFT_PRECEDENT',
+ };
+
+Or even custom ones:
+
+ set cmdb => {
+   type           => 'YAML',
+   path           => 'cmdb',
+   merge_behavior => {
+     SCALAR => sub {},
+     ARRAY  => sub {},
+     HASH   => sub {},
+ };
+
+For the full list of options, please see the documentation of Hash::Merge.
+
+=cut

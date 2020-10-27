@@ -11,6 +11,7 @@ Revision history for Rex
  - Fix CMDB path separators on Windows
 
  [DOCUMENTATION]
+ - Clarify CMDB documentation
 
  [ENHANCEMENTS]
 

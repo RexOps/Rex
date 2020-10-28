@@ -215,25 +215,36 @@ sub resolv_path {
 }
 
 sub parse_path {
-  my ($path) = @_;
-  my %hw;
+  my ( $path_with_macro, $replacement_for ) = @_;
 
-  require Rex::Commands::Gather;
+  my $replace_macros = sub {
+    my ( $path, $substitution_for ) = @_;
 
-  $hw{server}      = Rex::Commands::connection()->server;
-  $hw{environment} = Rex::Commands::environment();
+    my $macro = join q(|), keys %{$substitution_for};
 
-  $path =~ s/\{(server|environment)\}/$hw{$1}/gms;
+    ( my $substitution = $path ) =~ s/{($macro)}/$substitution_for->{$1}/gmsx;
 
-  if ( $path =~ m/\{([^\}]+)\}/ ) {
+    return $substitution;
+  };
 
-    # if there are still some variables to replace, we need some information of
-    # the system.
-    %hw = Rex::Commands::Gather::get_system_information();
-    $path =~ s/\{([^\}]+)\}/$hw{$1}/gms;
+  $replacement_for->{server}      //= Rex::Commands::connection()->server;
+  $replacement_for->{environment} //= Rex::Commands::environment();
+
+  my $replacement_path =
+    $replace_macros->( $path_with_macro, $replacement_for );
+
+  if ( $replacement_path =~ m/\{([^\}]+)\}/ ) {
+
+    # if there are still some macros to replace, we need some
+    # information of the system
+
+    require Rex::Commands::Gather;
+    my %hw = Rex::Commands::Gather::get_system_information();
+
+    $replacement_path = $replace_macros->( $replacement_path, \%hw );
   }
 
-  return $path;
+  return $replacement_path;
 }
 
 sub resolve_symlink {

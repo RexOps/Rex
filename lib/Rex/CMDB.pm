@@ -148,9 +148,10 @@ Function to query a CMDB. If this function is called without $item it should ret
 
 sub cmdb {
   my ( $item, $server ) = @_;
-  $server ||= connection->server;
 
   return if !cmdb_active();
+
+  $server = $CMDB_PROVIDER->__get_hostname_for($server);
 
   my $value;
   my $cache     = Rex::get_cache();

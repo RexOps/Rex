@@ -4,14 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix CMDB hostname when Rex is being run locally
- - Fix replacing hostname macro in CMDB paths
- - Fix host information gathering on Windows
- - Fix hostname detection on Windows
- - Fix CMDB path separators on Windows
 
  [DOCUMENTATION]
- - Clarify CMDB documentation
 
  [ENHANCEMENTS]
 
@@ -20,6 +14,19 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+
+ [REVISION]
+
+1.13.0.2-TRIAL 2020-10-28 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix CMDB hostname when Rex is being run locally
+ - Fix replacing hostname macro in CMDB paths
+ - Fix host information gathering on Windows
+ - Fix hostname detection on Windows
+ - Fix CMDB path separators on Windows
+
+ [DOCUMENTATION]
+ - Clarify CMDB documentation
 
  [REVISION]
  - Add initial CMDB path tests

@@ -183,22 +183,14 @@ sub run {
   $option->{auto_die} = Rex::Config->get_exec_autodie()
     if !exists $option->{auto_die};
 
-  # check if $cmd is an eplicit path
-  if (
-    $cmd =~ m{(^
-                 (?:[.]{1,2}|[~])?
-                 [/].+[/])
-                (.+)
-               }xsm
-    )
-  {
-    my ( $head, $tail ) = ( $1, $2 );
-    if ( $tail =~ /(.+?)([ ].*)/sxm ) {
-      $cmd = qq("$head$1"$2);
-    }
-    else {
-      $cmd = qq("$head$tail");
-    }
+  # We only process cmd is an explicit path that means
+  # that starts with . .. <letter>: and / or \
+
+  if ( $cmd =~ m{^(?:[.]{1,2}|[~]|[A-Z]:|[\\/])}xsm ) {
+    my $split = qr{(?=\s(?:[.]{1,2}|[~]|[A-Z]:|[\\/]))}mxs;
+    my @cmd = split $split, $cmd;
+    $cmd[0] = qq{"$cmd[0]"} ;
+    $cmd = join q{}, @cmd;
   }
 
   my $res_cmd = $cmd;

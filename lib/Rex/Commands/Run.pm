@@ -254,8 +254,22 @@ sub run {
 
     my $exec = Rex::Interface::Exec->create;
 
+    require Rex::Interface::Shell;
+    my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+
+    if ( $cmd =~ qr{[ ]}msx ) {
+      my $space = q( );
+      my @parts = split qr{[ ]}msx, $cmd;
+      $cmd = shift @parts;
+
+      while ( !can_run( $quoter->quote($cmd) ) ) {
+        $cmd = join $space, $cmd, shift @parts;
+      }
+
+      $cmd = join $space, $quoter->quote($cmd), @parts;
+    }
+
     if ( $args && ref($args) eq "ARRAY" ) {
-      my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
       $cmd = "$cmd " . join( " ", map { $quoter->quote($_) } @{$args} );
     }
 

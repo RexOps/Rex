@@ -67,7 +67,7 @@ jobs:
         - dzil build --in build --notgz
       script:
         - cd build
-        - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+        - prove --timer --lib --recurse --jobs $(nproc) --shuffle t/run_spaces.t
     - stage: test
       os: osx
       osx_image: xcode11.6

@@ -254,19 +254,32 @@ sub run {
 
     my $exec = Rex::Interface::Exec->create;
 
+    use DDP;
     require Rex::Interface::Shell;
+    my $shell = $exec->shell->name;
+    p $shell;
     my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
 
+
     if ( $cmd =~ qr{[ ]}msx ) {
+      p $cmd;
       my $space = q( );
       my @parts = split qr{[ ]}msx, $cmd;
+      p @parts;
+
       $cmd = shift @parts;
+
+      p $cmd;
 
       while ( !can_run( $quoter->quote($cmd) ) ) {
         $cmd = join $space, $cmd, shift @parts;
       }
 
+      p $cmd;
+
       $cmd = join $space, $quoter->quote($cmd), @parts;
+
+      p $cmd;
     }
 
     if ( $args && ref($args) eq "ARRAY" ) {

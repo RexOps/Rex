@@ -72,37 +72,52 @@ sub new {
 sub get {
   my ( $self, $item, $server ) = @_;
 
-  my @files = $self->_get_cmdb_files( $item, $server );
+  $server = $self->__get_hostname_for($server);
 
-  my $all = {};
-  Rex::Logger::debug( Dumper( \@files ) );
+  my $result = {};
 
-  # configuration variables
-  my $config_values = Rex::Config->get_all;
-  my %template_vars;
-  for my $key ( keys %{$config_values} ) {
-    if ( !exists $template_vars{$key} ) {
-      $template_vars{$key} = $config_values->{$key};
+  if ( $self->__cache->valid( $self->__cache_key() ) ) {
+    $result = $self->__cache->get( $self->__cache_key() );
+  }
+  else {
+
+    my @files = $self->_get_cmdb_files( $item, $server );
+
+    Rex::Logger::debug( Dumper( \@files ) );
+
+    # configuration variables
+    my $config_values = Rex::Config->get_all;
+    my %template_vars;
+    for my $key ( keys %{$config_values} ) {
+      if ( !exists $template_vars{$key} ) {
+        $template_vars{$key} = $config_values->{$key};
+      }
+    }
+    $template_vars{environment} = Rex::Commands::environment();
+
+    for my $file (@files) {
+      Rex::Logger::debug("CMDB - Opening $file");
+      if ( -f $file ) {
+
+        my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
+        my $t       = Rex::Config->get_template_function();
+        $content .= "\n"; # for safety
+        $content = $t->( $content, \%template_vars );
+
+        my $ref = YAML::Load($content);
+
+        $result = $self->{merger}->merge( $result, $ref );
+      }
     }
   }
-  $template_vars{environment} = Rex::Commands::environment();
 
-  for my $file (@files) {
-    Rex::Logger::debug("CMDB - Opening $file");
-    if ( -f $file ) {
-
-      my $content = eval { local ( @ARGV, $/ ) = ($file); <>; };
-      my $t       = Rex::Config->get_template_function();
-      $content .= "\n"; # for safety
-      $content = $t->( $content, \%template_vars );
-
-      my $ref = YAML::Load($content);
-
-      $all = $self->{merger}->merge( $all, $ref );
-    }
+  if ( defined $item ) {
+    return $result->{$item};
+  }
+  else {
+    return $result;
   }
 
-  return $all;
 }
 
 sub _get_cmdb_files {

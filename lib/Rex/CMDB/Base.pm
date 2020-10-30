@@ -45,4 +45,38 @@ sub __get_hostname_for {
   return $hostname;
 }
 
+sub __warm_up_cache_for {
+  my ( $self, $server ) = @_;
+
+  $server = $self->__get_hostname_for($server);
+  my $cache_key = $self->__cache_key("cmdb/$self/$server");
+
+  if ( !$self->__cache->valid($cache_key) ) {
+    my $cmdb = $self->get( undef, $server ) || undef;
+    $self->__cache->set( $cache_key, $cmdb );
+  }
+
+  return $self->__cache;
+}
+
+sub __cache_key {
+  my ( $self, $key ) = @_;
+
+  if ( defined $key ) {
+    $self->{__cache_key} = $key;
+  }
+
+  return $self->{__cache_key};
+}
+
+sub __cache {
+  my ($self) = @_;
+
+  if ( !defined $self->{__cache} ) {
+    $self->{__cache} = Rex::get_cache();
+  }
+
+  return $self->{__cache};
+}
+
 1;

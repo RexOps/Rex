@@ -188,9 +188,9 @@ sub run {
 
   if ( $cmd =~ m{^(?:[.]{1,2}|[~]|[A-Z]:|[\\/])}xsm ) {
     my $split = qr{(?=\s(?:[.]{1,2}|[~]|[A-Z]:|[\\/]))}mxs;
-    my @cmd = split $split, $cmd;
-    $cmd[0] = qq{"$cmd[0]"} ;
-    $cmd = join q{}, @cmd;
+    my @cmd   = split $split, $cmd;
+    $cmd[0] = qq{"$cmd[0]"};
+    $cmd    = join q{}, @cmd;
   }
 
   my $res_cmd = $cmd;

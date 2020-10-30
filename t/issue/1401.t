@@ -12,7 +12,7 @@ ok( !-e $path, qq("$path" not exists) );
 my $tail      = 'hello';
 my $parm      = 'Rex';
 my $s         = run "$path$tail $parm";
-my $notExists = ($win and !-e $path) ? $s : qq{$path$tail};
+my $notExists = ( $win and !-e $path ) ? $s : qq{$path$tail};
 
 like( $s, qr{$notExists}sm,
   qq{windows dont return "$path/$tail" on the message} );
@@ -40,6 +40,6 @@ like( $s, qr{$parm}sm, "/slash on parms and the comand didn't fail?" );
 $s = run qq("$path$tail" /$parm);
 like( $s, qr{/$parm}sm, "Quoted commands pass" );
 
-unlink "$path$tail" . ($win?q{.bat}:q{});
+unlink "$path$tail" . ( $win ? q{.bat} : q{} );
 rmdir $path;
 

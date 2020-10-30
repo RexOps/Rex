@@ -10,24 +10,22 @@ Rex::CMDB - Function to access the CMDB (configuration management database)
 
 =head1 DESCRIPTION
 
-This module exports a function to access a CMDB via a common interface.
+This module exports a function to access a CMDB via a common interface. When the L<0.51 feature flag|Rex#0.51> or later is used, the CMDB is enabled by default with L<Rex::CMDB::YAML> as the default provider.
 
 =head1 SYNOPSIS
 
  use Rex::CMDB;
  
  set cmdb => {
-     type => 'YAML',
-     path => [ 
-         'cmdb/{hostname}.yml',
-         'cmdb/default.yml',
-     ],
-     merge_behavior => 'LEFT_PRECEDENT',
+   type           => 'YAML',
+   path           => [ 'cmdb/{hostname}.yml', 'cmdb/default.yml', ],
+   merge_behavior => 'LEFT_PRECEDENT',
  };
  
- task "prepare", "server1", sub {
-   my $virtual_host = get cmdb("vhost");
-   my %all_information = get cmdb;
+ task 'prepare', 'server1', sub {
+   my %all_information          = get cmdb;
+   my $specific_item            = get cmdb('item');
+   my $specific_item_for_server = get cmdb( 'item', 'server' );
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -54,42 +52,14 @@ my $CMDB_PROVIDER;
 
 =head2 set cmdb
 
-CMDB is enabled by default, with Rex::CMDB::YAML as default provider.
+ set cmdb => {
+   type => 'YAML',
+   %provider_options,
+ };
 
-The path option specifies an ordered list of places to look for CMDB information. The path specification supports any Rex::Hardware variable as macros, when enclosed within curly braces. Macros are dynamically expanded during runtime. The default path settings is:
+Instantiate a specific C<type> of CMDB provider with the given options. Returns the provider instance.
 
- [qw(
-     cmdb/{operatingsystem}/{hostname}.yml
-     cmdb/{operatingsystem}/default.yml
-     cmdb/{environment}/{hostname}.yml
-     cmdb/{environment}/default.yml
-     cmdb/{hostname}.yml
-     cmdb/default.yml
- )]
-
-Please note that the default environment is, well, "default".
-
-You can define additional CMDB paths via the `-O` command line option by using a semicolon-separated list of `cmdb_path=path` key-value pairs:
-
- rex -O 'cmdb_path=cmdb/{domain}.yml;cmdb_path=cmdb/{domain}/{hostname}.yml;' taskname
-
-Those additional paths will be prepended to the current list of CMDB paths (so the last one specified will get on top, and thus checked first).
-
-The CMDB module looks up the specified files in order and then returns the requested data. If multiple files specify the same data for a given case, then the first instance of the data will be returned by default.
-
-Rex uses Hash::Merge internally to merge the data found on different levels of the CMDB hierarchy. Any merge strategy supported by that module can be specified to override the default one. For example one of the built-in strategies:
-
- merge_behavior => 'LEFT_PRECEDENT'
-
-Or even custom ones:
-
- merge_behavior => {
-     SCALAR => { ... },
-     ARRAY  => { ... },
-     HASH   => { ... },
- }
-
-For full list of options, please see the documentation of Hash::Merge.
+Please consult the documentation of the given provider for their supported options.
 
 =cut
 
@@ -137,20 +107,34 @@ Rex::Config->register_set_handler(
 
 =head2 cmdb([$item, $server])
 
-Function to query a CMDB. If this function is called without $item it should return a hash containing all the information for the requested server. If $item is given it should return only the value for $item.
+Function to query a CMDB.
 
- task "prepare", "server1", sub {
-   my $virtual_host = get cmdb("vhost");
-   my %all_information = get cmdb;
+If called without arguments, it returns the full CMDB data structure for the current connection.
+
+If only a defined C<$item> is passed, it returns only the value for the given CMDB item, for the current connection.
+
+If only a defined C<$server> is passed, it returns the whole CMDB data structure for the given server.
+
+If both C<$item> and C<$server> are defined, it returns the given CMDB item for the given server.
+
+The value returned is a L<Rex::Value>, so you may need to use the C<get cmdb(...)> form if you'd like to assign the result to a Perl variable:
+
+ task 'prepare', 'server1', sub {
+   my %all_information          = get cmdb;
+   my $specific_item            = get cmdb('item');
+   my $specific_item_for_server = get cmdb( 'item', 'server' );
  };
+
+If caching is enabled, this function caches the full data structure for the given server under the C<cmdb/$CMDB_PROVIDER/$server> cache key after the first query.
 
 =cut
 
 sub cmdb {
   my ( $item, $server ) = @_;
-  $server ||= connection->server;
 
   return if !cmdb_active();
+
+  $server = $CMDB_PROVIDER->__get_hostname_for($server);
 
   my $value;
   my $cache     = Rex::get_cache();

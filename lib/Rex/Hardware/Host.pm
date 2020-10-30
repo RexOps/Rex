@@ -32,70 +32,69 @@ sub get {
     return $cache->get($cache_key_name);
   }
 
-  if ( Rex::is_ssh || $^O !~ m/^MSWin/i ) {
+  my $bios = Rex::Inventory::Bios::get();
 
-    my $bios = Rex::Inventory::Bios::get();
+  my $os = get_operating_system();
 
-    my $os = get_operating_system();
-
-    my ( $domain, $hostname );
-    if ( $os eq "Windows" ) {
-      my @env = i_run("env");
-      ($hostname) =
-        map { /^COMPUTERNAME=(.*)$/ } split( /\r?\n/, @env );
-      ($domain) =
-        map { /^USERDOMAIN=(.*)$/ } split( /\r?\n/, @env );
-    }
-    elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
-      ( $hostname, $domain ) =
-        split( /\./, ( eval { i_run("hostname") } || "unknown.nodomain" ), 2 );
-    }
-    elsif ( $os eq "SunOS" ) {
-      ($hostname) =
-        map { /^([^\.]+)$/ } ( eval { i_run("hostname"); } || "unknown" );
-      ($domain) = eval { i_run("domainname"); } || ("nodomain");
-    }
-    elsif ( $os eq "OpenWrt" ) {
-      ($hostname) = eval { i_run("uname -n"); } || ("unknown");
-      ($domain) =
-        eval { i_run("cat /proc/sys/kernel/domainname"); } || ("unknown");
-    }
-    else {
-      my @out = i_run "hostname -f 2>/dev/null", fail_ok => 1;
-
-      if ( $? == 0 ) {
-        ( $hostname, $domain ) = split( /\./, $out[0], 2 );
-      }
-      else {
-        Rex::Logger::debug(
-          "Error getting hostname and domainname. There is something wrong with your /etc/hosts file."
-        );
-        ($hostname) = eval { i_run("hostname -s"); } || ("unknown");
-        ($domain)   = eval { i_run("hostname -d"); } || ("nodomain");
-      }
-    }
-
-    my $data = {
-
-      manufacturer => $bios->get_system_information()->get_manufacturer() || "",
-      hostname     => $hostname                                           || "",
-      domain       => $domain                                             || "",
-      operatingsystem          => $os                                     || "",
-      operating_system         => $os                                     || "",
-      operatingsystemrelease   => get_operating_system_version(),
-      operating_system_release => get_operating_system_version(),
-      kernelname               => [ i_run "uname -s" ]->[0],
-
-    };
-
-    $cache->set( $cache_key_name, $data );
-
-    return $data;
-
+  my ( $domain, $hostname );
+  if ( $os eq "Windows" ) {
+    my @env = i_run('set');
+    ($hostname) = map { /^COMPUTERNAME=(.*)$/ } @env;
+    ($domain)   = map { /^USERDOMAIN=(.*)$/ } @env;
+  }
+  elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
+    ( $hostname, $domain ) =
+      split( /\./, ( eval { i_run("hostname") } || "unknown.nodomain" ), 2 );
+  }
+  elsif ( $os eq "SunOS" ) {
+    ($hostname) =
+      map { /^([^\.]+)$/ } ( eval { i_run("hostname"); } || "unknown" );
+    ($domain) = eval { i_run("domainname"); } || ("nodomain");
+  }
+  elsif ( $os eq "OpenWrt" ) {
+    ($hostname) = eval { i_run("uname -n"); } || ("unknown");
+    ($domain) =
+      eval { i_run("cat /proc/sys/kernel/domainname"); } || ("unknown");
   }
   else {
-    return { operatingsystem => $^O, };
+    my @out = i_run "hostname -f 2>/dev/null", fail_ok => 1;
+
+    if ( $? == 0 ) {
+      ( $hostname, $domain ) = split( /\./, $out[0], 2 );
+    }
+    else {
+      Rex::Logger::debug(
+        "Error getting hostname and domainname. There is something wrong with your /etc/hosts file."
+      );
+      ($hostname) = eval { i_run("hostname -s"); } || ("unknown");
+      ($domain)   = eval { i_run("hostname -d"); } || ("nodomain");
+    }
   }
+
+  my $kernelname = q();
+
+  if ( can_run('uname') ) {
+    $kernelname = i_run 'uname -s';
+  }
+
+  my $operating_system_version = get_operating_system_version();
+
+  my $data = {
+
+    manufacturer => $bios->get_system_information()->get_manufacturer() || "",
+    hostname     => $hostname                                           || "",
+    domain       => $domain                                             || "",
+    operatingsystem          => $os                                     || "",
+    operating_system         => $os                                     || "",
+    operatingsystemrelease   => $operating_system_version,
+    operating_system_release => $operating_system_version,
+    kernelname               => $kernelname,
+
+  };
+
+  $cache->set( $cache_key_name, $data );
+
+  return $data;
 
 }
 
@@ -333,6 +332,13 @@ sub get_operating_system_version {
     }
     else {
       return "outdated";
+    }
+  }
+  elsif ( $op eq 'Windows' ) {
+    my $command = 'ver';
+
+    if ( can_run($command) ) {
+      return i_run $command;
     }
   }
 

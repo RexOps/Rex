@@ -18,6 +18,7 @@ jobs:
           packages:
             - libmagic-dev
       before_install:
+        - if [[ "${PERLCRITIC_HISTORY_RESET}" == "y" ]]; then rm -v /tmp/cache/.perlcritic-history; fi
         - cpanm Perl::Critic Perl::Tidy
         - mkdir ~/.dzil
         - export AUTHOR_EMAIL="$(git log -1 ${TRAVIS_COMMIT} --pretty='%aE')"

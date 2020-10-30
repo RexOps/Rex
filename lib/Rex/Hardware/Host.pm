@@ -335,7 +335,11 @@ sub get_operating_system_version {
     }
   }
   elsif ( $op eq 'Windows' ) {
-    return i_run 'ver';
+    my $command = 'ver';
+
+    if ( can_run($command) ) {
+      return i_run $command;
+    }
   }
 
   return [ i_run("uname -r") ]->[0];

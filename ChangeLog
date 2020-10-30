@@ -2,6 +2,7 @@ Revision history for Rex
 
 {{$NEXT}}
  [API CHANGES]
+ - Add autodie feature
 
  [BUG FIXES]
  - Fix gathering OS version for Cygwin

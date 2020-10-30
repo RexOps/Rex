@@ -1015,7 +1015,7 @@ activated. Available since version 1.0.
 
 =item no_autodie
 
-Will disable autodie feature. Available since version 1.0.
+Will disable autodie. Available since version 1.0.
 
 =item tty
 
@@ -1027,12 +1027,8 @@ Enabling the new template engine (better error reporting, etc.). Available since
 
 =item 0.56
 
-Will activate autodie feature. Furthermore, all features from earlier
-versions are activated. Available since version 0.56.
-
-=item autodie
-
-Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 0.56.
+Will enable autodie: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>.
+Furthermore, all features from earlier versions are activated. Available since version 0.56.
 
 =item 0.55
 

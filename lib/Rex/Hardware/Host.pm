@@ -12,6 +12,7 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
 use Rex;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -335,10 +336,10 @@ sub get_operating_system_version {
     }
   }
   elsif ( $op eq 'Windows' ) {
-    my $command = 'ver';
+    my $version = i_run 'ver', fail_ok => 1;
 
-    if ( can_run($command) ) {
-      return i_run $command;
+    if ( $CHILD_ERROR == 0 ) {
+      return $version;
     }
   }
 

@@ -7,6 +7,7 @@ Revision history for Rex
  - Fix gathering OS version for Cygwin
  - Fix excessive caching when querying a CMDB item
  - Fix gathering OS version for Windows
+ - Add missing autodie feature flag
 
  [DOCUMENTATION]
 

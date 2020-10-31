@@ -20,7 +20,7 @@ use Data::Dumper;
 use Sort::Naturally;
 use Symbol;
 
-use List::MoreUtils 0.416 qw(uniq);
+use List::Util 1.45 qw(uniq);
 
 use overload
   'eq'  => sub { shift->is_eq(@_); },

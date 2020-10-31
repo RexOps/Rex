@@ -757,6 +757,12 @@ sub import {
         $found_feature = 1;
       }
 
+      if ( $add eq 'autodie' ) {
+        Rex::Logger::debug('enabling autodie');
+        Rex::Config->set_autodie(1);
+        $found_feature = 1;
+      }
+
       if ( $add eq "no_autodie" ) {
         Rex::Logger::debug("disabling autodie");
         Rex::Config->set_autodie(0);
@@ -1032,7 +1038,7 @@ versions are activated. Available since version 0.56.
 
 =item autodie
 
-Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 0.56.
+Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 1.13.1.
 
 =item 0.55
 

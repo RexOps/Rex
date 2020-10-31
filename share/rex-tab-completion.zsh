@@ -18,7 +18,7 @@ _envs(){
 
 # return hosts managed by rex or any other host availabe via zsh's _hosts function
 _rex_hosts() {
-	rexhosts=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -MList::MoreUtils=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups')"})
+	rexhosts=(${(f)"$(rex -Ty 2>/dev/null| perl -MYAML -MList::Util=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups')"})
 	_wanted hosts expl "rex managed hosts" compadd -a rexhosts || _hosts
 }
 

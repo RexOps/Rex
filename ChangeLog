@@ -4,10 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix gathering OS version for Cygwin
- - Fix excessive caching when querying a CMDB item
- - Fix gathering OS version for Windows
- - Add missing autodie feature flag
 
  [DOCUMENTATION]
 
@@ -18,6 +14,15 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+
+ [REVISION]
+
+1.13.0.3-TRIAL 2020-10-31 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix gathering OS version for Cygwin
+ - Fix excessive caching when querying a CMDB item
+ - Fix gathering OS version for Windows
+ - Add missing autodie feature flag
 
  [REVISION]
  - Replace List::MoreUtils with List::Util

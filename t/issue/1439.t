@@ -1,4 +1,4 @@
-package main;
+#!/usr/bin/env perl
 
 use 5.006;
 use strict;
@@ -13,5 +13,3 @@ require Rex;
 ok( !Rex::Config->get_autodie(), 'By default, autodie isn\'t enabled' );
 Rex->import( -feature => 'autodie' );
 ok( Rex::Config->get_autodie(), 'We can enable the autodie feature' );
-
-1;

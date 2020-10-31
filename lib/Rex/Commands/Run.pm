@@ -185,12 +185,15 @@ sub run {
 
   # We only process cmd is an explicit path that means
   # that starts with . .. <letter>: and / or \
+  # and aren't scaped spaces or quotes
 
-  if ( $cmd =~ m{^(?:[.]{1,2}|[~]|[A-Z]:|[\\/])}xsm ) {
-    my $split = qr{(?=\s(?:[.]{1,2}|[~]|[A-Z]:|[\\/]))}mxs;
+  if (  ( $cmd =~ m{^(?:[.]{1,2}|[~]|[A-Z]:|[\\/])}xsm )
+    and ( $cmd !~ m{[\\^]\s|["']}xsm ) )
+  {
+    my $split = qr{(?=\s(?:[.]{1,2}|[~]|[A-Z]:|[\\/]))}xsm;
     my @cmd   = split $split, $cmd;
-    $cmd[0] = qq{"$cmd[0]"};
-    $cmd    = join q{}, @cmd;
+    $cmd[0] =~ s{(.*[\\/][^\s]*)}{"$1"}xsm;
+    $cmd = join q{}, @cmd;
   }
 
   my $res_cmd = $cmd;

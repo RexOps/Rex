@@ -18,7 +18,7 @@ _rex()
             ;;
         -H)
             if [ -f Rexfile ]; then
-                hosts=( $(rex -Ty 2>/dev/null | perl -MYAML -MList::MoreUtils=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups') )
+                hosts=( $(rex -Ty 2>/dev/null | perl -MYAML -MList::Util=uniq -E 'my $groups = Load(join "", <>)->{groups}; say $_->{name} for uniq sort map { @{ $groups->{$_} } } keys %$groups') )
                 COMPREPLY=( $( compgen -W '${hosts[@]}' -- "$cur" ) ) || _known_hosts_real -a "$cur"
             fi
             ;;

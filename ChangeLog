@@ -20,6 +20,7 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+ - Replace List::MoreUtils with List::Util
 
 1.13.0.2-TRIAL 2020-10-28 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

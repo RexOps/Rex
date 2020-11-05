@@ -6,7 +6,6 @@ Revision history for Rex
  [BUG FIXES]
 
  [DOCUMENTATION]
- - Clarify perlcritic policy
 
  [ENHANCEMENTS]
 
@@ -17,6 +16,10 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.1 2020-11-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Clarify perlcritic policy
 
 1.13.0.3-TRIAL 2020-10-31 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

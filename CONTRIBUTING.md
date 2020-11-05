@@ -73,7 +73,7 @@ It is important to note that the emphasis is not on the formatting rules themsel
 
 ### Code quality
 
-Rex uses Perl::Critic to make sure the codebase follows best practices, and conforms to the code quality rules described in `.perlcriticrc`.
+Rex uses Test::Perl::Critic::Progressive to make sure any changes to the codebase follows best practices by conforming to the code quality rules described in `.perlcriticrc`, and no new violations are introduced accidentally.
 
 Since `.perlcriticrc` is part of the repo, it can also be the subject of contributions. In fact, improving the rules and the codebase in this regard is highly welcome.
 

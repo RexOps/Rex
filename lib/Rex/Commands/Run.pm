@@ -183,6 +183,26 @@ sub run {
   $option->{auto_die} = Rex::Config->get_exec_autodie()
     if !exists $option->{auto_die};
 
+  # We only process cmd is an explicit path that means
+  # that starts with . .. <letter>: and / or \
+  # and aren't scaped spaces or quotes
+  {
+    my $path_start = qr{(?:[.]{1,2}|[~]|\p{IsAlphabetic}:|[\\/])}msx;
+    if ( ( $cmd =~ m{^$path_start}xsm )
+      && ( $cmd !~ m{[\\^]\s|["']}xsm ) )
+    {
+
+      #https://stackoverflow.com/questions/4094699\
+      #/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts\
+      #/4095133#4095133
+      my $split = qr{(?=\s$path_start|\b\d?[()?*[\]&|<>])}xsm;
+
+      my @cmd = split $split, $cmd;
+      $cmd[0] =~ s{(.*[\\/]\S*)}{"$1"}xsm;
+      $cmd = join q{}, @cmd;
+    }
+  }
+
   my $res_cmd = $cmd;
 
   if ( exists $option->{only_notified} && $option->{only_notified} ) {

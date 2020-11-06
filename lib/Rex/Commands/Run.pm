@@ -190,8 +190,13 @@ sub run {
   if (  ( $cmd =~ m{^(?:[.]{1,2}|[~]|[A-Z]:|[\\/])}xsm )
     and ( $cmd !~ m{[\\^]\s|["']}xsm ) )
   {
-    my $split = qr{(?=\s(?:[.]{1,2}|[~]|[A-Z]:|[\\/]))}xsm;
-    my @cmd   = split $split, $cmd;
+
+    #https://stackoverflow.com/questions/4094699\
+    #/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts\
+    #/4095133#4095133
+    my $split = qr{(?=\s(?:[.]{1,2}|[~]|[A-Z]:|[\\/])|\b[\d]?[()?*[\]&|<>])}xsm;
+
+    my @cmd = split $split, $cmd;
     $cmd[0] =~ s{(.*[\\/][^\s]*)}{"$1"}xsm;
     $cmd = join q{}, @cmd;
   }

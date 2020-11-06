@@ -1,3 +1,5 @@
+use 5.010;
+
 use Test::More tests => 7;
 
 use Rex::Commands::Run;
@@ -7,11 +9,11 @@ $::QUIET = 1;
 my $win = $^O =~ m/^MSWin/mxsi;
 
 my $path = './inexistent path with spaces/';
-ok( !-e $path, qq("$path" not exists) );
+ok( !-e $path, qq{"$path" not exists} );
 
 my $tail      = 'hello';
 my $parm      = 'Rex is wonderfull';
-my $s         = run "$path$tail $parm";
+my $s         = run qq{$path$tail $parm};
 my $notExists = ( $win and !-e $path ) ? $s : qq{$path$tail};
 
 like( $s, qr{$notExists}sm,
@@ -27,29 +29,33 @@ if ($win) {
   close $hello;
 }
 else {
-  #hello is a sybolic link to /usr/bin/echo
-  symlink "/usr/bin/echo", qq{$path$tail};
+  #hello is a sybolic link to echo
+  my $echo = '/bin/echo';
+  if ( !-X $echo ) {
+    substr $echo, 0, 0, q{/usr};
+  }
+  symlink $echo, qq{$path$tail};
 }
 
-$s = run "$path$tail $parm";
-like( $s, qr{$parm}sm, qq{$path$tail $parm didn't work} );
+$s = run qq{$path$tail $parm};
+like( $s, qr{$parm}sm, qq{"$path$tail $parm"  ok} );
 
-$s = run "$path$tail /$parm";
-like( $s, qr{$parm}sm, "/slash on parms and the comand didn't fail?" );
+$s = run qq{$path$tail /$parm};
+like( $s, qr{$parm}sm, '/slash on parms ok' );
 
-$s = run qq("$path$tail" $parm);
-like( $s, qr{$parm}sm, "Quoted commands pass" );
+$s = run qq{"$path$tail" $parm};
+like( $s, qr{$parm}sm, "Quoted commands ok" );
 my $mpath = $path;
 
 if ($win) {
   $mpath =~ s{/}{\\}gsmx;
-  $s = run qq($mpath$tail $parm);
-  like( $s, qr{$parm}sm, "($mpath$tail $parm) windows format pass" );
+  $s = run qq{$mpath$tail $parm};
+  like( $s, qr{$parm}sm, "($mpath$tail $parm) windows path ok" );
 }
 else {
   $mpath =~ s{(\s)}{\\$1}gsmx;
-  $s = run qq($mpath$tail $parm);
-  like( $s, qr{$parm}sm, "($mpath$tail $parm) scaped espaces pass" );
+  $s = run qq{$mpath$tail $parm};
+  like( $s, qr{$parm}sm, "($mpath$tail $parm) back slash escapes ok" );
 }
 
 unlink "$path$tail" . ( $win ? q{.bat} : q{} );

@@ -1,72 +1,86 @@
+
+use Test::More tests => 6;
+
 use strict;
 use warnings;
 use 5.010;
-use autodie;
+use autodie qw(:all);
 use English qw($OSNAME -no_match_vars);
-
-use Test::More tests => 7;
+use File::Temp;
 
 use Rex::Commands::Run;
 
 $::QUIET = 1;
 
 my $win = $OSNAME =~ m/^MSWin/mxsi;
+my $quote = q{"};
+my $space = q{ };
+my $empty = q{};
 
-my $path = './inexistent path with spaces/';
-ok( !-e $path, qq{"$path" not exists} );
+sub command {
+  my ( $path, $exe, @parm ) = @_;
+  return qq{$path/$exe } . join $empty, @parm;
+}
 
-my $tail       = 'hello';
-my $parm       = 'Rex is wonderfull';
-my $t_cmd      = qq{$path$tail $parm};
-my $s          = run $t_cmd;
-my $not_exists = ( $win && !-e $path ) ? $s : qq{$path$tail};
+sub relative {
+  return qq{./$_[0]};
+}
 
-like( $s, qr{(?-x:$not_exists)}smx,
-  qq{windows dont return "$path$tail" on the message} );
+my $path    = File::Temp->newdir( 'path with spaces XXXX', DIR => q{./} );
+my $tail    = 'hello';
+my $parm    = 'Rex is wonderfull';
+my $testcmd = '/bin/echo';
+my $s       = run command relative($path), $tail, $parm;
 
-ok( mkdir($path), qq{creating "$path"} );
-my $cmd = $path . $tail;
+#on windows if the path not exists not apears on the output
+my $not_exists = ( $win && $s !~ /(?-x:$path)/smx ) ? $s : $path;
+
+like( $s, qr{(?-x:$not_exists)}smx, q{inexistent command gives an error} );
+
+my $cmd = relative qq{$path/$tail};
 
 if ($win) {
 
   #On windows we create hello.bat contaning echo %1
-  $cmd .= q{bat};
-  open my $hello, '>', $cmd;
+  $cmd .= q{.bat};
+  open my $hello, q{>}, $cmd;
   print {$hello} "echo %*\n";
   close $hello;
 }
 else {
   #hello is a sybolic link to echo
-  my $echo = '/bin/echo';
-  if ( !-X $echo ) {
-    substr $echo, 0, 0, q{/usr};
+  if ( !-X $testcmd ) {
+    substr $testcmd, 0, 0, q{/usr};
   }
-  symlink $echo, $cmd;
+  symlink $testcmd, $cmd;
 }
 
-my $result = qr{(?-x:$parm)}smx;
+my $result = qr{^(?-x:$parm)}smx;
 
-$s = run $t_cmd;
-like( $s, $result, qq{"$t_cmd"  ok} );
+$s = run command( relative($path), $tail, $parm );
+like( $s, $result, q{path with spaces parse ok} );
 
-$s = run qq{$path$tail /$parm};
-like( $s, $result, '/slash on parms ok' );
+$s = run command( relative($path), $tail, $parm, q{ /extra} );
+like( $s, $result, 'an " /"  on the parmeters parse ok' );
 
-$s = run qq{"$path$tail" $parm};
+$s = run command( $quote . relative($path), $tail . $quote, $parm );
 like( $s, $result, 'Quoted commands ok' );
-my $mpath = $path;
+
+#Partialy quoted paths don't work on windows
+#$s = run command( relative(qq{"$path"}), $tail, $parm );
+#like( $s, $result, 'Partially quoted' );
+
+my $mpath = join $empty, relative($path), q{/}, $tail;
 
 if ($win) {
   $mpath =~ s{/}{\\}gsmx;
-  $s = run qq{$mpath$tail $parm};
-  like( $s, $result, "($mpath$tail $parm) windows path ok" );
+  $s = run join $space, $mpath, $parm;
+  like( $s, $result, "($mpath $parm) windows path ok" );
 }
 else {
   $mpath =~ s{(\s)}{\\$1}gsmx;
-  $mpath .= $tail;
-  $s = run qq{$mpath $parm};
+  $s = run join $space, $mpath, $parm;
   like( $s, $result, "($mpath $parm) back slash escapes ok" );
 }
 
-unlink $cmd;
-rmdir $path;
+like( run( command $path->{REALNAME}, $tail, $parm ), $result, 'fullpath ok' );

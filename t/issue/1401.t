@@ -15,7 +15,7 @@ use Rex::Commands::Run;
 
 $::QUIET = 1;
 
-my $win = $OSNAME =~ m/^MSWin/mxsi;
+my $win   = $OSNAME =~ m/^MSWin/mxsi;
 my $quote = q{"};
 my $space = q{ };
 my $empty = q{};

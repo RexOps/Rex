@@ -9,6 +9,8 @@ use autodie qw(:all);
 use English qw($OSNAME -no_match_vars);
 use File::Temp;
 
+our $VERSION = '9999.99.99_99'; # VERSION
+
 use Rex::Commands::Run;
 
 $::QUIET = 1;

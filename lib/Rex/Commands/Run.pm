@@ -185,19 +185,41 @@ sub run {
   $option->{auto_die} = Rex::Config->get_exec_autodie()
     if !exists $option->{auto_die};
 
-  # We only process cmd is an explicit path that means
-  # that starts with . .. <letter>: and / or \
-  # and aren't scaped spaces or quotes
   {
-    my $path_start = qr{(?:[.]{1,2}|[~]|\p{IsAlphabetic}:|[\\/])}msx;
-    if ( ( $cmd =~ m{^$path_start}xsm )
-      && ( $cmd !~ m{[\\^]\s|["']}xsm ) )
+    my $path_regex = qr{
+        (?:                     # looks like either:
+            [.]{1,2}            # relative path
+          |                     # or
+            [~]                 # tilde expansion
+          |                     # or
+            \p{IsAlphabetic}:   # Windows drive
+          |                     # or
+            [\\/]               # absolute path
+        )
+    }msx;
+
+    my $starts_with_path_regex = qr{^$path_regex}xsm;
+
+    my $is_path_quoted_regex = qr{
+        [\\^]\s # whitespace escaped by either backslash or caret
+      |         # or
+        ["']    # quoted
+    }xsm;
+
+    if ( ( $cmd =~ $starts_with_path_regex )
+      && ( $cmd !~ $is_path_quoted_regex ) )
     {
 
-      #https://stackoverflow.com/questions/4094699\
-      #/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts\
-      #/4095133#4095133
-      my $split = qr{(?=\s$path_start|\b\d?[()?*[\]&|<>])}xsm;
+      my $split =
+        qr{                     #https://stackoverflow.com/questions/4094699/how-does-the-windows-command-interpreter-cmd-exe-parse-scripts/4095133#4095133
+           (?=                  # lookahead 
+               \s$path_regex    # whitespace followed by path regex
+             |                  # or
+               \b               # word boundary, followed by
+               \d?              # an optional single digit, followed by
+               [()?*[\]&|<>]    # one of these special characters
+           )
+        }xsm;
 
       my @cmd = split $split, $cmd;
       $cmd[0] =~ s{(.*[\\/]\S*)}{"$1"}xsm;

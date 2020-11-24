@@ -6,6 +6,8 @@ use strict;
 use warnings;
 use 5.010;
 use autodie qw(:all);
+
+use Carp qw(croak);
 use English qw($OSNAME -no_match_vars);
 use File::Temp;
 
@@ -47,7 +49,7 @@ if ($win) {
   #On windows we create hello.bat contaning echo %1
   $cmd .= q{.bat};
   open my $hello, q{>}, $cmd;
-  print {$hello} "echo %*\n";
+  print {$hello} "echo %*\n" or croak "Could not write to $cmd";
   close $hello;
 }
 else {

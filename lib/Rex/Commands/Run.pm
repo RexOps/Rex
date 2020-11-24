@@ -59,6 +59,8 @@ use base qw(Rex::Exporter);
 
 @EXPORT = qw(run can_run sudo);
 
+my $EMPTY = q{};
+
 =head2 run($command [, $callback], %options)
 
 =head2 run($command, $arguments, %options)
@@ -199,7 +201,7 @@ sub run {
 
       my @cmd = split $split, $cmd;
       $cmd[0] =~ s{(.*[\\/]\S*)}{"$1"}xsm;
-      $cmd = join q{}, @cmd;
+      $cmd = join $EMPTY, @cmd;
     }
   }
 
@@ -302,11 +304,11 @@ sub run {
     $LAST_OUTPUT = [ $out, $err ];
 
     if ( !defined $out ) {
-      $out = "";
+      $out = $EMPTY;
     }
 
     if ( !defined $err ) {
-      $err = "";
+      $err = $EMPTY;
     }
 
     if ( $? == 127 ) {

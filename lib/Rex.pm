@@ -994,7 +994,7 @@ or even multiple ones like this:
 
 =item 1.4
 
-Enable per-task argument parsing (L<task_chaining_cmdline_args|#task_chaining_cmdline_args>). Furthermore, all features from earlier versions are activated. Available since version 1.4.
+Enable per-task argument parsing (L<task_chaining_cmdline_args|Rex#task_chaining_cmdline_args>). Furthermore, all features from earlier versions are activated. Available since version 1.4.
 
 =item no_task_chaining_cmdline_args
 

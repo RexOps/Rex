@@ -364,3 +364,46 @@ sub _replace_var {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Rex::Template::NG - simple template engine (replacing Rex::Template)
+
+=head1 SYNOPSIS
+
+ use Rex::Template::NG;
+
+ my $template = Rex::Template->new;
+
+ print $template->parse($content, \%template_vars);
+ print $template->parse($content, @template_vars);
+
+=head1 DESCRIPTION
+
+This is intended as a replacement of the original L<Rex::Template>, therefore its interface and syntax are identical. The main differences are:
+
+=over 4
+
+=item * produces "more correct" output in case when comping is required
+
+=item * gives better diagnostics in case of errors
+
+=back
+
+It is recommended to use this module instead of L<Rex::Template>.
+
+=head1 DIAGNOSTICS
+
+It prints the whole template as C<INFO> level messages, and then a message about the problem with its context and line number (e.g. I<"Unknown variable name $var on code line: ... line: ...">).
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+=head1 DEPENDENCIES
+
+=head1 INCOMPATIBILITIES
+
+=head1 BUGS AND LIMITATIONS
+
+=cut

@@ -6,16 +6,88 @@
 
 =head1 NAME
 
-Rex::Template - Simple Template Engine.
-
-=head1 DESCRIPTION
-
-This is a simple template engine for configuration files.
+Rex::Template - simple template engine
 
 =head1 SYNOPSIS
 
+ use Rex::Template;
+
  my $template = Rex::Template->new;
+
  print $template->parse($content, \%template_vars);
+ print $template->parse($content, @template_vars);
+
+=head1 DESCRIPTION
+
+This is a simple template engine for configuration files. It is included mostly for backwards compatibility, and it is recommended to use L<Rex::Template::NG> instead (for better control of chomping new lines, and better diagnostics if things go wrong).
+
+=head2 SYNTAX
+
+The following syntax is recognized:
+
+=over 4
+
+=item * anything between C<E<lt>%> and C<%E<gt>> markers are considered as a template directive, which is treated as Perl code
+
+=item * if the opening marker is followed by an equal sign (C<E<lt>%=>) or a plus sign (C<E<lt>%+>), then the directive is replaced with the value it evaluates to
+
+=item * if the closing marker is prefixed with a minus sign (C<-%E<gt>>), then any trailing newlines are chomped for that directive
+
+=back
+
+The built-in template support is intentionally kept basic and simple. For anything more sophisticated, please use your favorite template engine.
+
+=head2 EXAMPLES
+
+Plain text is unchanged:
+
+ my $result = $template->parse( 'one two three', {} );
+
+ # $result is 'one two three'
+
+Variable interpolation:
+
+ my $result = template->parse( 'Hello, this is <%= $::name %>', { name => 'foo' } ); # original format
+ my $result = template->parse( 'Hello, this is <%+ $::name %>', { name => 'foo' } ); # alternative format with + sign
+ my $result = template->parse( 'Hello, this is <%= $name %>',   { name => 'foo' } ); # local variables
+ my $result = template->parse( 'Hello, this is <%= $name %>',     name => 'foo'   ); # array of variables, instead of hashref
+
+ # $result is 'Hello, this is foo' for all cases above
+
+Simple evaluation:
+
+ my $result = $template->parse( '<%= join("/", @{$elements} ) %>', elements => [qw(one two three)] );
+ # $result is 'one/two/three'
+
+Embedded code blocks:
+
+ my $content = '<% if ($logged_in) { %>
+ Logged in!
+ <% } else { %>
+ Logged out!
+ <% } %>';
+
+ my $result = $template->parse( $content, logged_in => 1 );
+
+ # $result is "\nLogged in!\n"
+
+=head1 DIAGNOSTICS
+
+Not much, mainly due to the internal approach of the module.
+
+If there was a problem, it prints an C<INFO> level I<"syntax error at ...">, followed by a C<WARN> about I<"It seems that there was an error processing the template because the result is empty.">, and finally I<"Error processing template at ...">.
+
+The beginning of the reported syntax error might give some clue where the error happened in the template, but that's it.
+
+Use L<Rex::Template::NG> instead for better diagnostics.
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+If C<$Rex::Template::BE_LOCAL> is set to a true value, then local template variables are supported instead of only global ones (C<$foo> vs C<$::foo>). The default value is C<1> since Rex-0.41. It can be disabled with the L<no_local_template_vars|Rex#no_local_template_vars> feature flag.
+
+If C<$Rex::Template::DO_CHOMP> is set to a true value, then any trailing new line character resulting from template directives are chomped. Defaults to C<0>.
+
+This module does not support any environment variables.
 
 =head1 EXPORTED FUNCTIONS
 
@@ -53,6 +125,14 @@ sub new {
 
   return $self;
 }
+
+=head2 parse($content, $variables)
+
+Parse C<$content> as a template, using C<$variables> hash reference to pass name-value pairs of variables to make them available for the template function.
+
+Alternatively, the variables may be passed as an array instead of a hash reference.
+
+=cut
 
 sub parse {
   my $self = shift;
@@ -226,11 +306,11 @@ sub _normalize_var_name {
 
 =head2 is_defined($variable, $default_value)
 
-This function will check if $variable is defined. If yes, it will return the value of $variable, otherwise it will return $default_value.
+This function will check if C<$variable> is defined. If yes, it will return the value of C<$variable>, otherwise it will return C<$default_value>.
 
-You can use this function inside your templates.
+You can use this function inside your templates, for example:
 
- ServerTokens <%= is_defined($::server_tokens, "Prod") %>
+ ServerTokens <%= is_defined( $::server_tokens, 'Prod' ) %>
 
 =cut
 
@@ -242,3 +322,19 @@ sub is_defined {
 }
 
 1;
+
+__END__
+
+=head1 DEPENDENCIES
+
+=head1 INCOMPATIBILITIES
+
+=head1 BUGS AND LIMITATIONS
+
+It might not be able to chomp new line characters resulting from templates in every case.
+
+It can't report useful diagnostic messages upon errors.
+
+Use L<Rex::Template::NG> instead.
+
+=cut

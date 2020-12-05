@@ -6,7 +6,6 @@ Revision history for Rex
  [BUG FIXES]
 
  [DOCUMENTATION]
- - Clarify templating documentation
 
  [ENHANCEMENTS]
 
@@ -17,6 +16,10 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.2 2020-12-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Clarify templating documentation
 
 1.13.1 2020-11-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

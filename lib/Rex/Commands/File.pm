@@ -101,6 +101,10 @@ use vars qw(%file_handles);
 
 Parse a template and return the content.
 
+By default, it uses L<Rex::Template>. If any of the L<template_ng|Rex#template_ng> or L<1.3|Rex#1.3> (or newer) feature flag is enabled, then L<Rex::Template::NG> is used instead of this module (recommended).
+
+For more advanced functionality, you may use your favorite template engine via the L<set_template_function|Rex::Config#set_template_function> configuration option.
+
 =head3 Embedded templates
 
 Use C<__DATA__> to embed templates at the end of the file. Prefix embedded template names with C<@>. If embedding multiple templates, mark their end with C<@end>.

@@ -379,25 +379,25 @@ This function supports the following L<hooks|Rex::Hook>:
 
 =item before
 
-This gets executed before anything is done. All original parameters are passed to it, including the applied defaults (C<ensure => 'present', resolved path for C<source>).
+This gets executed before anything is done. All original parameters are passed to it, including the applied defaults (C<ensure =E<gt> 'present'>, resolved path for C<source>).
 
 The return value of this hook overwrites the original parameters of the function call.
 
 =item before_change
 
-This gets executed right before the new file is written. All original parameters are passed to it, including the applied defaults (C<ensure => 'present', resolved path for C<source>).
+This gets executed right before the new file is written. All original parameters are passed to it, including the applied defaults (C<ensure =E<gt> 'present'>, resolved path for C<source>).
 
 Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after_change
 
-This gets executed right after the file is written. All original parameters, including the applied defaults (C<ensure => 'present', resolved path for C<source>), and any returned results are passed to it.
+This gets executed right after the file is written. All original parameters, including the applied defaults (C<ensure =E<gt> 'present'>, resolved path for C<source>), and any returned results are passed to it.
 
 Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after
 
-This gets executed right before the C<file()> function returns. All original parameters, including the applied defaults (C<ensure => 'present', resolved path for C<source>), and any returned results are passed to it.
+This gets executed right before the C<file()> function returns. All original parameters, including the applied defaults (C<ensure =E<gt> 'present'>, resolved path for C<source>), and any returned results are passed to it.
 
 =back
 

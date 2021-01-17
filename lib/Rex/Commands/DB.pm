@@ -205,7 +205,7 @@ sub import {
 
   if ($opt) {
     $dbh = DBI->connect(
-      $opt->{"dsn"}, $opt->{"user"},
+      $opt->{"dsn"},            $opt->{"user"},
       $opt->{"password"} || "", $opt->{"attr"}
     );
     $dbh->{mysql_auto_reconnect} = 1;

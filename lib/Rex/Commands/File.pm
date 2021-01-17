@@ -232,7 +232,7 @@ sub template {
       }
 
       my $file_content = eval { local ( @ARGV, $/ ) = ($file_path); <>; };
-      my ($data) = ( $file_content =~ m/.*__DATA__(.*)/ms );
+      my ($data)       = ( $file_content =~ m/.*__DATA__(.*)/ms );
       my $fp = Rex::File::Parser::Data->new( data => [ split( /\n/, $data ) ] );
       my $snippet_to_read = substr( $file, 1 );
       $content = $fp->read($snippet_to_read);

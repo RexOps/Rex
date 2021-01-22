@@ -1,0 +1,146 @@
+name: build and test
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+env:
+  PERL_CPANM_OPT: "--quiet --notest"
+  AUTHOR_TESTING: 1
+  EXTENDED_TESTING: 1
+  RELEASE_TESTING: 1
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Extract author information
+        run: |
+          echo AUTHOR_NAME="$(git log -1 ${GITHUB_REF} --pretty='%aN')" >> $GITHUB_ENV
+          echo AUTHOR_EMAIL="$(git log -1 ${GITHUB_REF} --pretty='%aE')" >> $GITHUB_ENV
+      - uses: shogo82148/actions-setup-perl@v1
+      - name: Setup Perl environment
+        run: |
+          echo PERL5LIB="${GITHUB_WORKSPACE}/local/lib/perl5:${PERL5LIB}" >> $GITHUB_ENV
+          echo PERL_VERSION="$(perl -E 'print $^V')" >> $GITHUB_ENV
+          echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/local/bin" >> $GITHUB_PATH
+      - name: Cache build modules
+        uses: actions/cache@v2
+        with:
+          path: local
+          key: cache-build-modules-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-build-modules-${{ env.PERL_VERSION }}-
+      - name: Cache perlcritic history
+        uses: actions/cache@v2
+        with:
+          path: /tmp/cache/.perlcritic-history
+          key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-perlcritic-history-
+      - name: Log perl information
+        run: perl -V
+      - name: Install packages
+        run: sudo apt-get install -y libmagic-dev default-mysql-server rsync
+      - name: Install build dependencies
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
+      - name: Configure Dist::Zilla
+        run: |
+          mkdir ~/.dzil
+          echo "[%User]" > ~/.dzil/config.ini
+          echo "name = ${AUTHOR_NAME}" >> ~/.dzil/config.ini
+          echo "email = ${AUTHOR_EMAIL}" >> ~/.dzil/config.ini
+          cat ~/.dzil/config.ini
+      - name: Install author dependencies
+        run: dzil authordeps | cpanm --local-lib ${GITHUB_WORKSPACE}/local
+      - name: Build dist
+        run: dzil build --no-tgz --in build
+      - name: Install dependencies
+        run: |
+          cd build
+          cpanm --installdeps --local-lib ${GITHUB_WORKSPACE}/local --with-all-features --with-develop --with-suggests .
+      - name: Run extra tests
+        run: |
+          cd build
+          prove --timer --lib --recurse --jobs $(nproc) --shuffle xt
+      - name: Run tests
+        run: |
+          cd build
+          HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t
+      - name: Report coverage info to Coveralls
+        run: |
+          cd build
+          cover -report coveralls
+          rm -rf cover_db
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload build results
+        uses: actions/upload-artifact@v2
+        with:
+          name: build_results
+          path: build
+
+  linux:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build results
+        uses: actions/download-artifact@v2
+        with:
+          name: build_results
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+      - name: Log perl information
+        run: perl -V
+      - name: Install dependencies
+        run: cpanm --installdeps --with-all-features .
+      - name: Run tests
+        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t
+
+  macos:
+    needs: build
+    runs-on: macOS-latest
+
+    steps:
+      - name: Download build results
+        uses: actions/download-artifact@v2
+        with:
+          name: build_results
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+      - name: Log perl information
+        run: perl -V
+      - name: Install dependencies
+        run: cpanm --installdeps --with-all-features .
+      - name: Run tests
+        run: prove --timer --lib --recurse --jobs $(sysctl -n hw.ncpu) --shuffle t
+
+  windows:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Download build results
+        uses: actions/download-artifact@v2
+        with:
+          name: build_results
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          distribution: strawberry
+      - name: Log perl information
+        run: perl -V
+      - name: Install dependencies
+        run: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
+      - name: Install OS-specific dependency
+        run: cpanm Net::SSH2
+      - name: Run tests
+        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t

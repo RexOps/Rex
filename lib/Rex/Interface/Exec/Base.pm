@@ -25,6 +25,7 @@ sub new {
 }
 
 sub exec { die("Must be implemented by Interface Class"); }
+sub axac { die("Must be implemented by Interface Class"); }
 
 sub _continuous_read {
   my ( $self, $line, $option ) = @_;

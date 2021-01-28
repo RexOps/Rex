@@ -8,7 +8,7 @@ $::QUIET = 1;
 
 resource "foo", sub {
   my $test_name = resource_name;
-  my $mode      = param_lookup "mode", "0755";
+  my $mode = param_lookup "mode", "0755";
 
   is( $test_name, "testname", "resource name is testname" );
   is( $mode,      "0666",     "got mode 0666" );

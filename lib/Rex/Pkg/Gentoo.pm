@@ -212,7 +212,7 @@ sub add_repository {
       }
     }
     else {
-      $op = 'a'; # --add
+      $op = 'a';   # --add
     }
     i_run "layman -$op $name" if defined $op;
   }

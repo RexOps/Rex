@@ -152,7 +152,7 @@ is( $cron[16]->{cron}->{day_of_month}, "*",     "the 8th job / day" );
 is( $cron[16]->{cron}->{month},        "*/2",   "the 8th job / month" );
 is( $cron[16]->{cron}->{day_of_week},
   "*", "the 8th job / day_of_month of week" );
-is( $cron[16]->{cron}->{command}, "bar",      "the 8th job / cmd" );
+is( $cron[16]->{cron}->{command}, "bar", "the 8th job / cmd" );
 is( $cron[16]->{line}, "* 5,6,7 * */2 * bar", "the 8th job / cron line" );
 
 is( $cron[17]->{type},                 "job", "the 9th job" );
@@ -163,7 +163,7 @@ is( $cron[17]->{cron}->{month},        "*",   "the 9th job / month" );
 is( $cron[17]->{cron}->{day_of_week},
   "0", "the 9th job / day_of_month of week" );
 is( $cron[17]->{cron}->{command}, "false", "the 9th job / cmd" );
-is( $cron[17]->{line}, "0 0 * * 0 false",  "the 9th job / cron line" );
+is( $cron[17]->{line}, "0 0 * * 0 false", "the 9th job / cron line" );
 
 unless ( $^O =~ m/^MSWin/ ) {
   #
@@ -288,7 +288,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[15]->{cron}->{day_of_week},
     "*", "the 7th job / day_of_month of week" );
   is( $cron[15]->{cron}->{command}, "foo", "the 7th job / cmd" );
-  is( $cron[15]->{line}, "* * * * * foo",  "the 7th job / cron line" );
+  is( $cron[15]->{line}, "* * * * * foo", "the 7th job / cron line" );
 
   is( $cron[16]->{type},                 "job",   "the 8th job" );
   is( $cron[16]->{cron}->{minute},       "*",     "the 8th job / min" );
@@ -297,7 +297,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[16]->{cron}->{month},        "*/2",   "the 8th job / month" );
   is( $cron[16]->{cron}->{day_of_week},
     "*", "the 8th job / day_of_month of week" );
-  is( $cron[16]->{cron}->{command}, "bar",      "the 8th job / cmd" );
+  is( $cron[16]->{cron}->{command}, "bar", "the 8th job / cmd" );
   is( $cron[16]->{line}, "* 5,6,7 * */2 * bar", "the 8th job / cron line" );
 
   is( $cron[17]->{type},                 "job", "the 9th job" );
@@ -308,7 +308,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[17]->{cron}->{day_of_week},
     "0", "the 9th job / day_of_month of week" );
   is( $cron[17]->{cron}->{command}, "false", "the 9th job / cmd" );
-  is( $cron[17]->{line}, "0 0 * * 0 false",  "the 9th job / cron line" );
+  is( $cron[17]->{line}, "0 0 * * 0 false", "the 9th job / cron line" );
 
   #
   # Delete 2 entries
@@ -404,7 +404,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[13]->{cron}->{day_of_week},
     "*", "the 7th job / day_of_month of week" );
   is( $cron[13]->{cron}->{command}, "foo", "the 7th job / cmd" );
-  is( $cron[13]->{line}, "* * * * * foo",  "the 7th job / cron line" );
+  is( $cron[13]->{line}, "* * * * * foo", "the 7th job / cron line" );
 
   is( $cron[14]->{type},                 "job",   "the 8th job" );
   is( $cron[14]->{cron}->{minute},       "*",     "the 8th job / min" );
@@ -413,7 +413,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[14]->{cron}->{month},        "*/2",   "the 8th job / month" );
   is( $cron[14]->{cron}->{day_of_week},
     "*", "the 8th job / day_of_month of week" );
-  is( $cron[14]->{cron}->{command}, "bar",      "the 8th job / cmd" );
+  is( $cron[14]->{cron}->{command}, "bar", "the 8th job / cmd" );
   is( $cron[14]->{line}, "* 5,6,7 * */2 * bar", "the 8th job / cron line" );
 
   is( $cron[15]->{type},                 "job", "the 9th job" );
@@ -424,7 +424,7 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[15]->{cron}->{day_of_week},
     "0", "the 9th job / day_of_month of week" );
   is( $cron[15]->{cron}->{command}, "false", "the 9th job / cmd" );
-  is( $cron[15]->{line}, "0 0 * * 0 false",  "the 9th job / cron line" );
+  is( $cron[15]->{line}, "0 0 * * 0 false", "the 9th job / cron line" );
 
   $c->add_env( "FOOVAR" => "FOOVAL", );
 

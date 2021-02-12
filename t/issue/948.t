@@ -26,7 +26,7 @@ sub Rex::Commands::File::file {
   my ( $name, %params ) = @_;
 
   my $fmt = get_image_format();
-  like $params{content}, qr|<driver name="qemu" type="$fmt"/>|,
+  like $params{content}, qr|<driver name="qemu" type="$fmt"\s*/>|,
     "Found file content for $fmt format.";
   $count_file++;
 }

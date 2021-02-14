@@ -1,24 +1,34 @@
 # Contributing guide
 
-Thank you for considering to contribute to Rex! As a free and open source project, it is developed by volunteers all around the world like you.
+Thank you for considering to contribute to Rex! It is a free and open source project developed by volunteers like you from all around the world.
 
-The guidelines collected here are aimed at helping communication around contributions in order to make an efficient use of one of our most important resource: time.
+We would like to make sure everyone can make an efficient use of their time. The goal of the guidelines here is to help communication around contributions.
 
-Since most contributions we receive is about code, this guide also focuses a lot on them, but it's far from being the only way you can participate. Improving documentation, submitting and triaging bug reports, or spreading the word via blogs, talks and social media are all equally encouraged and welcome. Even starring the project on [GitHub](https://github.com/RexOps/Rex), or adding it to your favorites on [MetaCPAN](https://metacpan.org/pod/Rex) helps :)
+Since most contributions we receive is about code, this guide also focuses a lot on them. But it's far from being the only way you can participate:
+
+- improving documentation
+- testing with various setups
+- submitting and triaging bug reports
+- spreading the word via blogs, talks and social media
+- starring the project on [GitHub](https://github.com/RexOps/Rex)
+- adding it to your favorites on [MetaCPAN](https://metacpan.org/pod/Rex)
+- listing it as part of your stack on [StackShare](https://stackshare.io/rex)
+
+All those are equally encouraged and welcome!
 
 ## Project guidelines
 
 Over the course of years, many decisions were taken around Rex. We found some of the ideas coming up more often than others, so we collected them here (in no particular order).
 
-### Getting help
+### Getting help and support
 
-For both community and commercial support, please see our [support](https://www.rexify.org/support/index.html) page.
+If you need help with questions like “How do I…?” and “Why does it…?”, please see our [support](https://www.rexify.org/support/index.html) page for both community and commercial support.
 
-Please don't use the issue tracker for support questions (“how do I…?”, “why does it…?”, etc.).
+Please use the issue tracker only for bug reports and feature requests.
 
 ### GitHub issues and pull requests
 
-The first step of any change proposal is to open an issue about it. This gives a chance to discuss the details, and to design potential solutions before spending effort on the implementation in a follow-up pull request.
+The first step of any change proposal is to open an issue about it. This gives a chance to discuss the details, and to design potential solutions before spending any effort on the implementation.
 
 To cover the vast majority of typical discussion points in advance, there are predefined templates for issues and pull requests. Please make sure to use them in order to streamline the workflow.
 
@@ -26,11 +36,15 @@ If something comes up that is not a good fit for the templates, that's probably 
 
 ### Cross platform support
 
-Rex is expected to be able to _run_ wherever Perl can run. This includes Linux, BSDs, Mac OS X, Windows and possibly others. Patches and guides about how to run Rex on even more platforms are more than welcome! As a general rule, running Rex is only supported on platforms which are actively maintained by their respective upstream teams.
+Rex is expected to _run_ wherever Perl can run. This includes Linux, BSDs, Mac OS X, Windows and possibly others. Patches and guides about how to run Rex on even more platforms are more than welcome!
+
+As a general rule, running Rex is only supported on platforms which are actively maintained by their respective upstream teams.
 
 ### Supported OSes
 
-Rex is expected to be able to _manage_ machines running various operating systems. This mainly includes Unix-like systems. Patches and guides about how to manage other operating systems are more than welcome! As a general rule, managing a machine with Rex is only supported for OSes that are actively maintained by their respective upstream teams.
+Rex is expected to _manage_ endpoints running various operating systems. Today, this mostly means Unix-like systems. Patches and guides about how to manage other operating systems are more than welcome!
+
+As a general rule, managing an endpoint with Rex is only supported for platforms that are actively maintained by their respective upstream teams.
 
 ### Supported Perl versions
 
@@ -49,31 +63,39 @@ On top of the supported minimum version of Perl, the goal is to support the late
 - 5.26.3
 - 5.28.3
 - 5.30.3
-- 5.32.0
+- 5.32.1
 
 ### Backwards compatibility
 
 The goal is to remain backwards compatible within major versions of Rex (which is also implied by following [Dotted Semantic Versioning](https://metacpan.org/pod/Version::Dotted::Semantic#Dotted-Semantic-Versioning-Specification) rules).
 
-To still be able to introduce new features while staying backwards compatible, Rex uses [feature flags](https://metacpan.org/pod/Rex#FEATURE-FLAGS). This makes it possible to selectively opt in or out of new features, depending on the needs of the given use case. The collection of preferred settings for a specific version of Rex can also be enabled via feature flags named after the minor releases. The goal is to have pairs of feature flags for opting in and out.
+To still be able to introduce new features while staying backwards compatible, Rex uses [feature flags](https://metacpan.org/pod/Rex#FEATURE-FLAGS). This makes it possible to selectively opt in or out of new features, depending on the needs of the given use case.
+
+The collection of preferred settings for a specific version of Rex can also be enabled via feature flags named after the minor releases.
+
+The goal is to have pairs of feature flags for opting in and out.
 
 ### Deprecation policy
 
 Features and code paths may be dropped by following a planned deprecation procedure. In order to provide a transition period for the users, there should be warnings about the deprecation before the behavior is changed.
 
-If an OS gets deprecated that is supported by Rex either to run on or to manage, we may try to keep it supported until it doesn't cause any problems. As soon a retired OS starts to cause bugs, or gets in the way of progress, it is a candidate to be dropped from support. In other words, we may choose to be lazy to keep the support around, but it's probably not worth putting effort actively into something that is not supported anymore even by their own creators.
+If a supported OS gets deprecated, we may try to keep it supported while it doesn't cause any problems. As soon a retired OS starts to cause bugs, or gets in the way of progress, it is a candidate to be dropped from support.
+
+In other words, we may choose to be lazy to keep the support around, but it's probably not worth putting effort actively into something that is not supported anymore even by their own creators.
 
 In case you depend on a deprecated feature, or must use or manage a retired OS, you might be interested to get community or commercial [support](https://www.rexify.org/support/index.html).
 
 ### Code layout
 
-Rex uses Perl::Tidy to format its codebase according to the rules described in `.perltidyrc`. All contributions are expected to be formatted using the same rules. To avoid unnecessary "tidy only" commits, we recommend to integrate formatting directly into your workflow, for example via a git pre-commit hook, or via your editor as a shortcut or automatic action.
+Rex uses [Perl::Tidy](https://metacpan.org/pod/Perl::Tidy) to format its codebase according to the rules described in `.perltidyrc`. All contributions are expected to be formatted using the same rules.
+
+To avoid unnecessary "tidy only" commits, we recommend to integrate formatting directly into your workflow, for example via a git pre-commit hook, or via your editor as a shortcut or automatic action.
 
 It is important to note that the emphasis is not on the formatting rules themselves, but on having a consistent layout throughout the codebase. Since `.perltidyrc` is part of the repo, it can also be the subject of contributions.
 
 ### Code quality
 
-Rex uses Test::Perl::Critic::Progressive to make sure any changes to the codebase follows best practices by conforming to the code quality rules described in `.perlcriticrc`, and no new violations are introduced accidentally.
+Rex uses [Test::Perl::Critic::Progressive](https://metacpan.org/pod/Test::Perl::Critic::Progressive) to make sure every change follows best practices described by the code quality rules in `.perlcriticrc`, and no new violations are introduced accidentally.
 
 Since `.perlcriticrc` is part of the repo, it can also be the subject of contributions. In fact, improving the rules and the codebase in this regard is highly welcome.
 
@@ -139,7 +161,13 @@ The preferred way for sending contributions is to [fork](https://docs.github.com
 
 It is recommended to use feature [branches](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-branches) when working on contributions. This makes it easy to separate the commits related to a specific changeset from the main line of development, while still keeping them together in one place.
 
-Ideally, a single commit represents a single logical change, has a readable commit message, and passes tests in itself. There are many articles written on the topic, but this is a good example about [how to write a git commit message](https://chris.beams.io/posts/git-commit/).
+Ideally, a single commit:
+
+- represents a single logical change
+- has a readable commit message
+- passes tests in itself
+
+There are many articles written on the topic, but this is a good example about [how to write a git commit message](https://chris.beams.io/posts/git-commit/).
 
 It is generally recommended to:
 
@@ -158,6 +186,8 @@ If you think some of the information here is outdated, not clear enough, or have
 - [Rex website](https://www.rexify.org)
 - [MetaCPAN](https://metacpan.org/pod/Rex)
 - [GitHub](https://github.com/RexOps/Rex)
+- [Discussions](https://github.com/RexOps/Rex/discussions)
 - [Issue tracker](https://github.com/RexOps/Rex/issues)
 - [Google Groups](https://groups.google.com/forum/#!forum/rex-users)
+- [StackShare](https://stackshare.io/rex)
 - [IRC](https://webchat.freenode.net/?channels=rex)

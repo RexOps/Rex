@@ -35,12 +35,14 @@ jobs:
           echo PERL_VERSION="$(perl -E 'print $^V')" >> $GITHUB_ENV
           echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
           echo "${GITHUB_WORKSPACE}/local/bin" >> $GITHUB_PATH
+      - name: Get operating system version
+        run: echo OS_VERSION="$(lsb_release -sr)" >> $GITHUB_ENV
       - name: Cache build modules
         uses: actions/cache@v2
         with:
           path: local
-          key: cache-build-modules-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-build-modules-${{ env.PERL_VERSION }}-
+          key: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
       - name: Cache perlcritic history
         uses: actions/cache@v2
         with:

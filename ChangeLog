@@ -4,11 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix parsing debconf values containing colons
 
  [DOCUMENTATION]
- - Clarify contributing guide
- - Remove misleading sudo command variant
 
  [ENHANCEMENTS]
 
@@ -19,6 +16,14 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.3 2021-03-05 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix parsing debconf values containing colons
+
+ [DOCUMENTATION]
+ - Clarify contributing guide
+ - Remove misleading sudo command variant
 
 1.13.2 2020-12-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

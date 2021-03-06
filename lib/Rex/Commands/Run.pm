@@ -252,7 +252,7 @@ sub run {
       $path = join( ":", Rex::Config->get_path() );
     }
 
-    my $exec = Rex::Interface::Exec->create;
+    my $exec = Rex::Interface::Exec->create(Rex::get_current_connection()->{conn}->get_connection_type, @_);
 
     if ( $args && ref($args) eq "ARRAY" ) {
       my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );

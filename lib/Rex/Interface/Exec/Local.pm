@@ -72,8 +72,9 @@ sub exec {
   if ( $^O !~ m/^MSWin/ ) {
     if ($path) { $path = "PATH=$path" }
     $path ||= "";
-
-    my $new_cmd = "LC_ALL=C $cmd";
+    
+    my $locale = exists $option->{locale} ? $option->{locale} : 'C';
+    my $new_cmd = $locale ? "LC_ALL=$locale $cmd" : $cmd;
     if ($path) {
       $new_cmd = "export $path ; $new_cmd";
     }

@@ -45,8 +45,15 @@ sub exec {
   else {
     $shell = $self->shell;
   }
-
-  $shell->set_locale("C");
+  
+  my $locale = exists $option->{locale} ? $option->{locale} : 'C';
+  if ($locale) {
+    $shell->set_locale($locale);
+  }
+  else {
+    $option->{no_locales} = 1;
+  }
+  
   $shell->path($path);
 
   if ( Rex::Config->get_source_global_profile ) {

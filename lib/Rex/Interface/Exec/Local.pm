@@ -19,6 +19,7 @@ use Symbol 'gensym';
 use IPC::Open3;
 use IO::Select;
 use Rex::Interface::Exec::IOReader;
+use Rex::Interface::Shell;
 
 # Use 'parent' is recommended, but from Perl 5.10.1 its in core
 use base qw(Rex::Interface::Exec::Base Rex::Interface::Exec::IOReader);
@@ -55,38 +56,38 @@ sub exec {
     $cmd = "cd " . $option->{cwd} . " && $cmd";
   }
 
-  if ( exists $option->{path} ) {
-    $path = $option->{path};
-  }
-
-  if ( exists $option->{env} ) {
-    $self->set_env( $option->{env} );
-  }
-
-  if ( exists $option->{format_cmd} ) {
-    $option->{format_cmd} =~ s/\{\{CMD\}\}/$cmd/;
-    $cmd = $option->{format_cmd};
-  }
-
   Rex::Commands::profiler()->start("exec: $cmd");
   if ( $^O !~ m/^MSWin/ ) {
-    if ($path) { $path = "PATH=$path" }
-    $path ||= "";
+    my $shell;
 
-    my $new_cmd = "LC_ALL=C $cmd";
-    if ($path) {
-      $new_cmd = "export $path ; $new_cmd";
+    if ( $option->{_force_sh} ) {
+      $shell = Rex::Interface::Shell->create('Sh');
+    }
+    else {
+      $shell = $self->shell;
     }
 
-    if ( $self->{env} ) {
-      $new_cmd = $self->{env} . " $new_cmd";
+    $shell->set_locale('C');
+
+    if ( exists $option->{path} ) {
+      $shell->path( $option->path );
     }
 
     if ( Rex::Config->get_source_global_profile ) {
-      $new_cmd = ". /etc/profile >/dev/null 2>&1; $new_cmd";
+      $shell->source_global_profile(1);
     }
 
-    $cmd = $new_cmd;
+    if ( Rex::Config->get_source_profile ) {
+      $shell->source_profile(1);
+    }
+
+    if ( exists $option->{env} ) {
+      $shell->set_environment( $option->{env} );
+    }
+
+    my $exec = $shell->exec( $cmd, $option );
+
+    $cmd = $exec;
   }
 
   Rex::Logger::debug("Executing: $cmd");

@@ -16,6 +16,10 @@ assignees: ''
 **I would like to** <!-- do something new or better with Rex -->
 **so I can** <!-- reach a specific goal -->.
 
+## Additional context
+
+<!-- Add any other context about the feature request here. -->
+
 ## Describe the solution you'd like
 
 <!-- A clear and concise description of expected behavior, or code examples for expected interfaces. -->
@@ -23,7 +27,3 @@ assignees: ''
 ## Describe alternatives you've considered
 
 <!-- A clear and concise description of any alternative solutions or features you've considered, possibly listing pros and cons. -->
-
-## Additional context
-
-<!-- Add any other context about the feature request here. -->

@@ -1587,17 +1587,17 @@ sub last_command_output {
 This is a function to compare a string with some given options.
 
  task "mytask", "myserver", sub {
-   my $ntp_service = case operating_sytem, {
+   my $ntp_service = case operating_system, {
                  Debian  => "ntp",
                  default => "ntpd",
                };
 
-   my $ntp_service = case operating_sytem, {
+   my $ntp_service = case operating_system, {
                  qr{debian}i => "ntp",
                  default    => "ntpd",
                };
 
-   my $ntp_service = case operating_sytem, {
+   my $ntp_service = case operating_system, {
                  qr{debian}i => "ntp",
                  default    => sub { return "foo"; },
                };

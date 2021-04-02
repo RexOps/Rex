@@ -49,8 +49,7 @@ BEGIN {
   }
   else {
     # this fails sometimes on windows...
-    eval {
-      Rex::Logger::debug("Running under windows, Expect not supported."); };
+    eval { Rex::Logger::debug("Running under windows, Expect not supported."); };
   }
 }
 

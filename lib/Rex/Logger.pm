@@ -33,6 +33,7 @@ package Rex::Logger;
 use 5.010001;
 use strict;
 use warnings;
+use utf8;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
@@ -74,6 +75,7 @@ If you set this variable to 1 nothing will be logged.
 =cut
 
 our $silent = 0;
+our $encode = 'UTF-8';
 
 =item $format
 
@@ -126,7 +128,7 @@ sub info {
   return if $silent;
 
   local *STDERR;
-  open STDERR, ">&", $DEFAULT_STDERR;
+  open STDERR, ">&:encoding($encode)", $DEFAULT_STDERR;
 
   if ( defined($type) ) {
     $msg = format_string( $msg, uc($type) );
@@ -187,7 +189,7 @@ sub debug {
   return unless $debug;
 
   local *STDERR;
-  open STDERR, ">&", $DEFAULT_STDERR;
+  open STDERR, ">&:encoding($encode)", $DEFAULT_STDERR;
 
   $msg = format_string( $msg, "DEBUG" );
 
@@ -203,7 +205,7 @@ sub debug {
   }
 
   if ( Rex::Config->get_log_filename() ) {
-    open( $log_fh, ">>", Rex::Config->get_log_filename() ) or die($!);
+    open( $log_fh, ">>:encoding(UTF-8)", Rex::Config->get_log_filename() ) or die($!);
     flock( $log_fh, 2 );
     print {$log_fh} "$msg\n" if ($log_fh);
     close($log_fh);

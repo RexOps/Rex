@@ -961,6 +961,10 @@ sub logging {
     $args = {@_};
   }
 
+  if ( exists $args->{'encode'} ) {
+    $Rex::Logger::encode = $args->{'encode'};
+  }
+
   if ( exists $args->{'to_file'} ) {
     Rex::Config->set_log_filename( $args->{'to_file'} );
   }

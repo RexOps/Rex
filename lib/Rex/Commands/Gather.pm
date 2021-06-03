@@ -269,6 +269,7 @@ sub is_redhat {
     "Amazon",                      "ROSAEnterpriseServer",
     "CloudLinuxServer",            "XenServer",
     "OracleServer",                "Virtuozzo",
+    "AlmaLinux",
   );
 
   if ( grep { /$os/i } @redhat_clones ) {

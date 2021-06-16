@@ -196,4 +196,5 @@ If you think some of the information here is outdated, not clear enough, or have
 - [Issue tracker](https://github.com/RexOps/Rex/issues)
 - [Google Groups](https://groups.google.com/forum/#!forum/rex-users)
 - [StackShare](https://stackshare.io/rex)
-- [IRC](https://webchat.freenode.net/?channels=rex)
+- [Matrix](https://matrix.to/#rexops:matrix.org)
+- [IRC](https://webchat.oftc.net/?channels=rexops)

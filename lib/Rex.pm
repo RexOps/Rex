@@ -511,8 +511,7 @@ sub deprecated {
     "Please rewrite your code. This function will disappear in (R)?ex version $version."
   );
   Rex::Logger::info(
-    "If you need assistance please join #rex on irc.freenode.net or our google group."
-  );
+    "If you need assistance, get in touch via one of our support channels!");
 
 }
 

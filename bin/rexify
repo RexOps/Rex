@@ -840,7 +840,7 @@ unless ( -f 'lib' . $ARGV[0] . '.pm' ) {
   }
 
   print STDERR "Created Rexfile.\n";
-  print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
+  print STDERR "Done.\n\nNow edit Rexfile to suit your needs.\n";
   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
   print STDERR
     "\nIf you need assistance, get in touch via one of our support channels!\n";

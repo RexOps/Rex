@@ -1,4 +1,6 @@
 severity = brutal
+theme = -freenode
+
 [-CodeLayout::RequireTidyCode]
 
 [Subroutines::ProhibitUnusedPrivateSubroutines]

@@ -64,6 +64,7 @@ On top of the supported minimum version of Perl, the goal is to support the late
 - 5.28.3
 - 5.30.3
 - 5.32.1
+- 5.34.0
 
 ### Backwards compatibility
 
@@ -154,6 +155,11 @@ Extended, author and release tests may need further dependencies, before being e
 
     dzil listdeps --author --missing | cpanm
     dzil test --all
+
+It's particularly important to run the progressive perlcritic tests on the default branch before modifying the code base. This generates baseline data to compare against later:
+
+    rm xt/author/.perlcritic-history
+    prove --lib xt/author/critic-progressive.t
 
 ## Git workflow
 

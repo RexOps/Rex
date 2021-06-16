@@ -28,7 +28,8 @@ jobs:
         run: |
           echo AUTHOR_NAME="$(git log -1 ${GITHUB_REF} --pretty='%aN')" >> $GITHUB_ENV
           echo AUTHOR_EMAIL="$(git log -1 ${GITHUB_REF} --pretty='%aE')" >> $GITHUB_ENV
-      - uses: shogo82148/actions-setup-perl@v1
+      - name: Setup Perl
+        uses: shogo82148/actions-setup-perl@v1
       - name: Setup Perl environment
         run: |
           echo PERL5LIB="${GITHUB_WORKSPACE}/local/lib/perl5:${PERL5LIB}" >> $GITHUB_ENV

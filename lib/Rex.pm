@@ -1038,7 +1038,7 @@ versions are activated. Available since version 0.56.
 
 =item autodie
 
-Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 1.13.1.
+Will enable autodie feature: die on all failed L<filesystem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 1.13.1.
 
 =item 0.55
 

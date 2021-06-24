@@ -32,7 +32,8 @@ The first step of any change proposal is to open an issue about it. This gives a
 
 To cover the vast majority of typical discussion points in advance, there are predefined templates for issues and pull requests. Please make sure to use them in order to streamline the workflow.
 
-If something comes up that is not a good fit for the templates, that's probably already an early indicator that it should be discussed more closely. In this case please contact us first, or at least provide a reasoning about why the template had to be ignored in that specific case.
+If something comes up that is not a good fit for the templates, that's probably already an early indicator that it should be discussed more closely. In this case please [contact us](https://www.rexify.org/support/index.html) first, or at least provide a reasoning about why the template had to be ignored in that specific case.
+
 
 ### Cross platform support
 

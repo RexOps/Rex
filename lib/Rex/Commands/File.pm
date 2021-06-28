@@ -387,13 +387,9 @@ The return value of this hook overwrites the original parameters of the function
 
 This gets executed right before the new file is written. All original parameters are passed to it, including the applied defaults (C<ensure =E<gt> 'present'>, resolved path for C<source>).
 
-Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
-
 =item after_change
 
 This gets executed right after the file is written. All original parameters, including the applied defaults (C<ensure =E<gt> 'present'>, resolved path for C<source>), and any returned results are passed to it.
-
-Only called when the C<content> parameter is used. For the C<source> parameter, the L<upload|Rex::Commands::Upload#upload> hooks are used.
 
 =item after
 
@@ -481,19 +477,29 @@ sub file {
     );
   }
 
-  elsif ( exists $option->{"content"} && !$is_directory ) {
+  elsif ( ( exists $option->{content} || exists $option->{source} )
+    && !$is_directory )
+  {
 
     # first upload file to tmp location, to get md5 sum.
     # than we can decide if we need to replace the current (old) file.
 
     my $tmp_file_name = get_tmp_file_name($file);
 
-    my $fh    = file_write($tmp_file_name);
-    my @lines = split( qr{$/}, $option->{"content"} );
-    for my $line (@lines) {
-      $fh->write( $line . $/ );
+    if ( exists $option->{content} ) {
+      my $fh    = file_write($tmp_file_name);
+      my @lines = split( qr{$/}, $option->{"content"} );
+      for my $line (@lines) {
+        $fh->write( $line . $/ );
+      }
+      $fh->close;
     }
-    $fh->close;
+    elsif ( exists $option->{source} ) {
+      $option->{source} =
+        Rex::Helper::Path::get_file_path( $option->{source}, caller );
+
+      upload $option->{source}, $tmp_file_name;
+    }
 
     # now get md5 sums
     eval { $old_md5 = md5($file); };
@@ -551,15 +557,6 @@ sub file {
 
     }
 
-  }
-  elsif ( exists $option->{"source"} && !$is_directory ) {
-    $option->{source} =
-      Rex::Helper::Path::get_file_path( $option->{source}, caller() );
-
-    # HOOKS: for this case you have to use the upload hooks!
-    $__ret = upload $option->{"source"}, "$file", force => 1;
-
-    $need_md5 = 0 if $__ret->{changed} == 0;
   }
 
   if ( exists $option->{"ensure"} ) {

@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Remove unused tasks array
+ - Fix file hooks when source option is used
 
  [DOCUMENTATION]
  - Update support channels

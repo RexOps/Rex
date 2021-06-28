@@ -6,7 +6,7 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Test::Deep;
 use Test::Output;
 
@@ -20,6 +20,7 @@ my ( $before, $before_change, $after_change, $after );
 my $test_file    = File::Temp->new()->filename();
 my $test_mode    = '600';
 my $test_content = 'test content';
+my $test_source  = 't/commands/file/test.tpl';
 
 register_function_hooks {
   before        => { file => \&before_hook, },
@@ -30,6 +31,7 @@ register_function_hooks {
 
 my %code_for = (
   'file content' => sub { file $test_file, content => $test_content },
+  'file source'  => sub { file $test_file, source  => $test_source },
   'file absent'  => sub { file $test_file, ensure  => 'absent' },
 );
 
@@ -58,6 +60,9 @@ sub expected_params {
 
   if ( exists $params->{content} ) {
     $expected_params->{content} = $test_content;
+  }
+  elsif ( exists $params->{source} ) {
+    $expected_params->{source} = $test_source;
   }
   else {
     $expected_params = { ensure => 'absent', };

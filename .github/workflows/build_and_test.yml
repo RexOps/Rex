@@ -42,14 +42,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: local
-          key: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
+          key: cache-build-modules-${{ secrets.CACHE_VERSION }}-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-build-modules-${{ secrets.CACHE_VERSION }}-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
       - name: Cache perlcritic history
         uses: actions/cache@v2
         with:
           path: /tmp/cache/.perlcritic-history
-          key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-perlcritic-history-
+          key: cache-perlcritic-history-${{ secrets.CACHE_VERSION }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-perlcritic-history-${{ secrets.CACHE_VERSION }}-
       - name: Log perl information
         run: perl -V
       - name: Install packages

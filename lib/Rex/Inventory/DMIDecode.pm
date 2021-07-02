@@ -133,7 +133,7 @@ sub _read_dmidecode {
       return;
     }
 
-    eval { @lines = i_run "dmidecode"; };
+    eval { @lines = i_run "dmidecode", stderr_to_stdout => 1; };
 
     if ($@) {
       Rex::Logger::debug("Error running dmidecode");

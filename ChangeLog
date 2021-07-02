@@ -4,11 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Remove unused tasks array
- - Fix file hooks when source option is used
 
  [DOCUMENTATION]
- - Update support channels
 
  [ENHANCEMENTS]
 
@@ -19,6 +16,14 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.3.1-TRIAL 2021-07-02 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Remove unused tasks array
+ - Fix file hooks when source option is used
+
+ [DOCUMENTATION]
+ - Update support channels
 
 1.13.3 2021-03-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

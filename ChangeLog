@@ -4,7 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix local file copy on Windows
 
  [DOCUMENTATION]
 
@@ -17,6 +16,10 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.3.2-TRIAL 2021-07-03 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix local file copy on Windows
 
 1.13.3.1-TRIAL 2021-07-02 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

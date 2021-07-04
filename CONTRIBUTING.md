@@ -196,6 +196,34 @@ It is generally recommended to:
 - [rebase](https://docs.github.com/en/github/using-git/about-git-rebase) your feature branch on top of the default branch if there are new commits since the feature branch has been created
 - use follow up/clean up commits on the same PR, but then please also [squash related commits](https://docs.github.com/en/github/using-git/about-git-rebase) together in the feature branch _before_ merging in order to keep a tidy history (in other words, no "tidy only" or "fix typo" commits are necessary)
 
+## Common scenarios
+
+### Add support to manage new operating systems
+
+Allowing Rex to manage a new OS requires the following steps:
+
+1. Teach rex about how to detect the given OS
+
+    - add a way to `Rex::Hardware::Host::get_operating_system()` to detect the given OS
+    - add a new `is_myos()` function to `Rex::Commands::Gather`
+
+1. Let Rex choose the proper package and service management modules for the given OS
+
+    - modify `Rex::Service` and `Rex::Pkg`
+
+1. Add new service and package management modules specific to the given OS
+
+    - add `Rex::Service::MyOS`
+    - add `Rex::Pkg::MyOS`
+
+### Add support for new virtualization methods
+
+Assuming the new virtualization method is called `MyVirt`, the following steps are required:
+
+- create the top-level `Rex::Virtualization::MyVirt` module which includes the constructor, and the documentation
+- create submodules for each virtualization command, e.g. `Rex::Virtualization::MyVirt::info`
+- implement the logic of the given command as the `execute` method
+
 ## Contribute to this guide
 
 If you think some of the information here is outdated, not clear enough, or have bugs, feel free to contribute to it too!

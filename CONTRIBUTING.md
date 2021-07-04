@@ -34,6 +34,18 @@ To cover the vast majority of typical discussion points in advance, there are pr
 
 If something comes up that is not a good fit for the templates, that's probably already an early indicator that it should be discussed more closely. In this case please [contact us](https://www.rexify.org/support/index.html) first, or at least provide a reasoning about why the template had to be ignored in that specific case.
 
+### Rex core vs extending Rex
+
+Strictly speaking the core competency of Rex is to execute commands, manage files, define tasks, and orchestrate their execution.
+
+Rex gained lots of other capabilities over time, and historically many of them landed in core as well. But it is often possible to extend Rex by only minimally changing the core, if at all. For example this includes adding support to:
+
+- manage new operating systems
+- new shell types
+- new virtualization methods
+- new cloud providers
+
+It is highly encouraged to add such new capabilities via their own extension modules outside the core. If in doubt, please check some of the common scenarios below, or [contact us](https://www.rexify.org/support/index.html).
 
 ### Cross platform support
 

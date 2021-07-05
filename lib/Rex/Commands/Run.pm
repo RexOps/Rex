@@ -357,11 +357,10 @@ sub run {
 
 =head2 can_run($command)
 
-This function checks if a command is in the path or is available. You can
-specify multiple commands, the first command found will be returned.
+This function checks if a command is available in the path. It accepts a list of commands, and returns the full path to the first command found.
 
- task "uptime", sub {
-   if( my $cmd = can_run("uptime", "downtime") ) {
+ task 'uptime', sub {
+   if ( my $cmd = can_run( 'uptime', 'downtime' ) ) {
      say run $cmd;
    }
  };

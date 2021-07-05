@@ -34,6 +34,18 @@ To cover the vast majority of typical discussion points in advance, there are pr
 
 If something comes up that is not a good fit for the templates, that's probably already an early indicator that it should be discussed more closely. In this case please [contact us](https://www.rexify.org/support/index.html) first, or at least provide a reasoning about why the template had to be ignored in that specific case.
 
+### Rex core vs extending Rex
+
+Strictly speaking the core competency of Rex is to execute commands, manage files, define tasks, and orchestrate their execution.
+
+Rex gained lots of other capabilities over time, and historically many of them landed in core as well. But it is often possible to extend Rex by only minimally changing the core, if at all. For example this includes adding support to:
+
+- manage new operating systems
+- new shell types
+- new virtualization methods
+- new cloud providers
+
+It is highly encouraged to add such new capabilities via their own extension modules outside the core. If in doubt, please check some of the common scenarios below, or [contact us](https://www.rexify.org/support/index.html).
 
 ### Cross platform support
 
@@ -183,6 +195,34 @@ It is generally recommended to:
 - open [draft pull requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests) to share the idea and ask for feedback early
 - [rebase](https://docs.github.com/en/github/using-git/about-git-rebase) your feature branch on top of the default branch if there are new commits since the feature branch has been created
 - use follow up/clean up commits on the same PR, but then please also [squash related commits](https://docs.github.com/en/github/using-git/about-git-rebase) together in the feature branch _before_ merging in order to keep a tidy history (in other words, no "tidy only" or "fix typo" commits are necessary)
+
+## Common scenarios
+
+### Add support to manage new operating systems
+
+Allowing Rex to manage a new OS requires the following steps:
+
+1. Teach rex about how to detect the given OS
+
+    - add a way to `Rex::Hardware::Host::get_operating_system()` to detect the given OS
+    - add a new `is_myos()` function to `Rex::Commands::Gather`
+
+1. Let Rex choose the proper package and service management modules for the given OS
+
+    - modify `Rex::Service` and `Rex::Pkg`
+
+1. Add new service and package management modules specific to the given OS
+
+    - add `Rex::Service::MyOS`
+    - add `Rex::Pkg::MyOS`
+
+### Add support for new virtualization methods
+
+Assuming the new virtualization method is called `MyVirt`, the following steps are required:
+
+- create the top-level `Rex::Virtualization::MyVirt` module which includes the constructor, and the documentation
+- create submodules for each virtualization command, e.g. `Rex::Virtualization::MyVirt::info`
+- implement the logic of the given command as the `execute` method
 
 ## Contribute to this guide
 

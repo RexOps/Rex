@@ -10,6 +10,7 @@ Revision history for Rex
  - Add common scenarios to contributing guide
  - Clarify documentation of run command
  - Clarify documentation of can_run command
+ - Fix Rex::Task synopsis
 
  [ENHANCEMENTS]
 

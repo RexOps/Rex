@@ -17,15 +17,15 @@ The Task Object. Typically you only need this class if you want to manipulate ta
  use Rex::Task;
  
  # create a new task
- my $task = Rex::Task->new(name => "testtask");
- $task->set_server("remoteserver");
- $task->set_code(sub { say "Hello"; });
- $task->modify("no_ssh", 1);
+ my $task = Rex::Task->new( name => 'testtask' );
+ $task->set_server('remoteserver');
+ $task->set_code( sub { say 'Hello'; } );
+ $task->modify( 'no_ssh', 1 );
  
  # retrieve an existing task
  use Rex::TaskList;
  
- my $existing_task = Rex::TaskList->get_task('my_task');
+ my $existing_task = Rex::TaskList->create->get_task('my_task');
 
 =head1 METHODS
 

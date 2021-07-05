@@ -8,6 +8,8 @@ Revision history for Rex
  [DOCUMENTATION]
  - Add section about Rex core vs extending Rex
  - Add common scenarios to contributing guide
+ - Clarify documentation of run command
+ - Clarify documentation of can_run command
 
  [ENHANCEMENTS]
 

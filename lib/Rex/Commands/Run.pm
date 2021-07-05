@@ -14,9 +14,8 @@ With this module you can run a command.
 
 =head1 SYNOPSIS
 
- my $output = run "ls -l";
- sudo "id";
-
+ my $output = run 'ls -l';
+ sudo 'id';
 
 =head1 EXPORTED FUNCTIONS
 
@@ -60,95 +59,117 @@ use base qw(Rex::Exporter);
 
 =head2 run($command [, $callback], %options)
 
-=head2 run($command, $arguments, %options)
-
-This form will execute $command with the given $arguments.
-$arguments must be an array reference. The arguments will be quoted.
-
- run "ls", ["-l", "-t", "-r", "-a"];
- run "ls", ["/tmp", "-l"], auto_die => TRUE;
-
-=head2 run($command_description, command => $command, %options)
-
-This function will execute the given command and returns the output. In
+This function will execute the given C<$command> and returns the output. In
 scalar context it returns the raw output as is, and in list context it
 returns the list of output lines. The exit value of the command is stored
-in the $? variable.
+in the C<$?> variable.
 
+ run 'uptime';
+ my $output       = run 'uptime';
+ my @output_lines = run 'uptime';
 
- task "uptime", "server01", sub {
-   say run "uptime";
-   run "uptime", sub {
-     my ($stdout, $stderr) = @_;
-     my $server = Rex::get_current_connection()->{server};
-     say "[$server] $stdout\n";
-   };
+It supports optional callbacks as subroutine reference, which will receive the command's output sent to C<STDOUT> and C<STDERR>.
+
+ run 'uptime', sub {
+   my ( $stdout, $stderr ) = @_;
+   my $server = Rex::get_current_connection()->{server};
+   say "[$server] $stdout\n";
  };
 
-Supported options are:
+It also takes further options in a form of a hash. Supported options are:
 
-  cwd             => $path
-    sets the working directory of the executed command to $path
-  only_if         => $condition_command
-    executes the command only if $condition_command completes successfully
-  unless          => $condition_command
-    executes the command unless $condition_command completes successfully
-  only_notified   => TRUE
-    queues the command, to be executed upon notification (see below)
-  env             => { var1 => $value1, ..., varN => $valueN }
-    sets environment variables in the environment of the command
-  timeout         => value
-    sets the timeout for the command to be run
-  auto_die        => TRUE
-    die if the command returns with a non-zero exit code
-    it can be set globally via the exec_autodie feature flag
-  command         => $command_to_run
-    if set, run tries to execute the specified command and the first argument
-    becomes an identifier for the run block (e.g. to be triggered with notify)
-  creates         => $file_to_create
-    tries to create $file_to_create upon execution
-    skips execution if the file already exists
-  continuous_read => $callback
-    calls $callback subroutine reference for each line of the command's output,
-    passing the line as an argument
+=over 4
+
+=item cwd => $path
+
+Sets the working directory of the executed command to C<$path>.
+
+=item only_if => $condition_command
+
+Executes the command only if C<$condition_command> returns success.
+
+=item unless => $condition_command
+
+Executes the command if C<$condition_command> returns failure.
+
+=item only_notified => TRUE
+
+Queues the command to be executed later upon notification.
+
+=item env => { var1 => $value1, ..., varN => $valueN }
+
+Sets environment variables for the given command.
+
+=item timeout => value
+
+Sets the timeout for the command to be run.
+
+=item auto_die => TRUE
+
+Die if the command returns with an exit code indicating failure. It can be set globally via the L<exec_autodie|Rex#exec_autodie> feature flag.
+
+=item command => $command_to_run
+
+If present, Rex will execute C<$command_to_run>, and treat the first arugment as an identifier for the given C<run()> block (e.g. to be triggered with notify).
+
+=item creates => $file_to_create
+
+Tries to create C<$file_to_create> upon execution, and skips execution if the file already exists.
+
+=item continuous_read => $callback
+
+Calls C<$callback> subroutine reference for each line of the command's output, passing the line as an argument.
+
+=item end_if_matched => qr{$pattern}
+
+End execution early as soon as C<$pattern> is detected in the command's output.
+
+=back
 
 Examples:
 
-If you only want to run a command in special cases, you can queue the command
-and notify it when you want to run it.
+If you only want to run a command if another command succeeds or fails, use the C<only_if> or C<unless> options.
 
- task "prepare", sub {
-   run "extract-something",
-     command     => "tar -C /foo -xzf /tmp/foo.tgz",
-     only_notified => TRUE;
+ run 'some-command',
+   only_if => 'pgrep httpd'; # only run if httpd is running
 
-   # some code ...
-
-   notify "run", "extract-something";  # now the command gets executed
- };
-
-If you only want to run a command if another command succeeds or fails, you can use
-I<only_if> or I<unless> option.
-
- run "some-command",
-   only_if => "ps -ef | grep -q httpd";   # only run if httpd is running
-
- run "some-other-command",
-   unless => "ps -ef | grep -q httpd";    # only run if httpd is not running
+ run 'some-other-command',
+   unless => 'pgrep httpd'; # only run if httpd is _not_ running
 
 If you want to set custom environment variables you can do it like this:
 
- run "my_command",
-
-    env => {
-     env_var_1 => "the value for 1",
-     env_var_2 => "the value for 2",
+ run 'my_command',
+   env => {
+     env_var_1 => 'the value for 1',
+     env_var_2 => 'the value for 2',
    };
 
 If you want to end the command upon receiving a certain output:
- run "my_command",
-   end_if_matched => qr/PATTERN/;
-   
+
+ run 'my_command',
+   end_if_matched => qr{$pattern};
+
+=head2 run($command, $arguments, %options)
+
+This form will execute C<$command> with the given C<$arguments> pass as an array reference.
+All arguments will be quoted by Rex with C<Net::OpenSSH::ShellQuoter->quoter()> according to the managed host's shell.
+
+ run 'ls', [ '-l', '-t', '-r', '-a' ];
+ run 'ls', [ '/tmp', '-l' ], auto_die => TRUE;
+
+=head2 run($command_description, command => $command, %options)
+
+If you only want to run a command in certain cases, you can queue the command
+and notify it to trigger its execution.
+
+ run 'extract-something',
+   command       => 'tar -C /foo -xzf /tmp/foo.tgz',
+   only_notified => TRUE;
+
+ # some code ...
+
+ notify 'run', 'extract-something'; # now the command gets executed
+
 =cut
 
 our $LAST_OUTPUT; # this variable stores the last output of a run.
@@ -336,11 +357,10 @@ sub run {
 
 =head2 can_run($command)
 
-This function checks if a command is in the path or is available. You can
-specify multiple commands, the first command found will be returned.
+This function checks if a command is available in the path. It accepts a list of commands, and returns the full path to the first command found.
 
- task "uptime", sub {
-   if( my $cmd = can_run("uptime", "downtime") ) {
+ task 'uptime', sub {
+   if ( my $cmd = can_run( 'uptime', 'downtime' ) ) {
      say run $cmd;
    }
  };

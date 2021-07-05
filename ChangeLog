@@ -6,12 +6,6 @@ Revision history for Rex
  [BUG FIXES]
 
  [DOCUMENTATION]
- - Add section about Rex core vs extending Rex
- - Add common scenarios to contributing guide
- - Clarify documentation of run command
- - Clarify documentation of can_run command
- - Fix Rex::Task synopsis
- - Clarify documentation of rex script
 
  [ENHANCEMENTS]
 
@@ -22,6 +16,15 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.13.4 2021-07-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Add section about Rex core vs extending Rex
+ - Add common scenarios to contributing guide
+ - Clarify documentation of run command
+ - Clarify documentation of can_run command
+ - Fix Rex::Task synopsis
+ - Clarify documentation of rex script
 
 1.13.3.2-TRIAL 2021-07-03 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

@@ -11,6 +11,7 @@ Revision history for Rex
  - Clarify documentation of run command
  - Clarify documentation of can_run command
  - Fix Rex::Task synopsis
+ - Clarify documentation of rex script
 
  [ENHANCEMENTS]
 

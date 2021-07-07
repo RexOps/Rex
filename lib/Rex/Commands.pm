@@ -1786,8 +1786,11 @@ sub evaluate_hostname {
   if ( $rule =~ m/,/ ) {
     @ret = _evaluate_hostname_list( $start, $rule, $end );
   }
-  else {
+  elsif ( $rule =~ m/[.]{2}/msx ) {
     @ret = _evaluate_hostname_range( $start, $rule, $end );
+  }
+  else {
+    croak('Invalid hostgroup expression');
   }
 
   return @ret;

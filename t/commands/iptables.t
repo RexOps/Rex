@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 32;
+use Test::More tests => 36;
 
 use Rex::Commands::Iptables;
 
@@ -55,3 +55,8 @@ is( $rules->{foo}->[0]->[13], "50",                  "up to 50" );
 is( $rules->{foo}->[0]->[14], "j",                   "jump to" );
 is( $rules->{foo}->[0]->[15], "RETURN",              "RETURN" );
 
+is(Rex::Commands::Iptables::chain_exists('foo'),0);
+is(Rex::Commands::Iptables::chain_exists('INPUT'),1);
+
+is(Rex::Commands::Iptables::chain_exists('foo', table => 'filter'),0);
+is(Rex::Commands::Iptables::chain_exists('INPUT', table => 'filter'),1);

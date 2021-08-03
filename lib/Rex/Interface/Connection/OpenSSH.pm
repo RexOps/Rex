@@ -52,28 +52,28 @@ sub connect {
   $self->{__auth_info__} = \%option;
 
   Rex::Logger::debug("Using Net::OpenSSH for connection");
-  Rex::Logger::debug( "Using user: " . $user );
-  Rex::Logger::debug( Rex::Logger::masq( "Using password: %s", $pass ) )
-    if defined $pass;
+  # Rex::Logger::debug( "Using user: " . $user );
+  # Rex::Logger::debug( Rex::Logger::masq( "Using password: %s", $pass ) )
+  #   if defined $pass;
 
-  my $proxy_command = Rex::Config->get_proxy_command( server => $server );
+  # my $proxy_command = Rex::Config->get_proxy_command( server => $server );
 
-  $port    ||= Rex::Config->get_port( server => $server )    || 22;
-  $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
+  # $port    ||= Rex::Config->get_port( server => $server )    || 22;
+  # $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
 
-  $server =
-    Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
+  # $server =
+    # Rex::Config->get_ssh_config_hostname( server => $server ) || $server;
 
   ( $server, $port ) = Rex::Helper::IP::get_server_and_port( $server, $port );
 
-  Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
+  Rex::Logger::debug( "Connecting to $server" );
 
   my %ssh_opts = Rex::Config->get_openssh_opt();
   Rex::Logger::debug("get_openssh_opt()");
   Rex::Logger::debug( Dumper( \%ssh_opts ) );
 
   $ssh_opts{LogLevel} ||= "QUIET";
-  $ssh_opts{ConnectTimeout} = $timeout;
+  # $ssh_opts{ConnectTimeout} = $timeout;
 
   my %net_openssh_constructor_options = (
     exists $ssh_opts{initialize_options}
@@ -91,7 +91,7 @@ sub connect {
   }
 
   my @connection_props = ( "" . $server ); # stringify server object, so that a dumper don't print out passwords.
-  push @connection_props, ( user => $user, port => $port );
+  # push @connection_props, ( user => $user, port => $port );
 
   if (@ssh_opts_line) {
     if ( !$net_openssh_constructor_options{external_master} ) {
@@ -101,7 +101,7 @@ sub connect {
     push @connection_props, default_ssh_opts => \@ssh_opts_line;
   }
 
-  push @connection_props, proxy_command => $proxy_command if $proxy_command;
+  # push @connection_props, proxy_command => $proxy_command if $proxy_command;
 
   my @auth_types_to_try;
   if ( $auth_type && $auth_type eq "pass" ) {
@@ -120,7 +120,7 @@ sub connect {
   }
   else { # for key auth, and others
     Rex::Logger::debug(
-      "OpenSSH: key_auth or not defined: $server:$port - $user");
+      "OpenSSH: key_auth or not defined: $server");
     push @auth_types_to_try, "key", "pass";
   }
 

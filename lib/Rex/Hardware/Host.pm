@@ -173,6 +173,9 @@ sub get_operating_system {
     elsif ( $content =~ m/Scientific/ ) {
       return "Scientific";
     }
+    elsif ( $content =~ m/CloudLinux/ ) {
+      return 'CloudLinux';
+    }
     else {
       return "Redhat";
     }

@@ -1064,11 +1064,7 @@ sub needs {
     my $task_o    = $tl->get_task($task);
     my $task_name = $task_o->name;
     my $suffix    = $self . ":";
-    if ( @args && grep ( /^\Q$task_name\E$/, @args ) ) {
-      Rex::Logger::debug( "Calling " . $task_o->name );
-      $task_o->run( "<func>", params => \%task_opts, args => \@task_args );
-    }
-    elsif ( !@args ) {
+    if ( !@args || grep ( /^\Q$task_name\E$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task_o->name );
       $task_o->run( "<func>", params => \%task_opts, args => \@task_args );
     }

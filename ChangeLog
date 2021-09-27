@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Detect invalid hostgroup expressions
+ - Propagate args/params down to "needed" tasks launched by needs()
 
  [DOCUMENTATION]
 

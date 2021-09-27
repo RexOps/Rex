@@ -144,9 +144,9 @@ task test6 => sub {
   T::check_needed( $_, { argv => \@_ } ) for (qw/test /);
 };
 
-TODO: {
-  local $TODO = "Issue 1508: The needs() function should propogate parameters/args";
 
+
+{
   my $task_list = Rex::TaskList->create;
   my $run_list  = Rex::RunList->instance;
   $run_list->parse_opts(qw/test test2 test3 test5 test6/);

@@ -1066,11 +1066,11 @@ sub needs {
     my $suffix    = $self . ":";
     if ( @args && grep ( /^\Q$task_name\E$/, @args ) ) {
       Rex::Logger::debug( "Calling " . $task_o->name );
-      $task_o->run( "<func>", params => \@task_args, args => \%task_opts );
+      $task_o->run( "<func>", params => \%task_opts, args => \@task_args );
     }
     elsif ( !@args ) {
       Rex::Logger::debug( "Calling " . $task_o->name );
-      $task_o->run( "<func>", params => \@task_args, args => \%task_opts );
+      $task_o->run( "<func>", params => \%task_opts, args => \@task_args );
     }
   }
 

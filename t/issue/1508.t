@@ -144,8 +144,6 @@ task test6 => sub {
   T::check_needed( $_, { argv => \@_ } ) for (qw/test /);
 };
 
-
-
 {
   my $task_list = Rex::TaskList->create;
   my $run_list  = Rex::RunList->instance;

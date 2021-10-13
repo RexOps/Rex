@@ -1739,7 +1739,11 @@ sub read_config_file {
   $config_file ||= _home_dir() . "/.rex/config.yml";
 
   if ( -f $config_file ) {
-    my $yaml = eval { local ( @ARGV, $/ ) = ($config_file); <>; };
+    my $yaml = do {
+      use IO::File;
+      my $fh = IO::File->new( $config_file, 'r' );
+      join '', $fh->getlines();
+    };
     eval { $HOME_CONFIG_YAML = Load($yaml); };
 
     if ($@) {
@@ -1762,7 +1766,11 @@ sub read_ssh_config_file {
   $config_file ||= _home_dir() . '/.ssh/config';
 
   if ( -f $config_file ) {
-    my @lines = eval { local (@ARGV) = ($config_file); <>; };
+    my @lines = do {
+      use IO::File;
+      my $fh = IO::File->new( $config_file, 'r' );
+      join '', $fh->getlines();
+    };
     %SSH_CONFIG_FOR = _parse_ssh_config(@lines);
   }
 }

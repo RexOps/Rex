@@ -120,7 +120,7 @@ If both C<$item> and C<$server> are defined, it returns the given CMDB item for 
 The value returned is a L<Rex::Value>, so you may need to use the C<get cmdb(...)> form if you'd like to assign the result to a Perl variable:
 
  task 'prepare', 'server1', sub {
-   my %all_information          = get cmdb;
+   my $all_information          = get cmdb;
    my $specific_item            = get cmdb('item');
    my $specific_item_for_server = get cmdb( 'item', 'server' );
  };

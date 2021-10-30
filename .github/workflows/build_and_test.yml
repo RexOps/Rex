@@ -53,7 +53,7 @@ jobs:
       - name: Log perl information
         run: perl -V
       - name: Install packages
-        run: sudo apt-get install -y libmagic-dev default-mysql-server rsync
+        run: sudo apt-get install -y libmagic-dev default-mysql-server rsync aspell
       - name: Install build dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
       - name: Configure Dist::Zilla

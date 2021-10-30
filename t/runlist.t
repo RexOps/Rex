@@ -22,8 +22,8 @@ $run_list->parse_opts(@ARGV);
 
 my @tasks = $run_list->tasks;
 
-is scalar @tasks, 3, "run list has 3 tasks";
-is ref $_, 'Rex::Task', "object isa Rex::Task" for @tasks;
+is scalar @tasks, 3,           "run list has 3 tasks";
+is ref $_,        'Rex::Task', "object isa Rex::Task" for @tasks;
 
 note "opts";
 is_deeply { $tasks[0]->get_opts }, { name => 'thename', num => 5 },

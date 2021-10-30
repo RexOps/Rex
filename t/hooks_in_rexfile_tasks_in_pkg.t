@@ -18,11 +18,11 @@ timeout 1;
 
 before_task_start ALL => sub { $before_task_start_all += 1; };
 before_task_start 't:tasks:alien:negotiate' => sub { $before_task_start += 1 };
-before ALL                                  => sub { $before_all        += 1 };
-before 't:tasks:alien:negotiate'            => sub { $before            += 1 };
+before ALL                       => sub { $before_all += 1 };
+before 't:tasks:alien:negotiate' => sub { $before     += 1 };
 
-after 't:tasks:alien:negotiate'               => sub { $after     += 1 };
-after ALL                                     => sub { $after_all += 1 };
+after 't:tasks:alien:negotiate' => sub { $after     += 1 };
+after ALL                       => sub { $after_all += 1 };
 after_task_finished 't:tasks:alien:negotiate' =>
   sub { $after_task_finished += 1 };
 after_task_finished ALL => sub { $after_task_finished_all += 1 };

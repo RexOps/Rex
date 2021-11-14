@@ -22,11 +22,11 @@ task foo => sub { return "yo" };
 
 before_task_start ALL => sub { $before_task_start_all += 1 };
 before_task_start foo => sub { $before_task_start     += 1 };
-before ALL            => sub { $before_all            += 1 };
-before foo            => sub { $before                += 1 };
+before ALL => sub { $before_all += 1 };
+before foo => sub { $before     += 1 };
 
-after foo               => sub { $after                   += 1 };
-after ALL               => sub { $after_all               += 1 };
+after foo => sub { $after     += 1 };
+after ALL => sub { $after_all += 1 };
 after_task_finished foo => sub { $after_task_finished     += 1 };
 after_task_finished ALL => sub { $after_task_finished_all += 1 };
 

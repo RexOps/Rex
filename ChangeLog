@@ -7,7 +7,7 @@ Revision history for Rex
  - Detect invalid hostgroup expressions
 
  [DOCUMENTATION]
- - Correct type of variable shown as being returned from 'get cmdb'.
+ - Correct type of variable shown as being returned from 'get cmdb'
 
  [ENHANCEMENTS]
 

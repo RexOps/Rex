@@ -1,0 +1,76 @@
+---
+name: Bug report
+description: Create a report to help us improve
+labels: 'triage needed'
+body:
+    - type: textarea
+      attributes:
+          label: Describe the bug
+          description: A clear and concise description of what the bug is.
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: Expected behavior
+          description: A clear and concise description of what is expected instead.
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: How to reproduce it
+          description: Steps to reproduce the unexpected behavior.
+          placeholder: |
+              1.
+              2.
+              3.
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: Code example
+          description: Shortest code example that demonstrates the bug.
+          placeholder: |
+              ```perl
+
+              ```
+    - type: textarea
+      attributes:
+          label: Additional context
+          description: For debug logs, run your code with `rex -d`, and [attach the output as a file](https://docs.github.com/en/github/managing-your-work-on-github/file-attachments-on-issues-and-pull-requests). If you must copy-paste, make sure to post it as a code block instead of text. Make sure any sensitive information is removed before posting.
+    - type: markdown
+      attributes:
+          value: '## Circumstances'
+    - type: input
+      attributes:
+          label: Rex version
+          description: Obtain it with `rex -v`.
+      validations:
+          required: true
+    - type: input
+      attributes:
+          label: Perl version
+          description: Obtain with `perl -v`.
+      validations:
+          required: true
+    - type: input
+      attributes:
+          label: Operating system running rex
+          description: Be as specific as possible.
+      validations:
+          required: true
+    - type: input
+      attributes:
+          label: Operating system managed by rex
+          description: Even if it is the local machine.
+          placeholder: local
+      validations:
+          required: true
+    - type: dropdown
+      attributes:
+          label: How rex was installed?
+          options:
+              - package manager
+              - cpan client
+              - dzil install
+      validations:
+          required: true

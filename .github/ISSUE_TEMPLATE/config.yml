@@ -1,0 +1,15 @@
+---
+blank_issues_enabled: false
+contact_links:
+    - name: General discussions
+      url: https://github.com/RexOps/Rex/discussions
+      about: General chat to discuss ideas, ask for help, and show cool things you made with Rex.
+    - name: Chat
+      url: https://matrix.to/#/#rexops:matrix.org
+      about: 'Join the chat in our #rexops room on matrix.org'
+    - name: Chat on IRC
+      url: https://webchat.oftc.net/?channels=rexops
+      about: 'Join the chat in our #rexops channel on OFTC'
+    - name: Mailing list
+      url: https://groups.google.com/group/rex-users
+      about: Join Rex Users on Google Groups

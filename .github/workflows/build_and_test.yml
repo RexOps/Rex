@@ -62,6 +62,7 @@ jobs:
       - name: Install build dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy
       - name: Install coverage dependencies
+        if: ${{ github.event_name != 'schedule' }}
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
       - name: Configure Dist::Zilla
         run: |
@@ -82,11 +83,18 @@ jobs:
         run: |
           cd build
           prove --timer --lib --recurse --jobs $(nproc) --shuffle xt
-      - name: Run tests
+      - name: Run tests with coverage
+        if: ${{ github.event_name != 'schedule' }}
         run: |
           cd build
           HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t
+      - name: Run tests without coverage
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          cd build
+          prove --timer --lib --recurse --jobs $(nproc) --shuffle t
       - name: Report coverage info to Coveralls
+        if: ${{ github.event_name != 'schedule' }}
         run: |
           cd build
           cover -report coveralls

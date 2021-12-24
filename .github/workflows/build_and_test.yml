@@ -60,7 +60,9 @@ jobs:
       - name: Install packages
         run: sudo apt-get install -y libmagic-dev mysql-server rsync aspell
       - name: Install build dependencies
-        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy
+      - name: Install coverage dependencies
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
       - name: Configure Dist::Zilla
         run: |
           mkdir ~/.dzil

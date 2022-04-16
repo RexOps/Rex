@@ -162,7 +162,19 @@ jobs:
           - default
         cpanm_args:
           - --with-all-features
+        threaded:
+          - false
         include:
+          - os: ubuntu
+            perl: latest
+            distribution: default
+            cpanm_args: --with-all-features
+            threaded: true
+          - os: macos
+            perl: latest
+            distribution: default
+            cpanm_args: --with-all-features
+            threaded: true
           - os: windows
             perl: latest
             distribution: strawberry
@@ -181,6 +193,7 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.distribution }}
+          multi-thread: ${{ matrix.threaded }}
       - name: Install dependencies
         run: cpanm --installdeps ${{ matrix.cpanm_args }} .
       - name: Get number of processors

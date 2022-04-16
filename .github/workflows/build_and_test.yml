@@ -146,9 +146,28 @@ jobs:
       - name: Run extra tests
         run: prove --timer --lib --recurse --jobs $(nproc) --shuffle xt/
 
-  linux:
+  tests:
     needs: build
-    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu
+          - macos
+        perl:
+          - latest
+        distribution:
+          - default
+        cpanm_args:
+          - --with-all-features
+        include:
+          - os: windows
+            perl: latest
+            distribution: strawberry
+            cpanm_args: --with-all-features --without-feature=custom_output --without-feature=rsync
+
+    runs-on: ${{ matrix.os }}-latest
 
     steps:
       - name: Download build results
@@ -156,44 +175,15 @@ jobs:
         with:
           name: build_results
       - name: Setup Perl
-        uses: shogo82148/actions-setup-perl@v1
-      - name: Install dependencies
-        run: cpanm --installdeps --with-all-features .
-      - name: Run tests
-        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t
-
-  macos:
-    needs: build
-    runs-on: macOS-latest
-
-    steps:
-      - name: Download build results
-        uses: actions/download-artifact@v3
-        with:
-          name: build_results
-      - name: Setup Perl
-        uses: shogo82148/actions-setup-perl@v1
-      - name: Install dependencies
-        run: cpanm --installdeps --with-all-features .
-      - name: Run tests
-        run: prove --timer --lib --recurse --jobs $(sysctl -n hw.ncpu) --shuffle t
-
-  windows:
-    needs: build
-    runs-on: windows-latest
-
-    steps:
-      - name: Download build results
-        uses: actions/download-artifact@v3
-        with:
-          name: build_results
-      - name: Setup Perl
+        id: perl
         uses: shogo82148/actions-setup-perl@v1
         with:
-          distribution: strawberry
+          perl-version: ${{ matrix.perl }}
+          distribution: ${{ matrix.distribution }}
       - name: Install dependencies
-        run: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
-      - name: Install OS-specific dependency
-        run: cpanm Net::SSH2
+        run: cpanm --installdeps ${{ matrix.cpanm_args }} .
+      - name: Get number of processors
+        id: cores
+        uses: SimenB/github-actions-cpu-cores@v1
       - name: Run tests
-        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t
+        run: prove --timer --lib --recurse --jobs ${{ steps.cores.outputs.count }} --shuffle t/

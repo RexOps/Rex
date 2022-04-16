@@ -70,15 +70,11 @@ jobs:
       - name: Install dependencies
         run: |
           cd build
-          cpanm --installdeps --local-lib ${GITHUB_WORKSPACE}/local --with-all-features --with-develop --with-suggests .
+          cpanm --installdeps --local-lib ${GITHUB_WORKSPACE}/local --with-develop .
       - name: Run extra tests
         run: |
           cd build
           prove --timer --lib --recurse --jobs $(nproc) --shuffle xt
-      - name: Run tests without coverage
-        run: |
-          cd build
-          prove --timer --lib --recurse --jobs $(nproc) --shuffle t
       - name: Upload build results
         uses: actions/upload-artifact@v3
         with:

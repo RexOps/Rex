@@ -14,9 +14,6 @@ on:
 
 env:
   PERL_CPANM_OPT: "--quiet --notest"
-  AUTHOR_TESTING: 1
-  EXTENDED_TESTING: 1
-  RELEASE_TESTING: 1
 
 jobs:
   build:
@@ -34,10 +31,8 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
       - name: Setup Perl environment
         run: |
-          echo PERL5LIB="${GITHUB_WORKSPACE}/local/lib/perl5:${PERL5LIB}" >> $GITHUB_ENV
           echo PERL_VERSION="$(perl -E 'print $^V')" >> $GITHUB_ENV
           echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
-          echo "${GITHUB_WORKSPACE}/local/bin" >> $GITHUB_PATH
       - name: Get operating system version
         run: echo OS_VERSION="$(lsb_release -sr)" >> $GITHUB_ENV
       - name: Cache build modules
@@ -46,16 +41,8 @@ jobs:
           path: local
           key: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
           restore-keys: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
-      - name: Cache perlcritic history
-        uses: actions/cache@v3
-        with:
-          path: /tmp/cache/.perlcritic-history
-          key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-perlcritic-history-
-      - name: Install packages
-        run: sudo apt-get install -y aspell
-      - name: Install build dependencies
-        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy
+      - name: Install Dist::Zilla
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla
       - name: Configure Dist::Zilla
         run: |
           mkdir ~/.dzil
@@ -67,14 +54,6 @@ jobs:
         run: dzil authordeps | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Build dist
         run: dzil build --no-tgz --in build
-      - name: Install dependencies
-        run: |
-          cd build
-          cpanm --installdeps --local-lib ${GITHUB_WORKSPACE}/local --with-develop .
-      - name: Run extra tests
-        run: |
-          cd build
-          prove --timer --lib --recurse --jobs $(nproc) --shuffle xt
       - name: Upload build results
         uses: actions/upload-artifact@v3
         with:
@@ -127,6 +106,45 @@ jobs:
         run: |
           cd build
           cover -report coveralls
+
+  extra-tests:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    env:
+      AUTHOR_TESTING: 1
+      EXTENDED_TESTING: 1
+      RELEASE_TESTING: 1
+
+    steps:
+      - name: Download build results
+        uses: actions/download-artifact@v3
+        with:
+          name: build_results
+      - name: Install packages
+        run: sudo apt-get install -y aspell
+      - name: Setup Perl
+        id: perl
+        uses: shogo82148/actions-setup-perl@v1
+      - name: Get build timestamp
+        run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+      - name: Cache extra-tests dependencies
+        uses: actions/cache@v3
+        with:
+          path: local
+          key: cache-extra-tests-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-extra-tests-deps-${{ steps.perl.outputs.perl-hash }}-
+      - name: Install dependencies
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop .
+      - name: Cache perlcritic history
+        uses: actions/cache@v3
+        with:
+          path: /tmp/cache/.perlcritic-history
+          key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-perlcritic-history-
+      - name: Run extra tests
+        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle xt/
 
   linux:
     needs: build

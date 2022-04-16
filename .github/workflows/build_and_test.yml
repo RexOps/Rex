@@ -28,19 +28,16 @@ jobs:
           echo AUTHOR_NAME="$(git log -1 ${GITHUB_REF} --pretty='%aN')" >> $GITHUB_ENV
           echo AUTHOR_EMAIL="$(git log -1 ${GITHUB_REF} --pretty='%aE')" >> $GITHUB_ENV
       - name: Setup Perl
+        id: perl
         uses: shogo82148/actions-setup-perl@v1
-      - name: Setup Perl environment
-        run: |
-          echo PERL_VERSION="$(perl -E 'print $^V')" >> $GITHUB_ENV
-          echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
-      - name: Get operating system version
-        run: echo OS_VERSION="$(lsb_release -sr)" >> $GITHUB_ENV
-      - name: Cache build modules
+      - name: Get build timestamp
+        run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+      - name: Cache build dependencies
         uses: actions/cache@v3
         with:
           path: local
-          key: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
+          key: cache-build-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-build-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install Dist::Zilla
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla
       - name: Configure Dist::Zilla

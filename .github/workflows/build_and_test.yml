@@ -52,8 +52,6 @@ jobs:
           path: /tmp/cache/.perlcritic-history
           key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
           restore-keys: cache-perlcritic-history-
-      - name: Log perl information
-        run: perl -V
       - name: Install packages
         run: sudo apt-get install -y aspell
       - name: Install build dependencies
@@ -115,8 +113,6 @@ jobs:
           name: build_results
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
-      - name: Log perl information
-        run: perl -V
       - name: Install dependencies
         run: cpanm --installdeps --with-all-features .
       - name: Run tests
@@ -133,8 +129,6 @@ jobs:
           name: build_results
       - name: Setup Perl
         uses: shogo82148/actions-setup-perl@v1
-      - name: Log perl information
-        run: perl -V
       - name: Install dependencies
         run: cpanm --installdeps --with-all-features .
       - name: Run tests
@@ -153,8 +147,6 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           distribution: strawberry
-      - name: Log perl information
-        run: perl -V
       - name: Install dependencies
         run: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
       - name: Install OS-specific dependency

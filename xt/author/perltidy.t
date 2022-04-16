@@ -22,9 +22,9 @@ subtest 'files in bin', sub {
 subtest 'standard files', sub {
   run_tests(
     exclude => [
-      'Makefile.PL',                  '.build/',
-      'blib/',                        'misc/',
-      qr{xt/author/(?!perltidy\.t$)}, qr{xt/release/},
+      'Makefile.PL', '.build/', 'blib/', 'misc/', 'local/',
+      qr{xt/author/(?!perltidy\.t$)},
+      qr{xt/release/},
     ],
   );
 };

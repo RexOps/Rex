@@ -172,6 +172,7 @@ BEGIN {
 }
 
 my $home = $ENV{'HOME'} || "/tmp";
+my $tmp = "/tmp";
 if ( $^O =~ m/^MSWin/ ) {
   $home = $ENV{'USERPROFILE'};
 }

@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Extract author information
         run: |
           echo AUTHOR_NAME="$(git log -1 ${GITHUB_REF} --pretty='%aN')" >> $GITHUB_ENV
@@ -41,13 +41,13 @@ jobs:
       - name: Get operating system version
         run: echo OS_VERSION="$(lsb_release -sr)" >> $GITHUB_ENV
       - name: Cache build modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: local
           key: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
           restore-keys: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
       - name: Cache perlcritic history
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/cache/.perlcritic-history
           key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
@@ -104,7 +104,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload build results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: build_results
           path: build
@@ -115,7 +115,7 @@ jobs:
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build_results
       - name: Setup Perl
@@ -133,7 +133,7 @@ jobs:
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build_results
       - name: Setup Perl
@@ -151,7 +151,7 @@ jobs:
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build_results
       - name: Setup Perl

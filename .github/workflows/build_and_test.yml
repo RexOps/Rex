@@ -54,13 +54,8 @@ jobs:
           restore-keys: cache-perlcritic-history-
       - name: Log perl information
         run: perl -V
-      - name: Add upstream MySQL APT repository
-        run: |
-          wget https://dev.mysql.com/get/mysql-apt-config_0.8.22-1_all.deb
-          sudo dpkg -i mysql-apt-config_0.8.22-1_all.deb
-          sudo apt-get update
       - name: Install packages
-        run: sudo apt-get install -y libmagic-dev mysql-server rsync aspell
+        run: sudo apt-get install -y aspell
       - name: Install build dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy
       - name: Install coverage dependencies

@@ -56,9 +56,6 @@ jobs:
         run: sudo apt-get install -y aspell
       - name: Install build dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy
-      - name: Install coverage dependencies
-        if: ${{ github.event_name != 'schedule' }}
-        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
       - name: Configure Dist::Zilla
         run: |
           mkdir ~/.dzil
@@ -78,29 +75,53 @@ jobs:
         run: |
           cd build
           prove --timer --lib --recurse --jobs $(nproc) --shuffle xt
-      - name: Run tests with coverage
-        if: ${{ github.event_name != 'schedule' }}
-        run: |
-          cd build
-          HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t
       - name: Run tests without coverage
-        if: ${{ github.event_name == 'schedule' }}
         run: |
           cd build
           prove --timer --lib --recurse --jobs $(nproc) --shuffle t
-      - name: Report coverage info to Coveralls
-        if: ${{ github.event_name != 'schedule' }}
-        run: |
-          cd build
-          cover -report coveralls
-          rm -rf cover_db
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload build results
         uses: actions/upload-artifact@v3
         with:
           name: build_results
           path: build
+
+  coverage:
+    if: ${{ github.event_name != 'schedule' }}
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Download build results
+        uses: actions/download-artifact@v3
+        with:
+          name: build_results
+      - name: Setup Perl
+        id: perl
+        uses: shogo82148/actions-setup-perl@v1
+      - name: Get build timestamp
+        run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+      - name: Cache coverage dependencies
+        uses: actions/cache@v3
+        with:
+          path: local
+          key: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-
+      - name: Install dependencies
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-suggests .
+      - name: Install coverage dependencies
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
+      - name: Run tests with coverage
+        env:
+          HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/,^t/
+        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+      - name: Report coverage info to Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cover -report coveralls
 
   linux:
     needs: build

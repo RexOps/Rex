@@ -343,6 +343,17 @@ sub get_operating_system_version {
       return $version;
     }
   }
+  elsif ( $op eq 'NixOS' ) {
+    my $fh      = file_read('/etc/os-release');
+    my $content = $fh->read_all;
+    $fh->close;
+
+    chomp $content;
+
+    my ($version) = $content =~ m/VERSION_ID="(\d+(?:\.)?\d+)"/m;
+
+    return $version;
+  }
 
   return [ i_run("uname -r") ]->[0];
 

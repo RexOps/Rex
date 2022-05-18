@@ -187,6 +187,10 @@ sub get_operating_system {
     return "Manjaro";
   }
 
+  if ( is_file('/etc/NIXOS') ) {
+    return 'NixOS';
+  }
+
   my $os_string = i_run("uname -s");
   return $os_string; # return the plain os
 

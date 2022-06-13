@@ -1016,7 +1016,7 @@ sub delete_lines_according_to {
 
 }
 
-=head2 append_if_no_such_line($file, $new_line, @regexp)
+=head2 append_if_no_such_line($file, $new_line[, @regexp])
 
 Append $new_line to $file if none in @regexp is found. If no regexp is
 supplied, the line is appended unless there is already an identical line

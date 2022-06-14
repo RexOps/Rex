@@ -12,7 +12,7 @@ BEGIN {
     or plan skip_all => 'Could not load Rex::Commands::Rsync module';
 }
 
-use Cwd qw(realpath);
+use Cwd            qw(realpath);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);

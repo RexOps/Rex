@@ -14,9 +14,9 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 use FindBin;
 use File::Basename qw(basename dirname);
-use Time::HiRes qw(gettimeofday tv_interval);
-use Cwd qw(getcwd);
-use List::Util qw(max);
+use Time::HiRes    qw(gettimeofday tv_interval);
+use Cwd            qw(getcwd);
+use List::Util     qw(max);
 use Text::Wrap;
 use Term::ReadKey;
 use Sort::Naturally;

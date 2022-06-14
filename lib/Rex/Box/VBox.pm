@@ -100,7 +100,7 @@ BEGIN {
   LWP::UserAgent->use;
 }
 
-use Time::HiRes qw(tv_interval gettimeofday);
+use Time::HiRes    qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 
 use base qw(Rex::Box::Base);

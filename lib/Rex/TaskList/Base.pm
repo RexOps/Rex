@@ -26,7 +26,7 @@ use Rex::Fork::Manager;
 use Rex::Report;
 use Rex::Group;
 use Time::HiRes qw(time);
-use POSIX qw(floor);
+use POSIX       qw(floor);
 
 sub new {
   my $that  = shift;

@@ -49,6 +49,10 @@ jobs:
           cat ~/.dzil/config.ini
       - name: Install author dependencies
         run: dzil authordeps | cpanm --local-lib ${GITHUB_WORKSPACE}/local
+      - name: Install App::cpanoutdated
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local App::cpanoutdated
+      - name: Upgrade CPAN modules
+        run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Build dist
         run: dzil build --no-tgz --in build
       - name: Create build tarball
@@ -90,6 +94,10 @@ jobs:
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-suggests .
       - name: Install coverage dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
+      - name: Install App::cpanoutdated
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local App::cpanoutdated
+      - name: Upgrade CPAN modules
+        run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Run tests with coverage
         env:
           HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/,^t/
@@ -131,6 +139,10 @@ jobs:
           restore-keys: cache-extra-tests-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop .
+      - name: Install App::cpanoutdated
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local App::cpanoutdated
+      - name: Upgrade CPAN modules
+        run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Cache perlcritic history
         uses: actions/cache@v3
         with:

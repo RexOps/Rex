@@ -19,17 +19,28 @@ my %VM_PROVIDER;
 
 Rex::Config->register_config_handler(
   virtualization => sub {
-    my ($param) = @_;
+    my ($params) = @_;
 
-    if ( ref($param) eq '' ) {
+    if ( ref($params) eq '' ) {
 
 #support 'set virtualization => 'LibVirt', but leave the way open for using a hash in future
 #other virtualisation drivers may need more settings...
-      $param = { type => $param };
+      $params = { type => $params };
     }
 
-    if ( exists $param->{type} ) {
-      Rex::Config->set( virtualization => $param->{type} );
+    if ( ref($params) eq 'HASH' ) {
+
+      if ( exists $params->{type} ) {
+        Rex::Config->set( virtualization => $params );
+      }
+      else {
+        # Probably do some error thing here
+      }
+    }
+    else {
+      # Some error thing here so people dont go:
+      # set virtualzation => [qw/what is this anyway/']
+
     }
   }
 );

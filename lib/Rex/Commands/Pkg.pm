@@ -60,7 +60,7 @@ use vars qw(@EXPORT);
 @EXPORT =
   qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for pkg);
 
-=head2 pkg($package, %options)
+=head2 pkg($package [, %options])
 
 Since: 0.45
 

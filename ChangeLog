@@ -8,6 +8,7 @@ Revision history for Rex
 
  [DOCUMENTATION]
  - Clarify optional arguments of file commands
+ - Clarify optional arguments of the pkg command
 
  [ENHANCEMENTS]
 

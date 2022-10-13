@@ -840,7 +840,7 @@ On failure it will die.
 
  my $fh;
  eval {
-   $fh = read("/etc/groups");
+   $fh = file_read("/etc/groups");
  };
  
  # catch an error

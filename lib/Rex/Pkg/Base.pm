@@ -273,7 +273,9 @@ OLD_PKG:
   push @modifications, map { $_->{action} = 'installed'; $_ }
     grep { !exists $_->{found} } @new_installed;
 
-  map { delete $_->{found} } @modifications;
+  for (@modifications) {
+    delete $_->{found};
+  }
 
   return @modifications;
 }

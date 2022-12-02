@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use Rex::Pkg::Base;
 
@@ -32,5 +32,8 @@ is( $found_libssh2->{action}, "installed", "libssh2-1 was installed" );
 
 my ($found_mc) = grep { $_->{name} eq "mc" } @mods;
 is( $found_mc->{action}, "removed", "mc was removed" );
+
+my $leftover_found = scalar grep { defined $_->{found} } @mods;
+is( $leftover_found, 0, 'no internal found marker left' );
 
 1;

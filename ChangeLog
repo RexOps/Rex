@@ -9,6 +9,7 @@ Revision history for Rex
  [DOCUMENTATION]
  - Clarify optional arguments of file commands
  - Clarify optional arguments of the pkg command
+ - Correct example for file_read command
 
  [ENHANCEMENTS]
 

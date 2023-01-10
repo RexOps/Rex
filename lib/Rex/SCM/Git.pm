@@ -33,7 +33,54 @@ sub checkout {
   $run_opt{env} = $checkout_opt->{env} if ( $checkout_opt->{env} );
   my $clone_args = join( " ", @{ $checkout_opt->{clone_args} || [''] } );
 
-  if ( !is_dir($checkout_to) ) {
+  if ( is_dir("$checkout_to/.git") ) {
+    my $branch = $checkout_opt->{"branch"} || "master";
+    Rex::Logger::info( "Pulling "
+        . $repo_info->{"url"} . " to "
+        . ( $checkout_to ? $checkout_to : "." ) );
+
+    my $rebase = $checkout_opt->{"rebase"} ? '--rebase' : '';
+    my $out    = i_run "git pull $rebase origin $branch",
+      cwd     => $checkout_to,
+      fail_ok => 1,
+      %run_opt;
+
+    unless ( $? == 0 ) {
+      Rex::Logger::info( "Error pulling.", "warn" );
+      Rex::Logger::info($out);
+      die("Error pulling.");
+    }
+    else {
+      Rex::Logger::debug($out);
+    }
+
+    if ( exists $checkout_opt->{"tag"} ) {
+      my $tag          = $checkout_opt->{tag};
+      my $checkout_cmd = sprintf( $CHECKOUT_TAG_COMMAND, $tag, $tag );
+      Rex::Logger::info( "Switching to tag " . $tag );
+      $out = i_run "git fetch origin",
+        cwd     => $checkout_to,
+        fail_ok => 1,
+        %run_opt;
+
+      unless ( $? == 0 ) {
+        Rex::Logger::info( "Error switching to tag.", "warn" );
+        Rex::Logger::info($out);
+        die("Error switching to tag.");
+      }
+      else {
+        Rex::Logger::debug($out);
+      }
+      $out = i_run "$checkout_cmd", cwd => $checkout_to, fail_ok => 1, %run_opt;
+      unless ( $? == 0 ) {
+        Rex::Logger::info( "Error switching to tag.", "warn" );
+        Rex::Logger::info($out);
+        die("Error switching to tag.");
+      }
+      Rex::Logger::debug($out);
+    }
+  }
+  else {
     my $clone_cmd = sprintf( $CLONE_COMMAND,
       $clone_args, $repo_info->{"url"}, basename($checkout_to) );
     Rex::Logger::debug(
@@ -94,57 +141,6 @@ sub checkout {
       }
       Rex::Logger::debug($out);
     }
-  }
-  elsif ( is_dir("$checkout_to/.git") ) {
-    my $branch = $checkout_opt->{"branch"} || "master";
-    Rex::Logger::info( "Pulling "
-        . $repo_info->{"url"} . " to "
-        . ( $checkout_to ? $checkout_to : "." ) );
-
-    my $rebase = $checkout_opt->{"rebase"} ? '--rebase' : '';
-    my $out    = i_run "git pull $rebase origin $branch",
-      cwd     => $checkout_to,
-      fail_ok => 1,
-      %run_opt;
-
-    unless ( $? == 0 ) {
-      Rex::Logger::info( "Error pulling.", "warn" );
-      Rex::Logger::info($out);
-      die("Error pulling.");
-    }
-    else {
-      Rex::Logger::debug($out);
-    }
-
-    if ( exists $checkout_opt->{"tag"} ) {
-      my $tag          = $checkout_opt->{tag};
-      my $checkout_cmd = sprintf( $CHECKOUT_TAG_COMMAND, $tag, $tag );
-      Rex::Logger::info( "Switching to tag " . $tag );
-      $out = i_run "git fetch origin",
-        cwd     => $checkout_to,
-        fail_ok => 1,
-        %run_opt;
-
-      unless ( $? == 0 ) {
-        Rex::Logger::info( "Error switching to tag.", "warn" );
-        Rex::Logger::info($out);
-        die("Error switching to tag.");
-      }
-      else {
-        Rex::Logger::debug($out);
-      }
-      $out = i_run "$checkout_cmd", cwd => $checkout_to, fail_ok => 1, %run_opt;
-      unless ( $? == 0 ) {
-        Rex::Logger::info( "Error switching to tag.", "warn" );
-        Rex::Logger::info($out);
-        die("Error switching to tag.");
-      }
-      Rex::Logger::debug($out);
-    }
-  }
-  else {
-    Rex::Logger::info( "Error checking out repository.", "warn" );
-    die("Error checking out repository.");
   }
 }
 

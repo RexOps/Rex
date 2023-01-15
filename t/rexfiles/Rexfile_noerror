@@ -1,4 +1,3 @@
 use Rex;
-user 'testuser';
-task test => sub { say "test1" };
 
+task 'test', sub { };

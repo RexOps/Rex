@@ -1,6 +1,6 @@
 use Rex;
-user 'testuser';
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-task test2 => sub { say "test4" };
 
+print STDERR "This is STDERR message\n";
+print STDOUT "This is STDOUT message\n";
+
+task 'test', sub { };

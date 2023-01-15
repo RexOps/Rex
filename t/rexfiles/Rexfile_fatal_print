@@ -1,8 +1,11 @@
 use Rex;
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-aaaabbbbcccc
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-task test2 => sub { say "test6" };
 
+print STDERR "This is STDERR message\n";
+print STDOUT "This is STDOUT message\n";
+
+abc
+
+print STDERR "This is STDERR message\n";
+print STDOUT "This is STDOUT message\n";
+
+task 'test', sub { };

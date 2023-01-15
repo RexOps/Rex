@@ -1,4 +1,5 @@
 use Rex;
-aaaabbbbcccc
-task test => sub { say "test3" };
 
+abc
+
+task 'test', sub { };

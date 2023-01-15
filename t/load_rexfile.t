@@ -13,27 +13,12 @@ use File::Temp;
 use Rex::CLI;
 use Test::Output;
 
-## no critic (ProhibitPostfixControls, WhileDiamondDefaultAssignment);
 ## no critic (ProhibitPunctuationVars);
 ## no critic (RequireCheckedSyscalls, RequireCheckedClose);
 ## no critic (RegularExpressions);
 ## no critic (Carping, ProhibitNoWarnings, DuplicateLiteral);
 
-#diag 'create some rexfiles to test...';
-my $fh      = undef;
-my $testdir = File::Temp->newdir( 'rextest.XXXX', TMPDIR => 1, CLEANUP => 1 );
-while (<DATA>) {
-  last if /^__END__$/;
-  if (/^@@ *(\S+)$/) {
-
-    #diag "prepare file $1";
-    close $fh if $fh;
-    open $fh, '>', File::Spec->catfile( $testdir, $1 ) or die $!;
-    next;
-  }
-  print {$fh} $_ if $fh;
-}
-close $fh if $fh;
+my $testdir = File::Spec->join( 't', 'rexfiles' );
 
 my $exit_was_called;
 
@@ -48,7 +33,7 @@ use warnings 'redefine';
 $::QUIET = 1;
 
 #$Rex::Logger::no_color = 1;
-my $logfile = File::Spec->catfile( $testdir, 'log' );
+my $logfile = File::Temp->new->filename;
 Rex::Config->set_log_filename($logfile);
 
 # NOW TEST
@@ -177,49 +162,3 @@ sub _reset_test {
 
   return;
 }
-
-__DATA__
-@@ Rexfile_noerror
-use Rex;
-user 'testuser';
-task test => sub { say "test1" };
-
-@@ Rexfile_warnings
-use Rex;
-use warnings;
-warn 'This is warning';
-my $undef; my $warn = 'warn'.$undef;
-user 'testuser';
-task test => sub { say "test2" };
-
-@@ Rexfile_fatal
-use Rex;
-aaaabbbbcccc
-task test => sub { say "test3" };
-
-@@ Rexfile_noerror_print
-use Rex;
-user 'testuser';
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-task test2 => sub { say "test4" };
-
-@@ Rexfile_warnings_print
-use Rex;
-use warnings;
-warn 'This is warning';
-my $undef; my $warn = 'warn'.$undef;
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-user 'testuser';
-task test2 => sub { say "test5" };
-
-@@ Rexfile_fatal_print
-use Rex;
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-aaaabbbbcccc
-print STDERR 'This is STDERR message';
-print STDOUT 'This is STDOUT message';
-task test2 => sub { say "test6" };
-

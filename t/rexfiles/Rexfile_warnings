@@ -1,0 +1,7 @@
+use Rex;
+use warnings;
+warn 'This is warning';
+my $undef; my $warn = 'warn'.$undef;
+user 'testuser';
+task test => sub { say "test2" };
+

@@ -1,0 +1,9 @@
+use Rex;
+use warnings;
+warn 'This is warning';
+my $undef; my $warn = 'warn'.$undef;
+print STDERR 'This is STDERR message';
+print STDOUT 'This is STDOUT message';
+user 'testuser';
+task test2 => sub { say "test5" };
+

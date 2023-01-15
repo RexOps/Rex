@@ -1,0 +1,8 @@
+use Rex;
+print STDERR 'This is STDERR message';
+print STDOUT 'This is STDOUT message';
+aaaabbbbcccc
+print STDERR 'This is STDERR message';
+print STDOUT 'This is STDOUT message';
+task test2 => sub { say "test6" };
+

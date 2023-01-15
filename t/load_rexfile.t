@@ -151,6 +151,8 @@ sub _get_log {
 }
 
 sub _reset_test {
+  Rex::TaskList->create->clear_tasks();
+
   $exit_was_called = undef;
 
   # reset log

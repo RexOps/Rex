@@ -21,6 +21,7 @@ Revision history for Rex
 
  [REVISION]
  - Fix handling of warnings during Rexfile loading
+ - Mask internal naming in Rexfile loading output
 
 1.13.4 2021-07-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

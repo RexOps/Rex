@@ -764,6 +764,10 @@ sub load_rexfile {
 
         # remove /loader/.../ prefix before filename
         s{/loader/[^/]+/}{}sxm;
+
+        # convert Rexfile to human-friendly name
+        s{__Rexfile__.pm}{Rexfile}msx;
+
         Rex::Logger::info( "\t$_", 'warn' );
       }
     }
@@ -778,6 +782,9 @@ sub load_rexfile {
     # remove the strange path to the Rexfile which exists because
     # we load the Rexfile via our custom code block.
     $e =~ s|/loader/[^/]+/||smg;
+
+    # convert Rexfile to human-friendly name
+    $e =~ s{__Rexfile__.pm}{Rexfile}msx;
 
     my @lines = split( $/, $e );
 

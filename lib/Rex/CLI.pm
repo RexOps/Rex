@@ -761,6 +761,7 @@ sub load_rexfile {
     if (@warnings) {
       Rex::Logger::info( "You have some code warnings:", 'warn' );
       for (@warnings) {
+        chomp;
 
         # remove /loader/.../ prefix before filename
         s{/loader/[^/]+/}{}sxm;

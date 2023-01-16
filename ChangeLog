@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Detect invalid hostgroup expressions
+ - Prevent empty log lines upon Rexfile warnings
 
  [DOCUMENTATION]
  - Clarify optional arguments of file commands

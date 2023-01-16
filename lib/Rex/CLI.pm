@@ -744,14 +744,11 @@ sub load_rexfile {
       }
     };
 
-    my ( $stdout, $stderr, $default_stderr );
-    open $default_stderr, ">&", STDERR;
-
-    # we close STDERR here because we don't want to see the
-    # normal perl error message on the screen. Instead we print
-    # the error message in the catch-if below.
-    local *STDERR;
-    open( STDERR, ">>", \$stderr );
+    # we don't want to see the
+    # normal perl warning message on the screen. Instead we print
+    # the warning message in the catch-if below
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, $_[0] };
 
     # we can't use $rexfile here, because if the variable contains dots
     # the perl interpreter try to load the file directly without using @INC
@@ -761,13 +758,11 @@ sub load_rexfile {
     # update %INC so that we can later use it to find the rexfile
     $INC{"__Rexfile__.pm"} = $rexfile;
 
-    # reopen STDERR
-    open STDERR, ">&", $default_stderr;
-
-    if ($stderr) {
-      my @lines = split( $/, $stderr );
+    if (@warnings) {
       Rex::Logger::info( "You have some code warnings:", 'warn' );
-      Rex::Logger::info( "\t$_",                         'warn' ) for @lines;
+      for (@warnings) {
+        Rex::Logger::info( "\t$_", 'warn' );
+      }
     }
 
     1;

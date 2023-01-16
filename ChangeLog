@@ -20,6 +20,7 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+ - Fix handling of warnings during Rexfile loading
 
 1.13.4 2021-07-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

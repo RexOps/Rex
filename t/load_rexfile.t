@@ -7,7 +7,7 @@ use autodie;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 21;
+use Test::More tests => 16;
 
 use File::Spec;
 use File::Temp;
@@ -18,9 +18,13 @@ use Test::Output;
 ## no critic (RegularExpressions);
 ## no critic (ProhibitNoWarnings, DuplicateLiteral);
 
-my $testdir = File::Spec->join( 't', 'rexfiles' );
+$Rex::Logger::format = '%l - %s';
 
-my $exit_was_called;
+my $testdir      = File::Spec->join( 't', 'rexfiles' );
+my $rex_cli_path = $INC{'Rex/CLI.pm'};
+my $empty        = q();
+
+my ( $exit_was_called, $expected );
 
 # we must disable Rex::CLI::exit() sub imported from Rex::Commands
 no warnings 'redefine';
@@ -39,113 +43,92 @@ Rex::Config->set_log_filename($logfile);
 # NOW TEST
 
 # No Rexfile warning (via Rex::Logger)
-Rex::CLI::load_rexfile( File::Spec->catfile( $testdir, 'no_Rexfile' ) );
-like(
-  cat($logfile),
-  qr/WARN - No Rexfile found/,
-  'No Rexfile warning (via logger)'
-);
+my $rexfile = File::Spec->join( $testdir, 'no_Rexfile' );
+
+_setup_test();
+
+Rex::CLI::load_rexfile($rexfile);
+
+is( cat($logfile), $expected->{log}, 'No Rexfile warning (via logger)' );
 
 # Valid Rexfile
-_reset_test();
-output_like {
-  Rex::CLI::load_rexfile( File::Spec->catfile( $testdir, 'Rexfile_noerror' ) );
-}
-qr/^$/, qr/^$/, 'No stdout/stderr messages on valid Rexfile';
-is( cat($logfile), q{}, 'No warnings on valid Rexfile (via logger)' );
+$rexfile = File::Spec->join( $testdir, 'Rexfile_noerror' );
+
+_setup_test();
+
+output_like { Rex::CLI::load_rexfile($rexfile); } qr/^$/, qr/^$/,
+  'No stdout/stderr messages on valid Rexfile';
+
+is( cat($logfile), $expected->{log},
+  'No warnings on valid Rexfile (via logger)' );
 
 # Rexfile with warnings
-_reset_test();
-output_like {
-  Rex::CLI::load_rexfile( File::Spec->catfile( $testdir, 'Rexfile_warnings' ) );
-}
-qr/^$/, qr/^$/, 'No stdout/stderr messages on Rexfile with warnings';
+$rexfile = File::Spec->join( $testdir, 'Rexfile_warnings' );
+
+_setup_test();
+
+output_like { Rex::CLI::load_rexfile($rexfile); } qr/^$/, qr/^$/,
+  'No stdout/stderr messages on Rexfile with warnings';
+
 ok( !$exit_was_called, 'sub load_rexfile() not exit' );
-like(
-  cat($logfile),
-  qr/WARN - You have some code warnings/,
-  'Code warnings via logger'
-);
-like( cat($logfile), qr/This is warning/, 'warn() warning via logger' );
-like(
-  cat($logfile),
-  qr/Use of uninitialized value \$undef/,
-  'perl warning via logger'
-);
-unlike(
-  cat($logfile),
-  qr#at /loader/0x#,
-  'loader prefix is filtered in warnings report'
-);
+
+is( cat($logfile), $expected->{log}, 'Warnings present (via logger)' );
 
 # Rexfile with fatal errors
-_reset_test();
-output_like {
-  Rex::CLI::load_rexfile( File::Spec->catfile( $testdir, 'Rexfile_fatal' ) );
-}
-qr/^$/, qr/^$/, 'No stdout/stderr messages on Rexfile with errors';
+$rexfile = File::Spec->join( $testdir, 'Rexfile_fatal' );
+
+_setup_test();
+
+output_like { Rex::CLI::load_rexfile($rexfile); } qr/^$/, qr/^$/,
+  'No stdout/stderr messages on Rexfile with errors';
+
 ok( $exit_was_called, 'sub load_rexfile() aborts' );
-like(
-  cat($logfile),
-  qr/ERROR - Compile time errors/,
-  'Fatal errors via logger'
-);
-like(
-  cat($logfile),
-  qr/syntax error at/,
-  'syntax error is fatal error via logger'
-);
-unlike(
-  cat($logfile),
-  qr#at /loader/0x#,
-  'loader prefix is filtered in errors report'
-);
+
+is( cat($logfile), $expected->{log}, 'Errors present (via logger)' );
 
 # Now print messages to STDERR/STDOUT
 # Valid Rexfile
-_reset_test();
-output_like {
-  Rex::CLI::load_rexfile(
-    File::Spec->catfile( $testdir, 'Rexfile_noerror_print' ) );
-}
-qr/^This is STDOUT message$/, qr/^This is STDERR message$/,
+$rexfile = File::Spec->join( $testdir, 'Rexfile_noerror_print' );
+
+_setup_test();
+
+output_like { Rex::CLI::load_rexfile($rexfile); } qr/^This is STDOUT message$/,
+  qr/^This is STDERR message$/,
   'Correct stdout/stderr messages printed from valid Rexfile';
-is( cat($logfile), q{},
+
+is( cat($logfile), $expected->{log},
   'No warnings via logger on valid Rexfile that print messages' );
 
 # Rexfile with warnings
-_reset_test();
-output_like {
-  Rex::CLI::load_rexfile(
-    File::Spec->catfile( $testdir, 'Rexfile_warnings_print' ) );
-}
-qr/^This is STDOUT message$/, qr/^This is STDERR message$/,
+$rexfile = File::Spec->join( $testdir, 'Rexfile_warnings_print' );
+
+_setup_test();
+
+output_like { Rex::CLI::load_rexfile($rexfile); } qr/^This is STDOUT message$/,
+  qr/^This is STDERR message$/,
   'Correct stdout/stderr messages printed from Rexfile with warnings';
-like(
-  cat($logfile),
-  qr/WARN - You have some code warnings/,
-  'Code warnings exist via logger'
-);
+
+is( cat($logfile), $expected->{log}, 'Code warnings exist via logger' );
 
 # Rexfile with fatal errors
-_reset_test();
-output_like {
-  Rex::CLI::load_rexfile(
-    File::Spec->catfile( $testdir, 'Rexfile_fatal_print' ) );
-}
-qr/^$/, qr/^$/,
-  'No stdout/stderr messages printed from Rexfile that has errors';
-ok( $exit_was_called, 'sub load_rexfile() aborts' );
-like(
-  cat($logfile),
-  qr/ERROR - Compile time errors/,
-  'Fatal errors exist via logger'
-);
+$rexfile = File::Spec->join( $testdir, 'Rexfile_fatal_print' );
 
-sub _reset_test {
+_setup_test();
+
+output_like { Rex::CLI::load_rexfile($rexfile); } qr/^$/, qr/^$/,
+  'No stdout/stderr messages printed from Rexfile that has errors';
+
+ok( $exit_was_called, 'sub load_rexfile() aborts' );
+
+is( cat($logfile), $expected->{log}, 'Fatal errors exist via logger' );
+
+sub _setup_test {
   Rex::TaskList->create->clear_tasks();
 
   $exit_was_called = undef;
+
+  $expected->{log} = -r "$rexfile.log" ? cat("$rexfile.log") : $empty;
+  $expected->{log} =~ s{%REX_CLI_PATH%}{$rex_cli_path}msx;
 
   # reset log
   open my $fh, '>', $logfile;

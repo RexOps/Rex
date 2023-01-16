@@ -1,0 +1,4 @@
+WARN - No Rexfile found.
+WARN - Create a file named 'Rexfile' in this directory,
+WARN - or specify the file you want to use with:
+WARN -    rex -f file_to_use task_to_run

@@ -69,7 +69,7 @@ sub __run__ {
   %opts = Rex::Args->getopts;
 
   if ( $opts{'Q'} ) {
-    my ( $stdout, $stderr );
+    my $stdout;
     open( my $newout, '>', \$stdout );
     select $newout;
     close(STDERR);

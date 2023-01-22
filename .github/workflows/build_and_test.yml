@@ -170,6 +170,7 @@ jobs:
             perl: latest
             distribution: strawberry
 
+    name: ${{ matrix.perl }} 🐪 ${{ matrix.os }}
     runs-on: ${{ matrix.os }}-latest
 
     steps:

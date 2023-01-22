@@ -11,7 +11,6 @@ use File::Temp;
 use File::Spec;
 
 use Rex::CLI;
-## no critic (RequireTrailingCommaAtNewline);
 ## no critic (ProhibitPostfixControls, WhileDiamondDefaultAssignment);
 ## no critic (ProhibitPunctuationVars, ProhibitPackageVars);
 ## no critic (RequireCheckedSyscalls, RequireCheckedClose);

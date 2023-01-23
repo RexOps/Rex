@@ -1,0 +1,5 @@
+ERROR - Compile time errors:
+ERROR - 	syntax error at Rexfile line 8, near "abc
+ERROR - 	
+ERROR - 	print"
+ERROR - 	Compilation failed in require at %REX_CLI_PATH% line 756.

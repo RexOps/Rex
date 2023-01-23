@@ -1,0 +1,8 @@
+use Rex;
+
+use warnings;
+
+warn 'This is warning';
+my $warn = 'warn' . undef;
+
+task 'test', sub { };

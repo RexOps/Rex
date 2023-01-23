@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Detect invalid hostgroup expressions
+ - Prevent empty log lines upon Rexfile warnings
 
  [DOCUMENTATION]
  - Clarify optional arguments of file commands
@@ -20,6 +21,8 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+ - Fix handling of warnings during Rexfile loading
+ - Mask internal naming in Rexfile loading output
 
 1.13.4 2021-07-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

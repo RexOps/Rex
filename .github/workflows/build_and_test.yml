@@ -192,6 +192,8 @@ jobs:
           macos: cpanm --installdeps --with-all-features .
           linux: cpanm --installdeps --with-all-features .
           windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
+      - name: Dump Test::Simple version
+        run: perl -MTest::Simple -E 'say Test::Simple->VERSION'
       - name: Get number of processors
         id: cores
         uses: SimenB/github-actions-cpu-cores@v1

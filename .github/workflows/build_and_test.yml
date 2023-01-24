@@ -203,12 +203,26 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
+      - name: Get build timestamp
+        uses: knicknic/os-specific-run@v1.0.3
+        with:
+          macos: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+          linux: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+          windows: |
+            $timestamp = Get-Date -Format "s"
+            "BUILD_TIMESTAMP=${timestamp}" >> $env:GITHUB_ENV
+      - name: Cache test dependencies
+        uses: actions/cache@v3
+        with:
+          path: local
+          key: cache-test-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-test-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install dependencies
         uses: knicknic/os-specific-run@v1.0.3
         with:
-          macos: cpanm --installdeps --with-all-features .
-          linux: cpanm --installdeps --with-all-features .
-          windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
+          macos: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-all-features .
+          linux: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-all-features .
+          windows: cpanm --local-lib "${env:GITHUB_WORKSPACE}/local" --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
       - name: Dump Test::Simple version
         run: perl -MTest::Simple -E 'say Test::Simple->VERSION'
       - name: Get number of processors

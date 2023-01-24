@@ -161,14 +161,9 @@ jobs:
         os:
           - ubuntu
           - macos
+          - windows
         perl:
           - latest
-        distribution:
-          - default
-        include:
-          - os: windows
-            perl: latest
-            distribution: strawberry
 
     runs-on: ${{ matrix.os }}-latest
 
@@ -184,7 +179,7 @@ jobs:
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-          distribution: ${{ matrix.distribution }}
+          distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
       - name: Install dependencies
         uses: knicknic/os-specific-run@v1.0.3
         with:

@@ -181,6 +181,8 @@ jobs:
           - os: windows
             perl: '5.34'
           - os: windows
+            perl: '5.32'
+          - os: windows
             perl: '5.12'
           - os: windows
             perl: '5.10'

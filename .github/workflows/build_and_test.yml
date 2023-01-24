@@ -177,6 +177,13 @@ jobs:
           - '5.14'
           - '5.12'
           - '5.10'
+        exclude:
+          - os: windows
+            perl: '5.34'
+          - os: windows
+            perl: '5.12'
+          - os: windows
+            perl: '5.10'
 
     name: ${{ matrix.perl }} 🐪 ${{ matrix.os }}
     runs-on: ${{ matrix.os }}-latest

@@ -203,6 +203,8 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
+      - name: Upgrade cpanm
+        run: cpanm App::cpanminus
       - name: Get build timestamp
         uses: knicknic/os-specific-run@v1.0.3
         with:

@@ -232,3 +232,6 @@ jobs:
         uses: SimenB/github-actions-cpu-cores@v1
       - name: Run tests
         run: prove --timer --lib --recurse --jobs ${{ steps.cores.outputs.count }} --shuffle t/
+      - name: Show logs
+        if: ${{ failure() }}
+        run: cat C:/HOSTED~1/windows/STRAWB~1/516~1.2/x64/data/.cpanm/work/*/build.log

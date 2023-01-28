@@ -61,7 +61,7 @@ As a general rule, managing an endpoint with Rex is only supported for platforms
 
 ### Supported Perl versions
 
-The minimum version of Perl that is supported by Rex is determined by matching the oldest version of Perl 5 that is supplied by the platforms where Rex is supported to run. Up until the retirement date of RHEL/CentOS 5 on 2017-03-31, this meant 5.8.8. Currently it is 5.10.1.
+Rex aims to run even on older Perl versions up to 10 years old. Currently this means 5.10.1. The recommended minimum version of Perl on Windows is 5.20.3.
 
 On top of the supported minimum version of Perl, the goal is to support the latest versions of all minor Perl 5 releases. That makes the full list the following:
 

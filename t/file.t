@@ -367,26 +367,21 @@ subtest 'get temp file name' => sub {
   }
 };
 
-TODO: {
-  local $TODO = 'on_change hook is triggered unconditionally on Windows'
-    if ( $^O =~ /MSWin/ );
+subtest 'on_change hook with source option' => sub {
+  my $testfile1 = File::Temp->new()->filename;
+  my $testfile2 = File::Temp->new()->filename;
 
-  subtest 'on_change hook with source option' => sub {
-    my $testfile1 = File::Temp->new()->filename;
-    my $testfile2 = File::Temp->new()->filename;
+  my $changed;
 
-    my $changed;
+  file $testfile1, content => 'change', on_change => sub { $changed += 1 };
 
-    file $testfile1, content => 'change', on_change => sub { $changed += 1 };
+  is( $changed, 1, 'on_change when creating a new file with content' );
 
-    is( $changed, 1, 'on_change when creating a new file with content' );
+  file $testfile2, source => $testfile1, on_change => sub { $changed += 1 };
 
-    file $testfile2, source => $testfile1, on_change => sub { $changed += 1 };
+  is( $changed, 2, 'on_change when creating a new file with source' );
 
-    is( $changed, 2, 'on_change when creating a new file with source' );
+  file $testfile2, source => $testfile1, on_change => sub { $changed += 1 };
 
-    file $testfile2, source => $testfile1, on_change => sub { $changed += 1 };
-
-    is( $changed, 2, 'on_change when uploading the same file again' );
-  };
-}
+  is( $changed, 2, 'on_change when uploading the same file again' );
+};

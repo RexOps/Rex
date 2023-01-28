@@ -1,4 +1,4 @@
 This is STDERR message
 WARN - You have some code warnings:
-WARN - 	This is warning at Rexfile line 5.
-WARN - 	Use of uninitialized value in concatenation (.) or string at Rexfile line 6.
+WARN - 	This is warning at %REXFILE_PATH% line 5.
+WARN - 	Use of uninitialized value in concatenation (.) or string at %REXFILE_PATH% line 6.

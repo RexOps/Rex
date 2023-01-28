@@ -67,7 +67,6 @@ sub _setup_test {
     my $default_content = $extension eq 'stderr' ? $expected->{log} : $empty;
 
     $expected->{$extension} = -r $file ? cat($file) : $default_content;
-    $expected->{$extension} =~ s{%REX_CLI_PATH%}{$rex_cli_path}msx;
     $expected->{$extension} =~ s{%REXFILE_PATH%}{$rexfile}gmsx;
   }
 

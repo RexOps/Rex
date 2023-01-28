@@ -13,6 +13,7 @@ Revision history for Rex
  - Correct example for file_read command
 
  [ENHANCEMENTS]
+ - Show Rexfile path in loading messages
 
  [MAJOR]
 

@@ -767,7 +767,7 @@ sub load_rexfile {
         s{/loader/[^/]+/}{}sxm;
 
         # convert Rexfile to human-friendly name
-        s{__Rexfile__.pm}{Rexfile}msx;
+        s{__Rexfile__.pm}{$rexfile}msx;
 
         Rex::Logger::info( "\t$_", 'warn' );
       }
@@ -785,7 +785,7 @@ sub load_rexfile {
     $e =~ s|/loader/[^/]+/||smg;
 
     # convert Rexfile to human-friendly name
-    $e =~ s{__Rexfile__.pm}{Rexfile}msx;
+    $e =~ s{__Rexfile__.pm}{$rexfile}gmsx;
 
     my @lines = split( $/, $e );
 

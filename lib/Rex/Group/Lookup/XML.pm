@@ -1,8 +1,6 @@
 #
 # (c) Nathan Abu <aloha2004@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 

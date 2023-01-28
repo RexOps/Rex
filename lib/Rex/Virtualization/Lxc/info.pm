@@ -1,8 +1,6 @@
 #
 # (c) Oleg Hardt <litwol@litwol.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Virtualization::Lxc::info;
 

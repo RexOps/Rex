@@ -1,8 +1,6 @@
 #
 # (c) Ferenc Erki <erkiferenc@gmail.com>, adjust GmbH
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Test::Base::has_dir;
 

@@ -1,8 +1,6 @@
 #
 # (c) Ferenc Erki <erkiferenc@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Cloud::OpenStack;
 

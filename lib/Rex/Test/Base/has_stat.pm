@@ -1,8 +1,6 @@
 #
 # (c) Robert Abraham <robert@adeven.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Test::Base::has_stat;
 

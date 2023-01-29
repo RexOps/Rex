@@ -778,10 +778,23 @@ sub load_rexfile {
 
     $e = _tidy_loading_message( $e, $rexfile );
 
-    my @lines = split( $/, $e );
+    my ( @error_lines, @debug_lines );
+
+    for my $line ( split $/, $e ) {
+      $line =~ m{CLI[.]pm[ ]line[ ]\d+}msx
+        ? push @debug_lines, $line
+        : push @error_lines, $line;
+    }
 
     Rex::Logger::info( "Compile time errors:", 'error' );
-    Rex::Logger::info( "\t$_",                 'error' ) for @lines;
+
+    for my $error_line (@error_lines) {
+      Rex::Logger::info( "\t$error_line", 'error' );
+    }
+
+    for my $debug_line (@debug_lines) {
+      Rex::Logger::debug("\t$debug_line");
+    }
 
     exit 1;
   }

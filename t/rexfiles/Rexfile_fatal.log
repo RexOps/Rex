@@ -2,4 +2,3 @@ ERROR - Compile time errors:
 ERROR - 	syntax error at %REXFILE_PATH% line 5, near "abc
 ERROR - 	
 ERROR - 	task "
-ERROR - 	Compilation failed in require at %REX_CLI_PATH% line 756.

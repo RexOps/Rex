@@ -1,10 +1,12 @@
+use 5.12.5;
+
 use Test::More;
 use Rex::Commands;
 
 {
+  use 5.12.5;
 
   package MyTest;
-  use strict;
   use warnings;
   use Rex::Commands;
 
@@ -24,10 +26,10 @@ use Rex::Commands;
 }
 
 {
+  use 5.12.5;
 
   package Nested::Module;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;
@@ -39,10 +41,10 @@ use Rex::Commands;
 }
 
 {
+  use 5.12.5;
 
   package Rex::Module;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;

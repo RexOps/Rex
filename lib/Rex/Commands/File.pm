@@ -57,8 +57,7 @@ With this module you can manipulate files.
 
 package Rex::Commands::File;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 use Fcntl;
 

@@ -1,3 +1,5 @@
+use 5.12.5;
+
 package main;
 
 use Test::More tests => 2;

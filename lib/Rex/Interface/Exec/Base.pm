@@ -4,8 +4,7 @@
 
 package Rex::Interface::Exec::Base;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 use Carp;
 use Rex::Helper::Run;

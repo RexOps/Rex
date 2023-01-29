@@ -46,8 +46,7 @@ This module can sync directories between your Rex system and your servers withou
 
 package Rex::Commands::Sync;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

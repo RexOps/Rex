@@ -28,8 +28,7 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 package Rex::FS::File;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 use Rex::Interface::File;
 

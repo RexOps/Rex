@@ -29,8 +29,7 @@ With this module you can get information of the routing table, current network c
 
 package Rex::Commands::Network;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

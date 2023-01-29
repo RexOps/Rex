@@ -1,3 +1,5 @@
+use 5.12.5;
+
 use Test::More;
 
 $^O =~ m/^MSWin/ ? plan tests => 83 : plan tests => 286;

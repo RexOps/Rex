@@ -45,7 +45,7 @@ Currently nesting data structures works only if the assignment is made on the to
 
 package Rex::Shared::Var;
 
-use strict;
+use 5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

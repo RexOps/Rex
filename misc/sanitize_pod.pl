@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
+use 5.12.5;
 use warnings;
 
 open my $fh, "<", $ARGV[0] or die $!;

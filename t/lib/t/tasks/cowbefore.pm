@@ -1,3 +1,5 @@
+use 5.12.5;
+
 package t::tasks::cowbefore;
 use Rex -base;
 

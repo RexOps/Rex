@@ -23,8 +23,7 @@ This module is the base class for hardware/information gathering.
 
 package Rex::Hardware;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

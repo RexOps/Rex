@@ -4,8 +4,7 @@
 
 package Rex::Interface::Shell::Tcsh;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 use Rex::Interface::Shell::Csh;
 

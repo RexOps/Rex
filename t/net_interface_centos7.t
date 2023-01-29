@@ -1,3 +1,5 @@
+use 5.12.5;
+
 use Test::More tests => 6;
 use Rex::Hardware::Network::Linux;
 

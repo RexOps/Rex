@@ -31,8 +31,7 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 
 package Rex::Task;
 
-use 5.010001;
-use strict;
+use 5.12.5;
 use warnings;
 use Data::Dumper;
 use Time::HiRes qw(time);

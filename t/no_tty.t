@@ -1,3 +1,5 @@
+use 5.12.5;
+
 use Test::More tests => 3;
 
 use Rex::Commands::Run;

@@ -4,8 +4,7 @@
 
 package Rex::Shared::Var::Common;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 require Exporter;

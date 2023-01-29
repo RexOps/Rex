@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
+use v5.12.5;
 use warnings;
 
 use Rex::Commands;

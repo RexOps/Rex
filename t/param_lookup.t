@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use v5.12.5;
+
 package main;
 
 use Test::More tests => 8;

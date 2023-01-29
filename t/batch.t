@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use v5.12.5;
+
 use Test::More tests => 2;
 use Rex::Commands;
 use Rex::Batch;

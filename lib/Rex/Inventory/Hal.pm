@@ -4,8 +4,7 @@
 
 package Rex::Inventory::Hal;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 use Rex::Inventory::Hal::Object;

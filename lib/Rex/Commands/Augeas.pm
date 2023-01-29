@@ -34,8 +34,7 @@ This is a simple module to manipulate configuration files with the help of augea
 
 package Rex::Commands::Augeas;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

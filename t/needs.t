@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use v5.12.5;
+
 use Test::More;
 use Rex::Commands;
 
@@ -7,7 +9,6 @@ use Rex::Commands;
 
   package MyTest;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;
@@ -31,7 +32,6 @@ use Rex::Commands;
 
   package Nested::Module;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;
@@ -46,7 +46,6 @@ use Rex::Commands;
 
   package Rex::Module;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;

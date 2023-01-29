@@ -4,8 +4,7 @@
 
 package Rex::Interface::Exec::HTTP;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Rex::Commands;
 

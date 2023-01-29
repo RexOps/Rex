@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use v5.12.5;
+
 use Test::More tests => 44;
 use Rex::Hardware::Network::Linux;
 use Rex::Helper::Hash;

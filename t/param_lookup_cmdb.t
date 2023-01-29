@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use v5.12.5;
+
 use Rex -base;
 use Rex::Resource;
 use Test::More;

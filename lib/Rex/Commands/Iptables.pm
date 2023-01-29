@@ -79,8 +79,7 @@ Only I<open_port> and I<close_port> are idempotent.
 
 package Rex::Commands::Iptables;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use version;
 

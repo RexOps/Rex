@@ -763,13 +763,9 @@ sub load_rexfile {
       for (@warnings) {
         chomp;
 
-        # remove /loader/.../ prefix before filename
-        s{/loader/[^/]+/}{}sxm;
+        my $message = _tidy_loading_message( $_, $rexfile );
 
-        # convert Rexfile to human-friendly name
-        s{__Rexfile__.pm}{Rexfile}msx;
-
-        Rex::Logger::info( "\t$_", 'warn' );
+        Rex::Logger::info( "\t$message", 'warn' );
       }
     }
 
@@ -780,12 +776,7 @@ sub load_rexfile {
     my $e = $@;
     chomp $e;
 
-    # remove the strange path to the Rexfile which exists because
-    # we load the Rexfile via our custom code block.
-    $e =~ s|/loader/[^/]+/||smg;
-
-    # convert Rexfile to human-friendly name
-    $e =~ s{__Rexfile__.pm}{Rexfile}msx;
+    $e = _tidy_loading_message( $e, $rexfile );
 
     my @lines = split( $/, $e );
 
@@ -794,6 +785,13 @@ sub load_rexfile {
 
     exit 1;
   }
+}
+
+sub _tidy_loading_message {
+  my ( $message, $rexfile ) = @_;
+
+  $message =~ s{/loader/[^/]+/__Rexfile__[.]pm}{$rexfile}gmsx;
+  return $message;
 }
 
 sub exit_rex {

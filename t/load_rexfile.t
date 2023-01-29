@@ -68,6 +68,7 @@ sub _setup_test {
 
     $expected->{$extension} = -r $file ? cat($file) : $default_content;
     $expected->{$extension} =~ s{%REX_CLI_PATH%}{$rex_cli_path}msx;
+    $expected->{$extension} =~ s{%REXFILE_PATH%}{$rexfile}gmsx;
   }
 
   # reset log

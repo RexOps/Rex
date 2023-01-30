@@ -4,6 +4,21 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+
+ [DOCUMENTATION]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+
+ [NEW FEATURES]
+
+ [REVISION]
+
+1.13.4.1-TRIAL 2023-01-30 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
  - Detect invalid hostgroup expressions
  - Prevent empty log lines upon Rexfile warnings
  - Fix tests on Strawberry Perl older than 5.18.4
@@ -18,12 +33,8 @@ Revision history for Rex
  - Show Rexfile path in loading messages
  - Hide internal details when Rexfile loading fails
 
- [MAJOR]
-
  [MINOR]
  - Set minimum required Perl version to 5.12.5
-
- [NEW FEATURES]
 
  [REVISION]
  - Fix handling of warnings during Rexfile loading

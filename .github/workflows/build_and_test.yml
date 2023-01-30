@@ -200,7 +200,7 @@ jobs:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
       - name: Install dependencies
-        uses: knicknic/os-specific-run@v1.0.3
+        uses: ferki/os-specific-run@ferki
         with:
           macos: cpanm --installdeps --with-all-features .
           linux: cpanm --installdeps --with-all-features .

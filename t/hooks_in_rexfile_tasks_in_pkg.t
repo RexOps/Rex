@@ -17,6 +17,9 @@ BEGIN {
 
 $::QUIET = 1;
 
+$before_task_start_all = $before_task_start = $before_all = $before = $after =
+  $after_all = $after_task_finished = $after_task_finished_all = 0;
+
 timeout 1;
 
 before_task_start ALL => sub { $before_task_start_all += 1; };

@@ -1,5 +1,8 @@
 package Rex::CLI;
 
+use 5.006;
+use warnings;
+
 BEGIN {
   use Test::More tests => 8;
   use lib 't/lib';
@@ -13,6 +16,9 @@ BEGIN {
 }
 
 $::QUIET = 1;
+
+$before_task_start_all = $before_task_start = $before_all = $before = $after =
+  $after_all = $after_task_finished = $after_task_finished_all = 0;
 
 timeout 1;
 

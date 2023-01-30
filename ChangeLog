@@ -7,6 +7,7 @@ Revision history for Rex
  - Detect invalid hostgroup expressions
  - Prevent empty log lines upon Rexfile warnings
  - Fix tests on Strawberry Perl older than 5.18.4
+ - Fix test warnings on Perl before 5.16.0
 
  [DOCUMENTATION]
  - Clarify optional arguments of file commands

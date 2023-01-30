@@ -1,5 +1,8 @@
 package Rex::CLI;
 
+use 5.006;
+use warnings;
+
 BEGIN {
   use Test::More tests => 8;
   use lib 't/lib';

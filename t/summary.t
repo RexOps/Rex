@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More;
 use Test::Deep;
 
+use Module::Load::Conditional qw(check_install);
 use Rex::Config;
 use Rex::Commands;
 use Rex::Commands::Run;
@@ -11,11 +12,20 @@ use Rex::Transaction;
 
 $::QUIET = 1;
 
-subtest "distributor => 'Base'" => sub {
+my @distributors = ('Base');
 
-  subtest 'exec_autodie => 0' => sub {
+if ( check_install( module => 'Parallel::ForkManager' ) ) {
+  push @distributors, 'Parallel_ForkManager';
+}
+
+plan tests => scalar @distributors * 2;
+
+for my $distributor (@distributors) {
+
+  Rex::Config->set_distributor($distributor);
+
+  subtest "$distributor distributor with exec_autodie => 0" => sub {
     Rex::Config->set_exec_autodie(0);
-    Rex::Config->set_distributor('Base');
     test_summary(
       task0 => { server => '<local>', task => 'task0', exit_code => 1 },
       task1 => { server => '<local>', task => 'task1', exit_code => 0 },
@@ -24,9 +34,8 @@ subtest "distributor => 'Base'" => sub {
     );
   };
 
-  subtest 'exec_autodie => 1' => sub {
+  subtest "$distributor distributor with exec_autodie => 1" => sub {
     Rex::Config->set_exec_autodie(1);
-    Rex::Config->set_distributor('Base');
     test_summary(
       task0 => { server => '<local>', task => 'task0', exit_code => 1 },
       task1 => { server => '<local>', task => 'task1', exit_code => 1 },
@@ -34,35 +43,6 @@ subtest "distributor => 'Base'" => sub {
       task3 => { server => '<local>', task => 'task3', exit_code => 1 },
     );
   };
-};
-
-SKIP: {
-  skip "Parallel::ForkManager is not installed", 1
-    if parallel_forkmanager_not_installed();
-
-  subtest "distributor => 'Parallel_ForkManager'" => sub {
-    subtest 'exec_autodie => 0' => sub {
-      Rex::Config->set_exec_autodie(0);
-      Rex::Config->set_distributor('Parallel_ForkManager');
-      test_summary(
-        task0 => { server => '<local>', task => 'task0', exit_code => 1 },
-        task1 => { server => '<local>', task => 'task1', exit_code => 0 },
-        task2 => { server => '<local>', task => 'task2', exit_code => 0 },
-        task3 => { server => '<local>', task => 'task3', exit_code => 1 },
-      );
-    };
-
-    subtest 'exec_autodie => 1' => sub {
-      Rex::Config->set_exec_autodie(1);
-      Rex::Config->set_distributor('Parallel_ForkManager');
-      test_summary(
-        task0 => { server => '<local>', task => 'task0', exit_code => 1 },
-        task1 => { server => '<local>', task => 'task1', exit_code => 1 },
-        task2 => { server => '<local>', task => 'task2', exit_code => 0 },
-        task3 => { server => '<local>', task => 'task3', exit_code => 1 },
-      );
-    };
-  }
 }
 
 sub create_tasks {
@@ -122,10 +102,4 @@ sub test_summary {
   no warnings;
 
   @Rex::TaskList::Base::SUMMARY = ();
-}
-
-sub parallel_forkmanager_not_installed {
-  eval { require Parallel::ForkManager };
-  return 1 if $@;
-  return 0;
 }

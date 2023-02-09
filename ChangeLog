@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix attempt to free unreferenced scalar on Windows
 
  [DOCUMENTATION]
 

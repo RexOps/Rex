@@ -4,6 +4,7 @@ use warnings;
 use Test::More tests => 2;
 use Test::Deep;
 
+use Module::Load::Conditional qw(check_install);
 use Rex::Config;
 use Rex::Commands;
 use Rex::Commands::Run;
@@ -38,7 +39,7 @@ subtest "distributor => 'Base'" => sub {
 
 SKIP: {
   skip "Parallel::ForkManager is not installed", 1
-    if parallel_forkmanager_not_installed();
+    if ( !check_install( module => 'Parallel::ForkManager' ) );
 
   subtest "distributor => 'Parallel_ForkManager'" => sub {
     subtest 'exec_autodie => 0' => sub {
@@ -122,10 +123,4 @@ sub test_summary {
   no warnings;
 
   @Rex::TaskList::Base::SUMMARY = ();
-}
-
-sub parallel_forkmanager_not_installed {
-  eval { require Parallel::ForkManager };
-  return 1 if $@;
-  return 0;
 }

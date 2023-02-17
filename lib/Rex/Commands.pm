@@ -350,12 +350,20 @@ sub task {
 
 =head2 desc($description)
 
-Set the description of a task.
+Set the description of the task, batch, or environment following it.
 
- desc "This is a task description of the following task";
- task "mytask", sub {
-   say "Do something";
- }
+ desc 'This is the description of the following task';
+ task 'mytask', sub {
+   say 'Do something';
+ };
+
+ desc 'This is the description of the following batch';
+ batch mybatch => 'task1', 'task2', 'task3';
+ 
+ desc 'This is the description of the following environment';
+ environment production => sub {
+   ...
+ };
 
 =cut
 

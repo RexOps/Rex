@@ -1654,14 +1654,14 @@ sub tmp_dir {
 
 This function dumps the contents of a variable to STDOUT.
 
-task "mytask", "myserver", sub {
-  my $myvar = {
-    name => "foo",
-    sys  => "bar",
-  };
-
-  inspect $myvar;
-};
+ task "mytask", "myserver", sub {
+   my $myvar = {
+     name => "foo",
+     sys  => "bar",
+   };
+ 
+   inspect $myvar;
+ };
 
 =cut
 

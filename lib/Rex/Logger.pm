@@ -34,8 +34,6 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-#use Rex;
-
 our $no_color = 0;
 eval "use Term::ANSIColor";
 if ($@) { $no_color = 1; }
@@ -240,9 +238,6 @@ sub shutdown {
 
 }
 
-# %D - Date
-# %h - Host
-# %s - Logstring
 sub format_string {
   my ( $s, $level ) = @_;
 

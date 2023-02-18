@@ -17,8 +17,11 @@ use Time::HiRes    qw(gettimeofday tv_interval);
 use Cwd            qw(getcwd);
 use List::Util     qw(max);
 use Text::Wrap;
+use Term::ANSIColor;
 use Term::ReadKey;
 use Sort::Naturally;
+
+use if $OSNAME eq 'MSWin32', 'Win32::Console::ANSI';
 
 use Rex;
 use Rex::Args;
@@ -32,13 +35,6 @@ use YAML;
 use Data::Dumper;
 
 my $no_color = 0;
-eval "use Term::ANSIColor";
-if ($EVAL_ERROR) { $no_color = 1; }
-
-if ( $OSNAME =~ m/MSWin/ ) {
-  eval "use Win32::Console::ANSI";
-  if ($EVAL_ERROR) { $no_color = 1; }
-}
 
 # preload some modules
 use Rex -base;

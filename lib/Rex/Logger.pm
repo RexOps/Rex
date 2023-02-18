@@ -35,15 +35,11 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use English qw(-no_match_vars);
+use Term::ANSIColor;
+
+use if $OSNAME eq 'MSWin32', 'Win32::Console::ANSI';
 
 our $no_color = 0;
-eval "use Term::ANSIColor";
-if ($EVAL_ERROR) { $no_color = 1; }
-
-if ( $OSNAME =~ m/MSWin/ ) {
-  eval "use Win32::Console::ANSI";
-  if ($EVAL_ERROR) { $no_color = 1; }
-}
 
 my $has_syslog = 0;
 my $log_fh;

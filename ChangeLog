@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix attempt to free unreferenced scalar on Windows
+ - Declare dependencies for colored output
 
  [DOCUMENTATION]
  - Fix rendering of inspect example

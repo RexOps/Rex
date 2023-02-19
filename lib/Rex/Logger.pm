@@ -249,7 +249,6 @@ sub format_string {
     && Rex::get_current_connection()->{conn}->server
     ? Rex::get_current_connection()->{conn}->server
     : "<local>";
-  my $pid = $PID;
 
   my $line = $format;
 
@@ -257,7 +256,7 @@ sub format_string {
   $line =~ s/\%h/$host/gms;
   $line =~ s/\%s/$s/gms;
   $line =~ s/\%l/$level/gms;
-  $line =~ s/\%p/$pid/gms;
+  $line =~ s/\%p/$PID/gms;
 
   return $line;
 }

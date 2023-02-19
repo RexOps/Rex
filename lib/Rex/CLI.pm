@@ -10,6 +10,7 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
 use FindBin;
 use File::Basename qw(basename dirname);
 use Time::HiRes    qw(gettimeofday tv_interval);
@@ -32,17 +33,17 @@ use Data::Dumper;
 
 my $no_color = 0;
 eval "use Term::ANSIColor";
-if ($@) { $no_color = 1; }
+if ($EVAL_ERROR) { $no_color = 1; }
 
-if ( $^O =~ m/MSWin/ ) {
+if ( $OSNAME =~ m/MSWin/ ) {
   eval "use Win32::Console::ANSI";
-  if ($@) { $no_color = 1; }
+  if ($EVAL_ERROR) { $no_color = 1; }
 }
 
 # preload some modules
 use Rex -base;
 
-$|++;
+$OUTPUT_AUTOFLUSH++;
 
 my ( %opts, @help, @exit );
 
@@ -310,8 +311,8 @@ CHECK_OVERWRITE: {
 
     $code = eval($code);
 
-    if ($@) {
-      Rex::Logger::info( "Error in eval line: $@\n", "warn" );
+    if ($EVAL_ERROR) {
+      Rex::Logger::info( "Error in eval line: $EVAL_ERROR\n", "warn" );
       exit 1;
     }
 
@@ -376,10 +377,10 @@ CHECK_OVERWRITE: {
   $run_list->parse_opts(@ARGV);
 
   eval { $run_list->run_tasks };
-  if ($@) {
+  if ($EVAL_ERROR) {
 
     # this is always the child
-    Rex::Logger::info( "Error running task/batch: $@", "warn" );
+    Rex::Logger::info( "Error running task/batch: $EVAL_ERROR", "warn" );
     CORE::exit(0);
   }
 
@@ -625,7 +626,7 @@ sub summarize {
   {
     Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" );
     if ( $_->{error_message} ) {
-      for my $line ( split( $/, $_->{error_message} ) ) {
+      for my $line ( split( $INPUT_RECORD_SEPARATOR, $_->{error_message} ) ) {
         Rex::Logger::info( "\t\t$line", "error" );
       }
     }
@@ -635,13 +636,16 @@ sub summarize {
 sub handle_lock_file {
   my $rexfile = shift;
 
-  if ( $^O !~ m/^MSWin/ ) {
+  if ( $OSNAME !~ m/^MSWin/ ) {
     if ( -f "$rexfile.lock" && !exists $opts{'F'} ) {
       Rex::Logger::debug("Found $rexfile.lock");
-      my $pid = eval { local ( @ARGV, $/ ) = ("$rexfile.lock"); <>; };
+      my $pid = eval {
+        local ( @ARGV, $INPUT_RECORD_SEPARATOR ) = ("$rexfile.lock");
+        <>;
+      };
       system(
         "ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
-      if ( $? == 0 ) {
+      if ( $CHILD_ERROR == 0 ) {
         Rex::Logger::info("Rexfile is in use by $pid.");
         CORE::exit 1;
       }
@@ -653,8 +657,8 @@ sub handle_lock_file {
     }
 
     Rex::Logger::debug("Creating lock-file ($rexfile.lock)");
-    open( my $f, ">", "$rexfile.lock" ) or die($!);
-    print $f $$;
+    open( my $f, ">", "$rexfile.lock" ) or die($OS_ERROR);
+    print $f $PID;
     close($f);
   }
   else {
@@ -705,7 +709,8 @@ sub load_rexfile {
     unshift @INC, sub {
       my $load_file = $_[1];
       if ( $load_file eq "__Rexfile__.pm" ) {
-        open( my $fh, "<", $rexfile ) or die("Error can't open $rexfile: $!");
+        open( my $fh, "<", $rexfile )
+          or die("Error can't open $rexfile: $OS_ERROR");
         my @content = <$fh>;
         close($fh);
         chomp @content;
@@ -770,15 +775,15 @@ sub load_rexfile {
     1;
   };
 
-  if ($@) {
-    my $e = $@;
+  if ($EVAL_ERROR) {
+    my $e = $EVAL_ERROR;
     chomp $e;
 
     $e = _tidy_loading_message( $e, $rexfile );
 
     my ( @error_lines, @debug_lines );
 
-    for my $line ( split $/, $e ) {
+    for my $line ( split $INPUT_RECORD_SEPARATOR, $e ) {
       $line =~ m{CLI[.]pm[ ]line[ ]\d+}msx
         ? push @debug_lines, $line
         : push @error_lines, $line;

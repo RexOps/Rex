@@ -34,13 +34,15 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
+
 our $no_color = 0;
 eval "use Term::ANSIColor";
-if ($@) { $no_color = 1; }
+if ($EVAL_ERROR) { $no_color = 1; }
 
-if ( $^O =~ m/MSWin/ ) {
+if ( $OSNAME =~ m/MSWin/ ) {
   eval "use Win32::Console::ANSI";
-  if ($@) { $no_color = 1; }
+  if ($EVAL_ERROR) { $no_color = 1; }
 }
 
 my $has_syslog = 0;
@@ -93,7 +95,7 @@ sub init {
   eval {
     die
       if ( Rex::Config->get_log_filename || !Rex::Config->get_log_facility );
-    die if ( $^O =~ m/^MSWin/ );
+    die if ( $OSNAME =~ m/^MSWin/ );
 
     Sys::Syslog->use;
     openlog( "rex", "ndelay,pid", Rex::Config->get_log_facility );
@@ -135,7 +137,7 @@ sub info {
   }
 
   if ( Rex::Config->get_log_filename() ) {
-    open( $log_fh, ">>", Rex::Config->get_log_filename() ) or die($!);
+    open( $log_fh, ">>", Rex::Config->get_log_filename() ) or die($OS_ERROR);
     flock( $log_fh, 2 );
     print {$log_fh} "$msg\n" if ($log_fh);
     close($log_fh);
@@ -188,7 +190,7 @@ sub debug {
   }
 
   if ( Rex::Config->get_log_filename() ) {
-    open( $log_fh, ">>", Rex::Config->get_log_filename() ) or die($!);
+    open( $log_fh, ">>", Rex::Config->get_log_filename() ) or die($OS_ERROR);
     flock( $log_fh, 2 );
     print {$log_fh} "$msg\n" if ($log_fh);
     close($log_fh);
@@ -247,7 +249,7 @@ sub format_string {
     && Rex::get_current_connection()->{conn}->server
     ? Rex::get_current_connection()->{conn}->server
     : "<local>";
-  my $pid = $$;
+  my $pid = $PID;
 
   my $line = $format;
 

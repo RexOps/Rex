@@ -69,10 +69,10 @@ sub wait_for_all {
 sub wait_for {
   my ( $self, $all ) = @_;
   do {
-    for ( my $i = 0 ; $i < scalar( @{ $self->{'forks'} } ) ; $i++ ) {
+  FORK: for ( my $i = 0 ; $i < scalar( @{ $self->{'forks'} } ) ; $i++ ) {
       my $thr = $self->{'forks'}->[$i];
       unless ( $thr->{'running'} ) {
-        next;
+        next FORK;
       }
 
       my $kid;

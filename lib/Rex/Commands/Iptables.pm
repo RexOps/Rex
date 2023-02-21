@@ -103,7 +103,7 @@ use Rex::Logger;
 
 @EXPORT = qw(iptables is_nat_gateway iptables_list iptables_clear
   open_port close_port redirect_port
-  default_state_rule);
+  default_state_rule chain_exists);
 
 sub iptables;
 
@@ -482,6 +482,44 @@ sub _iptables_list {
   }
 
   return $ret;
+}
+
+=head2 chain_exists
+
+Returns true if a chain exists in a table, false otherwise.
+
+
+ chain_exists 'foo'; # $table defaulting to 'filter'
+ chain_exists 'foo', table => 'filter';
+ chain_exists -6, 'foo'; # IPv6
+
+
+In this example we create a chain unless it already exists.
+
+ task "create_chain", sub {
+   iptables(t => 'filter', N => 'foo')
+     unless chain_exists('foo');
+ };
+
+
+=cut
+
+sub chain_exists {
+  my @params = @_;
+  my $ipt_version = _get_ip_version( \@params );
+  my ( $chain, %args ) = @params;
+
+  my $table = (delete $args{table} or 'filter');
+
+  eval {
+    iptables($ipt_version, list => $chain);
+  };
+
+  return 0  if $@ && $@ =~ /No chain/;
+  die $@    if $@;
+
+  return 1;
+
 }
 
 =head2 iptables_clear

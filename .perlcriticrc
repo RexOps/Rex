@@ -9,6 +9,9 @@ except_function_calls = 1
 [Subroutines::ProhibitUnusedPrivateSubroutines]
 private_name_regex = _(?!_)\w+
 
+[Subroutines::ProtectPrivateSubs]
+private_name_regex = _(?!_)\w+
+
 [-ValuesAndExpressions::ProhibitVersionStrings]
 
 [Variables::ProhibitPackageVars]

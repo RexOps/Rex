@@ -10,6 +10,7 @@ Revision history for Rex
  [DOCUMENTATION]
  - Fix rendering of inspect example
  - Clarify documentation of desc command
+ - Clarify template variables
 
  [ENHANCEMENTS]
 

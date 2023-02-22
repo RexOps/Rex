@@ -52,6 +52,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 require Rex::Exporter;
 use Data::Dumper;
 use Fcntl;
+use Rex::Helper::File::Spec;
 use Rex::Helper::SSH2;
 use Rex::Helper::Path;
 use Rex::Commands;
@@ -319,21 +320,25 @@ sub mkdir {
     &chmod( $mode, $dir )  if $mode;
   }
   else {
-    my @splitted_dir = __splitdir($dir);
+    if ( !Rex::Helper::File::Spec->file_name_is_absolute($dir) ) {
+      $dir = Rex::Helper::File::Spec->rel2abs($dir);
+    }
 
-    my $str_part = "";
-    for my $part (@splitted_dir) {
-      $str_part .= "$part";
+    my @directories = __splitdir($dir);
+    my $path_so_far = shift @directories;
 
-      if ( !is_dir($str_part) && !is_file($str_part) ) {
-        if ( !$fs->mkdir($str_part) ) {
+    for my $part (@directories) {
+      $path_so_far = Rex::Helper::File::Spec->join( $path_so_far, $part );
+
+      if ( !is_dir($path_so_far) && !is_file($path_so_far) ) {
+        if ( !$fs->mkdir($path_so_far) ) {
           Rex::Logger::debug("Can't create directory $dir");
           die("Can't create directory $dir");
         }
 
-        &chown( $owner, $str_part ) if $owner;
-        &chgrp( $group, $str_part ) if $group;
-        &chmod( $mode, $str_part )  if $mode;
+        &chown( $owner, $path_so_far ) if $owner;
+        &chgrp( $group, $path_so_far ) if $group;
+        &chmod( $mode, $path_so_far )  if $mode;
       }
     }
   }
@@ -378,32 +383,7 @@ sub mkdir {
 }
 
 sub __splitdir {
-  my $dir = shift;
-  my @splitted_dir;
-
-  if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
-
-    # special case for local windows runs
-    @splitted_dir = map { "\\$_"; } split( /[\\\/]/, $dir );
-    if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
-      $splitted_dir[0] = "$1:\\";
-    }
-    else {
-      $splitted_dir[0] =~ s/^\\//;
-    }
-  }
-  else {
-    @splitted_dir = map { "/$_"; } split( /\//, $dir );
-
-    unless ( $splitted_dir[0] eq "/" ) {
-      $splitted_dir[0] = "." . $splitted_dir[0];
-    }
-    else {
-      shift @splitted_dir;
-    }
-  }
-
-  return @splitted_dir;
+  return Rex::Helper::File::Spec->splitdir(shift);
 }
 
 =head3 chown($owner, $path)

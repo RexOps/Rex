@@ -319,29 +319,7 @@ sub mkdir {
     &chmod( $mode, $dir )  if $mode;
   }
   else {
-    my @splitted_dir;
-
-    if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
-
-      # special case for local windows runs
-      @splitted_dir = map { "\\$_"; } split( /[\\\/]/, $dir );
-      if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
-        $splitted_dir[0] = "$1:\\";
-      }
-      else {
-        $splitted_dir[0] =~ s/^\\//;
-      }
-    }
-    else {
-      @splitted_dir = map { "/$_"; } split( /\//, $dir );
-
-      unless ( $splitted_dir[0] eq "/" ) {
-        $splitted_dir[0] = "." . $splitted_dir[0];
-      }
-      else {
-        shift @splitted_dir;
-      }
-    }
+    my @splitted_dir = __splitdir($dir);
 
     my $str_part = "";
     for my $part (@splitted_dir) {
@@ -397,6 +375,35 @@ sub mkdir {
     ->report_resource_end( type => "mkdir", name => $dir );
 
   return 1;
+}
+
+sub __splitdir {
+  my $dir = shift;
+  my @splitted_dir;
+
+  if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
+
+    # special case for local windows runs
+    @splitted_dir = map { "\\$_"; } split( /[\\\/]/, $dir );
+    if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
+      $splitted_dir[0] = "$1:\\";
+    }
+    else {
+      $splitted_dir[0] =~ s/^\\//;
+    }
+  }
+  else {
+    @splitted_dir = map { "/$_"; } split( /\//, $dir );
+
+    unless ( $splitted_dir[0] eq "/" ) {
+      $splitted_dir[0] = "." . $splitted_dir[0];
+    }
+    else {
+      shift @splitted_dir;
+    }
+  }
+
+  return @splitted_dir;
 }
 
 =head3 chown($owner, $path)

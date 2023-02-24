@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 use v5.12.5;
+use warnings;
 
 use Test::More tests => 6;
 use FindBin qw($Bin);

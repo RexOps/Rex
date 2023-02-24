@@ -1,6 +1,7 @@
 package t::tasks::chicken;
 
 use v5.12.5;
+use warnings;
 
 use Rex -base;
 

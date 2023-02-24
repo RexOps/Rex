@@ -24,4 +24,3 @@ eval {
 };
 
 is( $ok, 1, "Rexfile with true return value was loaded successfull." );
-

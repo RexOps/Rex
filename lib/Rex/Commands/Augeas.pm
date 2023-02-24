@@ -420,4 +420,3 @@ sub _run_augtool {
 }
 
 1;
-

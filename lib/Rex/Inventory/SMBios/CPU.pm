@@ -48,4 +48,3 @@ sub get_socket_type {
 }
 
 1;
-

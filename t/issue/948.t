@@ -86,4 +86,3 @@ $v->execute(
 
 is( $count_exec, 2, "Executed qemu-img 2 times." );
 is( $count_file, 2, "Created virsh file 2 times." );
-

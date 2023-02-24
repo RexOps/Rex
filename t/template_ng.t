@@ -143,4 +143,3 @@ for my $key ( keys %{$v} ) {
     "$var_name is equal to " . $v->{$key}->{name}
   );
 }
-

@@ -76,4 +76,3 @@ task(
 test1( { file => "/etc/securetty" } );
 
 done_testing();
-

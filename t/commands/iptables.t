@@ -56,4 +56,3 @@ is( $rules->{foo}->[0]->[12], "limit-burst",         "use burst" );
 is( $rules->{foo}->[0]->[13], "50",                  "up to 50" );
 is( $rules->{foo}->[0]->[14], "j",                   "jump to" );
 is( $rules->{foo}->[0]->[15], "RETURN",              "RETURN" );
-

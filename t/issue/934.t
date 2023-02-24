@@ -35,4 +35,3 @@ before_task_start task1 => sub {
 my $run_list = Rex::RunList->instance;
 $run_list->parse_opts(@ARGV);
 $run_list->run_tasks;
-

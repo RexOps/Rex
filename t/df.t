@@ -67,4 +67,3 @@ is( $df->{"/dev/mapper/vg_c6test0232-lv_root"}->{used},
   1693244, "/dev/mapper/vg_c6test0232-lv_root used" );
 is( $df->{"/dev/mapper/vg_c6test0232-lv_root"}->{size},
   18102140, "/dev/mapper/vg_c6test0232-lv_root size" );
-

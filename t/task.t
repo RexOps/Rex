@@ -193,4 +193,3 @@ is_deeply( \@l, [ "e1", "e2" ], "task successfully returned a list" );
 param_test1( { name => "foo" } );
 param_test2( city => "bar" );
 param_test3( "blah", "blub", "bumm" );
-

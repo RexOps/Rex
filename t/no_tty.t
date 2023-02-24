@@ -22,4 +22,3 @@ SKIP: {
   $s = run("ls -l /jllkjlkj");
   like( $s, qr/No such file/, "again with tty" );
 }
-

@@ -530,4 +530,3 @@ unless ( $^O =~ m/^MSWin/ ) {
   is( $cron[0]->{value}, "/bin/bash",       "3rd env name" );
   is( $cron[0]->{line},  'SHELL=/bin/bash', "3rd env name" );
 }
-

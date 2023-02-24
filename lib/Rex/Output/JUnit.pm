@@ -100,4 +100,3 @@ __DATA__
    <% } %>
   </testsuite>
 </testsuites>
-

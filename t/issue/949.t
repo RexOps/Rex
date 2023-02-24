@@ -27,4 +27,3 @@ eval {
     qr/^Failed loading given virtualization module\.\nTried to load \<Rex::Virtualization::Goo\>/,
     "Got right error message if module loading failed.";
 };
-

@@ -48,4 +48,3 @@ push @new_file, "";
 open my $out, ">", $ARGV[0] or ie $!;
 print $out join( "\n", @new_file );
 close $out;
-

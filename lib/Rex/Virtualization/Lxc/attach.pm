@@ -57,4 +57,3 @@ sub _format_opts {
 }
 
 1;
-

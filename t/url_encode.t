@@ -11,4 +11,3 @@ my $output =
 
 is( Rex::Helper::Encode::url_encode($input),
   $output, "encode everything except a-z0-9_" );
-

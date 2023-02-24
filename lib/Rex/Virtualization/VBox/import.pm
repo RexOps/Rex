@@ -48,4 +48,3 @@ sub execute {
 }
 
 1;
-

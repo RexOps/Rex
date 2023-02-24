@@ -78,4 +78,3 @@ is_deeply(
   [qw/1.host.domain 2.host.domain 3.host.domain/],
   "evaluate leading range"
 );
-

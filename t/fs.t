@@ -3,11 +3,13 @@
 use v5.12.5;
 use warnings;
 
-use Test::More tests => 3;
+use Test::More tests => 5;
 
+use File::Spec;
 use File::Temp;
 use Rex::Commands::Fs;
 use Test::Exception;
+use Test::Warnings;
 
 subtest 'stat fails for a nonexistent file', sub {
   plan tests => 2;
@@ -46,3 +48,10 @@ for my $case ( keys %path_for ) {
     ok( !-e $path, "$path doesn't exist anymore" );
   };
 }
+
+subtest 'no warnings for splitting the path of the root directory', sub {
+  plan tests => 1;
+
+  ok( Rex::Commands::Fs::__splitdir( File::Spec->rootdir() ),
+    'splitting up path of the root directory' );
+};

@@ -6,8 +6,10 @@ use Rex::Commands;
 {
 
   package MyTest;
+
   use strict;
   use warnings;
+
   use Rex::Commands;
 
   $::QUIET = 1;

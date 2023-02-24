@@ -45,10 +45,12 @@ Currently nesting data structures works only if the assignment is made on the to
 
 package Rex::Shared::Var;
 
-use strict qw(vars subs);
+use strict;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
+
+use Symbol;
 
 require Exporter;
 use base qw(Exporter);
@@ -79,26 +81,27 @@ sub share {
   my @vars = @_;
   my ( $package, $file, $line ) = caller;
 
-  my ( $sigil, $sym );
+  my ( $sigil, $symbol );
   for my $var (@vars) {
 
-    if ( ( $sigil, $sym ) = ( $var =~ /^([\$\@\%\*\&])(.+)/ ) ) {
-      $sym = "${package}::$sym";
+    if ( ( $sigil, $symbol ) = ( $var =~ /^([\$\@\%\*\&])(.+)/ ) ) {
+      my $ref_to_symbol = qualify_to_ref $symbol, $package;
+      $symbol = "${package}::$symbol";
 
       if ( $sigil eq "\$" ) {
         eval "use Rex::Shared::Var::Scalar;";
-        tie $$sym, "Rex::Shared::Var::Scalar", $sym;
-        *$sym = \$$sym;
+        tie ${ *{$ref_to_symbol} }, "Rex::Shared::Var::Scalar", $symbol;
+        *{$ref_to_symbol} = \${ *{$ref_to_symbol} };
       }
       elsif ( $sigil eq "\@" ) {
         eval "use Rex::Shared::Var::Array;";
-        tie @$sym, "Rex::Shared::Var::Array", $sym;
-        *$sym = \@$sym;
+        tie @{ *{$ref_to_symbol} }, "Rex::Shared::Var::Array", $symbol;
+        *{$ref_to_symbol} = \@{ *{$ref_to_symbol} };
       }
       elsif ( $sigil eq "\%" ) {
         eval "use Rex::Shared::Var::Hash;";
-        tie %$sym, "Rex::Shared::Var::Hash", $sym;
-        *$sym = \%$sym;
+        tie %{ *{$ref_to_symbol} }, "Rex::Shared::Var::Hash", $symbol;
+        *{$ref_to_symbol} = \%{ *{$ref_to_symbol} };
       }
     }
 

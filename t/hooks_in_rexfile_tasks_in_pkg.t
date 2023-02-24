@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 package Rex::CLI;
 
 use 5.006;

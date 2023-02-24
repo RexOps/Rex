@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 # tasks in Rexfile live under the Rex::CLI namespace
 package Rex::CLI;
 

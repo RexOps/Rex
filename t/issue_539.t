@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use Test::More tests => 16;
 use Rex::Hardware::Network::Linux;
 use Rex::Helper::Hash;

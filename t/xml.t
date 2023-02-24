@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use Test::More tests => 6;
 use FindBin qw($Bin);
 use Rex::Require;

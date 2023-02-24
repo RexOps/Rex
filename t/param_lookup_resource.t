@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 package MyTest;
 
 use Rex -base;

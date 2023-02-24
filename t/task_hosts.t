@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 package main;
 
 use Test::More tests => 2;

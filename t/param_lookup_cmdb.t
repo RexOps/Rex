@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 
 use Rex -base;
 use Rex::Resource;

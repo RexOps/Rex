@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 use Test::More tests => 31;
 
 use Rex::Inventory::DMIDecode;

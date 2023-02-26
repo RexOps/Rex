@@ -4,14 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix attempt to free unreferenced scalar on Windows
- - Declare dependencies for colored output
- - Fix warning when trying to create root directory
 
  [DOCUMENTATION]
- - Fix rendering of inspect example
- - Clarify documentation of desc command
- - Clarify template variables
 
  [ENHANCEMENTS]
 
@@ -22,6 +16,17 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.0.1-TRIAL 2023-02-26 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix attempt to free unreferenced scalar on Windows
+ - Declare dependencies for colored output
+ - Fix warning when trying to create root directory
+
+ [DOCUMENTATION]
+ - Fix rendering of inspect example
+ - Clarify documentation of desc command
+ - Clarify template variables
 
 1.14.0 2023-02-05 Ferenc Erki <erkiferenc@gmail.com>
  - No code changes since 1.13.4.1 trial release

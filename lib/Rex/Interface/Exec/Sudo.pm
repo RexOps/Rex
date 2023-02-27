@@ -79,7 +79,7 @@ sub exec {
 
     $file->open( '>', $random_file );
     $file->write(<<EOF);
-#!/usr/bin/perl
+#!/usr/bin/env perl
 unlink \$0;
 
 for (0..255) {

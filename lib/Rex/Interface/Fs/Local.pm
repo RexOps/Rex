@@ -70,7 +70,7 @@ sub rmdir {
   }
   else {
     @dirs = $self->_normalize_path(@dirs);
-    $exec->exec( "/bin/rm -rf " . join( " ", @dirs ) );
+    $exec->exec( "rm -rf " . join( " ", @dirs ) );
   }
 
   if ( $? == 0 ) { return 1; }
@@ -168,7 +168,7 @@ sub rename {
   else {
     ($old) = $self->_normalize_path($old);
     ($new) = $self->_normalize_path($new);
-    $exec->exec("/bin/mv $old $new");
+    $exec->exec("mv $old $new");
   }
 
   if ( $? == 0 ) { return 1; }

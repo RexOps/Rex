@@ -290,7 +290,9 @@ sub run {
   if ($changed) {
     my $path;
 
-    if ( !Rex::Config->get_no_path_cleanup() ) {
+    my $is_nixos = Rex::Interface::Fs->create()->is_file('/etc/NIXOS') ? 1 : 0;
+
+    if ( !$is_nixos && !Rex::Config->get_no_path_cleanup() ) {
       $path = join( ":", Rex::Config->get_path() );
     }
 

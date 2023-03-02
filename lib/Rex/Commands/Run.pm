@@ -15,6 +15,24 @@ With this module you can run a command.
  my $output = run 'ls -l';
  sudo 'id';
 
+=head1 CONFIGURATION AND ENVIRONMENT
+
+Please note that Rex may set the C<PATH> environment variable when executing commands on the user's behalf to a different value compared to executing the same commands manually. The following are available to control the related behavior:
+
+=over 4
+
+=item L<path|Rex::Commands#path> command
+
+=item L<set_path|Rex::Config#set_path> configuration option
+
+=item L<no_path_cleanup|Rex#no_path_cleanup> feature flag
+
+=item L<source_profile|Rex#source_profile> feature flag
+
+=item L<source_global_profile|Rex#source_global_profile> feature flag
+
+=back
+
 =head1 EXPORTED FUNCTIONS
 
 =cut

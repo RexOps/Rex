@@ -363,7 +363,7 @@ sub get_exec_autodie {
 
 Sets and gets the value of the C<$no_path_cleanup> configuration variable.
 
-This controls whether Rex should clean up the C<$PATH> before executing a L<run|Rex::Commands::Run#run> command.
+This controls whether Rex should use either the default or the explicitly configured C<PATH> settings (via L<path|Rex::Commands#path> or L<set_path>) when executing commands or not.
 
 Default is C<undef>.
 
@@ -723,7 +723,9 @@ sub get_tmp_dir {
 
 Sets and gets the value of the C<$path> configuration variable.
 
-This controls which C<PATH> Rex should use when executing L<run|Rex::Commands::Run#run> commands. The value should be set as an array reference, and will be dereferenced as such before returned by C<get_path>.
+This controls which C<PATH> Rex should use when executing commands via the L<Rex::Commands::Run> module.
+
+The value should be set as an array reference, and will be dereferenced as such before returned by C<get_path>. The L<path|Rex::Commands#path> command is a convenience wrapper for C<set_path>, and accepts an array.
 
 Default is
 

@@ -1240,6 +1240,8 @@ Set the execution path for all commands.
 
  path "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/pkg/bin", "/usr/pkg/sbin";
 
+It's a convenience wrapper for the L<set_path|Rex::Config#set_path> configuration option.
+
 =cut
 
 sub path {

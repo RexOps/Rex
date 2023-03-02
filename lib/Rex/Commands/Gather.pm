@@ -568,7 +568,19 @@ sub is_void {
   if ( $os =~ m/VoidLinux/i ) {
     return 1;
   }
+}
 
+=head2 is_nixos
+
+Returns true if the target system is a NixOS system.
+
+=cut
+
+sub is_nixos {
+  my $os = get_operating_system();
+  if ( $os =~ m/NixOS/msx ) {
+    return 1;
+  }
 }
 
 1;

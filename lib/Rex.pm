@@ -1080,8 +1080,10 @@ etc.). Available since version 0.46.
 
 =item no_path_cleanup
 
-Rex cleans the path before executing a command. With this feature Rex
-doesn't cleanup the path. Available since version 0.44.
+Controls whether Rex should use the default or explicitly configured C<PATH>
+settings when executing commands or not. See also the L<path|Rex::Commands#path>
+command and the L<set_path|Rex::Config#set_path> configuration option.
+Available since version 0.44.
 
 =item source_profile
 

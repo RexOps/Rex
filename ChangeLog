@@ -6,9 +6,6 @@ Revision history for Rex
  [BUG FIXES]
 
  [DOCUMENTATION]
- - Clarify PATH settings for executing commands
- - Clarify sync command locality
- - Clarify run command output handling
 
  [ENHANCEMENTS]
 
@@ -19,6 +16,12 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.1 2023-03-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Clarify PATH settings for executing commands
+ - Clarify sync command locality
+ - Clarify run command output handling
 
 1.14.0.1-TRIAL 2023-02-26 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

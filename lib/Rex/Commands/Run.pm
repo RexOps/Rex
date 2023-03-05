@@ -167,7 +167,7 @@ If you want to end the command upon receiving a certain output:
 =head2 run($command, $arguments, %options)
 
 This form will execute C<$command> with the given C<$arguments> pass as an array reference.
-All arguments will be quoted by Rex with C<Net::OpenSSH::ShellQuoter->quoter()> according to the managed host's shell.
+All arguments will be quoted by Rex with C<Net::OpenSSH::ShellQuoter-E<gt>quoter()> according to the managed host's shell.
 
  run 'ls', [ '-l', '-t', '-r', '-a' ];
  run 'ls', [ '/tmp', '-l' ], auto_die => TRUE;

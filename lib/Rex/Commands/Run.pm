@@ -83,7 +83,14 @@ in the C<$?> variable.
  my $output       = run 'uptime';
  my @output_lines = run 'uptime';
 
-It supports optional callbacks as subroutine reference, which will receive the command's output sent to C<STDOUT> and C<STDERR>.
+Please note when the C<L<tty|Rex#tty>> feature flag is enabled the
+combined output containing both C<STDOUT> and C<STDERR> is returned
+via C<STDOUT>. When using the C<L<no_tty|Rex#no_tty>> feature flag, or
+the C<L<1.0|Rex#1.0>> feature bundle (or newer), then C<run()> returns
+only the C<STDOUT> output of the command.
+
+To access separate C<STDOUT> and C<STDERR> output, use a callback
+subroutine, for example:
 
  run 'uptime', sub {
    my ( $stdout, $stderr ) = @_;

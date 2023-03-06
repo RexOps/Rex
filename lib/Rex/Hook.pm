@@ -20,7 +20,7 @@ This module manages hooks of various Rex functions.
 =head1 SYNOPSIS
 
  use Rex::Hook;
- 
+
  register_function_hooks { $state => { $function => $coderef, }, };
 
 =cut

@@ -56,9 +56,9 @@ If you want to control the output format, you can define a callback function:
  task "syslog", "server01", sub {
    tail "/var/log/syslog", sub {
     my ($data) = @_;
- 
+
     my $server = Rex->get_current_connection()->{'server'};
- 
+
     print "$server>> $data\n";
    };
  };

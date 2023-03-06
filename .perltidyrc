@@ -3,3 +3,4 @@
 --minimum-space-to-comment=1
 --no-outdent-long-quotes
 --static-side-comments
+--trim-pod

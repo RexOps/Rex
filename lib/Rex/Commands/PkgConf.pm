@@ -62,7 +62,7 @@ the specified package as a hash.
 
 With a question specified, it will return only that option
 
-Each question is returned with the question as the key, and 
+Each question is returned with the question as the key, and
 the value as a hashref. The hashref contains the keys: question,
 value and already_set. already_set is true if the question has
 already been answered.

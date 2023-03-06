@@ -160,19 +160,19 @@ Examples:
    size   => 15000,
    ondisk => "sda",
    type   => "primary";
-    
+
  partition "none",
    type   => "extended",
    ondisk => "sda",
    grow   => 1,
    mount  => TRUE,
-       
+
  partition "swap",
    fstype => "swap",
    type   => "logical",
    ondisk => "sda",
    size   => 8000;
-    
+
  partition "/",
    fstype => "ext3",
    size   => 10000,

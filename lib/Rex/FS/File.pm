@@ -44,7 +44,7 @@ object
 
  my $fh = Rex::Interface::File->create('Local');
  $fh->open( '<', 'filename' );
- 
+
  my $file = Rex::FS::File->new(fh => $fh);
 
 Create a C<Rex::FS::File> object with a filename
@@ -55,10 +55,10 @@ Create a C<Rex::FS::File> object with a filename
    mode     => 'r', # or '<'
    type     => 'Local',
  );
- 
+
  # or shorter
  my $file = Rex::FS::File->new( filename => 'filename' );
- 
+
  # open a local file in write mode
  my $file = Rex::FS::File->new(
    filename => 'filename',

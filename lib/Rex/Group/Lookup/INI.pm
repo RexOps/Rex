@@ -46,7 +46,7 @@ File example:
  [webservers]
  fe01
  fe02
-    
+
  [backends]
  be[01..03]
 

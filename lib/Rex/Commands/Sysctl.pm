@@ -17,7 +17,7 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::Sysctl;
- 
+
  my $data = sysctl "net.ipv4.tcp_keepalive_time";
  sysctl "net.ipv4.tcp_keepalive_time" => 1800;
 

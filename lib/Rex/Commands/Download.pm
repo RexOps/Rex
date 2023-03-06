@@ -18,7 +18,7 @@ Version <= 1.0: All these functions will not be reported.
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
- 
+
  # http
  task "download2", sub {
    download "http://server/remote/file";
@@ -81,7 +81,7 @@ Perform a download. If no local file is specified it will download the file to t
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
- 
+
  task "download", sub {
    download "http://www.rexify.org/index.html", "localfile.html";
  };

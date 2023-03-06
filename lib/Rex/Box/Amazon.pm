@@ -22,22 +22,22 @@ To use this module inside your Rexfile you can use the following commands.
    zone => "eu-west-1a",
    authkey => "default",
  };
-  
+
  task "prepare_box", sub {
    box {
      my ($box) = @_;
-       
+
      $box->name("mybox");
      $box->ami("ami-c1aaabb5");
-     $box->type("m1.large"); 
-        
+     $box->type("m1.large");
+
      $box->security_group("default");
-        
+
      $box->auth(
        user => "root",
        password => "box",
      );
-        
+
      $box->setup("setup_task");
    };
  };
@@ -61,7 +61,7 @@ If you want to use a YAML file you can use the following template.
 And then you can use it the following way in your Rexfile.
 
  use Rex::Commands::Box init_file => "file.yml";
-   
+
  task "prepare_vms", sub {
    boxes "init";
  };

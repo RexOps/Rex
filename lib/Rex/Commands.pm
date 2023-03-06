@@ -358,7 +358,7 @@ Set the description of the task, batch, or environment following it.
 
  desc 'This is the description of the following batch';
  batch mybatch => 'task1', 'task2', 'task3';
- 
+
  desc 'This is the description of the following environment';
  environment production => sub {
    ...
@@ -506,16 +506,16 @@ If you want to set special login information for a group you have to enable at l
 Command line options to set locality or authentication details are still taking precedence, and may override these settings.
 
  # auth for groups
- 
+
  use Rex -feature => ['0.31']; # activate setting auth for a group
 
  group frontends => "web[01..10]";
  group backends => "be[01..05]";
- 
+
  auth for => "frontends" =>
             user => "root",
             password => "foobar";
- 
+
  auth for => "backends" =>
             user => "admin",
             private_key => "/path/to/id_rsa",
@@ -523,24 +523,24 @@ Command line options to set locality or authentication details are still taking 
             sudo => TRUE;
 
  # auth for tasks
- 
+
  task "prepare", group => ["frontends", "backends"], sub {
    # do something
  };
- 
+
  auth for => "prepare" =>
             user => "root";
 
  # auth for multiple tasks with regular expression
- 
+
  task "step_1", sub {
   # do something
  };
- 
+
  task "step_2", sub {
   # do something
  };
- 
+
  auth for => qr/step/ =>
    user     => $user,
    password => $password;
@@ -1310,7 +1310,7 @@ The task name is a regular expression to find all tasks with a matching name. Th
 
 If called repeatedly, each sub will be appended to a list of 'before' functions.
 
-In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
+In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the
 server object that will be used for the connection.
 
 Please note, this must come after the definition of the specified task.
@@ -1374,7 +1374,7 @@ The task name is a regular expression to find all tasks with a matching name. Th
 
 If called repeatedly, each sub will be appended to a list of 'around' functions.
 
-In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
+In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the
 server object that will be used for the connection.
 
 Please note, this must come after the definition of the specified task.
@@ -1668,7 +1668,7 @@ This function dumps the contents of a variable to STDOUT.
      name => "foo",
      sys  => "bar",
    };
- 
+
    inspect $myvar;
  };
 

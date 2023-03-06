@@ -406,7 +406,7 @@ Depending on your remote sudo configuration, you may need to define a sudo passw
 Or alternatively, since Rexfile is plain perl, you can read the password from terminal at the start:
 
  use Term::ReadKey;
- 
+
  print 'I need sudo password: ';
  ReadMode('noecho');
  sudo_password ReadLine(0);
@@ -422,9 +422,9 @@ To run only a specific command with sudo, use :
 
  say sudo 'id';                # passing a remote command directly
  say sudo { command => 'id' }; # passing anonymous hashref
- 
+
  say sudo { command => 'id', user => 'different' }; # run a single command with sudo as different user
- 
+
 To run multiple commands with C<sudo>, either use an anonymous code reference directly:
 
  sudo sub {

@@ -25,15 +25,15 @@ Currently nesting data structures works only if the assignment is made on the to
    use Rex::Shared::Var;
    share qw(%hash %nested);
  }
- 
+
  # this doesn't work as expected
  $hash{key} = { nested_key => 42 };
  $hash{key}->{nested_key} = -1; # $hash{key}->{nested_key} still returns 42
- 
+
  # workaround 1 - top level assignments
  $hash{key} = { nested_key => 42 };
  $hash{key} = { nested_key => -1 };
- 
+
  # workaround 2 - nesting shared variables
  $nested{nested_key}      = 42;
  $hash{key}               = \%nested;

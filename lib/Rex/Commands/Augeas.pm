@@ -13,13 +13,13 @@ This is a simple module to manipulate configuration files with the help of augea
 =head1 SYNOPSIS
 
  my $k = augeas exists => "/files/etc/hosts/*/ipaddr", "127.0.0.1";
-    
+
  augeas insert => "/files/etc/hosts",
            label => "01",
            after => "/7",
            ipaddr => "192.168.2.23",
            canonical => "test";
-   
+
  augeas dump => "/files/etc/hosts";
 
  augeas modify =>

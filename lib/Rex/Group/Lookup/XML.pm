@@ -53,9 +53,9 @@ File example:
        <server name="machine03" user="root" password="blue123"/>
    </group>
  </configuration>
- 
+
 The XML file is validated against the DTD schema stored in C<Rex::Group::Lookup::XML::$schema_file> as string.
- 
+
 =cut
 
 =head2 $schema_file

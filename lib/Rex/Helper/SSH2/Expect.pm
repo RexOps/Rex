@@ -23,7 +23,7 @@ L<Net::SSH2>
 =head1 SYNOPSIS
 
  use Rex::Helper::SSH2::Expect;
-     
+
  my $exp = Rex::Helper::SSH2::Expect->new($ssh2);
  $exp->spawn("passwd");
  $exp->expect($timeout, [
@@ -58,7 +58,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 =head2 new($ssh2)
 
-Constructor: You need to parse an connected Net::SSH2 Object. 
+Constructor: You need to parse an connected Net::SSH2 Object.
 
 =cut
 

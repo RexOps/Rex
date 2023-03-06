@@ -13,7 +13,7 @@ With this Module you can manage your cronjobs.
 =head1 SYNOPSIS
 
  use Rex::Commands::Cron;
- 
+
  cron add => "root", {
         minute => '5',
         hour  => '*',
@@ -22,9 +22,9 @@ With this Module you can manage your cronjobs.
         day_of_week => '*',
         command => '/path/to/your/cronjob',
       };
- 
+
  cron list => "root";
- 
+
  cron delete => "root", 3;
 
 =head1 EXPORTED FUNCTIONS
@@ -62,7 +62,7 @@ Manage cron entries.
    day_of_month => "1,3,5",
    user         => "root",
    on_change    => sub { say "cron added"; };
- 
+
  # remove an entry
  cron_entry "reload-httpd",
    ensure       => "absent",
@@ -160,7 +160,7 @@ List cronjobs.
 
  use Rex::Commands::Cron;
  use Data::Dumper;
- 
+
  task "listcron", "server1", sub {
    my @crons = cron list => "root";
    print Dumper(\@crons);
@@ -172,7 +172,7 @@ This example will add a cronjob running on minute 1, 5, 19 and 40. Every hour an
 
  use Rex::Commands::Cron;
  use Data::Dumper;
- 
+
  task "addcron", "server1", sub {
     cron add => "root", {
       minute => "1,5,19,40",
@@ -207,10 +207,10 @@ Managing Environment Variables inside cron.
     cron env => user => add => {
       MYVAR => "foo",
     };
- 
+
     cron env => user => delete => $index;
     cron env => user => delete => 1;
- 
+
     cron env => user => "list";
  };
 

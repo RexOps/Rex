@@ -13,26 +13,26 @@ With this module you can do file system tasks like creating directories, deletin
 =head1 SYNOPSIS
 
  my @files = list_files "/etc";
- 
+
  unlink("/tmp/file");
- 
+
  rmdir("/tmp");
  mkdir("/tmp");
- 
+
  my %stat = stat("/etc/passwd");
- 
+
  my $link = readlink("/path/to/a/link");
  symlink("/source", "/dest");
- 
+
  rename("oldname", "newname");
- 
+
  chdir("/tmp");
- 
+
  is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
- 
+
  chmod 755, "/tmp";
  chown "user", "/tmp";
  chgrp "group", "/tmp";
@@ -269,10 +269,10 @@ With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resourc
  };
 
 Direct usage:
- 
+
  task "mkdir", "server01", sub {
    mkdir "/tmp";
- 
+
    mkdir "/tmp",
      owner => "root",
      group => "root",
@@ -391,7 +391,7 @@ sub __splitdir {
 Change the owner of a file or a directory.
 
  chown "www-data", "/var/www/html";
- 
+
  chown "www-data", "/var/www/html",
                 recursive => 1;
 
@@ -415,7 +415,7 @@ sub chown {
 Change the group of a file or a directory.
 
  chgrp "nogroup", "/var/www/html";
- 
+
  chgrp "nogroup", "/var/www/html",
               recursive => 1;
 
@@ -439,7 +439,7 @@ sub chgrp {
 Change the permissions of a file or a directory.
 
  chmod 755, "/var/www/html";
- 
+
  chmod 755, "/var/www/html",
           recursive => 1;
 
@@ -801,7 +801,7 @@ If C<$link> is a symbolic link, returns the path it resolves to, and C<die()>s o
    eval {
      $link = readlink("/tmp/testlink");
    };
- 
+
    say "this is a link" if($link);
  };
 
@@ -955,17 +955,17 @@ Mount devices.
           on_change => sub { say "device mounted"; };
    #
    # mount persistent with entry in /etc/fstab
- 
+
    mount "/dev/sda6", "/mnt/sda6",
           ensure     => "persistent",
           type       => "ext3",
           options    => [qw/noatime async/],
           on_change  => sub { say "device mounted"; };
- 
+
    # to umount a device
    mount "/dev/sda6", "/mnt/sda6",
           ensure => "absent";
- 
+
  };
 
 In order to be more aligned with C<mount> terminology, the previously used C<fs> option has been deprecated in favor of the C<type> option. The C<fs> option is still supported and works as previously, but Rex prints a warning if it is being used. There's also a warning if both C<fs> and C<type> options are specified, and in this case C<type> will be used.

@@ -13,7 +13,7 @@ This module is the base class for hardware/information gathering.
 =head1 SYNOPSIS
 
  use Rex::Hardware;
- 
+
  my %host_info = Rex::Hardware->get(qw/ Host /);
  my %all_info  = Rex::Hardware->get(qw/ All /);
 

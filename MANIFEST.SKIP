@@ -3,7 +3,7 @@
 ^debian\/
 README.pod
 \..*sw.*
-.git
+^.git/
 blib
 pm_toblib
 ^Makefile$

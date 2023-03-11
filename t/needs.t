@@ -2,6 +2,8 @@
 
 use v5.12.5;
 
+our $VERSION = '9999.99.99_99'; # VERSION
+
 use Test::More;
 use Rex::Commands;
 

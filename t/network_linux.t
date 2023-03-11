@@ -3,6 +3,8 @@
 use v5.12.5;
 use warnings;
 
+our $VERSION = '9999.99.99_99'; # VERSION
+
 use Test::More tests => 44;
 use Rex::Hardware::Network::Linux;
 use Rex::Helper::Hash;

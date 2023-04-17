@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix switching working directory to another drive
+ - Fix git cloning into an existing empty directory
 
  [DOCUMENTATION]
 

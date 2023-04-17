@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix switching working directory to another drive
 
  [DOCUMENTATION]
 

@@ -12,6 +12,8 @@ private_name_regex = _(?!_)\w+
 [Subroutines::ProtectPrivateSubs]
 private_name_regex = _(?!_)\w+
 
+[-ValuesAndExpressions::ProhibitConstantPragma]
+
 [-ValuesAndExpressions::ProhibitVersionStrings]
 
 [Variables::ProhibitPackageVars]

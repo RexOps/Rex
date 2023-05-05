@@ -8,12 +8,15 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
 
+use English qw(-no_match_vars);
 use File::Spec;
 use File::Temp;
 use Rex::CLI;
 use Rex::Commands::File;
 use Sub::Override;
 use Test::Output;
+
+use constant FIRST_PERL_VERSION_WITH_EXTRA_ERROR_MESSAGE => v5.37.9;
 
 $Rex::Logger::format   = '%l - %s';
 $Rex::Logger::no_color = 1;
@@ -65,7 +68,22 @@ sub _setup_test {
     my $file            = "$rexfile.$extension";
     my $default_content = $extension eq 'stderr' ? $expected->{log} : $empty;
 
-    $expected->{$extension} = -r $file ? cat($file) : $default_content;
+    if ( -r $file ) {
+      if ( $PERL_VERSION lt FIRST_PERL_VERSION_WITH_EXTRA_ERROR_MESSAGE
+        && $expected->{exit} == 1 )
+      {
+        my @output_lines = split qr{^}msx, cat($file);
+        pop @output_lines;
+        $expected->{$extension} = join $empty, @output_lines;
+      }
+      else {
+        $expected->{$extension} = cat($file);
+      }
+    }
+    else {
+      $expected->{$extension} = $default_content;
+    }
+
     $expected->{$extension} =~ s{%REXFILE_PATH%}{$rexfile}gmsx;
   }
 

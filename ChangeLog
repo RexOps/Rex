@@ -4,9 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix switching working directory to another drive
- - Fix git cloning into an existing empty directory
- - Fix Rexfile loading tests after perl-5.37.9
 
  [DOCUMENTATION]
 
@@ -19,6 +16,12 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.2 2023-05-05 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix switching working directory to another drive
+ - Fix git cloning into an existing empty directory
+ - Fix Rexfile loading tests after perl-5.37.9
 
 1.14.1 2023-03-05 Ferenc Erki <erkiferenc@gmail.com>
  [DOCUMENTATION]

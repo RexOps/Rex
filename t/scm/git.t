@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 8;
+use Test::More;
 use Test::Exception;
 
 use File::Spec;
@@ -19,7 +19,10 @@ $::QUIET = 1;
 
 my $git = can_run('git');
 
-if ( !defined $git ) {
+if ( defined $git ) {
+  plan tests => 8;
+}
+else {
   plan skip_all => 'Can not find git command';
 }
 

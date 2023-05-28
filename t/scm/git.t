@@ -77,12 +77,12 @@ subtest 'clone into existing directory', sub {
 sub prepare_test_repo {
   my $directory = shift;
 
-  i_run qq(git -C $directory init);
+  i_run 'git init', cwd => $directory;
 
-  i_run qq(git -C $directory config user.name Rex);
-  i_run qq(git -C $directory config user.email noreply\@rexify.org);
+  i_run 'git config user.name Rex',                 cwd => $directory;
+  i_run 'git config user.email noreply@rexify.org', cwd => $directory;
 
-  i_run qq(git -C $directory commit --allow-empty -m commit);
+  i_run 'git commit --allow-empty -m commit', cwd => $directory;
 
   return;
 }

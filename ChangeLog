@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix skipping tests without git
+ - Fix changing directory into git test repository
 
  [DOCUMENTATION]
 

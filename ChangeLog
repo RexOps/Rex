@@ -4,8 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix skipping tests without git
- - Fix changing directory into git test repository
 
  [DOCUMENTATION]
 
@@ -18,6 +16,11 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.2.1-TRIAL 2023-05-29 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix skipping tests without git
+ - Fix changing directory into git test repository
 
 1.14.2 2023-05-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

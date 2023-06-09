@@ -96,7 +96,7 @@ sub git_repo_ok {
     "$directory has .git subdirectory"
   );
 
-  lives_ok { i_run qq(git -C $directory rev-parse --git-dir) }
+  lives_ok { i_run 'git rev-parse --git-dir', cwd => $directory }
   "$directory looks like a git repository now";
 
   return;

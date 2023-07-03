@@ -322,7 +322,7 @@ sub _make_instance_map {
     private_ip => $_[1]->{"privateIpAddress"},
     (
       security_group => ref $_[1]->{"groupSet"}->{"item"} eq 'ARRAY' ? join ',',
-      map { $_->{groupName} } @{ $_[1]->{"groupSet"}->{"item"} }
+        map { $_->{groupName} } @{ $_[1]->{"groupSet"}->{"item"} }
       : $_[1]->{"groupSet"}->{"item"}->{"groupName"}
     ),
     (

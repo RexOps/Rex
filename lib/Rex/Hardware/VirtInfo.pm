@@ -96,7 +96,7 @@ sub get {
       $virtualization_role = "guest";
     }
 
-    elsif ( $product_name =~ /BHYVE/ ) {
+    elsif ( $product_name =~ /BHYVE/s ) {
       $virtualization_type = "bhyve";
       $virtualization_role = "guest";
     }
@@ -111,7 +111,7 @@ sub get {
       $virtualization_role = "guest";
     }
 
-    elsif ( $bios_vendor =~ /BHYVE/ ) {
+    elsif ( $bios_vendor =~ /BHYVE/s ) {
       $virtualization_type = "bhyve";
       $virtualization_role = "guest";
     }
@@ -194,7 +194,7 @@ sub get {
       $virtualization_role = "host";
     }
 
-    elsif ( $modules =~ /vmm/ && $^O eq 'freebsd' ) {
+    elsif ( $modules =~ /\ vmm\.ko/s && $^O eq 'freebsd' ) {
       $virtualization_type = "bhyve";
       $virtualization_role = "host";
     }

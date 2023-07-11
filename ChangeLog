@@ -7,6 +7,7 @@ Revision history for Rex
  - Fix checking test git repository
 
  [DOCUMENTATION]
+ - Correct type of variable shown as being returned from 'get cmdb'
 
  [ENHANCEMENTS]
 

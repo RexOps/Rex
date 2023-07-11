@@ -46,9 +46,9 @@ sub get {
     }
     else {
       my $bios = Rex::Inventory::Bios::get();
-      $bios_vendor  = $bios->get_bios()->get_vendor;
-      $product_name = $bios->get_system_information()->get_product_name;
-      $sys_vendor   = $bios->get_system_information()->get_manufacturer;
+      $bios_vendor  = $bios->get_bios()->get_vendor || '';
+      $product_name = $bios->get_system_information()->get_product_name || '';
+      $sys_vendor   = $bios->get_system_information()->get_manufacturer || '';
     }
 
     $self_status = i_run "cat /proc/self/status 2>/dev/null", fail_ok => 1;
@@ -99,8 +99,8 @@ sub get {
     }
 
     elsif ( $product_name =~ /BHYVE/s ) {
-      $virtualization_type = "bhyve";
-      $virtualization_role = "guest";
+      $virtualization_type = 'bhyve';
+      $virtualization_role = 'guest';
     }
 
     elsif ( $bios_vendor =~ /Xen/ ) {
@@ -114,8 +114,8 @@ sub get {
     }
 
     elsif ( $bios_vendor =~ /BHYVE/s ) {
-      $virtualization_type = "bhyve";
-      $virtualization_role = "guest";
+      $virtualization_type = 'bhyve';
+      $virtualization_role = 'guest';
     }
 
     elsif ( $sys_vendor =~ /Microsoft Corporation/ ) {
@@ -147,13 +147,8 @@ sub get {
       }
     }
 
-    elsif ( $OSNAME eq 'linux' && $cpuinfo =~ /model name.*QEMU Virtual CPU/ ) {
+    elsif ( $cpuinfo =~ /model name.*QEMU Virtual CPU/ ) {
       $virtualization_type = "kvm";
-      $virtualization_role = "guest";
-    }
-
-    elsif ( $OSNAME ne 'linux' && $cpuinfo =~ /Manufacturer.*QEMU Virtual CPU/ ) {
-      $virtualization_type = "qemu";
       $virtualization_role = "guest";
     }
 
@@ -196,9 +191,9 @@ sub get {
       $virtualization_role = "host";
     }
 
-    elsif ( $OSNAME eq 'linux' && $modules =~ /\ vmm\.ko/s ) {
-      $virtualization_type = "bhyve";
-      $virtualization_role = "host";
+    elsif ( $OSNAME eq 'freebsd' && $modules =~ /\ vmm\.ko/s ) {
+      $virtualization_type = 'bhyve';
+      $virtualization_role = 'host';
     }
 
     elsif ( $modules =~ /vboxdrv/ ) {

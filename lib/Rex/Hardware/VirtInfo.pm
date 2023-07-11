@@ -76,6 +76,11 @@ sub get {
       $virtualization_role = "guest";
     }
 
+    elsif ( $product_name =~ /BHYVE/ ) {
+      $virtualization_type = "bhyve";
+      $virtualization_role = "guest";
+    }
+
     elsif ( $bios_vendor =~ /Xen/ ) {
       $virtualization_type = "xen";
       $virtualization_role = "guest";
@@ -83,6 +88,11 @@ sub get {
 
     elsif ( $bios_vendor =~ /innotek GmbH/ ) {
       $virtualization_type = "virtualbox";
+      $virtualization_role = "guest";
+    }
+
+    elsif ( $bios_vendor =~ /BHYVE/ ) {
+      $virtualization_type = "bhyve";
       $virtualization_role = "guest";
     }
 
@@ -135,8 +145,13 @@ sub get {
       $virtualization_role = "guest";
     }
 
-    elsif ( $modules =~ /kvm/ ) {
+    elsif ( $modules =~ /kvm/ && $^O eq 'linux' ) {
       $virtualization_type = "kvm";
+      $virtualization_role = "host";
+    }
+
+    elsif ( $modules =~ /vmm/ && $^O eq 'freebsd' ) {
+      $virtualization_type = "bhyve";
       $virtualization_role = "host";
     }
 

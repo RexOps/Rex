@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -20,7 +18,7 @@ Version <= 1.0: All these functions will not be reported.
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
- 
+
  # http
  task "download2", sub {
    download "http://server/remote/file";
@@ -33,8 +31,7 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Download;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Rex::Helper::UserAgent;
 use Carp;
@@ -84,7 +81,7 @@ Perform a download. If no local file is specified it will download the file to t
  task "download", "remoteserver", sub {
    download "/remote/file", "localfile";
  };
- 
+
  task "download", sub {
    download "http://www.rexify.org/index.html", "localfile.html";
  };

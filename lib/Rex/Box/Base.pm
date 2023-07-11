@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -20,8 +18,7 @@ These methods are shared across all other Rex::Box modules.
 
 package Rex::Box::Base;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -37,7 +34,7 @@ BEGIN {
   LWP::UserAgent->use;
 }
 
-use Time::HiRes qw(tv_interval gettimeofday);
+use Time::HiRes    qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 use Data::Dumper;
 
@@ -241,7 +238,7 @@ Currently it supports 2 modes: I<nat> and I<bridged>. Currently it supports only
      type => "nat",
    },
  }
- 
+
  $box->network(
    1 => {
      type => "bridged",

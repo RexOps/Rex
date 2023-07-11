@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::CMDB::YAML;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -169,13 +166,13 @@ This module collects and merges data from a set of YAML files to provide configu
 =head1 SYNOPSIS
 
  use Rex::CMDB;
- 
+
  set cmdb => {
    type           => 'YAML',
    path           => [ 'cmdb/{hostname}.yml', 'cmdb/default.yml', ],
    merge_behavior => 'LEFT_PRECEDENT',
  };
-  
+
  task 'prepare', 'server1', sub {
    my %all_information          = get cmdb;
    my $specific_item            = get cmdb('item');

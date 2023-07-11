@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 use Test::More;
 
 my %have_mods = (
@@ -191,4 +195,3 @@ is_deeply( \@l, [ "e1", "e2" ], "task successfully returned a list" );
 param_test1( { name => "foo" } );
 param_test2( city => "bar" );
 param_test3( "blah", "blub", "bumm" );
-

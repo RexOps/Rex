@@ -1,8 +1,6 @@
 #
 # (c) xiahou feng <fanyeren@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,9 +13,9 @@ With this module you can define hostgroups out of a command.
 =head1 SYNOPSIS
 
  use Rex::Group::Lookup::Command;
- 
+
  group "dbserver"  => lookup_command("cat ip.list | grep -v -E '^#'");
- 
+
  rex xxxx                            # dbserver
 
 =head1 EXPORTED FUNCTIONS
@@ -26,8 +24,7 @@ With this module you can define hostgroups out of a command.
 
 package Rex::Group::Lookup::Command;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

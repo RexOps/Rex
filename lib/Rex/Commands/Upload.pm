@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -24,8 +22,7 @@ With this module you can upload a local file via sftp to a remote host.
 
 package Rex::Commands::Upload;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Fork::Manager;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -71,10 +68,10 @@ sub wait_for_all {
 sub wait_for {
   my ( $self, $all ) = @_;
   do {
-    for ( my $i = 0 ; $i < scalar( @{ $self->{'forks'} } ) ; $i++ ) {
+  FORK: for ( my $i = 0 ; $i < scalar( @{ $self->{'forks'} } ) ; $i++ ) {
       my $thr = $self->{'forks'}->[$i];
       unless ( $thr->{'running'} ) {
-        next;
+        next FORK;
       }
 
       my $kid;

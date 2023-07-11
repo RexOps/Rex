@@ -3,13 +3,10 @@
 # based on Rex::Pkg::Arch
 # (c) Harm Müller <harm _DOT_ mueller _AT_ g m a i l _Dot_ com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Pkg::VoidLinux;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

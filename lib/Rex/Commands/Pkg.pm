@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -31,8 +29,7 @@ With this module you can install packages and files.
 
 package Rex::Commands::Pkg;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -60,7 +57,7 @@ use vars qw(@EXPORT);
 @EXPORT =
   qw(install update remove update_system installed_packages is_installed update_package_db repository package_provider_for pkg);
 
-=head2 pkg($package, %options)
+=head2 pkg($package [, %options])
 
 Since: 0.45
 
@@ -264,7 +261,7 @@ This gets executed right after the new package was installed. All original param
 This hook is only available for package installations. If you need file hooks, you have to use the L<file()|Rex::Commands::File#file> function.
 
 =item after
- 
+
 This gets executed right before the C<install()> function returns. All original parameters, and any returned results are passed to it.
 
 =back

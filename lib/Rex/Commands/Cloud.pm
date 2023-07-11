@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -52,8 +50,7 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Cloud;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -181,7 +178,7 @@ Get all instances of a cloud service.
 There are some parameters for this function that can change the gathering of ip addresses for some cloud providers (like OpenStack).
 
  task "list", sub {
-   my @instances = cloud_instance_list 
+   my @instances = cloud_instance_list
                       private_network => 'private',
                       public_network  => 'public',
                       public_ip_type  => 'floating',
@@ -247,7 +244,7 @@ Upload public SSH key to cloud provider
 
  private_key '~/.ssh/mykey
  public_key  '~/.ssh/mykey.pub';
- 
+
  task "cloudprovider", sub {
    cloud_upload_key;
 

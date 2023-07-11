@@ -1,0 +1,3 @@
+WARN - You have some code warnings:
+WARN - 	This is warning at %REXFILE_PATH% line 5.
+WARN - 	Use of uninitialized value in concatenation (.) or string at %REXFILE_PATH% line 6.

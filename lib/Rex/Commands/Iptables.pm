@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -19,31 +17,31 @@ Only I<open_port> and I<close_port> are idempotent.
 =head1 SYNOPSIS
 
  use Rex::Commands::Iptables;
- 
+
  task "firewall", sub {
    iptables_clear;
- 
+
    open_port 22;
    open_port [22, 80] => {
      dev => "eth0",
    };
- 
+
    close_port 22 => {
      dev => "eth0",
    };
    close_port "all";
- 
+
    redirect_port 80 => 10080;
    redirect_port 80 => {
      dev => "eth0",
      to  => 10080,
    };
- 
+
    default_state_rule;
    default_state_rule dev => "eth0";
- 
+
    is_nat_gateway;
- 
+
    iptables t => "nat",
          A => "POSTROUTING",
          o => "eth0",
@@ -81,8 +79,7 @@ Only I<open_port> and I<close_port> are idempotent.
 
 package Rex::Commands::Iptables;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use version;
 
@@ -119,7 +116,7 @@ Open a port for inbound connections.
    open_port [22, 80],
      dev => "eth1";
  };
- 
+
  task "firewall", sub {
   open_port 22,
     dev    => "eth1",
@@ -282,7 +279,7 @@ flush.
  task "firewall", sub {
    iptables t => "nat", A => "POSTROUTING", o => "eth0", j => "MASQUERADE";
    iptables t => "filter", i => "eth0", m => "state", state => "RELATED,ESTABLISHED", j => "ACCEPT";
- 
+
    # automatically flushes all tables; equivalent to 'iptables -F'
    iptables "flush";
    iptables -F;

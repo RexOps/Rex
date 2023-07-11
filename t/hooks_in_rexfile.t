@@ -1,8 +1,12 @@
+#!/usr/bin/env perl
+
 # tasks in Rexfile live under the Rex::CLI namespace
 package Rex::CLI;
 
-use strict;
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Test::More tests => 8;
@@ -15,6 +19,9 @@ BEGIN {
 }
 
 $::QUIET = 1;
+
+$before_task_start_all = $before_task_start = $before_all = $before = $after =
+  $after_all = $after_task_finished = $after_task_finished_all = 0;
 
 timeout 1;
 

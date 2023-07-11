@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 #
 # Some of the code is based on Net::Amazon::EC2
@@ -10,8 +8,7 @@
 
 package Rex::Cloud::Amazon;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -325,7 +322,7 @@ sub _make_instance_map {
     private_ip => $_[1]->{"privateIpAddress"},
     (
       security_group => ref $_[1]->{"groupSet"}->{"item"} eq 'ARRAY' ? join ',',
-      map { $_->{groupName} } @{ $_[1]->{"groupSet"}->{"item"} }
+        map { $_->{groupName} } @{ $_[1]->{"groupSet"}->{"item"} }
       : $_[1]->{"groupSet"}->{"item"}->{"groupName"}
     ),
     (

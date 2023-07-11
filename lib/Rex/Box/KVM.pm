@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -18,23 +16,23 @@ To use this module inside your Rexfile you can use the following commands.
 
  use Rex::Commands::Box;
  set box => "KVM";
- 
+
  task "prepare_box", sub {
     box {
        my ($box) = @_;
- 
+
        $box->name("mybox");
        $box->url("http://box.rexify.org/box/ubuntu-server-12.10-amd64.kvm.qcow2");
- 
+
        $box->network(1 => {
           name => "default",
        });
- 
+
        $box->auth(
           user => "root",
           password => "box",
        );
- 
+
        $box->setup("setup_task");
     };
  };
@@ -50,7 +48,7 @@ If you want to use a YAML file you can use the following template.
 And then you can use it the following way in your Rexfile.
 
  use Rex::Commands::Box init_file => "file.yml";
- 
+
  task "prepare_vms", sub {
     boxes "init";
  };
@@ -63,8 +61,7 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 package Rex::Box::KVM;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Data::Dumper;
 use Rex::Box::Base;
@@ -79,7 +76,7 @@ BEGIN {
   LWP::UserAgent->use;
 }
 
-use Time::HiRes qw(tv_interval gettimeofday);
+use Time::HiRes    qw(tv_interval gettimeofday);
 use File::Basename qw(basename);
 
 use base qw(Rex::Box::Base);

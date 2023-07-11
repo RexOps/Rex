@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More tests => 1;
 
@@ -33,4 +37,3 @@ before_task_start task1 => sub {
 my $run_list = Rex::RunList->instance;
 $run_list->parse_opts(@ARGV);
 $run_list->run_tasks;
-

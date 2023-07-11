@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Fork::Task;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use POSIX ":sys_wait_h";
 

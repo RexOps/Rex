@@ -1,8 +1,6 @@
 #
 # (c) Nathan Abu <aloha2004@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -24,8 +22,7 @@ With this module you can define hostgroups out of an xml file.
 
 package Rex::Group::Lookup::XML;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Rex -base;
 
@@ -56,9 +53,9 @@ File example:
        <server name="machine03" user="root" password="blue123"/>
    </group>
  </configuration>
- 
+
 The XML file is validated against the DTD schema stored in C<Rex::Group::Lookup::XML::$schema_file> as string.
- 
+
 =cut
 
 =head2 $schema_file

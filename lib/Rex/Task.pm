@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,16 +13,16 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 =head1 SYNOPSIS
 
  use Rex::Task;
- 
+
  # create a new task
  my $task = Rex::Task->new( name => 'testtask' );
  $task->set_server('remoteserver');
  $task->set_code( sub { say 'Hello'; } );
  $task->modify( 'no_ssh', 1 );
- 
+
  # retrieve an existing task
  use Rex::TaskList;
- 
+
  my $existing_task = Rex::TaskList->create->get_task('my_task');
 
 =head1 METHODS
@@ -33,8 +31,7 @@ The Task Object. Typically you only need this class if you want to manipulate ta
 
 package Rex::Task;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Data::Dumper;
 use Time::HiRes qw(time);

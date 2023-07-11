@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -40,8 +38,7 @@ With this module you can configure packages. Currently it only supports Debian
 
 package Rex::Commands::PkgConf;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -65,7 +62,7 @@ the specified package as a hash.
 
 With a question specified, it will return only that option
 
-Each question is returned with the question as the key, and 
+Each question is returned with the question as the key, and
 the value as a hashref. The hashref contains the keys: question,
 value and already_set. already_set is true if the question has
 already been answered.

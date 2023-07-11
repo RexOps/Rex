@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More tests => 18;
 
@@ -76,4 +80,3 @@ is_deeply(
   [qw/1.host.domain 2.host.domain 3.host.domain/],
   "evaluate leading range"
 );
-

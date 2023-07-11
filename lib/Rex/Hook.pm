@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Hook;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -23,7 +20,7 @@ This module manages hooks of various Rex functions.
 =head1 SYNOPSIS
 
  use Rex::Hook;
- 
+
  register_function_hooks { $state => { $function => $coderef, }, };
 
 =cut

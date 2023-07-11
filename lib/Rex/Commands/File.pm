@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -21,7 +19,7 @@ With this module you can manipulate files.
    }
    $fh->close;
  };
- 
+
  task "read_passwd2", "server01", sub {
    say cat "/etc/passwd";
  };
@@ -32,18 +30,18 @@ With this module you can manipulate files.
    $fh->write("root:*:0:0:root user:/root:/bin/sh\n");
    $fh->close;
  };
- 
+
  delete_lines_matching "/var/log/auth.log", matching => "root";
  delete_lines_matching "/var/log/auth.log", matching => qr{Failed};
  delete_lines_matching "/var/log/auth.log",
                 matching => "root", qr{Failed}, "nobody";
- 
+
  file "/path/on/the/remote/machine",
    source => "/path/on/local/machine";
- 
+
  file "/path/on/the/remote/machine",
    content => "foo bar";
- 
+
  file "/path/on/the/remote/machine",
    source => "/path/on/local/machine",
    owner  => "root",
@@ -59,8 +57,7 @@ With this module you can manipulate files.
 
 package Rex::Commands::File;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Fcntl;
 
@@ -97,13 +94,47 @@ use base qw(Rex::Exporter);
 
 use vars qw(%file_handles);
 
-=head2 template($file, @params)
+=head2 template($file [, %params])
 
 Parse a template and return the content.
 
 By default, it uses L<Rex::Template>. If any of the L<template_ng|Rex#template_ng> or L<1.3|Rex#1.3> (or newer) feature flag is enabled, then L<Rex::Template::NG> is used instead of this module (recommended).
 
 For more advanced functionality, you may use your favorite template engine via the L<set_template_function|Rex::Config#set_template_function> configuration option.
+
+Template variables may be passed either as hash or a hash reference. The following calls are equivalent:
+
+ template( $template, variable => value );
+
+ template( $template, { variable => value } );
+
+=head3 List of exposed template variables
+
+The following template variables are passed to the underlying templating engine, in order of precedence from low to high (variables of the same name are overridden by the next level aka "last one wins"):
+
+=over 4
+
+=item task parameters
+
+All task parameters coming from the command line via C<S<rex taskname --param=value>>, or from calling a task as a function, like C<S<taskname( { param =E<gt> value } )>>.
+
+=item resource parameters
+
+All resource parameters as returned by C<Rex::Resource-E<gt>get_current_resource()-E<gt>get_all_parameters>, when called inside a resource.
+
+=item explicit template variables
+
+All manually specified, explicit template variables passed to C<template()>.
+
+=item system information
+
+The results from all available L<Rex::Hardware> modules as returned by C<Rex::Hardware-E<gt>get('All')>.
+
+Pass C<__no_sys_info__ =E<gt> TRUE> as a template variable to disable including system information:
+
+ my $content = template( $template, __no_sys_info__ => TRUE );
+
+=back
 
 =head3 Embedded templates
 
@@ -290,14 +321,14 @@ sub _get_std_template_vars {
   return %template_vars;
 }
 
-=head2 file($file_name, %options)
+=head2 file($file_name [, %options])
 
 This function is the successor of I<install file>. Please use this function to upload files to your server.
 
  task "prepare", "server1", "server2", sub {
    file "/file/on/remote/machine",
      source => "/file/on/local/machine";
- 
+
    file "/etc/hosts",
      content => template("templates/etc/hosts.tpl"),
      owner  => "user",
@@ -305,30 +336,30 @@ This function is the successor of I<install file>. Please use this function to u
      mode   => 700,
      on_change => sub { say "Something was changed." },
      on_no_change => sub { say "Nothing has changed." };
- 
+
    file "/etc/motd",
      content => `fortune`;
- 
+
    file "/etc/named.conf",
      content    => template("templates/etc/named.conf.tpl"),
      no_overwrite => TRUE;  # this file will not be overwritten if already exists.
- 
+
    file "/etc/httpd/conf/httpd.conf",
      source => "/files/etc/httpd/conf/httpd.conf",
      on_change => sub { service httpd => "restart"; };
- 
+
    file "/etc/named.d",
      ensure => "directory",  # this will create a directory
      owner  => "root",
      group  => "root";
- 
+
    file "/etc/motd",
      ensure => "absent";   # this will remove the file or directory
- 
+
  };
 
 The first parameter is either a string or an array reference. In the latter case the
-function is called for all strings in the array. Therefore, the following constructs 
+function is called for all strings in the array. Therefore, the following constructs
 are equivalent:
 
   file '/tmp/test1', ensure => 'directory';
@@ -362,7 +393,7 @@ Furthermore, if a path prefix matches multiple prefix entries in 'path_map',
 e.g. "files/etc/ntpd.conf" matching both "files/" and "files/etc/", the
 longer matching prefix(es) have precedence over shorter ones. Note that
 keys without a trailing slash (i.e. "files/etc") will be treated as having
-a trailing slash when matching the prefix ("files/etc/"). 
+a trailing slash when matching the prefix ("files/etc/").
 
 If no file is found using the above procedure and I<source> is relative,
 it will search from the location of your I<Rexfile> or the I<.pm> file if
@@ -785,12 +816,12 @@ On failure it will die.
  eval {
    $fh = file_write("/etc/groups");
  };
- 
+
  # catch an error
  if($@) {
    print "An error occurred. $@.\n";
  }
- 
+
  # work with the filehandle
  $fh->write("...");
  $fh->close;
@@ -840,14 +871,14 @@ On failure it will die.
 
  my $fh;
  eval {
-   $fh = read("/etc/groups");
+   $fh = file_read("/etc/groups");
  };
- 
+
  # catch an error
  if($@) {
    print "An error occurred. $@.\n";
  }
- 
+
  # work with the filehandle
  my $content = $fh->read_all;
  $fh->close;
@@ -972,7 +1003,7 @@ OUT:
     ->report_resource_end( type => "delete_lines_matching", name => $file );
 }
 
-=head2 delete_lines_according_to($search, $file, @options)
+=head2 delete_lines_according_to($search, $file [, @options])
 
 This is the successor of the delete_lines_matching() function. This function also allows the usage of on_change and on_no_change hooks.
 
@@ -1016,7 +1047,7 @@ sub delete_lines_according_to {
 
 }
 
-=head2 append_if_no_such_line($file, $new_line, @regexp)
+=head2 append_if_no_such_line($file, $new_line [, @regexp])
 
 Append $new_line to $file if none in @regexp is found. If no regexp is
 supplied, the line is appended unless there is already an identical line
@@ -1035,7 +1066,7 @@ Since 0.42 you can use named parameters as well
      on_change => sub {
                 say "file was changed, do something.";
               };
- 
+
    append_if_no_such_line "/etc/groups",
      line  => "mygroup:*:100:myuser1,myuser2",
      regexp => [qr{^mygroup:}, qr{^ourgroup:}]; # this is an OR
@@ -1047,7 +1078,7 @@ sub append_if_no_such_line {
   _append_or_update( 'append_if_no_such_line', @_ );
 }
 
-=head2 append_or_amend_line($file, $line, @regexp)
+=head2 append_or_amend_line($file, $line [, @regexp])
 
 Similar to L<append_if_no_such_line>, but if the line in the regexp is
 found, it will be updated. Otherwise, it will be appended.
@@ -1221,7 +1252,7 @@ Supported formats are .box, .tar, .tar.gz, .tgz, .tar.Z, .tar.bz2, .tbz2, .zip, 
     owner => "root",
     group => "root",
     to   => "/etc";
- 
+
    extract "/tmp/foo.tgz",
     type => "tgz",
     mode => "g+rwX";
@@ -1302,14 +1333,14 @@ sub extract {
 
 }
 
-=head2 sed($search, $replace, $file)
+=head2 sed($search, $replace, $file [, %options])
 
 Search some string in a file and replace it.
 
  task sar => sub {
    # this will work line by line
    sed qr{search}, "replace", "/var/log/auth.log";
- 
+
    # to use it in a multiline way
    sed qr{search}, "replace", "/var/log/auth.log",
     multiline => TRUE;

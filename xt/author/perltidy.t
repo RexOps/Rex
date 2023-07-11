@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
 use Test::PerlTidy;
@@ -22,9 +26,9 @@ subtest 'files in bin', sub {
 subtest 'standard files', sub {
   run_tests(
     exclude => [
-      'Makefile.PL',                  '.build/',
-      'blib/',                        'misc/',
-      qr{xt/author/(?!perltidy\.t$)}, qr{xt/release/},
+      'Makefile.PL', '.build/', 'blib/', 'misc/', 'local/',
+      qr{xt/author/(?!perltidy\.t$)},
+      qr{xt/release/},
     ],
   );
 };

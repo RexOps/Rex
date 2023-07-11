@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More tests => 6;
 
@@ -105,4 +109,3 @@ is_deeply(
   \%opt_t3,
   "got task3 parameter with 1.4 compatibility"
 );
-

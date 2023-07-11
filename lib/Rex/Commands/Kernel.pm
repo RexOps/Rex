@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -19,7 +17,7 @@ All these functions are not idempotent.
 =head1 SYNOPSIS
 
  kmod load => "ipmi_si";
- 
+
  kmod unload => "ipmi_si";
 
 =head1 EXPORTED FUNCTIONS
@@ -28,8 +26,7 @@ All these functions are not idempotent.
 
 package Rex::Commands::Kernel;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -54,7 +51,7 @@ This function loads or unloads a kernel module.
  task "load", sub {
    kmod load => "ipmi_si";
  };
- 
+
  task "unload", sub {
    kmod unload => "ipmi_si";
  };

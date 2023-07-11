@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More tests => 6;
 
@@ -43,4 +47,3 @@ is( $nh->{"data_emails_0"},      'm@m.m', "testing flattened array - nested" );
 is( $nh->{"data_emails_1"}, 'a@a.a', "testing flattened array - nested (2)" );
 is( $nh->{"data_emails_2_n1"},
   'nested_1', "testing flattened hash nested in array" );
-

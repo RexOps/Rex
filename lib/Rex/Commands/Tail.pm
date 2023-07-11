@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -27,8 +25,7 @@ With this module you can tail a file.
 
 package Rex::Commands::Tail;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -59,9 +56,9 @@ If you want to control the output format, you can define a callback function:
  task "syslog", "server01", sub {
    tail "/var/log/syslog", sub {
     my ($data) = @_;
- 
+
     my $server = Rex->get_current_connection()->{'server'};
- 
+
     print "$server>> $data\n";
    };
  };

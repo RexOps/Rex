@@ -1,11 +1,19 @@
+#!/usr/bin/env perl
+
+use v5.12.5;
+use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
+
 use Test::More;
 use Rex::Commands;
 
 {
 
   package MyTest;
-  use strict;
+
   use warnings;
+
   use Rex::Commands;
 
   $::QUIET = 1;
@@ -27,7 +35,6 @@ use Rex::Commands;
 
   package Nested::Module;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;
@@ -42,7 +49,6 @@ use Rex::Commands;
 
   package Rex::Module;
 
-  use strict;
   use warnings;
 
   use Rex::Commands;

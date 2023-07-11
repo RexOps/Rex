@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-use 5.010;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -37,7 +36,7 @@ my %code_for = (
 
 for my $test_case ( keys %code_for ) {
   subtest $test_case => sub {
-    my $test_code = shift;
+    my $test_code = $code_for{$test_case};
 
     $before = $before_change = $after_change = $after = 0;
 
@@ -47,9 +46,7 @@ for my $test_case ( keys %code_for ) {
     is( $before_change, 1, 'before_change hook ran' );
     is( $after_change,  1, 'after_change hook ran' );
     is( $after,         1, 'after hook ran' );
-
-    },
-    $code_for{$test_case};
+  };
 }
 
 sub expected_params {

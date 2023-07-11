@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,26 +13,26 @@ With this module you can do file system tasks like creating directories, deletin
 =head1 SYNOPSIS
 
  my @files = list_files "/etc";
- 
+
  unlink("/tmp/file");
- 
+
  rmdir("/tmp");
  mkdir("/tmp");
- 
+
  my %stat = stat("/etc/passwd");
- 
+
  my $link = readlink("/path/to/a/link");
  symlink("/source", "/dest");
- 
+
  rename("oldname", "newname");
- 
+
  chdir("/tmp");
- 
+
  is_file("/etc/passwd");
  is_dir("/etc");
  is_writeable("/tmp");
  is_writable("/tmp");
- 
+
  chmod 755, "/tmp";
  chown "user", "/tmp";
  chgrp "group", "/tmp";
@@ -46,8 +44,7 @@ With this module you can do file system tasks like creating directories, deletin
 
 package Rex::Commands::Fs;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -55,6 +52,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 require Rex::Exporter;
 use Data::Dumper;
 use Fcntl;
+use Rex::Helper::File::Spec;
 use Rex::Helper::SSH2;
 use Rex::Helper::Path;
 use Rex::Commands;
@@ -271,10 +269,10 @@ With Rex-0.45 and newer, please use the L<file|Rex::Commands::File#file> resourc
  };
 
 Direct usage:
- 
+
  task "mkdir", "server01", sub {
    mkdir "/tmp";
- 
+
    mkdir "/tmp",
      owner => "root",
      group => "root",
@@ -322,43 +320,25 @@ sub mkdir {
     &chmod( $mode, $dir )  if $mode;
   }
   else {
-    my @splitted_dir;
-
-    if ( Rex::is_ssh == 0 && $^O =~ m/^MSWin/ ) {
-
-      # special case for local windows runs
-      @splitted_dir = map { "\\$_"; } split( /[\\\/]/, $dir );
-      if ( $splitted_dir[0] =~ m/([a-z]):/i ) {
-        $splitted_dir[0] = "$1:\\";
-      }
-      else {
-        $splitted_dir[0] =~ s/^\\//;
-      }
-    }
-    else {
-      @splitted_dir = map { "/$_"; } split( /\//, $dir );
-
-      unless ( $splitted_dir[0] eq "/" ) {
-        $splitted_dir[0] = "." . $splitted_dir[0];
-      }
-      else {
-        shift @splitted_dir;
-      }
+    if ( !Rex::Helper::File::Spec->file_name_is_absolute($dir) ) {
+      $dir = Rex::Helper::File::Spec->rel2abs($dir);
     }
 
-    my $str_part = "";
-    for my $part (@splitted_dir) {
-      $str_part .= "$part";
+    my @directories = __splitdir($dir);
+    my $path_so_far = shift @directories;
 
-      if ( !is_dir($str_part) && !is_file($str_part) ) {
-        if ( !$fs->mkdir($str_part) ) {
+    for my $part (@directories) {
+      $path_so_far = Rex::Helper::File::Spec->join( $path_so_far, $part );
+
+      if ( !is_dir($path_so_far) && !is_file($path_so_far) ) {
+        if ( !$fs->mkdir($path_so_far) ) {
           Rex::Logger::debug("Can't create directory $dir");
           die("Can't create directory $dir");
         }
 
-        &chown( $owner, $str_part ) if $owner;
-        &chgrp( $group, $str_part ) if $group;
-        &chmod( $mode, $str_part )  if $mode;
+        &chown( $owner, $path_so_far ) if $owner;
+        &chgrp( $group, $path_so_far ) if $group;
+        &chmod( $mode, $path_so_far )  if $mode;
       }
     }
   }
@@ -402,12 +382,16 @@ sub mkdir {
   return 1;
 }
 
+sub __splitdir {
+  return Rex::Helper::File::Spec->splitdir(shift);
+}
+
 =head3 chown($owner, $path)
 
 Change the owner of a file or a directory.
 
  chown "www-data", "/var/www/html";
- 
+
  chown "www-data", "/var/www/html",
                 recursive => 1;
 
@@ -431,7 +415,7 @@ sub chown {
 Change the group of a file or a directory.
 
  chgrp "nogroup", "/var/www/html";
- 
+
  chgrp "nogroup", "/var/www/html",
               recursive => 1;
 
@@ -455,7 +439,7 @@ sub chgrp {
 Change the permissions of a file or a directory.
 
  chmod 755, "/var/www/html";
- 
+
  chmod 755, "/var/www/html",
           recursive => 1;
 
@@ -817,7 +801,7 @@ If C<$link> is a symbolic link, returns the path it resolves to, and C<die()>s o
    eval {
      $link = readlink("/tmp/testlink");
    };
- 
+
    say "this is a link" if($link);
  };
 
@@ -971,17 +955,17 @@ Mount devices.
           on_change => sub { say "device mounted"; };
    #
    # mount persistent with entry in /etc/fstab
- 
+
    mount "/dev/sda6", "/mnt/sda6",
           ensure     => "persistent",
           type       => "ext3",
           options    => [qw/noatime async/],
           on_change  => sub { say "device mounted"; };
- 
+
    # to umount a device
    mount "/dev/sda6", "/mnt/sda6",
           ensure => "absent";
- 
+
  };
 
 In order to be more aligned with C<mount> terminology, the previously used C<fs> option has been deprecated in favor of the C<type> option. The C<fs> option is still supported and works as previously, but Rex prints a warning if it is being used. There's also a warning if both C<fs> and C<type> options are specified, and in this case C<type> will be used.

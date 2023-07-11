@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use strict;
+use v5.12.5;
 use warnings;
 
 open my $fh, "<", $ARGV[0] or die $!;
@@ -48,4 +48,3 @@ push @new_file, "";
 open my $out, ">", $ARGV[0] or ie $!;
 print $out join( "\n", @new_file );
 close $out;
-

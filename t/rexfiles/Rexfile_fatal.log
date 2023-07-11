@@ -1,0 +1,5 @@
+ERROR - Compile time errors:
+ERROR - 	syntax error at %REXFILE_PATH% line 5, near "abc
+ERROR - 	
+ERROR - 	task "
+ERROR - 	Execution of %REXFILE_PATH% aborted due to compilation errors.

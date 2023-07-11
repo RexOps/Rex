@@ -31,19 +31,36 @@ sub get {
       $self_status,  $cpuinfo,     $modules
     ) = ( '', '', '', '', '', '' );
 
-    $product_name =
-      i_run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null",
-      fail_ok => 1;
-    $bios_vendor =
-      i_run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null",
-      fail_ok => 1;
-    $sys_vendor =
-      i_run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null",
-      fail_ok => 1;
+    if ($^O eq 'linux') {
+        $product_name =
+          i_run "cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null",
+          fail_ok => 1;
+        $bios_vendor =
+            i_run "cat /sys/devices/virtual/dmi/id/bios_vendor 2>/dev/null",
+            fail_ok => 1;
+        $sys_vendor =
+              i_run "cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null",
+              fail_ok => 1;
+    } else {
+        my $bios = Rex::Inventory::Bios::get();
+        $bios_vendor = $bios->get_bios()->get_vendor;
+        $product_name = $bios->get_system_information()->get_product_name;
+        $sys_vendor = $bios->get_system_information()->get_manufacturer;
+    }
 
     $self_status = i_run "cat /proc/self/status 2>/dev/null", fail_ok => 1;
-    $cpuinfo     = i_run "cat /proc/cpuinfo 2>/dev/null",     fail_ok => 1;
-    $modules     = i_run "cat /proc/modules 2>/dev/null",     fail_ok => 1;
+
+    if ( $^O eq 'linux' ) {
+        $cpuinfo     = i_run "cat /proc/cpuinfo 2>/dev/null",     fail_ok => 1;
+    } else {
+        $cpuinfo     = i_run "dmidecode -t processor 2>/dev/null",     fail_ok => 1;
+    }
+
+    if ( $^O eq 'linux' ) {
+        $modules     = i_run "cat /proc/modules 2>/dev/null",     fail_ok => 1;
+    } elsif ( $^O eq 'freebsd' ) {
+        $modules     = i_run "/sbin/kldstat 2>/dev/null",     fail_ok => 1;
+    }
 
     my ( $virtualization_type, $virtualization_role ) = ( '', '' );
 
@@ -125,22 +142,42 @@ sub get {
       }
     }
 
-    elsif ( $cpuinfo =~ /model name.*QEMU Virtual CPU/ ) {
+    elsif ( $^O eq 'linux' && $cpuinfo =~ /model name.*QEMU Virtual CPU/ ) {
       $virtualization_type = "kvm";
       $virtualization_role = "guest";
     }
 
-    elsif ( $cpuinfo =~ /vendor_id.*User Mode Linux|model name.*UML/ ) {
+     elsif ( $^O ne 'linux' && $cpuinfo =~ /Manufacturer.*QEMU Virtual CPU/ ) {
+      $virtualization_type = "qemu";
+      $virtualization_role = "guest";
+    }
+
+    elsif ($^O eq 'linux' && $cpuinfo =~ /vendor_id.*User Mode Linux|model name.*UML/ ) {
       $virtualization_type = "uml";
       $virtualization_role = "guest";
     }
 
-    elsif ( $cpuinfo =~ /vendor_id.*PowerVM Lx86/ ) {
+    elsif ($^O ne 'linux' && $cpuinfo =~ /Manufacturer.*User Mode Linux|model name.*UML/ ) {
+      $virtualization_type = "uml";
+      $virtualization_role = "guest";
+    }
+
+    elsif ( $^O eq 'linux' &&  $cpuinfo =~ /vendor_id.*PowerVM Lx86/ ) {
+     $virtualization_type = "powervm_lx86";
+     $virtualization_role = "guest";
+    }
+
+	elsif ( $^O ne 'linux' &&  $cpuinfo =~ /Manufacturer.*PowerVM Lx86/ ) {
       $virtualization_type = "powervm_lx86";
       $virtualization_role = "guest";
     }
 
-    elsif ( $cpuinfo =~ /vendor_id.*IBM\/S390/ ) {
+    elsif ( $^O eq 'linux' && $cpuinfo =~ /vendor_id.*IBM\/S390/ ) {
+      $virtualization_type = "ibm_systemz";
+      $virtualization_role = "guest";
+    }
+
+	elsif ( $^O ne 'linux' && $cpuinfo =~ /Manufacturer.*IBM\/S390/ ) {
       $virtualization_type = "ibm_systemz";
       $virtualization_role = "guest";
     }

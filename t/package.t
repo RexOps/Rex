@@ -8,9 +8,9 @@ our $VERSION = '9999.99.99_99'; # VERSION
 use Test::More tests => 1;
 use Test::Deep;
 
-use Rex::Pkg::Base;
+use Rex::Pkg::Test;
 
-my $pkg = Rex::Pkg::Base->new;
+my $pkg = Rex::Pkg::Test->new;
 
 my @plist1 = (
   { name => 'vim', version => '1.0' },

@@ -5,8 +5,9 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Test::Deep;
+use Test::Exception;
 
 use Rex::Pkg::Test;
 
@@ -48,6 +49,12 @@ subtest 'package list diffs' => sub {
   my @mods = $pkg->diff_package_list( \@plist1, \@plist2 );
 
   cmp_deeply( \@mods, \@expected, 'expected package modifications' );
+};
+
+subtest 'local package installation' => sub {
+  plan tests => 1;
+
+  lives_ok { $pkg->update('test_package') }, 'update test package';
 };
 
 1;

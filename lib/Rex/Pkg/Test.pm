@@ -19,6 +19,8 @@ sub new {
 
   bless $self, $proto;
 
+  $self->{commands} = { install => 'echo %s' };
+
   return $self;
 }
 

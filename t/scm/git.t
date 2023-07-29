@@ -26,9 +26,14 @@ else {
   plan skip_all => 'Can not find git command';
 }
 
+my $git_environment = {
+  GIT_CONFIG_GLOBAL => File::Spec->devnull(),
+  GIT_CONFIG_SYSTEM => File::Spec->devnull(),
+};
+
 ok( $git, "Found git command at $git" );
 
-my $git_version = i_run 'git version';
+my $git_version = i_run 'git version', env => $git_environment;
 ok( $git_version, qq(Git version returned as '$git_version') );
 
 my $test_repo_dir = tempdir( CLEANUP => 1 );
@@ -77,12 +82,16 @@ subtest 'clone into existing directory', sub {
 sub prepare_test_repo {
   my $directory = shift;
 
-  i_run 'git init', cwd => $directory;
+  i_run 'git init', cwd => $directory, env => $git_environment;
 
-  i_run 'git config user.name Rex',                 cwd => $directory;
-  i_run 'git config user.email noreply@rexify.org', cwd => $directory;
+  i_run 'git config user.name Rex', cwd => $directory, env => $git_environment;
+  i_run 'git config user.email noreply@rexify.org',
+    cwd => $directory,
+    env => $git_environment;
 
-  i_run 'git commit --allow-empty -m commit', cwd => $directory;
+  i_run 'git commit --allow-empty -m commit',
+    cwd => $directory,
+    env => $git_environment;
 
   return;
 }
@@ -96,7 +105,9 @@ sub git_repo_ok {
     "$directory has .git subdirectory"
   );
 
-  lives_ok { i_run 'git rev-parse --git-dir', cwd => $directory }
+  lives_ok {
+    i_run 'git rev-parse --git-dir', cwd => $directory, env => $git_environment
+  }
   "$directory looks like a git repository now";
 
   return;

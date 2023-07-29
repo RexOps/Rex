@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix checking test git repository
+ - Fix local package installation
 
  [DOCUMENTATION]
 

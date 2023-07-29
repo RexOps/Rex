@@ -5,7 +5,8 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 5;
+use Test::More tests => 1;
+use Test::Deep;
 
 use Rex::Pkg::Base;
 
@@ -23,21 +24,26 @@ my @plist2 = (
   { name => 'libssh2-1', version => '0.32.1' },
 );
 
+my @expected = (
+  {
+    action  => 'updated',
+    name    => 'rex',
+    version => '0.52.0',
+  },
+  {
+    action  => 'removed',
+    name    => 'mc',
+    version => '2.0',
+  },
+  {
+    action  => 'installed',
+    name    => 'libssh2-1',
+    version => '0.32.1',
+  },
+);
+
 my @mods = $pkg->diff_package_list( \@plist1, \@plist2 );
 
-my $found_vim = grep { $_->{name} eq "vim" } @mods;
-is( $found_vim, 0, "vim was not modified" );
-
-my ($found_rex) = grep { $_->{name} eq "rex" } @mods;
-is( $found_rex->{action}, "updated", "rex was updated" );
-
-my ($found_libssh2) = grep { $_->{name} eq "libssh2-1" } @mods;
-is( $found_libssh2->{action}, "installed", "libssh2-1 was installed" );
-
-my ($found_mc) = grep { $_->{name} eq "mc" } @mods;
-is( $found_mc->{action}, "removed", "mc was removed" );
-
-my $leftover_found = scalar grep { defined $_->{found} } @mods;
-is( $leftover_found, 0, 'no internal found marker left' );
+cmp_deeply( \@mods, \@expected, 'expected package modifications' );
 
 1;

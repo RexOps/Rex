@@ -41,6 +41,7 @@ use YAML;
 use Data::Dumper;
 use Rex::Require;
 use Symbol;
+use IPC::Open3 qw(open3);
 
 our (
   $user,                        $password,
@@ -792,6 +793,7 @@ sub has_user {
 
 sub get_user {
   my $class = shift;
+  my $param = {@_};
 
   if ( exists $ENV{REX_USER} ) {
     return $ENV{REX_USER};
@@ -799,6 +801,10 @@ sub get_user {
 
   if ($user) {
     return $user;
+  }
+
+  if ( exists $param->{server} ) {
+      return _get_ssh_config_for( host => $param->{server}, option => 'user' );
   }
 
   if ( $^O =~ m/^MSWin/ ) {
@@ -859,11 +865,9 @@ sub get_port {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{port} )
-  {
-    return $SSH_CONFIG_FOR{ $param->{server} }->{port};
+  if ( exists $param->{server} ) {
+    my $config =
+      _get_ssh_config_for( host => $param->{server}, option => 'port' );
   }
 
   return $port;
@@ -962,11 +966,8 @@ sub get_max_connect_fails {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{connectionattempts} )
-  {
-    return $SSH_CONFIG_FOR{ $param->{server} }->{connectionattempts};
+  if ( exists $param->{server} ) {
+    return _get_ssh_config_for( host => $param->{server}, option => 'connectionattempts' );
   }
 
   return $max_connect_fails || 3;
@@ -995,11 +996,8 @@ sub get_proxy_command {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{proxycommand} )
-  {
-    return $SSH_CONFIG_FOR{ $param->{server} }->{proxycommand};
+  if ( exists $param->{server} ) {
+    return _get_ssh_config_for( host => $param->{server}, option => 'proxycommand' );
   }
 
   return $proxy_command;
@@ -1028,11 +1026,8 @@ sub get_timeout {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{connecttimeout} )
-  {
-    return $SSH_CONFIG_FOR{ $param->{server} }->{connecttimeout};
+  if ( exists $param->{server} ) {
+    return _get_ssh_config_for( host => $param->{server}, option => 'connecttimeout' );
   }
 
   return $timeout || 2;
@@ -1267,11 +1262,8 @@ sub get_ssh_config_username {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{user} )
-  {
-    return $SSH_CONFIG_FOR{ $param->{server} }->{user};
+  if ( exists $param->{server} ) {
+      return _get_ssh_config_for( host => $param->{server}, option => 'user' );
   }
 
   return 0;
@@ -1281,16 +1273,8 @@ sub get_ssh_config_hostname {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{hostname} )
-  {
-    if ( $SSH_CONFIG_FOR{ $param->{server} }->{hostname} =~ m/^\%h(\.(.*))?/ ) {
-      return $param->{server} . $1;
-    }
-    else {
-      return $SSH_CONFIG_FOR{ $param->{server} }->{hostname};
-    }
+  if ( exists $param->{server} ) {
+    return _get_ssh_config_for( host => $param->{server}, option => 'hostname' );
   }
 
   return 0;
@@ -1300,12 +1284,10 @@ sub get_ssh_config_private_key {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{identityfile} )
-  {
+  if ( exists $param->{server} ) {
+    my $file =
+      _get_ssh_config_for( host => $param->{server}, option => 'identityfile');
 
-    my $file     = $SSH_CONFIG_FOR{ $param->{server} }->{identityfile};
     my $home_dir = _home_dir();
     $file =~ s/^~/$home_dir/;
 
@@ -1319,11 +1301,9 @@ sub get_ssh_config_public_key {
   my $class = shift;
   my $param = {@_};
 
-  if ( exists $param->{server}
-    && exists $SSH_CONFIG_FOR{ $param->{server} }
-    && exists $SSH_CONFIG_FOR{ $param->{server} }->{identityfile} )
-  {
-    my $file     = $SSH_CONFIG_FOR{ $param->{server} }->{identityfile} . ".pub";
+  if ( exists $param->{server} ) {
+    my $file =
+      _get_ssh_config_for( host => $param->{server}, option => 'identityfile' ) . ".pub";
     my $home_dir = _home_dir();
     $file =~ s/^~/$home_dir/;
     return $file;
@@ -1803,6 +1783,41 @@ sub _parse_ssh_config {
   }
 
   return %ret;
+}
+
+sub _get_ssh_config_for {
+  my %params = @_;
+
+  my $pid =
+    open3( my $in, my $out, my $err = gensym, 'ssh', '-qG', $params{host} );
+
+  my @lines = <$out>;
+  chomp @lines;
+
+  my %config;
+
+  for my $line (@lines) {
+    my ( $key, $value ) = split qr{\s+}msx, $line, 2;
+
+    if ( exists $config{$key} ) {
+      if ( ref $config{$key} eq 'ARRAY' ) {
+        push @{ $config{$key} }, $value;
+      }
+      else {
+        $config{$key} = [ $config{$key}, $value ];
+      }
+    }
+    else {
+      $config{$key} = $value;
+    }
+  }
+
+  if ( defined $params{option} ) {
+    return $config{ $params{option} };
+  }
+  else {
+    return %config;
+  }
 }
 
 sub import {

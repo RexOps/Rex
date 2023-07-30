@@ -62,7 +62,7 @@ sub update {
   my ( $self, $pkg, $option ) = @_;
 
   my $version = $option->{'version'} || '';
-  my $env     = $option->{'env'}     || ();
+  my $env     = $option->{'env'}     || {};
 
   Rex::Logger::debug( "Installing $pkg" . ( $version ? "-$version" : "" ) );
   my $cmd;

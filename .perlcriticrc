@@ -12,9 +12,6 @@ private_name_regex = _(?!_)\w+
 [Subroutines::ProtectPrivateSubs]
 private_name_regex = _(?!_)\w+
 
-[TooMuchCode::ProhibitDuplicateLiteral]
-allowlist = 'vim' 1.0 'rex' 0.52.0 'libssh2-1' 0.32.1 'mc' 2.0
-
 [-ValuesAndExpressions::ProhibitConstantPragma]
 
 [-ValuesAndExpressions::ProhibitVersionStrings]

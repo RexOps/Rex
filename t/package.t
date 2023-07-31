@@ -16,6 +16,8 @@ my $pkg = Rex::Pkg::Test->new;
 subtest 'package list diffs' => sub {
   plan tests => 1;
 
+  ## no critic (ProhibitDuplicateLiteral)
+
   my @plist1 = (
     { name => 'vim', version => '1.0' },
     { name => 'mc',  version => '2.0' },
@@ -45,6 +47,8 @@ subtest 'package list diffs' => sub {
       version => '0.32.1',
     },
   );
+
+  ## use critic
 
   my @mods = $pkg->diff_package_list( \@plist1, \@plist2 );
 

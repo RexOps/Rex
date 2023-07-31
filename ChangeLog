@@ -4,8 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix checking test git repository
- - Fix local package installation
 
  [DOCUMENTATION]
 
@@ -18,6 +16,11 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.2.2-TRIAL 2023-07-31 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix checking test git repository
+ - Fix local package installation
 
 1.14.2.1-TRIAL 2023-05-29 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

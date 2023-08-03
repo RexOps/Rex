@@ -4,7 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix checking command existence
 
  [DOCUMENTATION]
 
@@ -17,6 +16,10 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.2.3-TRIAL 2023-08-03 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix checking command existence
 
 1.14.2.2-TRIAL 2023-07-31 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

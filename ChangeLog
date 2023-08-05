@@ -17,6 +17,9 @@ Revision history for Rex
 
  [REVISION]
 
+1.14.3 2023-08-05 Ferenc Erki <erkiferenc@gmail.com>
+ - No code changes since the 1.14.2.3-TRIAL release
+
 1.14.2.3-TRIAL 2023-08-03 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]
  - Fix checking command existence

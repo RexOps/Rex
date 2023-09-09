@@ -54,7 +54,7 @@ sub _do_request {
   my ($res);
 
   if ( $type eq "GET" ) {
-    $res = $ua->request( GET $url);
+    $res = $ua->request( GET $url );
   }
   elsif ( $type eq "POST" ) {
     $res = $ua->request( POST $url, \@params );

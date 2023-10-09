@@ -110,7 +110,7 @@ sub get_operating_system {
   my $is_lsb = can_run("lsb_release");
 
   if ($is_lsb) {
-    if ( my $ret = i_run "lsb_release -s -i" ) {
+    if ( my $ret = i_run "lsb_release -s -i 2>/dev/null" ) {
       if ( $ret =~ m/SUSE/i ) {
         $ret = "SuSE";
       }

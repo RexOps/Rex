@@ -369,6 +369,25 @@ Returns the value of the given item.
     }
   }
 
+=item errors
+
+Returns any errors from a previous command (uses the augeas "errors" command)
+
+ my $errors = augeas "errors"
+
+=cut
+
+  elsif ( $action eq "errors" ) {
+
+    if ( $is_ssh || !$has_config_augeas ) {
+      my $result = _run_augtool("errors");
+      return $result->{return};
+    }
+    else {
+      return $aug->error_details;
+    }
+  }
+
   else {
     Rex::Logger::info("Unknown augeas action.");
   }

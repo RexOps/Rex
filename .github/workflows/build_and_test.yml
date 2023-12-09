@@ -198,6 +198,9 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
+      - name: Preinstall IO::Pty for Mac OS X tests
+        run: cpanm IO::Pty~'!=1.18'
+        if: matrix.os == 'macos'
       - name: Install dependencies
         uses: ferki/os-specific-run@ferki
         with:

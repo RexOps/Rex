@@ -51,7 +51,6 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
-use IO::String;
 use Module::Load::Conditional qw(can_load);
 
 my $has_config_augeas =

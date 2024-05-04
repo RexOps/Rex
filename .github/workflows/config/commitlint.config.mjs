@@ -1,4 +1,4 @@
-module.exports = {
+export default {
 	defaultIgnores: false,
 	rules: {
 		'body-leading-blank':   [ 2, 'always', true ],

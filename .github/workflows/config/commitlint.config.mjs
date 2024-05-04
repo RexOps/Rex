@@ -1,5 +1,6 @@
 export default {
 	defaultIgnores: false,
+	helpUrl: 'https://github.com/RexOps/Rex/blob/master/CONTRIBUTING.md#git-workflow',
 	rules: {
 		'body-leading-blank':   [ 2, 'always', true ],
 		'header-max-length':    [ 2, 'always', 50 ],

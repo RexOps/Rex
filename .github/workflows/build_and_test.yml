@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Extract author information
         run: |
           echo AUTHOR_NAME="$(git log -1 ${GITHUB_REF} --pretty='%aN')" >> $GITHUB_ENV
@@ -33,7 +33,7 @@ jobs:
       - name: Get build timestamp
         run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
       - name: Cache build dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: local
           key: cache-build-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
@@ -58,7 +58,7 @@ jobs:
       - name: Create build tarball
         run: tar cvf build.tar -C build .
       - name: Upload build results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build.tar
           path: build.tar
@@ -72,9 +72,9 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Download build results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build.tar
       - name: Extract build tarball
@@ -85,7 +85,7 @@ jobs:
       - name: Get build timestamp
         run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
       - name: Cache coverage dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: local
           key: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
@@ -119,7 +119,7 @@ jobs:
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build.tar
       - name: Extract build tarball
@@ -132,7 +132,7 @@ jobs:
       - name: Get build timestamp
         run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
       - name: Cache extra-tests dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: local
           key: cache-extra-tests-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
@@ -144,7 +144,7 @@ jobs:
       - name: Upgrade CPAN modules
         run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Cache perlcritic history
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /tmp/cache/.perlcritic-history
           key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
@@ -187,7 +187,7 @@ jobs:
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build.tar
       - name: Extract build tarball
@@ -202,13 +202,13 @@ jobs:
         run: cpanm IO::Pty~'!=1.18'
         if: matrix.os == 'macos'
       - name: Install dependencies
-        uses: ferki/os-specific-run@ferki
+        uses: carlkidcrypto/os-specific-runner@v2.0.0
         with:
           macos: cpanm --installdeps --with-all-features .
           linux: cpanm --installdeps --with-all-features .
           windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
       - name: Get number of processors
         id: cores
-        uses: SimenB/github-actions-cpu-cores@v1
+        uses: SimenB/github-actions-cpu-cores@v2
       - name: Run tests
         run: prove --timer --lib --recurse --jobs ${{ steps.cores.outputs.count }} --shuffle t/

@@ -1,0 +1,49 @@
+---
+name: Feature request
+description: Suggest an idea for this project
+labels: 'feature request'
+body:
+    - type: markdown
+      attributes:
+          value: '## User story'
+    - type: markdown
+      attributes:
+          value: A clear and concise description of _who_ wants to do _what_ and _why_.
+    - type: input
+      attributes:
+          label: As
+          description: Who?
+          placeholder: user, contributor, maintainer, engineer, manager, etc.
+      validations:
+          required: true
+    - type: input
+      attributes:
+          label: I would like to
+          description: What?
+          placeholder: do something new or better with Rex
+      validations:
+          required: true
+    - type: input
+      attributes:
+          label: so I can
+          description: Why?
+          placeholder: reach a specific goal
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: Additional context
+          description: Add any other context about the feature request here.
+    - type: markdown
+      attributes:
+          value: '---'
+    - type: textarea
+      attributes:
+          label: Describe the solution you would like
+          description: A clear and concise description of expected behavior, or code examples for expected interfaces.
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: Describe alternatives you have considered
+          description: A clear and concise description of any alternative solutions or features you have considered, possibly listing pros and cons.

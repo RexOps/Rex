@@ -1,12 +1,10 @@
-#!perl
+#!/usr/bin/env perl
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
-# vim: set expandtab:
 
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -37,114 +35,149 @@ The C<rex> script can be used to execute tasks defined in a Rexfile from the com
 
 =head1 SYNOPSIS
 
-    bash# rex -h                      # Show usage
-    bash# rex -T                      # List tasks
-    bash# rex uname                   # Run the 'uname' task
-    bash# rex -H server[01..10] uname # Run the 'uname' task on all the specified hosts
-    bash# rex -G production uname     # Run 'uname' on hosts on the 'production' hostgroup
-    bash# rex deploy --gracefully     # Pass '--gracefully' to the 'deploy' task
+ rex -h                      # Show usage
+ rex -T                      # List tasks
+ rex uname                   # Run the 'uname' task
+ rex -H server[01..10] uname # Run the 'uname' task on all the specified hosts
+ rex -G production uname     # Run 'uname' on hosts on the 'production' hostgroup
+ rex deploy --gracefully     # Pass '--gracefully' to the 'deploy' task
 
 =head1 USAGE
 
-    rex [<options>] [-H <host>] [-G <group>] <task> [<task-options>]
-    rex -T[m|y|v] [<string>]
+ rex [<options>] [-H <host>] [-G <group>] <task> [<task-options>]
+ rex -T[m|y|v] [<string>]
 
-    -b     Run batch
-    -e     Run the given code fragment
-    -E     Execute a task on the given environment
-    -G|-g  Execute a task on the given server groups
-    -H     Execute a task on the given hosts (space delimited)
-    -z     Execute a task on hosts from this command's output
-  
-    -K     Public key file for the ssh connection
-    -P     Private key file for the ssh connection
-    -p     Password for the ssh connection
-    -u     Username for the ssh connection
-  
-    -d     Show debug output
-    -ddd   Show more debug output (includes profiling output)
-    -m     Monochrome output: no colors
-    -o     Output format
-    -q     Quiet mode: no log output
-    -qw    Quiet mode: only output warnings and errors
-    -Q     Really quiet: output nothing
-  
-    -T     List tasks
-    -Ta    List all tasks, including hidden
-    -Tm    List tasks in machine-readable format
-    -Tv    List tasks verbosely
-    -Ty    List tasks in YAML format
-  
-    -c     Turn cache ON
-    -C     Turn cache OFF
-    -f     Use this file instead of Rexfile
-    -F     Force: disregard lock file
-    -h     Display this help message
-    -M     Load this module instead of Rexfile
-    -O     Pass additional options, like CMDB path
-    -s     Use sudo for every command
-    -S     Password for sudo
-    -t     Number of threads to use (aka 'parallelism' param)
-    -v     Display (R)?ex version
+ -b     Run batch
+ -e     Run the given code fragment
+ -E     Execute a task on the given environment
+ -G|-g  Execute a task on the given server groups
+ -H     Execute a task on the given hosts (space delimited)
+ -z     Execute a task on hosts from this command's output
+
+ -K     Public key file for the ssh connection
+ -P     Private key file for the ssh connection
+ -p     Password for the ssh connection
+ -u     Username for the ssh connection
+
+ -d     Show debug output
+ -ddd   Show more debug output (includes profiling output)
+ -m     Monochrome output: no colors
+ -o     Output format
+ -q     Quiet mode: no log output
+ -qw    Quiet mode: only output warnings and errors
+ -Q     Really quiet: output nothing
+
+ -T     List tasks
+ -Ta    List all tasks, including hidden
+ -Tm    List tasks in machine-readable format
+ -Tv    List tasks verbosely
+ -Ty    List tasks in YAML format
+
+ -c     Turn cache ON
+ -C     Turn cache OFF
+ -f     Use this file instead of Rexfile
+ -F     Force: disregard lock file
+ -h     Display this help message
+ -M     Load this module instead of Rexfile
+ -O     Pass additional options, like CMDB path
+ -s     Use sudo for every command
+ -S     Password for sudo
+ -t     Number of threads to use (aka 'parallelism' param)
+ -v     Display (R)?ex version
 
 =head1 Rexfile
 
 When you run C<rex> it reads the file C<Rexfile> in the current working
-directory. A Rexfile consists of 2 major parts: Configuration and Task
-Definitions.
+directory. A Rexfile consists of 2 major parts: configuration and task
+definitions.
 
 =head2 Configuration
 
-=head3 Simple Authentication
+See all the available commands in L<Rex::Commands>.
 
-    user "bruce";
-    password "batman";
-    pass_auth;
+=head3 Simple authentication
 
-=head3 Key Authentication
+ user 'bruce';
+ password 'batman';
+ pass_auth;
 
-    private_key "/path/to/your/private/key.file";
-    public_key "/path/to/your/public/key.file";
+=head3 Key authentication
 
-=head3 Define Logging
+ private_key '/path/to/your/private/key.file';
+ public_key '/path/to/your/public/key.file';
+ key_auth;
 
-    logging to_file => "rex.log";
-    logging to_syslog => "local0";
+=head3 Define logging
+
+ logging to_file   => 'rex.log';
+ logging to_syslog => 'local0';
 
 =head3 Group your servers
 
 Rex gives you the ability to define groups of servers. Groups can be defined the Rexfile:
 
-    group "frontends" => "frontend01", "frontend02", "frontend03", "frontend04", "frontend[05..09]";
+ group 'frontends' => 'frontend01', 'frontend02', 'frontend[03..09]';
 
-Groups can also be defined in a B<server.ini> file:
+Groups can also be defined in separate files, like C<server.ini>:
 
-    [frontends]
-    frontend[01..04]
+ # server.ini
+ [frontends]
+ frontend[01..04]
 
-=head2 Other Configuration
+ # Rexfile
+ use Rex::Group::Lookup::INI;
+ groups_file 'file.ini'
 
-    timeout 10;    # ssh timeout
-    parallelism 2; # execute tasks in parallel
+See L<Rex::Group::Lookup::INI> for more details, and check the C<Rex::Group::Lookup> namespace for other formats.
+
+=head2 Other configuration
+
+ timeout 10;    # ssh timeout
+ parallelism 2; # execute tasks in parallel
 
 =head2 Defining tasks
 
 A basic task looks like this:
 
-    # task description
-    desc "This task tells you how long since the server was rebooted";
-   
-    # task definition
-    task "shortname", sub {
-        say run "uptime";
-    };
+ # task description
+ desc 'This task tells you how long since the server was rebooted';
 
-You can also set a default server group:
+ # task definition
+ task 'shortname', sub {
+   say run 'uptime';
+ };
 
-    desc "This is a long description of a task";
-    task "shortname", group => "frontends", sub {
-        say run "uptime";
-    };
+By default it will be targeted at the same host where `rex` is being executed.
+
+You can also set a default server as the task's target:
+
+ desc 'This is a long description of a task';
+ task 'shortname',
+   'frontend01',
+   sub {
+     say run 'uptime';
+   };
+
+or even a default server group:
+
+ desc 'This is a long description of a task';
+ task 'shortname',
+   group => 'frontends',
+   sub {
+     say run 'uptime';
+   };
+
+The task options from the command line will be passed to the task as well:
+
+ # Rexfile
+ desc 'Get task options';
+ task 'get_task_options', sub {
+   my $task_options = shift;
+   my $option1 = $task_options->{option1};
+ };
+
+ # command line
+ rex get_task_options --option1=yes
 
 =head1 TAB COMPLETION
 

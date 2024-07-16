@@ -1,36 +1,64 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
 
-use Test::More tests => 4;
+our $VERSION = '9999.99.99_99'; # VERSION
 
-use Rex::Pkg::Base;
+use Test::More tests => 2;
+use Test::Deep;
+use Test::Exception;
 
-my $pkg = Rex::Pkg::Base->new;
+use Rex::Pkg::Test;
 
-my @plist1 = (
-  { name => 'vim', version => '1.0' },
-  { name => 'mc',  version => '2.0' },
-  { name => 'rex', version => '0.51.0' },
-);
+my $pkg = Rex::Pkg::Test->new;
 
-my @plist2 = (
-  { name => 'vim',       version => '1.0' },
-  { name => 'rex',       version => '0.52.0' },
-  { name => 'libssh2-1', version => '0.32.1' },
-);
+subtest 'package list diffs' => sub {
+  plan tests => 1;
 
-my @mods = $pkg->diff_package_list( \@plist1, \@plist2 );
+  ## no critic (ProhibitDuplicateLiteral)
 
-my $found_vim = grep { $_->{name} eq "vim" } @mods;
-is( $found_vim, 0, "vim was not modified" );
+  my @plist1 = (
+    { name => 'vim', version => '1.0' },
+    { name => 'mc',  version => '2.0' },
+    { name => 'rex', version => '0.51.0' },
+  );
 
-my ($found_rex) = grep { $_->{name} eq "rex" } @mods;
-is( $found_rex->{action}, "updated", "rex was updated" );
+  my @plist2 = (
+    { name => 'vim',       version => '1.0' },
+    { name => 'rex',       version => '0.52.0' },
+    { name => 'libssh2-1', version => '0.32.1' },
+  );
 
-my ($found_libssh2) = grep { $_->{name} eq "libssh2-1" } @mods;
-is( $found_libssh2->{action}, "installed", "libssh2-1 was installed" );
+  my @expected = (
+    {
+      action  => 'updated',
+      name    => 'rex',
+      version => '0.52.0',
+    },
+    {
+      action  => 'removed',
+      name    => 'mc',
+      version => '2.0',
+    },
+    {
+      action  => 'installed',
+      name    => 'libssh2-1',
+      version => '0.32.1',
+    },
+  );
 
-my ($found_mc) = grep { $_->{name} eq "mc" } @mods;
-is( $found_mc->{action}, "removed", "mc was removed" );
+  ## use critic
+
+  my @mods = $pkg->diff_package_list( \@plist1, \@plist2 );
+
+  cmp_deeply( \@mods, \@expected, 'expected package modifications' );
+};
+
+subtest 'local package installation' => sub {
+  plan tests => 1;
+
+  lives_ok { $pkg->update('test_package') }, 'update test package';
+};
 
 1;

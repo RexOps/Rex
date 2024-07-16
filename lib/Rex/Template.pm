@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -95,8 +93,7 @@ This module does not support any environment variables.
 
 package Rex::Template;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Symbol;
 

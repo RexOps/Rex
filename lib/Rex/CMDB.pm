@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,13 +13,13 @@ This module exports a function to access a CMDB via a common interface. When the
 =head1 SYNOPSIS
 
  use Rex::CMDB;
- 
+
  set cmdb => {
    type           => 'YAML',
    path           => [ 'cmdb/{hostname}.yml', 'cmdb/default.yml', ],
    merge_behavior => 'LEFT_PRECEDENT',
  };
- 
+
  task 'prepare', 'server1', sub {
    my %all_information          = get cmdb;
    my $specific_item            = get cmdb('item');
@@ -34,8 +32,7 @@ This module exports a function to access a CMDB via a common interface. When the
 
 package Rex::CMDB;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

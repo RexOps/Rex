@@ -1,62 +1,31 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Helper::File::Spec;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
+
 require File::Spec::Unix;
 require File::Spec::Win32;
 
-sub catfile {
-  shift @_;
-  _spec()->catfile(@_);
-}
+sub AUTOLOAD { ## no critic (ProhibitAutoloading)
+  my ( $self, @args ) = @_;
 
-sub catdir {
-  shift @_;
-  _spec()->catdir(@_);
-}
+  ( my $method ) = our $AUTOLOAD =~ /::(\w+)$/msx;
 
-sub join {
-  shift @_;
-  _spec()->join(@_);
-}
+  my $file_spec_flavor = 'File::Spec::Unix';
 
-sub splitdir {
-  shift @_;
-  _spec()->splitdir(@_);
-}
-
-sub tmpdir {
-  shift @_;
-  _spec()->tmpdir(@_);
-}
-
-sub rootdir {
-  shift @_;
-  _spec()->rootdir(@_);
-}
-
-sub _spec {
-  if ( Rex::is_ssh() ) {
-    return "File::Spec::Unix";
+  if ( $OSNAME eq 'MSWin32' && !Rex::is_ssh() ) {
+    $file_spec_flavor = 'File::Spec::Win32';
   }
-  else {
-    if ( $^O =~ m/^MSWin/ ) {
-      return "File::Spec::Win32";
-    }
-    else {
-      return "File::Spec::Unix";
-    }
-  }
+
+  return $file_spec_flavor->$method(@args);
 }
 
 1;

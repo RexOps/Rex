@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -32,8 +30,7 @@ While it's possible to use the methods below to set a configuration option direc
 
 package Rex::Config;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -114,7 +111,7 @@ sub get_autodie {
 
 Sets and gets the value of the C<$use_net_openssh_if_present> configuration variable.
 
-This controls whether Rex should use L<Net::OpenSSH> for connections if that is available. 
+This controls whether Rex should use L<Net::OpenSSH> for connections if that is available.
 
 Default is C<undef>.
 
@@ -366,7 +363,7 @@ sub get_exec_autodie {
 
 Sets and gets the value of the C<$no_path_cleanup> configuration variable.
 
-This controls whether Rex should clean up the C<$PATH> before executing a L<run|Rex::Commands::Run#run> command.
+This controls whether Rex should use either the default or the explicitly configured C<PATH> settings (via L<path|Rex::Commands#path> or L<set_path>) when executing commands or not.
 
 Default is C<undef>.
 
@@ -726,7 +723,9 @@ sub get_tmp_dir {
 
 Sets and gets the value of the C<$path> configuration variable.
 
-This controls which C<PATH> Rex should use when executing L<run|Rex::Commands::Run#run> commands. The value should be set as an array reference, and will be dereferenced as such before returned by C<get_path>.
+This controls which C<PATH> Rex should use when executing commands via the L<Rex::Commands::Run> module.
+
+The value should be set as an array reference, and will be dereferenced as such before returned by C<get_path>. The L<path|Rex::Commands#path> command is a convenience wrapper for C<set_path>, and accepts an array.
 
 Default is
 

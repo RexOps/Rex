@@ -1,8 +1,6 @@
 
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -108,8 +106,7 @@ This module is the core commands module.
 
 package Rex::Commands;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -319,9 +316,6 @@ sub task {
     push( @_, "" );
   }
 
-  my $ref_to_tasks = qualify_to_ref( 'tasks', $class );
-  push( @{ *{$ref_to_tasks} }, { name => $task_name_save, code => $_[-2] } );
-
   $options->{'dont_register'} ||= $dont_register_tasks;
   my $task_o = Rex::TaskList->create()->create_task( $task_name, @_, $options );
 
@@ -355,12 +349,20 @@ sub task {
 
 =head2 desc($description)
 
-Set the description of a task.
+Set the description of the task, batch, or environment following it.
 
- desc "This is a task description of the following task";
- task "mytask", sub {
-   say "Do something";
- }
+ desc 'This is the description of the following task';
+ task 'mytask', sub {
+   say 'Do something';
+ };
+
+ desc 'This is the description of the following batch';
+ batch mybatch => 'task1', 'task2', 'task3';
+
+ desc 'This is the description of the following environment';
+ environment production => sub {
+   ...
+ };
 
 =cut
 
@@ -504,16 +506,16 @@ If you want to set special login information for a group you have to enable at l
 Command line options to set locality or authentication details are still taking precedence, and may override these settings.
 
  # auth for groups
- 
+
  use Rex -feature => ['0.31']; # activate setting auth for a group
 
  group frontends => "web[01..10]";
  group backends => "be[01..05]";
- 
+
  auth for => "frontends" =>
             user => "root",
             password => "foobar";
- 
+
  auth for => "backends" =>
             user => "admin",
             private_key => "/path/to/id_rsa",
@@ -521,24 +523,24 @@ Command line options to set locality or authentication details are still taking 
             sudo => TRUE;
 
  # auth for tasks
- 
+
  task "prepare", group => ["frontends", "backends"], sub {
    # do something
  };
- 
+
  auth for => "prepare" =>
             user => "root";
 
  # auth for multiple tasks with regular expression
- 
+
  task "step_1", sub {
   # do something
  };
- 
+
  task "step_2", sub {
   # do something
  };
- 
+
  auth for => qr/step/ =>
    user     => $user,
    password => $password;
@@ -1238,6 +1240,8 @@ Set the execution path for all commands.
 
  path "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/usr/pkg/bin", "/usr/pkg/sbin";
 
+It's a convenience wrapper for the L<set_path|Rex::Config#set_path> configuration option.
+
 =cut
 
 sub path {
@@ -1306,7 +1310,7 @@ The task name is a regular expression to find all tasks with a matching name. Th
 
 If called repeatedly, each sub will be appended to a list of 'before' functions.
 
-In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
+In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the
 server object that will be used for the connection.
 
 Please note, this must come after the definition of the specified task.
@@ -1370,7 +1374,7 @@ The task name is a regular expression to find all tasks with a matching name. Th
 
 If called repeatedly, each sub will be appended to a list of 'around' functions.
 
-In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the 
+In this hook you can overwrite the server to which the task will connect to. The second argument is a reference to the
 server object that will be used for the connection.
 
 Please note, this must come after the definition of the specified task.
@@ -1587,17 +1591,17 @@ sub last_command_output {
 This is a function to compare a string with some given options.
 
  task "mytask", "myserver", sub {
-   my $ntp_service = case operating_sytem, {
+   my $ntp_service = case operating_system, {
                  Debian  => "ntp",
                  default => "ntpd",
                };
 
-   my $ntp_service = case operating_sytem, {
+   my $ntp_service = case operating_system, {
                  qr{debian}i => "ntp",
                  default    => "ntpd",
                };
 
-   my $ntp_service = case operating_sytem, {
+   my $ntp_service = case operating_system, {
                  qr{debian}i => "ntp",
                  default    => sub { return "foo"; },
                };
@@ -1659,14 +1663,14 @@ sub tmp_dir {
 
 This function dumps the contents of a variable to STDOUT.
 
-task "mytask", "myserver", sub {
-  my $myvar = {
-    name => "foo",
-    sys  => "bar",
-  };
+ task "mytask", "myserver", sub {
+   my $myvar = {
+     name => "foo",
+     sys  => "bar",
+   };
 
-  inspect $myvar;
-};
+   inspect $myvar;
+ };
 
 =cut
 
@@ -1789,8 +1793,11 @@ sub evaluate_hostname {
   if ( $rule =~ m/,/ ) {
     @ret = _evaluate_hostname_list( $start, $rule, $end );
   }
-  else {
+  elsif ( $rule =~ m/[.]{2}/msx ) {
     @ret = _evaluate_hostname_range( $start, $rule, $end );
+  }
+  else {
+    croak('Invalid hostgroup expression');
   }
 
   return @ret;

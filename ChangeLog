@@ -18,6 +18,93 @@ Revision history for Rex
 
  [REVISION]
 
+1.14.3 2023-08-05 Ferenc Erki <erkiferenc@gmail.com>
+ - No code changes since the 1.14.2.3-TRIAL release
+
+1.14.2.3-TRIAL 2023-08-03 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix checking command existence
+
+1.14.2.2-TRIAL 2023-07-31 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix checking test git repository
+ - Fix local package installation
+
+1.14.2.1-TRIAL 2023-05-29 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix skipping tests without git
+ - Fix changing directory into git test repository
+
+1.14.2 2023-05-05 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix switching working directory to another drive
+ - Fix git cloning into an existing empty directory
+ - Fix Rexfile loading tests after perl-5.37.9
+
+1.14.1 2023-03-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Clarify PATH settings for executing commands
+ - Clarify sync command locality
+ - Clarify run command output handling
+
+1.14.0.1-TRIAL 2023-02-26 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix attempt to free unreferenced scalar on Windows
+ - Declare dependencies for colored output
+ - Fix warning when trying to create root directory
+
+ [DOCUMENTATION]
+ - Fix rendering of inspect example
+ - Clarify documentation of desc command
+ - Clarify template variables
+
+1.14.0 2023-02-05 Ferenc Erki <erkiferenc@gmail.com>
+ - No code changes since 1.13.4.1 trial release
+
+1.13.4.1-TRIAL 2023-01-30 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Detect invalid hostgroup expressions
+ - Prevent empty log lines upon Rexfile warnings
+ - Fix tests on Strawberry Perl older than 5.18.4
+ - Fix test warnings on Perl before 5.16.0
+
+ [DOCUMENTATION]
+ - Clarify optional arguments of file commands
+ - Clarify optional arguments of the pkg command
+ - Correct example for file_read command
+
+ [ENHANCEMENTS]
+ - Show Rexfile path in loading messages
+ - Hide internal details when Rexfile loading fails
+
+ [MINOR]
+ - Set minimum required Perl version to 5.12.5
+
+ [REVISION]
+ - Fix handling of warnings during Rexfile loading
+ - Mask internal naming in Rexfile loading output
+
+1.13.4 2021-07-05 Ferenc Erki <erkiferenc@gmail.com>
+ [DOCUMENTATION]
+ - Add section about Rex core vs extending Rex
+ - Add common scenarios to contributing guide
+ - Clarify documentation of run command
+ - Clarify documentation of can_run command
+ - Fix Rex::Task synopsis
+ - Clarify documentation of rex script
+
+1.13.3.2-TRIAL 2021-07-03 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix local file copy on Windows
+
+1.13.3.1-TRIAL 2021-07-02 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Remove unused tasks array
+ - Fix file hooks when source option is used
+
+ [DOCUMENTATION]
+ - Update support channels
+
 1.13.3 2021-03-05 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]
  - Fix parsing debconf values containing colons

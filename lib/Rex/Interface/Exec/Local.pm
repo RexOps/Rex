@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Interface::Exec::Local;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -15,6 +12,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 use Rex::Logger;
 use Rex::Commands;
 
+use English qw(-no_match_vars);
 use Symbol 'gensym';
 use IPC::Open3;
 use IO::Select;
@@ -52,7 +50,8 @@ sub exec {
   my ( $out, $err, $pid );
 
   if ( exists $option->{cwd} ) {
-    $cmd = "cd " . $option->{cwd} . " && $cmd";
+    my $cd_cmd = $OSNAME eq 'MSWin32' ? 'cd /d' : 'cd';
+    $cmd = "$cd_cmd " . $option->{cwd} . " && $cmd";
   }
 
   if ( exists $option->{path} ) {

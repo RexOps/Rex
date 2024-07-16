@@ -13,4 +13,3 @@ users:
     password: proot
     
 MyTest::foo::mode: '0666'
-

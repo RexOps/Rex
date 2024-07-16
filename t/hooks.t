@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Test::More tests => 8;
@@ -13,17 +17,20 @@ BEGIN {
 
 $::QUIET = 1;
 
+$before_task_start_all = $before_task_start = $before_all = $before = $after =
+  $after_all = $after_task_finished = $after_task_finished_all = 0;
+
 timeout 1;
 
 task foo => sub { return "yo" };
 
 before_task_start ALL => sub { $before_task_start_all += 1 };
 before_task_start foo => sub { $before_task_start     += 1 };
-before ALL            => sub { $before_all            += 1 };
-before foo            => sub { $before                += 1 };
+before ALL => sub { $before_all += 1 };
+before foo => sub { $before     += 1 };
 
-after foo               => sub { $after                   += 1 };
-after ALL               => sub { $after_all               += 1 };
+after foo => sub { $after     += 1 };
+after ALL => sub { $after_all += 1 };
 after_task_finished foo => sub { $after_task_finished     += 1 };
 after_task_finished ALL => sub { $after_task_finished_all += 1 };
 

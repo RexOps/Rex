@@ -1,13 +1,10 @@
 #
 # (c) Ferenc Erki <erkiferenc@gmail.com>, adjust GmbH
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Interface::Shell::Idrac;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

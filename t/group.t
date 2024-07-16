@@ -1,7 +1,12 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
 
-use Test::More tests => 97;
+our $VERSION = '9999.99.99_99'; # VERSION
+
+use Test::More tests => 98;
+use Test::Exception;
 
 use Rex -feature => '0.31';
 use Rex::Group;
@@ -72,3 +77,8 @@ ok( $server->function( $function_name, sub { return $function_result } ),
 
 my $function_ref = qualify_to_ref( $function_name, $server );
 is( *{$function_ref}->(), $function_result, 'calling custom function' );
+
+# invalid hostgroup expression
+
+dies_ok( sub { Rex::Commands::evaluate_hostname('s[78]') },
+  'die on invalid hostgroup expression' );

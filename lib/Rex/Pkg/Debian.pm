@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Pkg::Debian;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -118,7 +115,9 @@ OLD_PKG:
   push @modifications, map { $_->{action} = 'installed'; $_ }
     grep { !exists $_->{found} } @new_installed;
 
-  map { delete $_->{found} } @modifications;
+  for (@modifications) {
+    delete $_->{found};
+  }
 
   return @modifications;
 }

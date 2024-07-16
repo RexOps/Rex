@@ -1,25 +1,26 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::CLI;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
 use FindBin;
 use File::Basename qw(basename dirname);
-use Time::HiRes qw(gettimeofday tv_interval);
-use Cwd qw(getcwd);
-use List::Util qw(max);
+use Time::HiRes    qw(gettimeofday tv_interval);
+use Cwd            qw(getcwd);
+use List::Util     qw(max);
 use Text::Wrap;
+use Term::ANSIColor;
 use Term::ReadKey;
 use Sort::Naturally;
+
+use if $OSNAME eq 'MSWin32', 'Win32::Console::ANSI';
 
 use Rex;
 use Rex::Args;
@@ -33,18 +34,11 @@ use YAML;
 use Data::Dumper;
 
 my $no_color = 0;
-eval "use Term::ANSIColor";
-if ($@) { $no_color = 1; }
-
-if ( $^O =~ m/MSWin/ ) {
-  eval "use Win32::Console::ANSI";
-  if ($@) { $no_color = 1; }
-}
 
 # preload some modules
 use Rex -base;
 
-$|++;
+$OUTPUT_AUTOFLUSH++;
 
 my ( %opts, @help, @exit );
 
@@ -69,7 +63,7 @@ sub __run__ {
   %opts = Rex::Args->getopts;
 
   if ( $opts{'Q'} ) {
-    my ( $stdout, $stderr );
+    my $stdout;
     open( my $newout, '>', \$stdout );
     select $newout;
     close(STDERR);
@@ -312,8 +306,8 @@ CHECK_OVERWRITE: {
 
     $code = eval($code);
 
-    if ($@) {
-      Rex::Logger::info( "Error in eval line: $@\n", "warn" );
+    if ($EVAL_ERROR) {
+      Rex::Logger::info( "Error in eval line: $EVAL_ERROR\n", "warn" );
       exit 1;
     }
 
@@ -378,10 +372,10 @@ CHECK_OVERWRITE: {
   $run_list->parse_opts(@ARGV);
 
   eval { $run_list->run_tasks };
-  if ($@) {
+  if ($EVAL_ERROR) {
 
     # this is always the child
-    Rex::Logger::info( "Error running task/batch: $@", "warn" );
+    Rex::Logger::info( "Error running task/batch: $EVAL_ERROR", "warn" );
     CORE::exit(0);
   }
 
@@ -627,7 +621,7 @@ sub summarize {
   {
     Rex::Logger::info( "\t$_->{task} failed on $_->{server}", "error" );
     if ( $_->{error_message} ) {
-      for my $line ( split( $/, $_->{error_message} ) ) {
+      for my $line ( split( $INPUT_RECORD_SEPARATOR, $_->{error_message} ) ) {
         Rex::Logger::info( "\t\t$line", "error" );
       }
     }
@@ -637,13 +631,16 @@ sub summarize {
 sub handle_lock_file {
   my $rexfile = shift;
 
-  if ( $^O !~ m/^MSWin/ ) {
+  if ( $OSNAME !~ m/^MSWin/ ) {
     if ( -f "$rexfile.lock" && !exists $opts{'F'} ) {
       Rex::Logger::debug("Found $rexfile.lock");
-      my $pid = eval { local ( @ARGV, $/ ) = ("$rexfile.lock"); <>; };
+      my $pid = eval {
+        local ( @ARGV, $INPUT_RECORD_SEPARATOR ) = ("$rexfile.lock");
+        <>;
+      };
       system(
         "ps aux | awk -F' ' ' { print \$2 } ' | grep $pid >/dev/null 2>&1");
-      if ( $? == 0 ) {
+      if ( $CHILD_ERROR == 0 ) {
         Rex::Logger::info("Rexfile is in use by $pid.");
         CORE::exit 1;
       }
@@ -655,8 +652,8 @@ sub handle_lock_file {
     }
 
     Rex::Logger::debug("Creating lock-file ($rexfile.lock)");
-    open( my $f, ">", "$rexfile.lock" ) or die($!);
-    print $f $$;
+    open( my $f, ">", "$rexfile.lock" ) or die($OS_ERROR);
+    print $f $PID;
     close($f);
   }
   else {
@@ -707,7 +704,8 @@ sub load_rexfile {
     unshift @INC, sub {
       my $load_file = $_[1];
       if ( $load_file eq "__Rexfile__.pm" ) {
-        open( my $fh, "<", $rexfile ) or die("Error can't open $rexfile: $!");
+        open( my $fh, "<", $rexfile )
+          or die("Error can't open $rexfile: $OS_ERROR");
         my @content = <$fh>;
         close($fh);
         chomp @content;
@@ -744,14 +742,11 @@ sub load_rexfile {
       }
     };
 
-    my ( $stdout, $stderr, $default_stderr );
-    open $default_stderr, ">&", STDERR;
-
-    # we close STDERR here because we don't want to see the
-    # normal perl error message on the screen. Instead we print
-    # the error message in the catch-if below.
-    local *STDERR;
-    open( STDERR, ">>", \$stderr );
+    # we don't want to see the
+    # normal perl warning message on the screen. Instead we print
+    # the warning message in the catch-if below
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, $_[0] };
 
     # we can't use $rexfile here, because if the variable contains dots
     # the perl interpreter try to load the file directly without using @INC
@@ -761,33 +756,53 @@ sub load_rexfile {
     # update %INC so that we can later use it to find the rexfile
     $INC{"__Rexfile__.pm"} = $rexfile;
 
-    # reopen STDERR
-    open STDERR, ">&", $default_stderr;
-
-    if ($stderr) {
-      my @lines = split( $/, $stderr );
+    if (@warnings) {
       Rex::Logger::info( "You have some code warnings:", 'warn' );
-      Rex::Logger::info( "\t$_",                         'warn' ) for @lines;
+      for (@warnings) {
+        chomp;
+
+        my $message = _tidy_loading_message( $_, $rexfile );
+
+        Rex::Logger::info( "\t$message", 'warn' );
+      }
     }
 
     1;
   };
 
-  if ($@) {
-    my $e = $@;
+  if ($EVAL_ERROR) {
+    my $e = $EVAL_ERROR;
     chomp $e;
 
-    # remove the strange path to the Rexfile which exists because
-    # we load the Rexfile via our custom code block.
-    $e =~ s|/loader/[^/]+/||smg;
+    $e = _tidy_loading_message( $e, $rexfile );
 
-    my @lines = split( $/, $e );
+    my ( @error_lines, @debug_lines );
+
+    for my $line ( split $INPUT_RECORD_SEPARATOR, $e ) {
+      $line =~ m{CLI[.]pm[ ]line[ ]\d+}msx
+        ? push @debug_lines, $line
+        : push @error_lines, $line;
+    }
 
     Rex::Logger::info( "Compile time errors:", 'error' );
-    Rex::Logger::info( "\t$_",                 'error' ) for @lines;
+
+    for my $error_line (@error_lines) {
+      Rex::Logger::info( "\t$error_line", 'error' );
+    }
+
+    for my $debug_line (@debug_lines) {
+      Rex::Logger::debug("\t$debug_line");
+    }
 
     exit 1;
   }
+}
+
+sub _tidy_loading_message {
+  my ( $message, $rexfile ) = @_;
+
+  $message =~ s{/loader/[^/]+/__Rexfile__[.]pm}{$rexfile}gmsx;
+  return $message;
 }
 
 sub exit_rex {

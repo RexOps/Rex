@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -30,8 +28,7 @@ This is the File Class used by I<file_write> and I<file_read>.
 
 package Rex::FS::File;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Rex::Interface::File;
 
@@ -47,7 +44,7 @@ object
 
  my $fh = Rex::Interface::File->create('Local');
  $fh->open( '<', 'filename' );
- 
+
  my $file = Rex::FS::File->new(fh => $fh);
 
 Create a C<Rex::FS::File> object with a filename
@@ -58,10 +55,10 @@ Create a C<Rex::FS::File> object with a filename
    mode     => 'r', # or '<'
    type     => 'Local',
  );
- 
+
  # or shorter
  my $file = Rex::FS::File->new( filename => 'filename' );
- 
+
  # open a local file in write mode
  my $file = Rex::FS::File->new(
    filename => 'filename',

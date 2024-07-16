@@ -56,11 +56,7 @@ If you'd like to build a .tar.gz release file:
 
 ## Need help?
 
-If a new user has difficulties to get on board, then it's a bug. Let us know!
-
-Feel free to join us on irc.freenode.net in the #rex channel, ask us on the [Rex Users](https://groups.google.com/group/rex-users/) on Google Groups, or browse and open [issues on GitHub](https://github.com/RexOps/Rex/issues).
-
-If you need commercial support for (R)?ex, check out the [Support](https://www.rexify.org/support/index.html) page on the website.
+If a new user has difficulties to get on board, then it's a bug. Let us know via one of our [support channels](https://www.rexify.org/support/index.html)!
 
 ## Contributing
 

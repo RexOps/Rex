@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,13 +13,13 @@ With this module you can define transactions and rollback scenarios on failure.
 =head1 SYNOPSIS
 
  use Rex::Transaction;
- 
+
  task 'do-something', 'server01', sub {
    transaction {
      on_rollback {
        rmdir '/tmp/mydata';
      };
- 
+
      mkdir '/tmp/mydata';
      upload 'files/myapp.tar.gz', '/tmp/mydata';
      run 'tar xzf myapp.tar.gz -C /tmp/mydata';
@@ -35,8 +33,7 @@ With this module you can define transactions and rollback scenarios on failure.
 
 package Rex::Transaction;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -63,11 +60,11 @@ Start a transaction for C<$codeRef>. If C<$codeRef> dies, Rex will run the L<on_
 
    deploy 'myapp.tar.gz';
  };
- 
+
  task 'restart_server', group => 'frontend', sub {
    service apache2 => 'restart';
  };
- 
+
  task 'all', group => 'frontend', sub {
    transaction {
      do_task [qw/deploy restart_server/];

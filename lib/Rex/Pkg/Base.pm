@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Pkg::Base;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 use Rex::Helper::Run;
 use Rex::Interface::Exec;
@@ -65,7 +62,7 @@ sub update {
   my ( $self, $pkg, $option ) = @_;
 
   my $version = $option->{'version'} || '';
-  my $env     = $option->{'env'}     || ();
+  my $env     = $option->{'env'}     || {};
 
   Rex::Logger::debug( "Installing $pkg" . ( $version ? "-$version" : "" ) );
   my $cmd;
@@ -273,7 +270,9 @@ OLD_PKG:
   push @modifications, map { $_->{action} = 'installed'; $_ }
     grep { !exists $_->{found} } @new_installed;
 
-  map { delete $_->{found} } @modifications;
+  for (@modifications) {
+    delete $_->{found};
+  }
 
   return @modifications;
 }

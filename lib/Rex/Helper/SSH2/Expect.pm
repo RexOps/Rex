@@ -1,7 +1,5 @@
 #
 # (c) 2011 Jan Gehring <jan.gehring@gmail.com>
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 #
 
 =head1 NAME
@@ -25,7 +23,7 @@ L<Net::SSH2>
 =head1 SYNOPSIS
 
  use Rex::Helper::SSH2::Expect;
-     
+
  my $exp = Rex::Helper::SSH2::Expect->new($ssh2);
  $exp->spawn("passwd");
  $exp->expect($timeout, [
@@ -53,15 +51,14 @@ L<Net::SSH2>
 
 package Rex::Helper::SSH2::Expect;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
 =head2 new($ssh2)
 
-Constructor: You need to parse an connected Net::SSH2 Object. 
+Constructor: You need to parse an connected Net::SSH2 Object.
 
 =cut
 

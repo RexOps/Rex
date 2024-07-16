@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,13 +13,13 @@ With this module you can get information of the routing table, current network c
 =head1 SYNOPSIS
 
  use Rex::Commands::Network;
- 
+
  my @routes = route;
  print Dumper(\@routes);
- 
+
  my $default_gw = default_gateway;
  default_gateway "192.168.2.1";
- 
+
  my @netstat = netstat;
  my @tcp_connections = grep { $_->{"proto"} eq "tcp" } netstat;
 
@@ -31,8 +29,7 @@ With this module you can get information of the routing table, current network c
 
 package Rex::Commands::Network;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

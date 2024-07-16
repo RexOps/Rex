@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -27,8 +25,7 @@ With this module you can manage the host entries in /etc/hosts.
 
 package Rex::Commands::Host;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -54,7 +51,7 @@ Manages the entries in /etc/hosts.
    ip        => "88.198.93.110",
    aliases   => ["www.rexify.org"],
    on_change => sub { say "added host entry"; };
- 
+
   host_entry "rexify.org",
     ensure    => "absent",
     on_change => sub { say "removed host entry"; };

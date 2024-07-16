@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -17,40 +15,40 @@ Version <= 1.0: All these functions will not be reported.
 =head1 SYNOPSIS
 
  use Rex::Commands::Box;
- 
+
  set box => "VBox";
- 
+
  group all_my_boxes => map { get_box($_->{name})->{ip} } list_boxes;
- 
+
  task mytask => sub {
- 
+
    box {
      my ($box) = @_;
      $box->name("boxname");
      $box->url("http://box.rexify.org/box/base-image.box");
- 
+
      $box->network(1 => {
       type => "nat",
      });
- 
+
      $box->network(1 => {
       type => "bridged",
       bridge => "eth0",
      });
- 
+
      $box->forward_port(ssh => [2222, 22]);
- 
+
      $box->share_folder(myhome => "/home/myuser");
- 
+
      $box->auth(
       user => "root",
       password => "box",
      );
- 
+
      $box->setup(qw/task_to_customize_box/);
- 
+
    };
- 
+
  };
 
 =head1 EXPORTED FUNCTIONS
@@ -59,8 +57,7 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Box;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -123,25 +120,25 @@ With this function you can create a new Rex/Box. The first parameter of this fun
    my ($box) = @_;
    $box->name("boxname");
    $box->url("http://box.rexify.org/box/base-image.box");
- 
+
    $box->network(1 => {
     type => "nat",
    });
- 
+
    $box->network(1 => {
     type => "bridged",
     bridge => "eth0",
    });
- 
+
    $box->forward_port(ssh => [2222, 22]);
- 
+
    $box->share_folder(myhome => "/home/myuser");
- 
+
    $box->auth(
     user => "root",
     password => "box",
    );
- 
+
    $box->setup(qw/task_to_customize_box/);
  };
 

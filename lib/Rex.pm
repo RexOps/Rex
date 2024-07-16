@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =encoding UTF-8
 
@@ -28,17 +26,17 @@ See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more informatio
 
     # In a Rexfile:
     use Rex -feature => [qw/1.4/];
-   
+
     user "root";
     password "ch4ngem3";
-   
+
     desc "Show system information";
     task "sysinfo", sub {
        say run "uname -a";
     };
 
     1;
-   
+
     # On the command line:
     $ rex -H server[01..10] sysinfo
 
@@ -48,8 +46,7 @@ See L<rex|https://metacpan.org/pod/distribution/Rex/bin/rex> for more informatio
 
 package Rex;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -511,8 +508,7 @@ sub deprecated {
     "Please rewrite your code. This function will disappear in (R)?ex version $version."
   );
   Rex::Logger::info(
-    "If you need assistance please join #rex on irc.freenode.net or our google group."
-  );
+    "If you need assistance, get in touch via one of our support channels!");
 
 }
 
@@ -1038,7 +1034,7 @@ versions are activated. Available since version 0.56.
 
 =item autodie
 
-Will enable autodie feature: die on all failed L<filesytem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 1.13.1.
+Will enable autodie feature: die on all failed L<filesystem commands|https://metacpan.org/pod/Rex::Commands::Fs>. Available since version 1.13.1.
 
 =item 0.55
 
@@ -1084,8 +1080,10 @@ etc.). Available since version 0.46.
 
 =item no_path_cleanup
 
-Rex cleans the path before executing a command. With this feature Rex
-doesn't cleanup the path. Available since version 0.44.
+Controls whether Rex should use the default or explicitly configured C<PATH>
+settings when executing commands or not. See also the L<path|Rex::Commands#path>
+command and the L<set_path|Rex::Config#set_path> configuration option.
+Available since version 0.44.
 
 =item source_profile
 

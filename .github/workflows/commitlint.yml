@@ -1,0 +1,19 @@
+---
+name: lint commit messages
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  commitlint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Run commitlint
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: .github/workflows/config/commitlint.config.mjs

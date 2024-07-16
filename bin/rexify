@@ -1,12 +1,10 @@
-#!perl
+#!/usr/bin/env perl
 
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
-# vim: set expandtab:
 
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -840,10 +838,10 @@ unless ( -f 'lib' . $ARGV[0] . '.pm' ) {
   }
 
   print STDERR "Created Rexfile.\n";
-  print STDERR "Done.\n\nNow edit Rexfile to suite your needs.\n";
+  print STDERR "Done.\n\nNow edit Rexfile to suit your needs.\n";
   print STDERR "You can edit $dir/lib/$ARGV[0].pm to define tasks.\n";
   print STDERR
-    "\n\nIf you have any questions or wishes\n\n\tjust join #rex on freenode\n\nor post them here:\n\n\thttps://github.com/RexOps/Rex/issues\n\n";
+    "\nIf you need assistance, get in touch via one of our support channels!\n";
 }
 else {
 

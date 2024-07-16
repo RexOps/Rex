@@ -1,0 +1,11 @@
+use Rex;
+
+use warnings;
+
+warn 'This is warning';
+my $warn = 'warn' . undef;
+
+print STDERR "This is STDERR message\n";
+print STDOUT "This is STDOUT message\n";
+
+task 'test', sub { };

@@ -1,3 +1,4 @@
+---
 name: build and test
 
 on:
@@ -5,16 +6,14 @@ on:
     - cron: '0 6 * * *'
   push:
     branches:
-      - '*'
+      - master
     tags-ignore:
       - '*'
   pull_request:
+  workflow_dispatch:
 
 env:
   PERL_CPANM_OPT: "--quiet --notest"
-  AUTHOR_TESTING: 1
-  EXTENDED_TESTING: 1
-  RELEASE_TESTING: 1
 
 jobs:
   build:
@@ -23,38 +22,24 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Extract author information
         run: |
           echo AUTHOR_NAME="$(git log -1 ${GITHUB_REF} --pretty='%aN')" >> $GITHUB_ENV
           echo AUTHOR_EMAIL="$(git log -1 ${GITHUB_REF} --pretty='%aE')" >> $GITHUB_ENV
-      - uses: shogo82148/actions-setup-perl@v1
-      - name: Setup Perl environment
-        run: |
-          echo PERL5LIB="${GITHUB_WORKSPACE}/local/lib/perl5:${PERL5LIB}" >> $GITHUB_ENV
-          echo PERL_VERSION="$(perl -E 'print $^V')" >> $GITHUB_ENV
-          echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
-          echo "${GITHUB_WORKSPACE}/local/bin" >> $GITHUB_PATH
-      - name: Get operating system version
-        run: echo OS_VERSION="$(lsb_release -sr)" >> $GITHUB_ENV
-      - name: Cache build modules
-        uses: actions/cache@v2
+      - name: Setup Perl
+        id: perl
+        uses: shogo82148/actions-setup-perl@v1
+      - name: Get build timestamp
+        run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+      - name: Cache build dependencies
+        uses: actions/cache@v4
         with:
           path: local
-          key: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-build-modules-${{ env.OS_VERSION }}-${{ env.PERL_VERSION }}-
-      - name: Cache perlcritic history
-        uses: actions/cache@v2
-        with:
-          path: /tmp/cache/.perlcritic-history
-          key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
-          restore-keys: cache-perlcritic-history-
-      - name: Log perl information
-        run: perl -V
-      - name: Install packages
-        run: sudo apt-get install -y libmagic-dev default-mysql-server rsync
-      - name: Install build dependencies
-        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla Perl::Critic Perl::Tidy Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
+          key: cache-build-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-build-deps-${{ steps.perl.outputs.perl-hash }}-
+      - name: Install Dist::Zilla
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Dist::Zilla
       - name: Configure Dist::Zilla
         run: |
           mkdir ~/.dzil
@@ -64,87 +49,166 @@ jobs:
           cat ~/.dzil/config.ini
       - name: Install author dependencies
         run: dzil authordeps | cpanm --local-lib ${GITHUB_WORKSPACE}/local
+      - name: Install App::cpanoutdated
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local App::cpanoutdated
+      - name: Upgrade CPAN modules
+        run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Build dist
         run: dzil build --no-tgz --in build
-      - name: Install dependencies
-        run: |
-          cd build
-          cpanm --installdeps --local-lib ${GITHUB_WORKSPACE}/local --with-all-features --with-develop --with-suggests .
-      - name: Run extra tests
-        run: |
-          cd build
-          prove --timer --lib --recurse --jobs $(nproc) --shuffle xt
-      - name: Run tests
-        run: |
-          cd build
-          HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^t/ prove --timer --lib --recurse --jobs $(nproc) --shuffle t
-      - name: Report coverage info to Coveralls
-        run: |
-          cd build
-          cover -report coveralls
-          rm -rf cover_db
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create build tarball
+        run: tar cvf build.tar -C build .
       - name: Upload build results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          name: build_results
-          path: build
+          name: build.tar
+          path: build.tar
 
-  linux:
+  coverage:
+    if: ${{ github.event_name != 'schedule' }}
+
     needs: build
+
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
       - name: Download build results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: build_results
+          name: build.tar
+      - name: Extract build tarball
+        run: tar xvf build.tar
       - name: Setup Perl
+        id: perl
         uses: shogo82148/actions-setup-perl@v1
-      - name: Log perl information
-        run: perl -V
+      - name: Get build timestamp
+        run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+      - name: Cache coverage dependencies
+        uses: actions/cache@v4
+        with:
+          path: local
+          key: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install dependencies
-        run: cpanm --installdeps --with-all-features .
-      - name: Run tests
-        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-suggests .
+      - name: Install coverage dependencies
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
+      - name: Install App::cpanoutdated
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local App::cpanoutdated
+      - name: Upgrade CPAN modules
+        run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
+      - name: Run tests with coverage
+        env:
+          HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/,^t/
+        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
+      - name: Report coverage info to Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cover -report coveralls
 
-  macos:
+  extra-tests:
     needs: build
-    runs-on: macOS-latest
+
+    runs-on: ubuntu-latest
+
+    env:
+      AUTHOR_TESTING: 1
+      EXTENDED_TESTING: 1
+      RELEASE_TESTING: 1
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: build_results
+          name: build.tar
+      - name: Extract build tarball
+        run: tar xvf build.tar
+      - name: Install packages
+        run: sudo apt-get install -y aspell
       - name: Setup Perl
+        id: perl
         uses: shogo82148/actions-setup-perl@v1
-      - name: Log perl information
-        run: perl -V
+      - name: Get build timestamp
+        run: echo BUILD_TIMESTAMP="$(date +%FT%T)" >> $GITHUB_ENV
+      - name: Cache extra-tests dependencies
+        uses: actions/cache@v4
+        with:
+          path: local
+          key: cache-extra-tests-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-extra-tests-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install dependencies
-        run: cpanm --installdeps --with-all-features .
-      - name: Run tests
-        run: prove --timer --lib --recurse --jobs $(sysctl -n hw.ncpu) --shuffle t
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop .
+      - name: Install App::cpanoutdated
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local App::cpanoutdated
+      - name: Upgrade CPAN modules
+        run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
+      - name: Cache perlcritic history
+        uses: actions/cache@v4
+        with:
+          path: /tmp/cache/.perlcritic-history
+          key: cache-perlcritic-history-${{ env.BUILD_TIMESTAMP }}
+          restore-keys: cache-perlcritic-history-
+      - name: Run extra tests
+        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle xt/
 
-  windows:
+  tests:
     needs: build
-    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu
+          - macos
+          - windows
+        perl:
+          - latest
+          - '5.36'
+          - '5.34'
+          - '5.32'
+          - '5.30'
+          - '5.28'
+          - '5.26'
+          - '5.24'
+          - '5.22'
+          - '5.20'
+          - '5.18'
+          - '5.16'
+          - '5.14'
+          - '5.12'
+        exclude:
+          - os: windows
+            perl: '5.34' # not released yet
+          - os: windows
+            perl: '5.12' # no 64-bit portable binaries
+
+    runs-on: ${{ matrix.os }}-latest
 
     steps:
       - name: Download build results
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: build_results
+          name: build.tar
+      - name: Extract build tarball
+        run: tar xvf build.tar
       - name: Setup Perl
+        id: perl
         uses: shogo82148/actions-setup-perl@v1
         with:
-          distribution: strawberry
-      - name: Log perl information
-        run: perl -V
+          perl-version: ${{ matrix.perl }}
+          distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
+      - name: Preinstall IO::Pty for Mac OS X tests
+        run: cpanm IO::Pty~'!=1.18'
+        if: matrix.os == 'macos'
       - name: Install dependencies
-        run: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
-      - name: Install OS-specific dependency
-        run: cpanm Net::SSH2
+        uses: carlkidcrypto/os-specific-runner@v2.0.0
+        with:
+          macos: cpanm --installdeps --with-all-features .
+          linux: cpanm --installdeps --with-all-features .
+          windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
+      - name: Get number of processors
+        id: cores
+        uses: SimenB/github-actions-cpu-cores@v2
       - name: Run tests
-        run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t
+        run: prove --timer --lib --recurse --jobs ${{ steps.cores.outputs.count }} --shuffle t/

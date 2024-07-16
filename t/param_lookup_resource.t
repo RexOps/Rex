@@ -1,3 +1,10 @@
+#!/usr/bin/env perl
+
+use v5.12.5;
+use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
+
 package MyTest;
 
 use Rex -base;
@@ -44,4 +51,3 @@ task(
 );
 
 test1();
-

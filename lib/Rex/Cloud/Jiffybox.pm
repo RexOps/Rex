@@ -1,13 +1,10 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 package Rex::Cloud::Jiffybox;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -57,7 +54,7 @@ sub _do_request {
   my ($res);
 
   if ( $type eq "GET" ) {
-    $res = $ua->request( GET $url);
+    $res = $ua->request( GET $url );
   }
   elsif ( $type eq "POST" ) {
     $res = $ua->request( POST $url, \@params );

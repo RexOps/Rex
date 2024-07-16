@@ -1,5 +1,9 @@
-use strict;
+#!/usr/bin/env perl
+
+use v5.12.5;
 use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
 use autodie;
 
 BEGIN {
@@ -12,7 +16,7 @@ BEGIN {
     or plan skip_all => 'Could not load Rex::Commands::Rsync module';
 }
 
-use Cwd qw(realpath);
+use Cwd            qw(realpath);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Temp qw(tempdir);

@@ -3,7 +3,7 @@
 ^debian\/
 README.pod
 \..*sw.*
-.git
+^.git/
 blib
 pm_toblib
 ^Makefile$
@@ -28,7 +28,6 @@ vars\..*
 passwd
 upload
 .*\.conf
-.*\.log
 ^images
 projects
 Rex\-\d+.*

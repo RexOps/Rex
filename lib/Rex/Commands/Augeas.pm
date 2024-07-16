@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=3 sw=3 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -15,13 +13,13 @@ This is a simple module to manipulate configuration files with the help of augea
 =head1 SYNOPSIS
 
  my $k = augeas exists => "/files/etc/hosts/*/ipaddr", "127.0.0.1";
-    
+
  augeas insert => "/files/etc/hosts",
            label => "01",
            after => "/7",
            ipaddr => "192.168.2.23",
            canonical => "test";
-   
+
  augeas dump => "/files/etc/hosts";
 
  augeas modify =>
@@ -36,8 +34,7 @@ This is a simple module to manipulate configuration files with the help of augea
 
 package Rex::Commands::Augeas;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -422,4 +419,3 @@ sub _run_augtool {
 }
 
 1;
-

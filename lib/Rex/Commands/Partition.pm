@@ -1,8 +1,6 @@
 #
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
-# vim: set ts=2 sw=2 tw=0:
-# vim: set expandtab:
 
 =head1 NAME
 
@@ -29,8 +27,7 @@ All these functions are not idempotent.
 
 package Rex::Commands::Partition;
 
-use 5.010001;
-use strict;
+use v5.12.5;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
@@ -163,19 +160,19 @@ Examples:
    size   => 15000,
    ondisk => "sda",
    type   => "primary";
-    
+
  partition "none",
    type   => "extended",
    ondisk => "sda",
    grow   => 1,
    mount  => TRUE,
-       
+
  partition "swap",
    fstype => "swap",
    type   => "logical",
    ondisk => "sda",
    size   => 8000;
-    
+
  partition "/",
    fstype => "ext3",
    size   => 10000,

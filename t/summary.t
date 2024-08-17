@@ -6,6 +6,7 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 use Test::Deep;
 
 use Module::Load::Conditional qw(check_install);
@@ -22,7 +23,7 @@ if ( check_install( module => 'Parallel::ForkManager' ) ) {
   push @distributors, 'Parallel_ForkManager';
 }
 
-plan tests => scalar @distributors * 2;
+plan tests => scalar @distributors * 2 + 1;
 
 for my $distributor (@distributors) {
 

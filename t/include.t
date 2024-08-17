@@ -6,7 +6,8 @@ use lib 't/lib';
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 2;
+use Test::More tests => 3;
+use Test::Warnings;
 use Test::Deep;
 
 use Rex::Commands;
@@ -29,5 +30,3 @@ cmp_deeply
   \@all_task_names,
   [qw/t:tasks:alien:negotiate t:tasks:cowboy:roundup/],
   "found hidden task";
-
-done_testing();

@@ -5,7 +5,8 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 6;
+use Test::More tests => 7;
+use Test::NoWarnings;
 
 use Rex::Args;
 use Rex::RunList;

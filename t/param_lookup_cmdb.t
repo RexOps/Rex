@@ -8,6 +8,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 use Rex -base;
 use Rex::Resource;
 use Test::More;
+use Test::Warnings;
 
 use Rex::CMDB;
 use Rex::Commands;
@@ -21,7 +22,7 @@ set(
   }
 );
 
-use Test::More tests => 1;
+use Test::More tests => 2;
 use Rex -base;
 
 task(

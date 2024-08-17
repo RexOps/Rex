@@ -7,7 +7,8 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::Helper::IP;
 
-use Test::More tests => 16;
+use Test::More tests => 17;
+use Test::NoWarnings;
 
 my $ok = 0;
 

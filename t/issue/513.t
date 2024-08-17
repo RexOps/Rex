@@ -7,7 +7,8 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 use Rex::CLI;
 
-use Test::More tests => 2;
+use Test::More tests => 3;
+use Test::NoWarnings;
 
 my $ok = 0;
 

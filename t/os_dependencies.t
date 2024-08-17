@@ -6,6 +6,7 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 use Rex::Commands;
 
 my $dependency_ref = case $^O, {
@@ -15,7 +16,7 @@ my $dependency_ref = case $^O, {
 
 my @dependencies = @{$dependency_ref};
 
-plan tests => scalar @dependencies;
+plan tests => @dependencies + 1;
 
 for my $module (@dependencies) {
   ok( eval "use $module; 1;", "$module is available" );

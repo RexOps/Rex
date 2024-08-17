@@ -7,6 +7,7 @@ use lib 't/lib';
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 use Test::Deep;
 
 use Rex::Commands;

@@ -6,6 +6,7 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings qw(:no_end_test had_no_warnings);
 use Rex::Commands;
 
 {
@@ -131,4 +132,5 @@ for my $task ( $run_list->tasks ) {
   $run_list->increment_current_index;
 }
 
+had_no_warnings;
 done_testing;

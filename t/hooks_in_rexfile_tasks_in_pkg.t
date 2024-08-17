@@ -8,7 +8,8 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
-  use Test::More tests => 8;
+  use Test::More tests => 9;
+  use Test::Warnings qw(:no_end_test had_no_warnings);
   use lib 't/lib';
   use t::tasks::alien;
   use File::Temp;
@@ -52,3 +53,5 @@ is $after,                   1, 'after hook';
 is $after_all,               1, 'after ALL hook';
 is $after_task_finished,     1, 'after_task_finished hook';
 is $after_task_finished_all, 1, 'after_task_finished ALL hook';
+
+had_no_warnings;

@@ -7,7 +7,8 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 package main;
 
-use Test::More tests => 8;
+use Test::More tests => 9;
+use Test::Warnings;
 use Rex -base;
 use Rex::Resource;
 

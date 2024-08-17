@@ -7,6 +7,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
   use Test::More;
+  use Test::Warnings;
   use Data::Dumper;
 
   eval "use DBI; 1" or plan skip_all => "Could not load DBI module";
@@ -29,7 +30,7 @@ my $mysqld = Test::mysqld->new(
   plan skip_all => $Test::mysqld::errstr;
   };
 
-plan tests => 38;
+plan tests => 39;
 
 $dbh = DBI->connect( $mysqld->dsn( dbname => 'test' ), );
 Rex::Commands::DB->import( { dsn => $mysqld->dsn( dbname => 'test' ) } );

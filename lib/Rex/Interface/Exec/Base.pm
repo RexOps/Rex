@@ -8,6 +8,7 @@ use v5.12.5;
 use warnings;
 use Carp;
 use Rex::Helper::Run;
+use Rex::Commands::Fs;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
@@ -68,7 +69,8 @@ sub can_run {
       fail_ok => 1;
 
     next if ( $? != 0 );
-    next if ( grep { /^no $command in/ } @output ); # for solaris
+
+    next if ( !is_file( $output[0] ) );
 
     $cache->set( $cache_key_name, $output[0] );
 

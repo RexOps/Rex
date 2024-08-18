@@ -164,6 +164,7 @@ jobs:
           - windows
         perl:
           - latest
+          - '5.38'
           - '5.36'
           - '5.34'
           - '5.32'
@@ -178,6 +179,8 @@ jobs:
           - '5.14'
           - '5.12'
         exclude:
+          - os: windows
+            perl: '5.38' # latest via actions-setup-perl
           - os: windows
             perl: '5.34' # not released yet
           - os: windows

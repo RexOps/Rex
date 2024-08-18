@@ -100,7 +100,7 @@ jobs:
         run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Run tests with coverage
         env:
-          HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/,^t/
+          HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/
         run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
       - name: Report coverage info to Coveralls
         env:

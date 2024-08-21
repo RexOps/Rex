@@ -180,8 +180,6 @@ jobs:
           - '5.12'
         exclude:
           - os: windows
-            perl: '5.38' # latest via actions-setup-perl
-          - os: windows
             perl: '5.34' # not released yet
           - os: windows
             perl: '5.12' # no 64-bit portable binaries

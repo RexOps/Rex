@@ -31,15 +31,13 @@ my $mysqld = Test::mysqld->new(
 
 plan tests => 38;
 
-SKIP: {
-  $dbh = DBI->connect( $mysqld->dsn( dbname => 'test' ), );
-  Rex::Commands::DB->import( { dsn => $mysqld->dsn( dbname => 'test' ) } );
-  _test_select();
-  _test_insert();
-  _test_delete();
-  _test_update();
-  _test_batch();
-}
+$dbh = DBI->connect( $mysqld->dsn( dbname => 'test' ), );
+Rex::Commands::DB->import( { dsn => $mysqld->dsn( dbname => 'test' ) } );
+_test_select();
+_test_insert();
+_test_delete();
+_test_update();
+_test_batch();
 
 sub _test_select {
   _initalize_db();

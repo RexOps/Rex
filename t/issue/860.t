@@ -5,7 +5,8 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 6;
+use Test::More tests => 7;
+use Test::Warnings qw(:no_end_test had_no_warnings);
 
 use Rex::Args;
 use Rex::RunList;
@@ -109,3 +110,5 @@ is_deeply(
   \%opt_t3,
   "got task3 parameter with 1.4 compatibility"
 );
+
+had_no_warnings();

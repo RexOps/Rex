@@ -6,7 +6,8 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use File::Temp;
-use Test::More tests => 21;
+use Test::More tests => 22;
+use Test::Warnings;
 
 use Rex::Config;
 

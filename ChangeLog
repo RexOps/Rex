@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Return only the first found command
 
  [DOCUMENTATION]
 

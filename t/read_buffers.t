@@ -6,12 +6,13 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 
 if ( $^O =~ m/^MSWin/i ) {
-  plan tests => 1;
+  plan tests => 2;
 }
 else {
-  plan tests => 2;
+  plan tests => 3;
 }
 
 use Rex::Interface::Exec;

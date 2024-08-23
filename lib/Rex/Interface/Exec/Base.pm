@@ -65,16 +65,16 @@ sub can_run {
       return $cache->get($cache_key_name);
     }
 
-    my $output = Rex::Helper::Run::i_run "$check_with_command $command",
+    my @output = Rex::Helper::Run::i_run "$check_with_command $command",
       fail_ok => 1;
 
     next if ( $? != 0 );
 
-    next if ( !is_file($output) );
+    next if ( !is_file( $output[0] ) );
 
-    $cache->set( $cache_key_name, $output );
+    $cache->set( $cache_key_name, $output[0] );
 
-    return $output;
+    return $output[0];
   }
 
   return undef;

@@ -91,7 +91,7 @@ jobs:
           key: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
           restore-keys: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install dependencies
-        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-suggests .
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-recommends --with-suggests .
       - name: Install coverage dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
       - name: Install App::cpanoutdated
@@ -202,9 +202,9 @@ jobs:
       - name: Install dependencies
         uses: carlkidcrypto/os-specific-runner@v2.0.0
         with:
-          macos: cpanm --installdeps --with-all-features .
-          linux: cpanm --installdeps --with-all-features .
-          windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
+          macos: cpanm --installdeps --with-all-features --with-recommends .
+          linux: cpanm --installdeps --with-all-features --with-recommends .
+          windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync --with-recommends .
       - name: Get number of processors
         id: cores
         uses: SimenB/github-actions-cpu-cores@v2

@@ -8,14 +8,16 @@ our $VERSION = '9999.99.99_99'; # VERSION
 BEGIN {
   use Test::More;
   use Data::Dumper;
+  use English qw(-no_match_vars);
 
-  eval "use DBI; 1" or plan skip_all => "Could not load DBI module";
+  eval "use DBI; 1"
+    or plan skip_all => "Could not load DBI module: $EVAL_ERROR";
 
   eval "use Rex::Commands::DB; 1"
-    or plan skip_all => "Could not load Rex::Commands::DB module: $@";
+    or plan skip_all => "Could not load Rex::Commands::DB module: $EVAL_ERROR";
 
   eval "use Test::mysqld; 1"
-    or plan skip_all => "Could not load Test::mysqld module";
+    or plan skip_all => "Could not load Test::mysqld module: $EVAL_ERROR";
 }
 
 my $dbh;

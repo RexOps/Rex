@@ -7,6 +7,7 @@ Revision history for Rex
  - Return only the first found command
  - Fix inconsistent augtool wrapper usage
  - Fix Config::Augeas detection
+ - Fix on_change in update_system command on Redhat
 
  [DOCUMENTATION]
 

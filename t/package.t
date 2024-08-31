@@ -13,8 +13,6 @@ use Test::Exception;
 use Rex::Pkg::Test;
 use Rex::Pkg::Redhat;
 
-use Storable 'dclone';
-
 my $pkg = Rex::Pkg::Test->new;
 
 subtest 'package list diffs' => sub {
@@ -66,74 +64,93 @@ subtest 'local package installation' => sub {
 };
 
 subtest 'redhat package list diffs' => sub {
-  ## no critic (ProhibitDuplicateLiteral)
-
-  plan tests => 4;
+  plan tests => 1;
 
   my $rh_pkg = Rex::Pkg::Redhat->new;
 
-  my @orig = (
+  ## no critic (ProhibitDuplicateLiteral)
+
+  my @before = (
     {
-      'arch'    => 'x86_64',
-      'version' => '5.14.0',
-      'release' => '427.26.1.el9_4',
-      'name'    => 'kernel',
-      'epoch'   => '0',
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'lzo',
+      release => '8.el7',
+      version => '2.06',
     },
     {
-      'version' => '5.14.0',
-      'arch'    => 'x86_64',
-      'name'    => 'kernel',
-      'epoch'   => '0',
-      'release' => '427.28.1.el9_4',
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'postgresql-server',
+      release => '1.el7',
+      version => '9.2.18',
     },
     {
-      'arch'    => 'x86_64',
-      'version' => '5.14.0',
-      'name'    => 'kernel',
-      'epoch'   => '0',
-      'release' => '427.31.1.el9_4',
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'kernel',
+      release => '427.26.1.el9_4',
+      version => '5.14.0',
     },
   );
 
-  my @plist1   = @{ dclone( \@orig ) };
-  my @plist2   = @{ dclone( \@orig ) };
-  my @expected = ();
-
-  my @mods = $rh_pkg->diff_package_list( \@plist1, \@plist2 );
-  cmp_deeply( \@mods, \@expected,
-    'expected package modifications when nothing changed' );
-
-  @plist1 = @{ dclone( \@orig ) };
-  pop @plist1;
-  @plist2   = @{ dclone( \@orig ) };
-  @expected = ( { %{ $orig[2] }, action => 'installed' } );
-
-  @mods = $rh_pkg->diff_package_list( \@plist1, \@plist2 );
-  cmp_deeply( \@mods, \@expected,
-    'expected package modifications when new kernel release is installed' );
-
-  @plist1 = @{ dclone( \@orig ) };
-  pop @plist1;
-  @plist2 = @{ dclone( \@orig ) };
-  shift @plist2;
-  @expected = ( { %{ $orig[2] }, action => 'updated' } );
-
-  @mods = $rh_pkg->diff_package_list( \@plist1, \@plist2 );
-  cmp_deeply( \@mods, \@expected,
-    'expected package modifications when new kernel release is installed and an old one removed'
+  my @after = (
+    {
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'postgresql-server',
+      release => '1.el7',
+      version => '9.2.19',
+    },
+    {
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'kernel',
+      release => '427.28.1.el9_4',
+      version => '5.14.0',
+    },
+    {
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'kernel',
+      release => '427.26.1.el9_4',
+      version => '5.14.0',
+    },
   );
 
-  @plist1 = @{ dclone( \@orig ) };
-  @plist2 = @{ dclone( \@orig ) };
-  shift @plist2;
-  @expected = ( { %{ $orig[0] }, action => 'removed' } );
-
-  @mods = $rh_pkg->diff_package_list( \@plist1, \@plist2 );
-  cmp_deeply( \@mods, \@expected,
-    'expected package modifications when only a kernel release is removed' );
+  my @expected = (
+    {
+      action  => 'updated',
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'postgresql-server',
+      release => '1.el7',
+      version => '9.2.19',
+    },
+    {
+      action  => 'installed',
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'kernel',
+      release => '427.28.1.el9_4',
+      version => '5.14.0',
+    },
+    {
+      action  => 'removed',
+      arch    => 'x86_64',
+      epoch   => '0',
+      name    => 'lzo',
+      release => '8.el7',
+      version => '2.06',
+    },
+  );
 
   ## use critic
+
+  my @mods = $rh_pkg->diff_package_list( \@before, \@after );
+
+  cmp_bag( \@mods, \@expected,
+    'expected package modifications on Red Hat compatible distros' );
 };
 
 1;

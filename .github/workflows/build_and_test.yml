@@ -199,6 +199,9 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
+      - name: Disable LWP for cpanm on older Strawberry Perls
+        run: echo "PERL_CPANM_OPT=$env:PERL_CPANM_OPT --no-lwp" >> $env:GITHUB_ENV
+        if: matrix.os == 'windows' && matrix.perl <= 5.22
       - name: Install dependencies
         uses: carlkidcrypto/os-specific-runner@v2.0.0
         with:

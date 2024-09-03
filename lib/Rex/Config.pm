@@ -73,7 +73,7 @@ our (
   $use_template_ng,             $use_rex_kvm_agent,
   $autodie,                     $task_chaining_cmdline_args,
   $waitpid_blocking_sleep_time, $write_utf8_files,
-  $default_auth,
+  $default_auth,                $augeas_commands_prepend,
 );
 
 # some defaults
@@ -1630,6 +1630,28 @@ sub set_default_auth {
 
 sub get_default_auth {
   return $default_auth // 1;
+}
+
+=head2 set_augeas_commands_prepend
+
+=head2 get_augeas_commands_prepend
+
+Sets and gets the value of the C<$augeas_commands_prepend> configuration variable.
+
+This controls the list of commands Rex should prepend at the beginning of the command file for Augeas operations.
+
+Default is C<[]>.
+
+=cut
+
+sub set_augeas_commands_prepend {
+  my $self = shift;
+  $augeas_commands_prepend = shift;
+  return $augeas_commands_prepend;
+}
+
+sub get_augeas_commands_prepend {
+  return $augeas_commands_prepend // [];
 }
 
 =head2 register_set_handler($handler_name, $code)

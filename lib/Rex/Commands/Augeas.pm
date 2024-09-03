@@ -84,6 +84,8 @@ sub augeas {
   if ( !$is_ssh && $has_config_augeas ) {
     Rex::Logger::debug("Creating Config::Augeas Object");
     $aug = Config::Augeas->new;
+    my $commands_to_prepend = Rex::Config->get_augeas_commands_prepend();
+    $aug->srun( join qq(\n), @{$commands_to_prepend} );
   }
 
   my $on_change; # Any code to run on change
@@ -394,8 +396,12 @@ sub _run_augtool {
     unless can_run "augtool";
   my $rnd_file = get_tmp_file;
   my $fh       = Rex::Interface::File->create;
+
+  my $commands_to_prepend = Rex::Config->get_augeas_commands_prepend();
+  unshift @commands, @{$commands_to_prepend};
+
   $fh->open( ">", $rnd_file );
-  $fh->write($_) foreach (@commands);
+  $fh->write( $_ . qq(\n) ) foreach (@commands);
   $fh->close;
   my ( $return, $error ) = i_run "augtool --file $rnd_file --autosave",
     sub { @_ }, fail_ok => 1;

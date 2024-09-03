@@ -79,6 +79,8 @@ jobs:
           name: build.tar
       - name: Extract build tarball
         run: tar xvf build.tar
+      - name: Install packages
+        run: sudo apt-get install -y augeas-tools
       - name: Setup Perl
         id: perl
         uses: shogo82148/actions-setup-perl@v1

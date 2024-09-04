@@ -84,6 +84,59 @@ sub get_installed {
   return @pkg;
 }
 
+sub diff_package_list {
+  my ( $self, $list1, $list2 ) = @_;
+
+  my @old_installed = @{$list1};
+  my @new_installed = @{$list2};
+
+  my @modifications;
+
+  my %old_installed;
+  foreach my $old_pkg (@old_installed) {
+    my $name    = $old_pkg->{name};
+    my $version = "$old_pkg->{version} $old_pkg->{release}";
+    $old_installed{$name}{$version} = $old_pkg;
+  }
+
+  my %new_installed;
+  foreach my $new_pkg (@new_installed) {
+    my $name    = $new_pkg->{name};
+    my $version = "$new_pkg->{version} $new_pkg->{release}";
+    if ( $old_installed{$name} and $old_installed{$name}{$version} ) {
+      delete $old_installed{$name}{$version};
+      if ( !keys %{ $old_installed{$name} } ) {
+        delete $old_installed{$name};
+      }
+      next;
+    }
+    $new_installed{$name}{$version} = $new_pkg;
+  }
+
+  foreach my $new_name ( keys %new_installed ) {
+    if ( $old_installed{$new_name} ) {
+      foreach my $pkg ( values %{ $new_installed{$new_name} } ) {
+        push @modifications, { %{$pkg}, action => 'updated' };
+      }
+    }
+    else {
+      foreach my $pkg ( values %{ $new_installed{$new_name} } ) {
+        push @modifications, { %{$pkg}, action => 'installed' };
+      }
+    }
+  }
+
+  foreach my $old_name ( keys %old_installed ) {
+    if ( !$new_installed{$old_name} ) {
+      foreach my $pkg ( values %{ $old_installed{$old_name} } ) {
+        push @modifications, { %{$pkg}, action => 'removed' };
+      }
+    }
+  }
+
+  return @modifications;
+}
+
 sub add_repository {
   my ( $self, %data ) = @_;
 

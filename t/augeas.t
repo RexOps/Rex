@@ -9,65 +9,83 @@ use Test::More;
 use Test::Warnings;
 use Test::Output;
 
-use File::Temp qw(tmpnam);
+use File::Temp                qw(tmpnam);
+use Module::Load::Conditional qw(check_install);
 use Rex::Commands::Augeas;
 use Rex::Commands::Run;
 
-if ( can_run('augtool') ) {
-  plan tests => 2;
+my $augeas_binary = 'augtool';
+my $augeas_module = 'Config::Augeas';
+
+my @augeas_backends;
+
+if ( can_run($augeas_binary) ) {
+  push @augeas_backends, $augeas_binary;
+}
+
+if ( check_install( module => $augeas_module ) ) {
+  push @augeas_backends, $augeas_module;
+}
+
+if (@augeas_backends) {
+  plan tests => 1 + scalar @augeas_backends;
 }
 else {
-  plan skip_all => 'Could not find augtool command';
+  plan skip_all => 'Could not find any Augeas backends';
 }
 
 my $file       = tmpnam();
 my $test_value = 'rex';
 
-subtest 'Simplelines lens' => sub {
-  plan tests => 7;
+for my $backend (@augeas_backends) {
+  Rex::Config->set_local_augeas_backend($backend);
 
-  Rex::Config->set_augeas_commands_prepend(
-    [ "transform Simplelines incl $file", 'load', ] );
+  subtest "Simplelines lens with $backend" => sub {
+    plan tests => 7;
 
-  my $path = '/files' . $file . '/1';
+    Rex::Config->set_augeas_commands_prepend(
+      [ "transform Simplelines incl $file", 'load', ] );
 
-  is( -e $file, undef, 'test file does not exist yet' );
+    my $path = '/files' . $file . '/1';
 
-  # modify
+    is( -e $file, undef, 'test file does not exist yet' );
 
-  augeas modify => $path => $test_value;
+    # modify
 
-  is( -e $file, 1, 'test file created' );
+    augeas modify => $path => $test_value;
 
-  # exists
+    is( -e $file, 1, 'test file created' );
 
-  my $has_first_entry = augeas exists => $path;
+    # exists
 
-  is( $has_first_entry, 1, 'first entry exists' );
+    my $has_first_entry = augeas exists => $path;
 
-  # get
+    is( $has_first_entry, 1, 'first entry exists' );
 
-  my $retrieved_value = augeas get => $path;
+    # get
 
-  is( $retrieved_value, $test_value, 'test value retrieved' );
+    my $retrieved_value = augeas get => $path;
 
-  # dump
+    is( $retrieved_value, $test_value, 'test value retrieved' );
 
-  stdout_is(
-    sub { augeas dump => $path },
-    qq($path = "$test_value"\n),
-    'correct dump output'
-  );
+    # dump
 
-  # remove
+    stdout_is(
+      sub { augeas dump => $path },
+      qq($path = "$test_value"\n),
+      'correct dump output'
+    );
 
-  augeas remove => $path;
+    # remove
 
-  my $still_has_first_entry = augeas exists => $path;
+    augeas remove => $path;
 
-  is( $still_has_first_entry, 0, 'first entry removed' );
+    my $still_has_first_entry = augeas exists => $path;
 
-  unlink $file;
+    is( $still_has_first_entry, 0, 'first entry removed' );
 
-  is( -e $file, undef, 'test file cleaned up' );
-};
+    unlink $file;
+
+    is( -e $file, undef, 'test file cleaned up' );
+  };
+}

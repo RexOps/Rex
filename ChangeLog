@@ -6,6 +6,7 @@ Revision history for Rex
  [BUG FIXES]
  - Return only the first found command
  - Make augeas dump output consistent across backends
+ - Fix Config::Augeas detection
 
  [DOCUMENTATION]
 

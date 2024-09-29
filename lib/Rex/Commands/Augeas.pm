@@ -52,16 +52,10 @@ use Rex::Commands::File;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
 use IO::String;
+use Module::Load::Conditional qw(can_load);
 
-my $has_config_augeas = 0;
-
-BEGIN {
-  use Rex::Require;
-  if ( Config::Augeas->is_loadable ) {
-    Config::Augeas->use;
-    $has_config_augeas = 1;
-  }
-}
+my $has_config_augeas =
+  can_load( modules => { 'Config::Augeas' => undef } ) ? 1 : 0;
 
 @EXPORT = qw(augeas);
 

@@ -17,6 +17,7 @@ Revision history for Rex
 
  [NEW FEATURES]
  - Add config option to prepend Augeas commands
+ - Add config option to control local Augeas backend
 
  [REVISION]
 

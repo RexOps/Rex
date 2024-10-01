@@ -80,7 +80,7 @@ jobs:
       - name: Extract build tarball
         run: tar xvf build.tar
       - name: Install packages
-        run: sudo apt-get install -y augeas-tools
+        run: sudo apt-get install -y augeas-tools libaugeas-dev
       - name: Setup Perl
         id: perl
         uses: shogo82148/actions-setup-perl@v1
@@ -127,7 +127,7 @@ jobs:
       - name: Extract build tarball
         run: tar xvf build.tar
       - name: Install packages
-        run: sudo apt-get install -y aspell
+        run: sudo apt-get install -y aspell libaugeas-dev
       - name: Setup Perl
         id: perl
         uses: shogo82148/actions-setup-perl@v1

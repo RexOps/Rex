@@ -81,7 +81,11 @@ sub augeas {
 
   my $is_ssh = Rex::is_ssh();
   my $aug; # Augeas object (non-SSH only)
-  if ( !$is_ssh && $has_config_augeas ) {
+
+  my $use_augtool =
+    !$has_config_augeas || Rex::Config->get_local_augeas_backend eq 'augtool';
+
+  if ( !$is_ssh && !$use_augtool ) {
     Rex::Logger::debug("Creating Config::Augeas Object");
     $aug = Config::Augeas->new;
     my $commands_to_prepend = Rex::Config->get_augeas_commands_prepend();
@@ -109,7 +113,7 @@ This modifies the keys given in @options in $file.
     $on_change = delete $config_option->{on_change}
       if ref $config_option->{on_change} eq 'CODE';
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my @commands;
       for my $key ( keys %{$config_option} ) {
         Rex::Logger::debug( "modifying $key -> " . $config_option->{$key} );
@@ -154,7 +158,7 @@ Remove an entry.
     for my $aug_key (@options) {
       Rex::Logger::debug("deleting $aug_key");
 
-      if ( $is_ssh || !$has_config_augeas ) {
+      if ( $is_ssh || $use_augtool ) {
         push @commands, "rm $aug_key\n";
       }
       else {
@@ -163,7 +167,7 @@ Remove an entry.
       }
     }
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my $result = _run_augtool(@commands);
       $ret     = $result->{return};
       $changed = $result->{changed};
@@ -204,7 +208,7 @@ Insert an item into the file. Here, the order of the options is important. If th
       pop @options;
     }
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my $position = ( exists $opts->{"before"} ? "before" : "after" );
       unless ( exists $opts->{$position} ) {
         Rex::Logger::info(
@@ -273,7 +277,7 @@ Dump the contents of a file to STDOUT.
     my $file    = shift @options;
     my $aug_key = $file;
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my $output = _run_augtool("print $aug_key");
       say $output->{'return'};
     }
@@ -300,7 +304,7 @@ Check if an item exists.
     my $aug_key = $file;
     my $val     = $options[0] || "";
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my @paths;
       my $result = _run_augtool("match $aug_key");
       for my $line ( split "\n", $result->{return} ) {
@@ -357,7 +361,7 @@ Returns the value of the given item.
   elsif ( $action eq "get" ) {
     my $file = shift @options;
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my @lines;
       my $result = _run_augtool("get $file");
       for my $line ( split "\n", $result->{return} ) {

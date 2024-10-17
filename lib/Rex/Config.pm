@@ -73,7 +73,8 @@ our (
   $use_template_ng,             $use_rex_kvm_agent,
   $autodie,                     $task_chaining_cmdline_args,
   $waitpid_blocking_sleep_time, $write_utf8_files,
-  $default_auth,
+  $default_auth,                $augeas_commands_prepend,
+  $local_augeas_backend,
 );
 
 # some defaults
@@ -1630,6 +1631,50 @@ sub set_default_auth {
 
 sub get_default_auth {
   return $default_auth // 1;
+}
+
+=head2 set_augeas_commands_prepend
+
+=head2 get_augeas_commands_prepend
+
+Sets and gets the value of the C<$augeas_commands_prepend> configuration variable.
+
+This controls the list of commands Rex should prepend at the beginning of the command file for Augeas operations.
+
+Default is C<[]>.
+
+=cut
+
+sub set_augeas_commands_prepend {
+  my $self = shift;
+  $augeas_commands_prepend = shift;
+  return $augeas_commands_prepend;
+}
+
+sub get_augeas_commands_prepend {
+  return $augeas_commands_prepend // [];
+}
+
+=head2 set_local_augeas_backend
+
+=head2 get_local_augeas_backend
+
+Sets and gets the value of the C<$local_augeas_backend> configuration variable.
+
+This controls which Augeas backend to use for local operations, C<augtool> or C<Config::Augeas>.
+
+Default is C<Config::Augeas>.
+
+=cut
+
+sub set_local_augeas_backend {
+  my $self = shift;
+  $local_augeas_backend = shift;
+  return $local_augeas_backend;
+}
+
+sub get_local_augeas_backend {
+  return $local_augeas_backend // 'Config::Augeas';
 }
 
 =head2 register_set_handler($handler_name, $code)

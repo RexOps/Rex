@@ -5,6 +5,8 @@ Revision history for Rex
 
  [BUG FIXES]
  - Return only the first found command
+ - Fix inconsistent augtool wrapper usage
+ - Fix Config::Augeas detection
 
  [DOCUMENTATION]
 
@@ -15,6 +17,8 @@ Revision history for Rex
  [MINOR]
 
  [NEW FEATURES]
+ - Add config option to prepend Augeas commands
+ - Add config option to control local Augeas backend
 
  [REVISION]
 

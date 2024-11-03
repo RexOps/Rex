@@ -4,9 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix precedence warning after perl-5.41.4
- - Fix missing argument warnings from Text::Wrap
- - Fix memory detection warnings on Solaris
 
  [DOCUMENTATION]
 
@@ -19,6 +16,12 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.14.3.2-TRIAL 2024-11-03 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix precedence warning after perl-5.41.4
+ - Fix missing argument warnings from Text::Wrap
+ - Fix memory detection warnings on Solaris
 
 1.14.3.1-TRIAL 2024-10-30 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

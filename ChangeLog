@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix precedence warning after perl-5.41.4
+ - Fix missing argument warnings from Text::Wrap
 
  [DOCUMENTATION]
 

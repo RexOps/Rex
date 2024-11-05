@@ -17,6 +17,9 @@ Revision history for Rex
 
  [REVISION]
 
+1.15.0 2024-11-05 Ferenc Erki <erkiferenc@gmail.com>
+ - No code changes since the 1.14.3.2-TRIAL release
+
 1.14.3.2-TRIAL 2024-11-03 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]
  - Fix precedence warning after perl-5.41.4

@@ -326,11 +326,16 @@ sub _set_storage_defaults {
           function => "0x0",
         };
       }
-      elsif ( $store->{"bus"} eq "ide" && !exists $store->{"address"} ) {
+      elsif (
+        ( $store->{"bus"} =~ /\Aide|scsi\Z/msx && !exists $store->{"address"} )
+        )
+      {
+ # The scsi conditional for the bus works around this error during virsh define:
+ # error: internal error: SCSI controller only supports 1 bus
         $store->{"address"} = {
           type       => "drive",
           controller => 0,
-          bus        => 1,
+          bus        => $store->{"bus"} eq 'scsi' ? 0 : 1,
           unit       => 0,
         };
       }
@@ -441,7 +446,15 @@ __DATA__
 
    <% for my $disk (@{$::storage}) { %>
    <disk type="<%= $disk->{type} %>" device="<%= $disk->{device} %>">
-    <driver name="qemu" type="<%= $disk->{driver_type} %>"/>
+    <driver name="qemu" type="<%= $disk->{driver_type} %>"
+      <% if(exists $disk->{driver_cache}) { %>
+        cache="<%= $disk->{driver_cache} %>"
+      <% } %>
+      <% if(exists $disk->{driver_discard}) { %>
+        discard="<%= $disk->{driver_discard} %>"
+      <% } %>
+    />
+
     <% if ($disk->{type} eq "file") { %>
     <source file="<%= $disk->{file} %>"/>
     <% } elsif ($disk->{file} eq "block") { %>
@@ -457,6 +470,11 @@ __DATA__
    <controller type="ide" index="0">
     <address type="pci" domain="0x0000" bus="0x00" slot="0x01" function="0x1"/>
    </controller>
+   <% if (grep { exists($_->{bus}) && $_->{bus} =~ /scsi/ } @{$::storage}) { %>
+   <controller type='scsi' index='0' model='<%= $::scsi_model // 'auto' %>'>
+     <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+   </controller>
+   <% } %>
    <% for my $netdev (@{$::network}) { %>
    <interface type="<%= $netdev->{type} %>">
     <% if(exists $netdev->{mac}) { %>

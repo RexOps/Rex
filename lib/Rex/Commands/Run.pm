@@ -132,7 +132,7 @@ Die if the command returns with an exit code indicating failure. It can be set g
 
 =item command => $command_to_run
 
-If present, Rex will execute C<$command_to_run>, and treat the first arugment as an identifier for the given C<run()> block (e.g. to be triggered with notify).
+If present, Rex will execute C<$command_to_run>, and treat the first argument as an identifier for the given C<run()> block (e.g. to be triggered with notify).
 
 =item creates => $file_to_create
 

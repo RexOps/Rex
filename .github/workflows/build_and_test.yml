@@ -79,6 +79,8 @@ jobs:
           name: build.tar
       - name: Extract build tarball
         run: tar xvf build.tar
+      - name: Install packages
+        run: sudo apt-get install -y augeas-tools libaugeas-dev
       - name: Setup Perl
         id: perl
         uses: shogo82148/actions-setup-perl@v1
@@ -91,7 +93,7 @@ jobs:
           key: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-${{ env.BUILD_TIMESTAMP }}
           restore-keys: cache-coverage-deps-${{ steps.perl.outputs.perl-hash }}-
       - name: Install dependencies
-        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-suggests .
+        run: cpanm --local-lib ${GITHUB_WORKSPACE}/local --installdeps --with-develop --with-all-features --with-recommends --with-suggests .
       - name: Install coverage dependencies
         run: cpanm --local-lib ${GITHUB_WORKSPACE}/local Devel::Cover::Report::Coveralls Pod::Coverage::CountParents
       - name: Install App::cpanoutdated
@@ -100,7 +102,7 @@ jobs:
         run: cpan-outdated -p | cpanm --local-lib ${GITHUB_WORKSPACE}/local
       - name: Run tests with coverage
         env:
-          HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/,^t/
+          HARNESS_PERL_SWITCHES: -MDevel::Cover=+ignore,^local/
         run: prove --timer --lib --recurse --jobs $(nproc) --shuffle t/
       - name: Report coverage info to Coveralls
         env:
@@ -125,7 +127,7 @@ jobs:
       - name: Extract build tarball
         run: tar xvf build.tar
       - name: Install packages
-        run: sudo apt-get install -y aspell
+        run: sudo apt-get install -y aspell libaugeas-dev
       - name: Setup Perl
         id: perl
         uses: shogo82148/actions-setup-perl@v1
@@ -164,6 +166,7 @@ jobs:
           - windows
         perl:
           - latest
+          - '5.38'
           - '5.36'
           - '5.34'
           - '5.32'
@@ -198,15 +201,15 @@ jobs:
         with:
           perl-version: ${{ matrix.perl }}
           distribution: ${{ matrix.os == 'windows' && 'strawberry' || 'default' }}
-      - name: Preinstall IO::Pty for Mac OS X tests
-        run: cpanm IO::Pty~'!=1.18'
-        if: matrix.os == 'macos'
+      - name: Disable LWP for cpanm on older Strawberry Perls
+        run: echo "PERL_CPANM_OPT=$env:PERL_CPANM_OPT --no-lwp" >> $env:GITHUB_ENV
+        if: matrix.os == 'windows' && matrix.perl <= 5.22
       - name: Install dependencies
         uses: carlkidcrypto/os-specific-runner@v2.0.0
         with:
-          macos: cpanm --installdeps --with-all-features .
-          linux: cpanm --installdeps --with-all-features .
-          windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync .
+          macos: cpanm --installdeps --with-all-features --with-recommends .
+          linux: cpanm --installdeps --with-all-features --with-recommends .
+          windows: cpanm --installdeps --with-all-features --without-feature=custom_output --without-feature=rsync --with-recommends .
       - name: Get number of processors
         id: cores
         uses: SimenB/github-actions-cpu-cores@v2

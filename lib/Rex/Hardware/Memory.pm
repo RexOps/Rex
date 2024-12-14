@@ -9,6 +9,7 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
 use Rex::Hardware::Host;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
@@ -54,25 +55,34 @@ sub get {
   elsif ( $os eq "SunOS" ) {
     my @data = i_run "echo ::memstat | mdb -k", fail_ok => 1;
 
-    my ($free_cache) = map { /\D+\d+\s+(\d+)/ } grep { /^Free \(cache/ } @data;
-    my ($free_list)  = map { /\D+\d+\s+(\d+)/ } grep { /^Free \(freel/ } @data;
-    my ($page_cache) = map { /\s+\d+\s+(\d+)/ } grep { /^Page cache/ } @data;
+    if ( $CHILD_ERROR == 0 ) {
+      my ($free_cache) =
+        map { /\D+\d+\s+(\d+)/ } grep { /^Free \(cache/ } @data;
+      my ($free_list) = map { /\D+\d+\s+(\d+)/ } grep { /^Free \(freel/ } @data;
+      my ($page_cache) = map { /\s+\d+\s+(\d+)/ } grep { /^Page cache/ } @data;
 
-    my $free = $free_cache + $free_list;
+      my $free = $free_cache + $free_list;
 
 #my ($total, $total_e) = grep { $_=$1 if /^Memory Size: (\d+) ([a-z])/i } i_run "prtconf";
-    my ($total) = map { /\s+\d+\s+(\d+)/ } grep { /^Total/ } @data;
+      my ($total) = map { /\s+\d+\s+(\d+)/ } grep { /^Total/ } @data;
 
-    &$convert( $free,  "M" );
-    &$convert( $total, "M" );
-    my $used = $total - $free;
+      &$convert( $free,  "M" );
+      &$convert( $total, "M" );
+      my $used = $total - $free;
 
-    $data = {
-      used  => $used,
-      total => $total,
-      free  => $free,
-    };
-
+      $data = {
+        used  => $used,
+        total => $total,
+        free  => $free,
+      };
+    }
+    else {
+      $data = {
+        used  => 0,
+        total => 0,
+        free  => 0,
+      };
+    }
   }
   elsif ( $os eq "OpenBSD" ) {
     my $mem_str   = i_run "top -d1 | grep Memory:", fail_ok => 1;

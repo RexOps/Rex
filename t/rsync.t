@@ -8,6 +8,7 @@ use autodie;
 
 BEGIN {
   use Test::More;
+  use Test::Warnings;
   use Rex::Commands::Run;
 
   can_run('rsync') or plan skip_all => 'Could not find rsync command';
@@ -32,7 +33,7 @@ my %source_for = (
   'rsync with wildcard in relative path' => 't/sync/*',
 );
 
-plan tests => 2 * scalar keys %source_for;
+plan tests => 1 + 2 * scalar keys %source_for;
 
 for my $scenario ( sort keys %source_for ) {
   test_rsync( $scenario, $source_for{$scenario} );

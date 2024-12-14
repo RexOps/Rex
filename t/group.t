@@ -5,7 +5,8 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 98;
+use Test::More tests => 99;
+use Test::Warnings;
 use Test::Exception;
 
 use Rex -feature => '0.31';

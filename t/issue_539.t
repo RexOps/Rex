@@ -5,7 +5,8 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 16;
+use Test::More tests => 17;
+use Test::Warnings;
 use Rex::Hardware::Network::Linux;
 use Rex::Helper::Hash;
 

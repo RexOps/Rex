@@ -7,6 +7,7 @@ use autodie;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 
 use English qw(-no_match_vars);
 use File::Spec;
@@ -39,7 +40,7 @@ closedir $dh;
 
 push @rexfiles, 'no_Rexfile';
 
-plan tests => scalar @rexfiles;
+plan tests => scalar @rexfiles + 1;
 
 for my $rexfile (@rexfiles) {
   subtest "Testing with $rexfile" => sub {

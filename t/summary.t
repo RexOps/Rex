@@ -5,7 +5,10 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
+use English qw(-no_match_vars);
+
 use Test::More;
+use if $OSNAME ne 'MSWin32' || $PERL_VERSION gt 'v5.20.0', 'Test::Warnings';
 use Test::Deep;
 
 use Module::Load::Conditional qw(check_install);
@@ -22,7 +25,9 @@ if ( check_install( module => 'Parallel::ForkManager' ) ) {
   push @distributors, 'Parallel_ForkManager';
 }
 
-plan tests => scalar @distributors * 2;
+my $extra_test_count = defined $Test::Warnings::VERSION ? 1 : 0;
+
+plan tests => scalar @distributors * 2 + $extra_test_count;
 
 for my $distributor (@distributors) {
 

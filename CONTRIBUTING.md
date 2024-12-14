@@ -78,7 +78,8 @@ On top of the supported minimum version of Perl, the goal is to support the late
 - 5.32.1
 - 5.34.1
 - 5.36.1
-- 5.38.0
+- 5.38.2
+- 5.40.0
 
 ### Backwards compatibility
 

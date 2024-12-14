@@ -10,7 +10,8 @@ my $cwd = getcwd;
 use File::Spec;
 use File::Temp;
 
-use Test::More tests => 61;
+use Test::More tests => 62;
+use Test::Warnings;
 
 use Rex::Commands::File;
 use Rex::Commands::Fs;

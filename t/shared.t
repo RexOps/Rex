@@ -6,7 +6,8 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 BEGIN {
-  use Test::More tests => 18;
+  use Test::More tests => 19;
+  use Test::Warnings qw(:no_end_test had_no_warnings);
   use Test::Deep;
   use Time::HiRes;
   use Rex::Shared::Var;
@@ -81,3 +82,5 @@ is( $hash{multi}->{arr1}->[1], "baz", "multidimension, arr1 - key1" );
 
   cmp_deeply \@array, [qw/0 1 1 1 1 1 1/], 'race condition avoided';
 }
+
+had_no_warnings();

@@ -80,7 +80,7 @@ sub PUSH {
   __lock sub {
     my $ref = __retrieve;
 
-    if ( !ref( $ref->{ $self->{varname} }->{data} ) eq "ARRAY" ) {
+    if ( ref( $ref->{ $self->{varname} }->{data} ) ne "ARRAY" ) {
       $ref->{ $self->{varname} }->{data} = [];
     }
 
@@ -97,7 +97,7 @@ sub UNSHIFT {
   __lock sub {
     my $ref = __retrieve;
 
-    if ( !ref( $ref->{ $self->{varname} }->{data} ) eq "ARRAY" ) {
+    if ( ref( $ref->{ $self->{varname} }->{data} ) ne "ARRAY" ) {
       $ref->{ $self->{varname} }->{data} = [];
     }
 

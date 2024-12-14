@@ -6,8 +6,9 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 
-$^O =~ m/^MSWin/ ? plan tests => 83 : plan tests => 286;
+$^O =~ m/^MSWin/ ? plan tests => 84 : plan tests => 287;
 
 use Rex::Cron::Base;
 

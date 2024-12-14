@@ -6,6 +6,7 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More;
+use Test::Warnings;
 use File::Temp qw(tempfile);
 use Carp;
 
@@ -18,7 +19,7 @@ my $file_libmagic_is_available = eval 'use File::LibMagic; 1';
 my $file_command_is_compatible = eval "run qq($command $0), auto_die => 1; 1";
 
 if ( $file_libmagic_is_available || $file_command_is_compatible ) {
-  plan tests => 2;
+  plan tests => 3;
 }
 else {
   plan skip_all =>

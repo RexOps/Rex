@@ -51,17 +51,10 @@ use Rex::Commands::Fs;
 use Rex::Commands::File;
 use Rex::Helper::Path;
 use Rex::Helper::Run;
-use IO::String;
+use Module::Load::Conditional qw(can_load);
 
-my $has_config_augeas = 0;
-
-BEGIN {
-  use Rex::Require;
-  if ( Config::Augeas->is_loadable ) {
-    Config::Augeas->use;
-    $has_config_augeas = 1;
-  }
-}
+my $has_config_augeas =
+  can_load( modules => { 'Config::Augeas' => undef } ) ? 1 : 0;
 
 @EXPORT = qw(augeas);
 
@@ -81,9 +74,15 @@ sub augeas {
 
   my $is_ssh = Rex::is_ssh();
   my $aug; # Augeas object (non-SSH only)
-  if ( !$is_ssh && $has_config_augeas ) {
+
+  my $use_augtool =
+    !$has_config_augeas || Rex::Config->get_local_augeas_backend eq 'augtool';
+
+  if ( !$is_ssh && !$use_augtool ) {
     Rex::Logger::debug("Creating Config::Augeas Object");
     $aug = Config::Augeas->new;
+    my $commands_to_prepend = Rex::Config->get_augeas_commands_prepend();
+    $aug->srun( join qq(\n), @{$commands_to_prepend} );
   }
 
   my $on_change; # Any code to run on change
@@ -107,7 +106,7 @@ This modifies the keys given in @options in $file.
     $on_change = delete $config_option->{on_change}
       if ref $config_option->{on_change} eq 'CODE';
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my @commands;
       for my $key ( keys %{$config_option} ) {
         Rex::Logger::debug( "modifying $key -> " . $config_option->{$key} );
@@ -152,7 +151,7 @@ Remove an entry.
     for my $aug_key (@options) {
       Rex::Logger::debug("deleting $aug_key");
 
-      if ( $is_ssh || !$has_config_augeas ) {
+      if ( $is_ssh || $use_augtool ) {
         push @commands, "rm $aug_key\n";
       }
       else {
@@ -161,7 +160,7 @@ Remove an entry.
       }
     }
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my $result = _run_augtool(@commands);
       $ret     = $result->{return};
       $changed = $result->{changed};
@@ -202,7 +201,7 @@ Insert an item into the file. Here, the order of the options is important. If th
       pop @options;
     }
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my $position = ( exists $opts->{"before"} ? "before" : "after" );
       unless ( exists $opts->{$position} ) {
         Rex::Logger::info(
@@ -271,9 +270,9 @@ Dump the contents of a file to STDOUT.
     my $file    = shift @options;
     my $aug_key = $file;
 
-    if ( $is_ssh || !$has_config_augeas ) {
-      my @list = i_exec "augtool", "print", $aug_key;
-      print join( "\n", @list ) . "\n";
+    if ( $is_ssh || $use_augtool ) {
+      my $output = _run_augtool("print $aug_key");
+      say $output->{'return'};
     }
     else {
       $aug->print($aug_key);
@@ -298,7 +297,7 @@ Check if an item exists.
     my $aug_key = $file;
     my $val     = $options[0] || "";
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my @paths;
       my $result = _run_augtool("match $aug_key");
       for my $line ( split "\n", $result->{return} ) {
@@ -355,7 +354,7 @@ Returns the value of the given item.
   elsif ( $action eq "get" ) {
     my $file = shift @options;
 
-    if ( $is_ssh || !$has_config_augeas ) {
+    if ( $is_ssh || $use_augtool ) {
       my @lines;
       my $result = _run_augtool("get $file");
       for my $line ( split "\n", $result->{return} ) {
@@ -394,8 +393,12 @@ sub _run_augtool {
     unless can_run "augtool";
   my $rnd_file = get_tmp_file;
   my $fh       = Rex::Interface::File->create;
+
+  my $commands_to_prepend = Rex::Config->get_augeas_commands_prepend();
+  unshift @commands, @{$commands_to_prepend};
+
   $fh->open( ">", $rnd_file );
-  $fh->write($_) foreach (@commands);
+  $fh->write( $_ . qq(\n) ) foreach (@commands);
   $fh->close;
   my ( $return, $error ) = i_run "augtool --file $rnd_file --autosave",
     sub { @_ }, fail_ok => 1;

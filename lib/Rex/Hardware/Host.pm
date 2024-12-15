@@ -192,7 +192,7 @@ sub get_operating_system {
 
   if ( is_file("/etc/slackware-version") ) {
     return "Slackware";
-  }  
+  }
 
   my $os_string = i_run("uname -s");
   return $os_string; # return the plain os

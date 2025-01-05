@@ -47,7 +47,7 @@ sub execute {
   if ($headless) {
     my $filename = get_tmp_file;
 
-    file( "$filename", content => <<EOF);
+    file( "$filename", content => <<EOF );
 use POSIX();
 
 my \$pid = fork();

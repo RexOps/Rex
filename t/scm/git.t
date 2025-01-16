@@ -28,6 +28,9 @@ else {
   plan skip_all => 'Can not find git command';
 }
 
+my $git_user_name  = 'Rex';
+my $git_user_email = 'noreply@rexify.org';
+
 my $empty_config_file = $OSNAME eq 'MSWin32' ? q() : File::Spec->devnull();
 
 my $git_environment = {
@@ -86,10 +89,7 @@ sub prepare_test_repo {
 
   i_run 'git init', cwd => $directory, env => $git_environment;
 
-  i_run 'git config user.name Rex', cwd => $directory, env => $git_environment;
-  i_run 'git config user.email noreply@rexify.org',
-    cwd => $directory,
-    env => $git_environment;
+  configure_git_user($directory);
 
   i_run 'git commit --allow-empty -m commit',
     cwd => $directory,
@@ -111,6 +111,20 @@ sub git_repo_ok {
     i_run 'git rev-parse --git-dir', cwd => $directory, env => $git_environment
   }
   "$directory looks like a git repository now";
+
+  return;
+}
+
+sub configure_git_user {
+  my $directory = shift;
+
+  i_run "git config user.name $git_user_name",
+    cwd => $directory,
+    env => $git_environment;
+
+  i_run "git config user.email $git_user_email",
+    cwd => $directory,
+    env => $git_environment;
 
   return;
 }

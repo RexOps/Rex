@@ -22,7 +22,7 @@ $::QUIET = 1;
 my $git = can_run('git');
 
 if ( defined $git ) {
-  plan tests => 9;
+  plan tests => 11;
 }
 else {
   plan skip_all => 'Can not find git command';
@@ -84,6 +84,55 @@ subtest 'clone into existing directory', sub {
   git_repo_ok($clone_target_dir);
 };
 
+subtest 'checkout new commits', sub {
+  plan tests => 4;
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  my $test_commit_message = 'new_origin_commit';
+
+  i_run "git commit --allow-empty -m $test_commit_message",
+    cwd => $test_repo_dir,
+    env => $git_environment;
+
+  lives_ok {
+    checkout $test_repo_name,
+      path => $clone_target_dir,
+  }
+  'pulling new commit';
+
+  git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
+
+  reset_test_repo();
+};
+
+subtest 'checkout new commits with rebase', sub {
+  plan tests => 4; ## no critic (ProhibitDuplicateLiteral)
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  i_run 'git commit --allow-empty -m new_origin_commit',
+    cwd => $test_repo_dir,
+    env => $git_environment;
+
+  my $test_commit_message = 'new_local_commit';
+
+  i_run "git commit --allow-empty -m $test_commit_message",
+    cwd => $clone_target_dir,
+    env => $git_environment;
+
+  lives_ok {
+    checkout $test_repo_name,
+      path   => $clone_target_dir,
+      rebase => TRUE,
+  }
+  'pulling new commit with rebase';
+
+  git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
+
+  reset_test_repo();
+};
+
 sub prepare_test_repo {
   my $directory = shift;
 
@@ -130,7 +179,42 @@ sub configure_git_user {
 }
 
 sub init_test {
+  my %opts = @_;
+
   my $clone_target_dir = tempdir( CLEANUP => 1 );
 
+  if ( $opts{clone} ) {
+    lives_ok {
+      checkout $test_repo_name,
+        path => $clone_target_dir,
+    }
+    'cloning the repo';
+
+    configure_git_user($clone_target_dir);
+  }
+
   return $clone_target_dir;
+}
+
+sub git_last_commit_message_ok {
+  my ( $directory, $expected_commit_message ) = @_;
+
+  my $last_commit_message = i_run 'git log --oneline -1 --format=%s',
+    cwd => $directory,
+    env => $git_environment;
+
+  is( $last_commit_message, $expected_commit_message,
+    'got correct last commit message' );
+
+  return;
+}
+
+sub reset_test_repo {
+  i_run 'git reset --hard HEAD~1',
+    cwd => $test_repo_dir,
+    env => $git_environment;
+
+  git_last_commit_message_ok( $test_repo_dir, 'commit' );
+
+  return;
 }

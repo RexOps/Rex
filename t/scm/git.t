@@ -48,12 +48,12 @@ git_repo_ok($test_repo_dir);
 
 my $test_repo_name = 'test_repo';
 
+set repository => $test_repo_name, url => $test_repo_dir;
+
 subtest 'clone into non-existing directory', sub {
   plan tests => 6;
 
   my $clone_target_dir = tempdir( CLEANUP => 1 );
-
-  set repository => $test_repo_name, url => $test_repo_dir;
 
   ok( -d $clone_target_dir, "$clone_target_dir could be created" );
 
@@ -71,8 +71,6 @@ subtest 'clone into existing directory', sub {
   plan tests => 5;
 
   my $clone_target_dir = tempdir( CLEANUP => 1 );
-
-  set repository => $test_repo_name, url => $test_repo_dir;
 
   ok( -d $clone_target_dir,
     "$clone_target_dir is the clone target directory now" );

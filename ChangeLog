@@ -10,6 +10,7 @@ Revision history for Rex
  [ENHANCEMENTS]
  - Quote command arguments on Windows
  - Support command environment variables on Windows
+ - Detect default branch of git origin
 
  [MAJOR]
 

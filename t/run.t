@@ -11,7 +11,7 @@ use Test::Warnings;
 
 use Rex::Commands::Run;
 
-plan tests => 2;
+plan tests => 3;
 
 subtest 'simple command output', sub {
   my $output = run 'echo 1';
@@ -21,4 +21,10 @@ subtest 'simple command output', sub {
   }
 
   is( $output, 1, 'correct output' );
+};
+
+subtest 'command with arguments', sub {
+  my $output = run 'perl', [ '-e', 'print 1' ];
+
+  is( $output, 1, 'correct output with arguments' );
 };

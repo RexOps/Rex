@@ -56,6 +56,7 @@ use Rex::Helper::SSH2::Expect;
 use Rex::Config;
 use Rex::Interface::Exec;
 use Rex::Interface::Fs;
+use English qw(-no_match_vars);
 
 BEGIN {
   if ( $^O !~ m/^MSWin/ ) {
@@ -297,7 +298,10 @@ sub run {
     my $exec = Rex::Interface::Exec->create;
 
     if ( $args && ref($args) eq "ARRAY" ) {
-      my $quoter = Net::OpenSSH::ShellQuoter->quoter( $exec->shell->name );
+      my $shell =
+        Rex::is_local() && $OSNAME eq 'MSWin32' ? 'MSWin' : $exec->shell->name;
+
+      my $quoter = Net::OpenSSH::ShellQuoter->quoter($shell);
       $cmd = "$cmd " . join( " ", map { $quoter->quote($_) } @{$args} );
     }
 

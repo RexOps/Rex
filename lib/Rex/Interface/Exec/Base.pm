@@ -9,6 +9,7 @@ use warnings;
 use Carp;
 use Rex::Helper::Run;
 use Rex::Commands::Fs;
+use Rex::Interface::Shell;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 

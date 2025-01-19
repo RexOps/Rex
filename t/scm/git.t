@@ -9,6 +9,7 @@ use Test::More;
 use Test::Warnings;
 use Test::Exception;
 
+use English qw(-no_match_vars);
 use File::Spec;
 use File::Temp qw(tempdir);
 use Rex::Commands;
@@ -27,9 +28,11 @@ else {
   plan skip_all => 'Can not find git command';
 }
 
+my $empty_config_file = $OSNAME eq 'MSWin32' ? q() : File::Spec->devnull();
+
 my $git_environment = {
-  GIT_CONFIG_GLOBAL => File::Spec->devnull(),
-  GIT_CONFIG_SYSTEM => File::Spec->devnull(),
+  GIT_CONFIG_GLOBAL => $empty_config_file,
+  GIT_CONFIG_SYSTEM => $empty_config_file,
 };
 
 ok( $git, "Found git command at $git" );

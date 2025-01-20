@@ -12,6 +12,9 @@ private_name_regex = _(?!_)\w+
 [Subroutines::ProtectPrivateSubs]
 private_name_regex = _(?!_)\w+
 
+[TooMuchCode::ProhibitDuplicateLiteral]
+allowlist = 'MSWin32'
+
 [-ValuesAndExpressions::ProhibitConstantPragma]
 
 [-ValuesAndExpressions::ProhibitVersionStrings]

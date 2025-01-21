@@ -4,12 +4,14 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix git branch checkout operations
 
  [DOCUMENTATION]
 
  [ENHANCEMENTS]
  - Quote command arguments on Windows
  - Support command environment variables on Windows
+ - Detect default branch of git origin
 
  [MAJOR]
 

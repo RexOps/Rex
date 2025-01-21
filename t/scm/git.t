@@ -22,11 +22,14 @@ $::QUIET = 1;
 my $git = can_run('git');
 
 if ( defined $git ) {
-  plan tests => 9;
+  plan tests => 15;
 }
 else {
   plan skip_all => 'Can not find git command';
 }
+
+my $git_user_name  = 'Rex';
+my $git_user_email = 'noreply@rexify.org';
 
 my $empty_config_file = $OSNAME eq 'MSWin32' ? q() : File::Spec->devnull();
 
@@ -43,17 +46,18 @@ ok( $git_version, qq(Git version returned as '$git_version') );
 my $test_repo_dir = tempdir( CLEANUP => 1 );
 ok( -d $test_repo_dir, "$test_repo_dir is the test repo directory now" );
 
+my $test_repo_name   = 'test_repo';
+my $test_branch_name = 'test_branch';
+
 prepare_test_repo($test_repo_dir);
 git_repo_ok($test_repo_dir);
 
-my $test_repo_name = 'test_repo';
+set repository => $test_repo_name, url => $test_repo_dir;
 
 subtest 'clone into non-existing directory', sub {
   plan tests => 6;
 
-  my $clone_target_dir = tempdir( CLEANUP => 1 );
-
-  set repository => $test_repo_name, url => $test_repo_dir;
+  my $clone_target_dir = init_test();
 
   ok( -d $clone_target_dir, "$clone_target_dir could be created" );
 
@@ -70,9 +74,7 @@ subtest 'clone into non-existing directory', sub {
 subtest 'clone into existing directory', sub {
   plan tests => 5;
 
-  my $clone_target_dir = tempdir( CLEANUP => 1 );
-
-  set repository => $test_repo_name, url => $test_repo_dir;
+  my $clone_target_dir = init_test();
 
   ok( -d $clone_target_dir,
     "$clone_target_dir is the clone target directory now" );
@@ -83,17 +85,154 @@ subtest 'clone into existing directory', sub {
   git_repo_ok($clone_target_dir);
 };
 
+subtest 'checkout new commits', sub {
+  plan tests => 4;
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  my $test_commit_message = 'new_origin_commit';
+
+  i_run "git commit --allow-empty -m $test_commit_message",
+    cwd => $test_repo_dir,
+    env => $git_environment;
+
+  lives_ok {
+    checkout $test_repo_name,
+      path => $clone_target_dir,
+  }
+  'pulling new commit';
+
+  git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
+
+  reset_test_repo();
+};
+
+subtest 'checkout new commits with rebase', sub {
+  plan tests => 4; ## no critic (ProhibitDuplicateLiteral)
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  i_run 'git commit --allow-empty -m new_origin_commit',
+    cwd => $test_repo_dir,
+    env => $git_environment;
+
+  my $test_commit_message = 'new_local_commit';
+
+  i_run "git commit --allow-empty -m $test_commit_message",
+    cwd => $clone_target_dir,
+    env => $git_environment;
+
+  lives_ok {
+    checkout $test_repo_name,
+      path   => $clone_target_dir,
+      rebase => TRUE,
+  }
+  'pulling new commit with rebase';
+
+  git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
+
+  reset_test_repo();
+};
+
+subtest 'clone a branch', sub {
+  plan tests => 5; ## no critic (ProhibitDuplicateLiteral)
+
+  my $clone_target_dir = init_test();
+
+  lives_ok {
+    checkout $test_repo_name,
+      path   => $clone_target_dir,
+      branch => $test_branch_name,
+  }
+  'cloning a branch';
+
+  git_repo_ok($clone_target_dir);
+  git_branch_ok( $clone_target_dir, $test_branch_name );
+};
+
+subtest 'checkout a branch after cloning', sub {
+  plan tests => 6; ## no critic (ProhibitDuplicateLiteral)
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  lives_ok {
+    checkout $test_repo_name,
+      path   => $clone_target_dir,
+      branch => $test_branch_name,
+  }
+  'checking out a branch after cloning';
+
+  git_repo_ok($clone_target_dir);
+  git_branch_ok( $clone_target_dir, $test_branch_name );
+};
+
+subtest 'checkout new commits from a branch', sub {
+  plan tests => 4; ## no critic (ProhibitDuplicateLiteral)
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  lives_ok {
+    checkout $test_repo_name,
+      path   => $clone_target_dir,
+      branch => $test_branch_name,
+  }
+  'pulling new commit from branch';
+
+  git_branch_ok( $clone_target_dir, $test_branch_name );
+  git_last_commit_message_ok( $clone_target_dir, 'origin_branch_commit' );
+};
+
+subtest 'checkout new commits from a branch with rebase', sub {
+  plan tests => 5; ## no critic (ProhibitDuplicateLiteral)
+
+  my $clone_target_dir = init_test( clone => TRUE );
+
+  my $test_commit_message = 'local_branch_commit';
+
+  i_run "git commit --allow-empty -m $test_commit_message",
+    cwd => $clone_target_dir,
+    env => $git_environment;
+
+  git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
+
+  lives_ok {
+    checkout $test_repo_name,
+      path   => $clone_target_dir,
+      branch => $test_branch_name,
+      rebase => TRUE,
+  }
+  'pulling new commit from branch with rebase';
+
+  git_branch_ok( $clone_target_dir, $test_branch_name );
+  git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
+};
+
 sub prepare_test_repo {
   my $directory = shift;
 
   i_run 'git init', cwd => $directory, env => $git_environment;
 
-  i_run 'git config user.name Rex', cwd => $directory, env => $git_environment;
-  i_run 'git config user.email noreply@rexify.org',
+  configure_git_user($directory);
+
+  my $default_branch = i_run 'git symbolic-ref HEAD',
     cwd => $directory,
     env => $git_environment;
 
+  $default_branch =~ s{refs/heads/}{}msx;
+
   i_run 'git commit --allow-empty -m commit',
+    cwd => $directory,
+    env => $git_environment;
+
+  i_run "git checkout -b $test_branch_name",
+    cwd => $directory,
+    env => $git_environment;
+
+  i_run 'git commit --allow-empty -m origin_branch_commit',
+    cwd => $directory,
+    env => $git_environment;
+
+  i_run "git checkout $default_branch",
     cwd => $directory,
     env => $git_environment;
 
@@ -113,6 +252,73 @@ sub git_repo_ok {
     i_run 'git rev-parse --git-dir', cwd => $directory, env => $git_environment
   }
   "$directory looks like a git repository now";
+
+  return;
+}
+
+sub configure_git_user {
+  my $directory = shift;
+
+  i_run "git config user.name $git_user_name",
+    cwd => $directory,
+    env => $git_environment;
+
+  i_run "git config user.email $git_user_email",
+    cwd => $directory,
+    env => $git_environment;
+
+  return;
+}
+
+sub init_test {
+  my %opts = @_;
+
+  my $clone_target_dir = tempdir( CLEANUP => 1 );
+
+  if ( $opts{clone} ) {
+    lives_ok {
+      checkout $test_repo_name,
+        path => $clone_target_dir,
+    }
+    'cloning the repo';
+
+    configure_git_user($clone_target_dir);
+  }
+
+  return $clone_target_dir;
+}
+
+sub git_last_commit_message_ok {
+  my ( $directory, $expected_commit_message ) = @_;
+
+  my $last_commit_message = i_run 'git log --oneline -1 --format=%s',
+    cwd => $directory,
+    env => $git_environment;
+
+  is( $last_commit_message, $expected_commit_message,
+    'got correct last commit message' );
+
+  return;
+}
+
+sub reset_test_repo {
+  i_run 'git reset --hard HEAD~1',
+    cwd => $test_repo_dir,
+    env => $git_environment;
+
+  git_last_commit_message_ok( $test_repo_dir, 'commit' );
+
+  return;
+}
+
+sub git_branch_ok {
+  my ( $directory, $expected_branch ) = @_;
+
+  my $current_branch = i_run 'git rev-parse --abbrev-ref HEAD',
+    cwd => $directory,
+    env => $git_environment;
+
+  is( $current_branch, $expected_branch, 'got correct current branch name' );
 
   return;
 }

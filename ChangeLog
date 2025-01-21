@@ -4,14 +4,10 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix git branch checkout operations
 
  [DOCUMENTATION]
 
  [ENHANCEMENTS]
- - Quote command arguments on Windows
- - Support command environment variables on Windows
- - Detect default branch of git origin
 
  [MAJOR]
 
@@ -20,6 +16,15 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.15.0.1-TRIAL 2025-01-21 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix git branch checkout operations
+
+ [ENHANCEMENTS]
+ - Quote command arguments on Windows
+ - Support command environment variables on Windows
+ - Detect default branch of git origin
 
 1.15.0 2024-11-05 Ferenc Erki <erkiferenc@gmail.com>
  - No code changes since the 1.14.3.2-TRIAL release

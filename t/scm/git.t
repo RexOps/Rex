@@ -13,6 +13,7 @@ use English qw(-no_match_vars);
 use File::Spec;
 use File::Temp qw(tempdir);
 use Rex::Commands;
+use Rex::Commands::File;
 use Rex::Commands::Run;
 use Rex::Commands::SCM;
 use Rex::Helper::Run;
@@ -46,8 +47,11 @@ ok( $git_version, qq(Git version returned as '$git_version') );
 my $test_repo_dir = tempdir( CLEANUP => 1 );
 ok( -d $test_repo_dir, "$test_repo_dir is the test repo directory now" );
 
-my $test_repo_name   = 'test_repo';
-my $test_branch_name = 'test_branch';
+my $test_repo_name              = 'test_repo';
+my $test_initial_commit_message = 'initial_commit';
+
+my $test_branch_name           = 'test_branch';
+my $test_branch_commit_message = 'origin_branch_commit';
 
 prepare_test_repo($test_repo_dir);
 git_repo_ok($test_repo_dir);
@@ -92,9 +96,7 @@ subtest 'checkout new commits', sub {
 
   my $test_commit_message = 'new_origin_commit';
 
-  i_run "git commit --allow-empty -m $test_commit_message",
-    cwd => $test_repo_dir,
-    env => $git_environment;
+  create_commit( directory => $test_repo_dir, message => $test_commit_message );
 
   lives_ok {
     checkout $test_repo_name,
@@ -112,15 +114,17 @@ subtest 'checkout new commits with rebase', sub {
 
   my $clone_target_dir = init_test( clone => TRUE );
 
-  i_run 'git commit --allow-empty -m new_origin_commit',
-    cwd => $test_repo_dir,
-    env => $git_environment;
+  create_commit(
+    directory => $test_repo_dir,
+    message   => 'new_oriting_commit_rebase'
+  );
 
   my $test_commit_message = 'new_local_commit';
 
-  i_run "git commit --allow-empty -m $test_commit_message",
-    cwd => $clone_target_dir,
-    env => $git_environment;
+  create_commit(
+    directory => $clone_target_dir,
+    message   => $test_commit_message
+  );
 
   lives_ok {
     checkout $test_repo_name,
@@ -179,7 +183,7 @@ subtest 'checkout new commits from a branch', sub {
   'pulling new commit from branch';
 
   git_branch_ok( $clone_target_dir, $test_branch_name );
-  git_last_commit_message_ok( $clone_target_dir, 'origin_branch_commit' );
+  git_last_commit_message_ok( $clone_target_dir, $test_branch_commit_message );
 };
 
 subtest 'checkout new commits from a branch with rebase', sub {
@@ -189,9 +193,10 @@ subtest 'checkout new commits from a branch with rebase', sub {
 
   my $test_commit_message = 'local_branch_commit';
 
-  i_run "git commit --allow-empty -m $test_commit_message",
-    cwd => $clone_target_dir,
-    env => $git_environment;
+  create_commit(
+    directory => $clone_target_dir,
+    message   => $test_commit_message
+  );
 
   git_last_commit_message_ok( $clone_target_dir, $test_commit_message );
 
@@ -220,17 +225,19 @@ sub prepare_test_repo {
 
   $default_branch =~ s{refs/heads/}{}msx;
 
-  i_run 'git commit --allow-empty -m commit',
-    cwd => $directory,
-    env => $git_environment;
+  create_commit(
+    directory => $directory,
+    message   => $test_initial_commit_message
+  );
 
   i_run "git checkout -b $test_branch_name",
     cwd => $directory,
     env => $git_environment;
 
-  i_run 'git commit --allow-empty -m origin_branch_commit',
-    cwd => $directory,
-    env => $git_environment;
+  create_commit(
+    directory => $directory,
+    message   => $test_branch_commit_message
+  );
 
   i_run "git checkout $default_branch",
     cwd => $directory,
@@ -306,7 +313,7 @@ sub reset_test_repo {
     cwd => $test_repo_dir,
     env => $git_environment;
 
-  git_last_commit_message_ok( $test_repo_dir, 'commit' );
+  git_last_commit_message_ok( $test_repo_dir, $test_initial_commit_message );
 
   return;
 }
@@ -319,6 +326,27 @@ sub git_branch_ok {
     env => $git_environment;
 
   is( $current_branch, $expected_branch, 'got correct current branch name' );
+
+  return;
+}
+
+sub create_commit {
+  my %opts = @_;
+
+  my $directory = $opts{directory};
+  my $message   = my $filename = $opts{message};
+
+  my $path = File::Spec->join( $directory, $filename );
+
+  file $path;
+
+  i_run "git add $filename",
+    cwd => $directory,
+    env => $git_environment;
+
+  i_run "git commit -m $message",
+    cwd => $directory,
+    env => $git_environment;
 
   return;
 }

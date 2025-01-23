@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix git rebase tests on old git versions
 
  [DOCUMENTATION]
 

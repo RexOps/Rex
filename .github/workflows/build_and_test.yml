@@ -179,12 +179,9 @@ jobs:
           - '5.18'
           - '5.16'
           - '5.14'
-          - '5.12'
         exclude:
           - os: windows
             perl: '5.34' # not released yet
-          - os: windows
-            perl: '5.12' # no 64-bit portable binaries
 
     runs-on: ${{ matrix.os }}-latest
 

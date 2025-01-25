@@ -61,11 +61,10 @@ As a general rule, managing an endpoint with Rex is only supported for platforms
 
 ### Supported Perl versions
 
-Rex aims to run even on older Perl versions up to 10 years old. Currently this means 5.12.5.
+Rex aims to run even on older Perl versions up to 10 years old. Currently this means 5.14.4.
 
 On top of the supported minimum version of Perl, the goal is to support the latest versions of all minor Perl 5 releases. That makes the full list the following:
 
-- 5.12.5
 - 5.14.4
 - 5.16.3
 - 5.18.4

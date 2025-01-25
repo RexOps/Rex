@@ -13,6 +13,7 @@ Revision history for Rex
  [MAJOR]
 
  [MINOR]
+ - Set minimum required Perl version to 5.14.4
 
  [NEW FEATURES]
 

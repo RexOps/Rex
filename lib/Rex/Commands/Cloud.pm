@@ -379,7 +379,7 @@ sub get_cloud_regions {
 
 =head2 cloud_volume($action , $data)
 
-This function controlls all aspects of a cloud volume.
+This function controls all aspects of a cloud volume.
 
 =cut
 

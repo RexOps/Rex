@@ -17,6 +17,9 @@ Revision history for Rex
 
  [REVISION]
 
+1.16.0 2025-02-05 Ferenc Erki <erkiferenc@gmail.com>
+ - No code changes since the 1.15.0.2-TRIAL release
+
 1.15.0.2-TRIAL 2025-01-29 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]
  - Fix git rebase tests on old git versions

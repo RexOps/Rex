@@ -1,0 +1,29 @@
+---
+name: Create work item
+description: Please only create a work item when advised by a maintainer. Thanks!
+body:
+    - type: checkboxes
+      attributes:
+          label: Already discussed
+          options:
+              - label: I already discussed this topic with a maintainer, and decided to work towards it.
+                required: true
+    - type: textarea
+      attributes:
+          label: Current situation
+          description: A clear and concise description of the current situation.
+          placeholder: What happens currently?
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: Expected results
+          description: A clear and concise description of the expected results.
+          placeholder: What should happen instead?
+      validations:
+          required: true
+    - type: textarea
+      attributes:
+          label: Additional details
+          description: Any additional details that may help the person working on this.
+          placeholder: For example links to discussions.

@@ -1,47 +1,23 @@
 ---
-labels: 'feature request'
+labels: 'triage needed'
 body:
-    - type: markdown
+    - type: textarea
       attributes:
-          value: '## User story'
-    - type: markdown
-      attributes:
-          value: A clear and concise description of _who_ wants to do _what_ and _why_.
-    - type: input
-      attributes:
-          label: As
-          description: Who?
-          placeholder: user, contributor, maintainer, engineer, manager, etc.
+          label: User story
+          description: 'Share the context to start the conversation: [who] wishes to do [what] and [why].'
+          placeholder: |
+              As a [user/contributor/maintainer/etc.],
+              I would like (Rex) to [do something new or better],
+              so I can [reach a specific goal].
       validations:
           required: true
-    - type: input
+    - type: textarea
       attributes:
-          label: I would like to
-          description: What?
-          placeholder: do something new or better with Rex
-      validations:
-          required: true
-    - type: input
-      attributes:
-          label: so I can
-          description: Why?
-          placeholder: reach a specific goal
+          label: Describe the solution you would like
+          description: A clear and concise description of the expected behavior, including even code examples.
       validations:
           required: true
     - type: textarea
       attributes:
           label: Additional context
-          description: Add any other context about the feature request here.
-    - type: markdown
-      attributes:
-          value: '---'
-    - type: textarea
-      attributes:
-          label: Describe the solution you would like
-          description: A clear and concise description of expected behavior, or code examples for expected interfaces.
-      validations:
-          required: true
-    - type: textarea
-      attributes:
-          label: Describe alternatives you have considered
-          description: A clear and concise description of any alternative solutions or features you have considered, possibly listing pros and cons.
+          description: Add any other context about the feature request here, including any alternatives you considered, possibly listing pros and cons.

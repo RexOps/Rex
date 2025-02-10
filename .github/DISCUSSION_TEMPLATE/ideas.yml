@@ -20,4 +20,4 @@ body:
     - type: textarea
       attributes:
           label: Additional context
-          description: Add any other context about the feature request here, including any alternatives you considered, possibly listing pros and cons.
+          description: Add any other context about the idea here, including any alternatives you have considered, possibly listing pros and cons.

@@ -14,10 +14,12 @@ body:
     - type: textarea
       attributes:
           label: Describe the solution you would like
-          description: A clear and concise description of the expected behavior, including even code examples.
+          description: A clear and concise description of the expected behavior.
+          placeholder: Consider including code examples.
       validations:
           required: true
     - type: textarea
       attributes:
           label: Additional context
-          description: Add any other context about the idea here, including any alternatives you have considered, possibly listing pros and cons.
+          description: Add any other context about the idea here.
+          placeholder: Include any alternatives you have considered, listing pros and cons.

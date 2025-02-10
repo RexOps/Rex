@@ -5,12 +5,14 @@ body:
       attributes:
           label: Describe your experience
           description: A clear and concise description of the observed behavior.
+          placeholder: What happens currently?
       validations:
           required: true
     - type: textarea
       attributes:
           label: Expected behavior
           description: A clear and concise description of the expected behavior.
+          placeholder: What should happen instead?
       validations:
           required: true
     - type: textarea
@@ -18,16 +20,17 @@ body:
           label: How to reproduce it
           description: Steps to reproduce the unexpected behavior.
           placeholder: |
-              1. Do this.
-              2. Then do that.
+              1. Do this. 
+              2. Then do that. 
               3. Observe the issue.
       validations:
           required: true
     - type: textarea
       attributes:
           label: Code example
-          description: Shortest code example that demonstrates the issue, like a Rexfile with a single task.
+          description: Short code example to demonstrate the issue.
           placeholder: |
+              Consider sharing a minimal Rexfile with a single task. 
               ```perl
 
               ```

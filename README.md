@@ -31,6 +31,21 @@ We have a [Getting started guide](https://www.rexify.org/docs/guides/start_using
 
 There are several methods to install (R)?ex: use your distro's package manager, download it from CPAN or build it from source. Check out the [Get Rex](https://www.rexify.org/get/index.html) page on the website for the different options, and choose the one that fits you best.
 
+### Install from CPAN
+
+You can use either `cpan` (comes with perl) or [cpanm](https://metacpan.org/pod/App::cpanminus):
+
+    cpanm Rex
+
+### Install from a package
+
+Find the right package to install for your system from the list at [Repology](https://repology.org/project/rex-automation-framework/versions). 
+
+For example, for Ubuntu:
+
+    apt-get update
+    apt-get install rex
+    
 ### Build from source
 
 To build (R)?ex from source, you need to install [Dist::Zilla](https://metacpan.org/pod/Dist::Zilla):

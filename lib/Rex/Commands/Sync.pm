@@ -94,30 +94,7 @@ sub sync_up {
   $source = get_file_path( $source, caller );
 
   #
-  # first, get all files on source side
-  #
-  my @local_files = _get_local_files($source);
-
-  #print Dumper(\@local_files);
-
-  #
-  # second, get all files from destination side
-  #
-
-  my @remote_files = _get_remote_files($dest);
-
-  #print Dumper(\@remote_files);
-
-  #
-  # third, get the difference
-  #
-
-  my @diff = _diff_files( \@local_files, \@remote_files );
-
-  #print Dumper(\@diff);
-
-  #
-  # fourth, build excludes list
+  # first, build excludes list
   #
 
   my $excludes = $options->{exclude} ||= [];
@@ -125,39 +102,46 @@ sub sync_up {
 
   my @excluded_files = @{$excludes};
 
-  #
-  # fifth, upload the different files
-  #
-
   my $check_exclude_file = sub {
-    my ( $file, $cmp ) = @_;
-    if ( $cmp =~ m/\// ) {
+    my ($file) = @_;
+    $file =~ s{^/}{};
 
-      # this is a directory exclude
-      if ( match_glob( $cmp, $file ) || match_glob( $cmp, substr( $file, 1 ) ) )
-      {
-        return 1;
-      }
-
-      return 0;
-    }
-
-    if ( match_glob( $cmp, basename($file) ) ) {
-      return 1;
+    for my $cmp (@excluded_files) {
+      return 1 if match_glob( $cmp, $file );
     }
 
     return 0;
   };
 
+  #
+  # second, get all files on source side (minus excludes)
+  #
+  my @local_files = _get_local_files( $source, $check_exclude_file );
+
+  #print Dumper(\@local_files);
+
+  #
+  # third, get all files from destination side (minus excludes)
+  #
+
+  my @remote_files = _get_remote_files( $dest, $check_exclude_file );
+
+  #print Dumper(\@remote_files);
+
+  #
+  # fourth, get the difference
+  #
+
+  my @diff = _diff_files( \@local_files, \@remote_files );
+
+  #print Dumper(\@diff);
+
+  #
+  # fifth, upload the different files
+  #
+
   my @uploaded_files;
   for my $file (@diff) {
-    next
-      if (
-      scalar(
-        grep { $check_exclude_file->( $file->{name}, $_ ) } @excluded_files
-      ) > 0
-      );
-
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
 
@@ -252,22 +236,42 @@ sub sync_down {
   $dest   = resolv_path($dest);
 
   #
-  # first, get all files on dest side
+  # first, build excludes list
   #
-  my @local_files = _get_local_files($dest);
+
+  my $excludes = $options->{exclude} ||= [];
+  $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
+
+  my @excluded_files = @{$excludes};
+
+  my $check_exclude_file = sub {
+    my ($file) = @_;
+    $file =~ s{^/}{};
+
+    for my $cmp (@excluded_files) {
+      return 1 if match_glob( $cmp, $file );
+    }
+
+    return 0;
+  };
+
+  #
+  # second, get all files on dest side (minus excludes)
+  #
+  my @local_files = _get_local_files( $dest, $check_exclude_file );
 
   #print Dumper(\@local_files);
 
   #
-  # second, get all files from source side
+  # third, get all files from source side (minus excludes)
   #
 
-  my @remote_files = _get_remote_files($source);
+  my @remote_files = _get_remote_files( $source, $check_exclude_file );
 
   #print Dumper(\@remote_files);
 
   #
-  # third, get the difference
+  # fourth, get the difference
   #
 
   my @diff = _diff_files( \@remote_files, \@local_files );
@@ -275,21 +279,10 @@ sub sync_down {
   #print Dumper(\@diff);
 
   #
-  # fourth, build excludes list
-  #
-
-  my $excludes = $options->{exclude} ||= [];
-  $excludes = [$excludes] unless ref($excludes) eq 'ARRAY';
-
-  my @excluded_files = map { glob_to_regex($_); } @{$excludes};
-
-  #
   # fifth, download the different files
   #
 
   for my $file (@diff) {
-    next if grep { basename( $file->{name} ) =~ $_ } @excluded_files;
-
     my ($dir)        = ( $file->{path} =~ m/(.*)\/[^\/]+$/ );
     my ($remote_dir) = ( $file->{name} =~ m/\/(.*)\/[^\/]+$/ );
 
@@ -326,7 +319,7 @@ sub sync_down {
 }
 
 sub _get_local_files {
-  my ($source) = @_;
+  my ( $source, $exclude_sub ) = @_;
 
   if ( !-d $source ) { die("$source : no such directory."); }
 
@@ -337,13 +330,15 @@ sub _get_local_files {
       for my $entry ( list_files($dir) ) {
         next if ( $entry eq "." );
         next if ( $entry eq ".." );
+
+        my $name = "$dir/$entry";
+        $name =~ s/^\Q$source\E//;
+        next if $exclude_sub->($name);
+
         if ( is_dir("$dir/$entry") ) {
           push( @dirs, "$dir/$entry" );
           next;
         }
-
-        my $name = "$dir/$entry";
-        $name =~ s/^\Q$source\E//;
         push(
           @local_files,
           {
@@ -361,7 +356,7 @@ sub _get_local_files {
 }
 
 sub _get_remote_files {
-  my ($dest) = @_;
+  my ( $dest, $exclude_sub ) = @_;
 
   if ( !is_dir($dest) ) { die("$dest : no such directory."); }
 
@@ -372,13 +367,16 @@ sub _get_remote_files {
     for my $entry ( list_files($dir) ) {
       next if ( $entry eq "." );
       next if ( $entry eq ".." );
+
+      my $name = "$dir/$entry";
+      $name =~ s/^\Q$dest\E//;
+      next if $exclude_sub->($name);
+
       if ( is_dir("$dir/$entry") ) {
         push( @remote_dirs, "$dir/$entry" );
         next;
       }
 
-      my $name = "$dir/$entry";
-      $name =~ s/^\Q$dest\E//;
       push(
         @remote_files,
         {
@@ -411,3 +409,4 @@ sub _diff_files {
 }
 
 1;
+

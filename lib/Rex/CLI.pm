@@ -31,8 +31,6 @@ use Rex::TaskList;
 use Rex::Logger;
 use YAML;
 
-use Data::Dumper;
-
 my $no_color = 0;
 
 # preload some modules
@@ -191,6 +189,7 @@ FORCE_SERVER: {
 
   load_server_ini_file($::rexfile);
   load_rexfile($::rexfile);
+  check_template_modules();
 
   #### check if some parameters should be overwritten from the command line
 CHECK_OVERWRITE: {
@@ -449,6 +448,30 @@ sub __help__ {
 
   CORE::exit 0;
 
+}
+
+# Check whether Rex/Template.pm
+# or Rex/Template/NG.pm modules are loaded. If there are,
+# they should be present in the %INC hash.
+sub check_template_modules {
+  my @tpl_modules_loaded =
+    grep { /(Rex\/Template|Rex\/Template\/NG)/ } keys %INC;
+  if ( scalar @tpl_modules_loaded > 0 ) {
+    Rex::Logger::info(
+      "WARNING! You are using Rex built-in template engine aka Rex::Template.",
+      "warn"
+    );
+    Rex::Logger::info(
+      "This engine is obsolete, unmaintained and will be retired in future releases.",
+      "warn"
+    );
+    Rex::Logger::info(
+      "Please consider migrating to a more modern template engine.", "warn" );
+    Rex::Logger::info(
+      "Text::Template::Simple, Template::Toolkit, etc. As usual, CPAN is you friend.",
+      "warn"
+    );
+  }
 }
 
 sub add_help {

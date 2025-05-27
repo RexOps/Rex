@@ -5,6 +5,7 @@ Revision history for Rex
 
  [BUG FIXES]
  - Fix FQDN parsing
+ - Handle SMBios errors gracefully
 
  [DOCUMENTATION]
 

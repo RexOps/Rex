@@ -7,6 +7,7 @@ Revision history for Rex
  - Fix FQDN parsing
  - Handle SMBios errors gracefully
  - Fix parsing free memory on Solaris
+ - Fix shared variable lockfile on Solaris
 
  [DOCUMENTATION]
 

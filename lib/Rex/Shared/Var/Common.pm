@@ -26,8 +26,8 @@ our $LOCK_FILE =
   File::Spec->catfile( File::Spec->tmpdir(), "vars.db.lock.$PARENT_PID" );
 
 sub __lock {
-  sysopen( my $dblock, $LOCK_FILE, O_RDONLY | O_CREAT ) or die($!);
-  flock( $dblock, LOCK_EX )                             or die($!);
+  sysopen( my $dblock, $LOCK_FILE, O_RDWR | O_CREAT ) or die($!);
+  flock( $dblock, LOCK_EX )                           or die($!);
 
   my $ret = $_[0]->();
 

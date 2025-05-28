@@ -731,6 +731,7 @@ The value should be set as an array reference, and will be dereferenced as such 
 Default is
 
  qw(
+   /usr/gnu/bin
    /bin
    /sbin
    /usr/bin
@@ -751,6 +752,7 @@ sub set_path {
 sub get_path {
   if ( !$path ) {
     return qw(
+      /usr/gnu/bin
       /bin
       /sbin
       /usr/bin

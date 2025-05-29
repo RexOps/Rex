@@ -57,7 +57,7 @@ sub get {
   else {
     my @out = i_run "hostname -f 2>/dev/null", fail_ok => 1;
 
-    if ( $? == 0 ) {
+    if ( $? == 0 && defined $out[0] ) {
       ( $hostname, $domain ) = split( /\./, $out[0], 2 );
     }
     else {

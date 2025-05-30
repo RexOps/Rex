@@ -750,10 +750,15 @@ sub set_path {
 
 sub get_path {
   if ( !$path ) {
-    return (
-      "/bin",         "/sbin",          "/usr/bin",
-      "/usr/sbin",    "/usr/local/bin", "/usr/local/sbin",
-      "/usr/pkg/bin", "/usr/pkg/sbin"
+    return qw(
+      /bin
+      /sbin
+      /usr/bin
+      /usr/sbin
+      /usr/local/bin
+      /usr/local/sbin
+      /usr/pkg/bin
+      /usr/pkg/sbin
     );
   }
   return @{$path};

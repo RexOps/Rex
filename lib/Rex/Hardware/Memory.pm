@@ -135,37 +135,31 @@ sub get {
     my $mem_str   = i_run "top -d1 | grep Mem:", fail_ok => 1;
     my $total_mem = sysctl("hw.physmem");
 
-    my (
-      $active, $a_ent, $inactive, $i_ent, $wired, $w_ent,
-      $cache,  $c_ent, $buf,      $b_ent, $free,  $f_ent
-      )
-      = ( $mem_str =~
-        m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i
-      );
+    my $memory_details = __parse_top_output($mem_str);
 
-    if ( !$active ) {
-      (
-        $active, $a_ent, $inactive, $i_ent, $wired,
-        $w_ent,  $buf,   $b_ent,    $free,  $f_ent
-        )
-        = ( $mem_str =~
-          m/(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])[^\d]+(\d+)([a-z])/i
-        );
+    for my $stat (qw(active inactive wired cache buf free)) {
+
+      if ( exists $memory_details->{$stat} ) {
+
+        my ( $value, $unit ) = $memory_details->{$stat} =~ qr{(\d+)([KMG])}msx;
+
+        $memory_details->{$stat} = $value;
+
+        &$convert( $memory_details->{$stat}, $unit );
+      }
+      else {
+        $memory_details->{$stat} = 0;
+      }
     }
 
-    &$convert( $active,   $a_ent );
-    &$convert( $inactive, $i_ent );
-    &$convert( $wired,    $w_ent ) if ($wired);
-    &$convert( $cache,    $c_ent ) if ($cache);
-    &$convert( $buf,      $b_ent ) if ($buf);
-    &$convert( $free,     $f_ent );
-
     $data = {
-      total   => $total_mem,
-      used    => $active + $inactive + $wired,
-      free    => $free,
-      cached  => $cache,
-      buffers => $buf,
+      total => $total_mem,
+      used  => $memory_details->{active} +
+        $memory_details->{inactive} +
+        $memory_details->{wired},
+      free    => $memory_details->{free},
+      cached  => $memory_details->{cache},
+      buffers => $memory_details->{buf},
     };
   }
   elsif ( $os eq "OpenWrt" ) {

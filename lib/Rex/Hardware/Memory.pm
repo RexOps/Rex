@@ -58,7 +58,8 @@ sub get {
     if ( $CHILD_ERROR == 0 ) {
       my ($free_cache) =
         map { /\D+\d+\s+(\d+)/ } grep { /^Free \(cache/ } @data;
-      my ($free_list) = map { /\D+\d+\s+(\d+)/ } grep { /^Free \(freel/ } @data;
+      my ($free_list) =
+        map { /\D+\d+\s+(\d+)/ } grep { /^Free (\s+|\(freel)/ } @data;
       my ($page_cache) = map { /\s+\d+\s+(\d+)/ } grep { /^Page cache/ } @data;
 
       my $free = $free_cache + $free_list;

@@ -4,6 +4,11 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix FQDN parsing
+ - Handle SMBios errors gracefully
+ - Fix parsing free memory on Solaris
+ - Fix shared variable lockfile on Solaris
+ - Prefer GNU tools on Solaris
 
  [DOCUMENTATION]
 

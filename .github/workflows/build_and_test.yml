@@ -212,3 +212,61 @@ jobs:
         uses: SimenB/github-actions-cpu-cores@v2
       - name: Run tests
         run: prove --timer --lib --recurse --jobs ${{ steps.cores.outputs.count }} --shuffle t/
+
+  tests-extra-runners:
+    needs: build
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - dragonflybsd
+          - freebsd
+          - netbsd
+          - openbsd
+          - solaris
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 20
+
+    steps:
+      - name: Download build results
+        uses: actions/download-artifact@v4
+        with:
+          name: build.tar
+      - name: Extract build tarball
+        run: tar xvf build.tar
+      - name: Set environment variables based on OS
+        uses: thaitype/actions-switch-case@v1
+        id: env_cmd
+        with:
+          default: 'echo Using default environment'
+          conditionals-with-values: |
+            ${{ matrix.os == 'dragonflybsd' }} => setenv LANG C
+            ${{ matrix.os == 'solaris' }} => export PATH=/usr/perl5/bin:/usr/gnu/bin:$PATH
+      - name: Set system setup command based on OS
+        uses: thaitype/actions-switch-case@v1
+        id: system_cmd
+        with:
+          default: '$VM_INSTALL_CMD augeas git'
+          conditionals-with-values: |
+            ${{ matrix.os == 'solaris' }} => $VM_INSTALL_CMD developer/gcc/gcc-c developer/versioning/git system/management/augeas
+      - name: Set cpanm setup command based on OS
+        uses: thaitype/actions-switch-case@v1
+        id: cpanm_cmd
+        with:
+          default: '$VM_INSTALL_CMD p5-App-cpanminus'
+          conditionals-with-values: |
+            ${{ matrix.os == 'openbsd' }} => cpan install App::cpanminus
+            ${{ matrix.os == 'solaris' }} => cpan install App::cpanminus
+      - name: Run tests on ${{ matrix.os }}
+        uses: jenseng/dynamic-uses@v1
+        with:
+          uses: vmactions/${{ matrix.os }}-vm@v1
+          with: |
+            {
+              "envs": "LANG PERL_CPANM_OPT VM_INSTALL_CMD",
+              "prepare": "cd $GITHUB_WORKSPACE; ${{ steps.env_cmd.outputs.match }}; ${{ steps.system_cmd.outputs.match }}; ${{ steps.cpanm_cmd.outputs.match }}; cpanm --installdeps --with-all-features .; cpanm Parallel::ForkManager",
+              "run": "cd $GITHUB_WORKSPACE; ${{ steps.env_cmd.outputs.match }}; prove --timer --lib --recurse --jobs 4 --shuffle t/"
+            }

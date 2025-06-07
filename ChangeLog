@@ -9,6 +9,8 @@ Revision history for Rex
  - Fix parsing free memory on Solaris
  - Fix shared variable lockfile on Solaris
  - Prefer GNU tools on Solaris
+ - Fix parsing FreeBSD memory details
+ - Recognize laundry memory on FreeBSD
 
  [DOCUMENTATION]
 

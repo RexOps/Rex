@@ -234,4 +234,28 @@ sub get {
   return $data;
 }
 
+sub __parse_top_output {
+  my $top_output = shift;
+
+  my @matches = $top_output =~ m{
+        \d+   # one or more digits
+        [KMG] # unit
+        [ ]   # space
+        \w+   # memory use type
+    }gmsx;
+
+  @matches = map { split qr{[ ]}msx } @matches;
+
+  if ( $matches[0] =~ qr{\d}msx ) {
+    @matches = reverse @matches;
+  }
+
+  my %top_memory_data = @matches;
+
+  %top_memory_data =
+    map { lc $_ => $top_memory_data{$_} } keys %top_memory_data;
+
+  return \%top_memory_data;
+}
+
 1;

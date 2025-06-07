@@ -137,7 +137,7 @@ sub get {
 
     my $memory_details = __parse_top_output($mem_str);
 
-    for my $stat (qw(active inactive wired cache buf free)) {
+    for my $stat (qw(active inactive wired laundry cache buf free)) {
 
       if ( exists $memory_details->{$stat} ) {
 
@@ -156,7 +156,8 @@ sub get {
       total => $total_mem,
       used  => $memory_details->{active} +
         $memory_details->{inactive} +
-        $memory_details->{wired},
+        $memory_details->{wired} +
+        $memory_details->{laundry},
       free    => $memory_details->{free},
       cached  => $memory_details->{cache},
       buffers => $memory_details->{buf},

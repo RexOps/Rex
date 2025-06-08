@@ -54,7 +54,7 @@ sub execute_line_based_operation {
 sub can_run {
   my ( $self, $commands_to_check, $check_with_command ) = @_;
 
-  $check_with_command ||= "which";
+  $check_with_command ||= "command -v";
 
   my $exec  = Rex::Interface::Exec->create;
   my $cache = Rex::get_cache();

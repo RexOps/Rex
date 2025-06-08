@@ -114,7 +114,7 @@ sub exec {
 sub can_run {
   my ( $self, $commands_to_check, $check_with_command ) = @_;
 
-  $check_with_command ||= $^O =~ /^MSWin/i ? 'where' : 'which';
+  $check_with_command ||= $^O =~ /^MSWin/i ? 'where' : 'command -v';
 
   return $self->SUPER::can_run( $commands_to_check, $check_with_command );
 }

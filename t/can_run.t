@@ -11,7 +11,7 @@ use Test::Warnings;
 use Rex::Commands::Run;
 
 {
-  my $command_to_check = $^O =~ /^MSWin/ ? 'where' : 'which';
+  my $command_to_check = $^O =~ /^MSWin/ ? 'where' : 'sh';
   my $result           = can_run($command_to_check);
   ok( $result, 'Found checker command' );
 }
@@ -23,14 +23,14 @@ use Rex::Commands::Run;
 }
 
 {
-  my @commands_to_check = $^O =~ /^MSWin/ ? 'where' : 'which';
+  my @commands_to_check = $^O =~ /^MSWin/ ? 'where' : 'sh';
   push @commands_to_check, 'non-existing command';
   my $result = can_run(@commands_to_check);
   ok( $result, 'Multiple commands - existing first' );
 }
 
 {
-  my @commands_to_check = $^O =~ /^MSWin/ ? 'where' : 'which';
+  my @commands_to_check = $^O =~ /^MSWin/ ? 'where' : 'sh';
   unshift @commands_to_check, 'non-existing command';
   my $result = can_run(@commands_to_check);
   ok( $result, 'Multiple commands - non-existing first' );

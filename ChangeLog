@@ -12,6 +12,7 @@ Revision history for Rex
  - Fix parsing FreeBSD memory details
  - Recognize laundry memory on FreeBSD
  - Fix command existence checks without which
+ - Fix hostgroup membership list
 
  [DOCUMENTATION]
 

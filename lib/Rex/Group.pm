@@ -15,7 +15,7 @@ use attributes;
 use Rex::Group::Entry::Server;
 
 use vars qw(%groups);
-use List::Util 1.45 qw(uniq);
+use List::Util 1.45 qw(any uniq);
 use Data::Dumper;
 
 sub new {
@@ -24,8 +24,16 @@ sub new {
   my $self  = {@_};
 
   bless( $self, $proto );
+
   for my $srv ( @{ $self->{servers} } ) {
     $srv->append_to_group( $self->{name} );
+
+    for my $group ( keys %groups ) {
+
+      if ( any { $_ eq $srv } $groups{$group}->get_servers ) {
+        $srv->append_to_group($group);
+      }
+    }
   }
 
   return $self;

@@ -4,6 +4,21 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+
+ [DOCUMENTATION]
+
+ [ENHANCEMENTS]
+
+ [MAJOR]
+
+ [MINOR]
+
+ [NEW FEATURES]
+
+ [REVISION]
+
+1.16.0.1-TRIAL 2025-06-12 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
  - Fix FQDN parsing
  - Handle SMBios errors gracefully
  - Fix parsing free memory on Solaris
@@ -16,16 +31,6 @@ Revision history for Rex
 
  [DOCUMENTATION]
  - Document temporary filename during file operations
-
- [ENHANCEMENTS]
-
- [MAJOR]
-
- [MINOR]
-
- [NEW FEATURES]
-
- [REVISION]
 
 1.16.0 2025-02-05 Ferenc Erki <erkiferenc@gmail.com>
  - No code changes since the 1.15.0.2-TRIAL release

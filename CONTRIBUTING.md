@@ -118,7 +118,7 @@ list the following:
 - 5.34.1
 - 5.36.1
 - 5.38.2
-- 5.40.1
+- 5.40.2
 
 ### Backwards compatibility
 

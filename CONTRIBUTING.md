@@ -329,7 +329,7 @@ We generally recommend to:
 - use atomic commits: use separate commits in a single pull request to separate
   the logical steps, and to help understanding the series of changes during
   review
-- share your ideas and for feedback early: open [draft pull
+- share your ideas and ask for feedback early: open [draft pull
   requests](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests#draft-pull-requests)
 - keep your branch up-to-date:
   [rebase](https://docs.github.com/en/github/using-git/about-git-rebase) your

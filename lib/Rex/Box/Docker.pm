@@ -62,7 +62,7 @@ See also the Methods of Rex::Box::Base. This module inherits all methods of it.
 
 package Rex::Box::Docker;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 use Data::Dumper;
 use Rex::Box::Base;

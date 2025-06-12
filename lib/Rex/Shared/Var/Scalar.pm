@@ -4,7 +4,7 @@
 
 package Rex::Shared::Var::Scalar;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 use Rex::Shared::Var::Common qw/__lock __store __retrieve/;

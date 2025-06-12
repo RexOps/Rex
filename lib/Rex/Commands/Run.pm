@@ -39,7 +39,7 @@ Please note that Rex may set the C<PATH> environment variable when executing com
 
 package Rex::Commands::Run;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

@@ -21,7 +21,7 @@ With this module you can define host groups in an INI style file.
 
 package Rex::Group::Lookup::INI;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

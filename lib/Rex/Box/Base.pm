@@ -18,7 +18,7 @@ These methods are shared across all other Rex::Box modules.
 
 package Rex::Box::Base;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

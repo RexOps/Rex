@@ -93,7 +93,7 @@ This module does not support any environment variables.
 
 package Rex::Template;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 use Symbol;
 

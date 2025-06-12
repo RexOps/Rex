@@ -68,7 +68,7 @@ For VirtualBox memory declaration is always in megabyte.
 
 package Rex::Virtualization::VBox;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

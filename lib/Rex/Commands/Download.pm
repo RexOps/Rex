@@ -31,7 +31,7 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Download;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 use Rex::Helper::UserAgent;
 use Carp;

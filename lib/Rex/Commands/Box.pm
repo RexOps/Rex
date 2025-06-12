@@ -57,7 +57,7 @@ Version <= 1.0: All these functions will not be reported.
 
 package Rex::Commands::Box;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

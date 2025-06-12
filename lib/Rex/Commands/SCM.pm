@@ -52,7 +52,7 @@ All these functions are not idempotent.
 
 package Rex::Commands::SCM;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

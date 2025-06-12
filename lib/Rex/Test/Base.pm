@@ -50,7 +50,7 @@ This is a basic test module to test your code with the help of local VMs. You ca
 
 package Rex::Test::Base;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 use base 'Test::Builder::Module';

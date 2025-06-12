@@ -4,7 +4,7 @@
 
 package Rex::Interface::Shell::Default;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 use Rex::Interface::Shell::Bash;
 

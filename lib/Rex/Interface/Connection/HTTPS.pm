@@ -4,7 +4,7 @@
 
 package Rex::Interface::Connection::HTTPS;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 use Rex::Interface::Connection::HTTP;
 use base qw(Rex::Interface::Connection::HTTP);

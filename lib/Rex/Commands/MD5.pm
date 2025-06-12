@@ -23,7 +23,7 @@ This is just a helper function and will not be reported.
 
 package Rex::Commands::MD5;
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION

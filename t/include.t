@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-use v5.12.5;
+use v5.14.4;
 use warnings;
 use lib 't/lib';
 

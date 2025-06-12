@@ -15,6 +15,7 @@ Revision history for Rex
  - Fix hostgroup membership list
 
  [DOCUMENTATION]
+ - Document temporary filename during file operations
 
  [ENHANCEMENTS]
 

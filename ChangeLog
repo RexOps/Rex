@@ -4,7 +4,6 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
- - Fix hostgroup membership list for all groups
 
  [DOCUMENTATION]
 
@@ -17,6 +16,10 @@ Revision history for Rex
  [NEW FEATURES]
 
  [REVISION]
+
+1.16.0.2-TRIAL 2025-06-16 Ferenc Erki <erkiferenc@gmail.com>
+ [BUG FIXES]
+ - Fix hostgroup membership list for all groups
 
 1.16.0.1-TRIAL 2025-06-12 Ferenc Erki <erkiferenc@gmail.com>
  [BUG FIXES]

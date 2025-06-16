@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-use Test::More tests => 102;
+use Test::More tests => 103;
 use Test::Warnings;
 use Test::Exception;
 use Test::Deep;
@@ -90,26 +90,25 @@ dies_ok( sub { Rex::Commands::evaluate_hostname('s[78]') },
 group first  => qw(one two);
 group second => qw(two three);
 
-my $expected_groups_for = {
-  one   => [qw(first)],
-  two   => [qw(first second)],
-  three => [qw(second)],
+my $expected_results_for = {
+  first => {
+    one => [qw(first)],
+    two => [qw(first second)],
+  },
+  second => {
+    two   => [qw(first second)],
+    three => [qw(second)],
+  },
 };
-
-my $groups_of;
 
 for my $group (qw(first second)) {
   my @hosts = Rex::Group->get_group($group);
 
   for my $host (@hosts) {
-    $groups_of->{ $host->to_s } = [ $host->groups ];
+    cmp_bag(
+      [ $host->groups ],
+      $expected_results_for->{$group}->{$host},
+      "correct host groups for host $host in group $group"
+    );
   }
-}
-
-for my $host ( keys %{$expected_groups_for} ) {
-  cmp_bag(
-    $groups_of->{$host},
-    $expected_groups_for->{$host},
-    "correct host groups for host $host"
-  );
 }

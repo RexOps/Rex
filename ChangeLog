@@ -4,6 +4,7 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Fix hostgroup membership list for all groups
 
  [DOCUMENTATION]
 

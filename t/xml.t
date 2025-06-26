@@ -6,9 +6,13 @@ use warnings;
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More tests => 7;
-use Test::Warnings;
+use Test::Warnings 0.033 'allow_patterns';
 use FindBin qw($Bin);
 use Rex::Require;
+
+if ( $ENV{AUTOMATED_TESTING} ) {
+  allow_patterns(qr{\bcompiled[ ]against\b}msx);
+}
 
 SKIP: {
 

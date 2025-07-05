@@ -17,6 +17,9 @@ Revision history for Rex
 
  [REVISION]
 
+1.16.1 2025-07-05 Ferenc Erki <erkiferenc@gmail.com>
+ - No code changes since the 1.16.0.3-TRIAL release
+
 1.16.0.3-TRIAL 2025-06-29 Ferenc Erki <erkiferenc@gmail.com>
  [REVISION]
  - Allow libxml2 version warnings for CPAN Testers

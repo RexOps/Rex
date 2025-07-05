@@ -119,6 +119,7 @@ list the following:
 - 5.36.1
 - 5.38.2
 - 5.40.2
+- 5.42.0
 
 ### Backwards compatibility
 

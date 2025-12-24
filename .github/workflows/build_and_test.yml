@@ -246,6 +246,17 @@ jobs:
           conditionals-with-values: |
             ${{ matrix.os == 'dragonflybsd' }} => setenv LANG C
             ${{ matrix.os == 'solaris' }} => export PATH=/usr/perl5/bin:/usr/gnu/bin:$PATH
+      - name: Select install command based on OS
+        uses: thaitype/actions-switch-case@v1
+        id: install_cmd
+        with:
+          default: pkg install -y
+          conditionals-with-values: |
+            ${{ matrix.os == 'netbsd' }} => /usr/sbin/pkg_add
+            ${{ matrix.os == 'openbsd' }} => pkg_add
+            ${{ matrix.os == 'solaris' }} => pkg install --no-backup-be --accept -v
+      - name: Set install command as environment variable
+        run: echo 'VM_INSTALL_CMD=${{ steps.install_cmd.outputs.match }}' >> $GITHUB_ENV
       - name: Set system setup command based on OS
         uses: thaitype/actions-switch-case@v1
         id: system_cmd

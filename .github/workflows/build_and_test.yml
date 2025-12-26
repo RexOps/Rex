@@ -180,6 +180,12 @@ jobs:
           - '5.18'
           - '5.16'
           - '5.14'
+        exclude:
+          - os: windows
+            perl: 5.38
+        include:
+          - os: windows
+            perl: 5.38.2
 
     runs-on: ${{ matrix.os }}-latest
 

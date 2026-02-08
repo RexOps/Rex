@@ -255,7 +255,7 @@ jobs:
         with:
           default: pkg install -y
           conditionals-with-values: |
-            ${{ matrix.os == 'netbsd' }} => /usr/sbin/pkg_add
+            ${{ matrix.os == 'netbsd' }} => /usr/sbin/pkg_add -u
             ${{ matrix.os == 'openbsd' }} => pkg_add
             ${{ matrix.os == 'solaris' }} => pkg install --no-backup-be --accept -v
       - name: Set install command as environment variable

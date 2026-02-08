@@ -247,7 +247,7 @@ jobs:
         with:
           default: 'echo Using default environment'
           conditionals-with-values: |
-            ${{ matrix.os == 'dragonflybsd' }} => setenv LANG C
+            ${{ matrix.os == 'dragonflybsd' }} => export LANG=C
             ${{ matrix.os == 'solaris' }} => export PATH=/usr/perl5/bin:/usr/gnu/bin:$PATH
       - name: Select install command based on OS
         uses: thaitype/actions-switch-case@v1

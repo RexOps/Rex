@@ -133,13 +133,32 @@ sub stat {
   return %ret;
 }
 
+=pod
+
+=head3 OpenSSH->upload($source, $target)
+
+Uploads an item from source to target.
+
+If sudo is enabled for the connection will set permissions etc too.
+Otherwise will only attempt to set permissions, and continue successfully
+if not.
+
+=cut
+
 sub upload {
   my ( $self, $source, $target ) = @_;
 
   Rex::Commands::profiler()->start("upload: $source -> $target");
 
   my $sftp = Rex::get_sftp();
-  unless ( $sftp->put( $source, $target ) ) {
+
+  # If we are not sudo, we need to fall back to best effort on
+  # file upload.  The %best_effort hash will evaluate be expanded
+  # to best_effort => 1 if and and only if is_sudo returns false.
+
+  my %best_effort = ();
+  $best_effort{best_effort} = 1 unless Rex::is_sudo();
+  unless ( $sftp->put( $source, $target, %best_effort) ) {
     Rex::Logger::debug("upload: $target is not writable");
 
     Rex::Commands::profiler()->end("upload: $source -> $target");

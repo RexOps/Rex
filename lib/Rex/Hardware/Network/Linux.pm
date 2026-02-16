@@ -14,6 +14,7 @@ use Rex::Helper::Run;
 use Rex::Commands::Run;
 use Rex::Helper::Array;
 use Data::Dumper;
+use Term::ANSIColor qw(colorstrip);
 
 sub get_bridge_devices {
   unless ( can_run("brctl") ) {
@@ -141,6 +142,7 @@ sub _parse_ip {
 
   my $cur_dev;
   for my $line (@ip_lines) {
+    $line = colorstrip($line);
     if ( $line =~ m/^\d+:\s*([^\s]+):/ ) {
       my $new_dev = $1;
 

@@ -1,0 +1,37 @@
+#
+# (c) Pieter le Roux <pgp@myleroux.net>
+#
+
+package Rex::Service::Alpine;
+
+use v5.14.4;
+use warnings;
+
+our $VERSION = '9999.99.99_99'; # VERSION
+
+use base qw(Rex::Service::Base);
+
+sub new {
+  my $that  = shift;
+  my $proto = ref($that) || $that;
+  my $self  = $proto->SUPER::new(@_);
+
+  bless $self, $proto;
+
+  #stop | start | restart | status | describe | zap $self->{commands} = {
+  $self->{commands} = {
+    start          => '/etc/init.d/%s start',
+    restart        => '/etc/init.d/%s restart',
+    stop           => '/etc/init.d/%s stop',
+    reload         => '/etc/init.d/%s stop && /etc/init.d/%s start',
+    status         => '/etc/init.d/%s status',
+    ensure_stop    => 'rc-update del %s',
+    ensure_start   => 'rc-update add %s default',
+    action         => '/etc/init.d/%s %s',
+    service_exists => 'rc-service --list | grep -i %s',
+  };
+
+  return $self;
+}
+
+1;

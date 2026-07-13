@@ -2,6 +2,8 @@
 # (c) Jan Gehring <jan.gehring@gmail.com>
 #
 
+## no critic (Documentation)
+
 =head1 NAME
 
 Rex::Commands::Gather - Hardware and Information gathering
@@ -14,7 +16,7 @@ All these functions will not be reported. These functions don't modify anything.
 
 =head1 SYNOPSIS
 
- operating_system_is("SuSE");
+ operating_system_is('SuSE');
 
 
 =head1 EXPORTED FUNCTIONS
@@ -25,13 +27,15 @@ package Rex::Commands::Gather;
 
 use v5.14.4;
 use warnings;
+use strict;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Data::Dumper;
 use Rex::Hardware;
 use Rex::Hardware::Host;
-use Rex::Hardware::Network;
+
+#use Rex::Hardware::Network;
 use Rex::Hardware::Memory;
 use Rex::Helper::System;
 use Rex::Commands;
@@ -44,13 +48,13 @@ use vars qw(@EXPORT);
 @EXPORT = qw(operating_system_is network_interfaces memory
   get_operating_system operating_system operating_system_version operating_system_release
   is_freebsd is_netbsd is_openbsd is_redhat is_linux is_bsd is_solaris is_suse is_debian is_mageia is_windows is_alt is_openwrt is_gentoo is_fedora is_arch is_void
-  get_system_information dump_system_information kernelname);
+  get_system_information dump_system_information kernelname is_alpine);
 
 =head2 get_operating_system
 
 Will return the current operating system name.
 
- task "get-os", "server01", sub {
+ task 'get-os', 'server01', sub {
    say get_operating_system();
  };
 
@@ -62,7 +66,7 @@ sub get_operating_system {
 
   my $operatingsystem = Rex::Hardware::Host->get_operating_system();
 
-  return $operatingsystem || "unknown";
+  return $operatingsystem || 'unknown';
 
 }
 
@@ -107,17 +111,21 @@ sub dump_system_information {
   my ($info) = @_;
   my %sys_info = get_system_information();
 
-  inspect( \%sys_info,
-    { prepend_key => '$', key_value_sep => " = ", no_root => 1 } );
+  ## no critic (ProhibitNoisyQuotes)
+
+  return inspect( \%sys_info,
+    { prepend_key => '$', key_value_sep => ' = ', no_root => 1 } );
+
+  ## use critic
 }
 
 =head2 operating_system_is($string)
 
 Will return 1 if the operating system is $string.
 
- task "is_it_suse", "server01", sub {
-   if( operating_system_is("SuSE") ) {
-     say "This is a SuSE system.";
+ task 'is_it_suse', 'server01', sub {
+   if( operating_system_is('SuSE') ) {
+     say 'This is a SuSE system.';
    }
  };
 
@@ -143,9 +151,9 @@ sub operating_system_is {
 
 Will return the os release number as an integer. For example, it will convert 5.10 to 510, 10.04 to 1004 or 6.0.3 to 603.
 
- task "prepare", "server01", sub {
+ task 'prepare', 'server01', sub {
    if( operating_system_version() >= 510 ) {
-     say "OS Release is higher or equal to 510";
+     say 'OS Release is higher or equal to 510';
    }
  };
 
@@ -178,7 +186,7 @@ sub operating_system_release {
 
 Return an HashRef of all the networkinterfaces and their configuration.
 
- task "get_network_information", "server01", sub {
+ task 'get_network_information', 'server01', sub {
    my $net_info = network_interfaces();
  };
 
@@ -186,7 +194,7 @@ You can iterate over the devices as follow
 
  my $net_info = network_interfaces();
  for my $dev ( keys %{ $net_info } ) {
-   say "$dev has the ip: " . $net_info->{$dev}->{"ip"} . " and the netmask: " . $net_info->{$dev}->{"netmask"};
+   say '$dev has the ip: ' . $net_info->{$dev}->{ip} . ' and the netmask: ' . $net_info->{$dev}->{netmask};
  }
 
 =cut
@@ -195,7 +203,7 @@ sub network_interfaces {
 
   my $net = Rex::Hardware::Network->get();
 
-  return $net->{"networkconfiguration"};
+  return $net->{networkconfiguration};
 
 }
 
@@ -203,14 +211,14 @@ sub network_interfaces {
 
 Return an HashRef of all memory information.
 
- task "get_memory_information", "server01", sub {
+ task 'get_memory_information', 'server01', sub {
    my $memory = memory();
 
-   say "Total:  " . $memory->{"total"};
-   say "Free:   " . $memory->{"free"};
-   say "Used:   " . $memory->{"used"};
-   say "Cached:  " . $memory->{"cached"};
-   say "Buffers: " . $memory->{"buffers"};
+   say 'Total:  ' . $memory->{total};
+   say 'Free:   ' . $memory->{free};
+   say 'Used:   ' . $memory->{used};
+   say 'Cached:  ' . $memory->{cached};
+   say 'Buffers: ' . $memory->{buffers};
  };
 
 =cut
@@ -227,19 +235,19 @@ sub memory {
 
 Returns true if the target system is a FreeBSD.
 
- task "foo", "server1", "server2", sub {
+ task 'foo', 'server1', 'server2', sub {
    if(is_freebsd) {
-     say "This is a freebsd system...";
+     say 'This is a freebsd system...';
    }
    else {
-     say "This is not a freebsd system...";
+     say 'This is not a freebsd system...';
    }
  };
 
 =cut
 
 sub is_freebsd {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
   if ( $os =~ m/FreeBSD/i ) {
     return 1;
   }
@@ -247,7 +255,7 @@ sub is_freebsd {
 
 =head2 is_redhat
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_redhat) {
      # do something on a redhat system (like RHEL, Fedora, CentOS, Scientific Linux
    }
@@ -256,26 +264,26 @@ sub is_freebsd {
 =cut
 
 sub is_redhat {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @redhat_clones = (
-    "Fedora",                      "Redhat",
-    "CentOS",                      "Scientific",
-    "RedHatEnterpriseServer",      "RedHatEnterpriseES",
-    "RedHatEnterpriseWorkstation", "RedHatEnterpriseWS",
-    "Amazon",                      "ROSAEnterpriseServer",
-    "CloudLinuxServer",            "XenServer",
-    "OracleServer",                "Virtuozzo",
+  my @redhat_clones = qw(
+    Fedora                      Redhat
+    CentOS                      Scientific
+    RedHatEnterpriseServer      RedHatEnterpriseES
+    RedHatEnterpriseWorkstation RedHatEnterpriseWS
+    Amazon                      ROSAEnterpriseServer
+    CloudLinuxServer            XenServer
+    OracleServer                Virtuozzo
   );
 
-  if ( grep { /$os/i } @redhat_clones ) {
+  if ( scalar grep { /$os/i } @redhat_clones ) {
     return 1;
   }
 }
 
 =head2 is_fedora
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_fedora) {
      # do something on a fedora system
    }
@@ -284,18 +292,18 @@ sub is_redhat {
 =cut
 
 sub is_fedora {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @fedora_clones = ("Fedora");
+  my @fedora_clones = ('Fedora');
 
-  if ( grep { /$os/i } @fedora_clones ) {
+  if ( scalar grep { /$os/i } @fedora_clones ) {
     return 1;
   }
 }
 
 =head2 is_suse
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_suse) {
      # do something on a suse system
    }
@@ -304,18 +312,18 @@ sub is_fedora {
 =cut
 
 sub is_suse {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @suse_clones = ( "OpenSuSE", "SuSE", "openSUSE project" );
+  my @suse_clones = ( 'OpenSuSE', 'SuSE', 'openSUSE project' );
 
-  if ( grep { /$os/i } @suse_clones ) {
+  if ( scalar grep { /$os/i } @suse_clones ) {
     return 1;
   }
 }
 
 =head2 is_mageia
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_mageia) {
      # do something on a mageia system (or other Mandriva followers)
    }
@@ -324,18 +332,18 @@ sub is_suse {
 =cut
 
 sub is_mageia {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @mdv_clones = ( "Mageia", "ROSADesktopFresh" );
+  my @mdv_clones = qw( Mageia ROSADesktopFresh );
 
-  if ( grep { /$os/i } @mdv_clones ) {
+  if ( scalar grep { /$os/i } @mdv_clones ) {
     return 1;
   }
 }
 
 =head2 is_debian
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_debian) {
      # do something on a debian system
    }
@@ -344,18 +352,18 @@ sub is_mageia {
 =cut
 
 sub is_debian {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @debian_clones = ( "Debian", "Ubuntu", "LinuxMint", "Raspbian", "Devuan" );
+  my @debian_clones = qw( Debian Ubuntu LinuxMint Raspbian Devuan );
 
-  if ( grep { /$os/i } @debian_clones ) {
+  if ( scalar grep { /$os/i } @debian_clones ) {
     return 1;
   }
 }
 
 =head2 is_alt
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_alt) {
      # do something on a ALT Linux system
    }
@@ -364,11 +372,11 @@ sub is_debian {
 =cut
 
 sub is_alt {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @alt_clones = ("ALT");
+  my @alt_clones = ('ALT');
 
-  if ( grep { /$os/i } @alt_clones ) {
+  if ( scalar grep { /$os/i } @alt_clones ) {
     return 1;
   }
 }
@@ -377,19 +385,19 @@ sub is_alt {
 
 Returns true if the target system is a NetBSD.
 
- task "foo", "server1", "server2", sub {
+ task 'foo', 'server1', 'server2', sub {
    if(is_netbsd) {
-     say "This is a netbsd system...";
+     say 'This is a netbsd system...';
    }
    else {
-     say "This is not a netbsd system...";
+     say 'This is not a netbsd system...';
    }
  };
 
 =cut
 
 sub is_netbsd {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
   if ( $os =~ m/NetBSD/i ) {
     return 1;
   }
@@ -399,19 +407,19 @@ sub is_netbsd {
 
 Returns true if the target system is an OpenBSD.
 
- task "foo", "server1", "server2", sub {
+ task 'foo', 'server1', 'server2', sub {
    if(is_openbsd) {
-     say "This is an openbsd system...";
+     say 'This is an openbsd system...';
    }
    else {
-     say "This is not an openbsd system...";
+     say 'This is not an openbsd system...';
    }
  };
 
 =cut
 
 sub is_openbsd {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
   if ( $os =~ m/OpenBSD/i ) {
     return 1;
   }
@@ -421,12 +429,12 @@ sub is_openbsd {
 
 Returns true if the target system is a Linux System.
 
- task "prepare", "server1", "server2", sub {
+ task 'prepare', 'server1', 'server2', sub {
    if(is_linux) {
-    say "This is a linux system...";
+    say 'This is a linux system...';
    }
    else {
-    say "This is not a linux system...";
+    say 'This is not a linux system...';
    }
  };
 
@@ -447,12 +455,12 @@ sub is_linux {
 
 Returns true if the target system is a BSD System.
 
- task "prepare", "server1", "server2", sub {
+ task 'prepare', 'server1', 'server2', sub {
    if(is_bsd) {
-    say "This is a BSD system...";
+    say 'This is a BSD system...';
    }
    else {
-    say "This is not a BSD system...";
+    say 'This is not a BSD system...';
    }
  };
 
@@ -461,7 +469,7 @@ Returns true if the target system is a BSD System.
 sub is_bsd {
 
   my $host = Rex::Hardware::Host->get();
-  if ( $host->{"kernelname"} =~ m/BSD/ ) {
+  if ( $host->{kernelname} =~ m/BSD/ ) {
     return 1;
   }
 }
@@ -470,12 +478,12 @@ sub is_bsd {
 
 Returns true if the target system is a Solaris System.
 
- task "prepare", "server1", "server2", sub {
+ task 'prepare', 'server1', 'server2', sub {
    if(is_solaris) {
-    say "This is a Solaris system...";
+    say 'This is a Solaris system...';
    }
    else {
-    say "This is not a Solaris system...";
+    say 'This is not a Solaris system...';
    }
  };
 
@@ -486,7 +494,7 @@ sub is_solaris {
   my $host = Rex::Hardware::Host->get();
   if ( exists $host->{kernelname}
     && $host->{kernelname}
-    && $host->{"kernelname"} =~ m/SunOS/ )
+    && $host->{kernelname} =~ m/SunOS/ )
   {
     return 1;
   }
@@ -501,8 +509,8 @@ Returns true if the target system is a Windows System.
 sub is_windows {
 
   my $host = Rex::Hardware::Host->get();
-  if ( $host->{"operatingsystem"} =~ m/^MSWin/
-    || $host->{operatingsystem} eq "Windows" )
+  if ( $host->{operatingsystem} =~ m/^MSWin/
+    || $host->{operatingsystem} eq 'Windows' )
   {
     return 1;
   }
@@ -539,7 +547,7 @@ sub is_gentoo {
 
 =head2 is_arch
 
- task "foo", "server1", sub {
+ task 'foo', 'server1', sub {
    if(is_arch) {
      # do something on a arch system
    }
@@ -548,11 +556,11 @@ sub is_gentoo {
 =cut
 
 sub is_arch {
-  my $os = @_ ? shift : get_operating_system();
+  my $os = shift || get_operating_system();
 
-  my @arch_clones = ( "Arch", "Manjaro", "Antergos" );
+  my @arch_clones = qw( Arch Manjaro Antergos );
 
-  if ( grep { /$os/i } @arch_clones ) {
+  if ( scalar grep { /$os/i } @arch_clones ) {
     return 1;
   }
 }
@@ -569,6 +577,13 @@ sub is_void {
     return 1;
   }
 
+}
+
+sub is_alpine {
+  my $os = get_operating_system();
+  if ( $os =~ m/Alpine/i ) {
+    return 1;
+  }
 }
 
 1;

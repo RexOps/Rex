@@ -21,10 +21,12 @@ use Rex::Inventory::Bios;
 
 require Rex::Hardware;
 
+## no critic (ProhibitExcessComplexity, ProhibitCascadingIfElse)
+
 sub get {
 
   my $cache          = Rex::get_cache();
-  my $cache_key_name = $cache->gen_key_name("hardware.host");
+  my $cache_key_name = $cache->gen_key_name('hardware.host');
 
   if ( $cache->valid($cache_key_name) ) {
     return $cache->get($cache_key_name);
@@ -35,37 +37,37 @@ sub get {
   my $os = get_operating_system();
 
   my ( $domain, $hostname );
-  if ( $os eq "Windows" ) {
+  if ( $os eq 'Windows' ) {
     my @env = i_run('set');
     ($hostname) = map { /^COMPUTERNAME=(.*)$/ } @env;
     ($domain)   = map { /^USERDOMAIN=(.*)$/ } @env;
   }
-  elsif ( $os eq "NetBSD" || $os eq "OpenBSD" || $os eq 'FreeBSD' ) {
+  elsif ( $os eq 'NetBSD' || $os eq 'OpenBSD' || $os eq 'FreeBSD' ) {
     ( $hostname, $domain ) =
-      split( /\./, ( eval { i_run("hostname") } || "unknown.nodomain" ), 2 );
+      split /\./, ( eval { i_run('hostname') } || 'unknown.nodomain' ), 2;
   }
-  elsif ( $os eq "SunOS" ) {
+  elsif ( $os eq 'SunOS' ) {
     ($hostname) =
-      map { /^([^\.]+)$/ } ( eval { i_run("hostname"); } || "unknown" );
-    ($domain) = eval { i_run("domainname"); } || ("nodomain");
+      map { /^([^\.]+)$/ } ( eval { i_run('hostname'); } || 'unknown' );
+    ($domain) = eval { i_run('domainname'); } || ('nodomain');
   }
-  elsif ( $os eq "OpenWrt" ) {
-    ($hostname) = eval { i_run("uname -n"); } || ("unknown");
+  elsif ( $os eq 'OpenWrt' ) {
+    ($hostname) = eval { i_run('uname -n'); } || ('unknown');
     ($domain) =
-      eval { i_run("cat /proc/sys/kernel/domainname"); } || ("unknown");
+      eval { i_run('cat /proc/sys/kernel/domainname'); } || ('unknown');
   }
   else {
-    my @out = i_run "hostname -f 2>/dev/null", fail_ok => 1;
+    my @out = i_run 'hostname -f 2>/dev/null', fail_ok => 1;
 
-    if ( $? == 0 && defined $out[0] ) {
-      ( $hostname, $domain ) = split( /\./, $out[0], 2 );
+    if ( scalar @out && defined $out[0] ) {
+      ( $hostname, $domain ) = split /\./, $out[0], 2;
     }
     else {
       Rex::Logger::debug(
-        "Error getting hostname and domainname. There is something wrong with your /etc/hosts file."
+        'Error getting hostname and domainname. There is something wrong with your /etc/hosts file.'
       );
-      ($hostname) = eval { i_run("hostname -s"); } || ("unknown");
-      ($domain)   = eval { i_run("hostname -d"); } || ("nodomain");
+      ($hostname) = eval { i_run('hostname -s'); } || ('unknown');
+      ($domain)   = eval { i_run('hostname -d'); } || ('nodomain');
     }
   }
 
@@ -79,11 +81,11 @@ sub get {
 
   my $data = {
 
-    manufacturer => $bios->get_system_information()->get_manufacturer() || "",
-    hostname     => $hostname                                           || "",
-    domain       => $domain                                             || "",
-    operatingsystem          => $os                                     || "",
-    operating_system         => $os                                     || "",
+    manufacturer => $bios->get_system_information()->get_manufacturer() || '',
+    hostname     => $hostname                                           || '',
+    domain       => $domain                                             || '',
+    operatingsystem          => $os                                     || '',
+    operating_system         => $os                                     || '',
     operatingsystemrelease   => $operating_system_version,
     operating_system_release => $operating_system_version,
     kernelname               => $kernelname,
@@ -99,95 +101,99 @@ sub get {
 sub get_operating_system {
 
   my $cache = Rex::get_cache();
-  if ( $cache->valid("hardware.host") ) {
-    my $host_cache = $cache->get("hardware.host");
+  if ( $cache->valid('hardware.host') ) {
+    my $host_cache = $cache->get('hardware.host');
     if ( exists $host_cache->{operatingsystem} ) {
       return $host_cache->{operatingsystem};
     }
   }
 
   # use lsb_release if available
-  my $is_lsb = can_run("lsb_release");
+  my $is_lsb = can_run('lsb_release');
 
   if ($is_lsb) {
-    if ( my $ret = i_run "lsb_release -s -i" ) {
+    if ( my $ret = i_run 'lsb_release -s -i' ) {
       if ( $ret =~ m/SUSE/i ) {
-        $ret = "SuSE";
+        $ret = 'SuSE';
       }
-      elsif ( $ret eq "ManjaroLinux" ) {
-        $ret = "Manjaro";
+      elsif ( $ret eq 'ManjaroLinux' ) {
+        $ret = 'Manjaro';
       }
       return $ret;
     }
   }
 
-  if ( is_dir("c:/") ) {
+  if ( is_dir('c:/') ) {
 
     # windows
-    return "Windows";
+    return 'Windows';
   }
 
-  if ( is_file("/etc/system-release") ) {
-    my $content = cat "/etc/system-release";
+  if ( is_file('/etc/system-release') ) {
+    my $content = cat '/etc/system-release';
     if ( $content =~ m/Amazon/sm ) {
-      return "Amazon";
+      return 'Amazon';
     }
   }
 
-  if ( is_file("/etc/debian_version") ) {
-    return "Debian";
+  if ( is_file('/etc/debian_version') ) {
+    return 'Debian';
   }
 
-  if ( is_file("/etc/SuSE-release") or is_file("/etc/SUSE-brand") ) {
-    return "SuSE";
+  if ( is_file('/etc/SuSE-release') or is_file('/etc/SUSE-brand') ) {
+    return 'SuSE';
   }
 
-  if ( is_file("/etc/mageia-release") ) {
-    return "Mageia";
+  if ( is_file('/etc/mageia-release') ) {
+    return 'Mageia';
   }
 
-  if ( is_file("/etc/fedora-release") ) {
-    return "Fedora";
+  if ( is_file('/etc/fedora-release') ) {
+    return 'Fedora';
   }
 
-  if ( is_file("/etc/gentoo-release") ) {
-    return "Gentoo";
+  if ( is_file('/etc/gentoo-release') ) {
+    return 'Gentoo';
   }
 
-  if ( is_file("/etc/altlinux-release") ) {
-    return "ALT";
+  if ( is_file('/etc/altlinux-release') ) {
+    return 'ALT';
   }
 
-  if ( is_file("/etc/redhat-release") ) {
-    my $fh      = file_read("/etc/redhat-release");
+  if ( is_file('/etc/redhat-release') ) {
+    my $fh      = file_read('/etc/redhat-release');
     my $content = $fh->read_all;
     $fh->close;
     chomp $content;
 
     if ( $content =~ m/CentOS/ ) {
-      return "CentOS";
+      return 'CentOS';
     }
     elsif ( $content =~ m/Scientific/ ) {
-      return "Scientific";
+      return 'Scientific';
     }
     else {
-      return "Redhat";
+      return 'Redhat';
     }
   }
 
-  if ( is_file("/etc/openwrt_release") ) {
-    return "OpenWrt";
+  if ( is_file('/etc/openwrt_release') ) {
+    return 'OpenWrt';
   }
 
-  if ( is_file("/etc/arch-release") ) {
-    return "Arch";
+  if ( is_file('/etc/arch-release') ) {
+    return 'Arch';
   }
 
-  if ( is_file("/etc/manjaro-release") ) {
-    return "Manjaro";
+  if ( is_file('/etc/manjaro-release') ) {
+    return 'Manjaro';
   }
 
-  my $os_string = i_run("uname -s");
+  if ( is_file('/etc/alpine-release') ) {
+    return 'Alpine';
+  }
+
+  my $os_string = i_run('uname -s');
   return $os_string; # return the plain os
 
 }
@@ -195,8 +201,8 @@ sub get_operating_system {
 sub get_operating_system_version {
 
   my $cache = Rex::get_cache();
-  if ( $cache->valid("hardware.host") ) {
-    my $host_cache = $cache->get("hardware.host");
+  if ( $cache->valid('hardware.host') ) {
+    my $host_cache = $cache->get('hardware.host');
     if ( exists $host_cache->{operatingsystemrelease} ) {
       return $host_cache->{operatingsystemrelease};
     }
@@ -204,21 +210,21 @@ sub get_operating_system_version {
 
   my $op = get_operating_system();
 
-  my $is_lsb = can_run("lsb_release");
+  my $is_lsb = can_run('lsb_release');
 
   # use lsb_release if available
   if ($is_lsb) {
-    if ( my $ret = i_run "lsb_release -r -s" ) {
-      my $os_check = i_run "lsb_release -d";
-      unless ( $os_check =~ m/SUSE\sLinux\sEnterprise/ ) {
+    if ( my $ret = i_run 'lsb_release -r -s' ) {
+      my $os_check = i_run 'lsb_release -d';
+      if ( !( $os_check =~ m/SUSE\sLinux\sEnterprise/ ) ) {
         return $ret;
       }
     }
   }
 
-  if ( $op eq "Debian" ) {
+  if ( $op eq 'Debian' ) {
 
-    my $fh      = file_read("/etc/debian_version");
+    my $fh      = file_read('/etc/debian_version');
     my $content = $fh->read_all;
     $fh->close;
 
@@ -227,59 +233,66 @@ sub get_operating_system_version {
     return $content;
 
   }
-  elsif ( $op eq "Ubuntu" ) {
-    my @l = i_run "lsb_release -r -s", fail_ok => 1;
+  elsif ( $op eq 'Ubuntu' ) {
+    my @l = i_run 'lsb_release -r -s', fail_ok => 1;
     return $l[0];
   }
-  elsif ( lc($op) eq "redhat"
-    or lc($op) eq "centos"
-    or lc($op) eq "scientific"
-    or lc($op) eq "fedora" )
+  elsif ( lc($op) eq 'redhat'
+    or lc($op) eq 'centos'
+    or lc($op) eq 'scientific'
+    or lc($op) eq 'fedora' )
   {
 
-    my $fh      = file_read("/etc/redhat-release");
+    my $fh      = file_read('/etc/redhat-release');
     my $content = $fh->read_all;
     $fh->close;
 
     chomp $content;
 
-    $content =~ m/(\d+(\.\d+)?)/;
-
-    return $1;
-
-  }
-  elsif ( $op eq "Mageia" ) {
-    my $fh      = file_read("/etc/mageia-release");
-    my $content = $fh->read_all;
-    $fh->close;
-
-    chomp $content;
-
-    $content =~ m/(\d+)/;
-
-    return $1;
-  }
-
-  elsif ( $op eq "Gentoo" ) {
-    my $fh      = file_read("/etc/gentoo-release");
-    my $content = $fh->read_all;
-    $fh->close;
-
-    chomp $content;
-
-    return [ split( /\s+/, $content ) ]->[-1];
-  }
-
-  elsif ( $op eq "SuSE" ) {
-
-    my ( $version, $release );
-
-    my $release_file;
-    if ( is_file("/etc/os-release") ) {
-      $release_file = "/etc/os-release";
+    if ( $content =~ m/(\d+(\.\d+)?)/ ) {
+      return $1;
     }
     else {
-      $release_file = "/etc/SuSE-release";
+      return;
+    }
+
+  }
+  elsif ( $op eq 'Mageia' ) {
+    my $fh      = file_read('/etc/mageia-release');
+    my $content = $fh->read_all;
+    $fh->close;
+
+    chomp $content;
+
+    if ( $content =~ m/(\d+)/ ) {
+      return $1;
+    }
+    else {
+      return;
+    }
+  }
+
+  elsif ( $op eq 'Gentoo' ) {
+    my $fh      = file_read('/etc/gentoo-release');
+    my $content = $fh->read_all;
+    $fh->close;
+
+    chomp $content;
+
+    return [ split /\s+/, $content ]->[-1];
+  }
+
+  elsif ( $op eq 'SuSE' ) {
+
+    #pgp my ( $version, $release );
+    my $version;
+
+    my $release_file;
+    if ( is_file('/etc/os-release') ) {
+      $release_file = '/etc/os-release';
+    }
+    else {
+      $release_file = '/etc/SuSE-release';
     }
 
     my $fh      = file_read($release_file);
@@ -298,24 +311,26 @@ sub get_operating_system_version {
     return $version;
 
   }
-  elsif ( $op eq "ALT" ) {
-    my $fh      = file_read("/etc/altlinux-release");
+  elsif ( $op eq 'ALT' ) {
+    my $fh      = file_read('/etc/altlinux-release');
     my $content = $fh->read_all;
     $fh->close;
 
     chomp $content;
 
-    $content =~ m/(\d+(\.\d+)*)/;
-
-    return $1;
-
+    if ( $content =~ m/(\d+(\.\d+)*)/ ) {
+      return $1;
+    }
+    else {
+      return;
+    }
   }
   elsif ( $op =~ /BSD/ ) {
-    my ($version) = map { /(\d+\.\d+)/ } i_run "uname -r";
+    my ($version) = map { /(\d+\.\d+)/ } i_run 'uname -r';
     return $version;
   }
-  elsif ( $op eq "OpenWrt" ) {
-    my $fh      = file_read("/etc/openwrt_version");
+  elsif ( $op eq 'OpenWrt' ) {
+    my $fh      = file_read('/etc/openwrt_version');
     my $content = $fh->read_all;
     $fh->close;
 
@@ -323,13 +338,13 @@ sub get_operating_system_version {
 
     return $content;
   }
-  elsif ( $op eq "Arch" ) {
-    my $available_updates = i_run "checkupdates", fail_ok => 1;
-    if ( $available_updates eq "" ) {
-      return "latest";
+  elsif ( $op eq 'Arch' ) {
+    my $available_updates = i_run 'checkupdates', fail_ok => 1;
+    if ( $available_updates eq '' ) {
+      return 'latest';
     }
     else {
-      return "outdated";
+      return 'outdated';
     }
   }
   elsif ( $op eq 'Windows' ) {
@@ -339,9 +354,22 @@ sub get_operating_system_version {
       return $version;
     }
   }
+  elsif ( $op eq 'Alpine' ) {
 
-  return [ i_run("uname -r") ]->[0];
+    my $fh      = file_read('/etc/alpine-release');
+    my $content = $fh->read_all;
+    $fh->close;
+
+    chomp $content;
+
+    return $content;
+
+  }
+
+  return [ i_run('uname -r') ]->[0];
 
 }
+
+## use critic
 
 1;

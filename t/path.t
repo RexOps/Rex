@@ -2,12 +2,14 @@
 
 use v5.14.4;
 use warnings;
+use strict;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
 use Test::More tests => 4;
 use Test::Warnings;
 
+use Rex::Commands::Gather;
 use Rex::Helper::Path;
 
 my $path = Rex::Helper::Path::resolv_path( "/home/foo/bar/baz", 1 );

@@ -6,10 +6,13 @@ package Rex::Helper::INI;
 
 use v5.14.4;
 use warnings;
+use strict;
+
+use String::Escape 'string2hash';
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
-BEGIN { String::Escape->use('string2hash'); }
+#BEGIN { String::Escape->use('string2hash'); }
 
 sub parse {
   my (@lines) = @_;

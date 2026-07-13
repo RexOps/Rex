@@ -103,7 +103,7 @@ resource "firewall", { export => 1 }, sub {
   };
 
   my $provider =
-    param_lookup( "provider", case ( lc(operating_system), $__provider ) );
+    param_lookup( "provider", case ( lc( operating_system() ), $__provider ) );
 
   if ( $provider !~ m/::/ ) {
     $provider = "Rex::Resource::firewall::Provider::$provider";

@@ -12,8 +12,14 @@ private_name_regex = _(?!_)\w+
 [Subroutines::ProtectPrivateSubs]
 private_name_regex = _(?!_)\w+
 
-[TooMuchCode::ProhibitDuplicateLiteral]
-allowlist = 'MSWin32'
+#pgp this is one of the stupid things in perlcritic :-)
+#[TooMuchCode::ProhibitDuplicateLiteral]
+#allowlist = 'MSWin32'
+[-TooMuchCode::ProhibitDuplicateLiteral]
+#pgp another stupid one
+[-ValuesAndExpressions::ProhibitEmptyQuotes]
+#pgp would make sense if perlcritic has been used from start :-)
+[-RegularExpressions::ProhibitEscapedMetacharacters]
 
 [-ValuesAndExpressions::ProhibitConstantPragma]
 
@@ -21,3 +27,4 @@ allowlist = 'MSWin32'
 
 [Variables::ProhibitPackageVars]
 add_packages = Rex::Logger
+

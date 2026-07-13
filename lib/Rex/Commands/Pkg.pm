@@ -31,6 +31,7 @@ package Rex::Commands::Pkg;
 
 use v5.14.4;
 use warnings;
+use strict;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 

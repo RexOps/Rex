@@ -6,6 +6,7 @@ package Rex::Pkg;
 
 use v5.14.4;
 use warnings;
+use strict;
 
 our $VERSION = '9999.99.99_99'; # VERSION
 
@@ -15,6 +16,8 @@ use Rex::Hardware;
 use Rex::Hardware::Host;
 use Rex::Logger;
 
+use Class::Load;
+use Carp;
 use Data::Dumper;
 
 my %PKG_PROVIDER;
@@ -32,24 +35,24 @@ sub get {
   my %_host = %{ Rex::Hardware::Host->get() };
   my $host  = {%_host};
 
-  my $pkg_provider_for = Rex::Config->get("package_provider") || {};
+  my $pkg_provider_for = Rex::Config->get('package_provider') || {};
 
 #if(lc($host->{"operatingsystem"}) eq "centos" || lc($host->{"operatingsystem"}) eq "redhat") {
   if ( is_redhat() ) {
-    $host->{"operatingsystem"} = "Redhat";
+    $host->{operatingsystem} = 'Redhat';
   }
 
   if ( is_debian() ) {
-    $host->{"operatingsystem"} = "Debian";
+    $host->{operatingsystem} = 'Debian';
   }
 
-  my $class = "Rex::Pkg::" . $host->{"operatingsystem"};
+  my $class = 'Rex::Pkg::' . $host->{operatingsystem};
 
   my $provider;
   if ( ref($pkg_provider_for)
-    && exists $pkg_provider_for->{ $host->{"operatingsystem"} } )
+    && exists $pkg_provider_for->{ $host->{operatingsystem} } )
   {
-    $provider = $pkg_provider_for->{ $host->{"operatingsystem"} };
+    $provider = $pkg_provider_for->{ $host->{operatingsystem} };
     $class .= "::$provider";
   }
   elsif ( exists $PKG_PROVIDER{$pkg_provider_for} ) {
@@ -57,19 +60,25 @@ sub get {
   }
 
   Rex::Logger::debug("Using $class for package management");
-  eval "use $class";
 
-  if ($@) {
+  #pgp this code does nothing - eval 'use class' will ALWAYS return undef
+  #eval "use $class";
 
-    if ($provider) {
-      Rex::Logger::info( "Provider not supported (" . $provider . ")" );
-    }
-    else {
-      Rex::Logger::info(
-        "OS not supported (" . $host->{"operatingsystem"} . ")" );
-    }
-    die("OS/Provider not supported");
-
+  #if ($@) {
+  #
+  #  if ($provider) {
+  #    Rex::Logger::info( 'Provider not supported (' . $provider . ')' );
+  #  }
+  #  else {
+  #    Rex::Logger::info(
+  #      'OS not supported (' . $host->{operatingsystem} . ') ' );
+  #  }
+  #  croak('OS/Provider not supported');
+  #
+  #}
+  if ( !Class::Load::is_class_loaded($class) ) {
+    Rex::Logger::info("OS ($host->{operatingsystem}) not supported");
+    exit 1;
   }
 
   return $class->new;

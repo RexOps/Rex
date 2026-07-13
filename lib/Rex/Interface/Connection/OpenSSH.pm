@@ -58,7 +58,7 @@ sub connect {
 
   my $proxy_command = Rex::Config->get_proxy_command( server => $server );
 
-  $port    ||= Rex::Config->get_port( server => $server )    || 22;
+  $port    ||= Rex::Config->get_port( server => $server );
   $timeout ||= Rex::Config->get_timeout( server => $server ) || 3;
 
   $server =
@@ -66,7 +66,9 @@ sub connect {
 
   ( $server, $port ) = Rex::Helper::IP::get_server_and_port( $server, $port );
 
-  Rex::Logger::debug( "Connecting to $server:$port (" . $user . ")" );
+  my $ssh_server_port = $server;  # 'server[:port]' string for debug messages
+  $ssh_server_port .= ":$port" if defined $port;
+  Rex::Logger::debug( "Connecting to $ssh_server_port ( $user )" );
 
   my %ssh_opts = Rex::Config->get_openssh_opt();
   Rex::Logger::debug("get_openssh_opt()");
@@ -107,20 +109,20 @@ sub connect {
   if ( $auth_type && $auth_type eq "pass" ) {
     Rex::Logger::debug(
       Rex::Logger::masq(
-        "OpenSSH: pass_auth: $server:$port - $user - %s", $pass
+        "OpenSSH: pass_auth: $ssh_server_port - $user - %s", $pass
       )
     );
     push @auth_types_to_try, "pass";
   }
   elsif ( $auth_type && $auth_type eq "krb5" ) {
-    Rex::Logger::debug("OpenSSH: krb5_auth: $server:$port - $user");
+    Rex::Logger::debug("OpenSSH: krb5_auth: $ssh_server_port - $user");
     push @auth_types_to_try, "krb5";
 
     # do nothing here
   }
   else { # for key auth, and others
     Rex::Logger::debug(
-      "OpenSSH: key_auth or not defined: $server:$port - $user");
+      "OpenSSH: key_auth or not defined: $ssh_server_port - $user");
     push @auth_types_to_try, "key", "pass";
   }
 
@@ -164,14 +166,14 @@ CONNECT_TRY:
   }
 
   if ( !$self->{ssh} ) {
-    Rex::Logger::info( "Can't connect to $server", "warn" );
+    Rex::Logger::info( "Can't connect to $ssh_server_port", "warn" );
     $self->{connected} = 0;
     return;
   }
 
   if ( $self->{ssh} && $self->{ssh}->error ) {
     Rex::Logger::info(
-      "Can't authenticate against $server (" . $self->{ssh}->error() . ")",
+      "Can't authenticate against $ssh_server_port (" . $self->{ssh}->error() . ")",
       "warn" );
     $self->{connected} = 1;
 
@@ -179,7 +181,7 @@ CONNECT_TRY:
   }
 
   Rex::Logger::debug( "Current Error-Code: " . $self->{ssh}->error() );
-  Rex::Logger::debug("Connected and authenticated to $server.");
+  Rex::Logger::debug("Connected and authenticated to $ssh_server_port.");
 
   $self->{connected} = 1;
   $self->{auth_ret}  = 1;

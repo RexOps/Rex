@@ -14,6 +14,7 @@ use Rex::Hardware::Host;
 use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Commands::Sysctl;
+use Rex::Hardware::DarwinProbe;
 
 require Rex::Hardware;
 
@@ -180,6 +181,16 @@ sub get {
       buffers => $buffers,
       cached  => $cached
     };
+  }
+  elsif ( $os eq "Darwin" ) {
+    my $bytes    = i_run "sysctl -n hw.memsize",  fail_ok => 1;
+    my $pagesize = i_run "sysctl -n hw.pagesize", fail_ok => 1;
+    my $vm_stat  = i_run "vm_stat",               fail_ok => 1;
+    $data = Rex::Hardware::DarwinProbe::memory_mb(
+      memsize  => $bytes,
+      pagesize => $pagesize,
+      vm_stat  => $vm_stat,
+    );
   }
   else {
     # default for linux

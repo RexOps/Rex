@@ -12,6 +12,7 @@ our $VERSION = '9999.99.99_99'; # VERSION
 use Rex::Commands::Run;
 use Rex::Helper::Run;
 use Rex::Hardware::Host;
+use Rex::Hardware::DarwinProbe;
 
 require Rex::Hardware;
 
@@ -124,6 +125,10 @@ sub get {
       used  => $used  || 0,
       free  => $free  || 0,
     };
+  }
+  elsif ( $os eq "Darwin" ) {
+    my $swap = i_run "sysctl -n vm.swapusage", fail_ok => 1;
+    $data = Rex::Hardware::DarwinProbe::swap_mb($swap);
   }
   else {
     # linux as default

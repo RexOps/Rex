@@ -258,17 +258,22 @@ sub is_freebsd {
 sub is_redhat {
   my $os = @_ ? shift : get_operating_system();
 
-  my @redhat_clones = (
-    "Fedora",                      "Redhat",
-    "CentOS",                      "Scientific",
-    "RedHatEnterpriseServer",      "RedHatEnterpriseES",
-    "RedHatEnterpriseWorkstation", "RedHatEnterpriseWS",
-    "Amazon",                      "ROSAEnterpriseServer",
-    "CloudLinuxServer",            "XenServer",
-    "OracleServer",                "Virtuozzo",
+  # lsb_release IDs for current RHEL rebuilds (#1661).
+  # Match exactly so a substring like Red does not hit Redhat.
+  my @redhat_clones = qw(
+    Fedora                      Redhat
+    CentOS                      Scientific
+    RedHatEnterpriseServer      RedHatEnterpriseES
+    RedHatEnterpriseWorkstation RedHatEnterpriseWS
+    RedHatEnterprise            Amazon
+    ROSAEnterpriseServer        CloudLinuxServer
+    XenServer                   OracleServer
+    OracleLinux                 Virtuozzo
+    Rocky                       RockyLinux
+    AlmaLinux                   CentOSStream
   );
 
-  if ( grep { /$os/i } @redhat_clones ) {
+  if ( grep { lc eq lc $os } @redhat_clones ) {
     return 1;
   }
 }

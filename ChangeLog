@@ -4,6 +4,8 @@ Revision history for Rex
  [API CHANGES]
 
  [BUG FIXES]
+ - Recognize Rocky, AlmaLinux, CentOS Stream, and Oracle Linux lsb_release IDs in is_redhat (#1661)
+ - Compare is_redhat OS names exactly instead of as an unanchored regex (#1661)
 
  [DOCUMENTATION]
 

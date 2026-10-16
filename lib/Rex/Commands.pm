@@ -1211,7 +1211,9 @@ sub LOCAL (&) {
   my $local_connect = Rex::Interface::Connection->create("Local");
 
   my $old_global_sudo = $Rex::GLOBAL_SUDO;
+  my $old_global_doas = $Rex::GLOBAL_DOAS;
   $Rex::GLOBAL_SUDO = 0;
+  $Rex::GLOBAL_DOAS = 0;
 
   Rex::push_connection(
     {
@@ -1230,6 +1232,7 @@ sub LOCAL (&) {
   Rex::pop_connection();
 
   $Rex::GLOBAL_SUDO = $old_global_sudo;
+  $Rex::GLOBAL_DOAS = $old_global_doas;
 
   return $ret;
 }

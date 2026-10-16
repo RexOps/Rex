@@ -45,6 +45,10 @@ sub get_connection_type {
     return "Sudo";
   }
 
+  if ( ( $self->{is_doas} && $self->{is_doas} == 1 ) || Rex::is_doas() ) {
+    return "Doas";
+  }
+
   return "Local";
 }
 

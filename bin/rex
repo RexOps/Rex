@@ -82,6 +82,7 @@ The C<rex> script can be used to execute tasks defined in a Rexfile from the com
  -O     Pass additional options, like CMDB path
  -s     Use sudo for every command
  -S     Password for sudo
+ -D     Use doas for every command
  -t     Number of threads to use (aka 'parallelism' param)
  -v     Display (R)?ex version
 

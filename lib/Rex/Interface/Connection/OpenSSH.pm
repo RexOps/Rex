@@ -34,7 +34,7 @@ sub connect {
 
   my (
     $user, $pass,    $private_key, $public_key, $server,
-    $port, $timeout, $auth_type,   $is_sudo
+    $port, $timeout, $auth_type,   $is_sudo,    $is_doas
   );
 
   $user        = $option{user};
@@ -46,6 +46,7 @@ sub connect {
   $private_key = $option{private_key};
   $auth_type   = $option{auth_type};
   $is_sudo     = $option{sudo};
+  $is_doas     = $option{doas};
 
   $self->{server}        = $server;
   $self->{is_sudo}       = $is_sudo;
@@ -230,18 +231,23 @@ sub get_connection_type {
 
   my $type = "OpenSSH";
 
-  if ( $self->{is_sudo} && $self->{is_sudo} == 1 ) {
-    return "Sudo";
+  if ( $self->{is_doas} ) {
+    $type = "Doas";
   }
-
-  if ( Rex::is_ssh() && !Rex::is_sudo() ) {
-    $type = "OpenSSH";
+  elsif ( $self->{is_sudo} ) {
+    $type = "Sudo";
+  }
+  elsif ( Rex::is_doas() ) {
+    $type = "Doas";
   }
   elsif ( Rex::is_sudo() ) {
     $type = "Sudo";
   }
 
+  Rex::Logger::debug("OpenSSH: selected connection type=$type");
+
   return $type;
+
 }
 
 1;

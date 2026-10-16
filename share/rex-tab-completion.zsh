@@ -55,6 +55,7 @@ arguments=(
 	'-O[pass additional options, like CMDB path]'
 	'-s[use sudo for every command]'
 	'-S[password for sudo]'
+	'-D[use doas for every command]'
 	'-t[number of threads to use (aka parallelism param)]'
 	'-v[display (R)?ex version]'
 	'*:options:->vary'

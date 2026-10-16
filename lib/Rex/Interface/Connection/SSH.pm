@@ -34,7 +34,7 @@ sub connect {
 
   my (
     $user, $pass,    $private_key, $public_key, $server,
-    $port, $timeout, $auth_type,   $is_sudo
+    $port, $timeout, $auth_type,   $is_sudo,    $is_doas
   );
 
   $user        = $option{user};
@@ -46,6 +46,7 @@ sub connect {
   $private_key = $option{private_key};
   $auth_type   = $option{auth_type};
   $is_sudo     = $option{sudo};
+  $is_doas     = $option{doas};
 
   $self->{server}        = $server;
   $self->{is_sudo}       = $is_sudo;
@@ -176,20 +177,23 @@ sub is_authenticated {
 sub get_connection_type {
   my ($self) = @_;
 
-  my $type = "SSH";
+  if ( $self->{is_doas} && $self->{is_doas} == 1 ) {
+    return "Doas";
+  }
 
   if ( $self->{is_sudo} && $self->{is_sudo} == 1 ) {
     return "Sudo";
   }
 
-  if ( Rex::is_ssh() && !Rex::is_sudo() ) {
-    $type = "SSH";
-  }
-  elsif ( Rex::is_sudo() ) {
-    $type = "Sudo";
+  if ( Rex::is_doas() ) {
+    return "Doas";
   }
 
-  return $type;
+  if ( Rex::is_sudo() ) {
+    return "Sudo";
+  }
+
+  return "SSH";
 }
 
 1;

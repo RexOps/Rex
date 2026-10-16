@@ -280,17 +280,26 @@ CHECK_OVERWRITE: {
     _handle_T(%opts);
 
     Rex::global_sudo(0);
+    Rex::global_doas(0);
     Rex::Logger::debug("Removing lockfile") if ( !exists $opts{'F'} );
     CORE::unlink("$::rexfile.lock")         if ( !exists $opts{'F'} );
     CORE::exit 0;
   }
 
+  my $enabled = "on";
+
   # turn sudo on with cli option s is used
   if ( exists $opts{'s'} ) {
-    sudo("on");
+    sudo($enabled);
   }
+
   if ( exists $opts{'S'} ) {
     sudo_password( $opts{'S'} );
+  }
+
+  # turn doas on with cli option D is used
+  if ( exists $opts{'D'} ) {
+    doas($enabled);
   }
 
   if ( exists $opts{'t'} ) {
@@ -439,6 +448,7 @@ sub __help__ {
   printf $fmt, "-O", "Pass additional options, like CMDB path";
   printf $fmt, "-s", "Use sudo for every command";
   printf $fmt, "-S", "Password for sudo";
+  printf $fmt, "-D", 'Use doas for every command';
   printf $fmt, "-t", "Number of threads to use (aka 'parallelism' param)";
   printf $fmt, "-v", "Display (R)?ex version";
   print "\n";
@@ -649,6 +659,7 @@ sub handle_lock_file {
       else {
         Rex::Logger::debug("Found stale lock file. Removing it.");
         Rex::global_sudo(0);
+        Rex::global_doas(0);
         CORE::unlink("$rexfile.lock");
       }
     }
@@ -813,6 +824,7 @@ sub exit_rex {
   summarize($signal) if !$signal;
 
   Rex::global_sudo(0);
+  Rex::global_doas(0);
   Rex::Logger::debug("Removing lockfile") if !exists $opts{'F'};
   unlink("$::rexfile.lock")               if !exists $opts{'F'};
 

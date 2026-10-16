@@ -82,6 +82,11 @@ sub new {
     delete $self->{sudo_password};
   }
 
+  if ( $self->{doas} ) {
+    $self->{auth}->{doas} = $self->{doas};
+    delete $self->{doas};
+  }
+
   if ( $self->{auth_type} ) {
     $self->{auth}->{auth_type} = $self->{auth_type};
     delete $self->{auth_type};
@@ -284,12 +289,21 @@ sub get_sudo_password {
   Rex::Config->get_sudo_password;
 }
 
+sub get_doas {
+  my ($self) = @_;
+  if ( exists $self->{auth}->{doas} ) {
+    return $self->{auth}->{doas};
+  }
+
+  return 0;
+}
+
 sub merge_auth {
   my ( $self, $other_auth ) = @_;
 
   my %new_auth;
   my @keys =
-    qw/user password port private_key public_key auth_type sudo sudo_password/;
+    qw/user password port private_key public_key auth_type sudo sudo_password doas/;
 
   for my $key (@keys) {
     my $call = "get_$key";

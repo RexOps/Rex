@@ -14,6 +14,7 @@ With this module you can run a command.
 
  my $output = run 'ls -l';
  sudo 'id';
+ doas 'id';
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -58,6 +59,11 @@ use Rex::Interface::Exec;
 use Rex::Interface::Fs;
 use English qw(-no_match_vars);
 
+my $ref_code = 'CODE';
+my $ref_hash = 'HASH';
+my $on       = 'on';
+my $on_flag  = '-on';
+
 BEGIN {
   if ( $^O !~ m/^MSWin/ ) {
     eval "use Expect";
@@ -71,7 +77,7 @@ BEGIN {
 use vars qw(@EXPORT);
 use base qw(Rex::Exporter);
 
-@EXPORT = qw(run can_run sudo);
+@EXPORT = qw(run can_run sudo doas);
 
 =head2 run($command [, $callback], %options)
 
@@ -203,10 +209,13 @@ sub run {
   my $cmd = shift;
 
   if ( ref $cmd eq "ARRAY" ) {
+    my $ret;
+
     for my $_cmd ( @{$cmd} ) {
-      &run( $_cmd, @_ );
+      run( $_cmd, @_ );
     }
-    return;
+
+    return $ret;
   }
 
   my ( $code, $option );
@@ -244,8 +253,8 @@ sub run {
         run( $option->{command} );
       }
     );
-
-    return;
+    $res_cmd = undef;
+    return $res_cmd;
   }
 
   if ( exists $option->{command} ) {
@@ -349,7 +358,7 @@ sub run {
     }
 
     if ($code) {
-      $out_ret = &$code( $out, $err );
+      $out_ret = $code->( $out, $err );
     }
 
     else {
@@ -458,37 +467,110 @@ sub sudo {
   my ($cmd) = @_;
 
   my $options;
-  if ( ref $cmd eq "HASH" ) {
+  my $ret;
+
+  if ( ref $cmd eq $ref_hash ) {
     $options = $cmd;
     $cmd     = $options->{command};
   }
 
-  if ( $cmd eq "on" || $cmd eq "-on" || $cmd eq "1" ) {
-    Rex::Logger::debug("Turning sudo globally on");
-    Rex::global_sudo(1);
-    return;
+  if ( $cmd eq $on || $cmd eq $on_flag || $cmd eq '1' ) {
+    Rex::Logger::debug('Turning sudo globally on');
+    Rex::global_doas(1);
   }
-  elsif ( $cmd eq "0" ) {
-    Rex::Logger::debug("Turning sudo globally off");
-    Rex::global_sudo(0);
-    return;
+  elsif ( $cmd eq '0' ) {
+    Rex::Logger::debug('Turning sudo globally off');
+    Rex::global_doas(0);
+  }
+  else {
+    Rex::get_current_connection_object()->push_use_doas(1);
+    Rex::get_current_connection_object()->push_doas_options( %{$options} );
+
+    if ( ref $cmd eq $ref_code ) {
+      $ret = $cmd->();
+    }
+    else {
+      $ret = i_run( $cmd, fail_ok => 1 );
+    }
+
+    Rex::get_current_connection_object()->pop_use_doas();
+    Rex::get_current_connection_object()->pop_doas_options();
   }
 
-  Rex::get_current_connection_object()->push_use_sudo(1);
-  Rex::get_current_connection_object()->push_sudo_options( %{$options} );
+  return $ret;
+}
+
+=head2 doas($command)
+
+This function will execute the given command with doas.
+
+With this function you can run a command as another user via doas.
+
+B<Note:> doas on OpenBSD does not support password input via stdin like sudo does.
+You must configure F</etc/doas.conf> appropriately for unattended execution.
+A typical configuration for a user to run commands as root without a password would be:
+
+  permit nopass myuser as root
+
+However, administrators should restrict rules appropriately for their security requirements.
+
+You can also pass a hash reference as first argument to specify options:
+
+ doas { user => 'root', command => 'id' };
+
+doas supports the following options:
+
+=over 4
+
+=item user
+
+The user to execute the command as.
+
+=item command
+
+The command to execute.
+
+=back
+
+To use doas without a password prompt (non-interactively), Rex uses the C<-n> option.
+Missing authorization will cause an immediate command failure.
+
+=cut
+
+sub doas {
+  my ($cmd) = @_;
+
+  my $options = {};
+
+  if ( ref $cmd eq $ref_hash ) {
+    $options = $cmd;
+    $cmd     = $options->{command};
+  }
+
+  if ( $cmd eq $on || $cmd eq $on_flag || $cmd eq '1' ) {
+    Rex::Logger::debug('Turning doas globally on');
+    return Rex::global_doas(1);
+  }
+  elsif ( $cmd eq '0' ) {
+    Rex::Logger::debug('Turning doas globally off');
+    return Rex::global_doas(0);
+  }
+
+  Rex::get_current_connection_object()->push_use_doas(1);
+  Rex::get_current_connection_object()->push_doas_options( %{$options} );
 
   my $ret;
 
-  # if sudo is used with a code block
-  if ( ref($cmd) eq "CODE" ) {
-    $ret = &$cmd();
+  # if doas is used with a code block
+  if ( ref $cmd eq $ref_code ) {
+    $ret = $cmd->();
   }
   else {
     $ret = i_run( $cmd, fail_ok => 1 );
   }
 
-  Rex::get_current_connection_object()->pop_use_sudo();
-  Rex::get_current_connection_object()->pop_sudo_options();
+  Rex::get_current_connection_object()->pop_use_doas();
+  Rex::get_current_connection_object()->pop_doas_options();
 
   return $ret;
 }
